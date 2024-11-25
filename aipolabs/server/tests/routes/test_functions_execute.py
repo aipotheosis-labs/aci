@@ -10,6 +10,7 @@ from aipolabs.common.schemas.function import FunctionExecutionResult
 AIPOLABS_TEST__HELLO_WORLD_WITH_ARGS = "AIPOLABS_TEST__HELLO_WORLD_WITH_ARGS"
 AIPOLABS_TEST__HELLO_WORLD_NESTED_ARGS = "AIPOLABS_TEST__HELLO_WORLD_NESTED_ARGS"
 AIPOLABS_TEST__HELLO_WORLD_NO_ARGS = "AIPOLABS_TEST__HELLO_WORLD_NO_ARGS"
+AIPOLABS_TEST_HTTP_BEARER__HELLO_WORLD = "AIPOLABS_TEST_HTTP_BEARER__HELLO_WORLD"
 
 
 def test_execute_function_with_invalid_input(test_client: TestClient, dummy_api_key: str) -> None:
@@ -163,3 +164,27 @@ def test_execute_function_with_nested_args(test_client: TestClient, dummy_api_ke
     function_execution_response = FunctionExecutionResult.model_validate(response.json())
     assert function_execution_response.success
     assert function_execution_response.data == mock_response_data
+
+
+@responses.activate
+def test_http_bearer_auth_token_injection(test_client: TestClient, dummy_api_key: str) -> None:
+
+    def request_callback(request: PreparedRequest) -> tuple[int, dict, str]:
+        # Verify Bearer token is injected
+        assert request.headers["Authorization"] == "Bearer test-bearer-token"
+
+        return (200, {}, json.dumps({}))
+
+    responses.add_callback(
+        method=responses.GET,
+        url="https://api.mock.aipolabs.com/v1/hello_world",
+        callback=request_callback,
+    )
+
+    response = test_client.post(
+        f"/v1/functions/{AIPOLABS_TEST_HTTP_BEARER__HELLO_WORLD}/execute",
+        json={},
+        headers={"x-api-key": dummy_api_key},
+    )
+
+    assert response.status_code == 200, response.json()

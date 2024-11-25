@@ -8,9 +8,12 @@
     "security_schemes": {
         "api_key": {
           "in": "header",
-          "name": "X-API-KEY"
+          "name": "X-API-KEY",
+          "default": ["xxx"]
         },
-        "http_basic": {}
+        "http_bearer": {
+          "default": ["xxx"]
+        }
     },
     "categories": [
         "search",

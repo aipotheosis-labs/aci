@@ -10,8 +10,7 @@
             "in": "header",
             "name": "X-Test-API-Key",
             "default": ["test-api-key"]
-        },
-        "http_basic": {}
+        }
     },
     "categories": [
         "testcategory",

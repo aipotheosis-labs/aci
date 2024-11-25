@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common import processor
 from aipolabs.common.db import crud, sql_models
-from aipolabs.common.enums import Protocol
+from aipolabs.common.enums import Protocol, SecuritySchemeType
 from aipolabs.common.logging import create_headline, get_logger
 from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.function import (
@@ -233,8 +233,8 @@ def _execute(
         # TODO: better way to remove None values? and if it's ok to remove all of them?
         function_input = processor.remove_none_values(function_input)
         # Extract parameters by location
-        path_params = function_input.get("path", {})
-        query_params = function_input.get("query", {})
+        path = function_input.get("path", {})
+        query = function_input.get("query", {})
         headers = function_input.get("header", {})
         cookies = function_input.get("cookie", {})
         body = function_input.get("body", {})
@@ -242,26 +242,23 @@ def _execute(
         protocol_data: RestMetadata = function_execution.protocol_data
         # Construct URL with path parameters
         url = f"{protocol_data.server_url}{protocol_data.path}"
-        if path_params:
+        if path:
             # Replace path parameters in URL
-            for path_param_name, path_param_value in path_params.items():
+            for path_param_name, path_param_value in path.items():
                 url = url.replace(f"{{{path_param_name}}}", str(path_param_value))
 
-        # get default api key and header name for the app
-        default_api_key_data = _get_default_api_key_and_header_name(db_app)
-        if default_api_key_data:
-            headers[default_api_key_data[1]] = default_api_key_data[0]
+        _inject_auth_token(db_app, headers, query, body, cookies)
+
         # Create request object
         request = requests.Request(
             method=protocol_data.method,
             url=url,
-            params=query_params if query_params else None,
+            params=query if query else None,
             headers=headers if headers else None,
             cookies=cookies if cookies else None,
             json=body if body else None,
         )
 
-        # Prepare the request to access its components
         prepared_request = request.prepare()
         # TODO: remove all print ?
         print(create_headline("FUNCTION EXECUTION HTTP REQUEST"))
@@ -295,26 +292,76 @@ def _execute(
             return FunctionExecutionResult(success=True, data=response_data)
 
 
-# get the default api key and header name for an app if exists, for example
-# "api_key": {
-#   "in": "header",
-#   "name": "X-Subscription-Token",
-#   "default": ["BSAnf8MFuERsHzyYzNPjOdX5lFc9zXv"]
-# },
-# and put it in the header of the request
-# TODO: the right way for auth is to get from the connected account first (need app & project integration),
-# and if not found, then use the app's default
-def _get_default_api_key_and_header_name(db_app: sql_models.App) -> tuple[str, str] | None:
-    if (
-        db_app.security_schemes
-        and "api_key" in db_app.security_schemes
-        and db_app.security_schemes["api_key"]["default"]
-    ):
-        return (
-            db_app.security_schemes["api_key"]["default"][0],
-            db_app.security_schemes["api_key"]["name"],
-        )
-    return None
+def _inject_auth_token(
+    db_app: sql_models.App, headers: dict, query: dict, body: dict, cookies: dict
+) -> None:
+    """Injects authentication tokens based on the app's security schemes.
+
+    We assume the auth token can only be in the header, query, cookie, or body.
+    Modifies the input dictionaries in place.
+
+    # TODO: the right way for auth is to get from the connected account first (need app & project integration),
+    # and if not found, then use the app's default
+
+    Args:
+        db_app (sql_models.App): The application model containing security schemes and authentication info.
+        query (dict): The query parameters dictionary.
+        headers (dict): The headers dictionary.
+        cookies (dict): The cookies dictionary.
+        body (dict): The body dictionary.
+
+    Examples security schemes:
+    {
+        "api_key": {
+            "in": "header",
+            "name": "X-API-KEY",
+            "default": ["xxx"]
+        },
+        "http_bearer": {
+            "default": ["xxx"]
+        }
+    }
+    """
+    security_schemes: dict[SecuritySchemeType, dict] = db_app.security_schemes
+
+    for scheme_type, scheme in security_schemes.items():
+        # if no default value is set for this scheme_type, skip to the next supported scheme
+        if not scheme.get("default"):
+            continue
+
+        # TODO: ideally we should do round robin for using shared default keys
+        token = scheme["default"][0]
+
+        match scheme_type:
+            case SecuritySchemeType.API_KEY:
+                api_key_location = scheme.get("in")
+                api_key_name = scheme.get("name")
+                match api_key_location:
+                    case "header":
+                        headers[api_key_name] = token
+                        break
+                    case "query":
+                        query[api_key_name] = token
+                        break
+                    case "body":
+                        body[api_key_name] = token
+                        break
+                    case "cookie":
+                        cookies[api_key_name] = token
+                        break
+                    case _:
+                        logger.error(
+                            f"Unsupported API key location: {api_key_location} for app: {db_app.name}"
+                        )
+                        continue
+            case SecuritySchemeType.HTTP_BEARER:
+                headers["Authorization"] = f"Bearer {token}"
+                break
+            case _:
+                logger.error(
+                    f"Unsupported security scheme type: {scheme_type} for app: {db_app.name}"
+                )
+                continue
 
 
 def _get_response_data(response: requests.Response) -> Any:

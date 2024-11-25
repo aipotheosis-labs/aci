@@ -9,8 +9,7 @@
         "api_key": {
             "in": "header",
             "name": "X-API-Key"
-        },
-        "http_basic": {}
+        }
     },
     "categories": [
         "devtools",
