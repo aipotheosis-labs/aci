@@ -1,6 +1,6 @@
 [
   {
-    "name": "TAVILY_SEARCH",
+    "name": "TAVILY__SEARCH",
     "description": "Tavily Search API is a search engine optimized for LLMs, aimed at efficient, quick and persistent search results.",
     "tags": ["search"],
     "visibility": "public",
@@ -8,12 +8,13 @@
     "protocol": "rest",
     "protocol_data": {
       "method": "POST",
-      "server_url": "https://api.tavily.com/search"
+      "path": "/search",
+      "server_url": "https://api.tavily.com"
     },
     "parameters": {
       "type": "object",
       "properties": {
-        "query": {
+        "body": {
           "type": "object",
           "description": "query parameters",
           "properties": {
@@ -23,7 +24,7 @@
             },
             "api_key": {
               "type": "string",
-              "default": ["X-API-KEY"],
+              "default": "X-API-KEY",
               "description": "Your Tavily API Key."
             },
             "search_depth": {
@@ -39,12 +40,12 @@
               "enum": ["general", "news"]
             },
             "days": {
-              "type": "int",
+              "type": "integer",
               "default": 3,
               "description": "The number of days back from the current date to include in the search results. This specifies the time frame of data to be retrieved. Please note that this feature is only available when using the 'news' search topic. Default is 3."
             },
             "max_results": {
-              "type": "int",
+              "type": "integer",
               "default": 5,
               "description": "The maximum number of search results to return. Default is 5."
             },
@@ -69,13 +70,19 @@
               "description": "Include the cleaned and parsed HTML content of each search result. Default is False."
             },
             "include_domains": {
-              "type": ["string", "null"],
+              "type": ["array", "null"],
               "default": null,
+              "items": {
+                "type": "string"
+              },
               "description": "A list of domains to specifically include in the search results. Default is [], which includes all domains."
             },
             "exclude_domains": {
-              "type": ["string", "null"],
+              "type": ["array", "null"],
               "default": null,
+              "items": {
+                "type": "string"
+              },
               "description": "A list of domains to specifically exclude from the search results. Default is [], which doesn't exclude any domains."
             }
           },
@@ -84,14 +91,14 @@
           "additionalProperties": false
         }
       },
-      "required": ["query"],
-      "visible": ["query"],
+      "required": ["body"],
+      "visible": ["body"],
       "additionalProperties": false
     },
     "response": {}
   },
   {
-    "name": "TAVILY_EXTRACT",
+    "name": "TAVILY__EXTRACT",
     "description": "Tavily Extract API is used to scrape raw content from a provided list of URLs.",
     "tags": ["search", "scrape"],
     "visibility": "public",
@@ -99,12 +106,13 @@
     "protocol": "rest",
     "protocol_data": {
       "method": "POST",
-      "server_url": "https://api.tavily.com/extract"
+      "path": "/extract",
+      "server_url": "https://api.tavily.com"
     },
     "parameters": {
       "type": "object",
       "properties": {
-        "query": {
+        "body": {
           "type": "object",
           "description": "query parameters",
           "properties": {
@@ -117,7 +125,7 @@
             },
             "api_key": {
               "type": "string",
-              "default": ["X-API-KEY"],
+              "default": "X-API-KEY",
               "description": "Your Tavily API Key."
             }
           },
@@ -126,8 +134,8 @@
           "additionalProperties": false
         }
       },
-      "required": ["query"],
-      "visible": ["query"],
+      "required": ["body"],
+      "visible": ["body"],
       "additionalProperties": false
     },
     "response": {}

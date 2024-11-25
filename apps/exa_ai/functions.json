@@ -1,6 +1,6 @@
 [
   {
-    "name": "EXA_SEARCH",
+    "name": "EXA_AI__SEARCH",
     "description": "Find webpages using Exa’s embeddings-based or Google-style keyword search.",
     "tags": ["search"],
     "visibility": "public",
@@ -8,12 +8,13 @@
     "protocol": "rest",
     "protocol_data": {
       "method": "POST",
-      "server_url": "https://api.exa.ai/search"
+      "path": "/search",
+      "server_url": "https://api.exa.ai"
     },
     "parameters": {
       "type": "object",
       "properties": {
-        "query": {
+        "body": {
           "type": "object",
           "description": "query parameters",
           "properties": {
@@ -39,7 +40,7 @@
               "enum": ["company", "research paper", "news", "linkedin profile", "github", "tweet", "movie", "song", "personal site", "pdf"]
             },
             "numResults": {
-              "type": "int",
+              "type": "integer",
               "default": 10,
               "description": "Number of search results to return. Default 10. Max 10.",
               "minimum": 0,
@@ -117,7 +118,9 @@
                       "description": "Whether HTML tags, which can help the LLM understand structure of text, should be included. Default false."
                     }
                   },
-                  "required": ["maxCharacters", "includeHtmlTags"]
+                  "required": [],
+                  "visible": ["maxCharacters", "includeHtmlTags"],
+                  "additionalProperties": false
                 },
                 "highlights": {
                   "type": "object",
@@ -138,7 +141,9 @@
                       "default": null
                     }
                   },
-                  "required": ["numSentences", "highlightsPerUrl"]
+                  "required": ["numSentences", "highlightsPerUrl"],
+                  "visible": ["numSentences", "highlightsPerUrl"],
+                  "additionalProperties": false
                 },
                 "summary": {
                   "type": "object",
@@ -149,10 +154,15 @@
                       "default": null,
                       "description": "If specified, tries to answer the query in the summary"
                     }
-                  }
+                  },
+                  "required": [],
+                  "visible": ["query"],
+                  "additionalProperties": false
                 }
               },
-              "required": ["text", "highlights", "summary"]
+              "required": ["text", "highlights", "summary"],
+              "visible": [],
+              "additionalProperties": false
             }
           },
           "required": ["query"],
@@ -160,10 +170,9 @@
           "additionalProperties": false
         }
       },
-      "required": ["query"],
-      "visible": ["query"],
+      "required": ["body"],
+      "visible": ["body"],
       "additionalProperties": false
-    },
-    "response": {}
+    }
   }
 ]
