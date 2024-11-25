@@ -109,7 +109,10 @@
           "description": "query parameters",
           "properties": {
             "urls": {
-              "type": ["string"],
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
               "description": "The urls you want to extract with Tavily."
             },
             "api_key": {

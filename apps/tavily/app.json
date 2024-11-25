@@ -7,14 +7,15 @@
     "description": "Tavily is a search tool that focuses on optimizing search for AI developers and autonomous AI agents. We take care of all the burden of searching, scraping, filtering and extracting.",
     "security_schemes": {
         "api_key": {
-          "in": "header",
-          "name": "X-API-KEY",
+          "in": "body",
+          "name": "api_key",
           "default": ["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"]
         },
         "http_basic": {}
     },
     "categories": [
-        "search"
+        "search",
+        "scraping"
     ],
     "visibility": "public",
     "enabled": true
