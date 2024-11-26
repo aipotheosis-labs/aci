@@ -16,7 +16,7 @@
       "properties": {
         "body": {
           "type": "object",
-          "description": "query parameters",
+          "description": "body parameters",
           "properties": {
             "query": {
               "type": "string",
@@ -37,7 +37,18 @@
               "type": ["string", "null"],
               "default": null,
               "description": "(beta) A data category to focus on, with higher comprehensivity and data cleanliness. Categories right now include company, research paper, news, linkedin profile, github, tweet, movie, song, personal site, and pdf.",
-              "enum": ["company", "research paper", "news", "linkedin profile", "github", "tweet", "movie", "song", "personal site", "pdf"]
+              "enum": [
+                "company",
+                "research paper",
+                "news",
+                "linkedin profile",
+                "github",
+                "tweet",
+                "movie",
+                "song",
+                "personal site",
+                "pdf"
+              ]
             },
             "numResults": {
               "type": "integer",
@@ -166,7 +177,268 @@
             }
           },
           "required": ["query"],
-          "visible": ["query", "useAutoprompt", "type", "category", "numResults"],
+          "visible": [
+            "query",
+            "useAutoprompt",
+            "type",
+            "category",
+            "numResults"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "EXA_AI__GET_CONTENTS",
+    "description": "Retrieve contents of documents based on a list of document IDs.",
+    "tags": ["scrape"],
+    "visibility": "public",
+    "enabled": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/contents",
+      "server_url": "https://api.exa.ai"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "body parameters",
+          "properties": {
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Array of document IDs obtained from searches."
+            },
+            "text": {
+              "type": "object",
+              "description": "Parsed contents of the page.",
+              "properties": {
+                "maxCharacters": {
+                  "type": ["integer", "null"],
+                  "default": null,
+                  "description": "Max length in characters for the text returned."
+                },
+                "includeHtmlTags": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether HTML tags, which can help the LLM understand structure of text, should be included. Default false."
+                }
+              },
+              "required": [],
+              "visible": ["maxCharacters", "includeHtmlTags"],
+              "additionalProperties": false
+            },
+            "highlights": {
+              "type": "object",
+              "description": "Relevant extract(s) from the webpage.",
+              "properties": {
+                "numSentences": {
+                  "type": "integer",
+                  "default": 5,
+                  "description": "The number of sentences to be returned in each snippet. Default 5"
+                },
+                "highlightsPerUrl": {
+                  "type": "integer",
+                  "default": 1,
+                  "description": "The number of snippets to return per page. Default 1"
+                },
+                "query": {
+                  "type": ["string", "null"],
+                  "default": null
+                }
+              },
+              "required": ["numSentences", "highlightsPerUrl"],
+              "visible": ["numSentences", "highlightsPerUrl"],
+              "additionalProperties": false
+            },
+            "summary": {
+              "type": "object",
+              "description": "Summary of the webpage",
+              "properties": {
+                "query": {
+                  "type": ["string", "null"],
+                  "default": null,
+                  "description": "If specified, tries to answer the query in the summary"
+                }
+              },
+              "required": [],
+              "visible": ["query"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["ids"],
+          "visible": ["ids"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "EXA_AI__FINDSIMILAR",
+    "description": "Find similar links to the link provided and optionally get page contents.",
+    "tags": ["search"],
+    "visibility": "public",
+    "enabled": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/findSimilar",
+      "server_url": "https://api.exa.ai"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "body parameters",
+          "properties": {
+            "url": {
+              "type": "string",
+              "description": "The url for which you would like to find similar links."
+            },
+            "numResults": {
+              "type": "integer",
+              "default": 10,
+              "description": "Number of search results to return. Default 10. Max 10.",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "includeDomains": {
+              "type": ["array", "null"],
+              "default": null,
+              "items": {
+                "type": "string"
+              },
+              "description": "List of domains to include in the search. If specified, results will only come from these domains."
+            },
+            "excludeDomains": {
+              "type": ["array", "null"],
+              "default": null,
+              "items": {
+                "type": "string"
+              },
+              "description": "List of domains to exclude in the search. If specified, results will not include any from these domains."
+            },
+            "startCrawlDate": {
+              "type": ["string", "null"],
+              "default": null,
+              "description": "Crawl date refers to the date that Exa discovered a link. Results will include links that were crawled after this date. Must be specified in ISO 8601 format (e.g., '2023-01-01T00:00:00Z')."
+            },
+            "endCrawlDate": {
+              "type": ["string", "null"],
+              "default": null,
+              "description": "Crawl date refers to the date that Exa discovered a link. Results will include links that were crawled before this date. Must be specified in ISO 8601 format (e.g., '2023-01-01T00:00:00Z')."
+            },
+            "startPublishedDate": {
+              "type": ["string", "null"],
+              "default": null,
+              "description": "Only links with a published date after this will be returned. Must be specified in ISO 8601 format (e.g., '2023-01-01T00:00:00Z')."
+            },
+            "endPublishedDate": {
+              "type": ["string", "null"],
+              "default": null,
+              "description": "Only links with a published date before this will be returned. Must be specified in ISO 8601 format (e.g., '2023-01-01T00:00:00Z')."
+            },
+            "includeText": {
+              "type": ["array", "null"],
+              "default": null,
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 1,
+              "description": "List of strings that must be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words."
+            },
+            "excludeText": {
+              "type": ["array", "null"],
+              "default": null,
+              "items": {
+                "type": "string"
+              },
+              "maxItems": 1,
+              "description": "List of strings that must not be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words."
+            },
+            "contents": {
+              "type": "object",
+              "properties": {
+                "text": {
+                  "type": "object",
+                  "description": "Parsed contents of the page.",
+                  "properties": {
+                    "maxCharacters": {
+                      "type": ["integer", "null"],
+                      "default": null,
+                      "description": "Max length in characters for the text returned."
+                    },
+                    "includeHtmlTags": {
+                      "type": "boolean",
+                      "default": false,
+                      "description": "Whether HTML tags, which can help the LLM understand structure of text, should be included. Default false."
+                    }
+                  },
+                  "required": [],
+                  "visible": ["maxCharacters", "includeHtmlTags"],
+                  "additionalProperties": false
+                },
+                "highlights": {
+                  "type": "object",
+                  "description": "Relevant extract(s) from the webpage.",
+                  "properties": {
+                    "numSentences": {
+                      "type": "integer",
+                      "default": 5,
+                      "description": "The number of sentences to be returned in each snippet. Default 5"
+                    },
+                    "highlightsPerUrl": {
+                      "type": "integer",
+                      "default": 1,
+                      "description": "The number of snippets to return per page. Default 1"
+                    },
+                    "query": {
+                      "type": ["string", "null"],
+                      "default": null
+                    }
+                  },
+                  "required": ["numSentences", "highlightsPerUrl"],
+                  "visible": ["numSentences", "highlightsPerUrl"],
+                  "additionalProperties": false
+                },
+                "summary": {
+                  "type": "object",
+                  "description": "Summary of the webpage",
+                  "properties": {
+                    "query": {
+                      "type": ["string", "null"],
+                      "default": null,
+                      "description": "If specified, tries to answer the query in the summary"
+                    }
+                  },
+                  "required": [],
+                  "visible": ["query"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["text", "highlights", "summary"],
+              "visible": [],
+              "additionalProperties": false
+            }
+          },
+          "required": ["url"],
+          "visible": [
+            "url",
+            "numResults"
+          ],
           "additionalProperties": false
         }
       },

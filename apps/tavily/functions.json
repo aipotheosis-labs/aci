@@ -16,7 +16,7 @@
       "properties": {
         "body": {
           "type": "object",
-          "description": "query parameters",
+          "description": "body parameters",
           "properties": {
             "query": {
               "type": "string",
@@ -114,7 +114,7 @@
       "properties": {
         "body": {
           "type": "object",
-          "description": "query parameters",
+          "description": "body parameters",
           "properties": {
             "urls": {
               "type": "array",

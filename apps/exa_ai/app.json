@@ -4,7 +4,7 @@
     "logo": "https://example.com/exa-logo.png",
     "provider": "Exa Labs, Inc.",
     "version": "aipolabs_0.0.0",
-    "description": "Exa is a search engine made for AIs. Exa finds the exact content you’re looking for on the web, with three core functionalities: search, contents, find similar.",
+    "description": "Exa is a search engine made for AIs. Exa finds the exact content you are looking for on the web, with three core functionalities: search, contents, find similar.",
     "security_schemes": {
         "api_key": {
           "in": "header",
@@ -15,7 +15,7 @@
     },
     "categories": [
         "search",
-        "scraping"
+        "scrape"
     ],
     "visibility": "public",
     "enabled": true
