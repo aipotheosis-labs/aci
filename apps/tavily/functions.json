@@ -87,7 +87,7 @@
             }
           },
           "required": ["query", "api_key"],
-          "visible": ["query", "search_depth", "topic", "days", "max_results", "include_images", "include_image_descriptions", "include_answer", "include_raw_content", "include_domains", "exclude_domains"],
+          "visible": ["query", "search_depth", "topic", "days", "max_results", "include_images", "include_image_descriptions", "include_answer"],
           "additionalProperties": false
         }
       },
