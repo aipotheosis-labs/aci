@@ -22,7 +22,6 @@ jsonschema = "^4.23.0"
 limits = "^3.13.0"
 aws-cdk-lib = "^2.164.1"
 constructs = ">=10.0.0,<11.0.0"
-alembic = "^1.14.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
