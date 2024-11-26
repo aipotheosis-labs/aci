@@ -3,7 +3,7 @@
     "display_name": "Tavily",
     "logo": "https://example.com/tavily-logo.png",
     "provider": "Tavily, Inc.",
-    "version": "aipolabs_0.0.0",
+    "version": "aipolabs_0.0.1",
     "description": "Tavily is a search tool that focuses on optimizing search for AI developers and autonomous AI agents. We take care of all the burden of searching, scraping, filtering and extracting.",
     "security_schemes": {
         "api_key": {
