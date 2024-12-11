@@ -2,7 +2,7 @@ import re
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from aipolabs.common.enums import SecuritySchemeType, Visibility
+from aipolabs.common.enums import SecurityScheme, Visibility
 from aipolabs.common.schemas.function import FunctionPublic
 
 
@@ -17,7 +17,7 @@ class AppCreate(BaseModel):
     visibility: Visibility
     enabled: bool
     # TODO: consider making schema for each security scheme instead of using dict
-    security_schemes: dict[SecuritySchemeType, dict] = Field(default_factory=dict)
+    security_schemes: dict[SecurityScheme, dict] = Field(default_factory=dict)
 
     @field_validator("name")
     def validate_name(cls, v: str) -> str:

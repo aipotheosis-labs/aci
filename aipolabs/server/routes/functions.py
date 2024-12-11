@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common import processor
 from aipolabs.common.db import crud, sql_models
-from aipolabs.common.enums import Protocol, SecuritySchemeType
+from aipolabs.common.enums import Protocol, SecurityScheme
 from aipolabs.common.logging import create_headline, get_logger
 from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.function import (
@@ -248,7 +248,7 @@ def _execute(
             for path_param_name, path_param_value in path.items():
                 url = url.replace(f"{{{path_param_name}}}", str(path_param_value))
 
-        _inject_auth_token(db_app, headers, query, body, cookies)
+        _inject_security_credentials(db_app, headers, query, body, cookies)
 
         # Create request object
         request = httpx.Request(
@@ -288,15 +288,15 @@ def _execute(
             return FunctionExecutionResult(success=True, data=_get_response_data(response))
 
 
-def _inject_auth_token(
+def _inject_security_credentials(
     db_app: sql_models.App, headers: dict, query: dict, body: dict, cookies: dict
 ) -> None:
     """Injects authentication tokens based on the app's security schemes.
 
-    We assume the auth token can only be in the header, query, cookie, or body.
+    We assume the security credentials can only be in the header, query, cookie, or body.
     Modifies the input dictionaries in place.
 
-    # TODO: the right way for auth is to get from the connected account first (need app & project integration),
+    # TODO: the right way for injecting security credentials is to get from the linked account first (need app & project integration),
     # and if not found, then use the app's default
 
     Args:
@@ -318,7 +318,7 @@ def _inject_auth_token(
         }
     }
     """
-    security_schemes: dict[SecuritySchemeType, dict] = db_app.security_schemes
+    security_schemes: dict[SecurityScheme, dict] = db_app.security_schemes
 
     for scheme_type, scheme in security_schemes.items():
         # if no default value is set for this scheme_type, skip to the next supported scheme
@@ -329,7 +329,7 @@ def _inject_auth_token(
         token = scheme["default"][0]
 
         match scheme_type:
-            case SecuritySchemeType.API_KEY:
+            case SecurityScheme.API_KEY:
                 api_key_location = scheme.get("in")
                 api_key_name = scheme.get("name")
                 match api_key_location:
@@ -350,7 +350,7 @@ def _inject_auth_token(
                             f"Unsupported API key location: {api_key_location} for app: {db_app.name}"
                         )
                         continue
-            case SecuritySchemeType.HTTP_BEARER:
+            case SecurityScheme.HTTP_BEARER:
                 headers["Authorization"] = f"Bearer {token}"
                 break
             case _:

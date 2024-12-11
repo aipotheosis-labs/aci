@@ -35,7 +35,7 @@ from aipolabs.common.enums import (
     APIKeyStatus,
     Plan,
     Protocol,
-    SecuritySchemeType,
+    SecurityScheme,
     Visibility,
 )
 
@@ -315,13 +315,13 @@ class App(Base):
     )
 
 
-# A user can have multiple projects, a project can integrate multiple apps, an app can have multiple connected accounts.
+# A user can have multiple projects, a project can integrate multiple apps, an app can have multiple linked accounts.
 # Same app in different projects need to authenticate user accounts separately.
 # When a user first create a project, there is no record for that project in this table,
 # the record is created when the user select (enable) an app to the project.
 # When user disable an app from the project, the record is not deleted, just the status is changed to disabled
 # TODO: table can get large if there are too many users and each has many projects, need to keep an eye out on performance
-# TODO: will it be necessary to store user selected auth type for the app here?
+# TODO: will it be necessary to store user selected security scheme type for the app here?
 # TODO: will there be performance issue if we offer a button in dev portal to enable all apps at once?
 # TODO: if App is disabled, should project_app_integration of that App also be disabled?
 class ProjectAppIntegration(Base):
@@ -359,9 +359,9 @@ class ProjectAppIntegration(Base):
     __table_args__ = (UniqueConstraint("project_id", "app_id", name="uc_project_app"),)
 
 
-# a connected account is specific to an app in a project.
-class ConnectedAccount(Base):
-    __tablename__ = "connected_accounts"
+# a linked account is specific to an app in a project.
+class LinkedAccount(Base):
+    __tablename__ = "linked_accounts"
 
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
@@ -372,13 +372,13 @@ class ConnectedAccount(Base):
     # account_owner should be unique per app per project (or just per ProjectAppIntegration), it identifies the end user, not the project owner.
     # ideally this should be some user id in client's system that uniquely identify this account owner.
     account_owner_id: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
-    # here we assume it's possible to have connected account but no auth is required, in which case
-    # security_scheme_type and security_scheme_data will be null
-    security_scheme_type: Mapped[SecuritySchemeType | None] = mapped_column(
-        SqlEnum(SecuritySchemeType), nullable=True
+    # here we assume it's possible to have linked account but no security credentials are required, in which case
+    # security_scheme and security_credentials will be null
+    security_scheme: Mapped[SecurityScheme | None] = mapped_column(
+        SqlEnum(SecurityScheme), nullable=True
     )
-    # auth_data is different for each auth type, e.g., API key, OAuth2 (access token, refresh token, scope, etc) etc
-    security_scheme_data: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    # security credentials are different for each security scheme, e.g., API key, OAuth2 (access token, refresh token, scope, etc) etc
+    security_credentials: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
     created_at: Mapped[datetime.datetime] = mapped_column(

@@ -9,7 +9,7 @@ class APIKeyStatus(str, Enum):
     DELETED = "deleted"
 
 
-class SecuritySchemeType(str, Enum):
+class SecurityScheme(str, Enum):
     """
     security scheme type for an app (or function if support override)
     """
