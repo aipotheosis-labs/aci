@@ -336,6 +336,13 @@ class ProjectAppIntegration(Base):
     app_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("apps.id"), nullable=False
     )
+    # selected (by client) as default security scheme for the app integration. Although making security_scheme constant is easier for
+    # implementation, we keep the flexibility for future use to allow user to select different security scheme for different linked accounts.
+    # So, ultimately the actual security scheme and credentials should be decided by individual linked accounts
+    # stored in linked_accounts table.
+    security_scheme: Mapped[SecurityScheme | None] = mapped_column(
+        SqlEnum(SecurityScheme), nullable=True
+    )
     # controlled by users to enable or disable the app integration
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
     # exclude certain functions from the app.
@@ -356,6 +363,7 @@ class ProjectAppIntegration(Base):
     )
 
     # unique constraint
+    # If in the future we want to allow the same project to integrate the same app multiple times, we can remove the unique constraint
     __table_args__ = (UniqueConstraint("project_id", "app_id", name="uc_project_app"),)
 
 
