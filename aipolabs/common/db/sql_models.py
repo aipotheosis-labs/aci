@@ -377,9 +377,15 @@ class LinkedAccount(Base):
     project_app_integration_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("project_app_integrations.id"), nullable=False
     )
-    # account_owner should be unique per app per project (or just per ProjectAppIntegration), it identifies the end user, not the project owner.
-    # ideally this should be some user id in client's system that uniquely identify this account owner.
-    account_owner_id: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
+    project_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("projects.id"), nullable=False
+    )
+    app_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("apps.id"), nullable=False
+    )
+    # account_name should be unique per app per project (or just per ProjectAppIntegration), ideally it identifies the end user.
+    # Ideally this should be some user id in client's system that uniquely identify owner of the account.
+    account_name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     # here we assume it's possible to have linked account but no security credentials are required, in which case
     # security_scheme and security_credentials will be null
     security_scheme: Mapped[SecurityScheme | None] = mapped_column(
@@ -401,6 +407,24 @@ class LinkedAccount(Base):
     )
     __table_args__ = (
         UniqueConstraint(
-            "project_app_integration_id", "account_owner_id", name="uc_project_app_account_owner"
+            "project_app_integration_id", "account_name", name="uc_project_app_account_name"
+        ),
+        # For each app in a project, the account_name should be unique.
+        # Technically this is redundant because of the unique contrainst above plus UniqueConstraint("project_id", "app_id", name="uc_project_app") in project_app_integrations table,
+        # but add it here in case we want to remove UniqueConstraint("project_id", "app_id", name="uc_project_app") in the future
+        UniqueConstraint(
+            "project_id", "app_id", "account_name", name="uc_project_app_account_name"
+        ),
+        # Add a foreign key constraint to ensure consistency with project_app_integration
+        CheckConstraint(
+            """
+            EXISTS (
+                SELECT 1 FROM project_app_integrations
+                WHERE id = project_app_integration_id
+                AND project_id = project_id
+                AND app_id = app_id
+            )
+            """,
+            name="cc_linked_account_project_app_consistency",
         ),
     )
