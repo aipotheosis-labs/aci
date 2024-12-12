@@ -1,8 +1,8 @@
-"""first migration
+"""support authenticated api call
 
-Revision ID: 15b48d96db4f
+Revision ID: 65a19467ca3c
 Revises:
-Create Date: 2024-11-11 20:12:24.517609+00:00
+Create Date: 2024-12-12 10:50:59.966485+00:00
 
 """
 
@@ -14,7 +14,7 @@ from pgvector.sqlalchemy import Vector
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = "15b48d96db4f"
+revision: str = "65a19467ca3c"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -150,6 +150,20 @@ def upgrade() -> None:
         sa.Column("id", sa.UUID(), nullable=False),
         sa.Column("project_id", sa.UUID(), nullable=False),
         sa.Column("app_id", sa.UUID(), nullable=False),
+        sa.Column(
+            "security_scheme",
+            sa.Enum(
+                "API_KEY",
+                "HTTP_BASIC",
+                "HTTP_BEARER",
+                "OAUTH2_PASSWORD",
+                "OAUTH2_AUTH_CODE",
+                "OAUTH2_AUTH_IMPLICIT",
+                "OPEN_ID_CONNECT",
+                name="securityscheme",
+            ),
+            nullable=True,
+        ),
         sa.Column("enabled", sa.Boolean(), nullable=False),
         sa.Column("excluded_functions", postgresql.ARRAY(sa.UUID()), nullable=False),
         sa.Column("created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
@@ -163,6 +177,7 @@ def upgrade() -> None:
             ["projects.id"],
         ),
         sa.PrimaryKeyConstraint("id"),
+        sa.UniqueConstraint("id", "project_id", "app_id", name="uc_integration_composite_key"),
         sa.UniqueConstraint("project_id", "app_id", name="uc_project_app"),
     )
     op.create_table(
@@ -171,7 +186,7 @@ def upgrade() -> None:
         sa.Column("key", sa.String(length=255), nullable=False),
         sa.Column("agent_id", sa.UUID(), nullable=False),
         sa.Column(
-            "status", sa.Enum("ACTIVE", "DISABLED", "DELETED", name="status"), nullable=False
+            "status", sa.Enum("ACTIVE", "DISABLED", "DELETED", name="apikeystatus"), nullable=False
         ),
         sa.Column("created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
         sa.Column("updated_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
@@ -184,12 +199,14 @@ def upgrade() -> None:
         sa.UniqueConstraint("key"),
     )
     op.create_table(
-        "connected_accounts",
+        "linked_accounts",
         sa.Column("id", sa.UUID(), nullable=False),
         sa.Column("project_app_integration_id", sa.UUID(), nullable=False),
-        sa.Column("account_owner_id", sa.String(length=255), nullable=False),
+        sa.Column("project_id", sa.UUID(), nullable=False),
+        sa.Column("app_id", sa.UUID(), nullable=False),
+        sa.Column("account_name", sa.String(length=255), nullable=False),
         sa.Column(
-            "security_scheme_type",
+            "security_scheme",
             sa.Enum(
                 "API_KEY",
                 "HTTP_BASIC",
@@ -198,21 +215,41 @@ def upgrade() -> None:
                 "OAUTH2_AUTH_CODE",
                 "OAUTH2_AUTH_IMPLICIT",
                 "OPEN_ID_CONNECT",
-                name="securityschemetype",
+                name="securityscheme",
             ),
             nullable=True,
         ),
-        sa.Column("security_scheme_data", sa.JSON(), nullable=True),
+        sa.Column("security_credentials", sa.JSON(), nullable=True),
         sa.Column("enabled", sa.Boolean(), nullable=False),
         sa.Column("created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
         sa.Column("updated_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
         sa.ForeignKeyConstraint(
+            ["app_id"],
+            ["apps.id"],
+        ),
+        sa.ForeignKeyConstraint(
+            ["project_app_integration_id", "project_id", "app_id"],
+            [
+                "project_app_integrations.id",
+                "project_app_integrations.project_id",
+                "project_app_integrations.app_id",
+            ],
+            name="fk_linked_account_project_app_integration",
+        ),
+        sa.ForeignKeyConstraint(
             ["project_app_integration_id"],
             ["project_app_integrations.id"],
         ),
+        sa.ForeignKeyConstraint(
+            ["project_id"],
+            ["projects.id"],
+        ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint(
-            "project_app_integration_id", "account_owner_id", name="uc_project_app_account_owner"
+            "project_app_integration_id", "account_name", name="uc_integration_id_account_name"
+        ),
+        sa.UniqueConstraint(
+            "project_id", "app_id", "account_name", name="uc_project_id_app_id_account_name"
         ),
     )
     # ### end Alembic commands ###
@@ -220,7 +257,7 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_table("connected_accounts")
+    op.drop_table("linked_accounts")
     op.drop_table("api_keys")
     op.drop_table("project_app_integrations")
     op.drop_table("agents")

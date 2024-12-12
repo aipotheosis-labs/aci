@@ -18,7 +18,15 @@ from uuid import UUID, uuid4
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import JSON, Boolean, CheckConstraint, DateTime
 from sqlalchemy import Enum as SqlEnum
-from sqlalchemy import ForeignKey, Integer, String, Text, UniqueConstraint, func
+from sqlalchemy import (
+    ForeignKey,
+    ForeignKeyConstraint,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
 
 # Note: need to use postgresqlr ARRAY in order to use overlap operator
 from sqlalchemy.dialects.postgresql import ARRAY
@@ -363,8 +371,12 @@ class ProjectAppIntegration(Base):
     )
 
     # unique constraint
-    # If in the future we want to allow the same project to integrate the same app multiple times, we can remove the unique constraint
-    __table_args__ = (UniqueConstraint("project_id", "app_id", name="uc_project_app"),)
+    __table_args__ = (
+        # This is needed for the foreign key constraint in LinkedAccount table
+        UniqueConstraint("id", "project_id", "app_id", name="uc_integration_composite_key"),
+        # If in the future we want to allow the same project to integrate the same app multiple times, we can remove the unique constraint
+        UniqueConstraint("project_id", "app_id", name="uc_project_app"),
+    )
 
 
 # a linked account is specific to an app in a project.
@@ -407,24 +419,26 @@ class LinkedAccount(Base):
     )
     __table_args__ = (
         UniqueConstraint(
-            "project_app_integration_id", "account_name", name="uc_project_app_account_name"
+            "project_app_integration_id",
+            "account_name",
+            name="uc_integration_id_account_name",
+        ),
+        # Add a foreign key constraint to ensure consistency with project_app_integration
+        # TODO: write test
+        ForeignKeyConstraint(
+            ["project_app_integration_id", "project_id", "app_id"],
+            [
+                "project_app_integrations.id",
+                "project_app_integrations.project_id",
+                "project_app_integrations.app_id",
+            ],
+            name="fk_linked_account_project_app_integration",
         ),
         # For each app in a project, the account_name should be unique.
         # Technically this is redundant because of the unique contrainst above plus UniqueConstraint("project_id", "app_id", name="uc_project_app") in project_app_integrations table,
         # but add it here in case we want to remove UniqueConstraint("project_id", "app_id", name="uc_project_app") in the future
+        # TODO: write test
         UniqueConstraint(
-            "project_id", "app_id", "account_name", name="uc_project_app_account_name"
-        ),
-        # Add a foreign key constraint to ensure consistency with project_app_integration
-        CheckConstraint(
-            """
-            EXISTS (
-                SELECT 1 FROM project_app_integrations
-                WHERE id = project_app_integration_id
-                AND project_id = project_id
-                AND app_id = app_id
-            )
-            """,
-            name="cc_linked_account_project_app_consistency",
+            "project_id", "app_id", "account_name", name="uc_project_id_app_id_account_name"
         ),
     )
