@@ -17,10 +17,7 @@ class SecurityScheme(str, Enum):
     API_KEY = "api_key"
     HTTP_BASIC = "http_basic"
     HTTP_BEARER = "http_bearer"
-    OAUTH2_PASSWORD = "oauth2_password"
-    OAUTH2_AUTH_CODE = "oauth2_auth_code"
-    OAUTH2_AUTH_IMPLICIT = "oauth2_auth_implicit"
-    OPEN_ID_CONNECT = "open_id_connect"
+    OAUTH2 = "oauth2"
 
 
 class Protocol(str, Enum):
