@@ -351,6 +351,9 @@ class ProjectAppIntegration(Base):
     security_scheme: Mapped[SecurityScheme | None] = mapped_column(
         SqlEnum(SecurityScheme), nullable=True
     )
+    # can store security config override for each app integration, e.g., store client id and secret for OAuth2 if client
+    # want to use their own OAuth2 app for whitelabeling
+    security_config_overrides: Mapped[dict | None] = mapped_column(JSON, nullable=True)
     # controlled by users to enable or disable the app integration
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
     # exclude certain functions from the app.
