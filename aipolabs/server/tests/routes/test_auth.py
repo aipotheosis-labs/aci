@@ -16,7 +16,7 @@ MOCK_USER_GOOGLE_AUTH_DATA = {
     "picture": "http://example.com/pic.jpg",
 }
 MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX = (
-    f"{config.GOOGLE_AUTH_AUTHORIZE_URL}?response_type=code&"
+    "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&"
     f"client_id={config.GOOGLE_AUTH_CLIENT_ID}&"
     "redirect_uri"
 )

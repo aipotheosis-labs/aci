@@ -22,11 +22,6 @@ AIPOLABS_REDIRECT_URI_BASE = check_and_get_env_variable("SERVER_AIPOLABS_REDIREC
 # Google Auth
 GOOGLE_AUTH_CLIENT_ID = check_and_get_env_variable("SERVER_GOOGLE_AUTH_CLIENT_ID")
 GOOGLE_AUTH_CLIENT_SECRET = check_and_get_env_variable("SERVER_GOOGLE_AUTH_CLIENT_SECRET")
-GOOGLE_AUTH_AUTHORIZE_URL = check_and_get_env_variable("SERVER_GOOGLE_AUTH_AUTHORIZE_URL")
-GOOGLE_AUTH_ACCESS_TOKEN_URL = check_and_get_env_variable(
-    "SERVER_GOOGLE_AUTH_ACCESS_TOKEN_URL"
-)  # refresh token (if needed in the future) link is the same
-GOOGLE_AUTH_API_BASE_URL = check_and_get_env_variable("SERVER_GOOGLE_AUTH_API_BASE_URL")
 GOOGLE_AUTH_SERVER_METADATA_URL = check_and_get_env_variable(
     "SERVER_GOOGLE_AUTH_SERVER_METADATA_URL"
 )

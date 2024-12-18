@@ -19,19 +19,16 @@ router = APIRouter()
 oauth = OAuth()
 
 
-class AuthProvider(Enum):
+class AuthProvider(str, Enum):
     GOOGLE = "google"
     GITHUB = "github"
 
 
 # Register Google OAuth
 oauth.register(
-    name=AuthProvider.GOOGLE.value,
+    name=AuthProvider.GOOGLE,
     client_id=config.GOOGLE_AUTH_CLIENT_ID,
     client_secret=config.GOOGLE_AUTH_CLIENT_SECRET,
-    authorize_url=config.GOOGLE_AUTH_AUTHORIZE_URL,
-    access_token_url=config.GOOGLE_AUTH_ACCESS_TOKEN_URL,
-    api_base_url=config.GOOGLE_AUTH_API_BASE_URL,
     client_kwargs=config.GOOGLE_AUTH_CLIENT_KWARGS,
     server_metadata_url=config.GOOGLE_AUTH_SERVER_METADATA_URL,
 )
