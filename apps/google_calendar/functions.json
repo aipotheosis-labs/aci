@@ -1,0 +1,65 @@
+[
+    {
+        "name": "GOOGLE_CALENDAR__CALENDARLIST_LIST",
+        "description": "Returns the calendars on the user's calendar list",
+        "tags": ["calendar"],
+        "visibility": "public",
+        "enabled": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users/me/calendarList",
+            "server_url": "https://www.googleapis.com/calendar/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "query parameters",
+                    "properties": {
+                        "maxResults": {
+                            "type": "integer",
+                            "description": "Maximum number of entries returned on one result page. By default the value is 100 entries. The page size can never exceed 250 entries.",
+                            "default": 100
+                        },
+                        "minAccessRole": {
+                            "type": ["string", "null"],
+                            "description": "The minimum access role for the user in the returned entries. The default is no restriction. 'freeBusyReader': The user can read free/busy information. 'owner': The user can read and modify events and access control lists. 'reader': The user can read events that are not private. 'writer': The user can read and modify events.",
+                            "enum": [
+                                null, "freeBusyReader", "owner", "reader", "writer"
+                            ],
+                            "default": null
+                        },
+                        "pageToken": {
+                            "type": ["string", "null"],
+                            "description": "Token specifying which result page to return.",
+                            "default": null
+                        },
+                        "showDeleted": {
+                            "type": "boolean",
+                            "description": "Whether to include deleted calendar list entries in the result.",
+                            "default": false
+                        },
+                        "showHidden": {
+                            "type": "boolean",
+                            "description": "Whether to show hidden entries",
+                            "default": false
+                        },
+                        "syncToken": {
+                            "type": ["string", "null"],
+                            "description": "Token obtained from the nextSyncToken field returned on the last page of results from the previous list request. It makes the result of this list request contain only entries that have changed since then. If only read-only fields such as calendar properties or ACLs have changed, the entry won't be returned. All entries deleted and hidden since the previous list request will always be in the result set and it is not allowed to set showDeleted neither showHidden to False. To ensure client state consistency minAccessRole query parameter cannot be specified together with nextSyncToken. If the syncToken expires, the server will respond with a 410 GONE response code and the client should clear its storage and perform a full synchronization without any syncToken.",
+                            "default": null
+                        }
+                    },
+                    "required": [],
+                    "visible": ["maxResults", "minAccessRole", "pageToken", "showDeleted", "showHidden", "syncToken"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    }
+]
