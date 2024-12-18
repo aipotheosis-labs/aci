@@ -153,19 +153,19 @@ def upgrade() -> None:
         sa.Column(
             "security_scheme",
             sa.Enum(
+                "NO_AUTH",
                 "API_KEY",
                 "HTTP_BASIC",
                 "HTTP_BEARER",
-                "OAUTH2_PASSWORD",
-                "OAUTH2_AUTH_CODE",
-                "OAUTH2_AUTH_IMPLICIT",
-                "OPEN_ID_CONNECT",
+                "OAUTH2",
                 name="securityscheme",
             ),
-            nullable=True,
+            nullable=False,
         ),
+        sa.Column("security_config_overrides", sa.JSON(), nullable=False),
         sa.Column("enabled", sa.Boolean(), nullable=False),
-        sa.Column("excluded_functions", postgresql.ARRAY(sa.UUID()), nullable=False),
+        sa.Column("all_functions_enabled", sa.Boolean(), nullable=False),
+        sa.Column("enabled_functions", postgresql.ARRAY(sa.UUID()), nullable=False),
         sa.Column("created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
         sa.Column("updated_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
         sa.ForeignKeyConstraint(
@@ -208,18 +208,16 @@ def upgrade() -> None:
         sa.Column(
             "security_scheme",
             sa.Enum(
+                "NO_AUTH",
                 "API_KEY",
                 "HTTP_BASIC",
                 "HTTP_BEARER",
-                "OAUTH2_PASSWORD",
-                "OAUTH2_AUTH_CODE",
-                "OAUTH2_AUTH_IMPLICIT",
-                "OPEN_ID_CONNECT",
+                "OAUTH2",
                 name="securityscheme",
             ),
-            nullable=True,
+            nullable=False,
         ),
-        sa.Column("security_credentials", sa.JSON(), nullable=True),
+        sa.Column("security_credentials", sa.JSON(), nullable=False),
         sa.Column("enabled", sa.Boolean(), nullable=False),
         sa.Column("created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
         sa.Column("updated_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
@@ -293,14 +291,12 @@ def downgrade() -> None:
         name="plan",
     ).drop(op_bind)
     sa.Enum(
+        "NO_AUTH",
         "API_KEY",
         "HTTP_BASIC",
         "HTTP_BEARER",
-        "OAUTH2_PASSWORD",
-        "OAUTH2_AUTH_CODE",
-        "OAUTH2_AUTH_IMPLICIT",
-        "OPEN_ID_CONNECT",
-        name="securityschemetype",
+        "OAUTH2",
+        name="securityscheme",
     ).drop(op_bind)
     # drop extentions
     op.execute("DROP EXTENSION IF EXISTS vector;")
