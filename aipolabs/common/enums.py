@@ -14,6 +14,7 @@ class SecurityScheme(str, Enum):
     security scheme type for an app (or function if support override)
     """
 
+    NO_AUTH = "no_auth"
     API_KEY = "api_key"
     HTTP_BASIC = "http_basic"
     HTTP_BEARER = "http_bearer"

@@ -348,17 +348,19 @@ class ProjectAppIntegration(Base):
     # implementation, we keep the flexibility for future use to allow user to select different security scheme for different linked accounts.
     # So, ultimately the actual security scheme and credentials should be decided by individual linked accounts
     # stored in linked_accounts table.
-    security_scheme: Mapped[SecurityScheme | None] = mapped_column(
-        SqlEnum(SecurityScheme), nullable=True
-    )
+    security_scheme: Mapped[SecurityScheme] = mapped_column(SqlEnum(SecurityScheme), nullable=False)
     # can store security config override for each app integration, e.g., store client id and secret for OAuth2 if client
     # want to use their own OAuth2 app for whitelabeling
-    security_config_overrides: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    security_config_overrides: Mapped[dict] = mapped_column(JSON, nullable=False)
     # controlled by users to enable or disable the app integration
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
     # exclude certain functions from the app.
     # TODO: Reconsider if this should be in a separate table to enforce data integrity, or use periodic task to clean up
-    excluded_functions: Mapped[list[UUID]] = mapped_column(
+
+    # indicate if all functions of the app are enabled in this integration
+    all_functions_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    # if all_functions_enabled is false, this list contains the unqiue ids of the functions that are enabled in this integration
+    enabled_functions: Mapped[list[UUID]] = mapped_column(
         ARRAY(PGUUID(as_uuid=True)), nullable=False
     )
 
@@ -401,13 +403,9 @@ class LinkedAccount(Base):
     # account_name should be unique per app per project (or just per ProjectAppIntegration), ideally it identifies the end user.
     # Ideally this should be some user id in client's system that uniquely identify owner of the account.
     account_name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
-    # here we assume it's possible to have linked account but no security credentials are required, in which case
-    # security_scheme and security_credentials will be null
-    security_scheme: Mapped[SecurityScheme | None] = mapped_column(
-        SqlEnum(SecurityScheme), nullable=True
-    )
+    security_scheme: Mapped[SecurityScheme] = mapped_column(SqlEnum(SecurityScheme), nullable=False)
     # security credentials are different for each security scheme, e.g., API key, OAuth2 (access token, refresh token, scope, etc) etc
-    security_credentials: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    security_credentials: Mapped[dict] = mapped_column(JSON, nullable=False)
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
     created_at: Mapped[datetime.datetime] = mapped_column(

@@ -13,7 +13,12 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common import utils
 from aipolabs.common.db import sql_models
-from aipolabs.common.enums import APIKeyStatus, ProjectOwnerType, Visibility
+from aipolabs.common.enums import (
+    APIKeyStatus,
+    ProjectOwnerType,
+    SecurityScheme,
+    Visibility,
+)
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.agent import AgentCreate
 from aipolabs.common.schemas.app import AppCreate
@@ -34,6 +39,46 @@ class ProjectNotFoundError(Exception):
     """Exception raised when a project is not found in the database."""
 
     pass
+
+
+def add_integration(
+    db_session: Session,
+    project_id: UUID,
+    app_id: UUID,
+    security_scheme: SecurityScheme,
+    security_config_overrides: dict,
+    all_functions_enabled: bool,
+    enabled_functions: list[UUID],
+) -> sql_models.ProjectAppIntegration:
+    """create a new project-app integration record"""
+    if all_functions_enabled and len(enabled_functions) > 0:
+        raise ValueError(
+            "all_functions_enabled and enabled_functions cannot be both True and non-empty"
+        )
+
+    db_project_app_integration = sql_models.ProjectAppIntegration(
+        project_id=project_id,
+        app_id=app_id,
+        security_scheme=security_scheme,
+        security_config_overrides=security_config_overrides,
+        enabled=True,
+        all_functions_enabled=all_functions_enabled,
+        enabled_functions=enabled_functions,
+    )
+    db_session.add(db_project_app_integration)
+    db_session.flush()
+    db_session.refresh(db_project_app_integration)
+    return db_project_app_integration
+
+
+def integration_exists(db_session: Session, project_id: UUID, app_id: UUID) -> bool:
+    """Check if a project-app integration exists in the database."""
+    return (
+        db_session.execute(
+            select(sql_models.ProjectAppIntegration).filter_by(project_id=project_id, app_id=app_id)
+        ).scalar_one_or_none()
+        is not None
+    )
 
 
 def user_exists(db_session: Session, user_id: UUID) -> bool:
