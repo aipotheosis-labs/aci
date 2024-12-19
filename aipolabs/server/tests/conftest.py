@@ -135,7 +135,7 @@ def sleep_for_rate_limit() -> None:
     time.sleep(1)
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="module")
 def db_session() -> Generator[Session, None, None]:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
         yield db_session

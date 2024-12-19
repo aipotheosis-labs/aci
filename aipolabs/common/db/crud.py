@@ -71,6 +71,21 @@ def add_integration(
     return db_project_app_integration
 
 
+def get_integrations(
+    db_session: Session, project_id: UUID, app_name: str | None = None
+) -> list[sql_models.ProjectAppIntegration]:
+    """Get all integrations for a project, optionally filtered by app name"""
+    statement = select(sql_models.ProjectAppIntegration).filter_by(project_id=project_id)
+    if app_name:
+        statement = statement.join(
+            sql_models.App, sql_models.ProjectAppIntegration.app_id == sql_models.App.id
+        ).filter(sql_models.App.name == app_name)
+    integrations: list[sql_models.ProjectAppIntegration] = (
+        db_session.execute(statement).scalars().all()
+    )
+    return integrations
+
+
 def integration_exists(db_session: Session, project_id: UUID, app_id: UUID) -> bool:
     """Check if a project-app integration exists in the database."""
     return (
