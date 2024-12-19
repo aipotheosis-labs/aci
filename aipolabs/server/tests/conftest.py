@@ -72,8 +72,6 @@ def dummy_user() -> Generator[sql_models.User, None, None]:
         )
         fixture_db_session.commit()
         yield dummy_user
-        fixture_db_session.delete(dummy_user)
-        fixture_db_session.commit()
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -96,8 +94,6 @@ def dummy_project(dummy_user: sql_models.User) -> Generator[sql_models.Project, 
         )
         fixture_db_session.commit()
         yield dummy_project
-        fixture_db_session.delete(dummy_project)
-        fixture_db_session.commit()
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -116,8 +112,6 @@ def dummy_api_key(
         )
         fixture_db_session.commit()
         yield dummy_agent.api_keys[0].key
-        fixture_db_session.delete(dummy_agent)
-        fixture_db_session.commit()
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -125,9 +119,6 @@ def dummy_apps() -> Generator[list[sql_models.App], None, None]:
     with utils.create_db_session(config.DB_FULL_URL) as fixture_db_session:
         dummy_apps = helper.create_dummy_apps_and_functions(fixture_db_session)
         yield dummy_apps
-        for dummy_app in dummy_apps:
-            fixture_db_session.delete(dummy_app)
-        fixture_db_session.commit()
 
 
 @pytest.fixture(scope="session", autouse=True)
