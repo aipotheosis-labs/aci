@@ -9,6 +9,19 @@
         "api_key": {
             "in": "header",
             "name": "X-API-Key"
+        },
+        "oauth2": {
+            "client_id": "xxx",
+            "client_secret": "xxx",
+            "authorize_url": "https://accounts.google.com/o/oauth2/auth",
+            "access_token_url": "https://oauth2.googleapis.com/token",
+            "refresh_token_url": "https://oauth2.googleapis.com/token",
+            "client_kwargs": {
+              "scope": "openid https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
+              "prompt": "consent",
+              "access_type": "offline"
+            },
+            "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
         }
     },
     "categories": [
