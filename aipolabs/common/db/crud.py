@@ -404,8 +404,18 @@ def set_app_enabled_status(db_session: Session, app_id: UUID, enabled: bool) -> 
     db_session.execute(statement)
 
 
+def set_app_enabled_status_by_name(db_session: Session, app_name: str, enabled: bool) -> None:
+    statement = update(sql_models.App).filter_by(name=app_name).values(enabled=enabled)
+    db_session.execute(statement)
+
+
 def set_app_visibility(db_session: Session, app_id: UUID, visibility: Visibility) -> None:
     statement = update(sql_models.App).filter_by(id=app_id).values(visibility=visibility)
+    db_session.execute(statement)
+
+
+def set_app_visibility_by_name(db_session: Session, app_name: str, visibility: Visibility) -> None:
+    statement = update(sql_models.App).filter_by(name=app_name).values(visibility=visibility)
     db_session.execute(statement)
 
 
