@@ -13,7 +13,7 @@ NON_EXISTENT_APP = "NON_EXISTENT_APP"
 
 
 @pytest.fixture(autouse=True, scope="module")
-def cleanup_integrations(
+def setup_and_cleanup(
     db_session: Session,
     test_client: TestClient,
     dummy_api_key: str,
