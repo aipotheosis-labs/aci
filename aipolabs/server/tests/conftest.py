@@ -115,6 +115,41 @@ def dummy_api_key(
 
 
 @pytest.fixture(scope="session", autouse=True)
+def dummy_project_2(dummy_user: sql_models.User) -> Generator[sql_models.Project, None, None]:
+    with utils.create_db_session(config.DB_FULL_URL) as fixture_db_session:
+        dummy_project = crud.create_project(
+            fixture_db_session,
+            ProjectCreate(
+                name="Dummy Project 2",
+                owner_type=ProjectOwnerType.USER,
+                owner_id=dummy_user.id,
+                created_by=dummy_user.id,
+            ),
+            visibility_access=Visibility.PUBLIC,
+        )
+        fixture_db_session.commit()
+        yield dummy_project
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dummy_api_key_2(
+    dummy_project_2: sql_models.Project, dummy_user: sql_models.User
+) -> Generator[str, None, None]:
+    with utils.create_db_session(config.DB_FULL_URL) as fixture_db_session:
+        dummy_agent = crud.create_agent(
+            fixture_db_session,
+            AgentCreate(
+                name="Dummy Agent 2",
+                description="Dummy Agent 2",
+                project_id=dummy_project_2.id,
+                created_by=dummy_user.id,
+            ),
+        )
+        fixture_db_session.commit()
+        yield dummy_agent.api_keys[0].key
+
+
+@pytest.fixture(scope="session", autouse=True)
 def dummy_apps() -> Generator[list[sql_models.App], None, None]:
     with utils.create_db_session(config.DB_FULL_URL) as fixture_db_session:
         dummy_apps = helper.create_dummy_apps_and_functions(fixture_db_session)

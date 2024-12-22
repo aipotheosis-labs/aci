@@ -75,3 +75,22 @@ async def list_integrations(
     """List all integrations for a project, optionally filtered by app name"""
     db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
     return crud.get_integrations(db_session, db_project.id, app_name=app_name)
+
+
+@router.get("/{integration_id}", response_model=IntegrationPublic)
+async def get_integration(
+    api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
+    db_session: Annotated[Session, Depends(deps.yield_db_session)],
+    integration_id: UUID,
+) -> sql_models.ProjectAppIntegration:
+    """Get an integration by id"""
+    db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
+    db_integration = crud.get_integration(db_session, integration_id)
+    if not db_integration:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Integration not found")
+    if db_integration.project_id != db_project.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The integration does not belong to the project",
+        )
+    return db_integration

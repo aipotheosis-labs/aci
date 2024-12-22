@@ -5,7 +5,7 @@ Do NOT commit to db in these functions. Handle commit and rollback in the caller
 
 import datetime
 import secrets
-from typing import Union
+from typing import Union, cast
 from uuid import UUID
 
 from sqlalchemy import select, update
@@ -84,6 +84,18 @@ def get_integrations(
         db_session.execute(statement).scalars().all()
     )
     return integrations
+
+
+def get_integration(
+    db_session: Session, integration_id: UUID
+) -> sql_models.ProjectAppIntegration | None:
+    """Get an integration by id"""
+    return cast(
+        sql_models.ProjectAppIntegration | None,
+        db_session.execute(
+            select(sql_models.ProjectAppIntegration).filter_by(id=integration_id)
+        ).scalar_one_or_none(),
+    )
 
 
 def integration_exists(db_session: Session, project_id: UUID, app_id: UUID) -> bool:
