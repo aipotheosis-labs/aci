@@ -40,7 +40,6 @@ class IntegrationUpdate(BaseModel):
     all_functions_enabled: bool | None = None
     enabled_functions: list[UUID] | None = None
 
-    @classmethod
     @model_validator(mode="after")
     def check_enabled_functions(
         cls: "Type[IntegrationUpdate]", instance: "IntegrationUpdate"
