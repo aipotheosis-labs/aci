@@ -45,25 +45,31 @@ def setup_and_cleanup(
     db_session.commit()
 
 
-def test_get_integration(
+def test_delete_integration(
     test_client: TestClient,
     dummy_api_key: str,
     setup_and_cleanup: Generator[tuple[str, str], None, None],
 ) -> None:
     google_integration_id, _ = setup_and_cleanup
 
-    response = test_client.get(
+    response = test_client.delete(
         f"/v1/integrations/{google_integration_id}", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
-    assert response.json()["id"] == google_integration_id
+
+    # get deletedintegration should return 404
+    response = test_client.get(
+        f"/v1/integrations/{google_integration_id}", headers={"x-api-key": dummy_api_key}
+    )
+    assert response.status_code == 404, response.json()
+    # TODO: check if linked accounts are deleted
 
 
-def test_get_integration_with_non_existent_integration(
+def test_delete_non_existent_integration(
     test_client: TestClient,
     dummy_api_key: str,
 ) -> None:
-    response = test_client.get(
+    response = test_client.delete(
         f"/v1/integrations/{NON_EXISTENT_INTEGRATION_ID}", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 404, response.json()
@@ -72,13 +78,13 @@ def test_get_integration_with_non_existent_integration(
 
 def test_get_integration_with_api_key_of_other_project(
     test_client: TestClient,
-    dummy_api_key_2: str,
+    dummy_api_key: str,
     setup_and_cleanup: Generator[tuple[str, str], None, None],
 ) -> None:
-    google_integration_id, _ = setup_and_cleanup
+    _, github_integration_id = setup_and_cleanup
 
-    response = test_client.get(
-        f"/v1/integrations/{google_integration_id}", headers={"x-api-key": dummy_api_key_2}
+    response = test_client.delete(
+        f"/v1/integrations/{github_integration_id}", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 403, response.json()
     assert response.json()["detail"] == "The integration does not belong to the project"

@@ -8,7 +8,7 @@ import secrets
 from typing import Union
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 
 from aipolabs.common import utils
@@ -39,6 +39,20 @@ class ProjectNotFoundError(Exception):
     """Exception raised when a project is not found in the database."""
 
     pass
+
+
+def delete_integration(db_session: Session, integration_id: UUID) -> None:
+    statement = delete(sql_models.ProjectAppIntegration).filter_by(id=integration_id)
+    db_session.execute(statement)
+    logger.info(f"Deleted integration {integration_id}")
+
+
+def delete_accounts(db_session: Session, integration_id: UUID) -> None:
+    statement = delete(sql_models.LinkedAccount).filter_by(
+        project_app_integration_id=integration_id
+    )
+    result = db_session.execute(statement)
+    logger.info(f"Deleted {result.rowcount} accounts for integration {integration_id}")
 
 
 def add_integration(

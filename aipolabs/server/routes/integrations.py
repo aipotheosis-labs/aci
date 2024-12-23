@@ -94,3 +94,32 @@ async def get_integration(
             detail="The integration does not belong to the project",
         )
     return db_integration
+
+
+@router.delete("/{integration_id}")
+async def delete_integration(
+    api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
+    db_session: Annotated[Session, Depends(deps.yield_db_session)],
+    integration_id: UUID,
+) -> None:
+    """
+    Delete an integration by id
+    Warning: This will delete the app integration from the project,
+    associated linked accounts, and then the integration record itself.
+    """
+    db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
+    db_integration = crud.get_integration(db_session, integration_id)
+    # validations
+    if not db_integration:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Integration not found")
+    if db_integration.project_id != db_project.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The integration does not belong to the project",
+        )
+    # TODO: double check atomic operations like below from other api endpoints
+    # 1. Delete all linked accounts for this integration
+    crud.delete_accounts(db_session, integration_id)
+    # 2. Delete the integration record
+    crud.delete_integration(db_session, integration_id)
+    db_session.commit()

@@ -328,6 +328,7 @@ class App(Base):
 # When a user first create a project, there is no record for that project in this table,
 # the record is created when the user select (enable) an app to the project.
 # When user disable an app from the project, the record is not deleted, just the status is changed to disabled
+# TODO: should we delete the record and associated linked accounts when user delete the integration?
 # TODO: table can get large if there are too many users and each has many projects, need to keep an eye out on performance
 # TODO: will it be necessary to store user selected security scheme type for the app here?
 # TODO: will there be performance issue if we offer a button in dev portal to enable all apps at once?
@@ -385,6 +386,8 @@ class ProjectAppIntegration(Base):
 
 
 # a linked account is specific to an app in a project.
+# TODO: considering creating separate tables per integration or per project (some benefits including easier to
+# delete the record and associated linked accounts when user delete the integration, without locking the table for too long)
 class LinkedAccount(Base):
     __tablename__ = "linked_accounts"
 
