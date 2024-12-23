@@ -1,14 +1,16 @@
-from typing import Annotated, Any
+from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel, Field
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
-from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.integrations import IntegrationPublic
+from aipolabs.common.schemas.integrations import (
+    IntegrationCreate,
+    IntegrationPublic,
+    IntegrationUpdate,
+)
 from aipolabs.server import dependencies as deps
 from aipolabs.server.validations import validate_project_access
 
@@ -16,17 +18,9 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 
-class AddIntegrationPayload(BaseModel):
-    app_name: str
-    security_scheme: SecurityScheme
-    # TODO: add typing/class to security_config_overrides
-    security_config_overrides: dict[str, Any] = Field(default_factory=dict)
-    # TODO: add all_functions_enabled/enabled_functions fields
-
-
 @router.post("/")
 async def add_integration(
-    payload: AddIntegrationPayload,
+    payload: IntegrationCreate,
     api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> dict[str, UUID]:
@@ -123,3 +117,42 @@ async def delete_integration(
     # 2. Delete the integration record
     crud.delete_integration(db_session, integration_id)
     db_session.commit()
+
+
+@router.patch("/{integration_id}", response_model=IntegrationPublic)
+async def update_integration(
+    api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
+    db_session: Annotated[Session, Depends(deps.yield_db_session)],
+    integration_id: UUID,
+    payload: IntegrationUpdate,
+) -> sql_models.ProjectAppIntegration:
+    """
+    Update an integration by ID.
+    If a field is not included in the request body, it will not be changed.
+    """
+    # validations
+    db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
+    db_integration = crud.get_integration(db_session, integration_id)
+    if not db_integration:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Integration not found")
+    if db_integration.project_id != db_project.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The integration does not belong to the project",
+        )
+
+    # update only non-null fields
+    if payload.security_scheme is not None:
+        db_integration.security_scheme = payload.security_scheme
+    if payload.security_config_overrides is not None:
+        db_integration.security_config_overrides = payload.security_config_overrides
+    if payload.enabled is not None:
+        db_integration.enabled = payload.enabled
+    if payload.all_functions_enabled is not None:
+        db_integration.all_functions_enabled = payload.all_functions_enabled
+    if payload.enabled_functions is not None:
+        db_integration.enabled_functions = payload.enabled_functions
+
+    db_session.commit()
+
+    return db_integration
