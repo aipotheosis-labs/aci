@@ -11,7 +11,15 @@ from aipolabs.common.logging import get_logger, setup_logging
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 from aipolabs.server.middleware.ratelimit import RateLimitMiddleware
-from aipolabs.server.routes import apps, auth, functions, health, integrations, projects
+from aipolabs.server.routes import (
+    accounts,
+    apps,
+    auth,
+    functions,
+    health,
+    integrations,
+    projects,
+)
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:
@@ -98,5 +106,11 @@ app.include_router(
     integrations.router,
     prefix="/v1/integrations",
     tags=["integrations"],
+    dependencies=[Depends(deps.validate_api_key)],
+)
+app.include_router(
+    accounts.router,
+    prefix="/v1/accounts",
+    tags=["accounts"],
     dependencies=[Depends(deps.validate_api_key)],
 )
