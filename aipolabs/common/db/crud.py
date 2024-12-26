@@ -458,10 +458,10 @@ def set_app_visibility_by_name(db_session: Session, app_name: str, visibility: V
     db_session.execute(statement)
 
 
-def get_app_by_id(db_session: Session, app_id: UUID) -> sql_models.App | None:
-    db_app: sql_models.App | None = db_session.execute(
+def get_app_by_id(db_session: Session, app_id: UUID) -> sql_models.App:
+    db_app: sql_models.App = db_session.execute(
         select(sql_models.App).filter_by(id=app_id)
-    ).scalar_one_or_none()
+    ).scalar_one()
     return db_app
 
 
