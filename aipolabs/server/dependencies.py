@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, timedelta, timezone
 from typing import Annotated, Generator
 from uuid import UUID
 
@@ -96,10 +96,10 @@ def validate_project_quota(
         logger.exception(f"Failed to get project by API key ID: {api_key_id}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
-    now: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
-    need_reset = now >= db_project.daily_quota_reset_at.replace(
-        tzinfo=datetime.timezone.utc
-    ) + datetime.timedelta(days=1)
+    now: datetime = datetime.now(timezone.utc)
+    need_reset = now >= db_project.daily_quota_reset_at.replace(tzinfo=timezone.utc) + timedelta(
+        days=1
+    )
 
     if not need_reset and db_project.daily_quota_used >= config.PROJECT_DAILY_QUOTA:
         logger.warning(f"Daily quota exceeded for project {db_project.id}")

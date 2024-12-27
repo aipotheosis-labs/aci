@@ -3,8 +3,8 @@ CRUD operations for the database.
 Do NOT commit to db in these functions. Handle commit and rollback in the caller.
 """
 
-import datetime
 import secrets
+from datetime import datetime, timedelta, timezone
 from typing import Union
 from uuid import UUID
 
@@ -513,10 +513,10 @@ def get_project_by_api_key_id(db_session: Session, api_key_id: UUID) -> sql_mode
 
 
 def increase_project_quota_usage(db_session: Session, project: sql_models.Project) -> None:
-    now: datetime.datetime = datetime.datetime.now(datetime.timezone.utc)
-    need_reset = now >= project.daily_quota_reset_at.replace(
-        tzinfo=datetime.timezone.utc
-    ) + datetime.timedelta(days=1)
+    now: datetime = datetime.now(timezone.utc)
+    need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=timezone.utc) + timedelta(
+        days=1
+    )
 
     if need_reset:
         # Reset the daily quota

@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -24,8 +24,8 @@ class AgentPublic(BaseModel):
     excluded_functions: list[UUID] = []
     created_by: UUID
 
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
+    created_at: datetime
+    updated_at: datetime
 
     api_keys: list[APIKeyPublic]
 

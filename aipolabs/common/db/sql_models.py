@@ -12,7 +12,7 @@ for example,
 # TODO: ideally shouldn't need it in python 3.12 for forward reference?
 from __future__ import annotations
 
-import datetime
+from datetime import datetime
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
@@ -84,10 +84,10 @@ class User(Base):
     email: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     profile_picture: Mapped[str | None] = mapped_column(Text, nullable=True)
     plan: Mapped[Plan] = mapped_column(SqlEnum(Plan), nullable=False)
-    created_at: Mapped[datetime.datetime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
     )
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False),
         server_default=func.now(),
         onupdate=func.now(),
@@ -140,15 +140,15 @@ class Project(Base):
 
     """ quota related fields: TODO: TBD how to implement quota system """
     daily_quota_used: Mapped[int] = mapped_column(Integer, default=0, nullable=False, init=False)
-    daily_quota_reset_at: Mapped[datetime.datetime] = mapped_column(
+    daily_quota_reset_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
     )
     total_quota_used: Mapped[int] = mapped_column(Integer, default=0, nullable=False, init=False)
 
-    created_at: Mapped[datetime.datetime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
     )
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False),
         server_default=func.now(),
         onupdate=func.now(),
@@ -192,10 +192,10 @@ class Agent(Base):
         ARRAY(PGUUID(as_uuid=True)), nullable=False
     )
 
-    created_at: Mapped[datetime.datetime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
     )
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False),
         server_default=func.now(),
         onupdate=func.now(),
@@ -225,10 +225,10 @@ class APIKey(Base):
     )
     status: Mapped[APIKeyStatus] = mapped_column(SqlEnum(APIKeyStatus), nullable=False)
 
-    created_at: Mapped[datetime.datetime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
     )
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False),
         server_default=func.now(),
         onupdate=func.now(),
@@ -267,10 +267,10 @@ class Function(Base):
     # TODO: should we provide EMBEDDING_DIMENTION here? which makes it less flexible if we want to change the embedding dimention in the future
     embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENTION), nullable=False)
 
-    created_at: Mapped[datetime.datetime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
     )
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False),
         server_default=func.now(),
         onupdate=func.now(),
@@ -306,10 +306,10 @@ class App(Base):
     # embedding vector for similarity search
     embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENTION), nullable=False)
 
-    created_at: Mapped[datetime.datetime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
     )
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False),
         server_default=func.now(),
         onupdate=func.now(),
@@ -365,10 +365,10 @@ class ProjectAppIntegration(Base):
         ARRAY(PGUUID(as_uuid=True)), nullable=False
     )
 
-    created_at: Mapped[datetime.datetime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
     )
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False),
         server_default=func.now(),
         onupdate=func.now(),
@@ -411,10 +411,10 @@ class LinkedAccount(Base):
     security_credentials: Mapped[dict] = mapped_column(JSON, nullable=False)
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
-    created_at: Mapped[datetime.datetime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
     )
-    updated_at: Mapped[datetime.datetime] = mapped_column(
+    updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False),
         server_default=func.now(),
         onupdate=func.now(),

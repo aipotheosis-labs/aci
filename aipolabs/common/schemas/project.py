@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -23,11 +23,11 @@ class ProjectPublic(BaseModel):
     owner_user_id: UUID | None = None
     owner_organization_id: UUID | None = None
     daily_quota_used: int
-    daily_quota_reset_at: datetime.datetime
+    daily_quota_reset_at: datetime
     total_quota_used: int
 
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
+    created_at: datetime
+    updated_at: datetime
 
     agents: list[AgentPublic]
 

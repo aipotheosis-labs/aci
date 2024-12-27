@@ -1,5 +1,5 @@
-import datetime
 import logging
+from datetime import datetime, timezone
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
@@ -18,7 +18,7 @@ need to mock some object otherwise the other tests might fail because of we set 
 
 def test_validate_project_quota_valid(test_client: TestClient, dummy_api_key: str) -> None:
     db_project = MagicMock()
-    db_project.daily_quota_reset_at = datetime.datetime.now(datetime.timezone.utc)
+    db_project.daily_quota_reset_at = datetime.now(timezone.utc)
     db_project.daily_quota_used = config.PROJECT_DAILY_QUOTA - 1
     db_project.id = uuid4()
     with patch(
@@ -33,7 +33,7 @@ def test_validate_project_quota_valid(test_client: TestClient, dummy_api_key: st
 
 def test_validate_project_quota_exceeded(test_client: TestClient, dummy_api_key: str) -> None:
     db_project = MagicMock()
-    db_project.daily_quota_reset_at = datetime.datetime.now(datetime.timezone.utc)
+    db_project.daily_quota_reset_at = datetime.now(timezone.utc)
     db_project.daily_quota_used = config.PROJECT_DAILY_QUOTA
 
     with patch(

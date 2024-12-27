@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from typing import TYPE_CHECKING
 from uuid import UUID
 
@@ -19,8 +19,8 @@ class IntegrationPublic(BaseModel):
     enabled: bool
     all_functions_enabled: bool
     enabled_functions: list[UUID]
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
+    created_at: datetime
+    updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
 

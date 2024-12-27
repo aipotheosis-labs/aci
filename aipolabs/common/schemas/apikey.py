@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
@@ -12,7 +12,7 @@ class APIKeyPublic(BaseModel):
     agent_id: UUID
     status: APIKeyStatus
 
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
+    created_at: datetime
+    updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
