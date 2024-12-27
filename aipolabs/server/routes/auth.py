@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Annotated, Any
+from typing import Annotated, Any, cast
 
-from authlib.integrations.starlette_client import OAuth
+from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from authlib.jose import JoseError, jwt
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
@@ -66,7 +66,9 @@ async def login(request: Request, provider: str) -> Any:
     path = request.url_for("auth_callback", provider=provider).path
     redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
     logger.info(f"Initiating OAuth login for provider: {provider}, redirecting to: {redirect_uri}")
-    return await oauth.create_client(provider).authorize_redirect(request, redirect_uri)
+    oauth_client = cast(StarletteOAuth2App, oauth.create_client(provider))
+
+    return await oauth_client.authorize_redirect(request, redirect_uri)
 
 
 # callback route for different auth providers
@@ -85,7 +87,7 @@ async def auth_callback(
         logger.error(f"Unsupported provider during callback: {provider}")
         raise HTTPException(status_code=400, detail="Unsupported provider")
 
-    oauth_client = oauth.create_client(provider)
+    oauth_client = cast(StarletteOAuth2App, oauth.create_client(provider))
 
     try:
         logger.info(f"Retrieving access token for provider: {provider}")
