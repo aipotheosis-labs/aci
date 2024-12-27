@@ -12,12 +12,13 @@ from aipolabs.common.db import crud
 from aipolabs.common.enums import APIKeyStatus
 from aipolabs.common.logging import get_logger
 from aipolabs.server import config
-from aipolabs.server.config import AOPOLABS_API_KEY_NAME, JWT_SECRET_KEY
 
 logger = get_logger(__name__)
 http_bearer = HTTPBearer(auto_error=True, description="login to receive a JWT token")
 api_key_header = APIKeyHeader(
-    name=AOPOLABS_API_KEY_NAME, description="API key for authentication", auto_error=True
+    name=config.AOPOLABS_API_KEY_NAME,
+    description="API key for authentication",
+    auto_error=True,
 )
 
 
@@ -40,7 +41,7 @@ def validate_http_bearer(
     """
     token = auth_data.credentials
     try:
-        payload = jwt.decode(token, JWT_SECRET_KEY)
+        payload = jwt.decode(token, config.JWT_SECRET_KEY)
         logger.debug(f"Decoded token payload: {payload}")
         payload.validate()  # This will raise a JoseError if validation fails
 

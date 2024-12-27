@@ -46,9 +46,9 @@ def create_access_token(user_id: str, expires_delta: timedelta) -> str:
     # Authlib expects a header, payload, and key
     header = {"alg": config.JWT_ALGORITHM}
     try:
-        jwt_token: str = jwt.encode(header, payload, config.JWT_SECRET_KEY).decode(
-            "utf-8"
-        )  # Decode to convert bytes to string
+        jwt_token: str = jwt.encode(
+            header, payload, config.JWT_SECRET_KEY
+        ).decode()  # Decode to convert bytes to string
 
         return jwt_token
     except JoseError as e:
