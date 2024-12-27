@@ -41,6 +41,7 @@ class HttpLocation(str, Enum):
     BODY = "body"
 
 
+# TODO: use lowercase for consistency?
 class HttpMethod(str, Enum):
     GET = "GET"
     POST = "POST"
