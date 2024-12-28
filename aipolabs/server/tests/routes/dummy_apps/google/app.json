@@ -14,9 +14,6 @@
             "client_id": "mock_client_id",
             "client_secret": "mock_client_secret",
             "scope": "openid email profile https://www.googleapis.com/auth/calendar",
-            "authorize_url": "mock_authorize_url",
-            "access_token_url": "mock_access_token_url",
-            "refresh_token_url": "mock_refresh_token_url",
             "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
         }
     },

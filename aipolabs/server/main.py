@@ -108,9 +108,6 @@ app.include_router(
     tags=["integrations"],
     dependencies=[Depends(deps.validate_api_key)],
 )
-app.include_router(
-    accounts.router,
-    prefix="/v1/accounts",
-    tags=["accounts"],
-    dependencies=[Depends(deps.validate_api_key)],
-)
+# TODO: project quota management for different routes
+# similar to auth, it contains a callback route so can't use global dependencies here
+app.include_router(accounts.router, prefix="/v1/accounts", tags=["accounts"])

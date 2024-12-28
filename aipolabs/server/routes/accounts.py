@@ -28,13 +28,18 @@ ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME = "accounts_oauth2_callback"
 # - For token refresh (when executing functions), either use authlib's oauth2 client/session or build the request manually.
 #   If doing mannually, might need to handle dynamic url dicovery via discovery doc (e.g., google)
 # - encrypt the state payload data to avoid tampering, parsing it in callback to get integration_id & account_name etc.
-@router.post("/accounts")
+@router.post("/")
 async def link_account(
     request: Request,
     account_create: AccountCreate,
     api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> RedirectResponse:
+    logger.info(
+        f"Linking account for api_key_id={api_key_id}, "
+        f"integration_id={account_create.integration_id}, "
+        f"account_name={account_create.account_name}"
+    )
     # validations
     # TODO: only allow linking accounts for enabled integrations?
     db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
@@ -52,7 +57,7 @@ async def link_account(
     if db_integration.security_scheme == SecurityScheme.OAUTH2:
         # TODO: double check if get by SecurityScheme.OAUTH2 works, not sure how postgrel stores enum values
         try:
-            oauth2_config = cast(dict, db_app.security_schemes[SecurityScheme.OAUTH2])
+            app_default_oauth2_config = cast(dict, db_app.security_schemes[SecurityScheme.OAUTH2])
         except KeyError:
             logger.error(
                 f"{SecurityScheme.OAUTH2} security scheme is missing for the app {db_app.name}"
@@ -63,22 +68,25 @@ async def link_account(
             )
         # TODO: create our own oauth2 client to abstract away the details and the authlib dependency, and
         # it would be easier if later we decide to implement oauth2 requests manually.
-        # Note: usually if server_metadata_url (e.g., google's discovery doc https://accounts.google.com/.well-known/openid-configuration)
-        # is provided, the other endpoints are not needed.
         # TODO: add code challenge for PKCE
+        # TODO: add correspinding validation of the oauth2 fields (e.g., client_id, client_secret, scope, etc.) when indexing an App.
+        # TODO: load client's overrides if they specify any, for example, client_id, client_secret, scope, etc.
         oauth_client = OAuth().register(
             name=db_app.name,
-            client_id=oauth2_config["client_id"],
-            client_secret=oauth2_config["client_secret"],
+            client_id=app_default_oauth2_config["client_id"],
+            client_secret=app_default_oauth2_config["client_secret"],
             client_kwargs={
-                "scope": oauth2_config["scope"],
+                "scope": app_default_oauth2_config["scope"],
                 "prompt": "consent",
+                "code_challenge_method": "S256",
             },
-            authorize_url=oauth2_config["authorize_url"],
+            # Note: usually if server_metadata_url (e.g., google's discovery doc https://accounts.google.com/.well-known/openid-configuration)
+            # is provided, the other endpoints are not needed.
+            authorize_url=app_default_oauth2_config.get("authorize_url", None),
             authorize_params={"access_type": "offline"},
-            access_token_url=oauth2_config["access_token_url"],
-            refresh_token_url=oauth2_config["refresh_token_url"],
-            server_metadata_url=oauth2_config["server_metadata_url"],
+            access_token_url=app_default_oauth2_config.get("access_token_url", None),
+            refresh_token_url=app_default_oauth2_config.get("refresh_token_url", None),
+            server_metadata_url=app_default_oauth2_config.get("server_metadata_url", None),
         )
         oauth_client = cast(StarletteOAuth2App, oauth_client)
 
@@ -87,7 +95,7 @@ async def link_account(
         state = {
             "integration_id": str(account_create.integration_id),
             "account_name": account_create.account_name,
-            "iat": datetime.now(timezone.utc).timestamp(),
+            "iat": int(datetime.now(timezone.utc).timestamp()),
             "nonce": secrets.token_urlsafe(16),
         }
         path = request.url_for(ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
@@ -119,7 +127,7 @@ async def link_account(
         )
 
 
-@router.get("/accounts/oauth2/callback", name=ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME)
+@router.get("/oauth2/callback", name=ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME)
 async def accounts_oauth2_callback(request: Request) -> None:
     logger.info(f"Callback received for route: {ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME}")
     state_jwt = request.query_params.get("state")
