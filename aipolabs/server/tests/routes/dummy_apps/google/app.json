@@ -11,16 +11,12 @@
             "name": "X-API-Key"
         },
         "oauth2": {
-            "client_id": "xxx",
-            "client_secret": "xxx",
-            "authorize_url": "https://accounts.google.com/o/oauth2/auth",
-            "access_token_url": "https://oauth2.googleapis.com/token",
-            "refresh_token_url": "https://oauth2.googleapis.com/token",
-            "client_kwargs": {
-              "scope": "openid https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
-              "prompt": "consent",
-              "access_type": "offline"
-            },
+            "client_id": "mock_client_id",
+            "client_secret": "mock_client_secret",
+            "scope": "openid email profile https://www.googleapis.com/auth/calendar",
+            "authorize_url": "mock_authorize_url",
+            "access_token_url": "mock_access_token_url",
+            "refresh_token_url": "mock_refresh_token_url",
             "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
         }
     },
