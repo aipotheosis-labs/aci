@@ -44,7 +44,7 @@ def test_login_google(test_client: TestClient) -> None:
     # (set follow_redirects=False when creating the test client)
     response = test_client.get("/v1/auth/login/google")
     assert response.headers["location"].startswith(MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX)
-    assert response.status_code == status.HTTP_302_FOUND, response.json()
+    assert response.status_code == status.HTTP_302_FOUND
 
 
 # mock_oauth_provider to mock google Oauth user info
