@@ -1,16 +1,20 @@
 from datetime import datetime, timezone
 from typing import Generator
+from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
+from uuid import UUID
 
 import pytest
+from authlib.integrations.starlette_client import StarletteOAuth2App
 from authlib.jose import jwt
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import sql_models
+from aipolabs.common.db import crud, sql_models
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.server import config
+from aipolabs.server.routes.accounts import AccountCreateOAuth2State
 
 GOOGLE = "GOOGLE"
 GITHUB = "GITHUB"
@@ -53,31 +57,15 @@ def setup_and_cleanup(
     db_session.commit()
 
 
-# @pytest.fixture
-# def mock_oauth_provider(monkeypatch: pytest.MonkeyPatch) -> None:
-#     class MockOAuthClient:
-#         async def authorize_access_token(self, request: Request) -> dict[str, dict]:
-#             return {"userinfo": MOCK_USER_GOOGLE_AUTH_DATA}
-
-#     # Mock the OAuth client creation
-#     def mock_create_client(provider: str) -> MockOAuthClient:
-#         return MockOAuthClient()
-
-#     # Mock the OAuth provider registry
-#     monkeypatch.setattr(
-#         "aipolabs.server.routes.auth.oauth._registry", {"google": "mock_google_client"}
-#     )
-#     monkeypatch.setattr("aipolabs.server.routes.auth.oauth.create_client", mock_create_client)
-
-
 def test_link_oauth2_account_success(
     test_client: TestClient,
     dummy_api_key: str,
-    setup_and_cleanup: Generator[tuple[str, str], None, None],
+    setup_and_cleanup: tuple[str, str],
+    db_session: Session,
 ) -> None:
     google_integration_id, _ = setup_and_cleanup
 
-    # step 1: init account linking process
+    # init account linking proces, trigger redirect to oauth2 provider
     response = test_client.post(
         "/v1/accounts/",
         json={
@@ -95,19 +83,52 @@ def test_link_oauth2_account_success(
     qs_params = parse_qs(urlparse(redirect_location).query)
     state_jwt = qs_params.get("state", [None])[0]
     assert state_jwt is not None
-    state = jwt.decode(state_jwt, config.JWT_SECRET_KEY)
-    assert state["integration_id"] == google_integration_id
-    assert state["account_name"] == "test_account"
-    assert state["iat"] > int(datetime.now(timezone.utc).timestamp()) - 3, "iat should be recent"
-    assert state["nonce"] is not None
+    state = AccountCreateOAuth2State.model_validate(jwt.decode(state_jwt, config.JWT_SECRET_KEY))
+    assert state.integration_id == UUID(google_integration_id)
+    assert state.account_name == "test_account"
+    assert state.iat > int(datetime.now(timezone.utc).timestamp()) - 3, "iat should be recent"
+    assert state.nonce is not None
 
-    # step 2: simulate the OAuth2 provider calling back your endpoint with 'state' & 'code'
-    callback_params = {
-        "state": state_jwt,
-        "code": "mock_auth_code",  # Usually provided by provider, but we just mock it
+    # mock the oauth2 client's authorize_access_token method
+    mock_oauth2_token_response = {
+        "access_token": "mock_access_token",
+        "token_type": "Bearer",
+        "expires_in": 3600,
+        "scope": "mock_scope",
+        "refresh_token": "mock_refresh_token",
     }
-    response = test_client.get("/v1/accounts/oauth2/callback", params=callback_params)
-    assert response.status_code == 200, response.json()
+    with patch.object(
+        StarletteOAuth2App,
+        "authorize_access_token",
+        return_value=mock_oauth2_token_response,
+    ):
+        # simulate the OAuth2 provider calling back with 'state' & 'code'
+        callback_params = {
+            "state": state_jwt,
+            "code": "mock_auth_code",  # Usually provided by provider, but we just mock it
+        }
+        response = test_client.get("/v1/accounts/oauth2/callback", params=callback_params)
+        assert response.status_code == 200, response.json()
+
+    # check linked account is created with the correct values
+    linked_account = crud.get_linked_account(
+        db_session,
+        state.project_id,
+        state.app_id,
+        state.account_name,
+    )
+    assert linked_account is not None
+    assert linked_account.security_scheme == SecurityScheme.OAUTH2
+    assert linked_account.security_credentials == mock_oauth2_token_response
+    assert linked_account.enabled is True
+    assert linked_account.project_app_integration_id == UUID(google_integration_id)
+    assert linked_account.project_id == state.project_id
+    assert linked_account.app_id == state.app_id
+    assert linked_account.account_name == state.account_name
+
+    # cleanup
+    crud.delete_linked_account(db_session, linked_account.id)
+    db_session.commit()
 
 
 def test_non_existent_integration_id(
@@ -126,7 +147,7 @@ def test_non_existent_integration_id(
 def test_integration_not_belong_to_project(
     test_client: TestClient,
     dummy_api_key_2: str,
-    setup_and_cleanup: Generator[tuple[str, str], None, None],
+    setup_and_cleanup: tuple[str, str],
 ) -> None:
     google_integration_id, _ = setup_and_cleanup
 

@@ -41,6 +41,51 @@ class ProjectNotFoundError(Exception):
     pass
 
 
+def delete_linked_account(db_session: Session, linked_account_id: UUID) -> None:
+    statement = delete(sql_models.LinkedAccount).filter_by(id=linked_account_id)
+    result = db_session.execute(statement)
+    if result.rowcount == 0:
+        raise ValueError(f"Linked account {linked_account_id} not found")
+
+
+def create_linked_account(
+    db_session: Session,
+    integration_id: UUID,
+    project_id: UUID,
+    app_id: UUID,
+    account_name: str,
+    security_scheme: SecurityScheme,
+    security_credentials: dict,
+    enabled: bool = True,
+) -> sql_models.LinkedAccount:
+    db_linked_account = sql_models.LinkedAccount(
+        project_app_integration_id=integration_id,
+        project_id=project_id,
+        app_id=app_id,
+        account_name=account_name,
+        security_scheme=security_scheme,
+        security_credentials=security_credentials,
+        enabled=enabled,
+    )
+    db_session.add(db_linked_account)
+    db_session.flush()
+    db_session.refresh(db_linked_account)
+    return db_linked_account
+
+
+def get_linked_account(
+    db_session: Session, project_id: UUID, app_id: UUID, account_name: str
+) -> sql_models.LinkedAccount | None:
+    statement = select(sql_models.LinkedAccount).filter_by(
+        project_id=project_id, app_id=app_id, account_name=account_name
+    )
+    linked_account: sql_models.LinkedAccount | None = db_session.execute(
+        statement
+    ).scalar_one_or_none()
+
+    return linked_account
+
+
 def delete_integration(db_session: Session, integration_id: UUID) -> None:
     statement = delete(sql_models.ProjectAppIntegration).filter_by(id=integration_id)
     db_session.execute(statement)

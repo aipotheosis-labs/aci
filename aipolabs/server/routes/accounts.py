@@ -9,10 +9,10 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import crud
+from aipolabs.common.db import crud, sql_models
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.accounts import AccountCreate
+from aipolabs.common.schemas.accounts import AccountCreate, AccountCreateOAuth2State
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 
@@ -52,45 +52,25 @@ async def link_account(
 
     # for OAuth2 account, we need to redirect to the OAuth2 provider's authorization endpoint
     if db_integration.security_scheme == SecurityScheme.OAUTH2:
-        # security_scheme of the integration must be one of the App's security_schemes
-        app_default_oauth2_config: dict = db_app.security_schemes[SecurityScheme.OAUTH2]
-        # TODO: create our own oauth2 client to abstract away the details and the authlib dependency, and
-        # it would be easier if later we decide to implement oauth2 requests manually.
-        # TODO: add correspinding validation of the oauth2 fields (e.g., client_id, client_secret, scope, etc.) when indexing an App.
-        # TODO: load client's overrides if they specify any, for example, client_id, client_secret, scope, etc.
-        oauth_client = OAuth().register(
-            name=db_app.name,
-            client_id=app_default_oauth2_config["client_id"],
-            client_secret=app_default_oauth2_config["client_secret"],
-            client_kwargs={
-                "scope": app_default_oauth2_config["scope"],
-                "prompt": "consent",
-                "code_challenge_method": "S256",
-            },
-            # Note: usually if server_metadata_url (e.g., google's discovery doc https://accounts.google.com/.well-known/openid-configuration)
-            # is provided, the other endpoints are not needed.
-            authorize_url=app_default_oauth2_config.get("authorize_url", None),
-            authorize_params={"access_type": "offline"},
-            access_token_url=app_default_oauth2_config.get("access_token_url", None),
-            refresh_token_url=app_default_oauth2_config.get("refresh_token_url", None),
-            server_metadata_url=app_default_oauth2_config.get("server_metadata_url", None),
-        )
-        oauth_client = cast(StarletteOAuth2App, oauth_client)
-
         # create and encode the state payload
         # note: the state payload is jwt encoded (signed), but it's not encrypted, anyone can decode it
-        state = {
-            "integration_id": str(account_create.integration_id),
-            "account_name": account_create.account_name,
-            "iat": int(datetime.now(timezone.utc).timestamp()),
-            "nonce": secrets.token_urlsafe(16),
-        }
+        state = AccountCreateOAuth2State(
+            integration_id=account_create.integration_id,
+            project_id=db_project.id,
+            app_id=db_app.id,
+            account_name=account_create.account_name,
+            iat=int(datetime.now(timezone.utc).timestamp()),
+            nonce=secrets.token_urlsafe(16),
+        )
         path = request.url_for(ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
         redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
-        state_jwt = jwt.encode({"alg": config.JWT_ALGORITHM}, state, config.JWT_SECRET_KEY).decode()
+        state_jwt = jwt.encode(
+            {"alg": config.JWT_ALGORITHM}, state.model_dump(mode="json"), config.JWT_SECRET_KEY
+        ).decode()
         # TODO: add expiration check to the state payload for extra security
         # TODO: how to handle redirect in cli (e.g., parse the redirect url)?
-        redirect_response = await oauth_client.authorize_redirect(
+        oauth2_client = create_oauth2_client(db_app)
+        redirect_response = await oauth2_client.authorize_redirect(
             request, redirect_uri, state=state_jwt
         )
         logger.info(
@@ -119,21 +99,122 @@ async def link_account(
 
 
 @router.get("/oauth2/callback", name=ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME)
-async def accounts_oauth2_callback(request: Request) -> None:
-    logger.info(f"Callback received for route: {ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME}")
+async def accounts_oauth2_callback(
+    request: Request,
+    db_session: Annotated[Session, Depends(deps.yield_db_session)],
+) -> None:
+    """
+    Callback route for OAuth2 account linking.
+    A linked account (with necessary credentials from the OAuth2 provider) will be created in the database.
+    """
     state_jwt = request.query_params.get("state")
-    logger.info(f"state_jwt: {state_jwt}")
+    logger.info(f"Callback received, state_jwt={state_jwt}")
+
     if not state_jwt:
         logger.error("Missing state parameter")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Missing state parameter"
         )
+    # decode the state payload
     try:
-        state = jwt.decode(state_jwt, config.JWT_SECRET_KEY)
+        state = AccountCreateOAuth2State.model_validate(
+            jwt.decode(state_jwt, config.JWT_SECRET_KEY)
+        )
         logger.info(f"state: {state}")
     except Exception as e:
-        logger.error(f"Failed to decode state: {e}")
+        logger.error(f"Failed to decode state_jwt={state_jwt}, error={e}")
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to decode state"
         )
-    return None
+    # create oauth2 client
+    db_app = crud.get_app_by_id(db_session, state.app_id)
+    oauth2_client = create_oauth2_client(db_app)
+    # get oauth2 account credentials
+    # TODO: can each OAuth2 provider return different fields? if so, need to handle them accordingly. Maybe can
+    # store the auth reponse schema in the App record in db. and cast the auth_response to the schema here.
+    try:
+        logger.info("Retrieving oauth2 token")
+        token_response = await oauth2_client.authorize_access_token(request)
+        # TODO: remove PII log
+        logger.warning(f"oauth2 token requested successfully, token_response: {token_response}")
+    except Exception as e:
+        logger.error("Failed to retrieve oauth2 token", exc_info=True)
+        raise HTTPException(status_code=400, detail=f"Failed to retrieve oauth2 token: {str(e)}")
+
+    # TODO: some of them might be optional (e.g., refresh_token, scope, expires_in, refresh_token_expires_in) and not be provided by the OAuth2 provider
+    # we should handle None or provide default values
+    security_credentials = {
+        "access_token": token_response["access_token"],
+        "token_type": token_response["token_type"],
+        "expires_in": token_response["expires_in"],
+        "scope": token_response["scope"],
+        "refresh_token": token_response["refresh_token"],
+    }
+
+    try:
+        # if the linked account already exists, update it, otherwise create a new one
+        db_linked_account = crud.get_linked_account(
+            db_session,
+            state.project_id,
+            state.app_id,
+            state.account_name,
+        )
+        if db_linked_account:
+            logger.info(
+                f"Updating oauth2 credentials for linked account linked_account_id={db_linked_account.id}"
+            )
+            db_linked_account.security_scheme = SecurityScheme.OAUTH2
+            db_linked_account.security_credentials = security_credentials
+        else:
+            logger.info(
+                f"Creating oauth2 linked account for integration_id={state.integration_id}, "
+                f"account_name={state.account_name}"
+            )
+            db_linked_account = crud.create_linked_account(
+                db_session,
+                integration_id=state.integration_id,
+                project_id=state.project_id,
+                app_id=state.app_id,
+                account_name=state.account_name,
+                security_scheme=SecurityScheme.OAUTH2,
+                security_credentials=security_credentials,
+                enabled=True,
+            )
+        db_session.commit()
+    except Exception as e:
+        logger.error("Failed to create linked account", exc_info=True)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create linked account: {str(e)}",
+        )
+
+
+def create_oauth2_client(db_app: sql_models.App) -> StarletteOAuth2App:
+    """
+    Create an OAuth2 client for the given app.
+    """
+    # TODO: create our own oauth2 client to abstract away the details and the authlib dependency, and
+    # it would be easier if later we decide to implement oauth2 requests manually.
+    # TODO: add correspinding validation of the oauth2 fields (e.g., client_id, client_secret, scope, etc.) when indexing an App.
+    # TODO: load client's overrides if they specify any, for example, client_id, client_secret, scope, etc.
+
+    # security_scheme of the integration must be one of the App's security_schemes, so we can safely cast it
+    app_default_oauth2_config = cast(dict, db_app.security_schemes[SecurityScheme.OAUTH2])
+    oauth_client = OAuth().register(
+        name=db_app.name,
+        client_id=app_default_oauth2_config["client_id"],
+        client_secret=app_default_oauth2_config["client_secret"],
+        client_kwargs={
+            "scope": app_default_oauth2_config["scope"],
+            "prompt": "consent",
+            "code_challenge_method": "S256",
+        },
+        # Note: usually if server_metadata_url (e.g., google's discovery doc https://accounts.google.com/.well-known/openid-configuration)
+        # is provided, the other endpoints are not needed.
+        authorize_url=app_default_oauth2_config.get("authorize_url", None),
+        authorize_params={"access_type": "offline"},
+        access_token_url=app_default_oauth2_config.get("access_token_url", None),
+        refresh_token_url=app_default_oauth2_config.get("refresh_token_url", None),
+        server_metadata_url=app_default_oauth2_config.get("server_metadata_url", None),
+    )
+    return cast(StarletteOAuth2App, oauth_client)
