@@ -49,7 +49,7 @@ def setup_and_cleanup(
 def test_update_integration(
     test_client: TestClient,
     dummy_api_key: str,
-    setup_and_cleanup: Generator[tuple[str, str], None, None],
+    setup_and_cleanup: tuple[str, str],
 ) -> None:
     google_integration_id, _ = setup_and_cleanup
 
@@ -78,7 +78,7 @@ def test_update_integration(
 def test_update_integration_with_invalid_payload(
     test_client: TestClient,
     dummy_api_key: str,
-    setup_and_cleanup: Generator[tuple[str, str], None, None],
+    setup_and_cleanup: tuple[str, str],
 ) -> None:
     google_integration_id, _ = setup_and_cleanup
 
@@ -110,7 +110,7 @@ def test_update_non_existent_integration(
 def test_update_integration_with_api_key_of_other_project(
     test_client: TestClient,
     dummy_api_key: str,
-    setup_and_cleanup: Generator[tuple[str, str], None, None],
+    setup_and_cleanup: tuple[str, str],
 ) -> None:
     _, github_integration_id = setup_and_cleanup
 
