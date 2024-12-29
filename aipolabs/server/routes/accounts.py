@@ -24,10 +24,8 @@ ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME = "accounts_oauth2_callback"
 
 # TODO:
 # Note:
-# - Use authlib to handle OAuth2 account linking by creating a new OAuth2 client for every request (avoid caching and concurrency issues)
 # - For token refresh (when executing functions), either use authlib's oauth2 client/session or build the request manually.
 #   If doing mannually, might need to handle dynamic url dicovery via discovery doc (e.g., google)
-# - encrypt the state payload data to avoid tampering, parsing it in callback to get integration_id & account_name etc.
 @router.post("/")
 async def link_account(
     request: Request,
@@ -41,7 +39,6 @@ async def link_account(
         f"account_name={account_create.account_name}"
     )
     # validations
-    # TODO: only allow linking accounts for enabled integrations?
     db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
     db_integration = crud.get_integration(db_session, account_create.integration_id)
     if not db_integration:
@@ -55,20 +52,10 @@ async def link_account(
 
     # for OAuth2 account, we need to redirect to the OAuth2 provider's authorization endpoint
     if db_integration.security_scheme == SecurityScheme.OAUTH2:
-        # TODO: double check if get by SecurityScheme.OAUTH2 works, not sure how postgrel stores enum values
-        try:
-            app_default_oauth2_config = cast(dict, db_app.security_schemes[SecurityScheme.OAUTH2])
-        except KeyError:
-            logger.error(
-                f"{SecurityScheme.OAUTH2} security scheme is missing for the app {db_app.name}"
-            )
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Unexpected error: OAUTH2 config is missing for the app.",
-            )
+        # security_scheme of the integration must be one of the App's security_schemes
+        app_default_oauth2_config: dict = db_app.security_schemes[SecurityScheme.OAUTH2]
         # TODO: create our own oauth2 client to abstract away the details and the authlib dependency, and
         # it would be easier if later we decide to implement oauth2 requests manually.
-        # TODO: add code challenge for PKCE
         # TODO: add correspinding validation of the oauth2 fields (e.g., client_id, client_secret, scope, etc.) when indexing an App.
         # TODO: load client's overrides if they specify any, for example, client_id, client_secret, scope, etc.
         oauth_client = OAuth().register(
@@ -121,9 +108,13 @@ async def link_account(
         )
 
     else:
+        # Should never reach here as all security schemes stored in the db should be supported
+        logger.error(
+            f"Unexpected error: Unsupported security scheme: {db_integration.security_scheme} for integration_id={account_create.integration_id}"
+        )
         raise HTTPException(
-            status.HTTP_400_BAD_REQUEST,
-            f"Unsupported security scheme: {db_integration.security_scheme} for integration_id={account_create.integration_id}",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Unexpected error: Unsupported security scheme",
         )
 
 

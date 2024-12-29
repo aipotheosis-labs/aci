@@ -110,27 +110,30 @@ def test_link_oauth2_account_success(
     assert response.status_code == 200, response.json()
 
 
-# # mock_oauth_provider to mock google Oauth user info
-# def test_callback_google(
-#     test_client: TestClient, mock_oauth_provider: None, db_session: Session
-# ) -> None:
-#     response = test_client.get("/v1/auth/callback/google")
-#     data = response.json()
-#     assert response.status_code == 200, response.json()
-#     # check jwt token is generated
-#     assert data["access_token"] is not None
-#     assert data["token_type"] == "bearer"
-#     # check user is created
-#     payload = jwt.decode(data["access_token"], config.JWT_SECRET_KEY)
-#     payload.validate()
-#     user_id = payload.get("sub")
-#     # get user by id and check user is created
+def test_non_existent_integration_id(
+    test_client: TestClient,
+    dummy_api_key: str,
+) -> None:
+    response = test_client.post(
+        "/v1/accounts/",
+        json={"integration_id": NON_EXISTENT_INTEGRATION_ID, "account_name": "test_account"},
+        headers={"x-api-key": dummy_api_key},
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND, response.json()
+    assert response.json()["detail"] == "Integration not found"
 
-#     user = db_session.execute(
-#         select(sql_models.User).filter(sql_models.User.id == user_id)
-#     ).scalar_one_or_none()
-#     assert user is not None
 
-#     # Clean up: Delete the created user
-#     db_session.delete(user)
-#     db_session.commit()
+def test_integration_not_belong_to_project(
+    test_client: TestClient,
+    dummy_api_key_2: str,
+    setup_and_cleanup: Generator[tuple[str, str], None, None],
+) -> None:
+    google_integration_id, _ = setup_and_cleanup
+
+    response = test_client.post(
+        "/v1/accounts/",
+        json={"integration_id": google_integration_id, "account_name": "test_account"},
+        headers={"x-api-key": dummy_api_key_2},
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN, response.json()
+    assert response.json()["detail"] == "The integration does not belong to the project"
