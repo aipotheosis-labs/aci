@@ -241,3 +241,25 @@ def _create_oauth2_client(db_app: sql_models.App) -> StarletteOAuth2App:
         server_metadata_url=app_default_oauth2_config.get("server_metadata_url", None),
     )
     return cast(StarletteOAuth2App, oauth_client)
+
+
+@router.get("/{account_id}", response_model=LinkedAccountPublic)
+async def get_linked_account(
+    account_id: UUID,
+    api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
+    db_session: Annotated[Session, Depends(deps.yield_db_session)],
+) -> sql_models.LinkedAccount:
+    """
+    Get a linked account by its id.
+    """
+    # validations
+    db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
+    db_linked_account = crud.get_linked_account_by_id(db_session, account_id)
+    if not db_linked_account:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "account not found")
+    if db_linked_account.project_id != db_project.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="The linked account does not belong to the project",
+        )
+    return db_linked_account

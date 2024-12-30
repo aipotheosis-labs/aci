@@ -77,6 +77,15 @@ def get_linked_account(
     return linked_account
 
 
+def get_linked_account_by_id(
+    db_session: Session, account_id: UUID
+) -> sql_models.LinkedAccount | None:
+    linked_account: sql_models.LinkedAccount | None = db_session.execute(
+        select(sql_models.LinkedAccount).filter_by(id=account_id)
+    ).scalar_one_or_none()
+    return linked_account
+
+
 def delete_linked_account(db_session: Session, linked_account_id: UUID) -> None:
     statement = delete(sql_models.LinkedAccount).filter_by(id=linked_account_id)
     result = db_session.execute(statement)
