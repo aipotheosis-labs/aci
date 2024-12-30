@@ -18,12 +18,12 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 
-@router.post("/")
+@router.post("/", response_model=IntegrationPublic)
 async def add_integration(
     payload: IntegrationCreate,
     api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-) -> dict[str, UUID]:
+) -> sql_models.ProjectAppIntegration:
     """Integrate an app to a project"""
     # TODO: validation
     # - security config is valid
@@ -56,7 +56,7 @@ async def add_integration(
     )
     db_session.commit()
 
-    return {"integration_id": db_project_app_integration.id}
+    return db_project_app_integration
     # TODO: global exception handling for none HTTPException
 
 

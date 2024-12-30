@@ -9,6 +9,14 @@
         "api_key": {
             "in": "header",
             "name": "X-API-Key"
+        },
+        "oauth2": {
+            "client_id": "mock_client_id",
+            "client_secret": "mock_client_secret",
+            "scope": "openid email profile https://www.googleapis.com/auth/calendar",
+            "authorize_url": "https://github.com/login/oauth/authorize",
+            "access_token_url": "https://github.com/login/oauth/access_token",
+            "refresh_token_url": "https://github.com/login/oauth/access_token"
         }
     },
     "categories": [

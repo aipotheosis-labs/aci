@@ -5,14 +5,19 @@ from uuid import UUID
 
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from authlib.jose import jwt
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.accounts import AccountCreate, AccountCreateOAuth2State
+from aipolabs.common.schemas.accounts import (
+    AccountCreate,
+    AccountCreateOAuth2State,
+    LinkedAccountPublic,
+    ListLinkedAccountsFilters,
+)
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 
@@ -69,7 +74,7 @@ async def link_account(
         ).decode()
         # TODO: add expiration check to the state payload for extra security
         # TODO: how to handle redirect in cli (e.g., parse the redirect url)?
-        oauth2_client = create_oauth2_client(db_app)
+        oauth2_client = _create_oauth2_client(db_app)
         redirect_response = await oauth2_client.authorize_redirect(
             request, redirect_uri, state=state_jwt
         )
@@ -128,7 +133,7 @@ async def accounts_oauth2_callback(
         )
     # create oauth2 client
     db_app = crud.get_app_by_id(db_session, state.app_id)
-    oauth2_client = create_oauth2_client(db_app)
+    oauth2_client = _create_oauth2_client(db_app)
     # get oauth2 account credentials
     # TODO: can each OAuth2 provider return different fields? if so, need to handle them accordingly. Maybe can
     # store the auth reponse schema in the App record in db. and cast the auth_response to the schema here.
@@ -189,7 +194,25 @@ async def accounts_oauth2_callback(
         )
 
 
-def create_oauth2_client(db_app: sql_models.App) -> StarletteOAuth2App:
+@router.get("/", response_model=list[LinkedAccountPublic])
+async def list_linked_accounts(
+    filters: Annotated[ListLinkedAccountsFilters, Query()],
+    api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
+    db_session: Annotated[Session, Depends(deps.yield_db_session)],
+) -> list[sql_models.LinkedAccount]:
+    """
+    List all linked accounts under the project (identified by api key), with optional filters.
+    As of now, project_id + app_id/app_name + account_name uniquely identify a linked account.
+    This can be an alternatively way to GET /accounts/{account_id} for getting a specific linked account.
+    """
+    logger.info(f"Listing linked accounts for api_key_id={api_key_id}, filters={filters}")
+
+    db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
+    linked_accounts = crud.get_linked_accounts(db_session, db_project.id, filters)
+    return linked_accounts
+
+
+def _create_oauth2_client(db_app: sql_models.App) -> StarletteOAuth2App:
     """
     Create an OAuth2 client for the given app.
     """

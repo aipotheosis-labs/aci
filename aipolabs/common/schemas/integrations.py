@@ -26,6 +26,7 @@ class IntegrationPublic(BaseModel):
 
 
 class IntegrationCreate(BaseModel):
+    # TODO: use app_id_or_name
     app_name: str
     security_scheme: SecurityScheme
     # TODO: add typing/class to security_config_overrides
