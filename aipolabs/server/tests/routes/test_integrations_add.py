@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.enums import SecurityScheme, Visibility
+from aipolabs.common.schemas.integrations import IntegrationPublic
 
 GOOGLE = "GOOGLE"
 NON_EXISTENT_APP = "NON_EXISTENT_APP"
@@ -30,7 +31,7 @@ def test_add_integration(
         "/v1/integrations/", json=payload, headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
-    assert response.json()["integration_id"] is not None, response.json()
+    IntegrationPublic.model_validate(response.json())
 
     # failure case: App already integrated
     response = test_client.post(

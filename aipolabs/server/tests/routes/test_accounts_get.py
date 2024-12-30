@@ -89,14 +89,14 @@ def test_get_linked_account(
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
-    assert LinkedAccountPublic.model_validate(response.json()).id == str(google_linked_account_1.id)
+    assert LinkedAccountPublic.model_validate(response.json()).id == google_linked_account_1.id
 
     response = test_client.get(
         f"/v1/accounts/{google_linked_account_2.id}",
         headers={"x-api-key": dummy_api_key_2},
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
-    assert LinkedAccountPublic.model_validate(response.json()).id == str(google_linked_account_2.id)
+    assert LinkedAccountPublic.model_validate(response.json()).id == google_linked_account_2.id
 
 
 def test_get_linked_account_not_found(

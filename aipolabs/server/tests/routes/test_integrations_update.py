@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import sql_models
 from aipolabs.common.enums import SecurityScheme
+from aipolabs.common.schemas.integrations import IntegrationPublic
 
 GOOGLE = "GOOGLE"
 GITHUB = "GITHUB"
@@ -18,7 +19,7 @@ def setup_and_cleanup(
     test_client: TestClient,
     dummy_api_key: str,
     dummy_api_key_2: str,
-) -> Generator[tuple[str, str], None, None]:
+) -> Generator[list[IntegrationPublic], None, None]:
     """Setup integrations for testing and cleanup after"""
     # add GOOGLE integration
     payload = {"app_name": GOOGLE, "security_scheme": SecurityScheme.OAUTH2}
@@ -27,7 +28,7 @@ def setup_and_cleanup(
         "/v1/integrations/", json=payload, headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
-    google_integration_id = response.json()["integration_id"]
+    google_integration = IntegrationPublic.model_validate(response.json())
 
     # add GITHUB integration (with different api key)
     payload = {"app_name": GITHUB, "security_scheme": SecurityScheme.API_KEY}
@@ -36,9 +37,9 @@ def setup_and_cleanup(
         "/v1/integrations/", json=payload, headers={"x-api-key": dummy_api_key_2}
     )
     assert response.status_code == 200, response.json()
-    github_integration_id = response.json()["integration_id"]
+    github_integration = IntegrationPublic.model_validate(response.json())
 
-    yield google_integration_id, github_integration_id
+    yield [google_integration, github_integration]
 
     # cleanup
     db_session.query(sql_models.ProjectAppIntegration).delete()
@@ -49,18 +50,18 @@ def setup_and_cleanup(
 def test_update_integration(
     test_client: TestClient,
     dummy_api_key: str,
-    setup_and_cleanup: tuple[str, str],
+    setup_and_cleanup: list[IntegrationPublic],
 ) -> None:
-    google_integration_id, _ = setup_and_cleanup
+    google_integration, _ = setup_and_cleanup
 
     response = test_client.get(
-        f"/v1/integrations/{google_integration_id}", headers={"x-api-key": dummy_api_key}
+        f"/v1/integrations/{google_integration.id}", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
     assert response.json()["enabled"] is True
 
     response = test_client.patch(
-        f"/v1/integrations/{google_integration_id}",
+        f"/v1/integrations/{google_integration.id}",
         json={"enabled": False},
         headers={"x-api-key": dummy_api_key},
     )
@@ -69,7 +70,7 @@ def test_update_integration(
 
     # sanity check by getting the same integration
     response = test_client.get(
-        f"/v1/integrations/{google_integration_id}", headers={"x-api-key": dummy_api_key}
+        f"/v1/integrations/{google_integration.id}", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
     assert response.json()["enabled"] is False
@@ -78,13 +79,13 @@ def test_update_integration(
 def test_update_integration_with_invalid_payload(
     test_client: TestClient,
     dummy_api_key: str,
-    setup_and_cleanup: tuple[str, str],
+    setup_and_cleanup: list[IntegrationPublic],
 ) -> None:
-    google_integration_id, _ = setup_and_cleanup
+    google_integration, _ = setup_and_cleanup
 
     # all_functions_enabled cannot be True when enabled_functions is provided
     response = test_client.patch(
-        f"/v1/integrations/{google_integration_id}",
+        f"/v1/integrations/{google_integration.id}",
         json={
             "all_functions_enabled": True,
             "enabled_functions": ["aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"],
@@ -110,12 +111,12 @@ def test_update_non_existent_integration(
 def test_update_integration_with_api_key_of_other_project(
     test_client: TestClient,
     dummy_api_key: str,
-    setup_and_cleanup: tuple[str, str],
+    setup_and_cleanup: list[IntegrationPublic],
 ) -> None:
-    _, github_integration_id = setup_and_cleanup
+    _, github_integration = setup_and_cleanup
 
     response = test_client.patch(
-        f"/v1/integrations/{github_integration_id}",
+        f"/v1/integrations/{github_integration.id}",
         json={"enabled": False},
         headers={"x-api-key": dummy_api_key},
     )

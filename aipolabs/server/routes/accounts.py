@@ -289,4 +289,4 @@ async def delete_linked_account(
     return None
 
 
-# TODO: add a route to update a linked account
+# TODO: add a route to update a linked account (e.g., enable/disable, change account name, etc.)

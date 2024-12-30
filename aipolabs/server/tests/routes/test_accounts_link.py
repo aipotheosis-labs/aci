@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 from typing import Generator
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
-from uuid import UUID
 
 import pytest
 from authlib.integrations.starlette_client import StarletteOAuth2App
@@ -13,6 +12,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.enums import SecurityScheme
+from aipolabs.common.schemas.integrations import IntegrationPublic
 from aipolabs.server import config
 from aipolabs.server.routes.accounts import AccountCreateOAuth2State
 
@@ -30,7 +30,7 @@ def setup_and_cleanup(
     test_client: TestClient,
     dummy_api_key: str,
     dummy_api_key_2: str,
-) -> Generator[tuple[str, str], None, None]:
+) -> Generator[list[IntegrationPublic], None, None]:
     """Setup integrations for testing and cleanup after"""
     # add GOOGLE integration
     payload = {"app_name": GOOGLE, "security_scheme": SecurityScheme.OAUTH2}
@@ -39,7 +39,7 @@ def setup_and_cleanup(
         "/v1/integrations/", json=payload, headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
-    google_integration_id = response.json()["integration_id"]
+    google_integration = IntegrationPublic.model_validate(response.json())
 
     # add GITHUB integration (with different api key)
     payload = {"app_name": GITHUB, "security_scheme": SecurityScheme.API_KEY}
@@ -48,9 +48,9 @@ def setup_and_cleanup(
         "/v1/integrations/", json=payload, headers={"x-api-key": dummy_api_key_2}
     )
     assert response.status_code == 200, response.json()
-    github_integration_id = response.json()["integration_id"]
+    github_integration = IntegrationPublic.model_validate(response.json())
 
-    yield google_integration_id, github_integration_id
+    yield [google_integration, github_integration]
 
     # cleanup
     db_session.query(sql_models.ProjectAppIntegration).delete()
@@ -60,16 +60,16 @@ def setup_and_cleanup(
 def test_link_oauth2_account_success(
     test_client: TestClient,
     dummy_api_key: str,
-    setup_and_cleanup: tuple[str, str],
+    setup_and_cleanup: list[IntegrationPublic],
     db_session: Session,
 ) -> None:
-    google_integration_id, _ = setup_and_cleanup
+    google_integration, _ = setup_and_cleanup
 
     # init account linking proces, trigger redirect to oauth2 provider
     response = test_client.post(
         "/v1/accounts/",
         json={
-            "integration_id": google_integration_id,
+            "integration_id": str(google_integration.id),
             "account_name": "test_account",
         },
         headers={"x-api-key": dummy_api_key},
@@ -84,7 +84,7 @@ def test_link_oauth2_account_success(
     state_jwt = qs_params.get("state", [None])[0]
     assert state_jwt is not None
     state = AccountCreateOAuth2State.model_validate(jwt.decode(state_jwt, config.JWT_SECRET_KEY))
-    assert state.integration_id == UUID(google_integration_id)
+    assert state.integration_id == google_integration.id
     assert state.account_name == "test_account"
     assert state.iat > int(datetime.now(timezone.utc).timestamp()) - 3, "iat should be recent"
     assert state.nonce is not None
@@ -121,7 +121,7 @@ def test_link_oauth2_account_success(
     assert linked_account.security_scheme == SecurityScheme.OAUTH2
     assert linked_account.security_credentials == mock_oauth2_token_response
     assert linked_account.enabled is True
-    assert linked_account.project_app_integration_id == UUID(google_integration_id)
+    assert linked_account.project_app_integration_id == google_integration.id
     assert linked_account.project_id == state.project_id
     assert linked_account.app_id == state.app_id
     assert linked_account.account_name == state.account_name
@@ -147,13 +147,13 @@ def test_non_existent_integration_id(
 def test_integration_not_belong_to_project(
     test_client: TestClient,
     dummy_api_key_2: str,
-    setup_and_cleanup: tuple[str, str],
+    setup_and_cleanup: list[IntegrationPublic],
 ) -> None:
-    google_integration_id, _ = setup_and_cleanup
+    google_integration, _ = setup_and_cleanup
 
     response = test_client.post(
         "/v1/accounts/",
-        json={"integration_id": google_integration_id, "account_name": "test_account"},
+        json={"integration_id": str(google_integration.id), "account_name": "test_account"},
         headers={"x-api-key": dummy_api_key_2},
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN, response.json()
