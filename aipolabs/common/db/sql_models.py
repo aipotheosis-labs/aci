@@ -332,9 +332,9 @@ class App(Base):
 # TODO: table can get large if there are too many users and each has many projects, need to keep an eye out on performance
 # TODO: will it be necessary to store user selected security scheme type for the app here?
 # TODO: will there be performance issue if we offer a button in dev portal to enable all apps at once?
-# TODO: if App is disabled, should project_app_integration of that App also be disabled?
-class ProjectAppIntegration(Base):
-    __tablename__ = "project_app_integrations"
+# TODO: if App is disabled, should all integrations of that App also be disabled?
+class Integration(Base):
+    __tablename__ = "integrations"
 
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
@@ -394,8 +394,8 @@ class LinkedAccount(Base):
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
     )
-    project_app_integration_id: Mapped[UUID] = mapped_column(
-        PGUUID(as_uuid=True), ForeignKey("project_app_integrations.id"), nullable=False
+    integration_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("integrations.id"), nullable=False
     )
     project_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("projects.id"), nullable=False
@@ -403,7 +403,7 @@ class LinkedAccount(Base):
     app_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("apps.id"), nullable=False
     )
-    # account_name should be unique per app per project (or just per ProjectAppIntegration), ideally it identifies the end user.
+    # account_name should be unique per app per project (or just per Integration), ideally it identifies the end user.
     # Ideally this should be some user id in client's system that uniquely identify owner of the account.
     account_name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     security_scheme: Mapped[SecurityScheme] = mapped_column(SqlEnum(SecurityScheme), nullable=False)
@@ -423,23 +423,23 @@ class LinkedAccount(Base):
     )
     __table_args__ = (
         UniqueConstraint(
-            "project_app_integration_id",
+            "integration_id",
             "account_name",
             name="uc_integration_id_account_name",
         ),
-        # Add a foreign key constraint to ensure consistency with project_app_integration
+        # Add a foreign key constraint to ensure consistency with integration
         # TODO: write test
         ForeignKeyConstraint(
-            ["project_app_integration_id", "project_id", "app_id"],
+            ["integration_id", "project_id", "app_id"],
             [
-                "project_app_integrations.id",
-                "project_app_integrations.project_id",
-                "project_app_integrations.app_id",
+                "integrations.id",
+                "integrations.project_id",
+                "integrations.app_id",
             ],
-            name="fk_linked_account_project_app_integration",
+            name="fk_linked_account_integration",
         ),
         # For each app in a project, the account_name should be unique.
-        # Technically this is redundant because of the unique contrainst above plus UniqueConstraint("project_id", "app_id", name="uc_project_app") in project_app_integrations table,
+        # Technically this is redundant because of the unique contrainst above plus UniqueConstraint("project_id", "app_id", name="uc_project_app") in integrations table,
         # but add it here in case we want to remove UniqueConstraint("project_id", "app_id", name="uc_project_app") in the future
         # TODO: write test
         UniqueConstraint(

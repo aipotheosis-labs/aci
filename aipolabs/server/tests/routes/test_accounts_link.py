@@ -53,7 +53,7 @@ def setup_and_cleanup(
     yield [google_integration, github_integration]
 
     # cleanup
-    db_session.query(sql_models.ProjectAppIntegration).delete()
+    db_session.query(sql_models.Integration).delete()
     db_session.commit()
 
 
@@ -121,7 +121,7 @@ def test_link_oauth2_account_success(
     assert linked_account.security_scheme == SecurityScheme.OAUTH2
     assert linked_account.security_credentials == mock_oauth2_token_response
     assert linked_account.enabled is True
-    assert linked_account.project_app_integration_id == google_integration.id
+    assert linked_account.integration_id == google_integration.id
     assert linked_account.project_id == state.project_id
     assert linked_account.app_id == state.app_id
     assert linked_account.account_name == state.account_name

@@ -24,7 +24,7 @@ class AccountCreateOAuth2State(BaseModel):
 
 class LinkedAccountPublic(BaseModel):
     id: UUID
-    project_app_integration_id: UUID
+    integration_id: UUID
     project_id: UUID
     app_id: UUID
     account_name: str

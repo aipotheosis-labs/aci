@@ -42,7 +42,7 @@ def setup_and_cleanup(
     yield [google_integration, github_integration]
 
     # cleanup
-    db_session.query(sql_models.ProjectAppIntegration).delete()
+    db_session.query(sql_models.Integration).delete()
     db_session.commit()
 
 

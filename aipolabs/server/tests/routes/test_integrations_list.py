@@ -38,7 +38,7 @@ def setup_and_cleanup(
     yield
 
     # cleanup
-    db_session.query(sql_models.ProjectAppIntegration).delete()
+    db_session.query(sql_models.Integration).delete()
     db_session.commit()
 
 

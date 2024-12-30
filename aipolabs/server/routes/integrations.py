@@ -23,7 +23,7 @@ async def add_integration(
     payload: IntegrationCreate,
     api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-) -> sql_models.ProjectAppIntegration:
+) -> sql_models.Integration:
     """Integrate an app to a project"""
     # TODO: validation
     # - security config is valid
@@ -45,7 +45,7 @@ async def add_integration(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Security scheme is not supported by the app",
         )
-    db_project_app_integration = crud.add_integration(
+    db_integration = crud.add_integration(
         db_session,
         db_project.id,
         db_app.id,
@@ -56,7 +56,7 @@ async def add_integration(
     )
     db_session.commit()
 
-    return db_project_app_integration
+    return db_integration
     # TODO: global exception handling for none HTTPException
 
 
@@ -65,7 +65,7 @@ async def list_integrations(
     api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
     app_name: str | None = None,
-) -> list[sql_models.ProjectAppIntegration]:
+) -> list[sql_models.Integration]:
     """List all integrations for a project, optionally filtered by app name"""
     db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
     return crud.get_integrations(db_session, db_project.id, app_name=app_name)
@@ -76,7 +76,7 @@ async def get_integration(
     api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
     integration_id: UUID,
-) -> sql_models.ProjectAppIntegration:
+) -> sql_models.Integration:
     """Get an integration by id"""
     db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
     db_integration = crud.get_integration(db_session, integration_id)
@@ -125,7 +125,7 @@ async def update_integration(
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
     integration_id: UUID,
     payload: IntegrationUpdate,
-) -> sql_models.ProjectAppIntegration:
+) -> sql_models.Integration:
     """
     Update an integration by ID.
     If a field is not included in the request body, it will not be changed.

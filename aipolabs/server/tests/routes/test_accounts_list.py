@@ -79,7 +79,7 @@ def setup_and_cleanup(
 
     # cleanup
     db_session.query(sql_models.LinkedAccount).delete()
-    db_session.query(sql_models.ProjectAppIntegration).delete()
+    db_session.query(sql_models.Integration).delete()
     db_session.commit()
 
 

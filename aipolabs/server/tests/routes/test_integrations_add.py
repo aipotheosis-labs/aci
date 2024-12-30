@@ -16,7 +16,7 @@ NON_EXISTENT_APP = "NON_EXISTENT_APP"
 def cleanup_integrations(db_session: Session) -> Generator[None, None, None]:
     """Automatically clean up integrations table after each test"""
     yield
-    db_session.query(sql_models.ProjectAppIntegration).delete()
+    db_session.query(sql_models.Integration).delete()
     db_session.commit()
 
 

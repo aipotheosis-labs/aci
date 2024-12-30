@@ -108,7 +108,7 @@ def create_linked_account(
     enabled: bool = True,
 ) -> sql_models.LinkedAccount:
     db_linked_account = sql_models.LinkedAccount(
-        project_app_integration_id=integration_id,
+        integration_id=integration_id,
         project_id=project_id,
         app_id=app_id,
         account_name=account_name,
@@ -123,15 +123,13 @@ def create_linked_account(
 
 
 def delete_integration(db_session: Session, integration_id: UUID) -> None:
-    statement = delete(sql_models.ProjectAppIntegration).filter_by(id=integration_id)
+    statement = delete(sql_models.Integration).filter_by(id=integration_id)
     db_session.execute(statement)
     logger.info(f"Deleted integration {integration_id}")
 
 
 def delete_accounts(db_session: Session, integration_id: UUID) -> None:
-    statement = delete(sql_models.LinkedAccount).filter_by(
-        project_app_integration_id=integration_id
-    )
+    statement = delete(sql_models.LinkedAccount).filter_by(integration_id=integration_id)
     result = db_session.execute(statement)
     logger.info(f"Deleted {result.rowcount} accounts for integration {integration_id}")
 
@@ -144,14 +142,14 @@ def add_integration(
     security_config_overrides: dict,
     all_functions_enabled: bool,
     enabled_functions: list[UUID],
-) -> sql_models.ProjectAppIntegration:
-    """create a new project-app integration record"""
+) -> sql_models.Integration:
+    """create a new integration record"""
     if all_functions_enabled and len(enabled_functions) > 0:
         raise ValueError(
             "all_functions_enabled and enabled_functions cannot be both True and non-empty"
         )
 
-    db_project_app_integration = sql_models.ProjectAppIntegration(
+    db_integration = sql_models.Integration(
         project_id=project_id,
         app_id=app_id,
         security_scheme=security_scheme,
@@ -160,42 +158,38 @@ def add_integration(
         all_functions_enabled=all_functions_enabled,
         enabled_functions=enabled_functions,
     )
-    db_session.add(db_project_app_integration)
+    db_session.add(db_integration)
     db_session.flush()
-    db_session.refresh(db_project_app_integration)
-    return db_project_app_integration
+    db_session.refresh(db_integration)
+    return db_integration
 
 
 def get_integrations(
     db_session: Session, project_id: UUID, app_name: str | None = None
-) -> list[sql_models.ProjectAppIntegration]:
+) -> list[sql_models.Integration]:
     """Get all integrations for a project, optionally filtered by app name"""
-    statement = select(sql_models.ProjectAppIntegration).filter_by(project_id=project_id)
+    statement = select(sql_models.Integration).filter_by(project_id=project_id)
     if app_name:
         statement = statement.join(
-            sql_models.App, sql_models.ProjectAppIntegration.app_id == sql_models.App.id
+            sql_models.App, sql_models.Integration.app_id == sql_models.App.id
         ).filter(sql_models.App.name == app_name)
-    integrations: list[sql_models.ProjectAppIntegration] = (
-        db_session.execute(statement).scalars().all()
-    )
+    integrations: list[sql_models.Integration] = db_session.execute(statement).scalars().all()
     return integrations
 
 
-def get_integration(
-    db_session: Session, integration_id: UUID
-) -> sql_models.ProjectAppIntegration | None:
+def get_integration(db_session: Session, integration_id: UUID) -> sql_models.Integration | None:
     """Get an integration by id"""
-    integration: sql_models.ProjectAppIntegration | None = db_session.execute(
-        select(sql_models.ProjectAppIntegration).filter_by(id=integration_id)
+    integration: sql_models.Integration | None = db_session.execute(
+        select(sql_models.Integration).filter_by(id=integration_id)
     ).scalar_one_or_none()
     return integration
 
 
 def integration_exists(db_session: Session, project_id: UUID, app_id: UUID) -> bool:
-    """Check if a project-app integration exists in the database."""
+    """Check if an integration exists in the database."""
     return (
         db_session.execute(
-            select(sql_models.ProjectAppIntegration).filter_by(project_id=project_id, app_id=app_id)
+            select(sql_models.Integration).filter_by(project_id=project_id, app_id=app_id)
         ).scalar_one_or_none()
         is not None
     )
