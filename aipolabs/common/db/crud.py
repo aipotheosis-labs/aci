@@ -86,11 +86,15 @@ def get_linked_account_by_id(
     return linked_account
 
 
-def delete_linked_account(db_session: Session, linked_account_id: UUID) -> None:
-    statement = delete(sql_models.LinkedAccount).filter_by(id=linked_account_id)
+def delete_linked_account(db_session: Session, account_id: UUID) -> None:
+    statement = delete(sql_models.LinkedAccount).filter_by(id=account_id)
     result = db_session.execute(statement)
     if result.rowcount == 0:
-        raise ValueError(f"Linked account {linked_account_id} not found")
+        raise ValueError(f"Linked account {account_id} not found")
+    elif result.rowcount > 1:
+        # should never happen
+        logger.error(f"Multiple ({result.rowcount}) linked accounts found with id {account_id}")
+        raise ValueError(f"Multiple ({result.rowcount}) linked accounts found with id {account_id}")
 
 
 def create_linked_account(
