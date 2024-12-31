@@ -7,16 +7,9 @@
     "description": "The Google Calendar API is a RESTful API that can be accessed through explicit HTTP calls. The API exposes most of the features available in the Google Calendar Web interface.",
     "security_schemes": {
         "oauth2": {
-          "client_id": "951665123713-fvh6hj99ho1oi2ockh6s68j04b5d7ulk.apps.googleusercontent.com",
-          "client_secret": "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",
-          "authorize_url": "https://accounts.google.com/o/oauth2/auth",
-          "access_token_url": "https://oauth2.googleapis.com/token",
-          "refresh_token_url": "https://oauth2.googleapis.com/token",
-          "client_kwargs": {
-            "scope": "openid https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile",
-            "prompt": "consent",
-            "access_type": "offline"
-          },
+          "client_id": "",
+          "client_secret": "",
+          "scope": "openid email profile https://www.googleapis.com/auth/calendar",
           "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
         }
     },

@@ -9,7 +9,7 @@
         "api_key": {
           "in": "header",
           "name": "X-Subscription-Token",
-          "default": ["BSAnf8MFuERsHzyYzNPjOdX5lFc9zXv"]
+          "default": []
         }
     },
     "categories": [

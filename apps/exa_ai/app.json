@@ -9,7 +9,7 @@
         "api_key": {
           "in": "header",
           "name": "X-API-KEY",
-          "default": ["6a288a3e-5af8-4809-82ef-aefd254b4954"]
+          "default": []
         },
         "http_basic": {}
     },

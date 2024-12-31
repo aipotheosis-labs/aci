@@ -9,7 +9,7 @@
         "api_key": {
           "in": "body",
           "name": "api_key",
-          "default": ["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"]
+          "default": []
         },
         "http_basic": {}
     },

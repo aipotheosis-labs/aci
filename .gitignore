@@ -1,3 +1,6 @@
+# Ignore all .security_credentials.json files
+.security_credentials.json
+
 # CDK asset staging directory
 .cdk.staging
 cdk.out
