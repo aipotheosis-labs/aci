@@ -9,7 +9,7 @@
         "api_key": {
           "in": "header",
           "name": "X-Subscription-Token",
-          "default": []
+          "default": ["{{ AIPOLABS_PROVIDED_SHARED_API_KEY }}"]
         }
     },
     "categories": [
