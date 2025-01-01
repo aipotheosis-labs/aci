@@ -8,13 +8,26 @@ Follow the [setup instructions](../README.md) for the project.
 For commands that require database connection, make sure the database you are connecting to is running and the `CLI_DB_` variables in `.env` file is set up correctly.
 
 <details>
-  <summary>Upsert App and Functions</summary>
+  <summary>Create App</summary>
   
-  - Create or update an app and its functions in the database, based on the app json file provided.
-  - Example files: [`aipolabs_test`](../../apps/aipolabs_test).
+  - Create an app (without its functions) in the database, based on the app json file provided.
+  - --secrets-file is optional, it is to temporarily store sensitive data such as default api key, default OAuth2 client secret etc, which will be used to populate the placeholders in app.json file.
+  - Example files: [`google_calendar`](../../apps/google_calendar/app.json).
 
   ```bash
-  python -m aipolabs.cli.aipolabs upsert-app-and-functions --app-file ./apps/aipolabs_test/app.json --functions-file ./apps/aipolabs_test/functions.json
+  python -m aipolabs.cli.aipolabs create-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
+  ```
+</details>
+
+<details>
+  <summary>Create Functions</summary>
+  
+  - Create functions for an app in the database, based on the functions json file provided.
+  - Note that the app must already exist in the database.
+  - Example files: [`google_calendar`](../../apps/google_calendar/functions.json).
+
+  ```bash
+  python -m aipolabs.cli.aipolabs create-functions --functions-file ./apps/google_calendar/functions.json
   ```
 </details>
 
