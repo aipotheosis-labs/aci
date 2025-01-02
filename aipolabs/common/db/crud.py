@@ -326,9 +326,14 @@ def get_api_key(db_session: Session, key: str) -> sql_models.APIKey | None:
     return db_api_key
 
 
-def get_apps(db_session: Session, limit: int, offset: int) -> list[sql_models.App]:
+def get_apps(
+    db_session: Session, public_only: bool, limit: int, offset: int
+) -> list[sql_models.App]:
     """Get all apps, order by App name"""
-    statement = select(sql_models.App).order_by(sql_models.App.name).offset(offset).limit(limit)
+    statement = select(sql_models.App)
+    if public_only:
+        statement = statement.filter(sql_models.App.visibility == Visibility.PUBLIC)
+    statement = statement.order_by(sql_models.App.name).offset(offset).limit(limit)
     db_apps: list[sql_models.App] = db_session.execute(statement).scalars().all()
     return db_apps
 

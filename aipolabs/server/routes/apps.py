@@ -33,9 +33,14 @@ async def list_apps(
     """
     Get a list of Apps and their details. Sorted by App name.
     """
-    # TODO: need add access control logic
-    apps = crud.get_apps(db_session, query_params.limit, query_params.offset)
-    return [AppDetails.model_validate(app) for app in apps]
+    db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
+
+    return crud.get_apps(
+        db_session,
+        db_project.visibility_access == Visibility.PUBLIC,
+        query_params.limit,
+        query_params.offset,
+    )
 
 
 @router.get("/search", response_model=list[AppBasic])
