@@ -28,14 +28,14 @@ class AppCreate(BaseModel):
         return v
 
 
-class AppPublic(BaseModel):
+class AppBasic(BaseModel):
     name: str
     description: str
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class AppDetails(AppPublic):
+class AppBasicWithFunctions(AppBasic):
     functions: list[FunctionPublic]
 
 
@@ -75,3 +75,14 @@ class AppsSearch(BaseModel):
         if v is not None and v.strip() == "":
             return None
         return v
+
+
+class AppsList(BaseModel):
+    """
+    Parameters for listing applications.
+    """
+
+    limit: int = Field(
+        default=100, ge=1, le=1000, description="Maximum number of Apps per response."
+    )
+    offset: int = Field(default=0, ge=0, description="Pagination offset.")

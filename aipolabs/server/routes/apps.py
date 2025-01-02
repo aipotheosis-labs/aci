@@ -8,7 +8,7 @@ from aipolabs.common.db import crud
 from aipolabs.common.enums import Visibility
 from aipolabs.common.logging import get_logger
 from aipolabs.common.openai_service import OpenAIService
-from aipolabs.common.schemas.app import AppDetails, AppPublic, AppsSearch
+from aipolabs.common.schemas.app import AppBasic, AppBasicWithFunctions, AppsSearch
 from aipolabs.common.schemas.function import FunctionPublic
 from aipolabs.server import config
 from aipolabs.server.dependencies import validate_api_key, yield_db_session
@@ -18,14 +18,15 @@ router = APIRouter()
 openai_service = OpenAIService(config.OPENAI_API_KEY)
 
 
-@router.get("/search", response_model=list[AppPublic])
+@router.get("/search", response_model=list[AppBasic])
 async def search_apps(
     apps_search: Annotated[AppsSearch, Query()],
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
-) -> list[AppPublic]:
+) -> list[AppBasic]:
     """
-    Returns a list of applications (name and description).
+    Search for applications.
+    Intented to be used by agents to search for apps based on natural language intent.
     """
     try:
         logger.info(f"Getting apps with filter params: {apps_search}")
@@ -48,9 +49,9 @@ async def search_apps(
             apps_search.offset,
         )
         # build apps list with similarity scores if they exist
-        apps: list[AppPublic] = []
+        apps: list[AppBasic] = []
         for app, _ in apps_with_scores:
-            app = AppPublic.model_validate(app)
+            app = AppBasic.model_validate(app)
             apps.append(app)
 
         return apps
@@ -61,12 +62,12 @@ async def search_apps(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router.get("/{app_name}", response_model=AppDetails)
+@router.get("/{app_name}", response_model=AppBasicWithFunctions)
 async def get_app_details(
     app_name: str,
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
-) -> AppDetails:
+) -> AppBasicWithFunctions:
     """
     Returns an application (name, description, and functions).
     """
@@ -102,7 +103,7 @@ async def get_app_details(
             )
         ]
 
-        app_details: AppDetails = AppDetails(
+        app_details: AppBasicWithFunctions = AppBasicWithFunctions(
             name=db_app.name,
             description=db_app.description,
             functions=[FunctionPublic.model_validate(function) for function in db_functions],

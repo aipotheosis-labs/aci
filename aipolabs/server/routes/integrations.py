@@ -60,6 +60,7 @@ async def add_integration(
     # TODO: global exception handling for none HTTPException
 
 
+# TODO: add pagination
 @router.get("/", response_model=list[IntegrationPublic])
 async def list_integrations(
     api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],

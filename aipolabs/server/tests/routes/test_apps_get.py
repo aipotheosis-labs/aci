@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
-from aipolabs.common.schemas.app import AppDetails
+from aipolabs.common.schemas.app import AppBasicWithFunctions
 
 AIPOLABS_TEST = "AIPOLABS_TEST"
 GITHUB = "GITHUB"
@@ -16,7 +16,7 @@ def test_get_app(test_client: TestClient, dummy_api_key: str) -> None:
     )
 
     assert response.status_code == 200, response.json()
-    app = AppDetails.model_validate(response.json())
+    app = AppBasicWithFunctions.model_validate(response.json())
     assert app.name == GITHUB
     assert len(app.functions) > 0
 
@@ -73,7 +73,7 @@ def test_get_private_app(
     )
 
     assert response.status_code == 200, response.json()
-    app = AppDetails.model_validate(response.json())
+    app = AppBasicWithFunctions.model_validate(response.json())
     assert app.name == dummy_apps[0].name
 
     # revert changes
