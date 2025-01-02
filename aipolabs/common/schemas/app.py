@@ -1,4 +1,7 @@
 import re
+from datetime import datetime
+from typing import Any
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
@@ -26,17 +29,6 @@ class AppCreate(BaseModel):
                 "name must be uppercase, contain only letters and underscores, and not have consecutive underscores"
             )
         return v
-
-
-class AppBasic(BaseModel):
-    name: str
-    description: str
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class AppBasicWithFunctions(AppBasic):
-    functions: list[FunctionPublic]
 
 
 class AppsSearch(BaseModel):
@@ -86,3 +78,44 @@ class AppsList(BaseModel):
         default=100, ge=1, le=1000, description="Maximum number of Apps per response."
     )
     offset: int = Field(default=0, ge=0, description="Pagination offset.")
+
+
+class AppBasic(BaseModel):
+    name: str
+    description: str
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class AppBasicWithFunctions(AppBasic):
+    functions: list[FunctionPublic]
+
+
+class AppDetails(BaseModel):
+    id: UUID
+    name: str
+    display_name: str
+    provider: str
+    version: str
+    description: str
+    logo: str | None
+    categories: list[str]
+    visibility: Visibility
+    enabled: bool
+    # Note this field is different from security_schemes in the db model. Here it's just a list of supported SecurityScheme.
+    # the security_schemes field in the db model is a dict of supported security schemes and their config,
+    # which contains sensitive information like OAuth2 client secret.
+    security_schemes: list[SecurityScheme]
+    functions: list[FunctionPublic]
+
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+    @field_validator("security_schemes", mode="before")
+    @classmethod
+    def extract_supported_security_schemes(cls, v: Any) -> Any:
+        if isinstance(v, dict):
+            return [SecurityScheme(k) for k in v.keys()]
+        return v

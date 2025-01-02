@@ -8,7 +8,13 @@ from aipolabs.common.db import crud
 from aipolabs.common.enums import Visibility
 from aipolabs.common.logging import get_logger
 from aipolabs.common.openai_service import OpenAIService
-from aipolabs.common.schemas.app import AppBasic, AppBasicWithFunctions, AppsSearch
+from aipolabs.common.schemas.app import (
+    AppBasic,
+    AppBasicWithFunctions,
+    AppDetails,
+    AppsList,
+    AppsSearch,
+)
 from aipolabs.common.schemas.function import FunctionPublic
 from aipolabs.server import config
 from aipolabs.server.dependencies import validate_api_key, yield_db_session
@@ -18,6 +24,19 @@ router = APIRouter()
 openai_service = OpenAIService(config.OPENAI_API_KEY)
 
 
+@router.get("/", response_model=list[AppDetails])
+async def list_apps(
+    apps_list: Annotated[AppsList, Query()],
+    db_session: Annotated[Session, Depends(yield_db_session)],
+    api_key_id: Annotated[UUID, Depends(validate_api_key)],
+) -> list[AppDetails]:
+    """
+    Get a list of Apps and their details. Sorted by App name.
+    """
+    apps = crud.get_apps(db_session, apps_list.limit, apps_list.offset)
+    return [AppDetails.model_validate(app) for app in apps]
+
+
 @router.get("/search", response_model=list[AppBasic])
 async def search_apps(
     apps_search: Annotated[AppsSearch, Query()],
@@ -25,7 +44,7 @@ async def search_apps(
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> list[AppBasic]:
     """
-    Search for applications.
+    Search for Apps.
     Intented to be used by agents to search for apps based on natural language intent.
     """
     try:
