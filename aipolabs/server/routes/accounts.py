@@ -147,7 +147,7 @@ async def accounts_oauth2_callback(
         raise HTTPException(status_code=400, detail=f"Failed to retrieve oauth2 token: {str(e)}")
 
     # TODO: some of them might be optional (e.g., refresh_token, scope, expires_in, refresh_token_expires_in) and not be provided by the OAuth2 provider
-    # we should handle None or provide default values
+    # we should handle None or provide default values (using pydantic)
     security_credentials = {
         "access_token": token_response["access_token"],
         "token_type": token_response["token_type"],
