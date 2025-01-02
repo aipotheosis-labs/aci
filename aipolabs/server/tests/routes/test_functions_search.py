@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
-from aipolabs.common.schemas.function import FunctionPublic
+from aipolabs.common.schemas.function import FunctionBasic
 
 GOOGLE__CALENDAR_CREATE_EVENT = "GOOGLE__CALENDAR_CREATE_EVENT"
 GITHUB__CREATE_REPOSITORY = "GITHUB__CREATE_REPOSITORY"
@@ -25,7 +25,7 @@ def test_search_functions_with_disabled_functions(
     )
     assert response.status_code == 200, response.json()
     functions = [
-        FunctionPublic.model_validate(response_function) for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions) - 1
 
@@ -49,7 +49,7 @@ def test_search_functions_with_disabled_apps(
     )
     assert response.status_code == 200, response.json()
     functions = [
-        FunctionPublic.model_validate(response_function) for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
 
     disabled_functions_count = sum(
@@ -81,7 +81,7 @@ def test_search_functions_with_private_functions(
     )
     assert response.status_code == 200, response.json()
     functions = [
-        FunctionPublic.model_validate(response_function) for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions) - 1
 
@@ -94,7 +94,7 @@ def test_search_functions_with_private_functions(
     )
     assert response.status_code == 200, response.json()
     functions = [
-        FunctionPublic.model_validate(response_function) for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions)
 
@@ -120,7 +120,7 @@ def test_search_functions_with_private_apps(
     )
     assert response.status_code == 200, response.json()
     functions = [
-        FunctionPublic.model_validate(response_function) for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
 
     private_functions_count = sum(
@@ -140,7 +140,7 @@ def test_search_functions_with_private_apps(
     )
     assert response.status_code == 200, response.json()
     functions = [
-        FunctionPublic.model_validate(response_function) for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions)
 
@@ -164,7 +164,7 @@ def test_search_functions_with_app_names(
 
     assert response.status_code == 200, response.json()
     functions = [
-        FunctionPublic.model_validate(response_function) for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     # only github and google functions should be returned
     for function in functions:
@@ -192,7 +192,7 @@ def test_search_functions_with_intent(
 
     assert response.status_code == 200, response.json()
     functions = [
-        FunctionPublic.model_validate(response_function) for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions)
     assert functions[0].name == GITHUB__CREATE_REPOSITORY
@@ -204,7 +204,7 @@ def test_search_functions_with_intent(
     )
     assert response.status_code == 200, response.json()
     functions = [
-        FunctionPublic.model_validate(response_function) for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions)
     assert functions[0].name == GOOGLE__CALENDAR_CREATE_EVENT
@@ -225,7 +225,7 @@ def test_search_functions_with_app_names_and_intent(
 
     assert response.status_code == 200, response.json()
     functions = [
-        FunctionPublic.model_validate(response_function) for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     # only github functions should be returned
     for function in functions:
@@ -250,7 +250,7 @@ def test_search_functions_pagination(
     )
     assert response.status_code == 200, response.json()
     functions = [
-        FunctionPublic.model_validate(response_function) for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions) - 1
 
@@ -260,6 +260,6 @@ def test_search_functions_pagination(
     )
     assert response.status_code == 200, response.json()
     functions = [
-        FunctionPublic.model_validate(response_function) for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == 1

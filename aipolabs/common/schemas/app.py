@@ -6,7 +6,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from aipolabs.common.enums import SecurityScheme, Visibility
-from aipolabs.common.schemas.function import FunctionPublic
+from aipolabs.common.schemas.function import FunctionBasic
 
 
 class AppCreate(BaseModel):
@@ -71,7 +71,7 @@ class AppsSearch(BaseModel):
 
 class AppsList(BaseModel):
     """
-    Parameters for listing applications.
+    Parameters for listing Apps.
     """
 
     limit: int = Field(
@@ -88,7 +88,7 @@ class AppBasic(BaseModel):
 
 
 class AppBasicWithFunctions(AppBasic):
-    functions: list[FunctionPublic]
+    functions: list[FunctionBasic]
 
 
 class AppDetails(BaseModel):
@@ -106,7 +106,7 @@ class AppDetails(BaseModel):
     # the security_schemes field in the db model is a dict of supported security schemes and their config,
     # which contains sensitive information like OAuth2 client secret.
     security_schemes: list[SecurityScheme]
-    functions: list[FunctionPublic]
+    functions: list[FunctionBasic]
 
     created_at: datetime
     updated_at: datetime

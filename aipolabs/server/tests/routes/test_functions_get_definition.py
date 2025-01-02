@@ -14,12 +14,12 @@ GITHUB = "GITHUB"
 GOOGLE = "GOOGLE"
 
 
-def test_get_function_openai(
+def test_get_function_definition_openai(
     test_client: TestClient, dummy_functions: list[sql_models.Function], dummy_api_key: str
 ) -> None:
     function_name = GITHUB__CREATE_REPOSITORY
     response = test_client.get(
-        f"/v1/functions/{function_name}",
+        f"/v1/functions/{function_name}/definition",
         params={"inference_provider": "openai"},
         headers={"x-api-key": dummy_api_key},
     )
@@ -36,12 +36,12 @@ def test_get_function_openai(
     assert function_definition.function.description == dummy_function.description
 
 
-def test_get_function_anthropic(
+def test_get_function_definition_anthropic(
     test_client: TestClient, dummy_functions: list[sql_models.Function], dummy_api_key: str
 ) -> None:
     function_name = GOOGLE__CALENDAR_CREATE_EVENT
     response = test_client.get(
-        f"/v1/functions/{function_name}",
+        f"/v1/functions/{function_name}/definition",
         params={"inference_provider": "anthropic"},
         headers={"x-api-key": dummy_api_key},
     )
@@ -55,7 +55,7 @@ def test_get_function_anthropic(
     assert function_definition.description == dummy_function.description
 
 
-def test_get_function_that_is_private(
+def test_get_private_function(
     db_session: Session,
     test_client: TestClient,
     dummy_functions: list[sql_models.Function],
@@ -67,7 +67,7 @@ def test_get_function_that_is_private(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].name}",
+        f"/v1/functions/{dummy_functions[0].name}/definition",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 404, response.json()
@@ -77,7 +77,7 @@ def test_get_function_that_is_private(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].name}", headers={"x-api-key": dummy_api_key}
+        f"/v1/functions/{dummy_functions[0].name}/definition", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
 
@@ -99,7 +99,7 @@ def test_get_function_that_is_under_private_app(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].name}", headers={"x-api-key": dummy_api_key}
+        f"/v1/functions/{dummy_functions[0].name}/definition", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 404, response.json()
 
@@ -108,7 +108,7 @@ def test_get_function_that_is_under_private_app(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].name}", headers={"x-api-key": dummy_api_key}
+        f"/v1/functions/{dummy_functions[0].name}/definition", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
 
@@ -129,7 +129,7 @@ def test_get_function_that_is_disabled(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].name}", headers={"x-api-key": dummy_api_key}
+        f"/v1/functions/{dummy_functions[0].name}/definition", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 404, response.json()
 
@@ -149,7 +149,7 @@ def test_get_function_that_is_under_disabled_app(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].name}", headers={"x-api-key": dummy_api_key}
+        f"/v1/functions/{dummy_functions[0].name}/definition", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 404, response.json()
 

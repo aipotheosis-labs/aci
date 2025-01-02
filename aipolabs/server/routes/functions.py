@@ -7,7 +7,6 @@ import httpx
 import jsonschema
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from httpx import HTTPStatusError
-from pydantic import BaseModel, Field, field_validator
 from sqlalchemy.orm import Session
 
 from aipolabs.common import processor
@@ -17,9 +16,10 @@ from aipolabs.common.logging import create_headline, get_logger
 from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.function import (
     AnthropicFunctionDefinition,
-    FunctionExecution,
+    FunctionBasic,
+    FunctionExecute,
     FunctionExecutionResult,
-    FunctionPublic,
+    FunctionsSearch,
     OpenAIFunctionDefinition,
     RestMetadata,
 )
@@ -31,75 +31,37 @@ logger = get_logger(__name__)
 openai_service = OpenAIService(config.OPENAI_API_KEY)
 
 
-# TODO: convert app names to lowercase/uppercase (in crud or here) to avoid case sensitivity issues?
-# TODO: add flag (e.g., verbose=true) to include detailed function info? (e.g., dev portal will need this)
-class SearchFunctionsParams(BaseModel):
-    app_names: list[str] | None = Field(
-        default=None, description="List of app names for filtering functions."
-    )
-    intent: str | None = Field(
-        default=None,
-        description="Natural language intent for vector similarity sorting. Results will be sorted by relevance to the intent.",
-    )
-    limit: int = Field(
-        default=100, ge=1, le=1000, description="Maximum number of Apps per response."
-    )
-    offset: int = Field(default=0, ge=0, description="Pagination offset.")
-
-    # need this in case user set {"app_names": None} which will translate to [''] in the params
-    @field_validator("app_names")
-    def validate_app_names(cls, v: list[str] | None) -> list[str] | None:
-        if v is not None:
-            # Remove any empty strings from the list
-            v = [app_name for app_name in v if app_name.strip()]
-            # If after removing empty strings the list is empty, set it to None
-            if not v:
-                return None
-        return v
-
-    # empty intent or string with spaces should be treated as None
-    @field_validator("intent")
-    def validate_intent(cls, v: str | None) -> str | None:
-        if v is not None and v.strip() == "":
-            return None
-        return v
-
-
-class FunctionExecutionParams(BaseModel):
-    function_input: dict = Field(
-        default_factory=dict, description="The input parameters for the function."
-    )
-    # TODO: can add other params like account_id
-
-
-@router.get("/search", response_model=list[FunctionPublic])
+@router.get("/search", response_model=list[FunctionBasic])
 async def search_functions(
-    search_params: Annotated[SearchFunctionsParams, Query()],
+    query_params: Annotated[FunctionsSearch, Query()],
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> list[sql_models.Function]:
     """
     Returns the basic information of a list of functions.
     """
+    # TODO: currently the search is done across all apps, we might want to add flags to account for below scenarios:
+    # - when clients search for functions, if the app of the functions is not integrated, should the functions be discoverable?
+    # - when clients search for functions, if the app of the functions is integrated but disabled, should the functions be discoverable?
     try:
-        logger.debug(f"Getting functions with params: {search_params}")
+        logger.debug(f"Getting functions with params: {query_params}")
         intent_embedding = (
             openai_service.generate_embedding(
-                search_params.intent,
+                query_params.intent,
                 config.OPENAI_EMBEDDING_MODEL,
                 config.OPENAI_EMBEDDING_DIMENSION,
             )
-            if search_params.intent
+            if query_params.intent
             else None
         )
         logger.debug(f"Generated intent embedding: {intent_embedding}")
         functions = crud.search_functions(
             db_session,
             api_key_id,
-            search_params.app_names,
+            query_params.app_names,
             intent_embedding,
-            search_params.limit,
-            search_params.offset,
+            query_params.limit,
+            query_params.offset,
         )
         logger.debug(f"functions: \n {functions}")
         return functions
@@ -119,7 +81,7 @@ class InferenceProvider(str, Enum):
 # TODO: client sdk can use pydantic to validate model output for parameters used for function execution
 # TODO: "flatten" flag to make sure nested parameters are flattened?
 @router.get(
-    "/{function_name}",
+    "/{function_name}/definition",
     response_model=OpenAIFunctionDefinition | AnthropicFunctionDefinition,
     response_model_exclude_none=True,  # having this to exclude "strict" field in openai's function definition if not set
 )
@@ -175,7 +137,7 @@ async def execute(
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
     function_name: str,
-    function_execution_params: FunctionExecutionParams,
+    body: FunctionExecute,
 ) -> FunctionExecutionResult:
     try:
         # Fetch function definition
@@ -183,11 +145,7 @@ async def execute(
         if not db_function:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Function not found.")
 
-        return _execute(
-            db_function.app,
-            FunctionExecution.model_validate(db_function),
-            function_execution_params.function_input,
-        )
+        return _execute(db_function, body.function_input)
 
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
@@ -207,15 +165,13 @@ async def execute(
 # app_instance: AppBase = app_factory.get_app_instance(function_name)
 # app_instance.validate_input(db_function.parameters, function_execution_params.function_input)
 # return app_instance.execute(function_name, function_execution_params.function_input)
-def _execute(
-    db_app: sql_models.App, function_execution: FunctionExecution, function_input: dict
-) -> FunctionExecutionResult:
+def _execute(db_function: sql_models.Function, function_input: dict) -> FunctionExecutionResult:
     # validate user input against the visible parameters
     try:
-        logger.info(f"validating function input for {function_execution.name}")
+        logger.info(f"validating function input for {db_function.name}")
         jsonschema.validate(
             instance=function_input,
-            schema=processor.filter_visible_properties(function_execution.parameters),
+            schema=processor.filter_visible_properties(db_function.parameters),
         )
     except jsonschema.ValidationError as e:
         logger.error(f"Invalid input: {e.message}")
@@ -225,11 +181,11 @@ def _execute(
 
     # inject non-visible defaults, note that should pass the original parameters schema not just visible ones
     function_input = processor.inject_required_but_invisible_defaults(
-        function_execution.parameters, function_input
+        db_function.parameters, function_input
     )
     logger.info(f"function_input after injecting defaults: {json.dumps(function_input)}")
 
-    if function_execution.protocol == Protocol.REST:
+    if db_function.protocol == Protocol.REST:
         # remove None values from the input
         # TODO: better way to remove None values? and if it's ok to remove all of them?
         function_input = processor.remove_none_values(function_input)
@@ -240,7 +196,7 @@ def _execute(
         cookies = function_input.get("cookie", {})
         body = function_input.get("body", {})
 
-        protocol_data: RestMetadata = function_execution.protocol_data
+        protocol_data = RestMetadata.model_validate(db_function.protocol_data)
         # Construct URL with path parameters
         url = f"{protocol_data.server_url}{protocol_data.path}"
         if path:
@@ -248,7 +204,7 @@ def _execute(
             for path_param_name, path_param_value in path.items():
                 url = url.replace(f"{{{path_param_name}}}", str(path_param_value))
 
-        _inject_security_credentials(db_app, headers, query, body, cookies)
+        _inject_security_credentials(db_function.app, headers, query, body, cookies)
 
         # Create request object
         request = httpx.Request(
@@ -286,6 +242,8 @@ def _execute(
                 return FunctionExecutionResult(success=False, error=_get_error_message(response, e))
 
             return FunctionExecutionResult(success=True, data=_get_response_data(response))
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported protocol.")
 
 
 def _inject_security_credentials(
