@@ -26,14 +26,15 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
 
 @router.get("/", response_model=list[AppDetails])
 async def list_apps(
-    apps_list: Annotated[AppsList, Query()],
+    query_params: Annotated[AppsList, Query()],
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> list[AppDetails]:
     """
     Get a list of Apps and their details. Sorted by App name.
     """
-    apps = crud.get_apps(db_session, apps_list.limit, apps_list.offset)
+    # TODO: need add access control logic
+    apps = crud.get_apps(db_session, query_params.limit, query_params.offset)
     return [AppDetails.model_validate(app) for app in apps]
 
 

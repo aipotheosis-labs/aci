@@ -1,5 +1,4 @@
 import json
-from enum import Enum
 from typing import Annotated, Any
 from uuid import UUID
 
@@ -11,15 +10,18 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common import processor
 from aipolabs.common.db import crud, sql_models
-from aipolabs.common.enums import Protocol, SecurityScheme
+from aipolabs.common.enums import Protocol, SecurityScheme, Visibility
 from aipolabs.common.logging import create_headline, get_logger
 from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.function import (
     AnthropicFunctionDefinition,
     FunctionBasic,
+    FunctionDetails,
     FunctionExecute,
     FunctionExecutionResult,
+    FunctionsList,
     FunctionsSearch,
+    InferenceProvider,
     OpenAIFunctionDefinition,
     RestMetadata,
 )
@@ -29,6 +31,24 @@ from aipolabs.server.dependencies import validate_api_key, yield_db_session
 router = APIRouter()
 logger = get_logger(__name__)
 openai_service = OpenAIService(config.OPENAI_API_KEY)
+
+
+@router.get("/", response_model=list[FunctionDetails])
+async def list_functions(
+    query_params: Annotated[FunctionsList, Query()],
+    db_session: Annotated[Session, Depends(yield_db_session)],
+    api_key_id: Annotated[UUID, Depends(validate_api_key)],
+) -> list[sql_models.Function]:
+    """Get a list of functions and their details. Sorted by function name."""
+    db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
+
+    return crud.get_functions(
+        db_session,
+        db_project.visibility_access == Visibility.PUBLIC,
+        query_params.app_names,
+        query_params.limit,
+        query_params.offset,
+    )
 
 
 @router.get("/search", response_model=list[FunctionBasic])
@@ -68,11 +88,6 @@ async def search_functions(
     except Exception as e:
         logger.error("Error searching functions", exc_info=True)
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
-
-
-class InferenceProvider(str, Enum):
-    OPENAI = "openai"
-    ANTHROPIC = "anthropic"
 
 
 # TODO: have "structured_outputs" flag ("structured_outputs_if_possible") to support openai's structured outputs function calling?

@@ -409,6 +409,25 @@ def search_functions(
     return results
 
 
+def get_functions(
+    db_session: Session, public_only: bool, app_names: list[str] | None, limit: int, offset: int
+) -> list[sql_models.Function]:
+    """Get a list of functions and their details. Sorted by function name."""
+    # exclude private Apps's functions and private functions if public_only is True
+    statement = select(sql_models.Function).join(sql_models.App)
+
+    if app_names and len(app_names) > 0:
+        statement = statement.filter(sql_models.App.name.in_(app_names))
+
+    if public_only:
+        statement = statement.filter(sql_models.App.visibility == Visibility.PUBLIC).filter(
+            sql_models.Function.visibility == Visibility.PUBLIC
+        )
+    statement = statement.order_by(sql_models.Function.name).offset(offset).limit(limit)
+    results: list[sql_models.Function] = db_session.execute(statement).scalars().all()
+    return results
+
+
 def get_function(
     db_session: Session, api_key_id: UUID, function_name: str
 ) -> sql_models.Function | None:

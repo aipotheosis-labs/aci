@@ -1,4 +1,7 @@
+from datetime import datetime
+from enum import Enum
 from typing import Any, Literal
+from uuid import UUID
 
 import jsonschema
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -69,6 +72,27 @@ class FunctionCreate(BaseModel):
         return self
 
 
+class FunctionsList(BaseModel):
+    app_names: list[str] | None = Field(
+        default=None, description="List of app names for filtering functions."
+    )
+    limit: int = Field(
+        default=100, ge=1, le=1000, description="Maximum number of Functions per response."
+    )
+    offset: int = Field(default=0, ge=0, description="Pagination offset.")
+
+    # need this in case user set {"app_names": None} which will translate to [''] in the params
+    @field_validator("app_names")
+    def validate_app_names(cls, v: list[str] | None) -> list[str] | None:
+        if v is not None:
+            # Remove any empty strings from the list
+            v = [app_name for app_name in v if app_name.strip()]
+            # If after removing empty strings the list is empty, set it to None
+            if not v:
+                return None
+        return v
+
+
 # TODO: convert app names to lowercase/uppercase (in crud or here) to avoid case sensitivity issues?
 # TODO: add flag (e.g., verbose=true) to include detailed function info? (e.g., dev portal will need this)
 class FunctionsSearch(BaseModel):
@@ -115,6 +139,30 @@ class FunctionBasic(BaseModel):
     description: str
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class FunctionDetails(BaseModel):
+    id: UUID
+    app_id: UUID
+    name: str
+    description: str
+    tags: list[str]
+    visibility: Visibility
+    enabled: bool
+    protocol: Protocol
+    protocol_data: dict
+    parameters: dict
+    response: dict
+
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class InferenceProvider(str, Enum):
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
 
 
 class OpenAIFunctionDefinition(BaseModel):

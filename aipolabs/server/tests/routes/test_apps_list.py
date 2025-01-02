@@ -33,7 +33,7 @@ def test_list_apps(
         assert len(app.functions) == len([f for f in dummy_functions if f.app_id == app.id])
 
 
-def test_get_apps_pagination(
+def test_list_apps_pagination(
     test_client: TestClient, dummy_apps: list[sql_models.App], dummy_api_key: str
 ) -> None:
     assert len(dummy_apps) > 2
