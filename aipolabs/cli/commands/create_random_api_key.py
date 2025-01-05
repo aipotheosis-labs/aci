@@ -14,7 +14,7 @@ from aipolabs.cli import config
 from aipolabs.cli.commands import create_agent, create_project, create_user
 from aipolabs.common import utils
 from aipolabs.common.db import crud, sql_models
-from aipolabs.common.enums import Plan, ProjectOwnerType, Visibility
+from aipolabs.common.enums import SubscriptionPlan, Visibility
 from aipolabs.common.logging import create_headline
 
 
@@ -43,22 +43,19 @@ def create_random_api_key_helper(visibility_access: Visibility) -> str:
         name=f"Test User {random_id}",
         email=f"test_{random_id}@example.com",
         profile_picture=f"https://example.com/profile_{random_id}.png",
-        plan=Plan.FREE,
+        plan=SubscriptionPlan.FREE,
         skip_dry_run=skip_dry_run,
     )
     project_id = create_project.create_project_helper(
-        project_name=f"Test Project {random_id}",
-        owner_type=ProjectOwnerType.USER,
+        name=f"Test Project {random_id}",
         owner_id=user_id,
-        created_by=user_id,
         visibility_access=visibility_access,
         skip_dry_run=skip_dry_run,
     )
     agent_id = create_agent.create_agent_helper(
-        agent_name=f"Test Agent {random_id}",
-        description=f"Test Agent {random_id}",
         project_id=project_id,
-        created_by=user_id,
+        name=f"Test Agent {random_id}",
+        description=f"Test Agent {random_id}",
         excluded_apps=[],
         excluded_functions=[],
         skip_dry_run=skip_dry_run,

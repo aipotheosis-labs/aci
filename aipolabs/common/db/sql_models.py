@@ -1,4 +1,5 @@
 """
+TODO:
 Note: try to keep dependencies on other internal packages to a minimum.
 Note: at the time of writing, it's still too early to do optimizations on the database schema,
 but we should keep an eye on it and be prepared for potential future optimizations.
@@ -7,6 +8,8 @@ for example,
 2. create index on embedding and other fields that are frequently used for filtering
 3. materialized views for frequently queried data
 4. limit string length for fields that have string type
+5. Note we might need to set up index for embedding manually for customizing the similarity search algorithm
+   (https://github.com/pgvector/pgvector)
 """
 
 # TODO: ideally shouldn't need it in python 3.12 for forward reference?
@@ -16,7 +19,7 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import JSON, Boolean, CheckConstraint, DateTime
+from sqlalchemy import JSON, Boolean, DateTime
 from sqlalchemy import Enum as SqlEnum
 from sqlalchemy import (
     ForeignKey,
@@ -31,6 +34,7 @@ from sqlalchemy import (
 # Note: need to use postgresqlr ARRAY in order to use overlap operator
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
+from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -41,9 +45,12 @@ from sqlalchemy.orm import (
 
 from aipolabs.common.enums import (
     APIKeyStatus,
-    Plan,
+    EntityType,
+    OrganizationRole,
     Protocol,
     SecurityScheme,
+    SubscriptionPlan,
+    SubscriptionStatus,
     Visibility,
 )
 
@@ -58,32 +65,21 @@ class Base(MappedAsDataclass, DeclarativeBase):
     pass
 
 
-class Organization(Base):
-    __tablename__ = "organizations"
+class Entity(Base):
+    """
+    Polymorphic Base for Users and Organizations
+    """
+
+    __tablename__ = "entities"
 
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
     )
-    name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
-    description: Mapped[str] = mapped_column(Text, nullable=False)
-
-
-# TODO: Note we might need to set up index for embedding manually for customizing the similarity search algorithm
-# (https://github.com/pgvector/pgvector)
-class User(Base):
-    __tablename__ = "users"
-
-    id: Mapped[UUID] = mapped_column(
-        PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
-    )
-    # google, github, email, etc
-    auth_provider: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
-    # google id, github id, email, etc
-    auth_user_id: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
+    # Discriminator column
+    type: Mapped[EntityType] = mapped_column(SqlEnum(EntityType), nullable=False, init=False)
     name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     email: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     profile_picture: Mapped[str | None] = mapped_column(Text, nullable=True)
-    plan: Mapped[Plan] = mapped_column(SqlEnum(Plan), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
     )
@@ -95,41 +91,170 @@ class User(Base):
         init=False,
     )
 
-    # deleting user will delete all projects owned by the user
+    subscriptions: Mapped[list[Subscription]] = relationship(
+        "Subscription",
+        lazy="select",
+        cascade="all, delete-orphan",
+        foreign_keys="Subscription.entity_id",
+        init=False,
+    )
+
+    # deleting entity will delete all projects owned by the entity
     owned_projects: Mapped[list[Project]] = relationship(
         "Project",
         lazy="select",
         cascade="all, delete-orphan",
-        foreign_keys="Project.owner_user_id",
+        foreign_keys="Project.owner_id",
         init=False,
     )
+
+    __mapper_args__ = {
+        "polymorphic_on": type,
+        "polymorphic_identity": EntityType.ENTITY,
+    }
+
+
+class User(Entity):
+    """
+    User is a type of Entity.
+    """
+
+    __tablename__ = "users"
+
+    # TODO: not sure if this is the intended way to do this
+    # but it doesn't work if we do:
+    # id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True), ForeignKey("entities.id"), primary_key=True, init=False)
+    @declared_attr
+    def id(cls) -> Mapped[UUID]:
+        return mapped_column(
+            PGUUID(as_uuid=True), ForeignKey("entities.id"), primary_key=True, init=False
+        )
+
+    # google, github, email, etc
+    auth_provider: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
+    # google id, github id, email, etc
+    auth_user_id: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
+
+    memberships: Mapped[list[Membership]] = relationship(
+        "Membership", back_populates="user", init=False
+    )
+
+    __mapper_args__ = {
+        "polymorphic_identity": EntityType.USER,
+    }
 
     __table_args__ = (
         UniqueConstraint("auth_provider", "auth_user_id", name="uc_auth_provider_user"),
     )
 
 
-# logical container for isolating and managing API keys, selected apps, and other data
-# each project can have multiple API keys
+class Organization(Entity):
+    """
+    Organization is a type of Entity.
+    """
+
+    __tablename__ = "organizations"
+
+    @declared_attr
+    def id(cls) -> Mapped[UUID]:
+        return mapped_column(
+            PGUUID(as_uuid=True), ForeignKey("entities.id"), primary_key=True, init=False
+        )
+
+    memberships: Mapped[list[Membership]] = relationship(
+        "Membership", back_populates="organization", init=False
+    )
+
+    __mapper_args__ = {
+        "polymorphic_identity": EntityType.ORGANIZATION,
+    }
+
+
+class Membership(Base):
+    """
+    Membership is a many-to-many relationship between users and organizations.
+    """
+
+    __tablename__ = "memberships"
+
+    id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
+    )
+    user_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False
+    )
+    organization_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False
+    )
+    role: Mapped[OrganizationRole] = mapped_column(SqlEnum(OrganizationRole), nullable=False)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+        init=False,
+    )
+
+    user: Mapped[User] = relationship("User", back_populates="memberships", init=False)
+    organization: Mapped[Organization] = relationship(
+        "Organization", back_populates="memberships", init=False
+    )
+
+
+# TODO: need more details (e.g., billings) after we have a payment system and business model
+# TODO: should we only allow one subscription per entity?
+class Subscription(Base):
+    """
+    Stores subscription information for users and organizations.
+    """
+
+    __tablename__ = "subscriptions"
+
+    id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
+    )
+    entity_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("entities.id"), nullable=False
+    )
+    plan: Mapped[SubscriptionPlan] = mapped_column(SqlEnum(SubscriptionPlan), nullable=False)
+    status: Mapped[SubscriptionStatus] = mapped_column(SqlEnum(SubscriptionStatus), nullable=False)
+
+    expires_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=False), default=None, nullable=True
+    )  # Null for active subscriptions
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+        init=False,
+    )
+
+
 # TODO: might need to limit number of projects a user can create
 class Project(Base):
+    """
+    Project is a logical container for isolating and managing API keys, selected apps, and other data
+    Each project can have multiple agents (associated with API keys), which are logical actors that access our platform
+    """
+
     __tablename__ = "projects"
 
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
     )
-    # Note: creator is not necessarily the owner
-    # should be a user and should be the same as owner_user_id if owner is of type user
-    created_by: Mapped[UUID] = mapped_column(
-        PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False
-    )
-    # owner of the project can be a user or an organization, here we have both fields as ForeignKey instead of (owner_type + owner_id)
-    # to enforce db integrity
-    owner_user_id: Mapped[UUID | None] = mapped_column(
-        PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=True
-    )
-    owner_organization_id: Mapped[UUID | None] = mapped_column(
-        PGUUID(as_uuid=True), ForeignKey("organizations.id"), nullable=True
+
+    # owner of the project can be a user or an organization
+    owner_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("entities.id"), nullable=False
     )
 
     name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
@@ -161,17 +286,14 @@ class Project(Base):
         "Agent", lazy="select", cascade="all, delete-orphan", init=False
     )
 
-    # check constraint to ensure project owner is either a user or an organization
-    __table_args__ = (
-        CheckConstraint(
-            "(owner_user_id IS NOT NULL AND owner_organization_id IS NULL) OR "
-            "(owner_user_id IS NULL AND owner_organization_id IS NOT NULL)",
-            name="cc_project_owner",
-        ),
-    )
-
 
 class Agent(Base):
+    """
+    Agent is an actor under a project, each project can have multiple agents.
+    It's the logical entity that access our platform, as a result, api keys are associated with agents.
+    This is an opinionated design, intented for a multi-agent system, but subject to change.
+    """
+
     __tablename__ = "agents"
 
     id: Mapped[UUID] = mapped_column(
@@ -179,9 +301,6 @@ class Agent(Base):
     )
     project_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("projects.id"), nullable=False
-    )
-    created_by: Mapped[UUID] = mapped_column(
-        PGUUID(as_uuid=True), ForeignKey("users.id"), nullable=False
     )
     name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
@@ -211,10 +330,15 @@ class Agent(Base):
 
 
 class APIKey(Base):
+    """
+    APIKey is the authentication token to access the platform.
+    In this opinionated design, api key belongs to an agent.
+    """
+
     __tablename__ = "api_keys"
 
     # id is not the actual API key, it's just a unique identifier to easily reference each API key entry without depending
-    # on the API key string itself.
+    # on the API key string itself. Also for logging without exposing the actual API key string.
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
     )
@@ -241,6 +365,11 @@ class APIKey(Base):
 # because function schema is loaded dynamically from the database to user
 # TODO: do we need auth_required on function level?
 class Function(Base):
+    """
+    Function is a callable function that can be executed.
+    Each function belongs to one App.
+    """
+
     __tablename__ = "functions"
 
     id: Mapped[UUID] = mapped_column(
@@ -256,7 +385,7 @@ class Function(Base):
     tags: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False)
     # if private, the function is only visible to privileged Projects (e.g., useful for internal and A/B testing)
     visibility: Mapped[Visibility] = mapped_column(SqlEnum(Visibility), nullable=False)
-    # if false, the function is not visible and will not be searchable and executable
+    # can be used to control if the function is searchable and executable
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
     protocol: Mapped[Protocol] = mapped_column(SqlEnum(Protocol), nullable=False)
     protocol_data: Mapped[dict] = mapped_column(JSON, nullable=False)
@@ -278,7 +407,7 @@ class Function(Base):
         init=False,
     )
 
-    # each function belongs to one app
+    # the App that this function belongs to
     app: Mapped[App] = relationship("App", lazy="select", back_populates="functions", init=False)
 
 
@@ -288,7 +417,7 @@ class App(Base):
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
     )
-    # Need name to be unique to support both sdk (where user can specify apps by name) and globally unique function name.
+    # Need name to be unique to support globally unique function name.
     name: Mapped[str] = mapped_column(String(APP_NAME_MAX_LENGTH), nullable=False, unique=True)
     display_name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     # provider (or company) of the app, e.g., google, github, or aipolabs or user (if allow user to create custom apps)
@@ -385,10 +514,16 @@ class Integration(Base):
     )
 
 
-# a linked account is specific to an app in a project.
-# TODO: considering creating separate tables per integration or per project (some benefits including easier to
-# delete the record and associated linked accounts when user delete the integration, without locking the table for too long)
+# TODO:
+# - considering creating separate tables per integration or per project (some benefits including easier to
+#   delete the record and associated linked accounts when user delete the integration, without locking the table for too long)
+# - or use nosql to store linked accounts instead when table gets large
+# - or use separate database instance for clients with large number of linked accounts
 class LinkedAccount(Base):
+    """
+    Linked account is a specific account under an app in a project.
+    """
+
     __tablename__ = "linked_accounts"
 
     id: Mapped[UUID] = mapped_column(

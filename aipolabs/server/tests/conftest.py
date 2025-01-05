@@ -11,9 +11,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common import utils
 from aipolabs.common.db import crud, sql_models
-from aipolabs.common.enums import ProjectOwnerType, Visibility
-from aipolabs.common.schemas.agent import AgentCreate
-from aipolabs.common.schemas.project import ProjectCreate
+from aipolabs.common.enums import Visibility
 from aipolabs.common.schemas.user import UserCreate
 from aipolabs.server import config
 from aipolabs.server.main import app as fastapi_app
@@ -84,12 +82,8 @@ def dummy_project(dummy_user: sql_models.User) -> Generator[sql_models.Project, 
     with utils.create_db_session(config.DB_FULL_URL) as fixture_db_session:
         dummy_project = crud.create_project(
             fixture_db_session,
-            ProjectCreate(
-                name="Dummy Project",
-                owner_type=ProjectOwnerType.USER,
-                owner_id=dummy_user.id,
-                created_by=dummy_user.id,
-            ),
+            owner_id=dummy_user.id,
+            name="Dummy Project",
             visibility_access=Visibility.PUBLIC,
         )
         fixture_db_session.commit()
@@ -103,12 +97,11 @@ def dummy_api_key(
     with utils.create_db_session(config.DB_FULL_URL) as fixture_db_session:
         dummy_agent = crud.create_agent(
             fixture_db_session,
-            AgentCreate(
-                name="Dummy Agent",
-                description="Dummy Agent",
-                project_id=dummy_project.id,
-                created_by=dummy_user.id,
-            ),
+            project_id=dummy_project.id,
+            name="Dummy Agent",
+            description="Dummy Agent",
+            excluded_apps=[],
+            excluded_functions=[],
         )
         fixture_db_session.commit()
         yield dummy_agent.api_keys[0].key
@@ -119,12 +112,8 @@ def dummy_project_2(dummy_user: sql_models.User) -> Generator[sql_models.Project
     with utils.create_db_session(config.DB_FULL_URL) as fixture_db_session:
         dummy_project = crud.create_project(
             fixture_db_session,
-            ProjectCreate(
-                name="Dummy Project 2",
-                owner_type=ProjectOwnerType.USER,
-                owner_id=dummy_user.id,
-                created_by=dummy_user.id,
-            ),
+            owner_id=dummy_user.id,
+            name="Dummy Project 2",
             visibility_access=Visibility.PUBLIC,
         )
         fixture_db_session.commit()
@@ -138,12 +127,11 @@ def dummy_api_key_2(
     with utils.create_db_session(config.DB_FULL_URL) as fixture_db_session:
         dummy_agent = crud.create_agent(
             fixture_db_session,
-            AgentCreate(
-                name="Dummy Agent 2",
-                description="Dummy Agent 2",
-                project_id=dummy_project_2.id,
-                created_by=dummy_user.id,
-            ),
+            project_id=dummy_project_2.id,
+            name="Dummy Agent 2",
+            description="Dummy Agent 2",
+            excluded_apps=[],
+            excluded_functions=[],
         )
         fixture_db_session.commit()
         yield dummy_agent.api_keys[0].key

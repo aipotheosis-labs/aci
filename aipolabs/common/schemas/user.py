@@ -2,7 +2,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from aipolabs.common.enums import Plan
+from aipolabs.common.enums import SubscriptionPlan
 
 
 class AuthResponse(BaseModel):
@@ -17,4 +17,4 @@ class UserCreate(BaseModel):
     name: str
     email: str
     profile_picture: str | None = None
-    plan: Plan = Plan.FREE
+    plan: SubscriptionPlan = SubscriptionPlan.FREE

@@ -48,7 +48,7 @@ For commands that require database connection, make sure the database you are co
   - You need to create the user first before creating a project for the user.
 
   ```bash
-  python -m aipolabs.cli.aipolabs create-project --project-name "My Project" --owner-type user --owner-id "8341edc4-eeb6-4e90-abe3-0051a9a7b9a5" --created-by "8341edc4-eeb6-4e90-abe3-0051a9a7b9a5" --visibility-access public
+  python -m aipolabs.cli.aipolabs create-project --name "My Project" --owner-id "5b3f0b5f-4e79-4a7a-9830-142ecba9f5fd" --visibility-access public
   ```
 </details>
 
@@ -59,7 +59,7 @@ For commands that require database connection, make sure the database you are co
   - You need to create the project first before creating an agent for the project.
 
   ```bash
-  python -m aipolabs.cli.aipolabs create-agent --agent-name "My Agent" --description "My Agent Description" --project-id "51711368-ef40-4efc-a9ab-5d44dbe0d671" --created-by "8341edc4-eeb6-4e90-abe3-0051a9a7b9a5"
+  python -m aipolabs.cli.aipolabs create-agent --name "My Agent" --description "My Agent Description" --project-id "0347ae5f-60c2-43c1-8a29-8b657c97693e"
   ```
 </details>
 

@@ -3,9 +3,9 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import sql_models
-from aipolabs.common.enums import ProjectOwnerType
+from aipolabs.common.enums import Visibility
 from aipolabs.common.schemas.agent import AgentCreate, AgentPublic
-from aipolabs.common.schemas.project import ProjectCreate, ProjectPublic
+from aipolabs.common.schemas.project import ProjectPublic
 
 
 def test_create_project_under_user(
@@ -14,23 +14,18 @@ def test_create_project_under_user(
     dummy_user_bearer_token: str,
     dummy_user: sql_models.User,
 ) -> None:
-    project_create = ProjectCreate(
-        name="project test_create_project",
-        owner_type=ProjectOwnerType.USER,
-        owner_id=dummy_user.id,
-        created_by=dummy_user.id,
-    )
+    body = {"name": "project test_create_project"}
 
     response = test_client.post(
         "/v1/projects/",
-        json=project_create.model_dump(mode="json"),
+        json=body,
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
     assert response.status_code == 200, response.json()
     project_public = ProjectPublic.model_validate(response.json())
-    assert project_public.name == project_create.name
-    assert project_public.owner_organization_id is None
-    assert project_public.owner_user_id == dummy_user.id
+    assert project_public.name == body["name"]
+    assert project_public.owner_id == dummy_user.id
+    assert project_public.visibility_access == Visibility.PUBLIC
 
     # Verify the project was actually created in the database and values match returned values
     db_project = db_session.execute(
@@ -50,24 +45,21 @@ def test_create_agent(
     dummy_user_bearer_token: str,
     dummy_user: sql_models.User,
 ) -> None:
-    agent_create = AgentCreate(
+    body = AgentCreate(
         name="new test agent",
         description="new test agent description",
-        project_id=dummy_project.id,
-        created_by=dummy_user.id,
     )
 
     response = test_client.post(
         f"/v1/projects/{dummy_project.id}/agents/",
-        json=agent_create.model_dump(mode="json"),
+        json=body.model_dump(mode="json"),
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
     assert response.status_code == 200, response.json()
     agent_public = AgentPublic.model_validate(response.json())
-    assert agent_public.name == agent_create.name
-    assert agent_public.description == agent_create.description
+    assert agent_public.name == body.name
+    assert agent_public.description == body.description
     assert agent_public.project_id == dummy_project.id
-    assert agent_public.created_by == dummy_user.id
 
     # Verify the agent was actually created in the database and values match returned values
     db_agent = db_session.execute(

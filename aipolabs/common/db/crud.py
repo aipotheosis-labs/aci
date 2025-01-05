@@ -5,7 +5,6 @@ Do NOT commit to db in these functions. Handle commit and rollback in the caller
 
 import secrets
 from datetime import datetime, timedelta, timezone
-from typing import Union
 from uuid import UUID
 
 from sqlalchemy import delete, select, update
@@ -15,15 +14,13 @@ from aipolabs.common import utils
 from aipolabs.common.db import sql_models
 from aipolabs.common.enums import (
     APIKeyStatus,
-    ProjectOwnerType,
     SecurityScheme,
+    SubscriptionStatus,
     Visibility,
 )
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.agent import AgentCreate
 from aipolabs.common.schemas.app import AppCreate
 from aipolabs.common.schemas.function import FunctionCreate
-from aipolabs.common.schemas.project import ProjectCreate
 from aipolabs.common.schemas.user import UserCreate
 
 logger = get_logger(__name__)
@@ -200,17 +197,37 @@ def user_exists(db_session: Session, user_id: UUID) -> bool:
     )
 
 
-def create_user(db_session: Session, user: UserCreate) -> sql_models.User:
-    db_user = sql_models.User(**user.model_dump())
+def create_user(db_session: Session, user_create: UserCreate) -> sql_models.User:
+    db_user = sql_models.User(
+        auth_provider=user_create.auth_provider,
+        auth_user_id=user_create.auth_user_id,
+        name=user_create.name,
+        email=user_create.email,
+        profile_picture=user_create.profile_picture,
+    )
     db_session.add(db_user)
+    # Flush the session to generate the id
     db_session.flush()
     db_session.refresh(db_user)
+    db_subscription = sql_models.Subscription(
+        entity_id=db_user.id,
+        plan=user_create.plan,
+        status=SubscriptionStatus.ACTIVE,
+    )
+    db_session.add(db_subscription)
+    return db_user
+
+
+def get_user(db_session: Session, user_id: UUID) -> sql_models.User | None:
+    db_user: sql_models.User | None = db_session.execute(
+        select(sql_models.User).filter_by(id=user_id)
+    ).scalar_one_or_none()
     return db_user
 
 
 def get_or_create_user(db_session: Session, user: UserCreate) -> sql_models.User:
     # Step 1: Acquire a lock on the row to prevent race condition
-    db_user: Union[sql_models.User, None] = db_session.execute(
+    db_user: sql_models.User | None = db_session.execute(
         select(sql_models.User)
         .where(
             sql_models.User.auth_provider == user.auth_provider,
@@ -231,23 +248,17 @@ def get_or_create_user(db_session: Session, user: UserCreate) -> sql_models.User
 
 def create_project(
     db_session: Session,
-    project: ProjectCreate,
-    # visibility_access can not be part of ProjectCreate otherwise users can create projects with private visibility
+    owner_id: UUID,
+    name: str,
     visibility_access: Visibility = Visibility.PUBLIC,
 ) -> sql_models.Project:
     """
     Create a new project.
-    Assume called has privilege to create project under the specified user or organization.
+    Assume caller has privilege to create project under the owner (user or organization)
     """
-    owner_user_id = project.owner_id if project.owner_type == ProjectOwnerType.USER else None
-    owner_organization_id = (
-        project.owner_id if project.owner_type == ProjectOwnerType.ORGANIZATION else None
-    )
     db_project = sql_models.Project(
-        name=project.name,
-        owner_user_id=owner_user_id,
-        owner_organization_id=owner_organization_id,
-        created_by=project.created_by,
+        owner_id=owner_id,
+        name=name,
         visibility_access=visibility_access,
     )
     db_session.add(db_project)
@@ -257,7 +268,14 @@ def create_project(
     return db_project
 
 
-def create_agent(db_session: Session, agent: AgentCreate) -> sql_models.Agent:
+def create_agent(
+    db_session: Session,
+    project_id: UUID,
+    name: str,
+    description: str,
+    excluded_apps: list[UUID],
+    excluded_functions: list[UUID],
+) -> sql_models.Agent:
     """
     Create a new agent under a project, and create a new API key for the agent.
     Assume user's access to the project has been checked.
@@ -265,9 +283,16 @@ def create_agent(db_session: Session, agent: AgentCreate) -> sql_models.Agent:
     TODO: handle agent exclusion of apps and functions
     """
     # Create the agent
-    db_agent = sql_models.Agent(**agent.model_dump())
+    db_agent = sql_models.Agent(
+        project_id=project_id,
+        name=name,
+        description=description,
+        excluded_apps=excluded_apps,
+        excluded_functions=excluded_functions,
+    )
     db_session.add(db_agent)
-    db_session.flush()  # Flush to get the agent's ID
+    # Flush to get the agent's ID
+    db_session.flush()
 
     # Create the API key for the agent
     api_key = sql_models.APIKey(
@@ -306,13 +331,13 @@ def user_has_admin_access_to_project(db_session: Session, user_id: UUID, project
     """Check if a user has admin access to a project."""
     # TODO: implement properly with organization and project access control
     # for now, just check if project owner is the user
-    db_project = db_session.execute(
+    db_project: sql_models.Project | None = db_session.execute(
         select(sql_models.Project).filter_by(id=project_id)
     ).scalar_one_or_none()
-    if not db_project:
+    if db_project:
+        return bool(db_project.owner_id == user_id)
+    else:
         raise ProjectNotFoundError(f"Project with ID {project_id} not found")
-
-    return db_project.owner_user_id is not None and db_project.owner_user_id == user_id
 
 
 def get_api_key(db_session: Session, key: str) -> sql_models.APIKey | None:

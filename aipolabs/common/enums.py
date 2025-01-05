@@ -52,7 +52,8 @@ class HttpMethod(str, Enum):
     OPTIONS = "OPTIONS"
 
 
-class ProjectOwnerType(str, Enum):
+class EntityType(str, Enum):
+    ENTITY = "entity"
     USER = "user"
     ORGANIZATION = "organization"
 
@@ -64,8 +65,31 @@ class Visibility(str, Enum):
     PRIVATE = "private"
 
 
-class Plan(str, Enum):
+class SubscriptionPlan(str, Enum):
+    """
+    subscription plan for a user or organization.
+    """
+
     CUSTOM = "custom"
     FREE = "free"
     PRO = "pro"
     ENTERPRISE = "enterprise"
+
+
+class SubscriptionStatus(str, Enum):
+    """
+    subscription status for a user or organization.
+    """
+
+    ACTIVE = "active"
+    CANCELLED = "cancelled"
+    EXPIRED = "expired"
+
+
+class OrganizationRole(str, Enum):
+    """
+    role for a user in an organization.
+    """
+
+    ADMIN = "admin"
+    MEMBER = "member"

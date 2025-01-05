@@ -57,7 +57,7 @@ def create_access_token(user_id: str, expires_delta: timedelta) -> str:
 
 
 # login route for different auth providers
-@router.get("/login/{provider}", include_in_schema=False)
+@router.get("/login/{provider}", include_in_schema=True)
 async def login(request: Request, provider: str) -> Any:
     if provider not in oauth._registry:
         logger.error(f"Unsupported provider: {provider}")
@@ -77,7 +77,7 @@ async def login(request: Request, provider: str) -> Any:
     "/callback/{provider}",
     name="auth_callback",
     response_model=AuthResponse,
-    include_in_schema=False,
+    include_in_schema=True,
 )
 async def auth_callback(
     request: Request, provider: str, db_session: Annotated[Session, Depends(deps.yield_db_session)]

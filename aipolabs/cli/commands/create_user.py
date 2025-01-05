@@ -5,7 +5,7 @@ import click
 from aipolabs.cli import config
 from aipolabs.common import utils
 from aipolabs.common.db import crud
-from aipolabs.common.enums import Plan
+from aipolabs.common.enums import SubscriptionPlan
 from aipolabs.common.logging import create_headline
 from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.user import UserCreate
@@ -47,9 +47,9 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
 @click.option(
     "--plan",
     "plan",
-    type=click.Choice(list(Plan)),
+    type=click.Choice(list(SubscriptionPlan)),
     help="subscription plan, default is free",
-    default=Plan.FREE,
+    default=SubscriptionPlan.FREE,
 )
 @click.option(
     "--skip-dry-run",
@@ -62,7 +62,7 @@ def create_user(
     name: str,
     email: str,
     profile_picture: str | None,
-    plan: Plan,
+    plan: SubscriptionPlan,
     skip_dry_run: bool,
 ) -> UUID:
     """Create a user in db."""
@@ -77,7 +77,7 @@ def create_user_helper(
     name: str,
     email: str,
     profile_picture: str | None,
-    plan: Plan,
+    plan: SubscriptionPlan,
     skip_dry_run: bool,
 ) -> UUID:
     # no need to check if user exists, db will raise an error if user already exists
