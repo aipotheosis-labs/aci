@@ -90,9 +90,9 @@ async def search_apps(
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
-@router.get("/{app_name}", response_model=AppBasicWithFunctions)
+@router.get("/{app_id}", response_model=AppBasicWithFunctions)
 async def get_app_details(
-    app_name: str,
+    app_id: UUID,
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> AppBasicWithFunctions:
@@ -100,7 +100,7 @@ async def get_app_details(
     Returns an application (name, description, and functions).
     """
     try:
-        db_app = crud.get_app_by_name(db_session, app_name)
+        db_app = crud.get_app(db_session, app_id)
         if not db_app:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="App not found.")
 
@@ -142,5 +142,5 @@ async def get_app_details(
         raise e
     # TODO: is catching Exception here necessary?
     except Exception as e:
-        logger.exception(f"Error getting app: {app_name}")
+        logger.exception(f"Error getting app: {app_id}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

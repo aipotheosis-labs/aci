@@ -4,11 +4,6 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.schemas.function import FunctionBasic
 
-GOOGLE__CALENDAR_CREATE_EVENT = "GOOGLE__CALENDAR_CREATE_EVENT"
-GITHUB__CREATE_REPOSITORY = "GITHUB__CREATE_REPOSITORY"
-GITHUB = "GITHUB"
-GOOGLE = "GOOGLE"
-
 
 def test_search_functions_with_disabled_functions(
     db_session: Session,
@@ -150,11 +145,11 @@ def test_search_functions_with_private_apps(
     db_session.commit()
 
 
-def test_search_functions_with_app_names(
+def test_search_functions_with_app_ids(
     test_client: TestClient, dummy_functions: list[sql_models.Function], dummy_api_key: str
 ) -> None:
     search_param = {
-        "app_names": [GITHUB, GOOGLE],
+        "app_ids": [dummy_functions[0].app_id, dummy_functions[1].app_id],
         "limit": 100,
         "offset": 0,
     }
@@ -166,18 +161,24 @@ def test_search_functions_with_app_names(
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
-    # only github and google functions should be returned
+    # only functions from the given app ids should be returned
     for function in functions:
-        assert function.name.startswith(GITHUB) or function.name.startswith(GOOGLE)
-    # total number of functions should be the sum of functions of GITHUB and GOOGLE from dummy_functions
+        assert function.name.startswith(dummy_functions[0].app.name) or function.name.startswith(
+            dummy_functions[1].app.name
+        )
+    # total number of functions should be the sum of functions from the given app ids
     assert len(functions) == sum(
-        function.name.startswith(GITHUB) or function.name.startswith(GOOGLE)
+        function.app_id in [dummy_functions[0].app_id, dummy_functions[1].app_id]
         for function in dummy_functions
     )
 
 
 def test_search_functions_with_intent(
-    test_client: TestClient, dummy_functions: list[sql_models.Function], dummy_api_key: str
+    test_client: TestClient,
+    dummy_functions: list[sql_models.Function],
+    dummy_function_github__create_repository: sql_models.Function,
+    dummy_function_google__calendar_create_event: sql_models.Function,
+    dummy_api_key: str,
 ) -> None:
 
     # intent1: create repo
@@ -195,7 +196,7 @@ def test_search_functions_with_intent(
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions)
-    assert functions[0].name == GITHUB__CREATE_REPOSITORY
+    assert functions[0].name == dummy_function_github__create_repository.name
 
     # intent2: upload file
     search_param["intent"] = "add this meeting to my calendar"
@@ -207,14 +208,17 @@ def test_search_functions_with_intent(
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions)
-    assert functions[0].name == GOOGLE__CALENDAR_CREATE_EVENT
+    assert functions[0].name == dummy_function_google__calendar_create_event.name
 
 
-def test_search_functions_with_app_names_and_intent(
-    test_client: TestClient, dummy_functions: list[sql_models.Function], dummy_api_key: str
+def test_search_functions_with_app_ids_and_intent(
+    test_client: TestClient,
+    dummy_functions: list[sql_models.Function],
+    dummy_api_key: str,
+    dummy_github_app: sql_models.App,
 ) -> None:
     search_param = {
-        "app_names": [GITHUB],
+        "app_ids": [dummy_github_app.id],
         "intent": "i want to create a new code repo for my project",
         "limit": 100,
         "offset": 0,
@@ -227,12 +231,14 @@ def test_search_functions_with_app_names_and_intent(
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
-    # only github functions should be returned
+    # only functions from the given app ids should be returned
     for function in functions:
-        assert function.name.startswith(GITHUB)
-    # total number of functions should be the sum of functions of GITHUB from dummy_functions
-    assert len(functions) == sum(function.name.startswith(GITHUB) for function in dummy_functions)
-    assert functions[0].name == GITHUB__CREATE_REPOSITORY
+        assert function.name.startswith(dummy_github_app.name)
+    # total number of functions should be the sum of functions from the given app ids
+    assert len(functions) == sum(
+        function.app_id == dummy_github_app.id for function in dummy_functions
+    )
+    assert functions[0].name.startswith(dummy_github_app.name)
 
 
 def test_search_functions_pagination(

@@ -12,12 +12,10 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.enums import SecurityScheme
-from aipolabs.common.schemas.integrations import IntegrationPublic
+from aipolabs.common.schemas.integrations import IntegrationCreate, IntegrationPublic
 from aipolabs.server import config
 from aipolabs.server.routes.accounts import AccountCreateOAuth2State
 
-GOOGLE = "GOOGLE"
-GITHUB = "GITHUB"
 NON_EXISTENT_INTEGRATION_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX = (
     "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&"
@@ -30,22 +28,36 @@ def setup_and_cleanup(
     test_client: TestClient,
     dummy_api_key: str,
     dummy_api_key_2: str,
+    dummy_google_app: sql_models.App,
+    dummy_github_app: sql_models.App,
 ) -> Generator[list[IntegrationPublic], None, None]:
     """Setup integrations for testing and cleanup after"""
-    # add GOOGLE integration
-    payload = {"app_name": GOOGLE, "security_scheme": SecurityScheme.OAUTH2}
+    # add google integration
+    body = IntegrationCreate(
+        app_id=dummy_google_app.id,
+        security_scheme=SecurityScheme.OAUTH2,
+        security_config_overrides={},
+    )
 
     response = test_client.post(
-        "/v1/integrations/", json=payload, headers={"x-api-key": dummy_api_key}
+        "/v1/integrations/",
+        json=body.model_dump(mode="json"),
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
     google_integration = IntegrationPublic.model_validate(response.json())
 
     # add GITHUB integration (with different api key)
-    payload = {"app_name": GITHUB, "security_scheme": SecurityScheme.API_KEY}
+    body = IntegrationCreate(
+        app_id=dummy_github_app.id,
+        security_scheme=SecurityScheme.API_KEY,
+        security_config_overrides={},
+    )
 
     response = test_client.post(
-        "/v1/integrations/", json=payload, headers={"x-api-key": dummy_api_key_2}
+        "/v1/integrations/",
+        json=body.model_dump(mode="json"),
+        headers={"x-api-key": dummy_api_key_2},
     )
     assert response.status_code == 200, response.json()
     github_integration = IntegrationPublic.model_validate(response.json())

@@ -4,25 +4,29 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.schemas.app import AppBasicWithFunctions
 
-AIPOLABS_TEST = "AIPOLABS_TEST"
-GITHUB = "GITHUB"
-GOOGLE = "GOOGLE"
+NON_EXISTENT_APP_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 
 
-def test_get_app(test_client: TestClient, dummy_api_key: str) -> None:
+def test_get_app(
+    test_client: TestClient,
+    dummy_api_key: str,
+    dummy_github_app: sql_models.App,
+) -> None:
     response = test_client.get(
-        f"/v1/apps/{GITHUB}",
+        f"/v1/apps/{dummy_github_app.id}",
         headers={"x-api-key": dummy_api_key},
     )
 
     assert response.status_code == 200, response.json()
     app = AppBasicWithFunctions.model_validate(response.json())
-    assert app.name == GITHUB
+    assert app.name == dummy_github_app.name
     assert len(app.functions) > 0
 
 
 def test_get_non_existent_app(test_client: TestClient, dummy_api_key: str) -> None:
-    response = test_client.get("/v1/apps/NON_EXISTENT", headers={"x-api-key": dummy_api_key})
+    response = test_client.get(
+        f"/v1/apps/{NON_EXISTENT_APP_ID}", headers={"x-api-key": dummy_api_key}
+    )
     assert response.status_code == 404, response.json()
 
 
@@ -36,9 +40,7 @@ def test_get_disabled_app(
     db_session.commit()
 
     # disabled app should not be returned
-    response = test_client.get(
-        f"/v1/apps/{dummy_apps[0].name}", headers={"x-api-key": dummy_api_key}
-    )
+    response = test_client.get(f"/v1/apps/{dummy_apps[0].id}", headers={"x-api-key": dummy_api_key})
     assert response.status_code == 403, response.json()
 
     # revert changes
@@ -58,7 +60,7 @@ def test_get_private_app(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/apps/{dummy_apps[0].name}",
+        f"/v1/apps/{dummy_apps[0].id}",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 403, response.json()
@@ -68,7 +70,7 @@ def test_get_private_app(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/apps/{dummy_apps[0].name}",
+        f"/v1/apps/{dummy_apps[0].id}",
         headers={"x-api-key": dummy_api_key},
     )
 

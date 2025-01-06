@@ -6,9 +6,6 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.schemas.app import AppDetails
 
-AIPOLABS_TEST = "AIPOLABS_TEST"
-GITHUB = "GITHUB"
-GOOGLE = "GOOGLE"
 PATH = "/v1/apps/"
 
 

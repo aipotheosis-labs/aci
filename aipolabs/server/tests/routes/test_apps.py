@@ -6,13 +6,13 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.schemas.app import AppBasic
 
-AIPOLABS_TEST = "AIPOLABS_TEST"
-GITHUB = "GITHUB"
-GOOGLE = "GOOGLE"
-
 
 def test_search_apps_with_intent(
-    test_client: TestClient, dummy_apps: list[sql_models.App], dummy_api_key: str
+    test_client: TestClient,
+    dummy_apps: list[sql_models.App],
+    dummy_github_app: sql_models.App,
+    dummy_google_app: sql_models.App,
+    dummy_api_key: str,
 ) -> None:
     # try with intent to find GITHUB app
     search_params = {
@@ -30,9 +30,9 @@ def test_search_apps_with_intent(
     assert response.status_code == 200, response.json()
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps)
-    assert apps[0].name == GITHUB
+    assert apps[0].name == dummy_github_app.name
 
-    # try with intent to find GOOGLE app
+    # try with intent to find google app
     search_params["intent"] = "i want to search the web"
     response = test_client.get(
         "/v1/apps/search",
@@ -43,7 +43,7 @@ def test_search_apps_with_intent(
     assert response.status_code == 200, response.json()
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps)
-    assert apps[0].name == GOOGLE
+    assert apps[0].name == dummy_google_app.name
 
 
 def test_search_apps_without_intent(
@@ -57,7 +57,11 @@ def test_search_apps_without_intent(
     assert len(apps) == len(dummy_apps)
 
 
-def test_search_apps_with_categories(test_client: TestClient, dummy_api_key: str) -> None:
+def test_search_apps_with_categories(
+    test_client: TestClient,
+    dummy_api_key: str,
+    dummy_aipolabs_test_app: sql_models.App,
+) -> None:
     search_params = {
         "intent": None,
         "categories": ["testcategory"],
@@ -71,11 +75,14 @@ def test_search_apps_with_categories(test_client: TestClient, dummy_api_key: str
     assert response.status_code == 200, response.json()
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 1
-    assert apps[0].name == AIPOLABS_TEST
+    assert apps[0].name == dummy_aipolabs_test_app.name
 
 
 def test_search_apps_with_categories_and_intent(
-    test_client: TestClient, dummy_api_key: str
+    test_client: TestClient,
+    dummy_api_key: str,
+    dummy_google_app: sql_models.App,
+    dummy_github_app: sql_models.App,
 ) -> None:
     search_params = {
         "intent": "i want to create a new code repo for my project",
@@ -90,8 +97,8 @@ def test_search_apps_with_categories_and_intent(
     assert response.status_code == 200, response.json()
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 2
-    assert apps[0].name == GITHUB
-    assert apps[1].name == GOOGLE
+    assert apps[0].name == dummy_github_app.name
+    assert apps[1].name == dummy_google_app.name
 
 
 def test_search_apps_pagination(

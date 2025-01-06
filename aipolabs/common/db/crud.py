@@ -39,18 +39,12 @@ class ProjectNotFoundError(Exception):
 
 
 def get_linked_accounts(
-    db_session: Session, project_id: UUID, app_id_or_name: str | None, account_name: str | None
+    db_session: Session, project_id: UUID, app_id: UUID | None, account_name: str | None
 ) -> list[sql_models.LinkedAccount]:
     """Get all linked accounts under a project, with optional filters"""
     statement = select(sql_models.LinkedAccount).filter_by(project_id=project_id)
-    if app_id_or_name:
-        # check if it's an id or a name
-        try:
-            app_id = UUID(app_id_or_name)
-            statement = statement.filter(sql_models.LinkedAccount.app_id == app_id)
-        except ValueError:
-            statement = statement.join(sql_models.App).filter(sql_models.App.name == app_id_or_name)
-
+    if app_id:
+        statement = statement.filter(sql_models.LinkedAccount.app_id == app_id)
     if account_name:
         statement = statement.filter(sql_models.LinkedAccount.account_name == account_name)
 
@@ -159,14 +153,14 @@ def add_integration(
 
 
 def get_integrations(
-    db_session: Session, project_id: UUID, app_name: str | None = None
+    db_session: Session, project_id: UUID, app_id: UUID | None = None
 ) -> list[sql_models.Integration]:
-    """Get all integrations for a project, optionally filtered by app name"""
+    """Get all integrations for a project, optionally filtered by app id"""
     statement = select(sql_models.Integration).filter_by(project_id=project_id)
-    if app_name:
+    if app_id:
         statement = statement.join(
             sql_models.App, sql_models.Integration.app_id == sql_models.App.id
-        ).filter(sql_models.App.name == app_name)
+        ).filter(sql_models.App.id == app_id)
     integrations: list[sql_models.Integration] = db_session.execute(statement).scalars().all()
     return integrations
 
@@ -401,7 +395,7 @@ def search_apps(
 def search_functions(
     db_session: Session,
     api_key_id: UUID,
-    app_names: list[str] | None,
+    app_ids: list[UUID] | None,
     intent_embedding: list[float] | None,
     limit: int,
     offset: int,
@@ -423,8 +417,8 @@ def search_functions(
             sql_models.Function.visibility == Visibility.PUBLIC
         )
     # filter out functions that are not in the specified apps
-    if app_names and len(app_names) > 0:
-        statement = statement.filter(sql_models.App.name.in_(app_names))
+    if app_ids:
+        statement = statement.filter(sql_models.App.id.in_(app_ids))
 
     if intent_embedding:
         similarity_score = sql_models.Function.embedding.cosine_distance(intent_embedding)
@@ -437,14 +431,14 @@ def search_functions(
 
 
 def get_functions(
-    db_session: Session, public_only: bool, app_names: list[str] | None, limit: int, offset: int
+    db_session: Session, public_only: bool, app_ids: list[UUID] | None, limit: int, offset: int
 ) -> list[sql_models.Function]:
     """Get a list of functions and their details. Sorted by function name."""
     # exclude private Apps's functions and private functions if public_only is True
     statement = select(sql_models.Function).join(sql_models.App)
 
-    if app_names and len(app_names) > 0:
-        statement = statement.filter(sql_models.App.name.in_(app_names))
+    if app_ids:
+        statement = statement.filter(sql_models.App.id.in_(app_ids))
 
     if public_only:
         statement = statement.filter(sql_models.App.visibility == Visibility.PUBLIC).filter(
@@ -455,19 +449,17 @@ def get_functions(
     return results
 
 
+# TODO: remove access control outside crud
 def get_function(
-    db_session: Session, api_key_id: UUID, function_name: str
+    db_session: Session, api_key_id: UUID, function_id: UUID
 ) -> sql_models.Function | None:
     """
     Get a function by name.
     Should filter out by function visibility, app visibility, and project visibility access.
     Should filter out by function enabled status.
     """
-    # function: sql_models.Function | None = db_session.execute(
-    #     select(sql_models.Function).filter_by(name=function_name)
-    # ).scalar_one_or_none()
     db_project = get_project_by_api_key_id(db_session, api_key_id)
-    statement = select(sql_models.Function).filter_by(name=function_name)
+    statement = select(sql_models.Function).filter_by(id=function_id)
 
     # filter out all functions of disabled apps and all disabled functions (where app is enabled buy specific functions can be disabled)
     statement = (
@@ -571,25 +563,15 @@ def set_app_enabled_status(db_session: Session, app_id: UUID, enabled: bool) -> 
     db_session.execute(statement)
 
 
-def set_app_enabled_status_by_name(db_session: Session, app_name: str, enabled: bool) -> None:
-    statement = update(sql_models.App).filter_by(name=app_name).values(enabled=enabled)
-    db_session.execute(statement)
-
-
 def set_app_visibility(db_session: Session, app_id: UUID, visibility: Visibility) -> None:
     statement = update(sql_models.App).filter_by(id=app_id).values(visibility=visibility)
     db_session.execute(statement)
 
 
-def set_app_visibility_by_name(db_session: Session, app_name: str, visibility: Visibility) -> None:
-    statement = update(sql_models.App).filter_by(name=app_name).values(visibility=visibility)
-    db_session.execute(statement)
-
-
-def get_app_by_id(db_session: Session, app_id: UUID) -> sql_models.App:
-    db_app: sql_models.App = db_session.execute(
+def get_app(db_session: Session, app_id: UUID) -> sql_models.App | None:
+    db_app: sql_models.App | None = db_session.execute(
         select(sql_models.App).filter_by(id=app_id)
-    ).scalar_one()
+    ).scalar_one_or_none()
     return db_app
 
 

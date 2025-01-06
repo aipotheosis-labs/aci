@@ -2,34 +2,40 @@ import httpx
 import respx
 from fastapi.testclient import TestClient
 
+from aipolabs.common.db.sql_models import Function
 from aipolabs.common.schemas.function import FunctionExecutionResult
 
-AIPOLABS_TEST__HELLO_WORLD_WITH_ARGS = "AIPOLABS_TEST__HELLO_WORLD_WITH_ARGS"
-AIPOLABS_TEST__HELLO_WORLD_NESTED_ARGS = "AIPOLABS_TEST__HELLO_WORLD_NESTED_ARGS"
-AIPOLABS_TEST__HELLO_WORLD_NO_ARGS = "AIPOLABS_TEST__HELLO_WORLD_NO_ARGS"
-AIPOLABS_TEST_HTTP_BEARER__HELLO_WORLD = "AIPOLABS_TEST_HTTP_BEARER__HELLO_WORLD"
 
-
-def test_execute_function_with_invalid_input(test_client: TestClient, dummy_api_key: str) -> None:
-    function_name = AIPOLABS_TEST__HELLO_WORLD_WITH_ARGS
+def test_execute_function_with_invalid_input(
+    test_client: TestClient,
+    dummy_api_key: str,
+    dummy_function_aipolabs_test__hello_world_with_args: Function,
+) -> None:
     body = {"function_input": {"name": "John"}}
     response = test_client.post(
-        f"/v1/functions/{function_name}/execute", json=body, headers={"x-api-key": dummy_api_key}
+        f"/v1/functions/{dummy_function_aipolabs_test__hello_world_with_args.id}/execute",
+        json=body,
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 400, response.json()
 
 
 @respx.mock
-def test_mock_execute_function_with_no_args(test_client: TestClient, dummy_api_key: str) -> None:
+def test_mock_execute_function_with_no_args(
+    test_client: TestClient,
+    dummy_api_key: str,
+    dummy_function_aipolabs_test__hello_world_no_args: Function,
+) -> None:
     # Mock the HTTP endpoint
     response_data = {"message": "Hello, test_mock_execute_function_with_no_args!"}
     respx.get("https://api.mock.aipolabs.com/v1/hello_world_no_args").mock(
         return_value=httpx.Response(200, json=response_data)
     )
 
-    function_name = AIPOLABS_TEST__HELLO_WORLD_NO_ARGS
     response = test_client.post(
-        f"/v1/functions/{function_name}/execute", json={}, headers={"x-api-key": dummy_api_key}
+        f"/v1/functions/{dummy_function_aipolabs_test__hello_world_no_args.id}/execute",
+        json={},
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
     assert "error" not in response.json()
@@ -39,7 +45,11 @@ def test_mock_execute_function_with_no_args(test_client: TestClient, dummy_api_k
 
 
 @respx.mock
-def test_execute_function_with_args(test_client: TestClient, dummy_api_key: str) -> None:
+def test_execute_function_with_args(
+    test_client: TestClient,
+    dummy_api_key: str,
+    dummy_function_aipolabs_test__hello_world_with_args: Function,
+) -> None:
     # Mock the HTTP endpoint
     mock_response_data = {"message": "Hello, test_execute_function_with_args!"}
 
@@ -52,7 +62,6 @@ def test_execute_function_with_args(test_client: TestClient, dummy_api_key: str)
         )
     )
 
-    function_name = AIPOLABS_TEST__HELLO_WORLD_WITH_ARGS
     function_execution_request_body = {
         "function_input": {
             "path": {"userId": "John"},
@@ -63,7 +72,7 @@ def test_execute_function_with_args(test_client: TestClient, dummy_api_key: str)
         }
     }
     response = test_client.post(
-        f"/v1/functions/{function_name}/execute",
+        f"/v1/functions/{dummy_function_aipolabs_test__hello_world_with_args.id}/execute",
         json=function_execution_request_body,
         headers={"x-api-key": dummy_api_key},
     )
@@ -82,7 +91,11 @@ def test_execute_function_with_args(test_client: TestClient, dummy_api_key: str)
 
 
 @respx.mock
-def test_execute_function_with_nested_args(test_client: TestClient, dummy_api_key: str) -> None:
+def test_execute_function_with_nested_args(
+    test_client: TestClient,
+    dummy_api_key: str,
+    dummy_function_aipolabs_test__hello_world_nested_args: Function,
+) -> None:
     # Mock the HTTP endpoint
     mock_response_data = {"message": "Hello, test_execute_function_with_args!"}
 
@@ -95,7 +108,6 @@ def test_execute_function_with_nested_args(test_client: TestClient, dummy_api_ke
         )
     )
 
-    function_name = AIPOLABS_TEST__HELLO_WORLD_NESTED_ARGS
     function_execution_request_body = {
         "function_input": {
             "path": {"userId": "John"},
@@ -108,7 +120,7 @@ def test_execute_function_with_nested_args(test_client: TestClient, dummy_api_ke
         }
     }
     response = test_client.post(
-        f"/v1/functions/{function_name}/execute",
+        f"/v1/functions/{dummy_function_aipolabs_test__hello_world_nested_args.id}/execute",
         json=function_execution_request_body,
         headers={"x-api-key": dummy_api_key},
     )
@@ -130,14 +142,18 @@ def test_execute_function_with_nested_args(test_client: TestClient, dummy_api_ke
 
 
 @respx.mock
-def test_http_bearer_auth_token_injection(test_client: TestClient, dummy_api_key: str) -> None:
+def test_http_bearer_auth_token_injection(
+    test_client: TestClient,
+    dummy_api_key: str,
+    dummy_function_aipolabs_test__http_bearer__hello_world: Function,
+) -> None:
     # Mock the HTTP endpoint
     request = respx.get("https://api.mock.aipolabs.com/v1/hello_world").mock(
         return_value=httpx.Response(200, json={})
     )
 
     response = test_client.post(
-        f"/v1/functions/{AIPOLABS_TEST_HTTP_BEARER__HELLO_WORLD}/execute",
+        f"/v1/functions/{dummy_function_aipolabs_test__http_bearer__hello_world.id}/execute",
         json={},
         headers={"x-api-key": dummy_api_key},
     )

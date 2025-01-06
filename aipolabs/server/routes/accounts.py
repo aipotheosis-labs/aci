@@ -53,7 +53,9 @@ async def link_account(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="The integration does not belong to the project",
         )
-    db_app = crud.get_app_by_id(db_session, db_integration.app_id)
+    db_app = crud.get_app(db_session, db_integration.app_id)
+    if not db_app:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "App not found")
 
     # for OAuth2 account, we need to redirect to the OAuth2 provider's authorization endpoint
     if db_integration.security_scheme == SecurityScheme.OAUTH2:
@@ -133,7 +135,9 @@ async def accounts_oauth2_callback(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to decode state"
         )
     # create oauth2 client
-    db_app = crud.get_app_by_id(db_session, state.app_id)
+    db_app = crud.get_app(db_session, state.app_id)
+    if not db_app:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "App not found")
     oauth2_client = _create_oauth2_client(db_app)
     # get oauth2 account credentials
     # TODO: can each OAuth2 provider return different fields? if so, need to handle them accordingly. Maybe can
@@ -204,14 +208,14 @@ async def list_linked_accounts(
 ) -> list[sql_models.LinkedAccount]:
     """
     List all linked accounts under the project (identified by api key).
-    As of now, project_id + app_id/app_name + account_name uniquely identify a linked account.
+    As of now, project_id + app_id + account_name uniquely identify a linked account.
     This can be an alternatively way to GET /accounts/{account_id} for getting a specific linked account.
     """
     logger.info(f"Listing linked accounts for api_key_id={api_key_id}, query_params={query_params}")
 
     db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
     linked_accounts = crud.get_linked_accounts(
-        db_session, db_project.id, query_params.app_id_or_name, query_params.account_name
+        db_session, db_project.id, query_params.app_id, query_params.account_name
     )
     return linked_accounts
 

@@ -145,11 +145,98 @@ def dummy_apps() -> Generator[list[sql_models.App], None, None]:
 
 
 @pytest.fixture(scope="session", autouse=True)
+def dummy_google_app(dummy_apps: list[sql_models.App]) -> sql_models.App:
+    dummy_google_app = next(app for app in dummy_apps if app.name == "GOOGLE")
+    assert dummy_google_app is not None
+    return dummy_google_app
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dummy_github_app(dummy_apps: list[sql_models.App]) -> sql_models.App:
+    dummy_github_app = next(app for app in dummy_apps if app.name == "GITHUB")
+    assert dummy_github_app is not None
+    return dummy_github_app
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dummy_aipolabs_test_app(dummy_apps: list[sql_models.App]) -> sql_models.App:
+    dummy_aipolabs_test_app = next(app for app in dummy_apps if app.name == "AIPOLABS_TEST")
+    assert dummy_aipolabs_test_app is not None
+    return dummy_aipolabs_test_app
+
+
+@pytest.fixture(scope="session", autouse=True)
 def dummy_functions(dummy_apps: list[sql_models.App]) -> list[sql_models.Function]:
     dummy_functions: list[sql_models.Function] = []
     for dummy_app in dummy_apps:
         dummy_functions.extend(dummy_app.functions)
     return dummy_functions
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dummy_function_github__create_repository(
+    dummy_functions: list[sql_models.Function],
+) -> sql_models.Function:
+    dummy_function_github__create_repository = next(
+        func for func in dummy_functions if func.name == "GITHUB__CREATE_REPOSITORY"
+    )
+    assert dummy_function_github__create_repository is not None
+    return dummy_function_github__create_repository
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dummy_function_google__calendar_create_event(
+    dummy_functions: list[sql_models.Function],
+) -> sql_models.Function:
+    dummy_function_google__calendar_create_event = next(
+        func for func in dummy_functions if func.name == "GOOGLE__CALENDAR_CREATE_EVENT"
+    )
+    assert dummy_function_google__calendar_create_event is not None
+    return dummy_function_google__calendar_create_event
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dummy_function_aipolabs_test__hello_world_with_args(
+    dummy_functions: list[sql_models.Function],
+) -> sql_models.Function:
+    dummy_function_aipolabs_test__hello_world_with_args = next(
+        func for func in dummy_functions if func.name == "AIPOLABS_TEST__HELLO_WORLD_WITH_ARGS"
+    )
+    assert dummy_function_aipolabs_test__hello_world_with_args is not None
+    return dummy_function_aipolabs_test__hello_world_with_args
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dummy_function_aipolabs_test__hello_world_nested_args(
+    dummy_functions: list[sql_models.Function],
+) -> sql_models.Function:
+    dummy_function_aipolabs_test__hello_world_nested_args = next(
+        func for func in dummy_functions if func.name == "AIPOLABS_TEST__HELLO_WORLD_NESTED_ARGS"
+    )
+    assert dummy_function_aipolabs_test__hello_world_nested_args is not None
+    return dummy_function_aipolabs_test__hello_world_nested_args
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dummy_function_aipolabs_test__hello_world_no_args(
+    dummy_functions: list[sql_models.Function],
+) -> sql_models.Function:
+    dummy_function_aipolabs_test__hello_world_no_args = next(
+        func for func in dummy_functions if func.name == "AIPOLABS_TEST__HELLO_WORLD_NO_ARGS"
+    )
+    assert dummy_function_aipolabs_test__hello_world_no_args is not None
+    return dummy_function_aipolabs_test__hello_world_no_args
+
+
+@pytest.fixture(scope="session", autouse=True)
+def dummy_function_aipolabs_test__http_bearer__hello_world(
+    dummy_functions: list[sql_models.Function],
+) -> sql_models.Function:
+    dummy_function_aipolabs_test__http_bearer__hello_world = next(
+        func for func in dummy_functions if func.name == "AIPOLABS_TEST_HTTP_BEARER__HELLO_WORLD"
+    )
+    assert dummy_function_aipolabs_test__http_bearer__hello_world is not None
+    return dummy_function_aipolabs_test__http_bearer__hello_world
 
 
 # sleep for 1 second to avoid rate limit for each module

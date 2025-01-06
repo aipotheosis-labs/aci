@@ -40,9 +40,9 @@ class LinkedAccountsList(BaseModel):
     Filters for listing linked accounts.
     """
 
-    app_id_or_name: str | None = Field(
+    app_id: UUID | None = Field(
         default=None,
-        description="unique id or name of the app",
+        description="unique id of the app",
     )
     account_name: str | None = Field(
         default=None,

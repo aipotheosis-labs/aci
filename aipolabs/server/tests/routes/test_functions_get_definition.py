@@ -8,18 +8,14 @@ from aipolabs.common.schemas.function import (
     OpenAIFunctionDefinition,
 )
 
-GOOGLE__CALENDAR_CREATE_EVENT = "GOOGLE__CALENDAR_CREATE_EVENT"
-GITHUB__CREATE_REPOSITORY = "GITHUB__CREATE_REPOSITORY"
-GITHUB = "GITHUB"
-GOOGLE = "GOOGLE"
-
 
 def test_get_function_definition_openai(
-    test_client: TestClient, dummy_functions: list[sql_models.Function], dummy_api_key: str
+    test_client: TestClient,
+    dummy_function_github__create_repository: sql_models.Function,
+    dummy_api_key: str,
 ) -> None:
-    function_name = GITHUB__CREATE_REPOSITORY
     response = test_client.get(
-        f"/v1/functions/{function_name}/definition",
+        f"/v1/functions/{dummy_function_github__create_repository.id}/definition",
         params={"inference_provider": "openai"},
         headers={"x-api-key": dummy_api_key},
     )
@@ -28,31 +24,29 @@ def test_get_function_definition_openai(
 
     function_definition = OpenAIFunctionDefinition.model_validate(response_json)
     assert function_definition.type == "function"
-    assert function_definition.function.name == function_name
+    assert function_definition.function.name == dummy_function_github__create_repository.name
     # sanity check: if description is the same
-    dummy_function = next(
-        function for function in dummy_functions if function.name == function_name
+    assert (
+        function_definition.function.description
+        == dummy_function_github__create_repository.description
     )
-    assert function_definition.function.description == dummy_function.description
 
 
 def test_get_function_definition_anthropic(
-    test_client: TestClient, dummy_functions: list[sql_models.Function], dummy_api_key: str
+    test_client: TestClient,
+    dummy_function_github__create_repository: sql_models.Function,
+    dummy_api_key: str,
 ) -> None:
-    function_name = GOOGLE__CALENDAR_CREATE_EVENT
     response = test_client.get(
-        f"/v1/functions/{function_name}/definition",
+        f"/v1/functions/{dummy_function_github__create_repository.id}/definition",
         params={"inference_provider": "anthropic"},
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
     function_definition = AnthropicFunctionDefinition.model_validate(response.json())
-    assert function_definition.name == function_name
+    assert function_definition.name == dummy_function_github__create_repository.name
     # sanity check: if description is the same
-    dummy_function = next(
-        function for function in dummy_functions if function.name == function_name
-    )
-    assert function_definition.description == dummy_function.description
+    assert function_definition.description == dummy_function_github__create_repository.description
 
 
 def test_get_private_function(
@@ -67,7 +61,7 @@ def test_get_private_function(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].name}/definition",
+        f"/v1/functions/{dummy_functions[0].id}/definition",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 404, response.json()
@@ -77,7 +71,7 @@ def test_get_private_function(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].name}/definition", headers={"x-api-key": dummy_api_key}
+        f"/v1/functions/{dummy_functions[0].id}/definition", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
 
@@ -99,7 +93,7 @@ def test_get_function_that_is_under_private_app(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].name}/definition", headers={"x-api-key": dummy_api_key}
+        f"/v1/functions/{dummy_functions[0].id}/definition", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 404, response.json()
 
@@ -108,7 +102,7 @@ def test_get_function_that_is_under_private_app(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].name}/definition", headers={"x-api-key": dummy_api_key}
+        f"/v1/functions/{dummy_functions[0].id}/definition", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
 
@@ -129,7 +123,7 @@ def test_get_function_that_is_disabled(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].name}/definition", headers={"x-api-key": dummy_api_key}
+        f"/v1/functions/{dummy_functions[0].id}/definition", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 404, response.json()
 
@@ -149,7 +143,7 @@ def test_get_function_that_is_under_disabled_app(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].name}/definition", headers={"x-api-key": dummy_api_key}
+        f"/v1/functions/{dummy_functions[0].id}/definition", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 404, response.json()
 

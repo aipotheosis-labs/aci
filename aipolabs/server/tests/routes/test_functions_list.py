@@ -4,11 +4,6 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.schemas.function import FunctionDetails
 
-GOOGLE__CALENDAR_CREATE_EVENT = "GOOGLE__CALENDAR_CREATE_EVENT"
-GITHUB__CREATE_REPOSITORY = "GITHUB__CREATE_REPOSITORY"
-GITHUB = "GITHUB"
-GOOGLE = "GOOGLE"
-
 
 def test_list_all_functions(
     test_client: TestClient,
@@ -50,11 +45,14 @@ def test_list_all_functions_pagination(
     assert len(functions) == 1
 
 
-def test_list_functions_with_app_names(
-    test_client: TestClient, dummy_functions: list[sql_models.Function], dummy_api_key: str
+def test_list_functions_with_app_ids(
+    test_client: TestClient,
+    dummy_apps: list[sql_models.App],
+    dummy_functions: list[sql_models.Function],
+    dummy_api_key: str,
 ) -> None:
     query_params = {
-        "app_names": [GITHUB, GOOGLE],
+        "app_ids": [dummy_apps[0].id, dummy_apps[1].id],
         "limit": 100,
         "offset": 0,
     }
@@ -64,7 +62,7 @@ def test_list_functions_with_app_names(
     assert response.status_code == 200, response.json()
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
     assert len(functions) == sum(
-        function.app.name in [GITHUB, GOOGLE] for function in dummy_functions
+        function.app_id in [dummy_apps[0].id, dummy_apps[1].id] for function in dummy_functions
     )
 
 

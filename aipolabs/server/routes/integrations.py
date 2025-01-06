@@ -28,7 +28,7 @@ async def add_integration(
     # TODO: validation
     # - security config is valid
     db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
-    db_app = crud.get_app_by_name(db_session, payload.app_name)
+    db_app = crud.get_app(db_session, payload.app_id)
     if not db_app:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="App not found")
     if not db_app.enabled:
@@ -65,11 +65,11 @@ async def add_integration(
 async def list_integrations(
     api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-    app_name: str | None = None,
+    app_id: UUID | None = None,
 ) -> list[sql_models.Integration]:
-    """List all integrations for a project, optionally filtered by app name"""
+    """List all integrations for a project, optionally filtered by app id"""
     db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
-    return crud.get_integrations(db_session, db_project.id, app_name=app_name)
+    return crud.get_integrations(db_session, db_project.id, app_id=app_id)
 
 
 @router.get("/{integration_id}", response_model=IntegrationPublic)

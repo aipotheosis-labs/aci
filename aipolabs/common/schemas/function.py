@@ -73,31 +73,19 @@ class FunctionCreate(BaseModel):
 
 
 class FunctionsList(BaseModel):
-    app_names: list[str] | None = Field(
-        default=None, description="List of app names for filtering functions."
+    app_ids: list[UUID] | None = Field(
+        default=None, description="List of app ids for filtering functions."
     )
     limit: int = Field(
         default=100, ge=1, le=1000, description="Maximum number of Functions per response."
     )
     offset: int = Field(default=0, ge=0, description="Pagination offset.")
 
-    # need this in case user set {"app_names": None} which will translate to [''] in the params
-    @field_validator("app_names")
-    def validate_app_names(cls, v: list[str] | None) -> list[str] | None:
-        if v is not None:
-            # Remove any empty strings from the list
-            v = [app_name for app_name in v if app_name.strip()]
-            # If after removing empty strings the list is empty, set it to None
-            if not v:
-                return None
-        return v
 
-
-# TODO: convert app names to lowercase/uppercase (in crud or here) to avoid case sensitivity issues?
 # TODO: add flag (e.g., verbose=true) to include detailed function info? (e.g., dev portal will need this)
 class FunctionsSearch(BaseModel):
-    app_names: list[str] | None = Field(
-        default=None, description="List of app names for filtering functions."
+    app_ids: list[UUID] | None = Field(
+        default=None, description="List of app ids for filtering functions."
     )
     intent: str | None = Field(
         default=None,
@@ -107,17 +95,6 @@ class FunctionsSearch(BaseModel):
         default=100, ge=1, le=1000, description="Maximum number of Apps per response."
     )
     offset: int = Field(default=0, ge=0, description="Pagination offset.")
-
-    # need this in case user set {"app_names": None} which will translate to [''] in the params
-    @field_validator("app_names")
-    def validate_app_names(cls, v: list[str] | None) -> list[str] | None:
-        if v is not None:
-            # Remove any empty strings from the list
-            v = [app_name for app_name in v if app_name.strip()]
-            # If after removing empty strings the list is empty, set it to None
-            if not v:
-                return None
-        return v
 
     # empty intent or string with spaces should be treated as None
     @field_validator("intent")

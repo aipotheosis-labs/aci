@@ -45,7 +45,7 @@ async def list_functions(
     return crud.get_functions(
         db_session,
         db_project.visibility_access == Visibility.PUBLIC,
-        query_params.app_names,
+        query_params.app_ids,
         query_params.limit,
         query_params.offset,
     )
@@ -78,7 +78,7 @@ async def search_functions(
         functions = crud.search_functions(
             db_session,
             api_key_id,
-            query_params.app_names,
+            query_params.app_ids,
             intent_embedding,
             query_params.limit,
             query_params.offset,
@@ -96,14 +96,14 @@ async def search_functions(
 # TODO: client sdk can use pydantic to validate model output for parameters used for function execution
 # TODO: "flatten" flag to make sure nested parameters are flattened?
 @router.get(
-    "/{function_name}/definition",
+    "/{function_id}/definition",
     response_model=OpenAIFunctionDefinition | AnthropicFunctionDefinition,
     response_model_exclude_none=True,  # having this to exclude "strict" field in openai's function definition if not set
 )
 async def get_function_definition(
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
-    function_name: str,
+    function_id: UUID,
     inference_provider: InferenceProvider = Query(
         default=InferenceProvider.OPENAI,
         description="The inference provider, which determines the format of the function definition.",
@@ -114,7 +114,7 @@ async def get_function_definition(
     The actual content depends on the intended model (inference provider, e.g., OpenAI, Anthropic, etc.) and the function itself.
     """
     try:
-        function = crud.get_function(db_session, api_key_id, function_name)
+        function = crud.get_function(db_session, api_key_id, function_id)
         if not function:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Function not found.")
 
@@ -139,24 +139,24 @@ async def get_function_definition(
     except HTTPException as e:
         raise e
     except Exception as e:
-        logger.exception(f"Error getting function definition for {function_name}")
+        logger.exception(f"Error getting function definition for {function_id}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 
 @router.post(
-    "/{function_name}/execute",
+    "/{function_id}/execute",
     response_model=FunctionExecutionResult,
     response_model_exclude_none=True,
 )
 async def execute(
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
-    function_name: str,
+    function_id: UUID,
     body: FunctionExecute,
 ) -> FunctionExecutionResult:
     try:
         # Fetch function definition
-        db_function = crud.get_function(db_session, api_key_id, function_name)
+        db_function = crud.get_function(db_session, api_key_id, function_id)
         if not db_function:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Function not found.")
 
@@ -168,7 +168,7 @@ async def execute(
         raise e
     except Exception:
         logger.exception(
-            f"An unexpected error occurred during function execution for {function_name}"
+            f"An unexpected error occurred during function execution for {function_id}"
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error."
