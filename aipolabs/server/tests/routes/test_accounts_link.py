@@ -12,11 +12,14 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.enums import SecurityScheme
-from aipolabs.common.schemas.integrations import IntegrationCreate, IntegrationPublic
+from aipolabs.common.schemas.accounts import AccountCreate
+from aipolabs.common.schemas.app_configurations import (
+    AppConfigurationCreate,
+    AppConfigurationPublic,
+)
 from aipolabs.server import config
 from aipolabs.server.routes.accounts import AccountCreateOAuth2State
 
-NON_EXISTENT_INTEGRATION_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX = (
     "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&"
 )
@@ -30,60 +33,61 @@ def setup_and_cleanup(
     dummy_api_key_2: str,
     dummy_google_app: sql_models.App,
     dummy_github_app: sql_models.App,
-) -> Generator[list[IntegrationPublic], None, None]:
-    """Setup integrations for testing and cleanup after"""
-    # add google integration
-    body = IntegrationCreate(
+) -> Generator[list[AppConfigurationPublic], None, None]:
+    """Setup app configurations for testing and cleanup after"""
+    # create google app configuration
+    body = AppConfigurationCreate(
         app_id=dummy_google_app.id,
         security_scheme=SecurityScheme.OAUTH2,
         security_config_overrides={},
     )
 
     response = test_client.post(
-        "/v1/integrations/",
+        "/v1/app-configurations/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
-    google_integration = IntegrationPublic.model_validate(response.json())
+    google_app_configuration = AppConfigurationPublic.model_validate(response.json())
 
-    # add GITHUB integration (with different api key)
-    body = IntegrationCreate(
+    # create github app configuration under different project (with different api key)
+    body = AppConfigurationCreate(
         app_id=dummy_github_app.id,
         security_scheme=SecurityScheme.API_KEY,
         security_config_overrides={},
     )
 
     response = test_client.post(
-        "/v1/integrations/",
+        "/v1/app-configurations/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_2},
     )
     assert response.status_code == 200, response.json()
-    github_integration = IntegrationPublic.model_validate(response.json())
+    github_app_configuration = AppConfigurationPublic.model_validate(response.json())
 
-    yield [google_integration, github_integration]
+    yield [google_app_configuration, github_app_configuration]
 
     # cleanup
-    db_session.query(sql_models.Integration).delete()
+    db_session.query(sql_models.AppConfiguration).delete()
     db_session.commit()
 
 
 def test_link_oauth2_account_success(
     test_client: TestClient,
     dummy_api_key: str,
-    setup_and_cleanup: list[IntegrationPublic],
+    setup_and_cleanup: list[AppConfigurationPublic],
     db_session: Session,
 ) -> None:
-    google_integration, _ = setup_and_cleanup
+    google_app_configuration, _ = setup_and_cleanup
 
     # init account linking proces, trigger redirect to oauth2 provider
+    body = AccountCreate(
+        app_id=google_app_configuration.app_id,
+        account_name="test_account",
+    )
     response = test_client.post(
         "/v1/accounts/",
-        json={
-            "integration_id": str(google_integration.id),
-            "account_name": "test_account",
-        },
+        json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
 
@@ -96,7 +100,7 @@ def test_link_oauth2_account_success(
     state_jwt = qs_params.get("state", [None])[0]
     assert state_jwt is not None
     state = AccountCreateOAuth2State.model_validate(jwt.decode(state_jwt, config.JWT_SECRET_KEY))
-    assert state.integration_id == google_integration.id
+    assert state.app_id == google_app_configuration.app_id
     assert state.account_name == "test_account"
     assert state.iat > int(datetime.now(timezone.utc).timestamp()) - 3, "iat should be recent"
     assert state.nonce is not None
@@ -133,7 +137,7 @@ def test_link_oauth2_account_success(
     assert linked_account.security_scheme == SecurityScheme.OAUTH2
     assert linked_account.security_credentials == mock_oauth2_token_response
     assert linked_account.enabled is True
-    assert linked_account.integration_id == google_integration.id
+    assert linked_account.app_id == google_app_configuration.app_id
     assert linked_account.project_id == state.project_id
     assert linked_account.app_id == state.app_id
     assert linked_account.account_name == state.account_name
@@ -143,30 +147,19 @@ def test_link_oauth2_account_success(
     db_session.commit()
 
 
-def test_non_existent_integration_id(
+def test_non_existent_app_configuration(
     test_client: TestClient,
     dummy_api_key: str,
+    dummy_aipolabs_test_app: sql_models.App,
 ) -> None:
+    body = AccountCreate(
+        app_id=dummy_aipolabs_test_app.id,
+        account_name="test_account",
+    )
     response = test_client.post(
         "/v1/accounts/",
-        json={"integration_id": NON_EXISTENT_INTEGRATION_ID, "account_name": "test_account"},
+        json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.json()
-    assert response.json()["detail"] == "Integration not found"
-
-
-def test_integration_not_belong_to_project(
-    test_client: TestClient,
-    dummy_api_key_2: str,
-    setup_and_cleanup: list[IntegrationPublic],
-) -> None:
-    google_integration, _ = setup_and_cleanup
-
-    response = test_client.post(
-        "/v1/accounts/",
-        json={"integration_id": str(google_integration.id), "account_name": "test_account"},
-        headers={"x-api-key": dummy_api_key_2},
-    )
-    assert response.status_code == status.HTTP_403_FORBIDDEN, response.json()
-    assert response.json()["detail"] == "The integration does not belong to the project"
+    assert response.json()["detail"] == "App not configured"

@@ -40,31 +40,27 @@ async def link_account(
 ) -> RedirectResponse:
     logger.info(
         f"Linking account for api_key_id={api_key_id}, "
-        f"integration_id={account_create.integration_id}, "
+        f"app_id={account_create.app_id}, "
         f"account_name={account_create.account_name}"
     )
     # validations
     db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
-    db_integration = crud.get_integration(db_session, account_create.integration_id)
-    if not db_integration:
-        raise HTTPException(status.HTTP_404_NOT_FOUND, "Integration not found")
-    if db_integration.project_id != db_project.id:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="The integration does not belong to the project",
-        )
-    db_app = crud.get_app(db_session, db_integration.app_id)
+    db_app_configuration = crud.get_app_configuration(
+        db_session, db_project.id, account_create.app_id
+    )
+    if not db_app_configuration:
+        raise HTTPException(status.HTTP_404_NOT_FOUND, "App not configured")
+    db_app = crud.get_app(db_session, db_app_configuration.app_id)
     if not db_app:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "App not found")
 
     # for OAuth2 account, we need to redirect to the OAuth2 provider's authorization endpoint
-    if db_integration.security_scheme == SecurityScheme.OAUTH2:
+    if db_app_configuration.security_scheme == SecurityScheme.OAUTH2:
         # create and encode the state payload
         # note: the state payload is jwt encoded (signed), but it's not encrypted, anyone can decode it
         state = AccountCreateOAuth2State(
-            integration_id=account_create.integration_id,
+            app_id=account_create.app_id,
             project_id=db_project.id,
-            app_id=db_app.id,
             account_name=account_create.account_name,
             iat=int(datetime.now(timezone.utc).timestamp()),
             nonce=secrets.token_urlsafe(16),
@@ -82,13 +78,13 @@ async def link_account(
             request, redirect_uri, state=state_jwt
         )
         logger.info(
-            f"Initiating OAuth2 account linking for integration_id={account_create.integration_id}, "
+            f"Initiating OAuth2 account linking for project_id={db_project.id}, app_id={account_create.app_id}, "
             f"app={db_app.name}, account={account_create.account_name}, redirect_uri={redirect_uri}"
             f"response_url={redirect_response.headers['location']}"
         )
         return redirect_response
 
-    elif db_integration.security_scheme == SecurityScheme.API_KEY:
+    elif db_app_configuration.security_scheme == SecurityScheme.API_KEY:
         # TODO: ... handle API key ...
         raise HTTPException(
             status_code=status.HTTP_501_NOT_IMPLEMENTED,
@@ -98,7 +94,7 @@ async def link_account(
     else:
         # Should never reach here as all security schemes stored in the db should be supported
         logger.error(
-            f"Unexpected error: Unsupported security scheme: {db_integration.security_scheme} for integration_id={account_create.integration_id}"
+            f"Unexpected error: Unsupported security scheme: {db_app_configuration.security_scheme} for app_id={account_create.app_id}"
         )
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -177,12 +173,11 @@ async def accounts_oauth2_callback(
             db_linked_account.security_credentials = security_credentials
         else:
             logger.info(
-                f"Creating oauth2 linked account for integration_id={state.integration_id}, "
-                f"account_name={state.account_name}"
+                f"Creating oauth2 linked account for project_id={state.project_id}, "
+                f"app_id={state.app_id}, account_name={state.account_name}"
             )
             db_linked_account = crud.create_linked_account(
                 db_session,
-                integration_id=state.integration_id,
                 project_id=state.project_id,
                 app_id=state.app_id,
                 account_name=state.account_name,
@@ -229,7 +224,7 @@ def _create_oauth2_client(db_app: sql_models.App) -> StarletteOAuth2App:
     # TODO: add correspinding validation of the oauth2 fields (e.g., client_id, client_secret, scope, etc.) when indexing an App.
     # TODO: load client's overrides if they specify any, for example, client_id, client_secret, scope, etc.
 
-    # security_scheme of the integration must be one of the App's security_schemes, so we can safely cast it
+    # security_scheme of the app configuration must be one of the App's security_schemes, so we can safely cast it
     app_default_oauth2_config = cast(dict, db_app.security_schemes[SecurityScheme.OAUTH2])
     oauth_client = OAuth().register(
         name=db_app.name,

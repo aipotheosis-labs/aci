@@ -7,9 +7,10 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.enums import SecurityScheme
-from aipolabs.common.schemas.integrations import IntegrationCreate, IntegrationPublic
-
-NON_EXISTENT_INTEGRATION_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+from aipolabs.common.schemas.app_configurations import (
+    AppConfigurationCreate,
+    AppConfigurationPublic,
+)
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -22,34 +23,37 @@ def setup_and_cleanup(
     """Setup linked accounts for testing and cleanup after"""
     dummy_app_1 = dummy_apps[0]
     dummy_app_2 = dummy_apps[1]
-    # add integration
-    body = IntegrationCreate(
+    # create app configuration
+    body = AppConfigurationCreate(
         app_id=dummy_app_1.id,
         security_scheme=SecurityScheme.OAUTH2,
     )
     response = test_client.post(
-        "/v1/integrations/", json=body.model_dump(mode="json"), headers={"x-api-key": dummy_api_key}
+        "/v1/app-configurations/",
+        json=body.model_dump(mode="json"),
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
-    dummy_app_1_integration = IntegrationPublic.model_validate(response.json())
+    dummy_app_1_app_configuration = AppConfigurationPublic.model_validate(response.json())
 
-    # add integration
-    body = IntegrationCreate(
+    # create app configuration
+    body = AppConfigurationCreate(
         app_id=dummy_app_2.id,
         security_scheme=SecurityScheme.OAUTH2,
     )
     response = test_client.post(
-        "/v1/integrations/", json=body.model_dump(mode="json"), headers={"x-api-key": dummy_api_key}
+        "/v1/app-configurations/",
+        json=body.model_dump(mode="json"),
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
-    dummy_app_2_integration = IntegrationPublic.model_validate(response.json())
+    dummy_app_2_app_configuration = AppConfigurationPublic.model_validate(response.json())
 
     # create mock linked accounts
     dummy_app_1_linked_account_1 = crud.create_linked_account(
         db_session,
-        dummy_app_1_integration.id,
-        dummy_app_1_integration.project_id,
-        dummy_app_1_integration.app_id,
+        dummy_app_1_app_configuration.project_id,
+        dummy_app_1_app_configuration.app_id,
         "test_dummy_app_1_account_1",
         SecurityScheme.OAUTH2,
         {"access_token": "mock_access_token"},
@@ -58,9 +62,8 @@ def setup_and_cleanup(
 
     dummy_app_1_linked_account_2 = crud.create_linked_account(
         db_session,
-        dummy_app_1_integration.id,
-        dummy_app_1_integration.project_id,
-        dummy_app_1_integration.app_id,
+        dummy_app_1_app_configuration.project_id,
+        dummy_app_1_app_configuration.app_id,
         "test_dummy_app_1_account_2",
         SecurityScheme.OAUTH2,
         {"access_token": "mock_access_token"},
@@ -69,9 +72,8 @@ def setup_and_cleanup(
 
     dummy_app_2_linked_account_1 = crud.create_linked_account(
         db_session,
-        dummy_app_2_integration.id,
-        dummy_app_2_integration.project_id,
-        dummy_app_2_integration.app_id,
+        dummy_app_2_app_configuration.project_id,
+        dummy_app_2_app_configuration.app_id,
         "test_dummy_app_2_account_1",
         SecurityScheme.OAUTH2,
         {"access_token": "mock_access_token"},
@@ -87,7 +89,7 @@ def setup_and_cleanup(
 
     # cleanup
     db_session.query(sql_models.LinkedAccount).delete()
-    db_session.query(sql_models.Integration).delete()
+    db_session.query(sql_models.AppConfiguration).delete()
     db_session.commit()
 
 
@@ -160,14 +162,15 @@ def test_list_linked_accounts_filter_by_app_id_and_account_name(
     assert response.json()[0]["account_name"] == dummy_app_1_linked_account_1.account_name
 
 
-def test_list_linked_accounts_filter_by_non_existent_app_id(
+def test_list_linked_accounts_filter_by_non_existent_app_configuration(
     test_client: TestClient,
     dummy_api_key: str,
+    dummy_aipolabs_test_app: sql_models.App,
 ) -> None:
     response = test_client.get(
         "/v1/accounts/",
         headers={"x-api-key": dummy_api_key},
-        params={"app_id": NON_EXISTENT_INTEGRATION_ID},
+        params={"app_id": str(dummy_aipolabs_test_app.id)},
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
     assert len(response.json()) == 0

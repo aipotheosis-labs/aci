@@ -61,8 +61,8 @@ async def search_functions(
     Returns the basic information of a list of functions.
     """
     # TODO: currently the search is done across all apps, we might want to add flags to account for below scenarios:
-    # - when clients search for functions, if the app of the functions is not integrated, should the functions be discoverable?
-    # - when clients search for functions, if the app of the functions is integrated but disabled, should the functions be discoverable?
+    # - when clients search for functions, if the app of the functions is not configured, should the functions be discoverable?
+    # - when clients search for functions, if the app of the functions is configured but disabled by client, should the functions be discoverable?
     try:
         logger.debug(f"Getting functions with params: {query_params}")
         intent_embedding = (
@@ -269,7 +269,7 @@ def _inject_security_credentials(
     We assume the security credentials can only be in the header, query, cookie, or body.
     Modifies the input dictionaries in place.
 
-    # TODO: the right way for injecting security credentials is to get from the linked account first (need app & project integration),
+    # TODO: the right way for injecting security credentials is to get from the linked account first,
     # and if not found, then use the app's default
 
     Args:

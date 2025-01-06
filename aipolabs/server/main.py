@@ -13,11 +13,11 @@ from aipolabs.server import dependencies as deps
 from aipolabs.server.middleware.ratelimit import RateLimitMiddleware
 from aipolabs.server.routes import (
     accounts,
+    app_configurations,
     apps,
     auth,
     functions,
     health,
-    integrations,
     projects,
 )
 
@@ -34,6 +34,7 @@ def custom_generate_unique_id(route: APIRoute) -> str:
 setup_logging()
 logger = get_logger(__name__)
 
+# TODO: move to config
 app = FastAPI(
     title="Aipolabs",
     version="0.0.1-beta.3",
@@ -81,7 +82,7 @@ def validation_exception_handler(request: Request, exc: ValidationError) -> JSON
     )
 
 
-# TODO: custom rate limiting on different routes, e.g., integrations
+# TODO: custom rate limiting on different routes
 app.include_router(health.router, prefix="/v1/health", tags=["health"])
 app.include_router(auth.router, prefix="/v1/auth", tags=["auth"])
 app.include_router(
@@ -103,9 +104,9 @@ app.include_router(
     dependencies=[Depends(deps.validate_api_key), Depends(deps.validate_project_quota)],
 )
 app.include_router(
-    integrations.router,
-    prefix="/v1/integrations",
-    tags=["integrations"],
+    app_configurations.router,
+    prefix="/v1/app-configurations",
+    tags=["app-configurations"],
     dependencies=[Depends(deps.validate_api_key)],
 )
 # TODO: project quota management for different routes

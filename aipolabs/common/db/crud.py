@@ -87,7 +87,6 @@ def delete_linked_account(db_session: Session, account_id: UUID) -> None:
 
 def create_linked_account(
     db_session: Session,
-    integration_id: UUID,
     project_id: UUID,
     app_id: UUID,
     account_name: str,
@@ -96,7 +95,6 @@ def create_linked_account(
     enabled: bool = True,
 ) -> sql_models.LinkedAccount:
     db_linked_account = sql_models.LinkedAccount(
-        integration_id=integration_id,
         project_id=project_id,
         app_id=app_id,
         account_name=account_name,
@@ -110,19 +108,19 @@ def create_linked_account(
     return db_linked_account
 
 
-def delete_integration(db_session: Session, integration_id: UUID) -> None:
-    statement = delete(sql_models.Integration).filter_by(id=integration_id)
-    db_session.execute(statement)
-    logger.info(f"Deleted integration {integration_id}")
-
-
-def delete_accounts(db_session: Session, integration_id: UUID) -> None:
-    statement = delete(sql_models.LinkedAccount).filter_by(integration_id=integration_id)
+def delete_app_configuration(db_session: Session, project_id: UUID, app_id: UUID) -> int:
+    statement = delete(sql_models.AppConfiguration).filter_by(project_id=project_id, app_id=app_id)
     result = db_session.execute(statement)
-    logger.info(f"Deleted {result.rowcount} accounts for integration {integration_id}")
+    return int(result.rowcount)
 
 
-def add_integration(
+def delete_linked_accounts(db_session: Session, project_id: UUID, app_id: UUID) -> int:
+    statement = delete(sql_models.LinkedAccount).filter_by(project_id=project_id, app_id=app_id)
+    result = db_session.execute(statement)
+    return int(result.rowcount)
+
+
+def create_app_configuration(
     db_session: Session,
     project_id: UUID,
     app_id: UUID,
@@ -130,14 +128,15 @@ def add_integration(
     security_config_overrides: dict,
     all_functions_enabled: bool,
     enabled_functions: list[UUID],
-) -> sql_models.Integration:
-    """create a new integration record"""
+) -> sql_models.AppConfiguration:
+    """create a new app configuration record"""
+    # TODO: use pydantic model to validate the input
     if all_functions_enabled and len(enabled_functions) > 0:
         raise ValueError(
             "all_functions_enabled and enabled_functions cannot be both True and non-empty"
         )
 
-    db_integration = sql_models.Integration(
+    db_app_configuration = sql_models.AppConfiguration(
         project_id=project_id,
         app_id=app_id,
         security_scheme=security_scheme,
@@ -146,38 +145,40 @@ def add_integration(
         all_functions_enabled=all_functions_enabled,
         enabled_functions=enabled_functions,
     )
-    db_session.add(db_integration)
+    db_session.add(db_app_configuration)
     db_session.flush()
-    db_session.refresh(db_integration)
-    return db_integration
+    db_session.refresh(db_app_configuration)
+    return db_app_configuration
 
 
-def get_integrations(
+def get_app_configurations(
     db_session: Session, project_id: UUID, app_id: UUID | None = None
-) -> list[sql_models.Integration]:
-    """Get all integrations for a project, optionally filtered by app id"""
-    statement = select(sql_models.Integration).filter_by(project_id=project_id)
+) -> list[sql_models.AppConfiguration]:
+    """Get all app configurations for a project, optionally filtered by app id"""
+    statement = select(sql_models.AppConfiguration).filter_by(project_id=project_id)
     if app_id:
-        statement = statement.join(
-            sql_models.App, sql_models.Integration.app_id == sql_models.App.id
-        ).filter(sql_models.App.id == app_id)
-    integrations: list[sql_models.Integration] = db_session.execute(statement).scalars().all()
-    return integrations
+        statement = statement.filter_by(app_id=app_id)
+    app_configurations: list[sql_models.AppConfiguration] = (
+        db_session.execute(statement).scalars().all()
+    )
+    return app_configurations
 
 
-def get_integration(db_session: Session, integration_id: UUID) -> sql_models.Integration | None:
-    """Get an integration by id"""
-    integration: sql_models.Integration | None = db_session.execute(
-        select(sql_models.Integration).filter_by(id=integration_id)
+def get_app_configuration(
+    db_session: Session, project_id: UUID, app_id: UUID
+) -> sql_models.AppConfiguration | None:
+    """Get an app configuration by project id and app id"""
+    app_configuration: sql_models.AppConfiguration | None = db_session.execute(
+        select(sql_models.AppConfiguration).filter_by(project_id=project_id, app_id=app_id)
     ).scalar_one_or_none()
-    return integration
+    return app_configuration
 
 
-def integration_exists(db_session: Session, project_id: UUID, app_id: UUID) -> bool:
-    """Check if an integration exists in the database."""
+def app_configuration_exists(db_session: Session, project_id: UUID, app_id: UUID) -> bool:
+    """Check if an app configuration exists in the database."""
     return (
         db_session.execute(
-            select(sql_models.Integration).filter_by(project_id=project_id, app_id=app_id)
+            select(sql_models.AppConfiguration).filter_by(project_id=project_id, app_id=app_id)
         ).scalar_one_or_none()
         is not None
     )

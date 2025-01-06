@@ -4,7 +4,7 @@
     "logo": "https://example.com/aipolabs-logo.png",
     "provider": "aipolabs",
     "version": "1.0.0",
-    "description": "Aipolabs Test is a hypothetical application used to demonstrate how API schemas can be structured. It offers basic functionalities for testing purposes such as creating resources, retrieving data, and simulating user interactions. This API is useful for developers testing their integrations and workflows.",
+    "description": "Aipolabs Test is a hypothetical application used to demonstrate how API schemas can be structured. It offers basic functionalities for testing purposes such as creating resources, retrieving data, and simulating user interactions.",
     "security_schemes": {
         "api_key": {
             "in": "header",

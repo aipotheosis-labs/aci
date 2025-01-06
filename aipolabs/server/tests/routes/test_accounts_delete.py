@@ -7,7 +7,10 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.enums import SecurityScheme
-from aipolabs.common.schemas.integrations import IntegrationCreate, IntegrationPublic
+from aipolabs.common.schemas.app_configurations import (
+    AppConfigurationCreate,
+    AppConfigurationPublic,
+)
 
 NON_EXISTENT_ACCOUNT_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 
@@ -22,50 +25,48 @@ def setup_and_cleanup(
 ) -> Generator[list[sql_models.LinkedAccount], None, None]:
     """Setup linked accounts for testing and cleanup after"""
     dummy_app_1 = dummy_apps[0]
-    # create a mock integration for project 1
-    body = IntegrationCreate(
+    # create a app configuration for project 1
+    body = AppConfigurationCreate(
         app_id=dummy_app_1.id,
         security_scheme=SecurityScheme.OAUTH2,
     )
     response = test_client.post(
-        "/v1/integrations/",
+        "/v1/app-configurations/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
-    integration_1 = IntegrationPublic.model_validate(response.json())
+    app_configuration_1 = AppConfigurationPublic.model_validate(response.json())
 
-    # create a mock integration for project 2
-    body = IntegrationCreate(
+    # create a mock app configuration for project 2
+    body = AppConfigurationCreate(
         app_id=dummy_app_1.id,
         security_scheme=SecurityScheme.OAUTH2,
     )
     response = test_client.post(
-        "/v1/integrations/",
+        "/v1/app-configurations/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_2},
     )
     assert response.status_code == 200, response.json()
-    integration_2 = IntegrationPublic.model_validate(response.json())
+    app_configuration_2 = AppConfigurationPublic.model_validate(response.json())
 
-    # create a mock linked account for project 1
+    # create a mock linked account for app_configuration_1
     linked_account_1 = crud.create_linked_account(
         db_session,
-        integration_1.id,
-        integration_1.project_id,
-        integration_1.app_id,
+        app_configuration_1.project_id,
+        app_configuration_1.app_id,
         "test_account_1",
         SecurityScheme.OAUTH2,
         {"access_token": "mock_access_token"},
         enabled=True,
     )
 
-    # create a mock linked account for project 2
+    # create a mock linked account for app_configuration_2
     linked_account_2 = crud.create_linked_account(
         db_session,
-        integration_2.id,
-        integration_2.project_id,
-        integration_2.app_id,
+        app_configuration_2.project_id,
+        app_configuration_2.app_id,
         "test_account_2",
         SecurityScheme.OAUTH2,
         {"access_token": "mock_access_token"},
@@ -78,7 +79,7 @@ def setup_and_cleanup(
 
     # cleanup
     db_session.query(sql_models.LinkedAccount).delete()
-    db_session.query(sql_models.Integration).delete()
+    db_session.query(sql_models.AppConfiguration).delete()
     db_session.commit()
 
 

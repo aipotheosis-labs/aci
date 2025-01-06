@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from typing import Type
 
 
-class IntegrationPublic(BaseModel):
+class AppConfigurationPublic(BaseModel):
     id: UUID
     project_id: UUID
     app_id: UUID
@@ -25,7 +25,7 @@ class IntegrationPublic(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class IntegrationCreate(BaseModel):
+class AppConfigurationCreate(BaseModel):
     app_id: UUID
     security_scheme: SecurityScheme
     # TODO: add typing/class to security_config_overrides
@@ -33,7 +33,7 @@ class IntegrationCreate(BaseModel):
     # TODO: add all_functions_enabled/enabled_functions fields
 
 
-class IntegrationUpdate(BaseModel):
+class AppConfigurationUpdate(BaseModel):
     security_scheme: SecurityScheme | None = None
     security_config_overrides: dict | None = None
     enabled: bool | None = None
@@ -42,8 +42,8 @@ class IntegrationUpdate(BaseModel):
 
     @model_validator(mode="after")
     def check_enabled_functions(
-        cls: "Type[IntegrationUpdate]", instance: "IntegrationUpdate"
-    ) -> "IntegrationUpdate":
+        cls: "Type[AppConfigurationUpdate]", instance: "AppConfigurationUpdate"
+    ) -> "AppConfigurationUpdate":
         # if enabled_functions is provided and length is not 0,
         # all_functions_enabled must be False (or not provided), and if provided, we set it to False
         if instance.enabled_functions and len(instance.enabled_functions) != 0:

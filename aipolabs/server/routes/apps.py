@@ -54,8 +54,8 @@ async def search_apps(
     Intented to be used by agents to search for apps based on natural language intent.
     """
     # TODO: currently the search is done across all apps, we might want to add flags to account for below scenarios:
-    # - when clients search for apps, if the app is not integrated, should it be discoverable?
-    # - when clients search for apps, if an app is integrated but disabled, should it be discoverable?
+    # - when clients search for apps, if the app is not configured, should it be discoverable?
+    # - when clients search for apps, if an app is configured but disabled by client, should it be discoverable?
     try:
         logger.info(f"Getting apps with filter params: {query_params}")
         intent_embedding = (

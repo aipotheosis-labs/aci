@@ -21,15 +21,7 @@ from uuid import UUID, uuid4
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import JSON, Boolean, DateTime
 from sqlalchemy import Enum as SqlEnum
-from sqlalchemy import (
-    ForeignKey,
-    ForeignKeyConstraint,
-    Integer,
-    String,
-    Text,
-    UniqueConstraint,
-    func,
-)
+from sqlalchemy import ForeignKey, Integer, String, Text, UniqueConstraint, func
 
 # Note: need to use postgresqlr ARRAY in order to use overlap operator
 from sqlalchemy.dialects.postgresql import ARRAY
@@ -452,18 +444,20 @@ class App(Base):
     )
 
 
-# A user can have multiple projects, a project can integrate multiple apps, an app can have multiple linked accounts.
-# Same app in different projects need to authenticate user accounts separately.
-# When a user first create a project, there is no record for that project in this table,
-# the record is created when the user select (enable) an app to the project.
-# When user disable an app from the project, the record is not deleted, just the status is changed to disabled
-# TODO: should we delete the record and associated linked accounts when user delete the integration?
-# TODO: table can get large if there are too many users and each has many projects, need to keep an eye out on performance
-# TODO: will it be necessary to store user selected security scheme type for the app here?
-# TODO: will there be performance issue if we offer a button in dev portal to enable all apps at once?
-# TODO: if App is disabled, should all integrations of that App also be disabled?
-class Integration(Base):
-    __tablename__ = "integrations"
+# TODO: We make the decision to only allow one configuration per app per project to avoid unjustified
+# complexity and mental overhead on client side. (simplify apis and sdks) But we can revisit this decision
+# if later a valid use case is found.
+# TODO: should we delete app's associated linked accounts when user delete the app configuration?
+# TODO: revisit if we should disallow client changing the security scheme after the record is created, to
+# enforce consistant linked accounts type.
+# TODO: Reconsider if "enabled_functions" should be in a separate table to enforce data integrity, or use periodic task to clean up
+class AppConfiguration(Base):
+    """
+    App configuration is a configuration for an app in a project.
+    A record is created when the user enable and configure an app to a project.
+    """
+
+    __tablename__ = "app_configurations"
 
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
@@ -474,22 +468,20 @@ class Integration(Base):
     app_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("apps.id"), nullable=False
     )
-    # selected (by client) as default security scheme for the app integration. Although making security_scheme constant is easier for
+    # selected (by client) as default security scheme for the linking accounts. Although making security_scheme constant is easier for
     # implementation, we keep the flexibility for future use to allow user to select different security scheme for different linked accounts.
     # So, ultimately the actual security scheme and credentials should be decided by individual linked accounts
     # stored in linked_accounts table.
     security_scheme: Mapped[SecurityScheme] = mapped_column(SqlEnum(SecurityScheme), nullable=False)
-    # can store security config override for each app integration, e.g., store client id and secret for OAuth2 if client
+    # can store security config override for each app, e.g., store client id and secret for OAuth2 if client
     # want to use their own OAuth2 app for whitelabeling
     security_config_overrides: Mapped[dict] = mapped_column(JSON, nullable=False)
-    # controlled by users to enable or disable the app integration
+    # controlled by users to enable or disable the app
+    # TODO: what are the implications of enabling/disabling the app?
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
-    # exclude certain functions from the app.
-    # TODO: Reconsider if this should be in a separate table to enforce data integrity, or use periodic task to clean up
-
-    # indicate if all functions of the app are enabled in this integration
+    # indicate if all functions of the app are enabled for this app
     all_functions_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
-    # if all_functions_enabled is false, this list contains the unqiue ids of the functions that are enabled in this integration
+    # if all_functions_enabled is false, this list contains the unqiue ids of the functions that are enabled for this app
     enabled_functions: Mapped[list[UUID]] = mapped_column(
         ARRAY(PGUUID(as_uuid=True)), nullable=False
     )
@@ -507,18 +499,20 @@ class Integration(Base):
 
     # unique constraint
     __table_args__ = (
-        # This is needed for the foreign key constraint in LinkedAccount table
-        UniqueConstraint("id", "project_id", "app_id", name="uc_integration_composite_key"),
-        # If in the future we want to allow the same project to integrate the same app multiple times, we can remove the unique constraint
+        # If in the future we want to allow a project to integrate the same app multiple times, we can remove the unique constraint
+        # but that would require changes in other places (business logic and other tables)
         UniqueConstraint("project_id", "app_id", name="uc_project_app"),
     )
 
 
-# TODO:
-# - considering creating separate tables per integration or per project (some benefits including easier to
-#   delete the record and associated linked accounts when user delete the integration, without locking the table for too long)
-# - or use nosql to store linked accounts instead when table gets large
-# - or use separate database instance for clients with large number of linked accounts
+# TODO: table can get large if there are significant number of clients
+# (O(n) = #clients * #projects_per_client * #apps * #linked_accounts_per_app)
+# need to keep an eye out on performance and revisit if we should:
+# - use nosql (or sharding) to store linked accounts instead.
+# - use separate database instance for clients with large number of linked accounts
+# - use separate tables per project. Some benefits including easier to delete the record and associated
+#   linked accounts when user delete the app configuration, without locking the table for too long. But number of
+#   tables can be too big for postgres.
 class LinkedAccount(Base):
     """
     Linked account is a specific account under an app in a project.
@@ -529,16 +523,13 @@ class LinkedAccount(Base):
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
     )
-    integration_id: Mapped[UUID] = mapped_column(
-        PGUUID(as_uuid=True), ForeignKey("integrations.id"), nullable=False
-    )
     project_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("projects.id"), nullable=False
     )
     app_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("apps.id"), nullable=False
     )
-    # account_name should be unique per app per project (or just per Integration), ideally it identifies the end user.
+    # account_name should be unique per app per project, ideally it identifies the end user.
     # Ideally this should be some user id in client's system that uniquely identify owner of the account.
     account_name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     security_scheme: Mapped[SecurityScheme] = mapped_column(SqlEnum(SecurityScheme), nullable=False)
@@ -557,25 +548,7 @@ class LinkedAccount(Base):
         init=False,
     )
     __table_args__ = (
-        UniqueConstraint(
-            "integration_id",
-            "account_name",
-            name="uc_integration_id_account_name",
-        ),
-        # Add a foreign key constraint to ensure consistency with integration
-        # TODO: write test
-        ForeignKeyConstraint(
-            ["integration_id", "project_id", "app_id"],
-            [
-                "integrations.id",
-                "integrations.project_id",
-                "integrations.app_id",
-            ],
-            name="fk_linked_account_integration",
-        ),
         # For each app in a project, the account_name should be unique.
-        # Technically this is redundant because of the unique contrainst above plus UniqueConstraint("project_id", "app_id", name="uc_project_app") in integrations table,
-        # but add it here in case we want to remove UniqueConstraint("project_id", "app_id", name="uc_project_app") in the future
         # TODO: write test
         UniqueConstraint(
             "project_id", "app_id", "account_name", name="uc_project_id_app_id_account_name"
