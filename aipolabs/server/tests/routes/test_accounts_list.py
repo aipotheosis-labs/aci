@@ -98,7 +98,7 @@ def test_list_linked_accounts_no_filters(
     dummy_api_key: str,
 ) -> None:
     response = test_client.get(
-        "/v1/accounts/",
+        "/v1/linked-accounts/",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
@@ -113,14 +113,17 @@ def test_list_linked_accounts_filter_by_app_id(
     dummy_app_2_linked_account_1 = setup_and_cleanup[2]
 
     response = test_client.get(
-        "/v1/accounts/",
+        "/v1/linked-accounts/",
         headers={"x-api-key": dummy_api_key},
         params={"app_id": str(dummy_app_2_linked_account_1.app_id)},
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
     assert len(response.json()) == 1
     assert response.json()[0]["app_id"] == str(dummy_app_2_linked_account_1.app_id)
-    assert response.json()[0]["account_name"] == dummy_app_2_linked_account_1.account_name
+    assert (
+        response.json()[0]["linked_account_owner_id"]
+        == dummy_app_2_linked_account_1.linked_account_owner_id
+    )
 
 
 def test_list_linked_accounts_filter_by_account_name(
@@ -131,14 +134,17 @@ def test_list_linked_accounts_filter_by_account_name(
     github_linked_account = setup_and_cleanup[2]
 
     response = test_client.get(
-        "/v1/accounts/",
+        "/v1/linked-accounts/",
         headers={"x-api-key": dummy_api_key},
-        params={"account_name": github_linked_account.account_name},
+        params={"linked_account_owner_id": github_linked_account.linked_account_owner_id},
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
     assert len(response.json()) == 1
     assert response.json()[0]["app_id"] == str(github_linked_account.app_id)
-    assert response.json()[0]["account_name"] == github_linked_account.account_name
+    assert (
+        response.json()[0]["linked_account_owner_id"]
+        == github_linked_account.linked_account_owner_id
+    )
 
 
 def test_list_linked_accounts_filter_by_app_id_and_account_name(
@@ -149,17 +155,20 @@ def test_list_linked_accounts_filter_by_app_id_and_account_name(
     dummy_app_1_linked_account_1 = setup_and_cleanup[0]
 
     response = test_client.get(
-        "/v1/accounts/",
+        "/v1/linked-accounts/",
         headers={"x-api-key": dummy_api_key},
         params={
             "app_id": str(dummy_app_1_linked_account_1.app_id),
-            "account_name": dummy_app_1_linked_account_1.account_name,
+            "linked_account_owner_id": dummy_app_1_linked_account_1.linked_account_owner_id,
         },
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
     assert len(response.json()) == 1
     assert response.json()[0]["app_id"] == str(dummy_app_1_linked_account_1.app_id)
-    assert response.json()[0]["account_name"] == dummy_app_1_linked_account_1.account_name
+    assert (
+        response.json()[0]["linked_account_owner_id"]
+        == dummy_app_1_linked_account_1.linked_account_owner_id
+    )
 
 
 def test_list_linked_accounts_filter_by_non_existent_app_configuration(
@@ -168,7 +177,7 @@ def test_list_linked_accounts_filter_by_non_existent_app_configuration(
     dummy_aipolabs_test_app: sql_models.App,
 ) -> None:
     response = test_client.get(
-        "/v1/accounts/",
+        "/v1/linked-accounts/",
         headers={"x-api-key": dummy_api_key},
         params={"app_id": str(dummy_aipolabs_test_app.id)},
     )

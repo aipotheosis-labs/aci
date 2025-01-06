@@ -12,13 +12,13 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.enums import SecurityScheme
-from aipolabs.common.schemas.accounts import AccountCreate
 from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
     AppConfigurationPublic,
 )
+from aipolabs.common.schemas.linked_accounts import LinkedAccountCreate
 from aipolabs.server import config
-from aipolabs.server.routes.accounts import AccountCreateOAuth2State
+from aipolabs.server.routes.linked_accounts import LinkedAccountCreateOAuth2State
 
 MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX = (
     "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&"
@@ -81,12 +81,12 @@ def test_link_oauth2_account_success(
     google_app_configuration, _ = setup_and_cleanup
 
     # init account linking proces, trigger redirect to oauth2 provider
-    body = AccountCreate(
+    body = LinkedAccountCreate(
         app_id=google_app_configuration.app_id,
-        account_name="test_account",
+        linked_account_owner_id="test_account",
     )
     response = test_client.post(
-        "/v1/accounts/",
+        "/v1/linked-accounts/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
@@ -99,9 +99,11 @@ def test_link_oauth2_account_success(
     qs_params = parse_qs(urlparse(redirect_location).query)
     state_jwt = qs_params.get("state", [None])[0]
     assert state_jwt is not None
-    state = AccountCreateOAuth2State.model_validate(jwt.decode(state_jwt, config.JWT_SECRET_KEY))
+    state = LinkedAccountCreateOAuth2State.model_validate(
+        jwt.decode(state_jwt, config.JWT_SECRET_KEY)
+    )
     assert state.app_id == google_app_configuration.app_id
-    assert state.account_name == "test_account"
+    assert state.linked_account_owner_id == "test_account"
     assert state.iat > int(datetime.now(timezone.utc).timestamp()) - 3, "iat should be recent"
     assert state.nonce is not None
 
@@ -123,7 +125,7 @@ def test_link_oauth2_account_success(
             "state": state_jwt,
             "code": "mock_auth_code",  # Usually provided by provider, but we just mock it
         }
-        response = test_client.get("/v1/accounts/oauth2/callback", params=callback_params)
+        response = test_client.get("/v1/linked-accounts/oauth2/callback", params=callback_params)
         assert response.status_code == 200, response.json()
 
     # check linked account is created with the correct values
@@ -131,7 +133,7 @@ def test_link_oauth2_account_success(
         db_session,
         state.project_id,
         state.app_id,
-        state.account_name,
+        state.linked_account_owner_id,
     )
     assert linked_account is not None
     assert linked_account.security_scheme == SecurityScheme.OAUTH2
@@ -140,7 +142,7 @@ def test_link_oauth2_account_success(
     assert linked_account.app_id == google_app_configuration.app_id
     assert linked_account.project_id == state.project_id
     assert linked_account.app_id == state.app_id
-    assert linked_account.account_name == state.account_name
+    assert linked_account.linked_account_owner_id == state.linked_account_owner_id
 
     # cleanup
     crud.delete_linked_account(db_session, linked_account.id)
@@ -152,12 +154,12 @@ def test_non_existent_app_configuration(
     dummy_api_key: str,
     dummy_aipolabs_test_app: sql_models.App,
 ) -> None:
-    body = AccountCreate(
+    body = LinkedAccountCreate(
         app_id=dummy_aipolabs_test_app.id,
-        account_name="test_account",
+        linked_account_owner_id="test_account",
     )
     response = test_client.post(
-        "/v1/accounts/",
+        "/v1/linked-accounts/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )

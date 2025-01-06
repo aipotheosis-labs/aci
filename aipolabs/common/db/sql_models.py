@@ -529,9 +529,10 @@ class LinkedAccount(Base):
     app_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("apps.id"), nullable=False
     )
-    # account_name should be unique per app per project, ideally it identifies the end user.
-    # Ideally this should be some user id in client's system that uniquely identify owner of the account.
-    account_name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
+    # linked_account_owner_id should be unique per app per project, it should identify the end user, which
+    # is the owner of the linked account. One common design is to use the same linked_account_owner_id that
+    # identifies an end user for all configured apps in a project.
+    linked_account_owner_id: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     security_scheme: Mapped[SecurityScheme] = mapped_column(SqlEnum(SecurityScheme), nullable=False)
     # security credentials are different for each security scheme, e.g., API key, OAuth2 (access token, refresh token, scope, etc) etc
     security_credentials: Mapped[dict] = mapped_column(JSON, nullable=False)
@@ -548,9 +549,11 @@ class LinkedAccount(Base):
         init=False,
     )
     __table_args__ = (
-        # For each app in a project, the account_name should be unique.
         # TODO: write test
         UniqueConstraint(
-            "project_id", "app_id", "account_name", name="uc_project_id_app_id_account_name"
+            "project_id",
+            "app_id",
+            "linked_account_owner_id",
+            name="uc_project_app_linked_account_owner",
         ),
     )

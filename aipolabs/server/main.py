@@ -12,12 +12,12 @@ from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 from aipolabs.server.middleware.ratelimit import RateLimitMiddleware
 from aipolabs.server.routes import (
-    accounts,
     app_configurations,
     apps,
     auth,
     functions,
     health,
+    linked_accounts,
     projects,
 )
 
@@ -111,4 +111,4 @@ app.include_router(
 )
 # TODO: project quota management for different routes
 # similar to auth, it contains a callback route so can't use global dependencies here
-app.include_router(accounts.router, prefix="/v1/accounts", tags=["accounts"])
+app.include_router(linked_accounts.router, prefix="/v1/linked-accounts", tags=["linked-accounts"])

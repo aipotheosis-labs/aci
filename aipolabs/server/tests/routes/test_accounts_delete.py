@@ -91,14 +91,14 @@ def test_delete_linked_account(
     linked_account_1, _ = setup_and_cleanup
 
     response = test_client.delete(
-        f"/v1/accounts/{linked_account_1.id}",
+        f"/v1/linked-accounts/{linked_account_1.id}",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == status.HTTP_204_NO_CONTENT, response.json()
 
     # check that the linked account was deleted
     response = test_client.get(
-        f"/v1/accounts/{linked_account_1.id}",
+        f"/v1/linked-accounts/{linked_account_1.id}",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.json()
@@ -109,7 +109,7 @@ def test_delete_linked_account_not_found(
     dummy_api_key: str,
 ) -> None:
     response = test_client.delete(
-        f"/v1/accounts/{NON_EXISTENT_ACCOUNT_ID}",
+        f"/v1/linked-accounts/{NON_EXISTENT_ACCOUNT_ID}",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.json()
@@ -123,7 +123,7 @@ def test_delete_linked_account_forbidden(
     _, linked_account_2 = setup_and_cleanup
 
     response = test_client.delete(
-        f"/v1/accounts/{linked_account_2.id}",
+        f"/v1/linked-accounts/{linked_account_2.id}",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN, response.json()

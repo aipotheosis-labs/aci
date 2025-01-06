@@ -108,7 +108,7 @@ class FunctionExecute(BaseModel):
     function_input: dict = Field(
         default_factory=dict, description="The input parameters for the function."
     )
-    # TODO: can add other params like account_id
+    # TODO: can add other params like linked_account_owner_id
 
 
 class FunctionBasic(BaseModel):

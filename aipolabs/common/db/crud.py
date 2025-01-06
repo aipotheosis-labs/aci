@@ -39,24 +39,26 @@ class ProjectNotFoundError(Exception):
 
 
 def get_linked_accounts(
-    db_session: Session, project_id: UUID, app_id: UUID | None, account_name: str | None
+    db_session: Session, project_id: UUID, app_id: UUID | None, linked_account_owner_id: str | None
 ) -> list[sql_models.LinkedAccount]:
     """Get all linked accounts under a project, with optional filters"""
     statement = select(sql_models.LinkedAccount).filter_by(project_id=project_id)
     if app_id:
         statement = statement.filter(sql_models.LinkedAccount.app_id == app_id)
-    if account_name:
-        statement = statement.filter(sql_models.LinkedAccount.account_name == account_name)
+    if linked_account_owner_id:
+        statement = statement.filter(
+            sql_models.LinkedAccount.linked_account_owner_id == linked_account_owner_id
+        )
 
     linked_accounts: list[sql_models.LinkedAccount] = db_session.execute(statement).scalars().all()
     return linked_accounts
 
 
 def get_linked_account(
-    db_session: Session, project_id: UUID, app_id: UUID, account_name: str
+    db_session: Session, project_id: UUID, app_id: UUID, linked_account_owner_id: str
 ) -> sql_models.LinkedAccount | None:
     statement = select(sql_models.LinkedAccount).filter_by(
-        project_id=project_id, app_id=app_id, account_name=account_name
+        project_id=project_id, app_id=app_id, linked_account_owner_id=linked_account_owner_id
     )
     linked_account: sql_models.LinkedAccount | None = db_session.execute(
         statement
@@ -66,30 +68,34 @@ def get_linked_account(
 
 
 def get_linked_account_by_id(
-    db_session: Session, account_id: UUID
+    db_session: Session, linked_account_id: UUID
 ) -> sql_models.LinkedAccount | None:
     linked_account: sql_models.LinkedAccount | None = db_session.execute(
-        select(sql_models.LinkedAccount).filter_by(id=account_id)
+        select(sql_models.LinkedAccount).filter_by(id=linked_account_id)
     ).scalar_one_or_none()
     return linked_account
 
 
-def delete_linked_account(db_session: Session, account_id: UUID) -> None:
-    statement = delete(sql_models.LinkedAccount).filter_by(id=account_id)
+def delete_linked_account(db_session: Session, linked_account_id: UUID) -> None:
+    statement = delete(sql_models.LinkedAccount).filter_by(id=linked_account_id)
     result = db_session.execute(statement)
     if result.rowcount == 0:
-        raise ValueError(f"Linked account {account_id} not found")
+        raise ValueError(f"Linked account={linked_account_id} not found")
     elif result.rowcount > 1:
         # should never happen
-        logger.error(f"Multiple ({result.rowcount}) linked accounts found with id {account_id}")
-        raise ValueError(f"Multiple ({result.rowcount}) linked accounts found with id {account_id}")
+        logger.error(
+            f"Multiple ({result.rowcount}) linked accounts found with id {linked_account_id}"
+        )
+        raise ValueError(
+            f"Multiple ({result.rowcount}) linked accounts found with id {linked_account_id}"
+        )
 
 
 def create_linked_account(
     db_session: Session,
     project_id: UUID,
     app_id: UUID,
-    account_name: str,
+    linked_account_owner_id: str,
     security_scheme: SecurityScheme,
     security_credentials: dict,
     enabled: bool = True,
@@ -97,7 +103,7 @@ def create_linked_account(
     db_linked_account = sql_models.LinkedAccount(
         project_id=project_id,
         app_id=app_id,
-        account_name=account_name,
+        linked_account_owner_id=linked_account_owner_id,
         security_scheme=security_scheme,
         security_credentials=security_credentials,
         enabled=enabled,

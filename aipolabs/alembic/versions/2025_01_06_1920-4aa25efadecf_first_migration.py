@@ -1,8 +1,8 @@
 """first migration
 
-Revision ID: 648a1a8a90dc
+Revision ID: 4aa25efadecf
 Revises:
-Create Date: 2025-01-06 14:27:10.685061+00:00
+Create Date: 2025-01-06 19:20:12.679114+00:00
 
 """
 
@@ -14,7 +14,7 @@ from pgvector.sqlalchemy import Vector
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = "648a1a8a90dc"
+revision: str = "4aa25efadecf"
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -195,7 +195,7 @@ def upgrade() -> None:
         sa.Column("id", sa.UUID(), nullable=False),
         sa.Column("project_id", sa.UUID(), nullable=False),
         sa.Column("app_id", sa.UUID(), nullable=False),
-        sa.Column("account_name", sa.String(length=255), nullable=False),
+        sa.Column("linked_account_owner_id", sa.String(length=255), nullable=False),
         sa.Column(
             "security_scheme",
             sa.Enum(
@@ -217,7 +217,10 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id"),
         sa.UniqueConstraint(
-            "project_id", "app_id", "account_name", name="uc_project_id_app_id_account_name"
+            "project_id",
+            "app_id",
+            "linked_account_owner_id",
+            name="uc_project_app_linked_account_owner",
         ),
     )
     op.create_table(
