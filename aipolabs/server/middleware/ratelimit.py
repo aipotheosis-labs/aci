@@ -15,6 +15,7 @@ from aipolabs.server.config import RATE_LIMIT_IP_PER_DAY, RATE_LIMIT_IP_PER_SECO
 logger = get_logger(__name__)
 
 
+# TODO: replace with redis storage
 class RateLimitMiddleware(BaseHTTPMiddleware):
     def __init__(self, app: ASGIApp) -> None:
         super().__init__(app)

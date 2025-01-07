@@ -18,7 +18,7 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
 def create_dummy_apps_and_functions(db_session: Session) -> list[sql_models.App]:
     dummy_apps: list[sql_models.App] = []
     # for app.json and functions.json in each dummy_apps directory, create an app and functions
-    dummy_apps_dir = Path(__file__).parent / "routes/dummy_apps"
+    dummy_apps_dir = Path(__file__).parent / "dummy_apps"
     for app_dir in dummy_apps_dir.glob("*"):
         app_file = app_dir / "app.json"
         functions_file = app_dir / "functions.json"
