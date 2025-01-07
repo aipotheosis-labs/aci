@@ -11,6 +11,7 @@ from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
     AppConfigurationPublic,
 )
+from aipolabs.server import config
 
 NON_EXISTENT_ACCOUNT_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 
@@ -31,7 +32,7 @@ def setup_and_cleanup(
         security_scheme=SecurityScheme.OAUTH2,
     )
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
@@ -44,7 +45,7 @@ def setup_and_cleanup(
         security_scheme=SecurityScheme.OAUTH2,
     )
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_2},
     )
@@ -91,14 +92,14 @@ def test_delete_linked_account(
     linked_account_1, _ = setup_and_cleanup
 
     response = test_client.delete(
-        f"/v1/linked-accounts/{linked_account_1.id}",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/{linked_account_1.id}",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == status.HTTP_204_NO_CONTENT, response.json()
 
     # check that the linked account was deleted
     response = test_client.get(
-        f"/v1/linked-accounts/{linked_account_1.id}",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/{linked_account_1.id}",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.json()
@@ -109,7 +110,7 @@ def test_delete_linked_account_not_found(
     dummy_api_key: str,
 ) -> None:
     response = test_client.delete(
-        f"/v1/linked-accounts/{NON_EXISTENT_ACCOUNT_ID}",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/{NON_EXISTENT_ACCOUNT_ID}",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND, response.json()
@@ -123,7 +124,7 @@ def test_delete_linked_account_forbidden(
     _, linked_account_2 = setup_and_cleanup
 
     response = test_client.delete(
-        f"/v1/linked-accounts/{linked_account_2.id}",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/{linked_account_2.id}",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN, response.json()

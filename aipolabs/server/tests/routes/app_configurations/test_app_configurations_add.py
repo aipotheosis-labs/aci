@@ -10,6 +10,7 @@ from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
     AppConfigurationPublic,
 )
+from aipolabs.server import config
 
 NON_EXISTENT_APP_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 
@@ -32,7 +33,7 @@ def test_create_app_configuration(
     body = AppConfigurationCreate(app_id=dummy_app.id, security_scheme=SecurityScheme.OAUTH2)
 
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
@@ -41,7 +42,7 @@ def test_create_app_configuration(
 
     # failure case: App already configured
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
@@ -57,7 +58,7 @@ def test_create_app_configuration_security_scheme_not_supported(
     dummy_app = dummy_apps[0]
     body = AppConfigurationCreate(app_id=dummy_app.id, security_scheme=SecurityScheme.HTTP_BASIC)
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
@@ -71,7 +72,7 @@ def test_create_app_configuration_app_not_found(
 ) -> None:
     body = AppConfigurationCreate(app_id=NON_EXISTENT_APP_ID, security_scheme=SecurityScheme.OAUTH2)
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
@@ -83,16 +84,16 @@ def test_create_app_configuration_app_not_enabled(
     test_client: TestClient,
     db_session: Session,
     dummy_api_key: str,
-    dummy_google_app: sql_models.App,
+    dummy_app_google: sql_models.App,
 ) -> None:
     # disable the app
-    crud.set_app_enabled_status(db_session, dummy_google_app.id, False)
+    crud.set_app_enabled_status(db_session, dummy_app_google.id, False)
     db_session.commit()
 
     # try creating app configuration
-    body = AppConfigurationCreate(app_id=dummy_google_app.id, security_scheme=SecurityScheme.OAUTH2)
+    body = AppConfigurationCreate(app_id=dummy_app_google.id, security_scheme=SecurityScheme.OAUTH2)
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
@@ -100,7 +101,7 @@ def test_create_app_configuration_app_not_enabled(
     assert response.json()["detail"] == "App is not enabled"
 
     # re-enable the app
-    crud.set_app_enabled_status(db_session, dummy_google_app.id, True)
+    crud.set_app_enabled_status(db_session, dummy_app_google.id, True)
     db_session.commit()
 
 
@@ -108,16 +109,16 @@ def test_create_app_configuration_project_does_not_have_access(
     test_client: TestClient,
     db_session: Session,
     dummy_api_key: str,
-    dummy_google_app: sql_models.App,
+    dummy_app_google: sql_models.App,
 ) -> None:
     # set the app to private
-    crud.set_app_visibility(db_session, dummy_google_app.id, Visibility.PRIVATE)
+    crud.set_app_visibility(db_session, dummy_app_google.id, Visibility.PRIVATE)
     db_session.commit()
 
     # try creating app configuration
-    body = AppConfigurationCreate(app_id=dummy_google_app.id, security_scheme=SecurityScheme.OAUTH2)
+    body = AppConfigurationCreate(app_id=dummy_app_google.id, security_scheme=SecurityScheme.OAUTH2)
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
@@ -125,5 +126,5 @@ def test_create_app_configuration_project_does_not_have_access(
     assert response.json()["detail"] == "Project does not have access to this app."
 
     # revert changes
-    crud.set_app_visibility(db_session, dummy_google_app.id, Visibility.PUBLIC)
+    crud.set_app_visibility(db_session, dummy_app_google.id, Visibility.PUBLIC)
     db_session.commit()

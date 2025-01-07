@@ -36,11 +36,11 @@ logger = get_logger(__name__)
 
 # TODO: move to config
 app = FastAPI(
-    title="Aipolabs",
-    version="0.0.1-beta.3",
-    docs_url="/v1/docs",
-    redoc_url="/v1/redoc",
-    openapi_url="/v1/openapi.json",
+    title=config.APP_TITLE,
+    version=config.APP_VERSION,
+    docs_url=config.APP_DOCS_URL,
+    redoc_url=config.APP_REDOC_URL,
+    openapi_url=config.APP_OPENAPI_URL,
     generate_unique_id_function=custom_generate_unique_id,
 )
 
@@ -83,32 +83,40 @@ def validation_exception_handler(request: Request, exc: ValidationError) -> JSON
 
 
 # TODO: custom rate limiting on different routes
-app.include_router(health.router, prefix="/v1/health", tags=["health"])
-app.include_router(auth.router, prefix="/v1/auth", tags=["auth"])
+app.include_router(
+    health.router,
+    prefix=config.ROUTER_PREFIX_HEALTH,
+    tags=[config.ROUTER_PREFIX_HEALTH.split("/")[-1]],
+)
+app.include_router(auth.router, prefix=config.ROUTER_PREFIX_AUTH, tags=["auth"])
 app.include_router(
     projects.router,
-    prefix="/v1/projects",
-    tags=["projects"],
+    prefix=config.ROUTER_PREFIX_PROJECTS,
+    tags=[config.ROUTER_PREFIX_PROJECTS.split("/")[-1]],
     dependencies=[Depends(deps.validate_http_bearer)],
 )
 app.include_router(
     apps.router,
-    prefix="/v1/apps",
-    tags=["apps"],
+    prefix=config.ROUTER_PREFIX_APPS,
+    tags=[config.ROUTER_PREFIX_APPS.split("/")[-1]],
     dependencies=[Depends(deps.validate_api_key), Depends(deps.validate_project_quota)],
 )
 app.include_router(
     functions.router,
-    prefix="/v1/functions",
-    tags=["functions"],
+    prefix=config.ROUTER_PREFIX_FUNCTIONS,
+    tags=[config.ROUTER_PREFIX_FUNCTIONS.split("/")[-1]],
     dependencies=[Depends(deps.validate_api_key), Depends(deps.validate_project_quota)],
 )
 app.include_router(
     app_configurations.router,
-    prefix="/v1/app-configurations",
-    tags=["app-configurations"],
+    prefix=config.ROUTER_PREFIX_APP_CONFIGURATIONS,
+    tags=[config.ROUTER_PREFIX_APP_CONFIGURATIONS.split("/")[-1]],
     dependencies=[Depends(deps.validate_api_key)],
 )
 # TODO: project quota management for different routes
 # similar to auth, it contains a callback route so can't use global dependencies here
-app.include_router(linked_accounts.router, prefix="/v1/linked-accounts", tags=["linked-accounts"])
+app.include_router(
+    linked_accounts.router,
+    prefix=config.ROUTER_PREFIX_LINKED_ACCOUNTS,
+    tags=[config.ROUTER_PREFIX_LINKED_ACCOUNTS.split("/")[-1]],
+)

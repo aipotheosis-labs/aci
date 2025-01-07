@@ -25,7 +25,9 @@ def test_validate_project_quota_valid(test_client: TestClient, dummy_api_key: st
         "aipolabs.server.dependencies.crud.get_project_by_api_key_id", return_value=db_project
     ), patch("aipolabs.server.dependencies.crud.increase_project_quota_usage"):
         response = test_client.get(
-            "/v1/apps/search", params={"limit": 1}, headers={"x-api-key": dummy_api_key}
+            f"{config.ROUTER_PREFIX_APPS}/search",
+            params={"limit": 1},
+            headers={"x-api-key": dummy_api_key},
         )
         logger.info(f"response: {response.json()}")
         assert response.status_code == status.HTTP_200_OK
@@ -40,7 +42,9 @@ def test_validate_project_quota_exceeded(test_client: TestClient, dummy_api_key:
         "aipolabs.server.dependencies.crud.get_project_by_api_key_id", return_value=db_project
     ):
         response = test_client.get(
-            "/v1/apps/search", params={"limit": 1}, headers={"x-api-key": dummy_api_key}
+            f"{config.ROUTER_PREFIX_APPS}/search",
+            params={"limit": 1},
+            headers={"x-api-key": dummy_api_key},
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert response.json()["detail"] == "Daily quota exceeded"

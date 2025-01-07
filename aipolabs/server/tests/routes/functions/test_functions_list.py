@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.schemas.function import FunctionDetails
+from aipolabs.server import config
 
 
 def test_list_all_functions(
@@ -15,7 +16,9 @@ def test_list_all_functions(
         "offset": 0,
     }
     response = test_client.get(
-        "/v1/functions/", params=query_params, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/",
+        params=query_params,
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
@@ -30,7 +33,9 @@ def test_list_all_functions_pagination(
         "offset": 0,
     }
     response = test_client.get(
-        "/v1/functions/", params=query_params, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/",
+        params=query_params,
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
@@ -38,7 +43,9 @@ def test_list_all_functions_pagination(
 
     query_params["offset"] = len(dummy_functions) - 1
     response = test_client.get(
-        "/v1/functions/", params=query_params, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/",
+        params=query_params,
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
@@ -57,7 +64,9 @@ def test_list_functions_with_app_ids(
         "offset": 0,
     }
     response = test_client.get(
-        "/v1/functions/", params=query_params, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/",
+        params=query_params,
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
@@ -77,7 +86,9 @@ def test_list_functions_with_private_functions(
     crud.set_function_visibility(db_session, dummy_functions[0].id, sql_models.Visibility.PRIVATE)
     db_session.commit()
 
-    response = test_client.get("/v1/functions/", params={}, headers={"x-api-key": dummy_api_key})
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/", params={}, headers={"x-api-key": dummy_api_key}
+    )
     assert response.status_code == 200, response.json()
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
     assert len(functions) == len(dummy_functions) - 1
@@ -86,7 +97,9 @@ def test_list_functions_with_private_functions(
     crud.set_project_visibility_access(db_session, dummy_project.id, sql_models.Visibility.PRIVATE)
     db_session.commit()
 
-    response = test_client.get("/v1/functions/", params={}, headers={"x-api-key": dummy_api_key})
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/", params={}, headers={"x-api-key": dummy_api_key}
+    )
     assert response.status_code == 200, response.json()
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
     assert len(functions) == len(dummy_functions)
@@ -108,7 +121,9 @@ def test_list_functions_with_private_apps(
     crud.set_app_visibility(db_session, dummy_functions[0].app_id, sql_models.Visibility.PRIVATE)
     db_session.commit()
 
-    response = test_client.get("/v1/functions/", params={}, headers={"x-api-key": dummy_api_key})
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/", params={}, headers={"x-api-key": dummy_api_key}
+    )
     assert response.status_code == 200, response.json()
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
 
@@ -124,7 +139,9 @@ def test_list_functions_with_private_apps(
     crud.set_project_visibility_access(db_session, dummy_project.id, sql_models.Visibility.PRIVATE)
     db_session.commit()
 
-    response = test_client.get("/v1/functions/", params={}, headers={"x-api-key": dummy_api_key})
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/", params={}, headers={"x-api-key": dummy_api_key}
+    )
     assert response.status_code == 200, response.json()
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
     assert len(functions) == len(dummy_functions)

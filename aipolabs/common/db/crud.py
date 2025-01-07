@@ -629,6 +629,16 @@ def get_project_by_api_key_id(db_session: Session, api_key_id: UUID) -> sql_mode
     return db_project
 
 
+def get_project(db_session: Session, project_id: UUID) -> sql_models.Project | None:
+    db_project: sql_models.Project | None = db_session.execute(
+        select(sql_models.Project).filter_by(id=project_id)
+    ).scalar_one_or_none()
+    return db_project
+
+
+# TODO: delete project and all related data (app_configurations, agents, api_keys, etc.)
+
+
 def increase_project_quota_usage(db_session: Session, project: sql_models.Project) -> None:
     now: datetime = datetime.now(timezone.utc)
     need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=timezone.utc) + timedelta(

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.schemas.app import AppBasicWithFunctions
+from aipolabs.server import config
 
 NON_EXISTENT_APP_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 
@@ -10,22 +11,22 @@ NON_EXISTENT_APP_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 def test_get_app(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_github_app: sql_models.App,
+    dummy_app_github: sql_models.App,
 ) -> None:
     response = test_client.get(
-        f"/v1/apps/{dummy_github_app.id}",
+        f"{config.ROUTER_PREFIX_APPS}/{dummy_app_github.id}",
         headers={"x-api-key": dummy_api_key},
     )
 
     assert response.status_code == 200, response.json()
     app = AppBasicWithFunctions.model_validate(response.json())
-    assert app.name == dummy_github_app.name
+    assert app.name == dummy_app_github.name
     assert len(app.functions) > 0
 
 
 def test_get_non_existent_app(test_client: TestClient, dummy_api_key: str) -> None:
     response = test_client.get(
-        f"/v1/apps/{NON_EXISTENT_APP_ID}", headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_APPS}/{NON_EXISTENT_APP_ID}", headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 404, response.json()
 
@@ -40,7 +41,9 @@ def test_get_disabled_app(
     db_session.commit()
 
     # disabled app should not be returned
-    response = test_client.get(f"/v1/apps/{dummy_apps[0].id}", headers={"x-api-key": dummy_api_key})
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_APPS}/{dummy_apps[0].id}", headers={"x-api-key": dummy_api_key}
+    )
     assert response.status_code == 403, response.json()
 
     # revert changes
@@ -60,7 +63,7 @@ def test_get_private_app(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/apps/{dummy_apps[0].id}",
+        f"{config.ROUTER_PREFIX_APPS}/{dummy_apps[0].id}",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 403, response.json()
@@ -70,7 +73,7 @@ def test_get_private_app(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/apps/{dummy_apps[0].id}",
+        f"{config.ROUTER_PREFIX_APPS}/{dummy_apps[0].id}",
         headers={"x-api-key": dummy_api_key},
     )
 

@@ -5,13 +5,14 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.schemas.app import AppBasic
+from aipolabs.server import config
 
 
 def test_search_apps_with_intent(
     test_client: TestClient,
     dummy_apps: list[sql_models.App],
-    dummy_github_app: sql_models.App,
-    dummy_google_app: sql_models.App,
+    dummy_app_github: sql_models.App,
+    dummy_app_google: sql_models.App,
     dummy_api_key: str,
 ) -> None:
     # try with intent to find GITHUB app
@@ -22,7 +23,7 @@ def test_search_apps_with_intent(
         "offset": 0,
     }
     response = test_client.get(
-        "/v1/apps/search",
+        f"{config.ROUTER_PREFIX_APPS}/search",
         params=search_params,
         headers={"x-api-key": dummy_api_key},
     )
@@ -30,12 +31,12 @@ def test_search_apps_with_intent(
     assert response.status_code == 200, response.json()
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps)
-    assert apps[0].name == dummy_github_app.name
+    assert apps[0].name == dummy_app_github.name
 
     # try with intent to find google app
     search_params["intent"] = "i want to search the web"
     response = test_client.get(
-        "/v1/apps/search",
+        f"{config.ROUTER_PREFIX_APPS}/search",
         params=search_params,
         headers={"x-api-key": dummy_api_key},
     )
@@ -43,13 +44,15 @@ def test_search_apps_with_intent(
     assert response.status_code == 200, response.json()
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps)
-    assert apps[0].name == dummy_google_app.name
+    assert apps[0].name == dummy_app_google.name
 
 
 def test_search_apps_without_intent(
     test_client: TestClient, dummy_apps: list[sql_models.App], dummy_api_key: str
 ) -> None:
-    response = test_client.get("/v1/apps/search", headers={"x-api-key": dummy_api_key})
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
+    )
 
     assert response.status_code == 200, response.json()
 
@@ -60,7 +63,7 @@ def test_search_apps_without_intent(
 def test_search_apps_with_categories(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_aipolabs_test_app: sql_models.App,
+    dummy_app_aipolabs_test: sql_models.App,
 ) -> None:
     search_params = {
         "intent": None,
@@ -69,20 +72,22 @@ def test_search_apps_with_categories(
         "offset": 0,
     }
     response = test_client.get(
-        "/v1/apps/search", params=search_params, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_APPS}/search",
+        params=search_params,
+        headers={"x-api-key": dummy_api_key},
     )
 
     assert response.status_code == 200, response.json()
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 1
-    assert apps[0].name == dummy_aipolabs_test_app.name
+    assert apps[0].name == dummy_app_aipolabs_test.name
 
 
 def test_search_apps_with_categories_and_intent(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_google_app: sql_models.App,
-    dummy_github_app: sql_models.App,
+    dummy_app_google: sql_models.App,
+    dummy_app_github: sql_models.App,
 ) -> None:
     search_params = {
         "intent": "i want to create a new code repo for my project",
@@ -91,14 +96,16 @@ def test_search_apps_with_categories_and_intent(
         "offset": 0,
     }
     response = test_client.get(
-        "/v1/apps/search", params=search_params, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_APPS}/search",
+        params=search_params,
+        headers={"x-api-key": dummy_api_key},
     )
 
     assert response.status_code == 200, response.json()
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 2
-    assert apps[0].name == dummy_github_app.name
-    assert apps[1].name == dummy_google_app.name
+    assert apps[0].name == dummy_app_github.name
+    assert apps[1].name == dummy_app_google.name
 
 
 def test_search_apps_pagination(
@@ -114,7 +121,9 @@ def test_search_apps_pagination(
     }
 
     response = test_client.get(
-        "/v1/apps/search", params=search_params, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_APPS}/search",
+        params=search_params,
+        headers={"x-api-key": dummy_api_key},
     )
 
     assert response.status_code == 200, response.json()
@@ -123,7 +132,9 @@ def test_search_apps_pagination(
 
     search_params["offset"] = len(dummy_apps) - 1
     response = test_client.get(
-        "/v1/apps/search", params=search_params, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_APPS}/search",
+        params=search_params,
+        headers={"x-api-key": dummy_api_key},
     )
 
     assert response.status_code == 200, response.json()
@@ -141,7 +152,9 @@ def test_search_apps_with_disabled_apps(
     db_session.commit()
 
     # disabled app should not be returned
-    response = test_client.get("/v1/apps/search", params={}, headers={"x-api-key": dummy_api_key})
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_APPS}/search", params={}, headers={"x-api-key": dummy_api_key}
+    )
     assert response.status_code == 200, response.json()
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps) - 1
@@ -163,7 +176,7 @@ def test_search_apps_with_private_apps(
     db_session.commit()
 
     response = test_client.get(
-        "/v1/apps/search",
+        f"{config.ROUTER_PREFIX_APPS}/search",
         params={},
         headers={"x-api-key": dummy_api_key},
     )
@@ -177,7 +190,7 @@ def test_search_apps_with_private_apps(
     db_session.commit()
 
     response = test_client.get(
-        "/v1/apps/search",
+        f"{config.ROUTER_PREFIX_APPS}/search",
         params={},
         headers={"x-api-key": dummy_api_key},
     )

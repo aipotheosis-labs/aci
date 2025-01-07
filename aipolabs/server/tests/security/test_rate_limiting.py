@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from limits import RateLimitItemPerDay, RateLimitItemPerSecond
 
+from aipolabs.server import config
 from aipolabs.server.main import app as fastapi_app
 from aipolabs.server.middleware.ratelimit import RateLimitMiddleware
 
@@ -39,11 +40,15 @@ def test_rate_limiting_ip_per_second(test_client: TestClient, dummy_api_key: str
         # Test successful requests
         for counter in range(OVERRIDE_RATE_LIMIT_IP_PER_SECOND):
             logger.info(f"counter: {counter}")
-            response = test_client.get("/v1/apps/search", headers={"x-api-key": dummy_api_key})
+            response = test_client.get(
+                f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
+            )
             assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"
 
         # Test rate limit exceeded
-        response = test_client.get("/v1/apps/search", headers={"x-api-key": dummy_api_key})
+        response = test_client.get(
+            f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
+        )
         assert (
             response.status_code == 429
         ), f"Expected 429 Too Many Requests, got {response.status_code}"
@@ -56,7 +61,9 @@ def test_rate_limiting_ip_per_second(test_client: TestClient, dummy_api_key: str
 
         # sleep to reset rate limit, should succeed
         time.sleep(2)
-        response = test_client.get("/v1/apps/search", headers={"x-api-key": dummy_api_key})
+        response = test_client.get(
+            f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
+        )
         assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"
 
 
@@ -74,11 +81,15 @@ def test_rate_limiting_ip_per_day(test_client: TestClient, dummy_api_key: str) -
         # Test successful requests
         for counter in range(OVERRIDE_RATE_LIMIT_IP_PER_DAY):
             logger.info(f"counter: {counter}")
-            response = test_client.get("/v1/apps/search", headers={"x-api-key": dummy_api_key})
+            response = test_client.get(
+                f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
+            )
             assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"
 
         # Test rate limit exceeded
-        response = test_client.get("/v1/apps/search", headers={"x-api-key": dummy_api_key})
+        response = test_client.get(
+            f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
+        )
         assert (
             response.status_code == 429
         ), f"Expected 429 Too Many Requests, got {response.status_code}"
@@ -91,7 +102,9 @@ def test_rate_limiting_ip_per_day(test_client: TestClient, dummy_api_key: str) -
 
         # sleep for seconds should NOT reset daily rate limit, so should fail
         time.sleep(2)
-        response = test_client.get("/v1/apps/search", headers={"x-api-key": dummy_api_key})
+        response = test_client.get(
+            f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
+        )
         assert (
             response.status_code == 429
         ), f"Expected 429 Too Many Requests, got {response.status_code}"

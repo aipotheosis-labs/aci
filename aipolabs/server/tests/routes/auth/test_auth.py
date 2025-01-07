@@ -29,7 +29,7 @@ MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX = (
 def test_login_google(test_client: TestClient) -> None:
     # This is a redirect response, but we are not following the redirect
     # (set follow_redirects=False when creating the test client)
-    response = test_client.get("/v1/auth/login/google")
+    response = test_client.get(f"{config.ROUTER_PREFIX_AUTH}/login/google")
     assert response.headers["location"].startswith(MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX)
     assert response.status_code == status.HTTP_302_FOUND
 
@@ -42,7 +42,7 @@ def test_callback_google(test_client: TestClient, db_session: Session) -> None:
         "authorize_access_token",
         return_value=MOCK_USER_GOOGLE_AUTH_DATA,
     ):
-        response = test_client.get("/v1/auth/callback/google")
+        response = test_client.get(f"{config.ROUTER_PREFIX_AUTH}/callback/google")
 
     data = response.json()
     assert response.status_code == 200, response.json()
@@ -71,6 +71,6 @@ def test_callback_google(test_client: TestClient, db_session: Session) -> None:
 
 
 def test_login_unsupported_provider(test_client: TestClient) -> None:
-    response = test_client.get("/v1/auth/login/unsupported")
+    response = test_client.get(f"{config.ROUTER_PREFIX_AUTH}/login/unsupported")
     assert response.status_code == 400
     assert response.json() == {"detail": "Unsupported provider"}

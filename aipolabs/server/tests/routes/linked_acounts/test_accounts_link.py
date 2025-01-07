@@ -31,19 +31,19 @@ def setup_and_cleanup(
     test_client: TestClient,
     dummy_api_key: str,
     dummy_api_key_2: str,
-    dummy_google_app: sql_models.App,
-    dummy_github_app: sql_models.App,
+    dummy_app_google: sql_models.App,
+    dummy_app_github: sql_models.App,
 ) -> Generator[list[AppConfigurationPublic], None, None]:
     """Setup app configurations for testing and cleanup after"""
     # create google app configuration
     body = AppConfigurationCreate(
-        app_id=dummy_google_app.id,
+        app_id=dummy_app_google.id,
         security_scheme=SecurityScheme.OAUTH2,
         security_config_overrides={},
     )
 
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
@@ -52,13 +52,13 @@ def setup_and_cleanup(
 
     # create github app configuration under different project (with different api key)
     body = AppConfigurationCreate(
-        app_id=dummy_github_app.id,
+        app_id=dummy_app_github.id,
         security_scheme=SecurityScheme.API_KEY,
         security_config_overrides={},
     )
 
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_2},
     )
@@ -86,7 +86,7 @@ def test_link_oauth2_account_success(
         linked_account_owner_id="test_account",
     )
     response = test_client.post(
-        "/v1/linked-accounts/",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
@@ -125,7 +125,9 @@ def test_link_oauth2_account_success(
             "state": state_jwt,
             "code": "mock_auth_code",  # Usually provided by provider, but we just mock it
         }
-        response = test_client.get("/v1/linked-accounts/oauth2/callback", params=callback_params)
+        response = test_client.get(
+            f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback", params=callback_params
+        )
         assert response.status_code == 200, response.json()
 
     # check linked account is created with the correct values
@@ -152,14 +154,14 @@ def test_link_oauth2_account_success(
 def test_non_existent_app_configuration(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_aipolabs_test_app: sql_models.App,
+    dummy_app_aipolabs_test: sql_models.App,
 ) -> None:
     body = LinkedAccountCreate(
-        app_id=dummy_aipolabs_test_app.id,
+        app_id=dummy_app_aipolabs_test.id,
         linked_account_owner_id="test_account",
     )
     response = test_client.post(
-        "/v1/linked-accounts/",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )

@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 
 from aipolabs.common.db.sql_models import Function
 from aipolabs.common.schemas.function import FunctionExecutionResult
+from aipolabs.server import config
 
 
 def test_execute_function_with_invalid_input(
@@ -13,7 +14,7 @@ def test_execute_function_with_invalid_input(
 ) -> None:
     body = {"function_input": {"name": "John"}}
     response = test_client.post(
-        f"/v1/functions/{dummy_function_aipolabs_test__hello_world_with_args.id}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.id}/execute",
         json=body,
         headers={"x-api-key": dummy_api_key},
     )
@@ -33,7 +34,7 @@ def test_mock_execute_function_with_no_args(
     )
 
     response = test_client.post(
-        f"/v1/functions/{dummy_function_aipolabs_test__hello_world_no_args.id}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.id}/execute",
         json={},
         headers={"x-api-key": dummy_api_key},
     )
@@ -72,7 +73,7 @@ def test_execute_function_with_args(
         }
     }
     response = test_client.post(
-        f"/v1/functions/{dummy_function_aipolabs_test__hello_world_with_args.id}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.id}/execute",
         json=function_execution_request_body,
         headers={"x-api-key": dummy_api_key},
     )
@@ -120,7 +121,7 @@ def test_execute_function_with_nested_args(
         }
     }
     response = test_client.post(
-        f"/v1/functions/{dummy_function_aipolabs_test__hello_world_nested_args.id}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_nested_args.id}/execute",
         json=function_execution_request_body,
         headers={"x-api-key": dummy_api_key},
     )
@@ -153,7 +154,7 @@ def test_http_bearer_auth_token_injection(
     )
 
     response = test_client.post(
-        f"/v1/functions/{dummy_function_aipolabs_test__http_bearer__hello_world.id}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__http_bearer__hello_world.id}/execute",
         json={},
         headers={"x-api-key": dummy_api_key},
     )

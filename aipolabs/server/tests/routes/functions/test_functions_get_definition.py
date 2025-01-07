@@ -7,6 +7,7 @@ from aipolabs.common.schemas.function import (
     AnthropicFunctionDefinition,
     OpenAIFunctionDefinition,
 )
+from aipolabs.server import config
 
 
 def test_get_function_definition_openai(
@@ -15,7 +16,7 @@ def test_get_function_definition_openai(
     dummy_api_key: str,
 ) -> None:
     response = test_client.get(
-        f"/v1/functions/{dummy_function_github__create_repository.id}/definition",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.id}/definition",
         params={"inference_provider": "openai"},
         headers={"x-api-key": dummy_api_key},
     )
@@ -38,7 +39,7 @@ def test_get_function_definition_anthropic(
     dummy_api_key: str,
 ) -> None:
     response = test_client.get(
-        f"/v1/functions/{dummy_function_github__create_repository.id}/definition",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.id}/definition",
         params={"inference_provider": "anthropic"},
         headers={"x-api-key": dummy_api_key},
     )
@@ -61,7 +62,7 @@ def test_get_private_function(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].id}/definition",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 404, response.json()
@@ -71,7 +72,8 @@ def test_get_private_function(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].id}/definition", headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
 
@@ -93,7 +95,8 @@ def test_get_function_that_is_under_private_app(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].id}/definition", headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 404, response.json()
 
@@ -102,7 +105,8 @@ def test_get_function_that_is_under_private_app(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].id}/definition", headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
 
@@ -123,7 +127,8 @@ def test_get_function_that_is_disabled(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].id}/definition", headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 404, response.json()
 
@@ -143,7 +148,8 @@ def test_get_function_that_is_under_disabled_app(
     db_session.commit()
 
     response = test_client.get(
-        f"/v1/functions/{dummy_functions[0].id}/definition", headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 404, response.json()
 

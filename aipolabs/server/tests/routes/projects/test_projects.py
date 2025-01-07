@@ -2,10 +2,11 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import sql_models
+from aipolabs.common.db import crud, sql_models
 from aipolabs.common.enums import Visibility
 from aipolabs.common.schemas.agent import AgentCreate, AgentPublic
-from aipolabs.common.schemas.project import ProjectPublic
+from aipolabs.common.schemas.project import ProjectCreate, ProjectPublic
+from aipolabs.server import config
 
 
 def test_create_project_under_user(
@@ -14,28 +15,23 @@ def test_create_project_under_user(
     dummy_user_bearer_token: str,
     dummy_user: sql_models.User,
 ) -> None:
-    body = {"name": "project test_create_project"}
-
+    body = ProjectCreate(name="project_test_create_project_under_user")
     response = test_client.post(
-        "/v1/projects/",
-        json=body,
+        f"{config.ROUTER_PREFIX_PROJECTS}/",
+        json=body.model_dump(mode="json"),
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
     assert response.status_code == 200, response.json()
     project_public = ProjectPublic.model_validate(response.json())
-    assert project_public.name == body["name"]
+    assert project_public.name == body.name
     assert project_public.owner_id == dummy_user.id
     assert project_public.visibility_access == Visibility.PUBLIC
 
     # Verify the project was actually created in the database and values match returned values
-    db_project = db_session.execute(
-        select(sql_models.Project).filter(sql_models.Project.id == project_public.id)
-    ).scalar_one_or_none()
+    db_project = crud.get_project(db_session, project_public.id)
 
     assert db_project is not None
     assert project_public.model_dump() == ProjectPublic.model_validate(db_project).model_dump()
-
-    # Clean up: no need to delete project, it will be deleted when dummy_user is deleted
 
 
 def test_create_agent(
@@ -43,7 +39,6 @@ def test_create_agent(
     db_session: Session,
     dummy_project: sql_models.Project,
     dummy_user_bearer_token: str,
-    dummy_user: sql_models.User,
 ) -> None:
     body = AgentCreate(
         name="new test agent",
@@ -51,7 +46,7 @@ def test_create_agent(
     )
 
     response = test_client.post(
-        f"/v1/projects/{dummy_project.id}/agents/",
+        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project.id}/agents/",
         json=body.model_dump(mode="json"),
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )

@@ -47,3 +47,19 @@ AOPOLABS_API_KEY_NAME = "X-API-KEY"
 PROJECT_DAILY_QUOTA = int(check_and_get_env_variable("SERVER_PROJECT_DAILY_QUOTA"))
 
 APPLICATION_LOAD_BALANCER_DNS = check_and_get_env_variable("SERVER_APPLICATION_LOAD_BALANCER_DNS")
+
+# APP
+APP_TITLE = "Aipolabs"
+APP_VERSION = "0.0.1-beta.3"
+APP_DOCS_URL = "/v1/docs"
+APP_REDOC_URL = "/v1/redoc"
+APP_OPENAPI_URL = "/v1/openapi.json"
+
+# ROUTERS
+ROUTER_PREFIX_HEALTH = "/v1/health"
+ROUTER_PREFIX_AUTH = "/v1/auth"
+ROUTER_PREFIX_PROJECTS = "/v1/projects"
+ROUTER_PREFIX_APPS = "/v1/apps"
+ROUTER_PREFIX_FUNCTIONS = "/v1/functions"
+ROUTER_PREFIX_APP_CONFIGURATIONS = "/v1/app-configurations"
+ROUTER_PREFIX_LINKED_ACCOUNTS = "/v1/linked-accounts"

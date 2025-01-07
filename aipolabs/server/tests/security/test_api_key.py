@@ -1,6 +1,8 @@
 from fastapi import status
 from fastapi.testclient import TestClient
 
+from aipolabs.server import config
+
 
 # sending a request without a valid api key in x-api-key header to /apps route should fail
 def test_without_api_key(test_client: TestClient) -> None:
@@ -11,7 +13,7 @@ def test_without_api_key(test_client: TestClient) -> None:
         "offset": 0,
     }
     response = test_client.get(
-        "/v1/apps/search",
+        f"{config.ROUTER_PREFIX_APPS}/search",
         params=search_params,
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -26,7 +28,7 @@ def test_with_invalid_api_key(test_client: TestClient, dummy_api_key: str) -> No
         "offset": 0,
     }
     response = test_client.get(
-        "/v1/apps/search",
+        f"{config.ROUTER_PREFIX_APPS}/search",
         params=search_params,
         headers={"x-api-key": "invalid_api_key"},
     )

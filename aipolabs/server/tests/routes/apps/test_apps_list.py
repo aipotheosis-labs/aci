@@ -5,8 +5,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.schemas.app import AppDetails
-
-PATH = "/v1/apps/"
+from aipolabs.server import config
 
 
 def test_list_apps(
@@ -20,7 +19,7 @@ def test_list_apps(
         "offset": 0,
     }
     response = test_client.get(
-        PATH,
+        f"{config.ROUTER_PREFIX_APPS}/",
         params=query_params,
         headers={"x-api-key": dummy_api_key},
     )
@@ -42,14 +41,20 @@ def test_list_apps_pagination(
         "offset": 0,
     }
 
-    response = test_client.get(PATH, params=query_params, headers={"x-api-key": dummy_api_key})
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_APPS}/", params=query_params, headers={"x-api-key": dummy_api_key}
+    )
 
     assert response.status_code == 200, response.json()
     apps = [AppDetails.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps) - 1
 
     query_params["offset"] = len(dummy_apps) - 1
-    response = test_client.get(PATH, params=query_params, headers={"x-api-key": dummy_api_key})
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_APPS}/",
+        params=query_params,
+        headers={"x-api-key": dummy_api_key},
+    )
 
     assert response.status_code == 200, response.json()
     apps = [AppDetails.model_validate(response_app) for response_app in response.json()]
@@ -68,7 +73,7 @@ def test_list_apps_with_private_apps(
     db_session.commit()
 
     response = test_client.get(
-        PATH,
+        f"{config.ROUTER_PREFIX_APPS}/",
         params={},
         headers={"x-api-key": dummy_api_key},
     )
@@ -82,7 +87,7 @@ def test_list_apps_with_private_apps(
     db_session.commit()
 
     response = test_client.get(
-        PATH,
+        f"{config.ROUTER_PREFIX_APPS}/",
         params={},
         headers={"x-api-key": dummy_api_key},
     )

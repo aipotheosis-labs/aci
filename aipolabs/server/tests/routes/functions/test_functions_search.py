@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud, sql_models
 from aipolabs.common.schemas.function import FunctionBasic
+from aipolabs.server import config
 
 
 def test_search_functions_with_disabled_functions(
@@ -16,7 +17,7 @@ def test_search_functions_with_disabled_functions(
     db_session.commit()
 
     response = test_client.get(
-        "/v1/functions/search", params={}, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search", params={}, headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
     functions = [
@@ -40,7 +41,7 @@ def test_search_functions_with_disabled_apps(
     db_session.commit()
 
     response = test_client.get(
-        "/v1/functions/search", params={}, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search", params={}, headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
     functions = [
@@ -72,7 +73,7 @@ def test_search_functions_with_private_functions(
     db_session.commit()
 
     response = test_client.get(
-        "/v1/functions/search", params={}, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search", params={}, headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
     functions = [
@@ -85,7 +86,7 @@ def test_search_functions_with_private_functions(
     db_session.commit()
 
     response = test_client.get(
-        "/v1/functions/search", params={}, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search", params={}, headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
     functions = [
@@ -111,7 +112,7 @@ def test_search_functions_with_private_apps(
     db_session.commit()
 
     response = test_client.get(
-        "/v1/functions/search", params={}, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search", params={}, headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
     functions = [
@@ -131,7 +132,7 @@ def test_search_functions_with_private_apps(
     db_session.commit()
 
     response = test_client.get(
-        "/v1/functions/search", params={}, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search", params={}, headers={"x-api-key": dummy_api_key}
     )
     assert response.status_code == 200, response.json()
     functions = [
@@ -154,7 +155,9 @@ def test_search_functions_with_app_ids(
         "offset": 0,
     }
     response = test_client.get(
-        "/v1/functions/search", params=search_param, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+        params=search_param,
+        headers={"x-api-key": dummy_api_key},
     )
 
     assert response.status_code == 200, response.json()
@@ -188,7 +191,9 @@ def test_search_functions_with_intent(
         "offset": 0,
     }
     response = test_client.get(
-        "/v1/functions/search", params=search_param, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+        params=search_param,
+        headers={"x-api-key": dummy_api_key},
     )
 
     assert response.status_code == 200, response.json()
@@ -201,7 +206,9 @@ def test_search_functions_with_intent(
     # intent2: upload file
     search_param["intent"] = "add this meeting to my calendar"
     response = test_client.get(
-        "/v1/functions/search", params=search_param, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+        params=search_param,
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
     functions = [
@@ -215,16 +222,18 @@ def test_search_functions_with_app_ids_and_intent(
     test_client: TestClient,
     dummy_functions: list[sql_models.Function],
     dummy_api_key: str,
-    dummy_github_app: sql_models.App,
+    dummy_app_github: sql_models.App,
 ) -> None:
     search_param = {
-        "app_ids": [dummy_github_app.id],
+        "app_ids": [dummy_app_github.id],
         "intent": "i want to create a new code repo for my project",
         "limit": 100,
         "offset": 0,
     }
     response = test_client.get(
-        "/v1/functions/search", params=search_param, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+        params=search_param,
+        headers={"x-api-key": dummy_api_key},
     )
 
     assert response.status_code == 200, response.json()
@@ -233,12 +242,12 @@ def test_search_functions_with_app_ids_and_intent(
     ]
     # only functions from the given app ids should be returned
     for function in functions:
-        assert function.name.startswith(dummy_github_app.name)
+        assert function.name.startswith(dummy_app_github.name)
     # total number of functions should be the sum of functions from the given app ids
     assert len(functions) == sum(
-        function.app_id == dummy_github_app.id for function in dummy_functions
+        function.app_id == dummy_app_github.id for function in dummy_functions
     )
-    assert functions[0].name.startswith(dummy_github_app.name)
+    assert functions[0].name.startswith(dummy_app_github.name)
 
 
 def test_search_functions_pagination(
@@ -252,7 +261,9 @@ def test_search_functions_pagination(
     }
 
     response = test_client.get(
-        "/v1/functions/search", params=search_param, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+        params=search_param,
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
     functions = [
@@ -262,7 +273,9 @@ def test_search_functions_pagination(
 
     search_param["offset"] = len(dummy_functions) - 1
     response = test_client.get(
-        "/v1/functions/search", params=search_param, headers={"x-api-key": dummy_api_key}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+        params=search_param,
+        headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
     functions = [

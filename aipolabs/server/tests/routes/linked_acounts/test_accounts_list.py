@@ -11,6 +11,7 @@ from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
     AppConfigurationPublic,
 )
+from aipolabs.server import config
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -29,7 +30,7 @@ def setup_and_cleanup(
         security_scheme=SecurityScheme.OAUTH2,
     )
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
@@ -42,7 +43,7 @@ def setup_and_cleanup(
         security_scheme=SecurityScheme.OAUTH2,
     )
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
@@ -98,7 +99,7 @@ def test_list_linked_accounts_no_filters(
     dummy_api_key: str,
 ) -> None:
     response = test_client.get(
-        "/v1/linked-accounts/",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
@@ -113,7 +114,7 @@ def test_list_linked_accounts_filter_by_app_id(
     dummy_app_2_linked_account_1 = setup_and_cleanup[2]
 
     response = test_client.get(
-        "/v1/linked-accounts/",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
         headers={"x-api-key": dummy_api_key},
         params={"app_id": str(dummy_app_2_linked_account_1.app_id)},
     )
@@ -134,7 +135,7 @@ def test_list_linked_accounts_filter_by_account_name(
     github_linked_account = setup_and_cleanup[2]
 
     response = test_client.get(
-        "/v1/linked-accounts/",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
         headers={"x-api-key": dummy_api_key},
         params={"linked_account_owner_id": github_linked_account.linked_account_owner_id},
     )
@@ -155,7 +156,7 @@ def test_list_linked_accounts_filter_by_app_id_and_account_name(
     dummy_app_1_linked_account_1 = setup_and_cleanup[0]
 
     response = test_client.get(
-        "/v1/linked-accounts/",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
         headers={"x-api-key": dummy_api_key},
         params={
             "app_id": str(dummy_app_1_linked_account_1.app_id),
@@ -174,12 +175,12 @@ def test_list_linked_accounts_filter_by_app_id_and_account_name(
 def test_list_linked_accounts_filter_by_non_existent_app_configuration(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_aipolabs_test_app: sql_models.App,
+    dummy_app_aipolabs_test: sql_models.App,
 ) -> None:
     response = test_client.get(
-        "/v1/linked-accounts/",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
         headers={"x-api-key": dummy_api_key},
-        params={"app_id": str(dummy_aipolabs_test_app.id)},
+        params={"app_id": str(dummy_app_aipolabs_test.id)},
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
     assert len(response.json()) == 0

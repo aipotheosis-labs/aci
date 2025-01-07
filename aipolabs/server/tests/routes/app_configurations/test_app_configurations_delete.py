@@ -10,6 +10,7 @@ from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
     AppConfigurationPublic,
 )
+from aipolabs.server import config
 
 
 @pytest.fixture(autouse=True, scope="module")
@@ -18,15 +19,15 @@ def setup_and_cleanup(
     test_client: TestClient,
     dummy_api_key: str,
     dummy_api_key_2: str,
-    dummy_google_app: sql_models.App,
-    dummy_github_app: sql_models.App,
+    dummy_app_google: sql_models.App,
+    dummy_app_github: sql_models.App,
 ) -> Generator[list[AppConfigurationPublic], None, None]:
     """Setup app configurations for testing and cleanup after"""
     # create google app configuration
-    body = AppConfigurationCreate(app_id=dummy_google_app.id, security_scheme=SecurityScheme.OAUTH2)
+    body = AppConfigurationCreate(app_id=dummy_app_google.id, security_scheme=SecurityScheme.OAUTH2)
 
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
@@ -35,11 +36,11 @@ def setup_and_cleanup(
 
     # create github app configuration
     body = AppConfigurationCreate(
-        app_id=dummy_github_app.id, security_scheme=SecurityScheme.API_KEY
+        app_id=dummy_app_github.id, security_scheme=SecurityScheme.API_KEY
     )
 
     response = test_client.post(
-        "/v1/app-configurations/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_2},
     )
@@ -61,14 +62,14 @@ def test_delete_app_configuration(
     google_app_configuration, _ = setup_and_cleanup
 
     response = test_client.delete(
-        f"/v1/app-configurations/{google_app_configuration.app_id}",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{google_app_configuration.app_id}",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 200, response.json()
 
     # get deleted app configuration should return 404
     response = test_client.get(
-        f"/v1/app-configurations/{google_app_configuration.app_id}",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{google_app_configuration.app_id}",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 404, response.json()
@@ -78,10 +79,10 @@ def test_delete_app_configuration(
 def test_delete_non_existent_app_configuration(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_aipolabs_test_app: sql_models.App,
+    dummy_app_aipolabs_test: sql_models.App,
 ) -> None:
     response = test_client.delete(
-        f"/v1/app-configurations/{dummy_aipolabs_test_app.id}",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{dummy_app_aipolabs_test.id}",
         headers={"x-api-key": dummy_api_key},
     )
     assert response.status_code == 404, response.json()
