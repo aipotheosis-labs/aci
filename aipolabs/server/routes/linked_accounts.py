@@ -204,7 +204,7 @@ async def linked_accounts_oauth2_callback(
 # TODO: add pagination
 @router.get("/", response_model=list[LinkedAccountPublic])
 async def list_linked_accounts(
-    query: Annotated[LinkedAccountsList, Query()],
+    query_params: Annotated[LinkedAccountsList, Query()],
     api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> list[LinkedAccount]:
@@ -214,11 +214,11 @@ async def list_linked_accounts(
     - app_id + linked_account_owner_id can uniquely identify a linked account.
     - This can be an alternatively way to GET /linked-accounts/{linked_account_id} for getting a specific linked account.
     """
-    logger.info(f"Listing linked accounts for api_key_id={api_key_id}, query={query}")
+    logger.info(f"Listing linked accounts for api_key_id={api_key_id}, query_params={query_params}")
 
     db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
     linked_accounts = crud.linked_accounts.get_linked_accounts(
-        db_session, db_project.id, query.app_id, query.linked_account_owner_id
+        db_session, db_project.id, query_params.app_id, query_params.linked_account_owner_id
     )
     return linked_accounts
 
