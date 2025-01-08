@@ -13,6 +13,7 @@ with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
     from aipolabs.server.tests import helper
 
 import logging
+import subprocess
 from datetime import timedelta
 from typing import Generator, cast
 
@@ -22,34 +23,35 @@ from sqlalchemy import inspect
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import Session
 
+from aipolabs.common.logging import create_headline
+
 logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session", autouse=True)
 def db_setup_and_cleanup() -> Generator[None, None, None]:
-    # Use 'with' to manage the session context
+    # make sure we are connecting to the local db not the production db
+    # TODO: it's part of the environment separation problem, need to properly set up failsafe prod isolation
+    assert config.DB_HOST == "localhost"
+
     with utils.create_db_session(config.DB_FULL_URL) as session:
         inspector = cast(Inspector, inspect(session.bind))
 
-        # Check if all tables defined in models are created in the db
+        # exit if any tables exist in the db for safety
         for table in Base.metadata.tables.values():
-            if not inspector.has_table(table.name):
-                pytest.exit(f"Table {table} does not exist in the database.")
+            if inspector.has_table(table.name):
+                pytest.exit(
+                    f"database is not empty (table={table.name} exists), please clear the database before running tests and "
+                    f"make sure to run tests against local database"
+                )
 
-        # Go through all tables and make sure there are no records in the table
-        # (skip alembic_version table)
-        for table in Base.metadata.tables.values():
-            if table.name != "alembic_version" and session.query(table).count() > 0:
-                pytest.exit(f"Table {table} is not empty.")
-
-        yield  # This allows the test to run
-
-        # Clean up: Empty all tables after tests in reverse order of creation
-        for table in reversed(Base.metadata.sorted_tables):
-            if table.name != "alembic_version" and session.query(table).count() > 0:
-                logger.warning(f"Deleting all records from table {table.name}")
-                session.execute(table.delete())
-        session.commit()
+        # use "alembic upgrade head" to create all tables
+        print(create_headline("Creating all tables with alembic"))
+        subprocess.run(["alembic", "upgrade", "head"])
+        yield
+        # use "alembic downgrade base" to drop all tables
+        print(create_headline("Dropping all tables with alembic"))
+        subprocess.run(["alembic", "downgrade", "base"])
 
 
 @pytest.fixture(scope="session")
