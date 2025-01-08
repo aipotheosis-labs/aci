@@ -3,16 +3,18 @@ from typing import Any
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import crud, sql_models
+from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import App, Project
+from aipolabs.common.enums import Visibility
 from aipolabs.common.schemas.app import AppBasic
 from aipolabs.server import config
 
 
 def test_search_apps_with_intent(
     test_client: TestClient,
-    dummy_apps: list[sql_models.App],
-    dummy_app_github: sql_models.App,
-    dummy_app_google: sql_models.App,
+    dummy_apps: list[App],
+    dummy_app_github: App,
+    dummy_app_google: App,
     dummy_api_key: str,
 ) -> None:
     # try with intent to find GITHUB app
@@ -48,7 +50,7 @@ def test_search_apps_with_intent(
 
 
 def test_search_apps_without_intent(
-    test_client: TestClient, dummy_apps: list[sql_models.App], dummy_api_key: str
+    test_client: TestClient, dummy_apps: list[App], dummy_api_key: str
 ) -> None:
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
@@ -63,7 +65,7 @@ def test_search_apps_without_intent(
 def test_search_apps_with_categories(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_app_aipolabs_test: sql_models.App,
+    dummy_app_aipolabs_test: App,
 ) -> None:
     search_params = {
         "intent": None,
@@ -86,8 +88,8 @@ def test_search_apps_with_categories(
 def test_search_apps_with_categories_and_intent(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_app_google: sql_models.App,
-    dummy_app_github: sql_models.App,
+    dummy_app_google: App,
+    dummy_app_github: App,
 ) -> None:
     search_params = {
         "intent": "i want to create a new code repo for my project",
@@ -109,7 +111,7 @@ def test_search_apps_with_categories_and_intent(
 
 
 def test_search_apps_pagination(
-    test_client: TestClient, dummy_apps: list[sql_models.App], dummy_api_key: str
+    test_client: TestClient, dummy_apps: list[App], dummy_api_key: str
 ) -> None:
     assert len(dummy_apps) > 2
 
@@ -145,10 +147,10 @@ def test_search_apps_pagination(
 def test_search_apps_with_disabled_apps(
     db_session: Session,
     test_client: TestClient,
-    dummy_apps: list[sql_models.App],
+    dummy_apps: list[App],
     dummy_api_key: str,
 ) -> None:
-    crud.set_app_enabled_status(db_session, dummy_apps[0].id, False)
+    crud.apps.set_app_enabled_status(db_session, dummy_apps[0].id, False)
     db_session.commit()
 
     # disabled app should not be returned
@@ -160,19 +162,19 @@ def test_search_apps_with_disabled_apps(
     assert len(apps) == len(dummy_apps) - 1
 
     # revert changes
-    crud.set_app_enabled_status(db_session, dummy_apps[0].id, True)
+    crud.apps.set_app_enabled_status(db_session, dummy_apps[0].id, True)
     db_session.commit()
 
 
 def test_search_apps_with_private_apps(
     db_session: Session,
     test_client: TestClient,
-    dummy_apps: list[sql_models.App],
-    dummy_project: sql_models.Project,
+    dummy_apps: list[App],
+    dummy_project: Project,
     dummy_api_key: str,
 ) -> None:
     # private app should not be reachable for project with only public access
-    crud.set_app_visibility(db_session, dummy_apps[0].id, sql_models.Visibility.PRIVATE)
+    crud.apps.set_app_visibility(db_session, dummy_apps[0].id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -186,7 +188,7 @@ def test_search_apps_with_private_apps(
     assert len(apps) == len(dummy_apps) - 1
 
     # private app should be reachable for project with private access
-    crud.set_project_visibility_access(db_session, dummy_project.id, sql_models.Visibility.PRIVATE)
+    crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -200,6 +202,6 @@ def test_search_apps_with_private_apps(
     assert len(apps) == len(dummy_apps)
 
     # revert changes
-    crud.set_project_visibility_access(db_session, dummy_project.id, sql_models.Visibility.PUBLIC)
-    crud.set_app_visibility(db_session, dummy_apps[0].id, sql_models.Visibility.PUBLIC)
+    crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PUBLIC)
+    crud.apps.set_app_visibility(db_session, dummy_apps[0].id, Visibility.PUBLIC)
     db_session.commit()

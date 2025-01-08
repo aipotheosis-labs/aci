@@ -5,7 +5,8 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import crud, sql_models
+from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import App, AppConfiguration, LinkedAccount
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
@@ -23,8 +24,8 @@ def setup_and_cleanup(
     test_client: TestClient,
     dummy_api_key: str,
     dummy_api_key_2: str,
-    dummy_apps: list[sql_models.App],
-) -> Generator[list[sql_models.LinkedAccount], None, None]:
+    dummy_apps: list[App],
+) -> Generator[list[LinkedAccount], None, None]:
     """Setup linked accounts for testing and cleanup after"""
     dummy_app_1 = dummy_apps[0]
     dummy_app_2 = dummy_apps[1]
@@ -57,7 +58,7 @@ def setup_and_cleanup(
     app_configuration_2 = AppConfigurationPublic.model_validate(response.json())
 
     # create a mock linked account for project 1
-    linked_account_1 = crud.create_linked_account(
+    linked_account_1 = crud.linked_accounts.create_linked_account(
         db_session,
         app_configuration_1.project_id,
         app_configuration_1.app_id,
@@ -68,7 +69,7 @@ def setup_and_cleanup(
     )
 
     # create a mock linked account for project 2
-    linked_account_2 = crud.create_linked_account(
+    linked_account_2 = crud.linked_accounts.create_linked_account(
         db_session,
         app_configuration_2.project_id,
         app_configuration_2.app_id,
@@ -83,8 +84,8 @@ def setup_and_cleanup(
     yield [linked_account_1, linked_account_2]
 
     # cleanup
-    db_session.query(sql_models.LinkedAccount).delete()
-    db_session.query(sql_models.AppConfiguration).delete()
+    db_session.query(LinkedAccount).delete()
+    db_session.query(AppConfiguration).delete()
     db_session.commit()
 
 
@@ -92,7 +93,7 @@ def test_get_linked_account(
     test_client: TestClient,
     dummy_api_key: str,
     dummy_api_key_2: str,
-    setup_and_cleanup: list[sql_models.LinkedAccount],
+    setup_and_cleanup: list[LinkedAccount],
 ) -> None:
     linked_account_1, linked_account_2 = setup_and_cleanup
 
@@ -125,7 +126,7 @@ def test_get_linked_account_not_found(
 def test_get_linked_account_forbidden(
     test_client: TestClient,
     dummy_api_key: str,
-    setup_and_cleanup: list[sql_models.LinkedAccount],
+    setup_and_cleanup: list[LinkedAccount],
 ) -> None:
     _, linked_account_2 = setup_and_cleanup
 

@@ -4,7 +4,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import sql_models
+from aipolabs.common.db.sql_models import App, AppConfiguration
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
@@ -19,8 +19,8 @@ def setup_and_cleanup(
     test_client: TestClient,
     dummy_api_key: str,
     dummy_api_key_2: str,
-    dummy_app_google: sql_models.App,
-    dummy_app_github: sql_models.App,
+    dummy_app_google: App,
+    dummy_app_github: App,
 ) -> Generator[list[AppConfigurationPublic], None, None]:
     """Setup app configurations for testing and cleanup after"""
     # create google app configuration
@@ -50,7 +50,7 @@ def setup_and_cleanup(
     yield [google_app_configuration, github_app_configuration]
 
     # cleanup
-    db_session.query(sql_models.AppConfiguration).delete()
+    db_session.query(AppConfiguration).delete()
     db_session.commit()
 
 
@@ -79,7 +79,7 @@ def test_delete_app_configuration(
 def test_delete_non_existent_app_configuration(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_app_aipolabs_test: sql_models.App,
+    dummy_app_aipolabs_test: App,
 ) -> None:
     response = test_client.delete(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{dummy_app_aipolabs_test.id}",

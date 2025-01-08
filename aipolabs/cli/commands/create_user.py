@@ -91,7 +91,7 @@ def create_user_helper(
             profile_picture=profile_picture,
             plan=plan,
         )
-        db_user = crud.create_user(db_session, user_create)
+        db_user = crud.users.create_user(db_session, user_create)
 
         if not skip_dry_run:
             click.echo(create_headline(f"will create new user {db_user.name}"))

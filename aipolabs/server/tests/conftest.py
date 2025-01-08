@@ -63,7 +63,7 @@ def test_client() -> Generator[TestClient, None, None]:
 @pytest.fixture(scope="session", autouse=True)
 def dummy_user() -> Generator[User, None, None]:
     with utils.create_db_session(config.DB_FULL_URL) as fixture_db_session:
-        dummy_user = crud.get_or_create_user(
+        dummy_user = crud.users.create_user(
             fixture_db_session,
             UserCreate(
                 auth_provider="dummy_auth_provider",
@@ -84,7 +84,7 @@ def dummy_user_bearer_token(dummy_user: User) -> str:
 @pytest.fixture(scope="session", autouse=True)
 def dummy_project(dummy_user: User) -> Generator[Project, None, None]:
     with utils.create_db_session(config.DB_FULL_URL) as fixture_db_session:
-        dummy_project = crud.create_project(
+        dummy_project = crud.projects.create_project(
             fixture_db_session,
             owner_id=dummy_user.id,
             name="Dummy Project",
@@ -97,7 +97,7 @@ def dummy_project(dummy_user: User) -> Generator[Project, None, None]:
 @pytest.fixture(scope="session", autouse=True)
 def dummy_api_key(dummy_project: Project) -> Generator[str, None, None]:
     with utils.create_db_session(config.DB_FULL_URL) as fixture_db_session:
-        dummy_agent = crud.create_agent(
+        dummy_agent = crud.projects.create_agent(
             fixture_db_session,
             project_id=dummy_project.id,
             name="Dummy Agent",
@@ -112,7 +112,7 @@ def dummy_api_key(dummy_project: Project) -> Generator[str, None, None]:
 @pytest.fixture(scope="session", autouse=True)
 def dummy_project_2(dummy_user: User) -> Generator[Project, None, None]:
     with utils.create_db_session(config.DB_FULL_URL) as fixture_db_session:
-        dummy_project = crud.create_project(
+        dummy_project = crud.projects.create_project(
             fixture_db_session,
             owner_id=dummy_user.id,
             name="Dummy Project 2",
@@ -125,7 +125,7 @@ def dummy_project_2(dummy_user: User) -> Generator[Project, None, None]:
 @pytest.fixture(scope="session", autouse=True)
 def dummy_api_key_2(dummy_project_2: Project, dummy_user: User) -> Generator[str, None, None]:
     with utils.create_db_session(config.DB_FULL_URL) as fixture_db_session:
-        dummy_agent = crud.create_agent(
+        dummy_agent = crud.projects.create_agent(
             fixture_db_session,
             project_id=dummy_project_2.id,
             name="Dummy Agent 2",

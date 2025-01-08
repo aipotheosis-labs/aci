@@ -2,7 +2,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import crud, sql_models
+from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import Agent, APIKey, Project, User
 from aipolabs.common.enums import Visibility
 from aipolabs.common.schemas.agent import AgentCreate, AgentPublic
 from aipolabs.common.schemas.project import ProjectCreate, ProjectPublic
@@ -13,7 +14,7 @@ def test_create_project_under_user(
     test_client: TestClient,
     db_session: Session,
     dummy_user_bearer_token: str,
-    dummy_user: sql_models.User,
+    dummy_user: User,
 ) -> None:
     body = ProjectCreate(name="project_test_create_project_under_user")
     response = test_client.post(
@@ -28,7 +29,7 @@ def test_create_project_under_user(
     assert project_public.visibility_access == Visibility.PUBLIC
 
     # Verify the project was actually created in the database and values match returned values
-    db_project = crud.get_project(db_session, project_public.id)
+    db_project = crud.projects.get_project(db_session, project_public.id)
 
     assert db_project is not None
     assert project_public.model_dump() == ProjectPublic.model_validate(db_project).model_dump()
@@ -37,7 +38,7 @@ def test_create_project_under_user(
 def test_create_agent(
     test_client: TestClient,
     db_session: Session,
-    dummy_project: sql_models.Project,
+    dummy_project: Project,
     dummy_user_bearer_token: str,
 ) -> None:
     body = AgentCreate(
@@ -58,7 +59,7 @@ def test_create_agent(
 
     # Verify the agent was actually created in the database and values match returned values
     db_agent = db_session.execute(
-        select(sql_models.Agent).filter(sql_models.Agent.id == agent_public.id)
+        select(Agent).filter(Agent.id == agent_public.id)
     ).scalar_one_or_none()
 
     assert db_agent is not None
@@ -66,7 +67,7 @@ def test_create_agent(
 
     # check api keys
     db_api_key = db_session.execute(
-        select(sql_models.APIKey).filter(sql_models.APIKey.agent_id == db_agent.id)
+        select(APIKey).filter(APIKey.agent_id == db_agent.id)
     ).scalar_one_or_none()
     assert db_api_key is not None
     assert len(agent_public.api_keys) == 1

@@ -3,15 +3,17 @@ from typing import Any
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import crud, sql_models
+from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import App, Function, Project
+from aipolabs.common.enums import Visibility
 from aipolabs.common.schemas.app import AppDetails
 from aipolabs.server import config
 
 
 def test_list_apps(
     test_client: TestClient,
-    dummy_apps: list[sql_models.App],
-    dummy_functions: list[sql_models.Function],
+    dummy_apps: list[App],
+    dummy_functions: list[Function],
     dummy_api_key: str,
 ) -> None:
     query_params = {
@@ -32,7 +34,7 @@ def test_list_apps(
 
 
 def test_list_apps_pagination(
-    test_client: TestClient, dummy_apps: list[sql_models.App], dummy_api_key: str
+    test_client: TestClient, dummy_apps: list[App], dummy_api_key: str
 ) -> None:
     assert len(dummy_apps) > 2
 
@@ -64,12 +66,12 @@ def test_list_apps_pagination(
 def test_list_apps_with_private_apps(
     db_session: Session,
     test_client: TestClient,
-    dummy_apps: list[sql_models.App],
-    dummy_project: sql_models.Project,
+    dummy_apps: list[App],
+    dummy_project: Project,
     dummy_api_key: str,
 ) -> None:
     # private app should not be reachable for project with only public access
-    crud.set_app_visibility(db_session, dummy_apps[0].id, sql_models.Visibility.PRIVATE)
+    crud.apps.set_app_visibility(db_session, dummy_apps[0].id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -83,7 +85,7 @@ def test_list_apps_with_private_apps(
     assert len(apps) == len(dummy_apps) - 1
 
     # private app should be reachable for project with private access
-    crud.set_project_visibility_access(db_session, dummy_project.id, sql_models.Visibility.PRIVATE)
+    crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -97,6 +99,6 @@ def test_list_apps_with_private_apps(
     assert len(apps) == len(dummy_apps)
 
     # revert changes
-    crud.set_project_visibility_access(db_session, dummy_project.id, sql_models.Visibility.PUBLIC)
-    crud.set_app_visibility(db_session, dummy_apps[0].id, sql_models.Visibility.PUBLIC)
+    crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PUBLIC)
+    crud.apps.set_app_visibility(db_session, dummy_apps[0].id, Visibility.PUBLIC)
     db_session.commit()

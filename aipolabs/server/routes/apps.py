@@ -33,9 +33,9 @@ async def list_apps(
     """
     Get a list of Apps and their details. Sorted by App name.
     """
-    db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
+    db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
 
-    return crud.get_apps(
+    return crud.apps.get_apps(
         db_session,
         db_project.visibility_access == Visibility.PUBLIC,
         query_params.limit,
@@ -68,7 +68,7 @@ async def search_apps(
             else None
         )
         logger.debug(f"Generated intent embedding: {intent_embedding}")
-        apps_with_scores = crud.search_apps(
+        apps_with_scores = crud.apps.search_apps(
             db_session,
             api_key_id,
             query_params.categories,
@@ -100,7 +100,7 @@ async def get_app_details(
     Returns an application (name, description, and functions).
     """
     try:
-        db_app = crud.get_app(db_session, app_id)
+        db_app = crud.apps.get_app(db_session, app_id)
         if not db_app:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="App not found.")
 
@@ -109,7 +109,7 @@ async def get_app_details(
                 status_code=status.HTTP_403_FORBIDDEN, detail="App is currently disabled."
             )
 
-        db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
+        db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
         # TODO: unify access control logic
         if (
             db_project.visibility_access == Visibility.PUBLIC

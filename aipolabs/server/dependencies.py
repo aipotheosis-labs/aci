@@ -68,7 +68,7 @@ def validate_api_key(
     api_key: Annotated[str, Security(api_key_header)],
 ) -> UUID:
     """Validate API key and return the API key ID. (not the actual API key string)"""
-    db_api_key = crud.get_api_key(db_session, api_key)
+    db_api_key = crud.projects.get_api_key(db_session, api_key)
     if db_api_key is None:
         logger.error(f"api key not found: {api_key[:8]}****")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API key")
@@ -92,7 +92,7 @@ def validate_project_quota(
 ) -> None:
     logger.debug(f"Validating project quota for API key ID: {api_key_id}")
     try:
-        db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
+        db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
     except Exception as e:
         logger.exception(f"Failed to get project by API key ID: {api_key_id}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
@@ -107,7 +107,7 @@ def validate_project_quota(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Daily quota exceeded")
 
     try:
-        crud.increase_project_quota_usage(db_session, db_project)
+        crud.projects.increase_project_quota_usage(db_session, db_project)
     except Exception as e:
         logger.exception(f"Failed to increase project quota usage for project {db_project.id}")
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))

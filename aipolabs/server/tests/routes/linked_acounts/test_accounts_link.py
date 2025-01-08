@@ -10,7 +10,8 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import crud, sql_models
+from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import App, AppConfiguration
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
@@ -31,8 +32,8 @@ def setup_and_cleanup(
     test_client: TestClient,
     dummy_api_key: str,
     dummy_api_key_2: str,
-    dummy_app_google: sql_models.App,
-    dummy_app_github: sql_models.App,
+    dummy_app_google: App,
+    dummy_app_github: App,
 ) -> Generator[list[AppConfigurationPublic], None, None]:
     """Setup app configurations for testing and cleanup after"""
     # create google app configuration
@@ -68,7 +69,7 @@ def setup_and_cleanup(
     yield [google_app_configuration, github_app_configuration]
 
     # cleanup
-    db_session.query(sql_models.AppConfiguration).delete()
+    db_session.query(AppConfiguration).delete()
     db_session.commit()
 
 
@@ -131,7 +132,7 @@ def test_link_oauth2_account_success(
         assert response.status_code == 200, response.json()
 
     # check linked account is created with the correct values
-    linked_account = crud.get_linked_account(
+    linked_account = crud.linked_accounts.get_linked_account(
         db_session,
         state.project_id,
         state.app_id,
@@ -147,14 +148,14 @@ def test_link_oauth2_account_success(
     assert linked_account.linked_account_owner_id == state.linked_account_owner_id
 
     # cleanup
-    crud.delete_linked_account(db_session, linked_account.id)
+    crud.linked_accounts.delete_linked_account(db_session, linked_account.id)
     db_session.commit()
 
 
 def test_non_existent_app_configuration(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_app_aipolabs_test: sql_models.App,
+    dummy_app_aipolabs_test: App,
 ) -> None:
     body = LinkedAccountCreate(
         app_id=dummy_app_aipolabs_test.id,

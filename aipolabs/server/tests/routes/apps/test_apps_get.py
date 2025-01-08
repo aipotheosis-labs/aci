@@ -1,7 +1,9 @@
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import crud, sql_models
+from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import App, Project
+from aipolabs.common.enums import Visibility
 from aipolabs.common.schemas.app import AppBasicWithFunctions
 from aipolabs.server import config
 
@@ -11,7 +13,7 @@ NON_EXISTENT_APP_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 def test_get_app(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_app_github: sql_models.App,
+    dummy_app_github: App,
 ) -> None:
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/{dummy_app_github.id}",
@@ -34,10 +36,10 @@ def test_get_non_existent_app(test_client: TestClient, dummy_api_key: str) -> No
 def test_get_disabled_app(
     db_session: Session,
     test_client: TestClient,
-    dummy_apps: list[sql_models.App],
+    dummy_apps: list[App],
     dummy_api_key: str,
 ) -> None:
-    crud.set_app_enabled_status(db_session, dummy_apps[0].id, False)
+    crud.apps.set_app_enabled_status(db_session, dummy_apps[0].id, False)
     db_session.commit()
 
     # disabled app should not be returned
@@ -47,19 +49,19 @@ def test_get_disabled_app(
     assert response.status_code == 403, response.json()
 
     # revert changes
-    crud.set_app_enabled_status(db_session, dummy_apps[0].id, True)
+    crud.apps.set_app_enabled_status(db_session, dummy_apps[0].id, True)
     db_session.commit()
 
 
 def test_get_private_app(
     db_session: Session,
     test_client: TestClient,
-    dummy_apps: list[sql_models.App],
-    dummy_project: sql_models.Project,
+    dummy_apps: list[App],
+    dummy_project: Project,
     dummy_api_key: str,
 ) -> None:
     # private app should not be reachable for project with only public access
-    crud.set_app_visibility(db_session, dummy_apps[0].id, sql_models.Visibility.PRIVATE)
+    crud.apps.set_app_visibility(db_session, dummy_apps[0].id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -69,7 +71,7 @@ def test_get_private_app(
     assert response.status_code == 403, response.json()
 
     # private app should be reachable for project with private access
-    crud.set_project_visibility_access(db_session, dummy_project.id, sql_models.Visibility.PRIVATE)
+    crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -82,8 +84,8 @@ def test_get_private_app(
     assert app.name == dummy_apps[0].name
 
     # revert changes
-    crud.set_project_visibility_access(db_session, dummy_project.id, sql_models.Visibility.PUBLIC)
-    crud.set_app_visibility(db_session, dummy_apps[0].id, sql_models.Visibility.PUBLIC)
+    crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PUBLIC)
+    crud.apps.set_app_visibility(db_session, dummy_apps[0].id, Visibility.PUBLIC)
     db_session.commit()
 
 

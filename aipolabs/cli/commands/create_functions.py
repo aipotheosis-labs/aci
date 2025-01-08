@@ -46,7 +46,7 @@ def create_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UU
             embedding_dimension=config.OPENAI_EMBEDDING_DIMENSION,
         )
 
-        db_functions = crud.create_functions(db_session, functions, function_embeddings)
+        db_functions = crud.functions.create_functions(db_session, functions, function_embeddings)
         if not skip_dry_run:
             click.echo(create_headline(f"will create {len(functions)} functions"))
             for db_function in db_functions:

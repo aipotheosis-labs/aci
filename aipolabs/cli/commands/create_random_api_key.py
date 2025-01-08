@@ -13,7 +13,8 @@ import click
 from aipolabs.cli import config
 from aipolabs.cli.commands import create_agent, create_project, create_user
 from aipolabs.common import utils
-from aipolabs.common.db import crud, sql_models
+from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import APIKey
 from aipolabs.common.enums import SubscriptionPlan, Visibility
 from aipolabs.common.logging import create_headline
 
@@ -63,7 +64,7 @@ def create_random_api_key_helper(visibility_access: Visibility) -> str:
 
     # get the api key by agent id
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
-        db_api_key: sql_models.APIKey | None = crud.get_api_key_by_agent_id(db_session, agent_id)
+        db_api_key: APIKey | None = crud.projects.get_api_key_by_agent_id(db_session, agent_id)
         if not db_api_key:
             raise ValueError(f"API key with agent ID {agent_id} not found")
         api_key: str = db_api_key.key

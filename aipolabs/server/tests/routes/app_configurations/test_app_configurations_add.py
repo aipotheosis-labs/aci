@@ -4,7 +4,8 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import crud, sql_models
+from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import App, AppConfiguration
 from aipolabs.common.enums import SecurityScheme, Visibility
 from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
@@ -19,14 +20,14 @@ NON_EXISTENT_APP_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 def cleanup(db_session: Session) -> Generator[None, None, None]:
     """Automatically clean up app configurations table after each test"""
     yield
-    db_session.query(sql_models.AppConfiguration).delete()
+    db_session.query(AppConfiguration).delete()
     db_session.commit()
 
 
 def test_create_app_configuration(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_apps: list[sql_models.App],
+    dummy_apps: list[App],
 ) -> None:
     # success case
     dummy_app = dummy_apps[0]
@@ -53,7 +54,7 @@ def test_create_app_configuration(
 def test_create_app_configuration_security_scheme_not_supported(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_apps: list[sql_models.App],
+    dummy_apps: list[App],
 ) -> None:
     dummy_app = dummy_apps[0]
     body = AppConfigurationCreate(app_id=dummy_app.id, security_scheme=SecurityScheme.HTTP_BASIC)
@@ -84,10 +85,10 @@ def test_create_app_configuration_app_not_enabled(
     test_client: TestClient,
     db_session: Session,
     dummy_api_key: str,
-    dummy_app_google: sql_models.App,
+    dummy_app_google: App,
 ) -> None:
     # disable the app
-    crud.set_app_enabled_status(db_session, dummy_app_google.id, False)
+    crud.apps.set_app_enabled_status(db_session, dummy_app_google.id, False)
     db_session.commit()
 
     # try creating app configuration
@@ -101,7 +102,7 @@ def test_create_app_configuration_app_not_enabled(
     assert response.json()["detail"] == "App is not enabled"
 
     # re-enable the app
-    crud.set_app_enabled_status(db_session, dummy_app_google.id, True)
+    crud.apps.set_app_enabled_status(db_session, dummy_app_google.id, True)
     db_session.commit()
 
 
@@ -109,10 +110,10 @@ def test_create_app_configuration_project_does_not_have_access(
     test_client: TestClient,
     db_session: Session,
     dummy_api_key: str,
-    dummy_app_google: sql_models.App,
+    dummy_app_google: App,
 ) -> None:
     # set the app to private
-    crud.set_app_visibility(db_session, dummy_app_google.id, Visibility.PRIVATE)
+    crud.apps.set_app_visibility(db_session, dummy_app_google.id, Visibility.PRIVATE)
     db_session.commit()
 
     # try creating app configuration
@@ -126,5 +127,5 @@ def test_create_app_configuration_project_does_not_have_access(
     assert response.json()["detail"] == "Project does not have access to this app."
 
     # revert changes
-    crud.set_app_visibility(db_session, dummy_app_google.id, Visibility.PUBLIC)
+    crud.apps.set_app_visibility(db_session, dummy_app_google.id, Visibility.PUBLIC)
     db_session.commit()

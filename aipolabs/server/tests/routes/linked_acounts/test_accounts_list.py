@@ -5,7 +5,8 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import crud, sql_models
+from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import App, AppConfiguration, LinkedAccount
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
@@ -19,8 +20,8 @@ def setup_and_cleanup(
     db_session: Session,
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_apps: list[sql_models.App],
-) -> Generator[list[sql_models.LinkedAccount], None, None]:
+    dummy_apps: list[App],
+) -> Generator[list[LinkedAccount], None, None]:
     """Setup linked accounts for testing and cleanup after"""
     dummy_app_1 = dummy_apps[0]
     dummy_app_2 = dummy_apps[1]
@@ -51,7 +52,7 @@ def setup_and_cleanup(
     dummy_app_2_app_configuration = AppConfigurationPublic.model_validate(response.json())
 
     # create mock linked accounts
-    dummy_app_1_linked_account_1 = crud.create_linked_account(
+    dummy_app_1_linked_account_1 = crud.linked_accounts.create_linked_account(
         db_session,
         dummy_app_1_app_configuration.project_id,
         dummy_app_1_app_configuration.app_id,
@@ -61,7 +62,7 @@ def setup_and_cleanup(
         enabled=True,
     )
 
-    dummy_app_1_linked_account_2 = crud.create_linked_account(
+    dummy_app_1_linked_account_2 = crud.linked_accounts.create_linked_account(
         db_session,
         dummy_app_1_app_configuration.project_id,
         dummy_app_1_app_configuration.app_id,
@@ -71,7 +72,7 @@ def setup_and_cleanup(
         enabled=True,
     )
 
-    dummy_app_2_linked_account_1 = crud.create_linked_account(
+    dummy_app_2_linked_account_1 = crud.linked_accounts.create_linked_account(
         db_session,
         dummy_app_2_app_configuration.project_id,
         dummy_app_2_app_configuration.app_id,
@@ -89,8 +90,8 @@ def setup_and_cleanup(
     ]
 
     # cleanup
-    db_session.query(sql_models.LinkedAccount).delete()
-    db_session.query(sql_models.AppConfiguration).delete()
+    db_session.query(LinkedAccount).delete()
+    db_session.query(AppConfiguration).delete()
     db_session.commit()
 
 
@@ -109,7 +110,7 @@ def test_list_linked_accounts_no_filters(
 def test_list_linked_accounts_filter_by_app_id(
     test_client: TestClient,
     dummy_api_key: str,
-    setup_and_cleanup: list[sql_models.LinkedAccount],
+    setup_and_cleanup: list[LinkedAccount],
 ) -> None:
     dummy_app_2_linked_account_1 = setup_and_cleanup[2]
 
@@ -130,7 +131,7 @@ def test_list_linked_accounts_filter_by_app_id(
 def test_list_linked_accounts_filter_by_account_name(
     test_client: TestClient,
     dummy_api_key: str,
-    setup_and_cleanup: list[sql_models.LinkedAccount],
+    setup_and_cleanup: list[LinkedAccount],
 ) -> None:
     github_linked_account = setup_and_cleanup[2]
 
@@ -151,7 +152,7 @@ def test_list_linked_accounts_filter_by_account_name(
 def test_list_linked_accounts_filter_by_app_id_and_account_name(
     test_client: TestClient,
     dummy_api_key: str,
-    setup_and_cleanup: list[sql_models.LinkedAccount],
+    setup_and_cleanup: list[LinkedAccount],
 ) -> None:
     dummy_app_1_linked_account_1 = setup_and_cleanup[0]
 
@@ -175,7 +176,7 @@ def test_list_linked_accounts_filter_by_app_id_and_account_name(
 def test_list_linked_accounts_filter_by_non_existent_app_configuration(
     test_client: TestClient,
     dummy_api_key: str,
-    dummy_app_aipolabs_test: sql_models.App,
+    dummy_app_aipolabs_test: App,
 ) -> None:
     response = test_client.get(
         f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",

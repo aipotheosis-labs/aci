@@ -64,7 +64,7 @@ def create_app_helper(app_file: Path, secrets_file: Path | None, skip_dry_run: b
 
     # Create the app in the database
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
-        db_app = crud.create_app(db_session, app, app_embedding)
+        db_app = crud.apps.create_app(db_session, app, app_embedding)
         if not skip_dry_run:
             click.echo(create_headline(f"Will create new app '{db_app.name}'"))
             click.echo(db_app)

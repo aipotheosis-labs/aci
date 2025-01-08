@@ -110,17 +110,21 @@ async def auth_callback(
         raise HTTPException(status_code=400, detail="User ID not found from auth provider")
 
     try:
-        user = crud.get_or_create_user(
-            db_session,
-            UserCreate(
-                auth_provider=user_info["iss"],
-                auth_user_id=user_info["sub"],
-                name=user_info["name"],
-                email=user_info["email"],
-                profile_picture=user_info["picture"],
-            ),
+        user = crud.users.get_user_by_auth_provider_id(
+            db_session, auth_provider=user_info["iss"], auth_user_id=user_info["sub"]
         )
-        db_session.commit()
+        if user is None:
+            user = crud.users.create_user(
+                db_session,
+                UserCreate(
+                    auth_provider=user_info["iss"],
+                    auth_user_id=user_info["sub"],
+                    name=user_info["name"],
+                    email=user_info["email"],
+                    profile_picture=user_info["picture"],
+                ),
+            )
+            db_session.commit()
     except Exception as e:
         # TODO: remove PII log
         logger.error(f"Failed to create or get user: {user_info}", exc_info=True)

@@ -1,7 +1,9 @@
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import crud, sql_models
+from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import App, Function, Project
+from aipolabs.common.enums import Visibility
 from aipolabs.common.schemas.function import FunctionBasic
 from aipolabs.server import config
 
@@ -9,11 +11,11 @@ from aipolabs.server import config
 def test_search_functions_with_disabled_functions(
     db_session: Session,
     test_client: TestClient,
-    dummy_functions: list[sql_models.Function],
+    dummy_functions: list[Function],
     dummy_api_key: str,
 ) -> None:
     # disabled functions should not be returned
-    crud.set_function_enabled_status(db_session, dummy_functions[0].id, False)
+    crud.functions.set_function_enabled_status(db_session, dummy_functions[0].id, False)
     db_session.commit()
 
     response = test_client.get(
@@ -26,18 +28,18 @@ def test_search_functions_with_disabled_functions(
     assert len(functions) == len(dummy_functions) - 1
 
     # revert changes
-    crud.set_function_enabled_status(db_session, dummy_functions[0].id, True)
+    crud.functions.set_function_enabled_status(db_session, dummy_functions[0].id, True)
     db_session.commit()
 
 
 def test_search_functions_with_disabled_apps(
     db_session: Session,
     test_client: TestClient,
-    dummy_functions: list[sql_models.Function],
+    dummy_functions: list[Function],
     dummy_api_key: str,
 ) -> None:
     # all functions (enabled or not) under disabled apps should not be returned
-    crud.set_app_enabled_status(db_session, dummy_functions[0].app_id, False)
+    crud.apps.set_app_enabled_status(db_session, dummy_functions[0].app_id, False)
     db_session.commit()
 
     response = test_client.get(
@@ -57,19 +59,19 @@ def test_search_functions_with_disabled_apps(
     ), "all functions under disabled apps should not be returned"
 
     # revert changes
-    crud.set_app_enabled_status(db_session, dummy_functions[0].app_id, True)
+    crud.apps.set_app_enabled_status(db_session, dummy_functions[0].app_id, True)
     db_session.commit()
 
 
 def test_search_functions_with_private_functions(
     db_session: Session,
     test_client: TestClient,
-    dummy_project: sql_models.Project,
-    dummy_functions: list[sql_models.Function],
+    dummy_project: Project,
+    dummy_functions: list[Function],
     dummy_api_key: str,
 ) -> None:
     # private functions should not be reachable for project with only public access
-    crud.set_function_visibility(db_session, dummy_functions[0].id, sql_models.Visibility.PRIVATE)
+    crud.functions.set_function_visibility(db_session, dummy_functions[0].id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -82,7 +84,7 @@ def test_search_functions_with_private_functions(
     assert len(functions) == len(dummy_functions) - 1
 
     # private functions should be reachable for project with private access
-    crud.set_project_visibility_access(db_session, dummy_project.id, sql_models.Visibility.PRIVATE)
+    crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -95,20 +97,20 @@ def test_search_functions_with_private_functions(
     assert len(functions) == len(dummy_functions)
 
     # revert changes
-    crud.set_project_visibility_access(db_session, dummy_project.id, sql_models.Visibility.PUBLIC)
-    crud.set_function_visibility(db_session, dummy_functions[0].id, sql_models.Visibility.PUBLIC)
+    crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PUBLIC)
+    crud.functions.set_function_visibility(db_session, dummy_functions[0].id, Visibility.PUBLIC)
     db_session.commit()
 
 
 def test_search_functions_with_private_apps(
     db_session: Session,
     test_client: TestClient,
-    dummy_project: sql_models.Project,
-    dummy_functions: list[sql_models.Function],
+    dummy_project: Project,
+    dummy_functions: list[Function],
     dummy_api_key: str,
 ) -> None:
     # all functions (public and private) under private apps should not be reachable for project with only public access
-    crud.set_app_visibility(db_session, dummy_functions[0].app_id, sql_models.Visibility.PRIVATE)
+    crud.apps.set_app_visibility(db_session, dummy_functions[0].app_id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -128,7 +130,7 @@ def test_search_functions_with_private_apps(
     ), "all functions under private apps should not be returned"
 
     # all functions (public and private) under private apps should be reachable for project with private access
-    crud.set_project_visibility_access(db_session, dummy_project.id, sql_models.Visibility.PRIVATE)
+    crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -141,13 +143,13 @@ def test_search_functions_with_private_apps(
     assert len(functions) == len(dummy_functions)
 
     # revert changes
-    crud.set_app_visibility(db_session, dummy_functions[0].app_id, sql_models.Visibility.PUBLIC)
-    crud.set_project_visibility_access(db_session, dummy_project.id, sql_models.Visibility.PUBLIC)
+    crud.apps.set_app_visibility(db_session, dummy_functions[0].app_id, Visibility.PUBLIC)
+    crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PUBLIC)
     db_session.commit()
 
 
 def test_search_functions_with_app_ids(
-    test_client: TestClient, dummy_functions: list[sql_models.Function], dummy_api_key: str
+    test_client: TestClient, dummy_functions: list[Function], dummy_api_key: str
 ) -> None:
     search_param = {
         "app_ids": [dummy_functions[0].app_id, dummy_functions[1].app_id],
@@ -178,9 +180,9 @@ def test_search_functions_with_app_ids(
 
 def test_search_functions_with_intent(
     test_client: TestClient,
-    dummy_functions: list[sql_models.Function],
-    dummy_function_github__create_repository: sql_models.Function,
-    dummy_function_google__calendar_create_event: sql_models.Function,
+    dummy_functions: list[Function],
+    dummy_function_github__create_repository: Function,
+    dummy_function_google__calendar_create_event: Function,
     dummy_api_key: str,
 ) -> None:
 
@@ -220,9 +222,9 @@ def test_search_functions_with_intent(
 
 def test_search_functions_with_app_ids_and_intent(
     test_client: TestClient,
-    dummy_functions: list[sql_models.Function],
+    dummy_functions: list[Function],
     dummy_api_key: str,
-    dummy_app_github: sql_models.App,
+    dummy_app_github: App,
 ) -> None:
     search_param = {
         "app_ids": [dummy_app_github.id],
@@ -251,7 +253,7 @@ def test_search_functions_with_app_ids_and_intent(
 
 
 def test_search_functions_pagination(
-    test_client: TestClient, dummy_functions: list[sql_models.Function], dummy_api_key: str
+    test_client: TestClient, dummy_functions: list[Function], dummy_api_key: str
 ) -> None:
     assert len(dummy_functions) > 2
 

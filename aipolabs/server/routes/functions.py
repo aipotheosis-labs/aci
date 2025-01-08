@@ -9,7 +9,8 @@ from httpx import HTTPStatusError
 from sqlalchemy.orm import Session
 
 from aipolabs.common import processor
-from aipolabs.common.db import crud, sql_models
+from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import App, Function
 from aipolabs.common.enums import Protocol, SecurityScheme, Visibility
 from aipolabs.common.logging import create_headline, get_logger
 from aipolabs.common.openai_service import OpenAIService
@@ -38,11 +39,11 @@ async def list_functions(
     query_params: Annotated[FunctionsList, Query()],
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
-) -> list[sql_models.Function]:
+) -> list[Function]:
     """Get a list of functions and their details. Sorted by function name."""
-    db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
+    db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
 
-    return crud.get_functions(
+    return crud.functions.get_functions(
         db_session,
         db_project.visibility_access == Visibility.PUBLIC,
         query_params.app_ids,
@@ -56,7 +57,7 @@ async def search_functions(
     query_params: Annotated[FunctionsSearch, Query()],
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
-) -> list[sql_models.Function]:
+) -> list[Function]:
     """
     Returns the basic information of a list of functions.
     """
@@ -75,7 +76,7 @@ async def search_functions(
             else None
         )
         logger.debug(f"Generated intent embedding: {intent_embedding}")
-        functions = crud.search_functions(
+        functions = crud.functions.search_functions(
             db_session,
             api_key_id,
             query_params.app_ids,
@@ -108,13 +109,13 @@ async def get_function_definition(
         default=InferenceProvider.OPENAI,
         description="The inference provider, which determines the format of the function definition.",
     ),
-) -> sql_models.Function:
+) -> Function:
     """
     Return the function definition that can be used directly by LLM.
     The actual content depends on the intended model (inference provider, e.g., OpenAI, Anthropic, etc.) and the function itself.
     """
     try:
-        function = crud.get_function(db_session, api_key_id, function_id)
+        function = crud.functions.get_function(db_session, api_key_id, function_id)
         if not function:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Function not found.")
 
@@ -156,7 +157,7 @@ async def execute(
 ) -> FunctionExecutionResult:
     try:
         # Fetch function definition
-        db_function = crud.get_function(db_session, api_key_id, function_id)
+        db_function = crud.functions.get_function(db_session, api_key_id, function_id)
         if not db_function:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Function not found.")
 
@@ -180,7 +181,7 @@ async def execute(
 # app_instance: AppBase = app_factory.get_app_instance(function_name)
 # app_instance.validate_input(db_function.parameters, function_execution_params.function_input)
 # return app_instance.execute(function_name, function_execution_params.function_input)
-def _execute(db_function: sql_models.Function, function_input: dict) -> FunctionExecutionResult:
+def _execute(db_function: Function, function_input: dict) -> FunctionExecutionResult:
     # validate user input against the visible parameters
     try:
         logger.info(f"validating function input for {db_function.name}")
@@ -262,7 +263,7 @@ def _execute(db_function: sql_models.Function, function_input: dict) -> Function
 
 
 def _inject_security_credentials(
-    db_app: sql_models.App, headers: dict, query: dict, body: dict, cookies: dict
+    db_app: App, headers: dict, query: dict, body: dict, cookies: dict
 ) -> None:
     """Injects authentication tokens based on the app's security schemes.
 
@@ -273,7 +274,7 @@ def _inject_security_credentials(
     # and if not found, then use the app's default
 
     Args:
-        db_app (sql_models.App): The application model containing security schemes and authentication info.
+        db_app (App): The application model containing security schemes and authentication info.
         query (dict): The query parameters dictionary.
         headers (dict): The headers dictionary.
         cookies (dict): The cookies dictionary.

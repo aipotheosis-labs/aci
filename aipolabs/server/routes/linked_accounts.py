@@ -9,7 +9,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db import crud, sql_models
+from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import App, LinkedAccount
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.linked_accounts import (
@@ -52,11 +53,13 @@ async def link_account(
         f"linked_account_owner_id={body.linked_account_owner_id}"
     )
     # validations
-    db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
-    db_app_configuration = crud.get_app_configuration(db_session, db_project.id, body.app_id)
+    db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
+    db_app_configuration = crud.app_configurations.get_app_configuration(
+        db_session, db_project.id, body.app_id
+    )
     if not db_app_configuration:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "App not configured")
-    db_app = crud.get_app(db_session, db_app_configuration.app_id)
+    db_app = crud.apps.get_app(db_session, db_app_configuration.app_id)
     if not db_app:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "App not found")
 
@@ -133,7 +136,7 @@ async def linked_accounts_oauth2_callback(
             status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to decode state"
         )
     # create oauth2 client
-    db_app = crud.get_app(db_session, state.app_id)
+    db_app = crud.apps.get_app(db_session, state.app_id)
     if not db_app:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "App not found")
     oauth2_client = _create_oauth2_client(db_app)
@@ -163,7 +166,7 @@ async def linked_accounts_oauth2_callback(
         # if the linked account already exists, update it, otherwise create a new one
         # TODO: consider separating the logic for updating and creating a linked account or give warning to clients
         # if the linked account already exists to avoid accidental overwriting the account
-        db_linked_account = crud.get_linked_account(
+        db_linked_account = crud.linked_accounts.get_linked_account(
             db_session,
             state.project_id,
             state.app_id,
@@ -180,7 +183,7 @@ async def linked_accounts_oauth2_callback(
                 f"Creating oauth2 linked account for project_id={state.project_id}, "
                 f"app_id={state.app_id}, linked_account_owner_id={state.linked_account_owner_id}"
             )
-            db_linked_account = crud.create_linked_account(
+            db_linked_account = crud.linked_accounts.create_linked_account(
                 db_session,
                 project_id=state.project_id,
                 app_id=state.app_id,
@@ -204,7 +207,7 @@ async def list_linked_accounts(
     query: Annotated[LinkedAccountsList, Query()],
     api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-) -> list[sql_models.LinkedAccount]:
+) -> list[LinkedAccount]:
     """
     List all linked accounts.
     - Optionally filter by app_id and linked_account_owner_id.
@@ -213,14 +216,14 @@ async def list_linked_accounts(
     """
     logger.info(f"Listing linked accounts for api_key_id={api_key_id}, query={query}")
 
-    db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
-    linked_accounts = crud.get_linked_accounts(
+    db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
+    linked_accounts = crud.linked_accounts.get_linked_accounts(
         db_session, db_project.id, query.app_id, query.linked_account_owner_id
     )
     return linked_accounts
 
 
-def _create_oauth2_client(db_app: sql_models.App) -> StarletteOAuth2App:
+def _create_oauth2_client(db_app: App) -> StarletteOAuth2App:
     """
     Create an OAuth2 client for the given app.
     """
@@ -256,14 +259,14 @@ async def get_linked_account(
     linked_account_id: UUID,
     api_key_id: Annotated[UUID, Depends(deps.validate_api_key)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-) -> sql_models.LinkedAccount:
+) -> LinkedAccount:
     """
     Get a linked account by its id.
     - linked_account_id uniquely identifies a linked account across the platform.
     """
     # validations
-    db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
-    db_linked_account = crud.get_linked_account_by_id(db_session, linked_account_id)
+    db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
+    db_linked_account = crud.linked_accounts.get_linked_account_by_id(db_session, linked_account_id)
     if not db_linked_account:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "linked account not found")
     # TODO: consider return 404 instead to avoid leaking unnecessary information
@@ -284,8 +287,8 @@ async def delete_linked_account(
     """
     Delete a linked account by its id.
     """
-    db_project = crud.get_project_by_api_key_id(db_session, api_key_id)
-    db_linked_account = crud.get_linked_account_by_id(db_session, linked_account_id)
+    db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
+    db_linked_account = crud.linked_accounts.get_linked_account_by_id(db_session, linked_account_id)
     if not db_linked_account:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "linked account not found")
     # TODO: consider return 404 instead to avoid leaking unnecessary information
@@ -294,7 +297,7 @@ async def delete_linked_account(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="The linked account does not belong to the project",
         )
-    crud.delete_linked_account(db_session, linked_account_id)
+    crud.linked_accounts.delete_linked_account(db_session, linked_account_id)
     db_session.commit()
 
     return None
