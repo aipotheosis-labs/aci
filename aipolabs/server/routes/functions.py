@@ -6,12 +6,12 @@ import httpx
 import jsonschema
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from httpx import HTTPStatusError
-from sqlalchemy.orm import Session
 
 from aipolabs.common import processor
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import App, Function
 from aipolabs.common.enums import Protocol, SecurityScheme, Visibility
+from aipolabs.common.exceptions import FunctionDisabled, FunctionNotFound
 from aipolabs.common.logging import create_headline, get_logger
 from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.function import (
@@ -26,8 +26,8 @@ from aipolabs.common.schemas.function import (
     OpenAIFunctionDefinition,
     RestMetadata,
 )
-from aipolabs.server import config
-from aipolabs.server.dependencies import validate_api_key, yield_db_session
+from aipolabs.server import acl, config
+from aipolabs.server import dependencies as deps
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -36,16 +36,13 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
 
 @router.get("/", response_model=list[FunctionDetails])
 async def list_functions(
+    context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[FunctionsList, Query()],
-    db_session: Annotated[Session, Depends(yield_db_session)],
-    api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> list[Function]:
     """Get a list of functions and their details. Sorted by function name."""
-    db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
-
     return crud.functions.get_functions(
-        db_session,
-        db_project.visibility_access == Visibility.PUBLIC,
+        context.db_session,
+        context.project.visibility_access == Visibility.PUBLIC,
         query_params.app_ids,
         query_params.limit,
         query_params.offset,
@@ -54,9 +51,8 @@ async def list_functions(
 
 @router.get("/search", response_model=list[FunctionBasic])
 async def search_functions(
+    context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[FunctionsSearch, Query()],
-    db_session: Annotated[Session, Depends(yield_db_session)],
-    api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> list[Function]:
     """
     Returns the basic information of a list of functions.
@@ -77,8 +73,8 @@ async def search_functions(
         )
         logger.debug(f"Generated intent embedding: {intent_embedding}")
         functions = crud.functions.search_functions(
-            db_session,
-            api_key_id,
+            context.db_session,
+            context.project.visibility_access == Visibility.PUBLIC,
             query_params.app_ids,
             intent_embedding,
             query_params.limit,
@@ -102,8 +98,7 @@ async def search_functions(
     response_model_exclude_none=True,  # having this to exclude "strict" field in openai's function definition if not set
 )
 async def get_function_definition(
-    db_session: Annotated[Session, Depends(yield_db_session)],
-    api_key_id: Annotated[UUID, Depends(validate_api_key)],
+    context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     function_id: UUID,
     inference_provider: InferenceProvider = Query(
         default=InferenceProvider.OPENAI,
@@ -115,9 +110,13 @@ async def get_function_definition(
     The actual content depends on the intended model (inference provider, e.g., OpenAI, Anthropic, etc.) and the function itself.
     """
     try:
-        function = crud.functions.get_function(db_session, api_key_id, function_id)
+        function: Function | None = crud.functions.get_function(context.db_session, function_id)
         if not function:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Function not found.")
+            raise FunctionNotFound(str(function_id))
+        if not function.enabled:
+            raise FunctionDisabled(str(function_id))
+
+        acl.validate_project_access_to_function(context.project, function)
 
         visible_parameters = processor.filter_visible_properties(function.parameters)
         logger.debug(f"Filtered parameters: {json.dumps(visible_parameters)}")
@@ -150,16 +149,15 @@ async def get_function_definition(
     response_model_exclude_none=True,
 )
 async def execute(
-    db_session: Annotated[Session, Depends(yield_db_session)],
-    api_key_id: Annotated[UUID, Depends(validate_api_key)],
+    context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     function_id: UUID,
     body: FunctionExecute,
 ) -> FunctionExecutionResult:
     try:
         # Fetch function definition
-        db_function = crud.functions.get_function(db_session, api_key_id, function_id)
+        db_function = crud.functions.get_function(context.db_session, function_id)
         if not db_function:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Function not found.")
+            raise FunctionNotFound(str(function_id))
 
         return _execute(db_function, body.function_input)
 

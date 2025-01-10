@@ -12,8 +12,8 @@ class AuthResponse(BaseModel):
 
 
 class UserCreate(BaseModel):
-    auth_provider: str
-    auth_user_id: str
+    identity_provider: str
+    user_id_by_provider: str
     name: str
     email: str
     profile_picture: str | None = None

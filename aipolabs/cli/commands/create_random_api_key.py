@@ -39,8 +39,8 @@ def create_random_api_key_helper(visibility_access: Visibility) -> str:
     random_id = str(uuid.uuid4())[:8]  # Get first 8 chars of UUID
 
     user_id = create_user.create_user_helper(
-        auth_provider="google",
-        auth_user_id=random_id,
+        identity_provider="google",
+        user_id_by_provider=random_id,
         name=f"Test User {random_id}",
         email=f"test_{random_id}@example.com",
         profile_picture=f"https://example.com/profile_{random_id}.png",

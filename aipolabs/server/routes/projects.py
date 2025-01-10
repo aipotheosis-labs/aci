@@ -30,13 +30,9 @@ async def create_project(
         # if project is to be created under an organization, check if user has admin access to the organization
         # TODO: add tests for this path
         if body.organization_id:
-            if not acl.validate_user_access_to_org(
+            acl.validate_user_access_to_org(
                 db_session, user_id, body.organization_id, OrganizationRole.ADMIN
-            ):
-                raise HTTPException(
-                    status_code=status.HTTP_403_FORBIDDEN,
-                    detail="User does not have admin access to the organization",
-                )
+            )
 
         db_project = crud.projects.create_project(db_session, owner_id, body.name)
         db_session.commit()
@@ -58,12 +54,8 @@ async def create_agent(
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Agent:
     try:
-        logger.info(f"Creating agent in project: {project_id}, user_id: {user_id}")
-        if not acl.validate_user_access_to_project(db_session, user_id, project_id):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="User does not have admin access to the project",
-            )
+        logger.info(f"Creating agent in project={project_id}, user_id={user_id}")
+        acl.validate_user_access_to_project(db_session, user_id, project_id)
 
         db_agent = crud.projects.create_agent(
             db_session,

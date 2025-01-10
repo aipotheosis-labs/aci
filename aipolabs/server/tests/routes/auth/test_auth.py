@@ -57,8 +57,8 @@ def test_callback_google(test_client: TestClient, db_session: Session) -> None:
 
     user = db_session.execute(select(User).filter(User.id == user_id)).scalar_one_or_none()
     assert user is not None
-    assert user.auth_provider == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["iss"]
-    assert user.auth_user_id == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["sub"]
+    assert user.identity_provider == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["iss"]
+    assert user.user_id_by_provider == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["sub"]
     assert user.email == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["email"]
     assert user.name == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["name"]
     assert user.profile_picture == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["picture"]

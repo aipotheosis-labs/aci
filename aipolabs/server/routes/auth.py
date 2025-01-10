@@ -4,7 +4,7 @@ from typing import Annotated, Any, cast
 
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from authlib.jose import JoseError, jwt
-from fastapi import APIRouter, Depends, HTTPException, Request, status
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
@@ -56,7 +56,7 @@ def create_access_token(user_id: str, expires_delta: timedelta) -> str:
         raise HTTPException(status_code=500, detail="JWT generation failed")
 
 
-# login route for different auth providers
+# login route for different identity providers
 @router.get("/login/{provider}", include_in_schema=True)
 async def login(request: Request, provider: str) -> Any:
     if provider not in oauth._registry:
@@ -71,7 +71,7 @@ async def login(request: Request, provider: str) -> Any:
     return await oauth_client.authorize_redirect(request, redirect_uri)
 
 
-# callback route for different auth providers
+# callback route for different identity providers
 # TODO: decision between long-lived JWT v.s session based v.s refresh token based auth
 @router.get(
     "/callback/{provider}",
@@ -107,31 +107,23 @@ async def auth_callback(
 
     if not user_info["sub"]:
         logger.error(f"User ID not found in user information for provider {provider}")
-        raise HTTPException(status_code=400, detail="User ID not found from auth provider")
+        raise HTTPException(status_code=400, detail="User ID not found from identity provider")
 
-    try:
-        user = crud.users.get_user_by_auth_provider_id(
-            db_session, auth_provider=user_info["iss"], auth_user_id=user_info["sub"]
+    user = crud.users.get_user(
+        db_session, identity_provider=user_info["iss"], user_id_by_provider=user_info["sub"]
+    )
+    if not user:
+        user = crud.users.create_user(
+            db_session,
+            UserCreate(
+                identity_provider=user_info["iss"],
+                user_id_by_provider=user_info["sub"],
+                name=user_info["name"],
+                email=user_info["email"],
+                profile_picture=user_info["picture"],
+            ),
         )
-        if user is None:
-            user = crud.users.create_user(
-                db_session,
-                UserCreate(
-                    auth_provider=user_info["iss"],
-                    auth_user_id=user_info["sub"],
-                    name=user_info["name"],
-                    email=user_info["email"],
-                    profile_picture=user_info["picture"],
-                ),
-            )
-            db_session.commit()
-    except Exception as e:
-        # TODO: remove PII log
-        logger.error(f"Failed to create or get user: {user_info}", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"auth failed: {str(e)}",
-        )
+        db_session.commit()
 
     # Generate JWT token for the user
     try:

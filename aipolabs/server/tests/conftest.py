@@ -70,8 +70,8 @@ def dummy_user() -> Generator[User, None, None]:
         dummy_user = crud.users.create_user(
             fixture_db_session,
             UserCreate(
-                auth_provider="dummy_auth_provider",
-                auth_user_id="dummy_user_id",
+                identity_provider="dummy_identity_provider",
+                user_id_by_provider="dummy_user_id_by_provider",
                 name="Dummy User",
                 email="dummy@example.com",
             ),

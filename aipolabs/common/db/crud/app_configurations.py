@@ -4,43 +4,64 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import AppConfiguration
-from aipolabs.common.enums import SecurityScheme
+from aipolabs.common.schemas.app_configurations import (
+    AppConfigurationCreate,
+    AppConfigurationUpdate,
+)
 
 
 def create_app_configuration(
     db_session: Session,
     project_id: UUID,
-    app_id: UUID,
-    security_scheme: SecurityScheme,
-    security_config_overrides: dict,
-    all_functions_enabled: bool,
-    enabled_functions: list[UUID],
+    app_configuration_create: AppConfigurationCreate,
 ) -> AppConfiguration:
-    """create a new app configuration record"""
-    # TODO: use pydantic model to validate the input
-    if all_functions_enabled and len(enabled_functions) > 0:
-        raise ValueError(
-            "all_functions_enabled and enabled_functions cannot be both True and non-empty"
-        )
-
-    db_app_configuration = AppConfiguration(
+    """
+    Create a new app configuration record
+    """
+    app_configuration = AppConfiguration(
         project_id=project_id,
-        app_id=app_id,
-        security_scheme=security_scheme,
-        security_config_overrides=security_config_overrides,
+        app_id=app_configuration_create.app_id,
+        security_scheme=app_configuration_create.security_scheme,
+        security_config_overrides=app_configuration_create.security_config_overrides,
         enabled=True,
-        all_functions_enabled=all_functions_enabled,
-        enabled_functions=enabled_functions,
+        all_functions_enabled=app_configuration_create.all_functions_enabled,
+        enabled_functions=app_configuration_create.enabled_functions,
     )
-    db_session.add(db_app_configuration)
+    db_session.add(app_configuration)
     db_session.flush()
-    db_session.refresh(db_app_configuration)
-    return db_app_configuration
+
+    return app_configuration
+
+
+def update_app_configuration(
+    db_session: Session,
+    app_configuration: AppConfiguration,
+    update: AppConfigurationUpdate,
+) -> AppConfiguration:
+    """
+    Update an app configuration by app id.
+    If a field is None, it will not be changed.
+    """
+    # TODO: a better way to do update?
+    if update.security_scheme is not None:
+        app_configuration.security_scheme = update.security_scheme
+    if update.security_config_overrides is not None:
+        app_configuration.security_config_overrides = update.security_config_overrides
+    if update.enabled is not None:
+        app_configuration.enabled = update.enabled
+    if update.all_functions_enabled is not None:
+        app_configuration.all_functions_enabled = update.all_functions_enabled
+    if update.enabled_functions is not None:
+        app_configuration.enabled_functions = update.enabled_functions
+
+    db_session.flush()
+    return app_configuration
 
 
 def delete_app_configuration(db_session: Session, project_id: UUID, app_id: UUID) -> int:
     statement = delete(AppConfiguration).filter_by(project_id=project_id, app_id=app_id)
     result = db_session.execute(statement)
+    db_session.flush()
     return int(result.rowcount)
 
 

@@ -12,6 +12,10 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import Agent, APIKey, Project
 from aipolabs.common.enums import APIKeyStatus, Visibility
+from aipolabs.common.exceptions import UnexpectedDatabaseException
+from aipolabs.common.logging import get_logger
+
+logger = get_logger(__name__)
 
 
 def create_project(
@@ -20,33 +24,52 @@ def create_project(
     name: str,
     visibility_access: Visibility = Visibility.PUBLIC,
 ) -> Project:
-    db_project = Project(
-        owner_id=owner_id,
-        name=name,
-        visibility_access=visibility_access,
-    )
-    db_session.add(db_project)
+    try:
+        db_project = Project(
+            owner_id=owner_id,
+            name=name,
+            visibility_access=visibility_access,
+        )
+        db_session.add(db_project)
+        return db_project
+    except Exception:
+        logger.exception("error creating project")
+        raise UnexpectedDatabaseException()
 
-    return db_project
+
+def project_exists(db_session: Session, project_id: UUID) -> bool:
+    try:
+        return (
+            db_session.execute(select(Project).filter_by(id=project_id)).scalar_one_or_none()
+            is not None
+        )
+    except Exception:
+        logger.exception(f"error checking if project={project_id} exists")
+        raise UnexpectedDatabaseException()
 
 
 def get_project(db_session: Session, project_id: UUID) -> Project | None:
-    db_project: Project | None = db_session.execute(
-        select(Project).filter_by(id=project_id)
-    ).scalar_one_or_none()
-    return db_project
+    """
+    Get a project by primary key.
+    """
+    try:
+        db_project: Project | None = db_session.execute(
+            select(Project).filter_by(id=project_id)
+        ).scalar_one_or_none()
+        return db_project
+    except Exception:
+        logger.exception(f"error getting project={project_id}")
+        raise UnexpectedDatabaseException()
 
 
-# TODO: scalar_one() vs scalar_one_or_none() for consistency. Relevant for all get ops like
-# set_project_visibility_access: when and where to check if the project exists?
-def get_project_by_api_key_id(db_session: Session, api_key_id: UUID) -> Project:
+def get_project_by_api_key_id(db_session: Session, api_key_id: UUID) -> Project | None:
     # api key id -> agent id -> project id
-    db_project: Project = db_session.execute(
+    db_project: Project | None = db_session.execute(
         select(Project)
         .join(Agent, Project.id == Agent.project_id)
         .join(APIKey, Agent.id == APIKey.agent_id)
         .filter(APIKey.id == api_key_id)
-    ).scalar_one()
+    ).scalar_one_or_none()
 
     return db_project
 

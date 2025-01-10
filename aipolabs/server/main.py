@@ -7,6 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
+from aipolabs.common.exceptions import AipolabsException
 from aipolabs.common.logging import get_logger, setup_logging
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
@@ -72,13 +73,23 @@ app.add_middleware(
 )
 
 
-# TODO: global exception handler. can switch to use middleware?
 @app.exception_handler(ValidationError)
 def validation_exception_handler(request: Request, exc: ValidationError) -> JSONResponse:
     logger.error(f"Validation error, request: {request}, error: {exc.errors()}")
     return JSONResponse(
         status_code=400,
-        content={"detail": "Internal validation error"},
+        content={"error": "Internal validation error"},
+    )
+
+
+@app.exception_handler(AipolabsException)
+def aipolabs_exception_handler(request: Request, exc: AipolabsException) -> JSONResponse:
+    logger.error(f"Aipolabs exception, request: {request}, error: {exc}")
+
+    # TODO: consider should we return more details to the client (exc.message or str(exc))
+    return JSONResponse(
+        status_code=exc.error_code,
+        content={"error": exc.title},
     )
 
 
@@ -95,6 +106,7 @@ app.include_router(
     tags=[config.ROUTER_PREFIX_PROJECTS.split("/")[-1]],
     dependencies=[Depends(deps.validate_http_bearer)],
 )
+# TODO: add validate_project_quota to all routes
 app.include_router(
     apps.router,
     prefix=config.ROUTER_PREFIX_APPS,

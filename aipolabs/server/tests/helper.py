@@ -46,6 +46,7 @@ def _upsert_app_and_functions(db_session: Session, app_file: Path, functions_fil
     # TODO: check app name and functio name match?
     logger.info(f"Upserting app and functions for app: {app.name}...")
     db_app = crud.apps.create_app(db_session, app, app_embedding)
+    db_session.flush()
     crud.functions.create_functions(db_session, functions, function_embeddings)
 
     db_session.commit()

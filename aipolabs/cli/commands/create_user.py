@@ -16,14 +16,14 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
 @click.command()
 @click.option(
     "--auth-provider",
-    "auth_provider",
+    "identity_provider",
     required=True,
-    type=click.Choice(["google"]),  # TODO: update according to auth provider when db finalized
-    help="Auth provider",
+    type=click.Choice(["google"]),  # TODO: update according to identity provider when db finalized
+    help="identity provider",
 )
 @click.option(
     "--auth-user-id",
-    "auth_user_id",
+    "user_id_by_provider",
     required=True,
     help="Auth user id",
 )
@@ -57,8 +57,8 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
     help="provide this flag to run the command and apply changes to the database",
 )
 def create_user(
-    auth_provider: str,
-    auth_user_id: str,
+    identity_provider: str,
+    user_id_by_provider: str,
     name: str,
     email: str,
     profile_picture: str | None,
@@ -67,13 +67,13 @@ def create_user(
 ) -> UUID:
     """Create a user in db."""
     return create_user_helper(
-        auth_provider, auth_user_id, name, email, profile_picture, plan, skip_dry_run
+        identity_provider, user_id_by_provider, name, email, profile_picture, plan, skip_dry_run
     )
 
 
 def create_user_helper(
-    auth_provider: str,
-    auth_user_id: str,
+    identity_provider: str,
+    user_id_by_provider: str,
     name: str,
     email: str,
     profile_picture: str | None,
@@ -81,11 +81,11 @@ def create_user_helper(
     skip_dry_run: bool,
 ) -> UUID:
     # no need to check if user exists, db will raise an error if user already exists
-    # with same auth_provider and auth_user_id
+    # with same identity_provider and user_id_by_provider
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
         user_create = UserCreate(
-            auth_provider=auth_provider,
-            auth_user_id=auth_user_id,
+            identity_provider=identity_provider,
+            user_id_by_provider=user_id_by_provider,
             name=name,
             email=email,
             profile_picture=profile_picture,

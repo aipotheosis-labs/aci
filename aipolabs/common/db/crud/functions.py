@@ -13,6 +13,13 @@ from aipolabs.common.schemas.function import FunctionCreate
 logger = get_logger(__name__)
 
 
+# TODO: move logic check to schema validation or caller
+# - pass app id
+# - app exists
+# - app is enabled
+# - function names are unique
+# - all functions belong to the same app
+# - function names are valid etc
 def create_functions(
     db_session: Session, functions: list[FunctionCreate], function_embeddings: list[list[float]]
 ) -> list[Function]:
@@ -57,21 +64,20 @@ def create_functions(
 
 def search_functions(
     db_session: Session,
-    api_key_id: UUID,
+    public_only: bool,
     app_ids: list[UUID] | None,
     intent_embedding: list[float] | None,
     limit: int,
     offset: int,
 ) -> list[Function]:
     """Get a list of functions with optional filtering by app names and sorting by vector similarity to intent."""
-    db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
     statement = select(Function)
 
     # filter out all functions of disabled apps and all disabled functions (where app is enabled buy specific functions can be disabled)
     statement = statement.join(App).filter(App.enabled).filter(Function.enabled)
     # if the corresponding project (api key belongs to) can only access public apps and functions, filter out all functions of private apps
     # and all private functions (where app is public but specific function is private)
-    if db_project.visibility_access == Visibility.PUBLIC:
+    if public_only:
         statement = statement.filter(App.visibility == Visibility.PUBLIC).filter(
             Function.visibility == Visibility.PUBLIC
         )
@@ -108,35 +114,16 @@ def get_functions(
     return results
 
 
-# TODO: remove access control outside crud
-def get_function(db_session: Session, api_key_id: UUID, function_id: UUID) -> Function | None:
-    """
-    Get a function by name.
-    Should filter out by function visibility, app visibility, and project visibility access.
-    Should filter out by function enabled status.
-    """
-    db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
+def get_function(db_session: Session, function_id: UUID) -> Function | None:
     statement = select(Function).filter_by(id=function_id)
 
-    # filter out all functions of disabled apps and all disabled functions (where app is enabled buy specific functions can be disabled)
+    # filter out all functions of disabled apps and all disabled functions
+    # (where app is enabled buy specific functions can be disabled)
     statement = statement.join(App).filter(App.enabled).filter(Function.enabled)
-    # if the corresponding project (api key belongs to) can only access public apps and functions, filter out all functions of private apps
-    # and all private functions (where app is public but specific function is private)
-    if db_project.visibility_access == Visibility.PUBLIC:
-        statement = statement.filter(App.visibility == Visibility.PUBLIC).filter(
-            Function.visibility == Visibility.PUBLIC
-        )
 
     function: Function | None = db_session.execute(statement).scalar_one_or_none()
 
     return function
-
-
-def get_function_by_name(db_session: Session, function_name: str) -> Function | None:
-    db_function: Function | None = db_session.execute(
-        select(Function).filter_by(name=function_name)
-    ).scalar_one_or_none()
-    return db_function
 
 
 def set_function_enabled_status(db_session: Session, function_id: UUID, enabled: bool) -> None:

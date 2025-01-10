@@ -123,9 +123,9 @@ class User(Entity):
         )
 
     # google, github, email, etc
-    auth_provider: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
+    identity_provider: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     # google id, github id, email, etc
-    auth_user_id: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
+    user_id_by_provider: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
 
     memberships: Mapped[list[Membership]] = relationship(
         "Membership", back_populates="user", init=False
@@ -136,7 +136,7 @@ class User(Entity):
     }
 
     __table_args__ = (
-        UniqueConstraint("auth_provider", "auth_user_id", name="uc_auth_provider_user"),
+        UniqueConstraint("identity_provider", "user_id_by_provider", name="uc_auth_provider_user"),
     )
 
 
@@ -496,6 +496,8 @@ class AppConfiguration(Base):
         nullable=False,
         init=False,
     )
+
+    app: Mapped[App] = relationship("App", lazy="select", init=False)
 
     # unique constraint
     __table_args__ = (

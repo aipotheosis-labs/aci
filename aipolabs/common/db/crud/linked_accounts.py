@@ -44,19 +44,11 @@ def get_linked_account_by_id(db_session: Session, linked_account_id: UUID) -> Li
     return linked_account
 
 
-def delete_linked_account(db_session: Session, linked_account_id: UUID) -> None:
+def delete_linked_account(db_session: Session, linked_account_id: UUID) -> int:
     statement = delete(LinkedAccount).filter_by(id=linked_account_id)
     result = db_session.execute(statement)
-    if result.rowcount == 0:
-        raise ValueError(f"Linked account={linked_account_id} not found")
-    elif result.rowcount > 1:
-        # should never happen
-        logger.error(
-            f"Multiple ({result.rowcount}) linked accounts found with id {linked_account_id}"
-        )
-        raise ValueError(
-            f"Multiple ({result.rowcount}) linked accounts found with id {linked_account_id}"
-        )
+    db_session.flush()
+    return int(result.rowcount)
 
 
 def create_linked_account(
@@ -78,11 +70,24 @@ def create_linked_account(
     )
     db_session.add(db_linked_account)
     db_session.flush()
-    db_session.refresh(db_linked_account)
     return db_linked_account
+
+
+def update_linked_account(
+    db_session: Session,
+    linked_account: LinkedAccount,
+    security_scheme: SecurityScheme,
+    security_credentials: dict,
+) -> LinkedAccount:
+    linked_account.security_scheme = security_scheme
+    linked_account.security_credentials = security_credentials
+    db_session.flush()
+    return linked_account
 
 
 def delete_linked_accounts(db_session: Session, project_id: UUID, app_id: UUID) -> int:
     statement = delete(LinkedAccount).filter_by(project_id=project_id, app_id=app_id)
     result = db_session.execute(statement)
+
+    db_session.flush()
     return int(result.rowcount)

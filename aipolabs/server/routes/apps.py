@@ -2,10 +2,10 @@ from typing import Annotated
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
 from aipolabs.common.enums import Visibility
+from aipolabs.common.exceptions import AppDisabled, AppNotFound
 from aipolabs.common.logging import get_logger
 from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.app import (
@@ -16,8 +16,8 @@ from aipolabs.common.schemas.app import (
     AppsSearch,
 )
 from aipolabs.common.schemas.function import FunctionBasic
-from aipolabs.server import config
-from aipolabs.server.dependencies import validate_api_key, yield_db_session
+from aipolabs.server import acl, config
+from aipolabs.server import dependencies as deps
 
 logger = get_logger(__name__)
 router = APIRouter()
@@ -26,18 +26,15 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
 
 @router.get("/", response_model=list[AppDetails])
 async def list_apps(
+    context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[AppsList, Query()],
-    db_session: Annotated[Session, Depends(yield_db_session)],
-    api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> list[AppDetails]:
     """
     Get a list of Apps and their details. Sorted by App name.
     """
-    db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
-
     return crud.apps.get_apps(
-        db_session,
-        db_project.visibility_access == Visibility.PUBLIC,
+        context.db_session,
+        context.project.visibility_access == Visibility.PUBLIC,
         query_params.limit,
         query_params.offset,
     )
@@ -45,9 +42,8 @@ async def list_apps(
 
 @router.get("/search", response_model=list[AppBasic])
 async def search_apps(
+    context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[AppsSearch, Query()],
-    db_session: Annotated[Session, Depends(yield_db_session)],
-    api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> list[AppBasic]:
     """
     Search for Apps.
@@ -69,8 +65,8 @@ async def search_apps(
         )
         logger.debug(f"Generated intent embedding: {intent_embedding}")
         apps_with_scores = crud.apps.search_apps(
-            db_session,
-            api_key_id,
+            context.db_session,
+            context.project.visibility_access == Visibility.PUBLIC,
             query_params.categories,
             intent_embedding,
             query_params.limit,
@@ -92,49 +88,37 @@ async def search_apps(
 
 @router.get("/{app_id}", response_model=AppBasicWithFunctions)
 async def get_app_details(
+    context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     app_id: UUID,
-    db_session: Annotated[Session, Depends(yield_db_session)],
-    api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> AppBasicWithFunctions:
     """
     Returns an application (name, description, and functions).
     """
     try:
-        db_app = crud.apps.get_app(db_session, app_id)
-        if not db_app:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="App not found.")
+        app = crud.apps.get_app(context.db_session, app_id)
+        if not app:
+            raise AppNotFound(str(app_id))
+        if not app.enabled:
+            raise AppDisabled(str(app_id))
 
-        if not db_app.enabled:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN, detail="App is currently disabled."
-            )
+        acl.validate_project_access_to_app(context.project, app)
 
-        db_project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
-        # TODO: unify access control logic
-        if (
-            db_project.visibility_access == Visibility.PUBLIC
-            and db_app.visibility != Visibility.PUBLIC
-        ):
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN,
-                detail="You are not authorized to access this app.",
-            )
         # filter functions by project visibility and enabled status
         # TODO: better way and place for this logic?
-        db_functions = [
+        functions = [
             function
-            for function in db_app.functions
+            for function in app.functions
             if function.enabled
             and not (
-                db_project.visibility_access == Visibility.PUBLIC
+                context.project.visibility_access == Visibility.PUBLIC
                 and function.visibility != Visibility.PUBLIC
             )
         ]
 
         app_details: AppBasicWithFunctions = AppBasicWithFunctions(
-            name=db_app.name,
-            description=db_app.description,
-            functions=[FunctionBasic.model_validate(function) for function in db_functions],
+            name=app.name,
+            description=app.description,
+            functions=[FunctionBasic.model_validate(function) for function in functions],
         )
 
         return app_details

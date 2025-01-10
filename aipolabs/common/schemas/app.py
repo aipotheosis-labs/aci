@@ -72,6 +72,7 @@ class AppsSearch(BaseModel):
 class AppsList(BaseModel):
     """
     Parameters for listing Apps.
+    TODO: add filters
     """
 
     limit: int = Field(

@@ -1,0 +1,244 @@
+from fastapi import status
+
+
+class AipolabsException(Exception):
+    """
+    Base class for all Aipolabs exceptions with consistent structure.
+
+    Attributes:
+        title (str): error title.
+        message (str): an optional detailed error message.
+        error_code (int): HTTP status code to identify the error type.
+    """
+
+    def __init__(
+        self,
+        title: str,
+        message: str | None = None,
+        error_code: int = status.HTTP_400_BAD_REQUEST,
+    ):
+        super().__init__(title, message, error_code)
+        self.title = title
+        self.message = message
+        self.error_code = error_code
+
+    def __str__(self) -> str:
+        """
+        String representation that combines title and message (if available)
+        """
+        if self.message:
+            return f"{self.title}: {self.message}"
+        return self.title
+
+
+class UnknownException(AipolabsException):
+    """
+    Exception raised when an unknown error occurs
+    """
+
+    def __init__(
+        self,
+        title: str = "An unknown error occurred",
+        message: str | None = None,
+        error_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR,
+    ):
+        super().__init__(title=title, message=message, error_code=error_code)
+
+
+class UnexpectedException(AipolabsException):
+    """
+    Exception raised when an unexpected error occurs
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Unexpected error",
+            message=message,
+            error_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+class UnexpectedDatabaseException(AipolabsException):
+    """
+    Exception raised when an unexpected error occurs in the database
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Unexpected database error",
+            message=message,
+            error_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+class ProjectNotFound(AipolabsException):
+    """
+    Exception raised when a project is not found
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Project not found", message=message, error_code=status.HTTP_404_NOT_FOUND
+        )
+
+
+class ProjectAccessDenied(AipolabsException):
+    """
+    Exception raised when a project is not accessible to a user
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Project access denied", message=message, error_code=status.HTTP_403_FORBIDDEN
+        )
+
+
+class AppNotFound(AipolabsException):
+    """
+    Exception raised when an app is not found
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="App not found", message=message, error_code=status.HTTP_404_NOT_FOUND
+        )
+
+
+class AppConfigurationNotFound(AipolabsException):
+    """
+    Exception raised when an app configuration is not found
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="App configuration not found",
+            message=message,
+            error_code=status.HTTP_404_NOT_FOUND,
+        )
+
+
+class AppConfigurationAlreadyExists(AipolabsException):
+    """
+    Exception raised when an app configuration already exists
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="App configuration already exists",
+            message=message,
+            error_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class AppSecuritySchemeNotSupported(AipolabsException):
+    """
+    Exception raised when a security scheme is not supported by an app
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Specified security scheme not supported by the app",
+            message=message,
+            error_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class AppDisabled(AipolabsException):
+    """
+    Exception raised when an app is disabled
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="App is disabled", message=message, error_code=status.HTTP_403_FORBIDDEN
+        )
+
+
+class InvalidAPIKey(AipolabsException):
+    """
+    Exception raised when an API key is invalid
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Invalid API key", message=message, error_code=status.HTTP_401_UNAUTHORIZED
+        )
+
+
+class AppAccessDenied(AipolabsException):
+    """
+    Exception raised when an app is not accessible to a project (per visibility access)
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="App access denied", message=message, error_code=status.HTTP_403_FORBIDDEN
+        )
+
+
+class UserNotFound(AipolabsException):
+    """
+    Exception raised when a user is not found
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="User not found", message=message, error_code=status.HTTP_404_NOT_FOUND
+        )
+
+
+class FunctionNotFound(AipolabsException):
+    """
+    Exception raised when a function is not found
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Function not found", message=message, error_code=status.HTTP_404_NOT_FOUND
+        )
+
+
+class FunctionDisabled(AipolabsException):
+    """
+    Exception raised when a function is disabled
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Function disabled", message=message, error_code=status.HTTP_403_FORBIDDEN
+        )
+
+
+class FunctionAccessDenied(AipolabsException):
+    """
+    Exception raised when a function is not accessible to a project (per visibility access)
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Function access denied", message=message, error_code=status.HTTP_403_FORBIDDEN
+        )
+
+
+class LinkedAccountNotFound(AipolabsException):
+    """
+    Exception raised when a linked account is not found
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Linked account not found", message=message, error_code=status.HTTP_404_NOT_FOUND
+        )
+
+
+class LinkedAccountAccessDenied(AipolabsException):
+    """
+    Exception raised when a linked account is not accessible to a project
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Linked account access denied",
+            message=message,
+            error_code=status.HTTP_403_FORBIDDEN,
+        )
