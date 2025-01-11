@@ -58,6 +58,43 @@ class UnexpectedException(AipolabsException):
         )
 
 
+class UnsupportedIdentityProvider(AipolabsException):
+    """
+    Exception raised when an unsupported identity provider is used
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Unsupported identity provider",
+            message=message,
+            error_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class AuthenticationError(AipolabsException):
+    """
+    Exception raised when an authentication error occurs
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Authentication error",
+            message=message,
+            error_code=status.HTTP_401_UNAUTHORIZED,
+        )
+
+
+class FeatureNotImplemented(AipolabsException):
+    """
+    Exception raised when a feature is not implemented
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Not implemented", message=message, error_code=status.HTTP_501_NOT_IMPLEMENTED
+        )
+
+
 class UnexpectedDatabaseException(AipolabsException):
     """
     Exception raised when an unexpected error occurs in the database
@@ -154,6 +191,17 @@ class AppDisabled(AipolabsException):
         )
 
 
+class InvalidBearerToken(AipolabsException):
+    """
+    Exception raised when a http bearer token is invalid
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Invalid bearer token", message=message, error_code=status.HTTP_401_UNAUTHORIZED
+        )
+
+
 class InvalidAPIKey(AipolabsException):
     """
     Exception raised when an API key is invalid
@@ -162,6 +210,17 @@ class InvalidAPIKey(AipolabsException):
     def __init__(self, message: str | None = None):
         super().__init__(
             title="Invalid API key", message=message, error_code=status.HTTP_401_UNAUTHORIZED
+        )
+
+
+class DailyQuotaExceeded(AipolabsException):
+    """
+    Exception raised when a daily quota is exceeded
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Daily quota exceeded", message=message, error_code=status.HTTP_401_UNAUTHORIZED
         )
 
 
@@ -217,6 +276,17 @@ class FunctionAccessDenied(AipolabsException):
     def __init__(self, message: str | None = None):
         super().__init__(
             title="Function access denied", message=message, error_code=status.HTTP_403_FORBIDDEN
+        )
+
+
+class InvalidFunctionInput(AipolabsException):
+    """
+    Exception raised when a function input is invalid
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Invalid function input", message=message, error_code=status.HTTP_400_BAD_REQUEST
         )
 
 

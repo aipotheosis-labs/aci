@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query
 
 from aipolabs.common.db import crud
 from aipolabs.common.enums import Visibility
@@ -52,38 +52,32 @@ async def search_apps(
     # TODO: currently the search is done across all apps, we might want to add flags to account for below scenarios:
     # - when clients search for apps, if the app is not configured, should it be discoverable?
     # - when clients search for apps, if an app is configured but disabled by client, should it be discoverable?
-    try:
-        logger.info(f"Getting apps with filter params: {query_params}")
-        intent_embedding = (
-            openai_service.generate_embedding(
-                query_params.intent,
-                config.OPENAI_EMBEDDING_MODEL,
-                config.OPENAI_EMBEDDING_DIMENSION,
-            )
-            if query_params.intent
-            else None
+    logger.info(f"Getting apps with filter params: {query_params}")
+    intent_embedding = (
+        openai_service.generate_embedding(
+            query_params.intent,
+            config.OPENAI_EMBEDDING_MODEL,
+            config.OPENAI_EMBEDDING_DIMENSION,
         )
-        logger.debug(f"Generated intent embedding: {intent_embedding}")
-        apps_with_scores = crud.apps.search_apps(
-            context.db_session,
-            context.project.visibility_access == Visibility.PUBLIC,
-            query_params.categories,
-            intent_embedding,
-            query_params.limit,
-            query_params.offset,
-        )
-        # build apps list with similarity scores if they exist
-        apps: list[AppBasic] = []
-        for app, _ in apps_with_scores:
-            app = AppBasic.model_validate(app)
-            apps.append(app)
+        if query_params.intent
+        else None
+    )
+    logger.debug(f"Generated intent embedding: {intent_embedding}")
+    apps_with_scores = crud.apps.search_apps(
+        context.db_session,
+        context.project.visibility_access == Visibility.PUBLIC,
+        query_params.categories,
+        intent_embedding,
+        query_params.limit,
+        query_params.offset,
+    )
+    # build apps list with similarity scores if they exist
+    apps: list[AppBasic] = []
+    for app, _ in apps_with_scores:
+        app = AppBasic.model_validate(app)
+        apps.append(app)
 
-        return apps
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        logger.exception(f"Error getting apps with filter params: {query_params}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    return apps
 
 
 @router.get("/{app_id}", response_model=AppBasicWithFunctions)
@@ -94,37 +88,30 @@ async def get_app_details(
     """
     Returns an application (name, description, and functions).
     """
-    try:
-        app = crud.apps.get_app(context.db_session, app_id)
-        if not app:
-            raise AppNotFound(str(app_id))
-        if not app.enabled:
-            raise AppDisabled(str(app_id))
+    app = crud.apps.get_app(context.db_session, app_id)
+    if not app:
+        raise AppNotFound(str(app_id))
+    if not app.enabled:
+        raise AppDisabled(str(app_id))
 
-        acl.validate_project_access_to_app(context.project, app)
+    acl.validate_project_access_to_app(context.project, app)
 
-        # filter functions by project visibility and enabled status
-        # TODO: better way and place for this logic?
-        functions = [
-            function
-            for function in app.functions
-            if function.enabled
-            and not (
-                context.project.visibility_access == Visibility.PUBLIC
-                and function.visibility != Visibility.PUBLIC
-            )
-        ]
-
-        app_details: AppBasicWithFunctions = AppBasicWithFunctions(
-            name=app.name,
-            description=app.description,
-            functions=[FunctionBasic.model_validate(function) for function in functions],
+    # filter functions by project visibility and enabled status
+    # TODO: better way and place for this logic?
+    functions = [
+        function
+        for function in app.functions
+        if function.enabled
+        and not (
+            context.project.visibility_access == Visibility.PUBLIC
+            and function.visibility != Visibility.PUBLIC
         )
+    ]
 
-        return app_details
-    except HTTPException as e:
-        raise e
-    # TODO: is catching Exception here necessary?
-    except Exception as e:
-        logger.exception(f"Error getting app: {app_id}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    app_details: AppBasicWithFunctions = AppBasicWithFunctions(
+        name=app.name,
+        description=app.description,
+        functions=[FunctionBasic.model_validate(function) for function in functions],
+    )
+
+    return app_details

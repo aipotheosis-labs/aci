@@ -3,15 +3,21 @@ from typing import Annotated, Generator
 from uuid import UUID
 
 from authlib.jose import JoseError, jwt
-from fastapi import Depends, HTTPException, Security, status
+from fastapi import Depends, Security
 from fastapi.security import APIKeyHeader, HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from aipolabs.common import utils
 from aipolabs.common.db import crud
-from aipolabs.common.db.sql_models import Project
+from aipolabs.common.db.sql_models import Project, User
 from aipolabs.common.enums import APIKeyStatus
-from aipolabs.common.exceptions import ProjectNotFound
+from aipolabs.common.exceptions import (
+    DailyQuotaExceeded,
+    InvalidAPIKey,
+    InvalidBearerToken,
+    ProjectNotFound,
+    UserNotFound,
+)
 from aipolabs.common.logging import get_logger
 from aipolabs.server import config
 
@@ -41,8 +47,9 @@ def yield_db_session() -> Generator[Session, None, None]:
 
 # TODO: rate limit and quota check for http bearer token and relevant routes
 def validate_http_bearer(
+    db_session: Annotated[Session, Depends(yield_db_session)],
     auth_data: Annotated[HTTPAuthorizationCredentials, Security(http_bearer)],
-) -> UUID:
+) -> User:
     """
     Validate HTTP Bearer token and return user ID.
     HTTP Bearer token is generated after a user logs in to dev portal.
@@ -56,20 +63,18 @@ def validate_http_bearer(
 
         user_id: str = payload.get("sub")
         if not user_id:
-            logger.error("Token is missing 'sub' claim.")
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Invalid authentication credentials, missing 'sub' claim",
-            )
+            raise InvalidBearerToken("Token is missing 'sub' claim.")
+
+        user = crud.users.get_user_by_id(db_session, UUID(user_id))
+        if not user:
+            raise UserNotFound(user_id)
 
         logger.debug(f"Token valid. User ID: {user_id}")
-        return UUID(user_id)
+        return user
 
-    except JoseError as e:
-        logger.error("Token verification failed", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail=f"Invalid token: {str(e)}"
-        )
+    except JoseError:
+        logger.exception("Token verification failed")
+        raise InvalidBearerToken("token verification failed")
 
 
 def validate_api_key(
@@ -80,17 +85,19 @@ def validate_api_key(
     db_api_key = crud.projects.get_api_key(db_session, api_key)
     if db_api_key is None:
         logger.error(f"api key not found: {api_key[:8]}****")
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid API key")
+        raise InvalidAPIKey("api key not found")
 
-    if db_api_key.status == APIKeyStatus.DISABLED:
+    elif db_api_key.status == APIKeyStatus.DISABLED:
         logger.error(f"api key is disabled: {api_key[:8]}****")
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="API key is disabled")
+        raise InvalidAPIKey("API key is disabled")
+
     elif db_api_key.status == APIKeyStatus.DELETED:
         logger.error(f"api key is deleted: {api_key[:8]}****")
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="API key is deleted")
+        raise InvalidAPIKey("API key is deleted")
 
-    api_key_id: UUID = db_api_key.id
-    return api_key_id
+    else:
+        api_key_id: UUID = db_api_key.id
+        return api_key_id
 
 
 # TODO: use cache (redis)
@@ -111,17 +118,16 @@ def validate_project_quota(
     )
 
     if not need_reset and project.daily_quota_used >= config.PROJECT_DAILY_QUOTA:
-        logger.warning(f"Daily quota exceeded for project {project.id}")
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Daily quota exceeded")
+        logger.warning(
+            f"Daily quota exceeded for project={project.id}, daily quota used={project.daily_quota_used}"
+        )
+        raise DailyQuotaExceeded()
 
-    try:
-        crud.projects.increase_project_quota_usage(db_session, project)
-        # TODO: commit here?
-        db_session.commit()
-        return project
-    except Exception as e:
-        logger.exception(f"Failed to increase project quota usage for project {project.id}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    crud.projects.increase_project_quota_usage(db_session, project)
+    # TODO: commit here with the same db_session or should create a separate db_session?
+    db_session.commit()
+
+    return project
 
 
 def get_request_context(

@@ -4,14 +4,19 @@ from uuid import UUID
 
 import httpx
 import jsonschema
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query
 from httpx import HTTPStatusError
 
 from aipolabs.common import processor
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import App, Function
 from aipolabs.common.enums import Protocol, SecurityScheme, Visibility
-from aipolabs.common.exceptions import FunctionDisabled, FunctionNotFound
+from aipolabs.common.exceptions import (
+    FunctionDisabled,
+    FunctionNotFound,
+    InvalidFunctionInput,
+    UnexpectedException,
+)
 from aipolabs.common.logging import create_headline, get_logger
 from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.function import (
@@ -60,31 +65,27 @@ async def search_functions(
     # TODO: currently the search is done across all apps, we might want to add flags to account for below scenarios:
     # - when clients search for functions, if the app of the functions is not configured, should the functions be discoverable?
     # - when clients search for functions, if the app of the functions is configured but disabled by client, should the functions be discoverable?
-    try:
-        logger.debug(f"Getting functions with params: {query_params}")
-        intent_embedding = (
-            openai_service.generate_embedding(
-                query_params.intent,
-                config.OPENAI_EMBEDDING_MODEL,
-                config.OPENAI_EMBEDDING_DIMENSION,
-            )
-            if query_params.intent
-            else None
+    logger.debug(f"Getting functions with params: {query_params}")
+    intent_embedding = (
+        openai_service.generate_embedding(
+            query_params.intent,
+            config.OPENAI_EMBEDDING_MODEL,
+            config.OPENAI_EMBEDDING_DIMENSION,
         )
-        logger.debug(f"Generated intent embedding: {intent_embedding}")
-        functions = crud.functions.search_functions(
-            context.db_session,
-            context.project.visibility_access == Visibility.PUBLIC,
-            query_params.app_ids,
-            intent_embedding,
-            query_params.limit,
-            query_params.offset,
-        )
-        logger.debug(f"functions: \n {functions}")
-        return functions
-    except Exception as e:
-        logger.error("Error searching functions", exc_info=True)
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+        if query_params.intent
+        else None
+    )
+    logger.debug(f"Generated intent embedding: {intent_embedding}")
+    functions = crud.functions.search_functions(
+        context.db_session,
+        context.project.visibility_access == Visibility.PUBLIC,
+        query_params.app_ids,
+        intent_embedding,
+        query_params.limit,
+        query_params.offset,
+    )
+    logger.debug(f"functions: \n {functions}")
+    return functions
 
 
 # TODO: have "structured_outputs" flag ("structured_outputs_if_possible") to support openai's structured outputs function calling?
@@ -109,38 +110,32 @@ async def get_function_definition(
     Return the function definition that can be used directly by LLM.
     The actual content depends on the intended model (inference provider, e.g., OpenAI, Anthropic, etc.) and the function itself.
     """
-    try:
-        function: Function | None = crud.functions.get_function(context.db_session, function_id)
-        if not function:
-            raise FunctionNotFound(str(function_id))
-        if not function.enabled:
-            raise FunctionDisabled(str(function_id))
+    function: Function | None = crud.functions.get_function(context.db_session, function_id)
+    if not function:
+        raise FunctionNotFound(str(function_id))
+    if not function.enabled:
+        raise FunctionDisabled(str(function_id))
 
-        acl.validate_project_access_to_function(context.project, function)
+    acl.validate_project_access_to_function(context.project, function)
 
-        visible_parameters = processor.filter_visible_properties(function.parameters)
-        logger.debug(f"Filtered parameters: {json.dumps(visible_parameters)}")
+    visible_parameters = processor.filter_visible_properties(function.parameters)
+    logger.debug(f"Filtered parameters: {json.dumps(visible_parameters)}")
 
-        if inference_provider == InferenceProvider.OPENAI:
-            function_definition = OpenAIFunctionDefinition(
-                function={
-                    "name": function.name,
-                    "description": function.description,
-                    "parameters": visible_parameters,
-                }
-            )
-        elif inference_provider == InferenceProvider.ANTHROPIC:
-            function_definition = AnthropicFunctionDefinition(
-                name=function.name,
-                description=function.description,
-                input_schema=visible_parameters,
-            )
-        return function_definition
-    except HTTPException as e:
-        raise e
-    except Exception as e:
-        logger.exception(f"Error getting function definition for {function_id}")
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+    if inference_provider == InferenceProvider.OPENAI:
+        function_definition = OpenAIFunctionDefinition(
+            function={
+                "name": function.name,
+                "description": function.description,
+                "parameters": visible_parameters,
+            }
+        )
+    elif inference_provider == InferenceProvider.ANTHROPIC:
+        function_definition = AnthropicFunctionDefinition(
+            name=function.name,
+            description=function.description,
+            input_schema=visible_parameters,
+        )
+    return function_definition
 
 
 @router.post(
@@ -153,25 +148,12 @@ async def execute(
     function_id: UUID,
     body: FunctionExecute,
 ) -> FunctionExecutionResult:
-    try:
-        # Fetch function definition
-        db_function = crud.functions.get_function(context.db_session, function_id)
-        if not db_function:
-            raise FunctionNotFound(str(function_id))
+    # Fetch function definition
+    db_function = crud.functions.get_function(context.db_session, function_id)
+    if not db_function:
+        raise FunctionNotFound(str(function_id))
 
-        return _execute(db_function, body.function_input)
-
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except HTTPException as e:
-        raise e
-    except Exception:
-        logger.exception(
-            f"An unexpected error occurred during function execution for {function_id}"
-        )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Internal server error."
-        )
+    return _execute(db_function, body.function_input)
 
 
 # TODO: allow local code execution override by using AppBase.execute() e.g.,:
@@ -188,8 +170,8 @@ def _execute(db_function: Function, function_input: dict) -> FunctionExecutionRe
             schema=processor.filter_visible_properties(db_function.parameters),
         )
     except jsonschema.ValidationError as e:
-        logger.error(f"Invalid input: {e.message}")
-        raise ValueError(f"Invalid input: {e.message}") from e
+        logger.exception("failed to validate function input")
+        raise InvalidFunctionInput(e.message)
 
     logger.info(f"function_input before injecting defaults: {json.dumps(function_input)}")
 
@@ -257,7 +239,8 @@ def _execute(db_function: Function, function_input: dict) -> FunctionExecutionRe
 
             return FunctionExecutionResult(success=True, data=_get_response_data(response))
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Unsupported protocol.")
+        # should never happen
+        raise UnexpectedException(f"Unsupported protocol for function={db_function.name}")
 
 
 def _inject_security_credentials(

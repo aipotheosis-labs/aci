@@ -5,7 +5,7 @@ from uuid import UUID
 
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from authlib.jose import jwt
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, Query, Request, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 
@@ -16,6 +16,8 @@ from aipolabs.common.exceptions import (
     AppConfigurationNotFound,
     AppDisabled,
     AppNotFound,
+    AuthenticationError,
+    FeatureNotImplemented,
     LinkedAccountAccessDenied,
     LinkedAccountNotFound,
     UnexpectedException,
@@ -95,19 +97,15 @@ async def link_account(
 
     elif db_app_configuration.security_scheme == SecurityScheme.API_KEY:
         # TODO: ... handle API key ...
-        raise HTTPException(
-            status_code=status.HTTP_501_NOT_IMPLEMENTED,
-            detail="API key security scheme is not implemented yet",
-        )
+        raise FeatureNotImplemented("API key security scheme is not implemented yet")
 
     else:
         # Should never reach here as all security schemes stored in the db should be supported
         logger.error(
             f"Unexpected error: Unsupported security scheme={db_app_configuration.security_scheme} for app_id={body.app_id}"
         )
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Unexpected error: Unsupported security scheme",
+        raise UnexpectedException(
+            f"Unsupported security scheme={db_app_configuration.security_scheme} for app_id={body.app_id}"
         )
 
 
@@ -125,9 +123,7 @@ async def linked_accounts_oauth2_callback(
 
     if not state_jwt:
         logger.error("Missing state parameter")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Missing state parameter"
-        )
+        raise AuthenticationError("Missing state parameter")
     # decode the state payload
     try:
         state = LinkedAccountCreateOAuth2State.model_validate(
@@ -136,9 +132,8 @@ async def linked_accounts_oauth2_callback(
         logger.info(f"state: {state}")
     except Exception as e:
         logger.error(f"Failed to decode state_jwt={state_jwt}, error={e}")
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail="Failed to decode state"
-        )
+        raise AuthenticationError("Failed to decode state")
+
     # create oauth2 client
     db_app = crud.apps.get_app(db_session, state.app_id)
     if not db_app:
@@ -156,8 +151,8 @@ async def linked_accounts_oauth2_callback(
         # TODO: remove PII log
         logger.warning(f"oauth2 token requested successfully, token_response: {token_response}")
     except Exception as e:
-        logger.error("Failed to retrieve oauth2 token", exc_info=True)
-        raise HTTPException(status_code=400, detail=f"Failed to retrieve oauth2 token: {str(e)}")
+        logger.exception("Failed to retrieve oauth2 token")
+        raise AuthenticationError(f"Failed to retrieve oauth2 token: {str(e)}")
 
     # TODO: some of them might be optional (e.g., refresh_token, scope, expires_in, refresh_token_expires_in) and not provided by the OAuth2 provider
     # we should handle None or provide default values (using pydantic)
@@ -169,44 +164,38 @@ async def linked_accounts_oauth2_callback(
         "refresh_token": token_response["refresh_token"],
     }
 
-    try:
-        # if the linked account already exists, update it, otherwise create a new one
-        # TODO: consider separating the logic for updating and creating a linked account or give warning to clients
-        # if the linked account already exists to avoid accidental overwriting the account
-        db_linked_account = crud.linked_accounts.get_linked_account(
+    # if the linked account already exists, update it, otherwise create a new one
+    # TODO: consider separating the logic for updating and creating a linked account or give warning to clients
+    # if the linked account already exists to avoid accidental overwriting the account
+    # TODO: try/except, retry?
+    db_linked_account = crud.linked_accounts.get_linked_account(
+        db_session,
+        state.project_id,
+        state.app_id,
+        state.linked_account_owner_id,
+    )
+    if db_linked_account:
+        logger.info(
+            f"Updating oauth2 credentials for linked account linked_account_id={db_linked_account.id}"
+        )
+        db_linked_account = crud.linked_accounts.update_linked_account(
+            db_session, db_linked_account, SecurityScheme.OAUTH2, security_credentials
+        )
+    else:
+        logger.info(
+            f"Creating oauth2 linked account for project_id={state.project_id}, "
+            f"app_id={state.app_id}, linked_account_owner_id={state.linked_account_owner_id}"
+        )
+        db_linked_account = crud.linked_accounts.create_linked_account(
             db_session,
-            state.project_id,
-            state.app_id,
-            state.linked_account_owner_id,
+            project_id=state.project_id,
+            app_id=state.app_id,
+            linked_account_owner_id=state.linked_account_owner_id,
+            security_scheme=SecurityScheme.OAUTH2,
+            security_credentials=security_credentials,
+            enabled=True,
         )
-        if db_linked_account:
-            logger.info(
-                f"Updating oauth2 credentials for linked account linked_account_id={db_linked_account.id}"
-            )
-            db_linked_account = crud.linked_accounts.update_linked_account(
-                db_session, db_linked_account, SecurityScheme.OAUTH2, security_credentials
-            )
-        else:
-            logger.info(
-                f"Creating oauth2 linked account for project_id={state.project_id}, "
-                f"app_id={state.app_id}, linked_account_owner_id={state.linked_account_owner_id}"
-            )
-            db_linked_account = crud.linked_accounts.create_linked_account(
-                db_session,
-                project_id=state.project_id,
-                app_id=state.app_id,
-                linked_account_owner_id=state.linked_account_owner_id,
-                security_scheme=SecurityScheme.OAUTH2,
-                security_credentials=security_credentials,
-                enabled=True,
-            )
-        db_session.commit()
-    except Exception as e:
-        logger.error("Failed to create linked account", exc_info=True)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create linked account: {str(e)}",
-        )
+    db_session.commit()
 
 
 # TODO: add pagination

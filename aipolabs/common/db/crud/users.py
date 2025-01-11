@@ -2,6 +2,8 @@
 User (Aipolabs direct clients, not end users) CRUD operations
 """
 
+from uuid import UUID
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -44,6 +46,7 @@ def get_user(db_session: Session, identity_provider: str, user_id_by_provider: s
     """
     Get a user by identity provider and user id by provider.
     """
+    # TODO: should try/except in the caller
     try:
         user: User | None = db_session.execute(
             select(User).filter_by(
@@ -54,3 +57,11 @@ def get_user(db_session: Session, identity_provider: str, user_id_by_provider: s
     except Exception:
         logger.exception("error getting user")
         raise UnexpectedDatabaseException()
+
+
+def get_user_by_id(db_session: Session, user_id: UUID) -> User | None:
+    """
+    Get a user by ID.
+    """
+    user: User | None = db_session.execute(select(User).filter_by(id=user_id)).scalar_one_or_none()
+    return user

@@ -3,11 +3,12 @@ from enum import Enum
 from typing import Annotated, Any, cast
 
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
-from authlib.jose import JoseError, jwt
-from fastapi import APIRouter, Depends, HTTPException, Request
+from authlib.jose import jwt
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
+from aipolabs.common.exceptions import UnexpectedException, UnsupportedIdentityProvider
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.user import AuthResponse, UserCreate
 from aipolabs.server import config
@@ -45,15 +46,12 @@ def create_access_token(user_id: str, expires_delta: timedelta) -> str:
 
     # Authlib expects a header, payload, and key
     header = {"alg": config.JWT_ALGORITHM}
-    try:
-        jwt_token: str = jwt.encode(
-            header, payload, config.JWT_SECRET_KEY
-        ).decode()  # Decode to convert bytes to string
+    # TODO: try/except, retry?
+    jwt_token: str = jwt.encode(
+        header, payload, config.JWT_SECRET_KEY
+    ).decode()  # for this jwt lib, need to decode to convert bytes to string
 
-        return jwt_token
-    except JoseError as e:
-        logger.error(f"JWT generation failed: {str(e)}")
-        raise HTTPException(status_code=500, detail="JWT generation failed")
+    return jwt_token
 
 
 # login route for different identity providers
@@ -61,7 +59,7 @@ def create_access_token(user_id: str, expires_delta: timedelta) -> str:
 async def login(request: Request, provider: str) -> Any:
     if provider not in oauth._registry:
         logger.error(f"Unsupported provider: {provider}")
-        raise HTTPException(status_code=400, detail="Unsupported provider")
+        raise UnsupportedIdentityProvider(provider)
 
     path = request.url_for("auth_callback", provider=provider).path
     redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
@@ -85,29 +83,29 @@ async def auth_callback(
     logger.info(f"Callback received for provider: {provider}")
     if provider not in oauth._registry:
         logger.error(f"Unsupported provider during callback: {provider}")
-        raise HTTPException(status_code=400, detail="Unsupported provider")
+        raise UnsupportedIdentityProvider(provider)
 
     oauth_client = cast(StarletteOAuth2App, oauth.create_client(provider))
 
-    try:
-        logger.info(f"Retrieving access token for provider: {provider}")
-        auth_response = await oauth_client.authorize_access_token(request)
-        logger.debug(
-            f"Access token requested successfully for provider: {provider}, "
-            f"auth_response: {auth_response}"
-        )
-    except Exception as e:
-        logger.error(f"Failed to retrieve access token for provider {provider}", exc_info=True)
-        raise HTTPException(status_code=400, detail=f"Failed to retrieve access token: {str(e)}")
+    # TODO: try/except, retry?
+    logger.info(f"Retrieving access token for provider: {provider}")
+    auth_response = await oauth_client.authorize_access_token(request)
+    logger.debug(
+        f"Access token requested successfully for provider: {provider}, "
+        f"auth_response: {auth_response}"
+    )
 
     if provider == AuthProvider.GOOGLE.value:
         user_info = auth_response["userinfo"]
     else:
+        # TODO: implement other identity providers
         pass
 
     if not user_info["sub"]:
         logger.error(f"User ID not found in user information for provider {provider}")
-        raise HTTPException(status_code=400, detail="User ID not found from identity provider")
+        raise UnexpectedException(
+            f"User ID not found from identity provider={provider}, user_info={user_info}"
+        )
 
     user = crud.users.get_user(
         db_session, identity_provider=user_info["iss"], user_id_by_provider=user_info["sub"]
@@ -126,16 +124,13 @@ async def auth_callback(
         db_session.commit()
 
     # Generate JWT token for the user
-    try:
-        jwt_token = create_access_token(
-            str(user.id),
-            timedelta(minutes=config.JWT_ACCESS_TOKEN_EXPIRE_MINUTES),
-        )
-        logger.debug(
-            f"JWT generated successfully for user: {user.id}, jwt_token: {jwt_token[:4]}...{jwt_token[-4:]}"
-        )
-    except Exception:
-        logger.error(f"JWT generation failed for user {user.id}", exc_info=True)
-        raise HTTPException(status_code=500, detail="JWT generation failed")
+    # TODO: try/except, retry?
+    jwt_token = create_access_token(
+        str(user.id),
+        timedelta(minutes=config.JWT_ACCESS_TOKEN_EXPIRE_MINUTES),
+    )
+    logger.debug(
+        f"JWT generated successfully for user: {user.id}, jwt_token: {jwt_token[:4]}...{jwt_token[-4:]}"
+    )
 
     return AuthResponse(access_token=jwt_token, token_type="bearer", user_id=user.id)
