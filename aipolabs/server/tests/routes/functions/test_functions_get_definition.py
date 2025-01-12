@@ -118,7 +118,7 @@ def test_get_function_that_is_under_private_app(
     db_session.commit()
 
 
-def test_get_function_that_is_disabled(
+def test_get_function_that_is_inactive(
     db_session: Session,
     test_client: TestClient,
     dummy_functions: list[Function],
@@ -139,13 +139,13 @@ def test_get_function_that_is_disabled(
     db_session.commit()
 
 
-def test_get_function_that_is_under_disabled_app(
+def test_get_function_that_is_under_inactive_app(
     db_session: Session,
     test_client: TestClient,
     dummy_functions: list[Function],
     dummy_api_key: str,
 ) -> None:
-    # functions (public or private) under disabled app should not be reachable
+    # functions (active or inactive) under inactive app should not be reachable
     crud.apps.set_app_active_status(db_session, dummy_functions[0].app_id, False)
     db_session.commit()
 

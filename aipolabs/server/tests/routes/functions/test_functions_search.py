@@ -9,7 +9,7 @@ from aipolabs.common.schemas.function import FunctionBasic
 from aipolabs.server import config
 
 
-def test_search_functions_with_disabled_functions(
+def test_search_functions_with_inactive_functions(
     db_session: Session,
     test_client: TestClient,
     dummy_functions: list[Function],
@@ -33,7 +33,7 @@ def test_search_functions_with_disabled_functions(
     db_session.commit()
 
 
-def test_search_functions_with_disabled_apps(
+def test_search_functions_with_inactive_apps(
     db_session: Session,
     test_client: TestClient,
     dummy_functions: list[Function],
@@ -51,13 +51,13 @@ def test_search_functions_with_disabled_apps(
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
 
-    disabled_functions_count = sum(
+    inactive_functions_count = sum(
         function.app_id == dummy_functions[0].app_id for function in dummy_functions
     )
-    assert disabled_functions_count > 0, "there should be at least one disabled function"
+    assert inactive_functions_count > 0, "there should be at least one inactive function"
     assert (
-        len(functions) == len(dummy_functions) - disabled_functions_count
-    ), "all functions under disabled apps should not be returned"
+        len(functions) == len(dummy_functions) - inactive_functions_count
+    ), "no functions should be returned under inactive apps"
 
     # revert changes
     crud.apps.set_app_active_status(db_session, dummy_functions[0].app_id, True)

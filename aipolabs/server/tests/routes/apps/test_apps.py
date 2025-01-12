@@ -145,7 +145,7 @@ def test_search_apps_pagination(
     assert len(apps) == 1
 
 
-def test_search_apps_with_disabled_apps(
+def test_search_apps_with_inactive_apps(
     db_session: Session,
     test_client: TestClient,
     dummy_apps: list[App],

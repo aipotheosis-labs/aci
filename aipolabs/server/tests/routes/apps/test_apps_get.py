@@ -34,7 +34,7 @@ def test_get_non_existent_app(test_client: TestClient, dummy_api_key: str) -> No
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_get_disabled_app(
+def test_get_inactive_app(
     db_session: Session,
     test_client: TestClient,
     dummy_apps: list[App],
@@ -88,6 +88,3 @@ def test_get_private_app(
     crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PUBLIC)
     crud.apps.set_app_visibility(db_session, dummy_apps[0].id, Visibility.PUBLIC)
     db_session.commit()
-
-
-# TODO: test app with private and disabled functions, see if functions are filtered correctly
