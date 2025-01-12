@@ -36,10 +36,10 @@ async def create_app_configuration(
     # - security config is valid
     app = crud.apps.get_app(context.db_session, body.app_id)
     if not app:
-        logger.error(f"app not found, app_id={body.app_id}")
+        logger.error(f"app={body.app_id} not found")
         raise AppNotFound(str(body.app_id))
     if not app.enabled:
-        logger.error(f"app is disabled, app_id={body.app_id}")
+        logger.error(f"app={body.app_id} is disabled")
         raise AppDisabled(str(body.app_id))
 
     acl.validate_project_access_to_app(context.project, app)
@@ -112,7 +112,7 @@ async def delete_app_configuration(
         context.db_session, context.project.id, app_id
     )
     if not app_configuration:
-        logger.error(f"app configuration not found, app_id={app_id}, project={context.project.id}")
+        logger.error(f"app configuration not found, app={app_id}, project={context.project.id}")
         raise AppConfigurationNotFound(
             f"configuration for app={app_id} not found for project={context.project.id}"
         )
@@ -151,7 +151,7 @@ async def update_app_configuration(
         context.db_session, context.project.id, app_id
     )
     if not app_configuration:
-        logger.error(f"app configuration not found, app_id={app_id}, project={context.project.id}")
+        logger.error(f"app configuration not found, app={app_id}, project={context.project.id}")
         raise AppConfigurationNotFound(
             f"configuration for app={app_id} not found for project={context.project.id}"
         )

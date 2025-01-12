@@ -105,12 +105,12 @@ async def link_account(
     else:
         # Should never reach here as all security schemes stored in the db should be supported
         logger.error(
-            f"Unexpected error: unsupported security scheme={app_configuration.security_scheme} "
-            f"for app_id={body.app_id}"
+            f"unsupported security scheme={app_configuration.security_scheme} "
+            f"for app={body.app_id}"
         )
         raise UnexpectedException(
             f"unsupported security scheme={app_configuration.security_scheme} "
-            f"for app_id={body.app_id}"
+            f"for app={body.app_id}"
         )
 
 
@@ -142,10 +142,10 @@ async def linked_accounts_oauth2_callback(
     # create oauth2 client
     app = crud.apps.get_app(db_session, state.app_id)
     if not app:
-        logger.error(f"app not found, app_id={state.app_id}")
+        logger.error(f"app={state.app_id} not found")
         raise AppNotFound(state.app_id)
     if not app.enabled:
-        logger.error(f"app is disabled, app_id={state.app_id}")
+        logger.error(f"app={state.app_id} is disabled")
         raise AppDisabled(state.app_id)
 
     oauth2_client = _create_oauth2_client(app)
@@ -275,12 +275,11 @@ async def get_linked_account(
         context.db_session, linked_account_id
     )
     if not linked_account:
-        logger.error(f"linked account not found, linked_account_id={linked_account_id}")
+        logger.error(f"linked account={linked_account_id} not found")
         raise LinkedAccountNotFound(str(linked_account_id))
     if linked_account.project_id != context.project.id:
         logger.error(
-            f"linked account does not belong to project, project_id={context.project.id}, "
-            f"linked_account_id={linked_account_id}"
+            f"linked account={linked_account_id} does not belong to project={context.project.id}"
         )
         raise LinkedAccountAccessDenied(str(linked_account_id))
     return linked_account
@@ -298,12 +297,11 @@ async def delete_linked_account(
         context.db_session, linked_account_id
     )
     if not linked_account:
-        logger.error(f"linked account not found, linked_account_id={linked_account_id}")
+        logger.error(f"linked account={linked_account_id} not found")
         raise LinkedAccountNotFound(str(linked_account_id))
     if linked_account.project_id != context.project.id:
         logger.error(
-            f"linked account does not belong to project, project_id={context.project.id}, "
-            f"linked_account_id={linked_account_id}"
+            f"linked account={linked_account_id} does not belong to project={context.project.id}"
         )
         raise LinkedAccountAccessDenied(str(linked_account_id))
     deleted_count = crud.linked_accounts.delete_linked_account(
@@ -311,10 +309,10 @@ async def delete_linked_account(
     )
     if deleted_count != 1:
         logger.error(
-            f"expected 1 row to be deleted, but got {deleted_count} for linked_account_id={linked_account_id}"
+            f"expected 1 row to be deleted, but got {deleted_count} for linked_account={linked_account_id}"
         )
         raise UnexpectedException(
-            f"expected 1 row to be deleted, but got {deleted_count} for linked_account_id={linked_account_id}"
+            f"expected 1 row to be deleted, but got {deleted_count} for linked_account={linked_account_id}"
         )
     context.db_session.commit()
 

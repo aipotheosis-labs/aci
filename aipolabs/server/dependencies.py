@@ -90,13 +90,13 @@ def validate_api_key(
 
     elif db_api_key.status == APIKeyStatus.DISABLED:
         logger.error(
-            f"api key is disabled, api_key_id={db_api_key.id}, partial api_key={api_key[:8]}****"
+            f"api key is disabled, api_key_id={db_api_key.id}, partial api key={api_key[:8]}****"
         )
         raise InvalidAPIKey("API key is disabled")
 
     elif db_api_key.status == APIKeyStatus.DELETED:
         logger.error(
-            f"api key is deleted, api_key_id={db_api_key.id}, partial api_key={api_key[:8]}****"
+            f"api key is deleted, api_key_id={db_api_key.id}, partial api key={api_key[:8]}****"
         )
         raise InvalidAPIKey("API key is deleted")
 

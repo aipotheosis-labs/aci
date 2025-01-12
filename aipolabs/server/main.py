@@ -75,13 +75,13 @@ app.add_middleware(
 @app.exception_handler(Exception)
 def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
     if isinstance(exc, AipolabsException):
-        logger.error(f"Aipolabs exception, request: {request}, error: {exc}")
+        logger.error(f"aipolabs exception, request={request}, error={exc}")
         return JSONResponse(
             status_code=exc.error_code,
             content={"error": exc.title},
         )
     else:
-        logger.exception(f"Unexpected exception, request: {request}, error: {exc}")
+        logger.exception(f"Unexpected exception, request={request}, error={exc}")
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"error": "Internal server error"},

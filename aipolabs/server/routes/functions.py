@@ -112,10 +112,10 @@ async def get_function_definition(
     """
     function: Function | None = crud.functions.get_function(context.db_session, function_id)
     if not function:
-        logger.error(f"function not found, function_id={function_id}")
+        logger.error(f"function={function_id} not found")
         raise FunctionNotFound(str(function_id))
     if not function.enabled:
-        logger.error(f"function is disabled, function_id={function_id}")
+        logger.error(f"function={function_id} is disabled")
         raise FunctionDisabled(str(function_id))
 
     acl.validate_project_access_to_function(context.project, function)
@@ -153,7 +153,7 @@ async def execute(
     # Fetch function definition
     function = crud.functions.get_function(context.db_session, function_id)
     if not function:
-        logger.error(f"function not found, function_id={function_id}")
+        logger.error(f"function={function_id} not found")
         raise FunctionNotFound(str(function_id))
 
     return _execute(function, body.function_input)
@@ -230,14 +230,14 @@ def _execute(function: Function, function_input: dict) -> FunctionExecutionResul
             try:
                 response = client.send(request)
             except Exception as e:
-                logger.error(f"Failed to send request: {str(e)}")
+                logger.exception("failed to send request")
                 return FunctionExecutionResult(success=False, error=str(e))
 
             # Raise an error for bad responses
             try:
                 response.raise_for_status()
             except HTTPStatusError as e:
-                logger.error(f"HTTP error occurred: {str(e)}")
+                logger.exception("http error occurred")
                 return FunctionExecutionResult(success=False, error=_get_error_message(response, e))
 
             return FunctionExecutionResult(success=True, data=_get_response_data(response))
@@ -306,7 +306,7 @@ def _inject_security_credentials(
                         break
                     case _:
                         logger.error(
-                            f"Unsupported API key location: {api_key_location} for app: {db_app.name}"
+                            f"unsupported api key location={api_key_location} for app={db_app.name}"
                         )
                         continue
             case SecurityScheme.HTTP_BEARER:
@@ -314,7 +314,7 @@ def _inject_security_credentials(
                 break
             case _:
                 logger.error(
-                    f"Unsupported security scheme type: {scheme_type} for app: {db_app.name}"
+                    f"unsupported security scheme type={scheme_type} for app={db_app.name}"
                 )
                 continue
 
@@ -325,8 +325,8 @@ def _get_response_data(response: httpx.Response) -> Any:
     """
     try:
         response_data = response.json() if response.content else {}
-    except Exception as e:
-        logger.error(f"error parsing json response: {str(e)}")
+    except Exception:
+        logger.exception("error parsing json response")
         response_data = response.text
 
     return response_data

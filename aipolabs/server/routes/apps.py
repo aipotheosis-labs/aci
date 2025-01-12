@@ -90,10 +90,10 @@ async def get_app_details(
     """
     app = crud.apps.get_app(context.db_session, app_id)
     if not app:
-        logger.error(f"app not found, app_id={app_id}")
+        logger.error(f"app={app_id} not found")
         raise AppNotFound(str(app_id))
     if not app.enabled:
-        logger.error(f"app is disabled, app_id={app_id}")
+        logger.error(f"app={app_id} is disabled")
         raise AppDisabled(str(app_id))
 
     acl.validate_project_access_to_app(context.project, app)
