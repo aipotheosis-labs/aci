@@ -1,6 +1,7 @@
 from typing import Generator
 
 import pytest
+from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -47,8 +48,8 @@ def test_create_app_configuration(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 400, response.json()
-    assert response.json()["detail"] == "App is already configured for the project"
+    assert response.status_code == status.HTTP_409_CONFLICT
+    assert str(response.json()["error"]).startswith("App configuration already exists")
 
 
 def test_create_app_configuration_security_scheme_not_supported(

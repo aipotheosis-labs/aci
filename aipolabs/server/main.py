@@ -1,5 +1,5 @@
 # import sentry_sdk
-from fastapi import Depends, FastAPI, Request, status
+from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
 from starlette.middleware.cors import CORSMiddleware
@@ -72,26 +72,20 @@ app.add_middleware(
 )
 
 
-@app.exception_handler(Exception)
-def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+# NOTE: generic exception handler (type Exception) for all exceptions doesn't work
+# https://github.com/fastapi/fastapi/discussions/9478
+@app.exception_handler(AipolabsException)
+async def global_exception_handler(request: Request, exc: AipolabsException) -> JSONResponse:
     if isinstance(exc, RateLimitExceeded):
-        logger.error(f"rate limit exceeded, request={request}, error={exc}")
         return JSONResponse(
             status_code=exc.error_code,
             content={"error": exc.title},
             headers=exc.headers,
         )
-    elif isinstance(exc, AipolabsException):
-        logger.error(f"aipolabs exception, request={request}, error={exc}")
+    else:
         return JSONResponse(
             status_code=exc.error_code,
             content={"error": exc.title},
-        )
-    else:
-        logger.exception(f"unexpected exception, request={request}")
-        return JSONResponse(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content={"error": "Internal server error"},
         )
 
 
