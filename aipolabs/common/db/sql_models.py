@@ -377,8 +377,8 @@ class Function(Base):
     tags: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False)
     # if private, the function is only visible to privileged Projects (e.g., useful for internal and A/B testing)
     visibility: Mapped[Visibility] = mapped_column(SqlEnum(Visibility), nullable=False)
-    # can be used to control if the function is searchable and executable
-    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    # can be used to control if the app's discoverability
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False)
     protocol: Mapped[Protocol] = mapped_column(SqlEnum(Protocol), nullable=False)
     protocol_data: Mapped[dict] = mapped_column(JSON, nullable=False)
     # empty dict for function that takes no args
@@ -420,8 +420,8 @@ class App(Base):
     categories: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False)
     # if private, the app is only visible to privileged Projects (e.g., useful for internal and A/B testing)
     visibility: Mapped[Visibility] = mapped_column(SqlEnum(Visibility), nullable=False)
-    # operational status of the app
-    enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    # operational status of the app, can be used to control if the app's discoverability
+    active: Mapped[bool] = mapped_column(Boolean, nullable=False)
     # security schemes and it's config supported by the app, e.g., API key, OAuth2, etc
     security_schemes: Mapped[dict] = mapped_column(JSON, nullable=False)
     # embedding vector for similarity search

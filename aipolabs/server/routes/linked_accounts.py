@@ -14,7 +14,6 @@ from aipolabs.common.db.sql_models import App, LinkedAccount
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.exceptions import (
     AppConfigurationNotFound,
-    AppDisabled,
     AppNotFound,
     AuthenticationError,
     LinkedAccountAccessDenied,
@@ -140,13 +139,10 @@ async def linked_accounts_oauth2_callback(
         raise AuthenticationError("failed to decode state")
 
     # create oauth2 client
-    app = crud.apps.get_app(db_session, state.app_id)
+    app = crud.apps.get_app(db_session, state.app_id, False, True)
     if not app:
         logger.error(f"app={state.app_id} not found")
         raise AppNotFound(state.app_id)
-    if not app.enabled:
-        logger.error(f"app={state.app_id} is disabled")
-        raise AppDisabled(state.app_id)
 
     oauth2_client = _create_oauth2_client(app)
     # get oauth2 account credentials

@@ -12,7 +12,6 @@ from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import App, Function
 from aipolabs.common.enums import Protocol, SecurityScheme, Visibility
 from aipolabs.common.exceptions import (
-    FunctionDisabled,
     FunctionNotFound,
     InvalidFunctionInput,
     UnexpectedException,
@@ -31,7 +30,7 @@ from aipolabs.common.schemas.function import (
     OpenAIFunctionDefinition,
     RestMetadata,
 )
-from aipolabs.server import acl, config
+from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 
 router = APIRouter()
@@ -48,6 +47,7 @@ async def list_functions(
     return crud.functions.get_functions(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
+        True,
         query_params.app_ids,
         query_params.limit,
         query_params.offset,
@@ -79,6 +79,7 @@ async def search_functions(
     functions = crud.functions.search_functions(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
+        True,
         query_params.app_ids,
         intent_embedding,
         query_params.limit,
@@ -110,15 +111,15 @@ async def get_function_definition(
     Return the function definition that can be used directly by LLM.
     The actual content depends on the intended model (inference provider, e.g., OpenAI, Anthropic, etc.) and the function itself.
     """
-    function: Function | None = crud.functions.get_function(context.db_session, function_id)
+    function: Function | None = crud.functions.get_function(
+        context.db_session,
+        function_id,
+        context.project.visibility_access == Visibility.PUBLIC,
+        True,
+    )
     if not function:
         logger.error(f"function={function_id} not found")
         raise FunctionNotFound(str(function_id))
-    if not function.enabled:
-        logger.error(f"function={function_id} is disabled")
-        raise FunctionDisabled(str(function_id))
-
-    acl.validate_project_access_to_function(context.project, function)
 
     visible_parameters = processor.filter_visible_properties(function.parameters)
     logger.debug(f"Filtered parameters: {json.dumps(visible_parameters)}")
@@ -151,7 +152,12 @@ async def execute(
     body: FunctionExecute,
 ) -> FunctionExecutionResult:
     # Fetch function definition
-    function = crud.functions.get_function(context.db_session, function_id)
+    function = crud.functions.get_function(
+        context.db_session,
+        function_id,
+        context.project.visibility_access == Visibility.PUBLIC,
+        True,
+    )
     if not function:
         logger.error(f"function={function_id} not found")
         raise FunctionNotFound(str(function_id))

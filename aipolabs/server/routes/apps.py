@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, Query
 
 from aipolabs.common.db import crud
 from aipolabs.common.enums import Visibility
-from aipolabs.common.exceptions import AppDisabled, AppNotFound
+from aipolabs.common.exceptions import AppNotFound
 from aipolabs.common.logging import get_logger
 from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.app import (
@@ -16,7 +16,7 @@ from aipolabs.common.schemas.app import (
     AppsSearch,
 )
 from aipolabs.common.schemas.function import FunctionBasic
-from aipolabs.server import acl, config
+from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 
 logger = get_logger(__name__)
@@ -35,6 +35,7 @@ async def list_apps(
     return crud.apps.get_apps(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
+        True,
         query_params.limit,
         query_params.offset,
     )
@@ -66,6 +67,7 @@ async def search_apps(
     apps_with_scores = crud.apps.search_apps(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
+        True,
         query_params.categories,
         intent_embedding,
         query_params.limit,
@@ -88,22 +90,22 @@ async def get_app_details(
     """
     Returns an application (name, description, and functions).
     """
-    app = crud.apps.get_app(context.db_session, app_id)
+    app = crud.apps.get_app(
+        context.db_session,
+        app_id,
+        context.project.visibility_access == Visibility.PUBLIC,
+        True,
+    )
     if not app:
         logger.error(f"app={app_id} not found")
         raise AppNotFound(str(app_id))
-    if not app.enabled:
-        logger.error(f"app={app_id} is disabled")
-        raise AppDisabled(str(app_id))
 
-    acl.validate_project_access_to_app(context.project, app)
-
-    # filter functions by project visibility and enabled status
+    # filter functions by project visibility and active status
     # TODO: better way and place for this logic?
     functions = [
         function
         for function in app.functions
-        if function.enabled
+        if function.active
         and not (
             context.project.visibility_access == Visibility.PUBLIC
             and function.visibility != Visibility.PUBLIC

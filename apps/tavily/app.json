@@ -18,5 +18,5 @@
         "scraping"
     ],
     "visibility": "public",
-    "enabled": true
+    "active": true
 }

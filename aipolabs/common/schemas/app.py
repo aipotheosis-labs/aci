@@ -18,7 +18,7 @@ class AppCreate(BaseModel):
     logo: str
     categories: list[str]
     visibility: Visibility
-    enabled: bool
+    active: bool
     # TODO: consider making schema for each security scheme instead of using dict
     security_schemes: dict[SecurityScheme, dict] = Field(default_factory=dict)
 
@@ -102,7 +102,7 @@ class AppDetails(BaseModel):
     logo: str | None
     categories: list[str]
     visibility: Visibility
-    enabled: bool
+    active: bool
     # Note this field is different from security_schemes in the db model. Here it's just a list of supported SecurityScheme.
     # the security_schemes field in the db model is a dict of supported security schemes and their config,
     # which contains sensitive information like OAuth2 client secret.

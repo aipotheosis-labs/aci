@@ -1,3 +1,4 @@
+from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -14,21 +15,21 @@ def test_search_functions_with_disabled_functions(
     dummy_functions: list[Function],
     dummy_api_key: str,
 ) -> None:
-    # disabled functions should not be returned
-    crud.functions.set_function_enabled_status(db_session, dummy_functions[0].id, False)
+    # inactive functions should not be returned
+    crud.functions.set_function_active_status(db_session, dummy_functions[0].id, False)
     db_session.commit()
 
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search", params={}, headers={"x-api-key": dummy_api_key}
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions) - 1
 
     # revert changes
-    crud.functions.set_function_enabled_status(db_session, dummy_functions[0].id, True)
+    crud.functions.set_function_active_status(db_session, dummy_functions[0].id, True)
     db_session.commit()
 
 
@@ -38,14 +39,14 @@ def test_search_functions_with_disabled_apps(
     dummy_functions: list[Function],
     dummy_api_key: str,
 ) -> None:
-    # all functions (enabled or not) under disabled apps should not be returned
-    crud.apps.set_app_enabled_status(db_session, dummy_functions[0].app_id, False)
+    # all functions (active or not) under inactive apps should not be returned
+    crud.apps.set_app_active_status(db_session, dummy_functions[0].app_id, False)
     db_session.commit()
 
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search", params={}, headers={"x-api-key": dummy_api_key}
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
@@ -59,7 +60,7 @@ def test_search_functions_with_disabled_apps(
     ), "all functions under disabled apps should not be returned"
 
     # revert changes
-    crud.apps.set_app_enabled_status(db_session, dummy_functions[0].app_id, True)
+    crud.apps.set_app_active_status(db_session, dummy_functions[0].app_id, True)
     db_session.commit()
 
 
@@ -77,7 +78,7 @@ def test_search_functions_with_private_functions(
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search", params={}, headers={"x-api-key": dummy_api_key}
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
@@ -90,7 +91,7 @@ def test_search_functions_with_private_functions(
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search", params={}, headers={"x-api-key": dummy_api_key}
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
@@ -116,7 +117,7 @@ def test_search_functions_with_private_apps(
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search", params={}, headers={"x-api-key": dummy_api_key}
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
@@ -136,7 +137,7 @@ def test_search_functions_with_private_apps(
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search", params={}, headers={"x-api-key": dummy_api_key}
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
@@ -162,7 +163,7 @@ def test_search_functions_with_app_ids(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
@@ -198,7 +199,7 @@ def test_search_functions_with_intent(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
@@ -212,7 +213,7 @@ def test_search_functions_with_intent(
         params=search_param,
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
@@ -238,7 +239,7 @@ def test_search_functions_with_app_ids_and_intent(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
@@ -267,7 +268,7 @@ def test_search_functions_pagination(
         params=search_param,
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
@@ -279,7 +280,7 @@ def test_search_functions_pagination(
         params=search_param,
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]

@@ -1,5 +1,6 @@
 from typing import Any
 
+from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -30,7 +31,7 @@ def test_search_apps_with_intent(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps)
     assert apps[0].name == dummy_app_github.name
@@ -43,7 +44,7 @@ def test_search_apps_with_intent(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps)
     assert apps[0].name == dummy_app_google.name
@@ -56,7 +57,7 @@ def test_search_apps_without_intent(
         f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
 
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps)
@@ -79,7 +80,7 @@ def test_search_apps_with_categories(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 1
     assert apps[0].name == dummy_app_aipolabs_test.name
@@ -103,7 +104,7 @@ def test_search_apps_with_categories_and_intent(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 2
     assert apps[0].name == dummy_app_github.name
@@ -128,7 +129,7 @@ def test_search_apps_pagination(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps) - 1
 
@@ -139,7 +140,7 @@ def test_search_apps_pagination(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 1
 
@@ -150,19 +151,19 @@ def test_search_apps_with_disabled_apps(
     dummy_apps: list[App],
     dummy_api_key: str,
 ) -> None:
-    crud.apps.set_app_enabled_status(db_session, dummy_apps[0].id, False)
+    crud.apps.set_app_active_status(db_session, dummy_apps[0].id, False)
     db_session.commit()
 
-    # disabled app should not be returned
+    # inactive app should not be returned
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search", params={}, headers={"x-api-key": dummy_api_key}
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps) - 1
 
     # revert changes
-    crud.apps.set_app_enabled_status(db_session, dummy_apps[0].id, True)
+    crud.apps.set_app_active_status(db_session, dummy_apps[0].id, True)
     db_session.commit()
 
 
@@ -183,7 +184,7 @@ def test_search_apps_with_private_apps(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps) - 1
 
@@ -197,7 +198,7 @@ def test_search_apps_with_private_apps(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps)
 

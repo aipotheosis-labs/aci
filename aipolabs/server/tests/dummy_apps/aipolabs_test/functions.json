@@ -4,7 +4,7 @@
         "description": "Say hello to the world with no args",
         "tags": ["test", "hello_world"],
         "visibility": "public",
-        "enabled": true,
+        "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
@@ -18,7 +18,7 @@
         "description": "Say hello to the world",
         "tags": ["test", "hello_world"],
         "visibility": "public",
-        "enabled": true,
+        "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "POST",
@@ -107,7 +107,7 @@
         "description": "Say hello to the world with nested args including path and query parameters",
         "tags": ["test", "hello_world"],
         "visibility": "public",
-        "enabled": true,
+        "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "POST",

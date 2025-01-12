@@ -5,10 +5,10 @@ from fastapi import APIRouter, Depends
 
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import AppConfiguration
+from aipolabs.common.enums import Visibility
 from aipolabs.common.exceptions import (
     AppConfigurationAlreadyExists,
     AppConfigurationNotFound,
-    AppDisabled,
     AppNotFound,
     AppSecuritySchemeNotSupported,
     UnexpectedException,
@@ -19,7 +19,6 @@ from aipolabs.common.schemas.app_configurations import (
     AppConfigurationPublic,
     AppConfigurationUpdate,
 )
-from aipolabs.server import acl
 from aipolabs.server import dependencies as deps
 
 router = APIRouter()
@@ -32,17 +31,16 @@ async def create_app_configuration(
     body: AppConfigurationCreate,
 ) -> AppConfiguration:
     """Create an app configuration for a project"""
-    # TODO: validation
-    # - security config is valid
-    app = crud.apps.get_app(context.db_session, body.app_id)
+    # TODO: validate security config
+    app = crud.apps.get_app(
+        context.db_session,
+        body.app_id,
+        context.project.visibility_access == Visibility.PUBLIC,
+        True,
+    )
     if not app:
         logger.error(f"app={body.app_id} not found")
         raise AppNotFound(str(body.app_id))
-    if not app.enabled:
-        logger.error(f"app={body.app_id} is disabled")
-        raise AppDisabled(str(body.app_id))
-
-    acl.validate_project_access_to_app(context.project, app)
 
     if crud.app_configurations.app_configuration_exists(
         context.db_session, context.project.id, body.app_id

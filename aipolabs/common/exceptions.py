@@ -169,17 +169,6 @@ class AppSecuritySchemeNotSupported(AipolabsException):
         )
 
 
-class AppDisabled(AipolabsException):
-    """
-    Exception raised when an app is disabled
-    """
-
-    def __init__(self, message: str | None = None):
-        super().__init__(
-            title="App is disabled", message=message, error_code=status.HTTP_403_FORBIDDEN
-        )
-
-
 class InvalidBearerToken(AipolabsException):
     """
     Exception raised when a http bearer token is invalid
@@ -213,17 +202,6 @@ class DailyQuotaExceeded(AipolabsException):
         )
 
 
-class AppAccessDenied(AipolabsException):
-    """
-    Exception raised when an app is not accessible to a project (per visibility access)
-    """
-
-    def __init__(self, message: str | None = None):
-        super().__init__(
-            title="App access denied", message=message, error_code=status.HTTP_403_FORBIDDEN
-        )
-
-
 class UserNotFound(AipolabsException):
     """
     Exception raised when a user is not found
@@ -243,28 +221,6 @@ class FunctionNotFound(AipolabsException):
     def __init__(self, message: str | None = None):
         super().__init__(
             title="Function not found", message=message, error_code=status.HTTP_404_NOT_FOUND
-        )
-
-
-class FunctionDisabled(AipolabsException):
-    """
-    Exception raised when a function is disabled
-    """
-
-    def __init__(self, message: str | None = None):
-        super().__init__(
-            title="Function disabled", message=message, error_code=status.HTTP_403_FORBIDDEN
-        )
-
-
-class FunctionAccessDenied(AipolabsException):
-    """
-    Exception raised when a function is not accessible to a project (per visibility access)
-    """
-
-    def __init__(self, message: str | None = None):
-        super().__init__(
-            title="Function access denied", message=message, error_code=status.HTTP_403_FORBIDDEN
         )
 
 

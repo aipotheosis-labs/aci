@@ -4,7 +4,7 @@
     "description": "Tavily Search API is a search engine optimized for LLMs, aimed at efficient, quick and persistent search results.",
     "tags": ["search"],
     "visibility": "public",
-    "enabled": true,
+    "active": true,
     "protocol": "rest",
     "protocol_data": {
       "method": "POST",
@@ -102,7 +102,7 @@
     "description": "Tavily Extract API is used to scrape raw content from a provided list of URLs.",
     "tags": ["search", "scrape"],
     "visibility": "public",
-    "enabled": true,
+    "active": true,
     "protocol": "rest",
     "protocol_data": {
       "method": "POST",

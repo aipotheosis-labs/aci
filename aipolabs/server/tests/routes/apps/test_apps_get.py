@@ -1,3 +1,4 @@
+from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -20,7 +21,7 @@ def test_get_app(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     app = AppBasicWithFunctions.model_validate(response.json())
     assert app.name == dummy_app_github.name
     assert len(app.functions) > 0
@@ -30,7 +31,7 @@ def test_get_non_existent_app(test_client: TestClient, dummy_api_key: str) -> No
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/{NON_EXISTENT_APP_ID}", headers={"x-api-key": dummy_api_key}
     )
-    assert response.status_code == 404, response.json()
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_get_disabled_app(
@@ -39,17 +40,17 @@ def test_get_disabled_app(
     dummy_apps: list[App],
     dummy_api_key: str,
 ) -> None:
-    crud.apps.set_app_enabled_status(db_session, dummy_apps[0].id, False)
+    crud.apps.set_app_active_status(db_session, dummy_apps[0].id, False)
     db_session.commit()
 
-    # disabled app should not be returned
+    # inactive app should not be returned
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/{dummy_apps[0].id}", headers={"x-api-key": dummy_api_key}
     )
-    assert response.status_code == 403, response.json()
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # revert changes
-    crud.apps.set_app_enabled_status(db_session, dummy_apps[0].id, True)
+    crud.apps.set_app_active_status(db_session, dummy_apps[0].id, True)
     db_session.commit()
 
 
@@ -68,7 +69,7 @@ def test_get_private_app(
         f"{config.ROUTER_PREFIX_APPS}/{dummy_apps[0].id}",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 403, response.json()
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # private app should be reachable for project with private access
     crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PRIVATE)
@@ -79,7 +80,7 @@ def test_get_private_app(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     app = AppBasicWithFunctions.model_validate(response.json())
     assert app.name == dummy_apps[0].name
 

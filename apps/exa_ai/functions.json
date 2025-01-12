@@ -4,7 +4,7 @@
     "description": "Find webpages using Exa’s embeddings-based or Google-style keyword search.",
     "tags": ["search"],
     "visibility": "public",
-    "enabled": true,
+    "active": true,
     "protocol": "rest",
     "protocol_data": {
       "method": "POST",
@@ -197,7 +197,7 @@
     "description": "Retrieve contents of documents based on a list of document IDs.",
     "tags": ["scrape"],
     "visibility": "public",
-    "enabled": true,
+    "active": true,
     "protocol": "rest",
     "protocol_data": {
       "method": "POST",
@@ -290,7 +290,7 @@
     "description": "Find similar links to the link provided and optionally get page contents.",
     "tags": ["search"],
     "visibility": "public",
-    "enabled": true,
+    "active": true,
     "protocol": "rest",
     "protocol_data": {
       "method": "POST",

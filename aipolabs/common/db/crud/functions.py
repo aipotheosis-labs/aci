@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 # TODO: move logic check to schema validation or caller
 # - pass app id
 # - app exists
-# - app is enabled
+# - app is active
 # - function names are unique
 # - all functions belong to the same app
 # - function names are valid etc
@@ -42,8 +42,8 @@ def create_functions(
     if len(app_names) != 1:
         raise ValueError("All functions must belong to the same app")
     app_name = app_names.pop()
-    # check if the app exists
-    app = crud.apps.get_app_by_name(db_session, app_name)
+    # check if the app exists: allow creating even if app is inactive
+    app = crud.apps.get_app_by_name(db_session, app_name, False, False)
     if not app:
         raise ValueError(f"App {app_name} does not exist")
 
@@ -55,7 +55,7 @@ def create_functions(
             description=function_create.description,
             tags=function_create.tags,
             visibility=function_create.visibility,
-            enabled=function_create.enabled,
+            active=function_create.active,
             protocol=function_create.protocol,
             protocol_data=function_create.protocol_data.model_dump(),
             parameters=function_create.parameters,
@@ -73,6 +73,7 @@ def create_functions(
 def search_functions(
     db_session: Session,
     public_only: bool,
+    active_only: bool,
     app_ids: list[UUID] | None,
     intent_embedding: list[float] | None,
     limit: int,
@@ -81,10 +82,12 @@ def search_functions(
     """Get a list of functions with optional filtering by app names and sorting by vector similarity to intent."""
     statement = select(Function)
 
-    # filter out all functions of disabled apps and all disabled functions (where app is enabled buy specific functions can be disabled)
-    statement = statement.join(App).filter(App.enabled).filter(Function.enabled)
-    # if the corresponding project (api key belongs to) can only access public apps and functions, filter out all functions of private apps
-    # and all private functions (where app is public but specific function is private)
+    # filter out all functions of inactive apps and all inactive functions
+    # (where app is active buy specific functions can be inactive)
+    if active_only:
+        statement = statement.join(App).filter(App.active).filter(Function.active)
+    # if the corresponding project (api key belongs to) can only access public apps and functions,
+    # filter out all functions of private apps and all private functions (where app is public but specific function is private)
     if public_only:
         statement = statement.filter(App.visibility == Visibility.PUBLIC).filter(
             Function.visibility == Visibility.PUBLIC
@@ -104,38 +107,56 @@ def search_functions(
 
 
 def get_functions(
-    db_session: Session, public_only: bool, app_ids: list[UUID] | None, limit: int, offset: int
+    db_session: Session,
+    public_only: bool,
+    active_only: bool,
+    app_ids: list[UUID] | None,
+    limit: int,
+    offset: int,
 ) -> list[Function]:
     """Get a list of functions and their details. Sorted by function name."""
-    # exclude private Apps's functions and private functions if public_only is True
     statement = select(Function).join(App)
 
     if app_ids:
         statement = statement.filter(App.id.in_(app_ids))
 
+    # exclude private Apps's functions and private functions if public_only is True
     if public_only:
         statement = statement.filter(App.visibility == Visibility.PUBLIC).filter(
             Function.visibility == Visibility.PUBLIC
         )
+    # exclude inactive functions (including all functions if apps are inactive)
+    if active_only:
+        statement = statement.filter(App.active).filter(Function.active)
+
     statement = statement.order_by(Function.name).offset(offset).limit(limit)
     results: list[Function] = db_session.execute(statement).scalars().all()
     return results
 
 
-def get_function(db_session: Session, function_id: UUID) -> Function | None:
+def get_function(
+    db_session: Session, function_id: UUID, public_only: bool, active_only: bool
+) -> Function | None:
     statement = select(Function).filter_by(id=function_id)
 
-    # filter out all functions of disabled apps and all disabled functions
-    # (where app is enabled buy specific functions can be disabled)
-    statement = statement.join(App).filter(App.enabled).filter(Function.enabled)
+    # filter out all functions of inactive apps and all inactive functions
+    # (where app is active buy specific functions can be inactive)
+    if active_only:
+        statement = statement.join(App).filter(App.active).filter(Function.active)
+    # if the corresponding project (api key belongs to) can only access public apps and functions,
+    # filter out all functions of private apps and all private functions (where app is public but specific function is private)
+    if public_only:
+        statement = statement.filter(App.visibility == Visibility.PUBLIC).filter(
+            Function.visibility == Visibility.PUBLIC
+        )
 
     function: Function | None = db_session.execute(statement).scalar_one_or_none()
 
     return function
 
 
-def set_function_enabled_status(db_session: Session, function_id: UUID, enabled: bool) -> None:
-    statement = update(Function).filter_by(id=function_id).values(enabled=enabled)
+def set_function_active_status(db_session: Session, function_id: UUID, active: bool) -> None:
+    statement = update(Function).filter_by(id=function_id).values(active=active)
     db_session.execute(statement)
 
 

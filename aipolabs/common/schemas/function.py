@@ -30,7 +30,7 @@ class FunctionCreate(BaseModel):
     description: str
     tags: list[str]
     visibility: Visibility
-    enabled: bool
+    active: bool
     protocol: Protocol
     protocol_data: RestMetadata | GraphQLMetadata = Field(default_factory=dict)
     parameters: dict = Field(default_factory=dict)
@@ -125,7 +125,7 @@ class FunctionDetails(BaseModel):
     description: str
     tags: list[str]
     visibility: Visibility
-    enabled: bool
+    active: bool
     protocol: Protocol
     protocol_data: dict
     parameters: dict

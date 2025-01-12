@@ -4,7 +4,7 @@
         "description": "Brave Web Search API is a REST API to query Brave Search and get back search results from the web.",
         "tags": ["search"],
         "visibility": "public",
-        "enabled": true,
+        "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",

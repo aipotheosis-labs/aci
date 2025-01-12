@@ -17,5 +17,5 @@
         "calendar"
     ],
     "visibility": "public",
-    "enabled": true
+    "active": true
 }

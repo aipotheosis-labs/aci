@@ -31,7 +31,7 @@ def create_app(
         logo=app_create.logo,
         categories=app_create.categories,
         visibility=app_create.visibility,
-        enabled=app_create.enabled,
+        active=app_create.active,
         security_schemes=app_create.security_schemes,
         embedding=app_embedding,
     )
@@ -42,21 +42,37 @@ def create_app(
     return app
 
 
-def get_app(db_session: Session, app_id: UUID) -> App | None:
-    app: App | None = db_session.execute(select(App).filter_by(id=app_id)).scalar_one_or_none()
+def get_app(db_session: Session, app_id: UUID, public_only: bool, active_only: bool) -> App | None:
+    statement = select(App).filter_by(id=app_id)
+    if active_only:
+        statement = statement.filter(App.active)
+    if public_only:
+        statement = statement.filter(App.visibility == Visibility.PUBLIC)
+    app: App | None = db_session.execute(statement).scalar_one_or_none()
     return app
 
 
-def get_app_by_name(db_session: Session, app_name: str) -> App | None:
-    app: App | None = db_session.execute(select(App).filter_by(name=app_name)).scalar_one_or_none()
+def get_app_by_name(
+    db_session: Session, app_name: str, public_only: bool, active_only: bool
+) -> App | None:
+    statement = select(App).filter_by(name=app_name)
+    if active_only:
+        statement = statement.filter(App.active)
+    if public_only:
+        statement = statement.filter(App.visibility == Visibility.PUBLIC)
+    app: App | None = db_session.execute(statement).scalar_one_or_none()
     return app
 
 
-def get_apps(db_session: Session, public_only: bool, limit: int, offset: int) -> list[App]:
+def get_apps(
+    db_session: Session, public_only: bool, active_only: bool, limit: int, offset: int
+) -> list[App]:
     """Get all apps, order by App name"""
     statement = select(App)
     if public_only:
         statement = statement.filter(App.visibility == Visibility.PUBLIC)
+    if active_only:
+        statement = statement.filter(App.active)
     statement = statement.order_by(App.name).offset(offset).limit(limit)
     apps: list[App] = db_session.execute(statement).scalars().all()
     return apps
@@ -65,6 +81,7 @@ def get_apps(db_session: Session, public_only: bool, limit: int, offset: int) ->
 def search_apps(
     db_session: Session,
     public_only: bool,
+    active_only: bool,
     categories: list[str] | None,
     intent_embedding: list[float] | None,
     limit: int,
@@ -73,12 +90,16 @@ def search_apps(
     """Get a list of apps with optional filtering by categories and sorting by vector similarity to intent. and pagination."""
     statement = select(App)
 
-    # filter out disabled apps
-    statement = statement.filter(App.enabled)
+    # filter out inactive apps
+    statement = statement.filter(App.active)
 
     # filter out private apps
     if public_only:
         statement = statement.filter(App.visibility == Visibility.PUBLIC)
+
+    # filter out inactive apps
+    if active_only:
+        statement = statement.filter(App.active)
 
     # filter out apps by categories
     # TODO: Is there any way to get typing for cosine_distance, label, overlap?
@@ -103,8 +124,8 @@ def search_apps(
         return [(app, None) for app, in results]
 
 
-def set_app_enabled_status(db_session: Session, app_id: UUID, enabled: bool) -> None:
-    statement = update(App).filter_by(id=app_id).values(enabled=enabled)
+def set_app_active_status(db_session: Session, app_id: UUID, active: bool) -> None:
+    statement = update(App).filter_by(id=app_id).values(active=active)
     db_session.execute(statement)
 
 

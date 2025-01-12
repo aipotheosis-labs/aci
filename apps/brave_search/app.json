@@ -17,5 +17,5 @@
         "browser"
     ],
     "visibility": "public",
-    "enabled": true
+    "active": true
 }

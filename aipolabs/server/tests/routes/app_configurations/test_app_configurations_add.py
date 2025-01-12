@@ -90,8 +90,7 @@ def test_create_app_configuration_app_not_enabled(
     dummy_api_key: str,
     dummy_app_google: App,
 ) -> None:
-    # disable the app
-    crud.apps.set_app_enabled_status(db_session, dummy_app_google.id, False)
+    crud.apps.set_app_active_status(db_session, dummy_app_google.id, False)
     db_session.commit()
 
     # try creating app configuration
@@ -101,11 +100,10 @@ def test_create_app_configuration_app_not_enabled(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert str(response.json()["error"]).startswith("App is disabled")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert str(response.json()["error"]).startswith("App not found")
 
-    # re-enable the app
-    crud.apps.set_app_enabled_status(db_session, dummy_app_google.id, True)
+    crud.apps.set_app_active_status(db_session, dummy_app_google.id, True)
     db_session.commit()
 
 
@@ -126,8 +124,8 @@ def test_create_app_configuration_project_does_not_have_access(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert str(response.json()["error"]).startswith("App access denied")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert str(response.json()["error"]).startswith("App not found")
 
     # revert changes
     crud.apps.set_app_visibility(db_session, dummy_app_google.id, Visibility.PUBLIC)

@@ -22,5 +22,5 @@
         "testcategory-2"
     ],
     "visibility": "public",
-    "enabled": true
+    "active": true
 }

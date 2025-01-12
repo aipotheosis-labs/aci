@@ -4,7 +4,7 @@
         "description": "describe the function",
         "tags": ["test", "hello_world"],
         "visibility": "public",
-        "enabled": true,
+        "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",

@@ -4,7 +4,7 @@
         "description": "Create a new event in Google Calendar",
         "tags": ["calendar"],
         "visibility": "public",
-        "enabled": true,
+        "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "POST",

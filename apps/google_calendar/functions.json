@@ -4,7 +4,7 @@
         "description": "Returns the calendars on the user's calendar list",
         "tags": ["calendar"],
         "visibility": "public",
-        "enabled": true,
+        "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",

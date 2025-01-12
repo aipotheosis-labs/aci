@@ -67,7 +67,7 @@ def test_get_private_function(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # should be reachable for project with private access
     crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PRIVATE)
@@ -100,7 +100,7 @@ def test_get_function_that_is_under_private_app(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # should be reachable for project with private access
     crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PRIVATE)
@@ -124,8 +124,8 @@ def test_get_function_that_is_disabled(
     dummy_functions: list[Function],
     dummy_api_key: str,
 ) -> None:
-    # disabled function should not be reachable
-    crud.functions.set_function_enabled_status(db_session, dummy_functions[0].id, False)
+    # inactive function should not be reachable
+    crud.functions.set_function_active_status(db_session, dummy_functions[0].id, False)
     db_session.commit()
 
     response = test_client.get(
@@ -135,7 +135,7 @@ def test_get_function_that_is_disabled(
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # revert changes
-    crud.functions.set_function_enabled_status(db_session, dummy_functions[0].id, True)
+    crud.functions.set_function_active_status(db_session, dummy_functions[0].id, True)
     db_session.commit()
 
 
@@ -146,7 +146,7 @@ def test_get_function_that_is_under_disabled_app(
     dummy_api_key: str,
 ) -> None:
     # functions (public or private) under disabled app should not be reachable
-    crud.apps.set_app_enabled_status(db_session, dummy_functions[0].app_id, False)
+    crud.apps.set_app_active_status(db_session, dummy_functions[0].app_id, False)
     db_session.commit()
 
     response = test_client.get(
@@ -156,5 +156,5 @@ def test_get_function_that_is_under_disabled_app(
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # revert changes
-    crud.apps.set_app_enabled_status(db_session, dummy_functions[0].app_id, True)
+    crud.apps.set_app_active_status(db_session, dummy_functions[0].app_id, True)
     db_session.commit()

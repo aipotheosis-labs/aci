@@ -17,5 +17,5 @@
         "utility"
     ],
     "visibility": "public",
-    "enabled": true
+    "active": true
 }
