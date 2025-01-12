@@ -4,10 +4,13 @@ from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import AppConfiguration
+from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
     AppConfigurationUpdate,
 )
+
+logger = get_logger(__name__)
 
 
 def create_app_configuration(
@@ -69,12 +72,16 @@ def delete_app_configuration(db_session: Session, project_id: UUID, app_id: UUID
 
 
 def get_app_configurations(
-    db_session: Session, project_id: UUID, app_id: UUID | None = None
+    db_session: Session, project_id: UUID, app_id: UUID | None, limit: int, offset: int
 ) -> list[AppConfiguration]:
     """Get all app configurations for a project, optionally filtered by app id"""
+    logger.error(
+        f"Getting app configurations for project={project_id}, app_id={app_id}, limit={limit}, offset={offset}"
+    )
     statement = select(AppConfiguration).filter_by(project_id=project_id)
     if app_id:
         statement = statement.filter_by(app_id=app_id)
+    statement = statement.offset(offset).limit(limit)
     app_configurations: list[AppConfiguration] = db_session.execute(statement).scalars().all()
     return app_configurations
 

@@ -60,3 +60,11 @@ class AppConfigurationUpdate(BaseModel):
                 "all_functions_enabled and enabled_functions cannot be both True and non-empty"
             )
         return self
+
+
+class AppConfigurationsList(BaseModel):
+    app_id: UUID | None = Field(default=None, description="Filter by app id.")
+    limit: int = Field(
+        default=100, ge=1, le=1000, description="Maximum number of results per response."
+    )
+    offset: int = Field(default=0, ge=0, description="Pagination offset.")

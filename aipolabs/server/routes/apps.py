@@ -101,7 +101,7 @@ async def get_app_details(
         raise AppNotFound(str(app_id))
 
     # filter functions by project visibility and active status
-    # TODO: better way and place for this logic?
+    # TODO: better way and place for crud filtering/acl logic like this?
     functions = [
         function
         for function in app.functions

@@ -7,7 +7,10 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import App, AppConfiguration
 from aipolabs.common.enums import SecurityScheme
-from aipolabs.common.schemas.app_configurations import AppConfigurationCreate
+from aipolabs.common.schemas.app_configurations import (
+    AppConfigurationCreate,
+    AppConfigurationsList,
+)
 from aipolabs.server import config
 
 NON_EXISTENT_APP_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
@@ -67,10 +70,12 @@ def test_list_app_configuration_with_app_id(
     dummy_api_key: str,
     dummy_app_google: App,
 ) -> None:
-    # list google app configuration of the project
+    query_params = AppConfigurationsList(app_id=dummy_app_google.id)
+
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/?app_id={dummy_app_google.id}",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         headers={"x-api-key": dummy_api_key},
+        params=query_params.model_dump(mode="json"),
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -83,9 +88,27 @@ def test_list_non_existent_app_configuration(
     dummy_api_key: str,
     dummy_app_aipolabs_test: App,
 ) -> None:
+    query_params = AppConfigurationsList(app_id=dummy_app_aipolabs_test.id)
+
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/?app_id={dummy_app_aipolabs_test.id}",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         headers={"x-api-key": dummy_api_key},
+        params=query_params.model_dump(mode="json"),
     )
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 0
+
+
+def test_list_app_configuration_with_limit_and_offset(
+    test_client: TestClient, dummy_api_key: str
+) -> None:
+    query_params = AppConfigurationsList(limit=1, offset=0)
+
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
+        headers={"x-api-key": dummy_api_key},
+        # Note: need to exclude None values, otherwise it won't be injected into the query params correctly
+        params=query_params.model_dump(exclude_none=True),
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 1

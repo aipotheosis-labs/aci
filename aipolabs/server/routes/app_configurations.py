@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import AppConfiguration
@@ -17,6 +17,7 @@ from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
     AppConfigurationPublic,
+    AppConfigurationsList,
     AppConfigurationUpdate,
 )
 from aipolabs.server import dependencies as deps
@@ -67,15 +68,18 @@ async def create_app_configuration(
     return app_configuration
 
 
-# TODO: add pagination
 @router.get("/", response_model=list[AppConfigurationPublic])
 async def list_app_configurations(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
-    app_id: UUID | None = None,
+    query_params: Annotated[AppConfigurationsList, Query()],
 ) -> list[AppConfiguration]:
-    """List all app configurations for a project, optionally filtered by app id"""
+    """List all app configurations for a project, with optionally filters"""
     return crud.app_configurations.get_app_configurations(
-        context.db_session, context.project.id, app_id=app_id
+        context.db_session,
+        context.project.id,
+        query_params.app_id,
+        query_params.limit,
+        query_params.offset,
     )
 
 
