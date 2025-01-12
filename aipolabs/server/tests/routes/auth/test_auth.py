@@ -45,7 +45,7 @@ def test_callback_google(test_client: TestClient, db_session: Session) -> None:
         response = test_client.get(f"{config.ROUTER_PREFIX_AUTH}/callback/google")
 
     data = response.json()
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     # check jwt token is generated
     assert data["access_token"] is not None
     assert data["token_type"] == "bearer"
@@ -70,5 +70,5 @@ def test_callback_google(test_client: TestClient, db_session: Session) -> None:
 
 def test_login_unsupported_provider(test_client: TestClient) -> None:
     response = test_client.get(f"{config.ROUTER_PREFIX_AUTH}/login/unsupported")
-    assert response.status_code == 400
-    assert response.json() == {"detail": "Unsupported provider"}
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert str(response.json()["error"]).startswith("Unsupported identity provider")

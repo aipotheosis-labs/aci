@@ -167,5 +167,5 @@ def test_non_existent_app_configuration(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == status.HTTP_404_NOT_FOUND, response.json()
-    assert response.json()["detail"] == "App not configured"
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert str(response.json()["error"]).startswith("App configuration not found")

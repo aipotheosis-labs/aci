@@ -1,3 +1,4 @@
+from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -21,7 +22,7 @@ def test_get_function_definition_openai(
         params={"inference_provider": "openai"},
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     response_json = response.json()
 
     function_definition = OpenAIFunctionDefinition.model_validate(response_json)
@@ -44,7 +45,7 @@ def test_get_function_definition_anthropic(
         params={"inference_provider": "anthropic"},
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     function_definition = AnthropicFunctionDefinition.model_validate(response.json())
     assert function_definition.name == dummy_function_github__create_repository.name
     # sanity check: if description is the same
@@ -66,7 +67,7 @@ def test_get_private_function(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 404, response.json()
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
     # should be reachable for project with private access
     crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PRIVATE)
@@ -76,7 +77,7 @@ def test_get_private_function(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
 
     # revert changes
     crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PUBLIC)
@@ -99,7 +100,7 @@ def test_get_function_that_is_under_private_app(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 404, response.json()
+    assert response.status_code == status.HTTP_403_FORBIDDEN
 
     # should be reachable for project with private access
     crud.projects.set_project_visibility_access(db_session, dummy_project.id, Visibility.PRIVATE)
@@ -109,7 +110,7 @@ def test_get_function_that_is_under_private_app(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
 
     # revert changes
     crud.apps.set_app_visibility(db_session, dummy_functions[0].app_id, Visibility.PUBLIC)
@@ -131,7 +132,7 @@ def test_get_function_that_is_disabled(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 404, response.json()
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # revert changes
     crud.functions.set_function_enabled_status(db_session, dummy_functions[0].id, True)
@@ -152,7 +153,7 @@ def test_get_function_that_is_under_disabled_app(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_functions[0].id}/definition",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 404, response.json()
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # revert changes
     crud.apps.set_app_enabled_status(db_session, dummy_functions[0].app_id, True)

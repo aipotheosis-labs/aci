@@ -1,6 +1,7 @@
 from typing import Generator
 
 import pytest
+from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -31,7 +32,7 @@ def setup_and_cleanup(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     google_app_configuration = AppConfigurationPublic.model_validate(response.json())
 
     # create github app configuration under different project (with different api key)
@@ -44,7 +45,7 @@ def setup_and_cleanup(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_2},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     github_app_configuration = AppConfigurationPublic.model_validate(response.json())
 
     yield [google_app_configuration, github_app_configuration]
@@ -66,7 +67,7 @@ def test_update_app_configuration(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{google_app_configuration.app_id}",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     assert response.json()["enabled"] is True
 
     response = test_client.patch(
@@ -74,7 +75,7 @@ def test_update_app_configuration(
         json={"enabled": False},
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     assert response.json()["enabled"] is False
 
     # sanity check by getting the same app configuration
@@ -82,7 +83,7 @@ def test_update_app_configuration(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{google_app_configuration.app_id}",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     assert response.json()["enabled"] is False
 
 
@@ -102,7 +103,7 @@ def test_update_app_configuration_with_invalid_payload(
         },
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 422, response.json()
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 def test_update_non_existent_app_configuration(
@@ -115,5 +116,5 @@ def test_update_non_existent_app_configuration(
         json={"enabled": False},
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 404, response.json()
-    assert response.json()["detail"] == "App configuration not found"
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert str(response.json()["error"]).startswith("App configuration not found")

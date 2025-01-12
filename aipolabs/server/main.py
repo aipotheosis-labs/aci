@@ -6,7 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
-from aipolabs.common.exceptions import AipolabsException, RateLimitExceeded
+from aipolabs.common.exceptions import AipolabsException
 from aipolabs.common.logging import get_logger, setup_logging
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
@@ -76,17 +76,10 @@ app.add_middleware(
 # https://github.com/fastapi/fastapi/discussions/9478
 @app.exception_handler(AipolabsException)
 async def global_exception_handler(request: Request, exc: AipolabsException) -> JSONResponse:
-    if isinstance(exc, RateLimitExceeded):
-        return JSONResponse(
-            status_code=exc.error_code,
-            content={"error": exc.title},
-            headers=exc.headers,
-        )
-    else:
-        return JSONResponse(
-            status_code=exc.error_code,
-            content={"error": exc.title},
-        )
+    return JSONResponse(
+        status_code=exc.error_code,
+        content={"error": exc.title},
+    )
 
 
 # TODO: custom rate limiting on different routes

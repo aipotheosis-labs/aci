@@ -1,6 +1,7 @@
 from typing import Generator
 
 import pytest
+from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -72,7 +73,7 @@ def test_delete_app_configuration(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{google_app_configuration.app_id}",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 404, response.json()
+    assert response.status_code == status.HTTP_404_NOT_FOUND
     # TODO: check if linked accounts are deleted
 
 
@@ -85,5 +86,5 @@ def test_delete_non_existent_app_configuration(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{dummy_app_aipolabs_test.id}",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 404, response.json()
-    assert response.json()["detail"] == "App configuration not found"
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert str(response.json()["error"]).startswith("App configuration not found")

@@ -64,8 +64,10 @@ def test_create_app_configuration_security_scheme_not_supported(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 400, response.json()
-    assert response.json()["detail"] == "Security scheme is not supported by the app"
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert str(response.json()["error"]).startswith(
+        "Specified security scheme not supported by the app"
+    )
 
 
 def test_create_app_configuration_app_not_found(
@@ -78,8 +80,8 @@ def test_create_app_configuration_app_not_found(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 404, response.json()
-    assert response.json()["detail"] == "App not found"
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert str(response.json()["error"]).startswith("App not found")
 
 
 def test_create_app_configuration_app_not_enabled(
@@ -99,8 +101,8 @@ def test_create_app_configuration_app_not_enabled(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 400, response.json()
-    assert response.json()["detail"] == "App is not enabled"
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert str(response.json()["error"]).startswith("App is disabled")
 
     # re-enable the app
     crud.apps.set_app_enabled_status(db_session, dummy_app_google.id, True)
@@ -124,8 +126,8 @@ def test_create_app_configuration_project_does_not_have_access(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 403, response.json()
-    assert response.json()["detail"] == "Project does not have access to this app."
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    assert str(response.json()["error"]).startswith("App access denied")
 
     # revert changes
     crud.apps.set_app_visibility(db_session, dummy_app_google.id, Visibility.PUBLIC)

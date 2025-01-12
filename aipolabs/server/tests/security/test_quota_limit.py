@@ -49,4 +49,4 @@ def test_validate_project_quota_exceeded(test_client: TestClient, dummy_api_key:
             headers={"x-api-key": dummy_api_key},
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
-        assert response.json()["detail"] == "Daily quota exceeded"
+        assert str(response.json()["error"]).startswith("Daily quota exceeded")
