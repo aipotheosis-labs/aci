@@ -1,3 +1,4 @@
+from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -22,7 +23,7 @@ def test_create_project_under_user(
         json=body.model_dump(mode="json"),
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     project_public = ProjectPublic.model_validate(response.json())
     assert project_public.name == body.name
     assert project_public.owner_id == dummy_user.id
@@ -51,7 +52,7 @@ def test_create_agent(
         json=body.model_dump(mode="json"),
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     agent_public = AgentPublic.model_validate(response.json())
     assert agent_public.name == body.name
     assert agent_public.description == body.description

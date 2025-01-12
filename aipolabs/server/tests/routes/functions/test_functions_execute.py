@@ -1,5 +1,6 @@
 import httpx
 import respx
+from fastapi import status
 from fastapi.testclient import TestClient
 
 from aipolabs.common.db.sql_models import Function
@@ -18,7 +19,7 @@ def test_execute_function_with_invalid_input(
         json=body,
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 400, response.json()
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
 
 
 @respx.mock
@@ -38,7 +39,7 @@ def test_mock_execute_function_with_no_args(
         json={},
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     assert "error" not in response.json()
     function_execution_response = FunctionExecutionResult.model_validate(response.json())
     assert function_execution_response.success
@@ -77,7 +78,7 @@ def test_execute_function_with_args(
         json=function_execution_request_body,
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     assert "error" not in response.json()
     function_execution_response = FunctionExecutionResult.model_validate(response.json())
     assert function_execution_response.success
@@ -125,7 +126,7 @@ def test_execute_function_with_nested_args(
         json=function_execution_request_body,
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     assert "error" not in response.json()
     function_execution_response = FunctionExecutionResult.model_validate(response.json())
     assert function_execution_response.success
@@ -162,4 +163,4 @@ def test_http_bearer_auth_token_injection(
     # Verify the request was made as expected
     assert request.called
     assert request.calls.last.request.headers["Authorization"] == "Bearer test-bearer-token"
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK

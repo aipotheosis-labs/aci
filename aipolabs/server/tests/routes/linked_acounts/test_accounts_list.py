@@ -35,7 +35,7 @@ def setup_and_cleanup(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     dummy_app_1_app_configuration = AppConfigurationPublic.model_validate(response.json())
 
     # create app configuration
@@ -48,7 +48,7 @@ def setup_and_cleanup(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     dummy_app_2_app_configuration = AppConfigurationPublic.model_validate(response.json())
 
     # create mock linked accounts

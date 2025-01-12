@@ -48,7 +48,7 @@ def setup_and_cleanup(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     google_app_configuration = AppConfigurationPublic.model_validate(response.json())
 
     # create github app configuration under different project (with different api key)
@@ -63,7 +63,7 @@ def setup_and_cleanup(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_2},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     github_app_configuration = AppConfigurationPublic.model_validate(response.json())
 
     yield [google_app_configuration, github_app_configuration]
@@ -129,7 +129,7 @@ def test_link_oauth2_account_success(
         response = test_client.get(
             f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback", params=callback_params
         )
-        assert response.status_code == 200, response.json()
+        assert response.status_code == status.HTTP_200_OK
 
     # check linked account is created with the correct values
     linked_account = crud.linked_accounts.get_linked_account(

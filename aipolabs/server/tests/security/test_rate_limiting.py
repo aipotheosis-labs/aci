@@ -3,7 +3,7 @@ import time
 from typing import cast
 from unittest.mock import patch
 
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from fastapi.testclient import TestClient
 from limits import RateLimitItemPerDay, RateLimitItemPerSecond
 
@@ -43,15 +43,13 @@ def test_rate_limiting_ip_per_second(test_client: TestClient, dummy_api_key: str
             response = test_client.get(
                 f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
             )
-            assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"
+            assert response.status_code == status.HTTP_200_OK
 
         # Test rate limit exceeded
         response = test_client.get(
             f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
         )
-        assert (
-            response.status_code == 429
-        ), f"Expected 429 Too Many Requests, got {response.status_code}"
+        assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
 
         # Verify rate limit headers
         assert "X-RateLimit-Limit-ip-per-second" in response.headers
@@ -64,7 +62,7 @@ def test_rate_limiting_ip_per_second(test_client: TestClient, dummy_api_key: str
         response = test_client.get(
             f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
         )
-        assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"
+        assert response.status_code == status.HTTP_200_OK
 
 
 def test_rate_limiting_ip_per_day(test_client: TestClient, dummy_api_key: str) -> None:
@@ -84,15 +82,13 @@ def test_rate_limiting_ip_per_day(test_client: TestClient, dummy_api_key: str) -
             response = test_client.get(
                 f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
             )
-            assert response.status_code == 200, f"Expected 200 OK, got {response.status_code}"
+            assert response.status_code == status.HTTP_200_OK
 
         # Test rate limit exceeded
         response = test_client.get(
             f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
         )
-        assert (
-            response.status_code == 429
-        ), f"Expected 429 Too Many Requests, got {response.status_code}"
+        assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS
 
         # Verify rate limit headers
         assert "X-RateLimit-Limit-ip-per-day" in response.headers
@@ -105,6 +101,4 @@ def test_rate_limiting_ip_per_day(test_client: TestClient, dummy_api_key: str) -
         response = test_client.get(
             f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key}
         )
-        assert (
-            response.status_code == 429
-        ), f"Expected 429 Too Many Requests, got {response.status_code}"
+        assert response.status_code == status.HTTP_429_TOO_MANY_REQUESTS

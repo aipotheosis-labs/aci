@@ -1,6 +1,7 @@
 from typing import Generator
 
 import pytest
+from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -28,7 +29,7 @@ def setup_and_cleanup(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
 
     # create github app configuration
     body = AppConfigurationCreate(
@@ -40,7 +41,7 @@ def setup_and_cleanup(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
 
     yield
 
@@ -57,7 +58,7 @@ def test_list_app_configuration(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/", headers={"x-api-key": dummy_api_key}
     )
     print(response.json())
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 2
 
 
@@ -72,7 +73,7 @@ def test_list_app_configuration_with_app_id(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 1
     assert response.json()[0]["app_id"] == str(dummy_app_google.id)
 
@@ -86,5 +87,5 @@ def test_list_non_existent_app_configuration(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/?app_id={dummy_app_aipolabs_test.id}",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 0

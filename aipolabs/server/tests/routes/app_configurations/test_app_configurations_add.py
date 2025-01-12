@@ -39,7 +39,7 @@ def test_create_app_configuration(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     AppConfigurationPublic.model_validate(response.json())
 
     # failure case: App already configured

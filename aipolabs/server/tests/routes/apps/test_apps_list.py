@@ -1,5 +1,6 @@
 from typing import Any
 
+from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -25,7 +26,7 @@ def test_list_apps(
         params=query_params,
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppDetails.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps)
     # assert each app has the correct functions
@@ -47,7 +48,7 @@ def test_list_apps_pagination(
         f"{config.ROUTER_PREFIX_APPS}/", params=query_params, headers={"x-api-key": dummy_api_key}
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppDetails.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps) - 1
 
@@ -58,7 +59,7 @@ def test_list_apps_pagination(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppDetails.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 1
 
@@ -80,7 +81,7 @@ def test_list_apps_with_private_apps(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppDetails.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps) - 1
 
@@ -94,7 +95,7 @@ def test_list_apps_with_private_apps(
         headers={"x-api-key": dummy_api_key},
     )
 
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     apps = [AppDetails.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps)
 

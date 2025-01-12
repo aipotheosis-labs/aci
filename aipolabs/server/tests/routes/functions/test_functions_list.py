@@ -1,3 +1,4 @@
+from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -22,7 +23,7 @@ def test_list_all_functions(
         params=query_params,
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
     assert len(functions) == len(dummy_functions)
 
@@ -39,7 +40,7 @@ def test_list_all_functions_pagination(
         params=query_params,
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
     assert len(functions) == len(dummy_functions) - 1
 
@@ -49,7 +50,7 @@ def test_list_all_functions_pagination(
         params=query_params,
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
     assert len(functions) == 1
 
@@ -70,7 +71,7 @@ def test_list_functions_with_app_ids(
         params=query_params,
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
     assert len(functions) == sum(
         function.app_id in [dummy_apps[0].id, dummy_apps[1].id] for function in dummy_functions
@@ -91,7 +92,7 @@ def test_list_functions_with_private_functions(
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/", params={}, headers={"x-api-key": dummy_api_key}
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
     assert len(functions) == len(dummy_functions) - 1
 
@@ -102,7 +103,7 @@ def test_list_functions_with_private_functions(
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/", params={}, headers={"x-api-key": dummy_api_key}
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
     assert len(functions) == len(dummy_functions)
 
@@ -126,7 +127,7 @@ def test_list_functions_with_private_apps(
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/", params={}, headers={"x-api-key": dummy_api_key}
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
 
     private_functions_count = sum(
@@ -144,7 +145,7 @@ def test_list_functions_with_private_apps(
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/", params={}, headers={"x-api-key": dummy_api_key}
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
     assert len(functions) == len(dummy_functions)
 
