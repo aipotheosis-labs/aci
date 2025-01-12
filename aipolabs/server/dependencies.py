@@ -80,28 +80,28 @@ def validate_http_bearer(
 
 def validate_api_key(
     db_session: Annotated[Session, Depends(yield_db_session)],
-    api_key: Annotated[str, Security(api_key_header)],
+    api_key_key: Annotated[str, Security(api_key_header)],
 ) -> UUID:
     """Validate API key and return the API key ID. (not the actual API key string)"""
-    db_api_key = crud.projects.get_api_key(db_session, api_key)
-    if db_api_key is None:
-        logger.error(f"api key not found, partial api key={api_key[:8]}****")
+    api_key = crud.projects.get_api_key(db_session, api_key_key)
+    if api_key is None:
+        logger.error(f"api key not found, partial api key={api_key_key[:8]}****")
         raise InvalidAPIKey("api key not found")
 
-    elif db_api_key.status == APIKeyStatus.DISABLED:
+    elif api_key.status == APIKeyStatus.DISABLED:
         logger.error(
-            f"api key is disabled, api_key_id={db_api_key.id}, partial api key={api_key[:8]}****"
+            f"api key is disabled, api_key_id={api_key.id}, partial api key={api_key_key[:8]}****"
         )
         raise InvalidAPIKey("API key is disabled")
 
-    elif db_api_key.status == APIKeyStatus.DELETED:
+    elif api_key.status == APIKeyStatus.DELETED:
         logger.error(
-            f"api key is deleted, api_key_id={db_api_key.id}, partial api key={api_key[:8]}****"
+            f"api key is deleted, api_key_id={api_key.id}, partial api key={api_key_key[:8]}****"
         )
         raise InvalidAPIKey("API key is deleted")
 
     else:
-        api_key_id: UUID = db_api_key.id
+        api_key_id: UUID = api_key.id
         return api_key_id
 
 

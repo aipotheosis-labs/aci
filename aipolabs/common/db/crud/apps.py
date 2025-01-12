@@ -17,40 +17,38 @@ logger = get_logger(__name__)
 
 def create_app(
     db_session: Session,
-    app: AppCreate,
+    app_create: AppCreate,
     app_embedding: list[float],
 ) -> App:
-    logger.debug(f"creating app: {app}")
+    logger.debug(f"creating app: {app_create}")
 
-    db_app = App(
-        name=app.name,
-        display_name=app.display_name,
-        provider=app.provider,
-        version=app.version,
-        description=app.description,
-        logo=app.logo,
-        categories=app.categories,
-        visibility=app.visibility,
-        enabled=app.enabled,
-        security_schemes=app.security_schemes,
+    app = App(
+        name=app_create.name,
+        display_name=app_create.display_name,
+        provider=app_create.provider,
+        version=app_create.version,
+        description=app_create.description,
+        logo=app_create.logo,
+        categories=app_create.categories,
+        visibility=app_create.visibility,
+        enabled=app_create.enabled,
+        security_schemes=app_create.security_schemes,
         embedding=app_embedding,
     )
 
-    db_session.add(db_app)
+    db_session.add(app)
 
-    return db_app
+    return app
 
 
 def get_app(db_session: Session, app_id: UUID) -> App | None:
-    db_app: App | None = db_session.execute(select(App).filter_by(id=app_id)).scalar_one_or_none()
-    return db_app
+    app: App | None = db_session.execute(select(App).filter_by(id=app_id)).scalar_one_or_none()
+    return app
 
 
 def get_app_by_name(db_session: Session, app_name: str) -> App | None:
-    db_app: App | None = db_session.execute(
-        select(App).filter_by(name=app_name)
-    ).scalar_one_or_none()
-    return db_app
+    app: App | None = db_session.execute(select(App).filter_by(name=app_name)).scalar_one_or_none()
+    return app
 
 
 def get_apps(db_session: Session, public_only: bool, limit: int, offset: int) -> list[App]:
@@ -59,8 +57,8 @@ def get_apps(db_session: Session, public_only: bool, limit: int, offset: int) ->
     if public_only:
         statement = statement.filter(App.visibility == Visibility.PUBLIC)
     statement = statement.order_by(App.name).offset(offset).limit(limit)
-    db_apps: list[App] = db_session.execute(statement).scalars().all()
-    return db_apps
+    apps: list[App] = db_session.execute(statement).scalars().all()
+    return apps
 
 
 def search_apps(

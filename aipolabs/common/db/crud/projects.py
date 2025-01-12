@@ -25,13 +25,13 @@ def create_project(
     visibility_access: Visibility = Visibility.PUBLIC,
 ) -> Project:
     try:
-        db_project = Project(
+        project = Project(
             owner_id=owner_id,
             name=name,
             visibility_access=visibility_access,
         )
-        db_session.add(db_project)
-        return db_project
+        db_session.add(project)
+        return project
     except Exception:
         logger.exception("error creating project")
         raise UnexpectedDatabaseException()
@@ -53,10 +53,10 @@ def get_project(db_session: Session, project_id: UUID) -> Project | None:
     Get a project by primary key.
     """
     try:
-        db_project: Project | None = db_session.execute(
+        project: Project | None = db_session.execute(
             select(Project).filter_by(id=project_id)
         ).scalar_one_or_none()
-        return db_project
+        return project
     except Exception:
         logger.exception(f"error getting project={project_id}")
         raise UnexpectedDatabaseException()
@@ -64,14 +64,14 @@ def get_project(db_session: Session, project_id: UUID) -> Project | None:
 
 def get_project_by_api_key_id(db_session: Session, api_key_id: UUID) -> Project | None:
     # api key id -> agent id -> project id
-    db_project: Project | None = db_session.execute(
+    project: Project | None = db_session.execute(
         select(Project)
         .join(Agent, Project.id == Agent.project_id)
         .join(APIKey, Agent.id == APIKey.agent_id)
         .filter(APIKey.id == api_key_id)
     ).scalar_one_or_none()
 
-    return db_project
+    return project
 
 
 def set_project_visibility_access(
@@ -129,41 +129,41 @@ def create_agent(
     Create a new agent under a project, and create a new API key for the agent.
     """
     # Create the agent
-    db_agent = Agent(
+    agent = Agent(
         project_id=project_id,
         name=name,
         description=description,
         excluded_apps=excluded_apps,
         excluded_functions=excluded_functions,
     )
-    db_session.add(db_agent)
+    db_session.add(agent)
 
     # Create the API key for the agent
-    api_key = APIKey(key=secrets.token_hex(32), agent_id=db_agent.id, status=APIKeyStatus.ACTIVE)
+    api_key = APIKey(key=secrets.token_hex(32), agent_id=agent.id, status=APIKeyStatus.ACTIVE)
     db_session.add(api_key)
 
-    return db_agent
+    return agent
 
 
 def get_agent_by_id(db_session: Session, agent_id: UUID) -> Agent | None:
-    db_agent: Agent | None = db_session.execute(
+    agent: Agent | None = db_session.execute(
         select(Agent).filter_by(id=agent_id)
     ).scalar_one_or_none()
 
-    return db_agent
+    return agent
 
 
 def get_api_key_by_agent_id(db_session: Session, agent_id: UUID) -> APIKey | None:
-    db_api_key: APIKey | None = db_session.execute(
+    api_key: APIKey | None = db_session.execute(
         select(APIKey).filter_by(agent_id=agent_id)
     ).scalar_one_or_none()
 
-    return db_api_key
+    return api_key
 
 
 def get_api_key(db_session: Session, key: str) -> APIKey | None:
-    db_api_key: APIKey | None = db_session.execute(
+    api_key: APIKey | None = db_session.execute(
         select(APIKey).filter_by(key=key)
     ).scalar_one_or_none()
 
-    return db_api_key
+    return api_key

@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="session", autouse=True)
-def db_setup_and_cleanup() -> Generator[None, None, None]:
+def database_setup_and_cleanup() -> Generator[None, None, None]:
     # make sure we are connecting to the local db not the production db
     # TODO: it's part of the environment separation problem, need to properly set up failsafe prod isolation
     assert config.DB_HOST == "localhost"

@@ -60,7 +60,7 @@ def create_linked_account(
     security_credentials: dict,
     enabled: bool = True,
 ) -> LinkedAccount:
-    db_linked_account = LinkedAccount(
+    linked_account = LinkedAccount(
         project_id=project_id,
         app_id=app_id,
         linked_account_owner_id=linked_account_owner_id,
@@ -68,9 +68,9 @@ def create_linked_account(
         security_credentials=security_credentials,
         enabled=enabled,
     )
-    db_session.add(db_linked_account)
+    db_session.add(linked_account)
     db_session.flush()
-    return db_linked_account
+    return linked_account
 
 
 def update_linked_account(

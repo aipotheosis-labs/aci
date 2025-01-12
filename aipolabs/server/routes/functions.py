@@ -162,7 +162,7 @@ async def execute(
 # TODO: allow local code execution override by using AppBase.execute() e.g.,:
 # app_factory = AppFactory()
 # app_instance: AppBase = app_factory.get_app_instance(function_name)
-# app_instance.validate_input(db_function.parameters, function_execution_params.function_input)
+# app_instance.validate_input(function.parameters, function_execution_params.function_input)
 # return app_instance.execute(function_name, function_execution_params.function_input)
 def _execute(function: Function, function_input: dict) -> FunctionExecutionResult:
     # validate user input against the visible parameters
@@ -248,7 +248,7 @@ def _execute(function: Function, function_input: dict) -> FunctionExecutionResul
 
 
 def _inject_security_credentials(
-    db_app: App, headers: dict, query: dict, body: dict, cookies: dict
+    app: App, headers: dict, query: dict, body: dict, cookies: dict
 ) -> None:
     """Injects authentication tokens based on the app's security schemes.
 
@@ -259,7 +259,7 @@ def _inject_security_credentials(
     # and if not found, then use the app's default
 
     Args:
-        db_app (App): The application model containing security schemes and authentication info.
+        app (App): The application model containing security schemes and authentication info.
         query (dict): The query parameters dictionary.
         headers (dict): The headers dictionary.
         cookies (dict): The cookies dictionary.
@@ -277,7 +277,7 @@ def _inject_security_credentials(
         }
     }
     """
-    security_schemes: dict[SecurityScheme, dict] = db_app.security_schemes
+    security_schemes: dict[SecurityScheme, dict] = app.security_schemes
 
     for scheme_type, scheme in security_schemes.items():
         # if no default value is set for this scheme_type, skip to the next supported scheme
@@ -306,16 +306,14 @@ def _inject_security_credentials(
                         break
                     case _:
                         logger.error(
-                            f"unsupported api key location={api_key_location} for app={db_app.name}"
+                            f"unsupported api key location={api_key_location} for app={app.name}"
                         )
                         continue
             case SecurityScheme.HTTP_BEARER:
                 headers["Authorization"] = f"Bearer {token}"
                 break
             case _:
-                logger.error(
-                    f"unsupported security scheme type={scheme_type} for app={db_app.name}"
-                )
+                logger.error(f"unsupported security scheme type={scheme_type} for app={app.name}")
                 continue
 
 

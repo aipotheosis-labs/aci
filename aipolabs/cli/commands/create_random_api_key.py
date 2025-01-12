@@ -64,15 +64,13 @@ def create_random_api_key_helper(visibility_access: Visibility) -> str:
 
     # get the api key by agent id
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
-        db_api_key: APIKey | None = crud.projects.get_api_key_by_agent_id(db_session, agent_id)
-        if not db_api_key:
+        api_key: APIKey | None = crud.projects.get_api_key_by_agent_id(db_session, agent_id)
+        if not api_key:
             raise ValueError(f"API key with agent ID {agent_id} not found")
-        api_key: str = db_api_key.key
         click.echo(create_headline("created test API key"))
-        # print user, project, agent, api key
         click.echo(f"User id: {user_id}")
         click.echo(f"Project id: {project_id}")
         click.echo(f"Agent id: {agent_id}")
-        click.echo(f"API Key: {api_key}")
+        click.echo(f"API Key: {api_key.key}")
 
-    return api_key
+    return str(api_key.key)

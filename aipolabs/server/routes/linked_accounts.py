@@ -175,25 +175,25 @@ async def linked_accounts_oauth2_callback(
     # TODO: consider separating the logic for updating and creating a linked account or give warning to clients
     # if the linked account already exists to avoid accidental overwriting the account
     # TODO: try/except, retry?
-    db_linked_account = crud.linked_accounts.get_linked_account(
+    linked_account = crud.linked_accounts.get_linked_account(
         db_session,
         state.project_id,
         state.app_id,
         state.linked_account_owner_id,
     )
-    if db_linked_account:
+    if linked_account:
         logger.info(
-            f"Updating oauth2 credentials for linked account linked_account_id={db_linked_account.id}"
+            f"Updating oauth2 credentials for linked account linked_account_id={linked_account.id}"
         )
-        db_linked_account = crud.linked_accounts.update_linked_account(
-            db_session, db_linked_account, SecurityScheme.OAUTH2, security_credentials
+        linked_account = crud.linked_accounts.update_linked_account(
+            db_session, linked_account, SecurityScheme.OAUTH2, security_credentials
         )
     else:
         logger.info(
             f"Creating oauth2 linked account for project_id={state.project_id}, "
             f"app_id={state.app_id}, linked_account_owner_id={state.linked_account_owner_id}"
         )
-        db_linked_account = crud.linked_accounts.create_linked_account(
+        linked_account = crud.linked_accounts.create_linked_account(
             db_session,
             project_id=state.project_id,
             app_id=state.app_id,
@@ -230,7 +230,7 @@ async def list_linked_accounts(
     return linked_accounts
 
 
-def _create_oauth2_client(db_app: App) -> StarletteOAuth2App:
+def _create_oauth2_client(app: App) -> StarletteOAuth2App:
     """
     Create an OAuth2 client for the given app.
     """
@@ -240,9 +240,9 @@ def _create_oauth2_client(db_app: App) -> StarletteOAuth2App:
     # TODO: load client's overrides if they specify any, for example, client_id, client_secret, scope, etc.
 
     # security_scheme of the app configuration must be one of the App's security_schemes, so we can safely cast it
-    app_default_oauth2_config = cast(dict, db_app.security_schemes[SecurityScheme.OAUTH2])
+    app_default_oauth2_config = cast(dict, app.security_schemes[SecurityScheme.OAUTH2])
     oauth_client = OAuth().register(
-        name=db_app.name,
+        name=app.name,
         client_id=app_default_oauth2_config["client_id"],
         client_secret=app_default_oauth2_config["client_secret"],
         client_kwargs={

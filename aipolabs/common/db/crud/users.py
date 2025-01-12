@@ -30,12 +30,12 @@ def create_user(db_session: Session, user_create: UserCreate) -> User:
             profile_picture=user_create.profile_picture,
         )
         db_session.add(user)
-        db_subscription = Subscription(
+        subscription = Subscription(
             entity_id=user.id,
             plan=user_create.plan,
             status=SubscriptionStatus.ACTIVE,
         )
-        db_session.add(db_subscription)
+        db_session.add(subscription)
         return user
     except Exception:
         logger.exception("error creating user")

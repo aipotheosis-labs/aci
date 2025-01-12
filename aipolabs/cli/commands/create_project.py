@@ -59,14 +59,14 @@ def create_project_helper(
 ) -> UUID:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
 
-        db_project = crud.projects.create_project(db_session, owner_id, name, visibility_access)
+        project = crud.projects.create_project(db_session, owner_id, name, visibility_access)
         if not skip_dry_run:
-            click.echo(create_headline(f"will create new project {db_project.name}"))
-            click.echo(db_project)
+            click.echo(create_headline(f"will create new project {project.name}"))
+            click.echo(project)
             click.echo(create_headline("provide --skip-dry-run to commit changes"))
             db_session.rollback()
         else:
-            click.echo(create_headline(f"committing creation of project {db_project.name}"))
-            click.echo(db_project)
+            click.echo(create_headline(f"committing creation of project {project.name}"))
+            click.echo(project)
             db_session.commit()
-        return db_project.id  # type: ignore
+        return project.id  # type: ignore

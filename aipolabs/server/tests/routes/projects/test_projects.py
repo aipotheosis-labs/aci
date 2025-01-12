@@ -29,10 +29,10 @@ def test_create_project_under_user(
     assert project_public.visibility_access == Visibility.PUBLIC
 
     # Verify the project was actually created in the database and values match returned values
-    db_project = crud.projects.get_project(db_session, project_public.id)
+    project = crud.projects.get_project(db_session, project_public.id)
 
-    assert db_project is not None
-    assert project_public.model_dump() == ProjectPublic.model_validate(db_project).model_dump()
+    assert project is not None
+    assert project_public.model_dump() == ProjectPublic.model_validate(project).model_dump()
 
 
 def test_create_agent(
@@ -58,19 +58,19 @@ def test_create_agent(
     assert agent_public.project_id == dummy_project.id
 
     # Verify the agent was actually created in the database and values match returned values
-    db_agent = db_session.execute(
+    agent = db_session.execute(
         select(Agent).filter(Agent.id == agent_public.id)
     ).scalar_one_or_none()
 
-    assert db_agent is not None
-    assert agent_public.model_dump() == AgentPublic.model_validate(db_agent).model_dump()
+    assert agent is not None
+    assert agent_public.model_dump() == AgentPublic.model_validate(agent).model_dump()
 
     # check api keys
-    db_api_key = db_session.execute(
-        select(APIKey).filter(APIKey.agent_id == db_agent.id)
+    api_key = db_session.execute(
+        select(APIKey).filter(APIKey.agent_id == agent.id)
     ).scalar_one_or_none()
-    assert db_api_key is not None
+    assert api_key is not None
     assert len(agent_public.api_keys) == 1
-    assert agent_public.api_keys[0].key == db_api_key.key
+    assert agent_public.api_keys[0].key == api_key.key
 
     # Clean up: no need to delete agent and api key, it will be deleted when dummy_project is deleted

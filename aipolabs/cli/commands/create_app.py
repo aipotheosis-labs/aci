@@ -52,11 +52,11 @@ def create_app_helper(app_file: Path, secrets_file: Path | None, skip_dry_run: b
     app_data = json.loads(rendered_content)
     print(create_headline("CREATED APP DATA"))
     print(app_data)
-    app: AppCreate = AppCreate.model_validate(app_data)
+    app_create: AppCreate = AppCreate.model_validate(app_data)
 
     # Generate app embedding
     app_embedding = embeddings.generate_app_embedding(
-        app,
+        app_create,
         openai_service,
         config.OPENAI_EMBEDDING_MODEL,
         config.OPENAI_EMBEDDING_DIMENSION,
@@ -64,18 +64,18 @@ def create_app_helper(app_file: Path, secrets_file: Path | None, skip_dry_run: b
 
     # Create the app in the database
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
-        db_app = crud.apps.create_app(db_session, app, app_embedding)
+        app = crud.apps.create_app(db_session, app_create, app_embedding)
         if not skip_dry_run:
-            click.echo(create_headline(f"Will create new app '{db_app.name}'"))
-            click.echo(db_app)
+            click.echo(create_headline(f"Will create new app '{app.name}'"))
+            click.echo(app)
             click.echo(create_headline("Provide --skip-dry-run to commit changes"))
             db_session.rollback()
         else:
-            click.echo(create_headline(f"Committing creation of app '{db_app.name}'"))
-            click.echo(db_app)
+            click.echo(create_headline(f"Committing creation of app '{app.name}'"))
+            click.echo(app)
             db_session.commit()
 
-        return db_app.id  # type: ignore
+        return app.id  # type: ignore
 
 
 def _render_template_to_string(template_path: Path, secrets: dict[str, str]) -> str:

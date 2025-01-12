@@ -83,7 +83,7 @@ def create_agent_helper(
 ) -> UUID:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
 
-        db_agent = crud.projects.create_agent(
+        agent = crud.projects.create_agent(
             db_session,
             project_id,
             name,
@@ -93,13 +93,13 @@ def create_agent_helper(
         )
 
         if not skip_dry_run:
-            click.echo(create_headline(f"will create new agent {db_agent.name}"))
-            click.echo(db_agent)
+            click.echo(create_headline(f"will create new agent {agent.name}"))
+            click.echo(agent)
             click.echo(create_headline("provide --skip-dry-run to commit changes"))
             db_session.rollback()
         else:
-            click.echo(create_headline(f"committing creation of agent {db_agent.name}"))
-            click.echo(db_agent)
+            click.echo(create_headline(f"committing creation of agent {agent.name}"))
+            click.echo(agent)
             db_session.commit()
 
-        return db_agent.id  # type: ignore
+        return agent.id  # type: ignore

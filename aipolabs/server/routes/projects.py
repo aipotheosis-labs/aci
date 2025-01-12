@@ -33,10 +33,10 @@ async def create_project(
             db_session, user.id, body.organization_id, OrganizationRole.ADMIN
         )
 
-    db_project = crud.projects.create_project(db_session, owner_id, body.name)
+    project = crud.projects.create_project(db_session, owner_id, body.name)
     db_session.commit()
-    logger.info(f"Created project: {db_project}")
-    return db_project
+    logger.info(f"Created project: {project}")
+    return project
 
 
 @router.post("/{project_id}/agents/", response_model=AgentPublic, include_in_schema=True)
@@ -49,7 +49,7 @@ async def create_agent(
     logger.info(f"Creating agent in project={project_id}, user={user.id}")
     acl.validate_user_access_to_project(db_session, user.id, project_id)
 
-    db_agent = crud.projects.create_agent(
+    agent = crud.projects.create_agent(
         db_session,
         project_id,
         body.name,
@@ -58,5 +58,5 @@ async def create_agent(
         body.excluded_functions,
     )
     db_session.commit()
-    logger.info(f"Created agent: {AgentPublic.model_validate(db_agent)}")
-    return db_agent
+    logger.info(f"Created agent: {AgentPublic.model_validate(agent)}")
+    return agent

@@ -21,45 +21,52 @@ logger = get_logger(__name__)
 # - all functions belong to the same app
 # - function names are valid etc
 def create_functions(
-    db_session: Session, functions: list[FunctionCreate], function_embeddings: list[list[float]]
+    db_session: Session,
+    functions_create: list[FunctionCreate],
+    function_embeddings: list[list[float]],
 ) -> list[Function]:
     """Create functions of the same app"""
-    logger.debug(f"upserting functions: {functions}")
+    logger.debug(f"upserting functions: {functions_create}")
     # each function name must be unique
-    if len(functions) != len(set(function.name for function in functions)):
+    if len(functions_create) != len(
+        set(function_create.name for function_create in functions_create)
+    ):
         raise ValueError("Function names must be unique")
     # all functions must belong to the same app
     app_names = set(
-        [utils.parse_app_name_from_function_name(function.name) for function in functions]
+        [
+            utils.parse_app_name_from_function_name(function_create.name)
+            for function_create in functions_create
+        ]
     )
     if len(app_names) != 1:
         raise ValueError("All functions must belong to the same app")
     app_name = app_names.pop()
     # check if the app exists
-    db_app = crud.apps.get_app_by_name(db_session, app_name)
-    if not db_app:
+    app = crud.apps.get_app_by_name(db_session, app_name)
+    if not app:
         raise ValueError(f"App {app_name} does not exist")
 
-    db_functions = []
-    for i, function in enumerate(functions):
-        db_function = Function(
-            app_id=db_app.id,
-            name=function.name,
-            description=function.description,
-            tags=function.tags,
-            visibility=function.visibility,
-            enabled=function.enabled,
-            protocol=function.protocol,
-            protocol_data=function.protocol_data.model_dump(),
-            parameters=function.parameters,
-            response=function.response,
+    functions = []
+    for i, function_create in enumerate(functions_create):
+        function = Function(
+            app_id=app.id,
+            name=function_create.name,
+            description=function_create.description,
+            tags=function_create.tags,
+            visibility=function_create.visibility,
+            enabled=function_create.enabled,
+            protocol=function_create.protocol,
+            protocol_data=function_create.protocol_data.model_dump(),
+            parameters=function_create.parameters,
+            response=function_create.response,
             embedding=function_embeddings[i],
         )
-        db_session.add(db_function)
-        db_functions.append(db_function)
+        db_session.add(function)
+        functions.append(function)
 
     db_session.flush()
-    return db_functions
+    return functions
 
 
 def search_functions(

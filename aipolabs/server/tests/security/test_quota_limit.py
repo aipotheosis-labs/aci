@@ -17,13 +17,13 @@ need to mock some object otherwise the other tests might fail because of we set 
 
 
 def test_validate_project_quota_valid(test_client: TestClient, dummy_api_key: str) -> None:
-    db_project = MagicMock()
-    db_project.daily_quota_reset_at = datetime.now(timezone.utc)
-    db_project.daily_quota_used = config.PROJECT_DAILY_QUOTA - 1
-    db_project.id = uuid4()
+    project = MagicMock()
+    project.daily_quota_reset_at = datetime.now(timezone.utc)
+    project.daily_quota_used = config.PROJECT_DAILY_QUOTA - 1
+    project.id = uuid4()
     with patch(
         "aipolabs.server.dependencies.crud.projects.get_project_by_api_key_id",
-        return_value=db_project,
+        return_value=project,
     ), patch("aipolabs.server.dependencies.crud.projects.increase_project_quota_usage"):
         response = test_client.get(
             f"{config.ROUTER_PREFIX_APPS}/search",
@@ -35,13 +35,13 @@ def test_validate_project_quota_valid(test_client: TestClient, dummy_api_key: st
 
 
 def test_validate_project_quota_exceeded(test_client: TestClient, dummy_api_key: str) -> None:
-    db_project = MagicMock()
-    db_project.daily_quota_reset_at = datetime.now(timezone.utc)
-    db_project.daily_quota_used = config.PROJECT_DAILY_QUOTA
+    project = MagicMock()
+    project.daily_quota_reset_at = datetime.now(timezone.utc)
+    project.daily_quota_used = config.PROJECT_DAILY_QUOTA
 
     with patch(
         "aipolabs.server.dependencies.crud.projects.get_project_by_api_key_id",
-        return_value=db_project,
+        return_value=project,
     ):
         response = test_client.get(
             f"{config.ROUTER_PREFIX_APPS}/search",

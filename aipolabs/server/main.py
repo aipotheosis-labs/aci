@@ -81,7 +81,7 @@ def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
             content={"error": exc.title},
         )
     else:
-        logger.exception(f"Unexpected exception, request={request}, error={exc}")
+        logger.exception(f"unexpected exception, request={request}")
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content={"error": "Internal server error"},

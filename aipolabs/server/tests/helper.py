@@ -30,25 +30,28 @@ def create_dummy_apps_and_functions(db_session: Session) -> list[App]:
 def _upsert_app_and_functions(db_session: Session, app_file: Path, functions_file: Path) -> App:
     """Upsert App and Functions to db from a json file."""
     with open(app_file, "r") as f:
-        app: AppCreate = AppCreate.model_validate(json.load(f))
+        app_create: AppCreate = AppCreate.model_validate(json.load(f))
     with open(functions_file, "r") as f:
-        functions: list[FunctionCreate] = [
+        functions_create: list[FunctionCreate] = [
             FunctionCreate.model_validate(function) for function in json.load(f)
         ]
 
     app_embedding = embeddings.generate_app_embedding(
-        app, openai_service, config.OPENAI_EMBEDDING_MODEL, config.OPENAI_EMBEDDING_DIMENSION
+        app_create, openai_service, config.OPENAI_EMBEDDING_MODEL, config.OPENAI_EMBEDDING_DIMENSION
     )
     function_embeddings = embeddings.generate_function_embeddings(
-        functions, openai_service, config.OPENAI_EMBEDDING_MODEL, config.OPENAI_EMBEDDING_DIMENSION
+        functions_create,
+        openai_service,
+        config.OPENAI_EMBEDDING_MODEL,
+        config.OPENAI_EMBEDDING_DIMENSION,
     )
 
     # TODO: check app name and functio name match?
-    logger.info(f"Upserting app and functions for app: {app.name}...")
-    db_app = crud.apps.create_app(db_session, app, app_embedding)
+    logger.info(f"Upserting app and functions for app: {app_create.name}...")
+    app = crud.apps.create_app(db_session, app_create, app_embedding)
     db_session.flush()
-    crud.functions.create_functions(db_session, functions, function_embeddings)
+    crud.functions.create_functions(db_session, functions_create, function_embeddings)
 
     db_session.commit()
 
-    return db_app
+    return app
