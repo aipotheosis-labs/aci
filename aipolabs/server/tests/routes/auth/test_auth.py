@@ -50,7 +50,7 @@ def test_callback_google(test_client: TestClient, db_session: Session) -> None:
     assert data["access_token"] is not None
     assert data["token_type"] == "bearer"
     # check user is created
-    payload = jwt.decode(data["access_token"], config.JWT_SECRET_KEY)
+    payload = jwt.decode(data["access_token"], config.SIGNING_KEY)
     payload.validate()
     user_id = payload.get("sub")
     # get user by id and check user is created

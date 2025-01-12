@@ -57,7 +57,7 @@ def validate_http_bearer(
     """
     token = auth_data.credentials
     try:
-        payload = jwt.decode(token, config.JWT_SECRET_KEY)
+        payload = jwt.decode(token, config.SIGNING_KEY)
         logger.debug(f"decoded token payload: {payload}")
         payload.validate()  # This will raise a JoseError if validation fails
 

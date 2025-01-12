@@ -84,7 +84,7 @@ async def link_account(
         path = request.url_for(ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
         redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
         state_jwt = jwt.encode(
-            {"alg": config.JWT_ALGORITHM}, state.model_dump(mode="json"), config.JWT_SECRET_KEY
+            {"alg": config.JWT_ALGORITHM}, state.model_dump(mode="json"), config.SIGNING_KEY
         ).decode()
         # TODO: add expiration check to the state payload for extra security
         # TODO: how to handle redirect in cli (e.g., parse the redirect url)? return JSONResponse(content={"redirect_url": redirect_url})
@@ -130,7 +130,7 @@ async def linked_accounts_oauth2_callback(
     # decode the state payload
     try:
         state = LinkedAccountCreateOAuth2State.model_validate(
-            jwt.decode(state_jwt, config.JWT_SECRET_KEY)
+            jwt.decode(state_jwt, config.SIGNING_KEY)
         )
         logger.info(f"state: {state}")
     except Exception:

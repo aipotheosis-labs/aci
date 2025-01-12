@@ -100,9 +100,7 @@ def test_link_oauth2_account_success(
     qs_params = parse_qs(urlparse(redirect_location).query)
     state_jwt = qs_params.get("state", [None])[0]
     assert state_jwt is not None
-    state = LinkedAccountCreateOAuth2State.model_validate(
-        jwt.decode(state_jwt, config.JWT_SECRET_KEY)
-    )
+    state = LinkedAccountCreateOAuth2State.model_validate(jwt.decode(state_jwt, config.SIGNING_KEY))
     assert state.app_id == google_app_configuration.app_id
     assert state.linked_account_owner_id == "test_account"
     assert state.iat > int(datetime.now(timezone.utc).timestamp()) - 3, "iat should be recent"

@@ -48,7 +48,7 @@ def create_access_token(user_id: str, expires_delta: timedelta) -> str:
     header = {"alg": config.JWT_ALGORITHM}
     # TODO: try/except, retry?
     jwt_token: str = jwt.encode(
-        header, payload, config.JWT_SECRET_KEY
+        header, payload, config.SIGNING_KEY
     ).decode()  # for this jwt lib, need to decode to convert bytes to string
 
     return jwt_token

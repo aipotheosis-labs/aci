@@ -11,12 +11,11 @@ OPENAI_EMBEDDING_MODEL = check_and_get_env_variable("SERVER_OPENAI_EMBEDDING_MOD
 OPENAI_EMBEDDING_DIMENSION = int(check_and_get_env_variable("SERVER_OPENAI_EMBEDDING_DIMENSION"))
 
 # JWT
-JWT_SECRET_KEY = check_and_get_env_variable("SERVER_JWT_SECRET_KEY")
+SIGNING_KEY = check_and_get_env_variable("SERVER_SIGNING_KEY")
 JWT_ALGORITHM = check_and_get_env_variable("SERVER_JWT_ALGORITHM")
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(
     check_and_get_env_variable("SERVER_JWT_ACCESS_TOKEN_EXPIRE_MINUTES")
 )
-SESSION_SECRET_KEY = check_and_get_env_variable("SERVER_SESSION_SECRET_KEY")
 AIPOLABS_REDIRECT_URI_BASE = check_and_get_env_variable("SERVER_AIPOLABS_REDIRECT_URI_BASE")
 
 # Google Auth
