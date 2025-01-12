@@ -1,14 +1,12 @@
-import json
-
 from limits import RateLimitItem, RateLimitItemPerDay, RateLimitItemPerSecond
 from limits.aio.storage import MemoryStorage
 from limits.aio.strategies import MovingWindowRateLimiter
-from starlette import status
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import ASGIApp
 
+from aipolabs.common.exceptions import RateLimitExceeded
 from aipolabs.common.logging import get_logger
 from aipolabs.server.config import RATE_LIMIT_IP_PER_DAY, RATE_LIMIT_IP_PER_SECOND
 
@@ -31,11 +29,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         rate_limit_key = self._get_rate_limit_key(request)
         for rate_limit_name, rate_limit in self.rate_limits.items():
             if not await self.limiter.hit(rate_limit, rate_limit_key):
-                return Response(
-                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                    content=json.dumps({"detail": f"Rate limit exceeded: {rate_limit_name}"}),
-                    headers=await self._get_rate_limit_headers(rate_limit_key),
-                )
+                logger.error(f"rate limit exceeded, rate_limit_name={rate_limit_name}")
+                raise RateLimitExceeded(headers=await self._get_rate_limit_headers(rate_limit_key))
 
         response = await call_next(request)
 

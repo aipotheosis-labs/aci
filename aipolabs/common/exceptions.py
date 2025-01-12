@@ -213,6 +213,20 @@ class DailyQuotaExceeded(AipolabsException):
         )
 
 
+class RateLimitExceeded(AipolabsException):
+    """
+    Exception raised when a rate limit is exceeded
+    """
+
+    def __init__(self, headers: dict, message: str | None = None):
+        self.headers = headers
+        super().__init__(
+            title="Rate limit exceeded",
+            message=message,
+            error_code=status.HTTP_429_TOO_MANY_REQUESTS,
+        )
+
+
 class AppAccessDenied(AipolabsException):
     """
     Exception raised when an app is not accessible to a project (per visibility access)

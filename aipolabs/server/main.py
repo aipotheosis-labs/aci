@@ -6,7 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
-from aipolabs.common.exceptions import AipolabsException
+from aipolabs.common.exceptions import AipolabsException, RateLimitExceeded
 from aipolabs.common.logging import get_logger, setup_logging
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
@@ -74,7 +74,14 @@ app.add_middleware(
 
 @app.exception_handler(Exception)
 def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
-    if isinstance(exc, AipolabsException):
+    if isinstance(exc, RateLimitExceeded):
+        logger.error(f"rate limit exceeded, request={request}, error={exc}")
+        return JSONResponse(
+            status_code=exc.error_code,
+            content={"error": exc.title},
+            headers=exc.headers,
+        )
+    elif isinstance(exc, AipolabsException):
         logger.error(f"aipolabs exception, request={request}, error={exc}")
         return JSONResponse(
             status_code=exc.error_code,
