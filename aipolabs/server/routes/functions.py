@@ -112,8 +112,10 @@ async def get_function_definition(
     """
     function: Function | None = crud.functions.get_function(context.db_session, function_id)
     if not function:
+        logger.error(f"function not found, function_id={function_id}")
         raise FunctionNotFound(str(function_id))
     if not function.enabled:
+        logger.error(f"function is disabled, function_id={function_id}")
         raise FunctionDisabled(str(function_id))
 
     acl.validate_project_access_to_function(context.project, function)
@@ -149,11 +151,12 @@ async def execute(
     body: FunctionExecute,
 ) -> FunctionExecutionResult:
     # Fetch function definition
-    db_function = crud.functions.get_function(context.db_session, function_id)
-    if not db_function:
+    function = crud.functions.get_function(context.db_session, function_id)
+    if not function:
+        logger.error(f"function not found, function_id={function_id}")
         raise FunctionNotFound(str(function_id))
 
-    return _execute(db_function, body.function_input)
+    return _execute(function, body.function_input)
 
 
 # TODO: allow local code execution override by using AppBase.execute() e.g.,:
@@ -161,13 +164,13 @@ async def execute(
 # app_instance: AppBase = app_factory.get_app_instance(function_name)
 # app_instance.validate_input(db_function.parameters, function_execution_params.function_input)
 # return app_instance.execute(function_name, function_execution_params.function_input)
-def _execute(db_function: Function, function_input: dict) -> FunctionExecutionResult:
+def _execute(function: Function, function_input: dict) -> FunctionExecutionResult:
     # validate user input against the visible parameters
     try:
-        logger.info(f"validating function input for {db_function.name}")
+        logger.info(f"validating function input for {function.name}")
         jsonschema.validate(
             instance=function_input,
-            schema=processor.filter_visible_properties(db_function.parameters),
+            schema=processor.filter_visible_properties(function.parameters),
         )
     except jsonschema.ValidationError as e:
         logger.exception("failed to validate function input")
@@ -177,11 +180,11 @@ def _execute(db_function: Function, function_input: dict) -> FunctionExecutionRe
 
     # inject non-visible defaults, note that should pass the original parameters schema not just visible ones
     function_input = processor.inject_required_but_invisible_defaults(
-        db_function.parameters, function_input
+        function.parameters, function_input
     )
     logger.info(f"function_input after injecting defaults: {json.dumps(function_input)}")
 
-    if db_function.protocol == Protocol.REST:
+    if function.protocol == Protocol.REST:
         # remove None values from the input
         # TODO: better way to remove None values? and if it's ok to remove all of them?
         function_input = processor.remove_none_values(function_input)
@@ -192,7 +195,7 @@ def _execute(db_function: Function, function_input: dict) -> FunctionExecutionRe
         cookies = function_input.get("cookie", {})
         body = function_input.get("body", {})
 
-        protocol_data = RestMetadata.model_validate(db_function.protocol_data)
+        protocol_data = RestMetadata.model_validate(function.protocol_data)
         # Construct URL with path parameters
         url = f"{protocol_data.server_url}{protocol_data.path}"
         if path:
@@ -200,7 +203,7 @@ def _execute(db_function: Function, function_input: dict) -> FunctionExecutionRe
             for path_param_name, path_param_value in path.items():
                 url = url.replace(f"{{{path_param_name}}}", str(path_param_value))
 
-        _inject_security_credentials(db_function.app, headers, query, body, cookies)
+        _inject_security_credentials(function.app, headers, query, body, cookies)
 
         # Create request object
         request = httpx.Request(
@@ -240,7 +243,8 @@ def _execute(db_function: Function, function_input: dict) -> FunctionExecutionRe
             return FunctionExecutionResult(success=True, data=_get_response_data(response))
     else:
         # should never happen
-        raise UnexpectedException(f"Unsupported protocol for function={db_function.name}")
+        logger.error(f"unsupported protocol for function={function.name}")
+        raise UnexpectedException(f"unsupported protocol for function={function.name}")
 
 
 def _inject_security_credentials(

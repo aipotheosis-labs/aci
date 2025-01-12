@@ -58,12 +58,12 @@ def create_access_token(user_id: str, expires_delta: timedelta) -> str:
 @router.get("/login/{provider}", include_in_schema=True)
 async def login(request: Request, provider: str) -> Any:
     if provider not in oauth._registry:
-        logger.error(f"Unsupported provider: {provider}")
+        logger.error(f"unsupported identity provider={provider}")
         raise UnsupportedIdentityProvider(provider)
 
     path = request.url_for("auth_callback", provider=provider).path
     redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
-    logger.info(f"Initiating OAuth login for provider: {provider}, redirecting to: {redirect_uri}")
+    logger.info(f"initiating login for provider={provider}, redirecting to={redirect_uri}")
     oauth_client = cast(StarletteOAuth2App, oauth.create_client(provider))
 
     return await oauth_client.authorize_redirect(request, redirect_uri)
@@ -80,19 +80,19 @@ async def login(request: Request, provider: str) -> Any:
 async def auth_callback(
     request: Request, provider: str, db_session: Annotated[Session, Depends(deps.yield_db_session)]
 ) -> Any:
-    logger.info(f"Callback received for provider: {provider}")
+    logger.info(f"callback received for identity provider={provider}")
     if provider not in oauth._registry:
-        logger.error(f"Unsupported provider during callback: {provider}")
+        logger.error(f"unsupported identity provider={provider} during callback")
         raise UnsupportedIdentityProvider(provider)
 
     oauth_client = cast(StarletteOAuth2App, oauth.create_client(provider))
 
     # TODO: try/except, retry?
-    logger.info(f"Retrieving access token for provider: {provider}")
+    logger.info(f"retrieving access token for provider={provider}")
     auth_response = await oauth_client.authorize_access_token(request)
     logger.debug(
-        f"Access token requested successfully for provider: {provider}, "
-        f"auth_response: {auth_response}"
+        f"access token requested successfully for provider={provider}, "
+        f"auth_response={auth_response}"
     )
 
     if provider == AuthProvider.GOOGLE.value:
@@ -102,9 +102,12 @@ async def auth_callback(
         pass
 
     if not user_info["sub"]:
-        logger.error(f"User ID not found in user information for provider {provider}")
+        logger.error(
+            f"'sub' not found in user information for identity provider={provider}, "
+            f"user_info={user_info}"
+        )
         raise UnexpectedException(
-            f"User ID not found from identity provider={provider}, user_info={user_info}"
+            f"'sub' not found in user information for identity provider={provider}"
         )
 
     user = crud.users.get_user(
@@ -130,7 +133,7 @@ async def auth_callback(
         timedelta(minutes=config.JWT_ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     logger.debug(
-        f"JWT generated successfully for user: {user.id}, jwt_token: {jwt_token[:4]}...{jwt_token[-4:]}"
+        f"JWT generated successfully for user={user.id}, jwt_token={jwt_token[:4]}...{jwt_token[-4:]}"
     )
 
     return AuthResponse(access_token=jwt_token, token_type="bearer", user_id=user.id)

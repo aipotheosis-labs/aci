@@ -36,8 +36,10 @@ async def create_app_configuration(
     # - security config is valid
     app = crud.apps.get_app(context.db_session, body.app_id)
     if not app:
+        logger.error(f"app not found, app_id={body.app_id}")
         raise AppNotFound(str(body.app_id))
     if not app.enabled:
+        logger.error(f"app is disabled, app_id={body.app_id}")
         raise AppDisabled(str(body.app_id))
 
     acl.validate_project_access_to_app(context.project, app)
@@ -45,13 +47,17 @@ async def create_app_configuration(
     if crud.app_configurations.app_configuration_exists(
         context.db_session, context.project.id, body.app_id
     ):
+        logger.error(
+            f"app configuration already exists for app={body.app_id}, project={context.project.id}"
+        )
         raise AppConfigurationAlreadyExists(
             f"app={body.app_id} already configured for project={context.project.id}"
         )
 
     if app.security_schemes.get(body.security_scheme) is None:
+        logger.error(f"app={body.app_id} does not support security_scheme={body.security_scheme}")
         raise AppSecuritySchemeNotSupported(
-            f"app={body.app_id} does not support security scheme={body.security_scheme}"
+            f"app={body.app_id} does not support security_scheme={body.security_scheme}"
         )
     app_configuration = crud.app_configurations.create_app_configuration(
         context.db_session,
@@ -85,6 +91,7 @@ async def get_app_configuration(
         context.db_session, context.project.id, app_id
     )
     if not app_configuration:
+        logger.error(f"app configuration not found for app={app_id}, project={context.project.id}")
         raise AppConfigurationNotFound(
             f"configuration for app={app_id} not found for project={context.project.id}"
         )
@@ -105,6 +112,7 @@ async def delete_app_configuration(
         context.db_session, context.project.id, app_id
     )
     if not app_configuration:
+        logger.error(f"app configuration not found, app_id={app_id}, project={context.project.id}")
         raise AppConfigurationNotFound(
             f"configuration for app={app_id} not found for project={context.project.id}"
         )
@@ -117,9 +125,13 @@ async def delete_app_configuration(
         context.db_session, context.project.id, app_id
     )
     if deleted_count != 1:
+        logger.error(
+            f"unexpected error deleting app configuration for app={app_id}, project={context.project.id}, "
+            f"wrong number of rows will be deleted={deleted_count}"
+        )
         raise UnexpectedException(
             f"unexpected error deleting app configuration for app={app_id}, project={context.project.id}, "
-            f"wrong number of rows deleted={deleted_count}"
+            f"wrong number of rows will be deleted={deleted_count}"
         )
     context.db_session.commit()
 
@@ -139,6 +151,7 @@ async def update_app_configuration(
         context.db_session, context.project.id, app_id
     )
     if not app_configuration:
+        logger.error(f"app configuration not found, app_id={app_id}, project={context.project.id}")
         raise AppConfigurationNotFound(
             f"configuration for app={app_id} not found for project={context.project.id}"
         )

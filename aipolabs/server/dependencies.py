@@ -58,7 +58,7 @@ def validate_http_bearer(
     token = auth_data.credentials
     try:
         payload = jwt.decode(token, config.JWT_SECRET_KEY)
-        logger.debug(f"Decoded token payload: {payload}")
+        logger.debug(f"decoded token payload: {payload}")
         payload.validate()  # This will raise a JoseError if validation fails
 
         user_id: str = payload.get("sub")
@@ -67,14 +67,15 @@ def validate_http_bearer(
 
         user = crud.users.get_user_by_id(db_session, UUID(user_id))
         if not user:
+            logger.error(f"user decoded from http bearer token not found, user={user_id}")
             raise UserNotFound(user_id)
 
-        logger.debug(f"Token valid. User ID: {user_id}")
+        logger.debug(f"http bearer token validation successful, user={user_id}")
         return user
 
     except JoseError:
-        logger.exception("Token verification failed")
-        raise InvalidBearerToken("token verification failed")
+        logger.exception("http bearer token validation failed")
+        raise InvalidBearerToken("token validation failed")
 
 
 def validate_api_key(
@@ -84,15 +85,19 @@ def validate_api_key(
     """Validate API key and return the API key ID. (not the actual API key string)"""
     db_api_key = crud.projects.get_api_key(db_session, api_key)
     if db_api_key is None:
-        logger.error(f"api key not found: {api_key[:8]}****")
+        logger.error(f"api key not found, partial api key={api_key[:8]}****")
         raise InvalidAPIKey("api key not found")
 
     elif db_api_key.status == APIKeyStatus.DISABLED:
-        logger.error(f"api key is disabled: {api_key[:8]}****")
+        logger.error(
+            f"api key is disabled, api_key_id={db_api_key.id}, partial api_key={api_key[:8]}****"
+        )
         raise InvalidAPIKey("API key is disabled")
 
     elif db_api_key.status == APIKeyStatus.DELETED:
-        logger.error(f"api key is deleted: {api_key[:8]}****")
+        logger.error(
+            f"api key is deleted, api_key_id={db_api_key.id}, partial api_key={api_key[:8]}****"
+        )
         raise InvalidAPIKey("API key is deleted")
 
     else:
@@ -106,10 +111,11 @@ def validate_project_quota(
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> Project:
-    logger.debug(f"Validating project quota for API key ID: {api_key_id}")
+    logger.debug(f"validating project quota for api_key_id={api_key_id}")
 
     project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
     if not project:
+        logger.error(f"project not found, api_key_id={api_key_id}")
         raise ProjectNotFound()
 
     now: datetime = datetime.now(timezone.utc)
@@ -119,7 +125,7 @@ def validate_project_quota(
 
     if not need_reset and project.daily_quota_used >= config.PROJECT_DAILY_QUOTA:
         logger.warning(
-            f"Daily quota exceeded for project={project.id}, daily quota used={project.daily_quota_used}"
+            f"daily quota exceeded for project={project.id}, daily quota used={project.daily_quota_used}"
         )
         raise DailyQuotaExceeded()
 

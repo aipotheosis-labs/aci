@@ -1,8 +1,7 @@
 # import sentry_sdk
-from fastapi import Depends, FastAPI, Request
+from fastapi import Depends, FastAPI, Request, status
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
-from pydantic import ValidationError
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
@@ -73,24 +72,20 @@ app.add_middleware(
 )
 
 
-@app.exception_handler(ValidationError)
-def validation_exception_handler(request: Request, exc: ValidationError) -> JSONResponse:
-    logger.error(f"Validation error, request: {request}, error: {exc.errors()}")
-    return JSONResponse(
-        status_code=400,
-        content={"error": "Internal validation error"},
-    )
-
-
-@app.exception_handler(AipolabsException)
-def aipolabs_exception_handler(request: Request, exc: AipolabsException) -> JSONResponse:
-    logger.error(f"Aipolabs exception, request: {request}, error: {exc}")
-
-    # TODO: consider should we return more details to the client (exc.message or str(exc))
-    return JSONResponse(
-        status_code=exc.error_code,
-        content={"error": exc.title},
-    )
+@app.exception_handler(Exception)
+def global_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    if isinstance(exc, AipolabsException):
+        logger.error(f"Aipolabs exception, request: {request}, error: {exc}")
+        return JSONResponse(
+            status_code=exc.error_code,
+            content={"error": exc.title},
+        )
+    else:
+        logger.exception(f"Unexpected exception, request: {request}, error: {exc}")
+        return JSONResponse(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content={"error": "Internal server error"},
+        )
 
 
 # TODO: custom rate limiting on different routes

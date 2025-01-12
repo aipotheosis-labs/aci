@@ -17,9 +17,9 @@ from aipolabs.common.exceptions import (
     AppDisabled,
     AppNotFound,
     AuthenticationError,
-    FeatureNotImplemented,
     LinkedAccountAccessDenied,
     LinkedAccountNotFound,
+    NoImplementationFound,
     UnexpectedException,
 )
 from aipolabs.common.logging import get_logger
@@ -61,16 +61,19 @@ async def link_account(
         f"app_id={body.app_id}, "
         f"linked_account_owner_id={body.linked_account_owner_id}"
     )
-    db_app_configuration = crud.app_configurations.get_app_configuration(
+    app_configuration = crud.app_configurations.get_app_configuration(
         context.db_session, context.project.id, body.app_id
     )
-    if not db_app_configuration:
+    if not app_configuration:
+        logger.error(
+            f"configuration for app={body.app_id} not found for project={context.project.id}"
+        )
         raise AppConfigurationNotFound(
             f"configuration for app={body.app_id} not found for project={context.project.id}"
         )
 
     # for OAuth2 account, we need to redirect to the OAuth2 provider's authorization endpoint
-    if db_app_configuration.security_scheme == SecurityScheme.OAUTH2:
+    if app_configuration.security_scheme == SecurityScheme.OAUTH2:
         # create and encode the state payload
         # note: the state payload is jwt encoded (signed), but it's not encrypted, anyone can decode it
         state = LinkedAccountCreateOAuth2State(
@@ -88,24 +91,26 @@ async def link_account(
         # TODO: add expiration check to the state payload for extra security
         # TODO: how to handle redirect in cli (e.g., parse the redirect url)? return JSONResponse(content={"redirect_url": redirect_url})
         # instead of RedirectResponse
-        oauth2_client = _create_oauth2_client(db_app_configuration.app)
+        oauth2_client = _create_oauth2_client(app_configuration.app)
         redirect_response = await oauth2_client.authorize_redirect(
             request, redirect_uri, state=state_jwt
         )
 
         return redirect_response
 
-    elif db_app_configuration.security_scheme == SecurityScheme.API_KEY:
+    elif app_configuration.security_scheme == SecurityScheme.API_KEY:
         # TODO: ... handle API key ...
-        raise FeatureNotImplemented("API key security scheme is not implemented yet")
+        raise NoImplementationFound("API key security scheme is not implemented yet")
 
     else:
         # Should never reach here as all security schemes stored in the db should be supported
         logger.error(
-            f"Unexpected error: Unsupported security scheme={db_app_configuration.security_scheme} for app_id={body.app_id}"
+            f"Unexpected error: unsupported security scheme={app_configuration.security_scheme} "
+            f"for app_id={body.app_id}"
         )
         raise UnexpectedException(
-            f"Unsupported security scheme={db_app_configuration.security_scheme} for app_id={body.app_id}"
+            f"unsupported security scheme={app_configuration.security_scheme} "
+            f"for app_id={body.app_id}"
         )
 
 
@@ -130,29 +135,31 @@ async def linked_accounts_oauth2_callback(
             jwt.decode(state_jwt, config.JWT_SECRET_KEY)
         )
         logger.info(f"state: {state}")
-    except Exception as e:
-        logger.error(f"Failed to decode state_jwt={state_jwt}, error={e}")
-        raise AuthenticationError("Failed to decode state")
+    except Exception:
+        logger.exception(f"failed to decode state_jwt={state_jwt}")
+        raise AuthenticationError("failed to decode state")
 
     # create oauth2 client
-    db_app = crud.apps.get_app(db_session, state.app_id)
-    if not db_app:
+    app = crud.apps.get_app(db_session, state.app_id)
+    if not app:
+        logger.error(f"app not found, app_id={state.app_id}")
         raise AppNotFound(state.app_id)
-    if not db_app.enabled:
+    if not app.enabled:
+        logger.error(f"app is disabled, app_id={state.app_id}")
         raise AppDisabled(state.app_id)
 
-    oauth2_client = _create_oauth2_client(db_app)
+    oauth2_client = _create_oauth2_client(app)
     # get oauth2 account credentials
     # TODO: can each OAuth2 provider return different fields? if so, need to handle them accordingly. Maybe can
     # store the auth reponse schema in the App record in db. and cast the auth_response to the schema here.
     try:
-        logger.info("Retrieving oauth2 token")
+        logger.info("retrieving oauth2 token")
         token_response = await oauth2_client.authorize_access_token(request)
         # TODO: remove PII log
         logger.warning(f"oauth2 token requested successfully, token_response: {token_response}")
-    except Exception as e:
-        logger.exception("Failed to retrieve oauth2 token")
-        raise AuthenticationError(f"Failed to retrieve oauth2 token: {str(e)}")
+    except Exception:
+        logger.exception("failed to retrieve oauth2 token")
+        raise AuthenticationError("failed to retrieve oauth2 token")
 
     # TODO: some of them might be optional (e.g., refresh_token, scope, expires_in, refresh_token_expires_in) and not provided by the OAuth2 provider
     # we should handle None or provide default values (using pydantic)
@@ -264,14 +271,19 @@ async def get_linked_account(
     - linked_account_id uniquely identifies a linked account across the platform.
     """
     # validations
-    db_linked_account = crud.linked_accounts.get_linked_account_by_id(
+    linked_account = crud.linked_accounts.get_linked_account_by_id(
         context.db_session, linked_account_id
     )
-    if not db_linked_account:
+    if not linked_account:
+        logger.error(f"linked account not found, linked_account_id={linked_account_id}")
         raise LinkedAccountNotFound(str(linked_account_id))
-    if db_linked_account.project_id != context.project.id:
+    if linked_account.project_id != context.project.id:
+        logger.error(
+            f"linked account does not belong to project, project_id={context.project.id}, "
+            f"linked_account_id={linked_account_id}"
+        )
         raise LinkedAccountAccessDenied(str(linked_account_id))
-    return db_linked_account
+    return linked_account
 
 
 @router.delete("/{linked_account_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -286,14 +298,24 @@ async def delete_linked_account(
         context.db_session, linked_account_id
     )
     if not linked_account:
+        logger.error(f"linked account not found, linked_account_id={linked_account_id}")
         raise LinkedAccountNotFound(str(linked_account_id))
     if linked_account.project_id != context.project.id:
+        logger.error(
+            f"linked account does not belong to project, project_id={context.project.id}, "
+            f"linked_account_id={linked_account_id}"
+        )
         raise LinkedAccountAccessDenied(str(linked_account_id))
     deleted_count = crud.linked_accounts.delete_linked_account(
         context.db_session, linked_account_id
     )
     if deleted_count != 1:
-        raise UnexpectedException(f"expected 1 row to be deleted, but got {deleted_count}")
+        logger.error(
+            f"expected 1 row to be deleted, but got {deleted_count} for linked_account_id={linked_account_id}"
+        )
+        raise UnexpectedException(
+            f"expected 1 row to be deleted, but got {deleted_count} for linked_account_id={linked_account_id}"
+        )
     context.db_session.commit()
 
 

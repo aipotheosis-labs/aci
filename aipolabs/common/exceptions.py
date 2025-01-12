@@ -84,14 +84,16 @@ class AuthenticationError(AipolabsException):
         )
 
 
-class FeatureNotImplemented(AipolabsException):
+class NoImplementationFound(AipolabsException):
     """
-    Exception raised when a feature is not implemented
+    Exception raised when a feature or function is not implemented
     """
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Not implemented", message=message, error_code=status.HTTP_501_NOT_IMPLEMENTED
+            title="No implementation found",
+            message=message,
+            error_code=status.HTTP_501_NOT_IMPLEMENTED,
         )
 
 

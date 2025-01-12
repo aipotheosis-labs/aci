@@ -4,15 +4,11 @@ from typing import Type
 
 from jsonschema import ValidationError, validate
 
+from aipolabs.common.exceptions import InvalidFunctionInput, NoImplementationFound
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.function import FunctionExecutionResult
 
 logger = get_logger(__name__)
-
-
-# custom exception
-class InvalidFunctionNameException(Exception):
-    pass
 
 
 def parse_function_name(function_name: str) -> tuple[str, str, str]:
@@ -20,16 +16,12 @@ def parse_function_name(function_name: str) -> tuple[str, str, str]:
     Parse function name to get module name, class name and method name.
     e.g. "AIPOLABS_TEST__HELLO_WORLD" -> "aipolabs.server.apps.aipolabs_test", "AipolabsTest", "hello_world"
     """
-    try:
-        app_name, method_name = function_name.split("__", 1)
-        module_name = f"aipolabs.server.apps.{app_name.lower()}"
-        class_name = "".join(word.capitalize() for word in app_name.split("_"))
-        method_name = method_name.lower()
+    app_name, method_name = function_name.split("__", 1)
+    module_name = f"aipolabs.server.apps.{app_name.lower()}"
+    class_name = "".join(word.capitalize() for word in app_name.split("_"))
+    method_name = method_name.lower()
 
-        return module_name, class_name, method_name
-    except Exception as e:
-        logger.exception(f"failed to parse function name: {function_name}")
-        raise InvalidFunctionNameException(f"failed to parse function name: {function_name}") from e
+    return module_name, class_name, method_name
 
 
 class AppBase(ABC):
@@ -40,7 +32,10 @@ class AppBase(ABC):
         _, _, method_name = parse_function_name(function_name)
         method = getattr(self, method_name, None)
         if not method:
-            raise ValueError(f"Method '{method_name}' not found in {self.__class__.__name__}.")
+            logger.error(f"method={method_name} not found in class={self.__class__.__name__}")
+            raise NoImplementationFound(
+                f"method={method_name} not found in class={self.__class__.__name__}"
+            )
 
         try:
             logger.info(
@@ -58,7 +53,10 @@ class AppBase(ABC):
         try:
             validate(instance=function_input, schema=function_parameters_schema)
         except ValidationError as e:
-            raise ValueError(f"Invalid input: {e.message}") from e
+            logger.exception(
+                f"validation error for function_input={function_input}, function_parameters_schema={function_parameters_schema}"
+            )
+            raise InvalidFunctionInput(e.message)
 
 
 class AppFactory:
@@ -73,8 +71,8 @@ class AppFactory:
             logger.info(f"found app class for {function_name}: {app_class}")
             app_instance: AppBase = app_class()
             return app_instance
-        except (ModuleNotFoundError, AttributeError) as e:
-            logger.exception(f"failed to find app class for {function_name}")
-            raise InvalidFunctionNameException(
-                f"failed to find app class for {function_name}"
-            ) from e
+        except (ModuleNotFoundError, AttributeError):
+            logger.exception(f"failed to find app class for function_name={function_name}")
+            raise NoImplementationFound(
+                f"failed to find app class for function_name={function_name}"
+            )
