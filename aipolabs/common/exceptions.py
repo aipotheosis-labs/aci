@@ -97,19 +97,6 @@ class NoImplementationFound(AipolabsException):
         )
 
 
-class UnexpectedDatabaseException(AipolabsException):
-    """
-    Exception raised when an unexpected error occurs in the database
-    """
-
-    def __init__(self, message: str | None = None):
-        super().__init__(
-            title="Unexpected database error",
-            message=message,
-            error_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
-
-
 class ProjectNotFound(AipolabsException):
     """
     Exception raised when a project is not found

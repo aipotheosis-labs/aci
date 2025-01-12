@@ -12,7 +12,6 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import Agent, APIKey, Project
 from aipolabs.common.enums import APIKeyStatus, Visibility
-from aipolabs.common.exceptions import UnexpectedDatabaseException
 from aipolabs.common.logging import get_logger
 
 logger = get_logger(__name__)
@@ -24,42 +23,32 @@ def create_project(
     name: str,
     visibility_access: Visibility = Visibility.PUBLIC,
 ) -> Project:
-    try:
-        project = Project(
-            owner_id=owner_id,
-            name=name,
-            visibility_access=visibility_access,
-        )
-        db_session.add(project)
-        return project
-    except Exception:
-        logger.exception("error creating project")
-        raise UnexpectedDatabaseException()
+    project = Project(
+        owner_id=owner_id,
+        name=name,
+        visibility_access=visibility_access,
+    )
+    db_session.add(project)
+    db_session.flush()
+    db_session.refresh(project)
+    return project
 
 
 def project_exists(db_session: Session, project_id: UUID) -> bool:
-    try:
-        return (
-            db_session.execute(select(Project).filter_by(id=project_id)).scalar_one_or_none()
-            is not None
-        )
-    except Exception:
-        logger.exception(f"error checking if project={project_id} exists")
-        raise UnexpectedDatabaseException()
+    return (
+        db_session.execute(select(Project).filter_by(id=project_id)).scalar_one_or_none()
+        is not None
+    )
 
 
 def get_project(db_session: Session, project_id: UUID) -> Project | None:
     """
     Get a project by primary key.
     """
-    try:
-        project: Project | None = db_session.execute(
-            select(Project).filter_by(id=project_id)
-        ).scalar_one_or_none()
-        return project
-    except Exception:
-        logger.exception(f"error getting project={project_id}")
-        raise UnexpectedDatabaseException()
+    project: Project | None = db_session.execute(
+        select(Project).filter_by(id=project_id)
+    ).scalar_one_or_none()
+    return project
 
 
 def get_project_by_api_key_id(db_session: Session, api_key_id: UUID) -> Project | None:
@@ -141,6 +130,9 @@ def create_agent(
     # Create the API key for the agent
     api_key = APIKey(key=secrets.token_hex(32), agent_id=agent.id, status=APIKeyStatus.ACTIVE)
     db_session.add(api_key)
+
+    db_session.flush()
+    db_session.refresh(agent)
 
     return agent
 

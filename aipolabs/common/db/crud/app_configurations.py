@@ -29,6 +29,7 @@ def create_app_configuration(
     )
     db_session.add(app_configuration)
     db_session.flush()
+    db_session.refresh(app_configuration)
 
     return app_configuration
 
@@ -55,6 +56,8 @@ def update_app_configuration(
         app_configuration.enabled_functions = update.enabled_functions
 
     db_session.flush()
+    db_session.refresh(app_configuration)
+
     return app_configuration
 
 

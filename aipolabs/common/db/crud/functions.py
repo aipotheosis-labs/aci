@@ -66,6 +66,7 @@ def create_functions(
         functions.append(function)
 
     db_session.flush()
+
     return functions
 
 

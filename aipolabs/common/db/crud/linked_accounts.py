@@ -70,6 +70,7 @@ def create_linked_account(
     )
     db_session.add(linked_account)
     db_session.flush()
+    db_session.refresh(linked_account)
     return linked_account
 
 
@@ -82,6 +83,7 @@ def update_linked_account(
     linked_account.security_scheme = security_scheme
     linked_account.security_credentials = security_credentials
     db_session.flush()
+    db_session.refresh(linked_account)
     return linked_account
 
 

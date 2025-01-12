@@ -37,7 +37,8 @@ def create_app(
     )
 
     db_session.add(app)
-
+    db_session.flush()
+    db_session.refresh(app)
     return app
 
 
