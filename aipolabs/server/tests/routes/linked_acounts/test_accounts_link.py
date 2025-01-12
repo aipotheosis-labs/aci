@@ -148,8 +148,7 @@ def test_link_oauth2_account_success(
     assert linked_account.linked_account_owner_id == state.linked_account_owner_id
 
     # cleanup
-    deleted_count = crud.linked_accounts.delete_linked_account(db_session, linked_account.id)
-    assert deleted_count == 1
+    crud.linked_accounts.delete_linked_account(db_session, linked_account)
     db_session.commit()
 
 

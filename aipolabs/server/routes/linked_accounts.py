@@ -16,7 +16,6 @@ from aipolabs.common.exceptions import (
     AppConfigurationNotFound,
     AppNotFound,
     AuthenticationError,
-    LinkedAccountAccessDenied,
     LinkedAccountNotFound,
     NoImplementationFound,
     UnexpectedException,
@@ -268,16 +267,12 @@ async def get_linked_account(
     """
     # validations
     linked_account = crud.linked_accounts.get_linked_account_by_id(
-        context.db_session, linked_account_id
+        context.db_session, linked_account_id, context.project.id
     )
     if not linked_account:
         logger.error(f"linked account={linked_account_id} not found")
         raise LinkedAccountNotFound(str(linked_account_id))
-    if linked_account.project_id != context.project.id:
-        logger.error(
-            f"linked account={linked_account_id} does not belong to project={context.project.id}"
-        )
-        raise LinkedAccountAccessDenied(str(linked_account_id))
+
     return linked_account
 
 
@@ -290,26 +285,14 @@ async def delete_linked_account(
     Delete a linked account by its id.
     """
     linked_account = crud.linked_accounts.get_linked_account_by_id(
-        context.db_session, linked_account_id
+        context.db_session, linked_account_id, context.project.id
     )
     if not linked_account:
         logger.error(f"linked account={linked_account_id} not found")
         raise LinkedAccountNotFound(str(linked_account_id))
-    if linked_account.project_id != context.project.id:
-        logger.error(
-            f"linked account={linked_account_id} does not belong to project={context.project.id}"
-        )
-        raise LinkedAccountAccessDenied(str(linked_account_id))
-    deleted_count = crud.linked_accounts.delete_linked_account(
-        context.db_session, linked_account_id
-    )
-    if deleted_count != 1:
-        logger.error(
-            f"expected 1 row to be deleted, but got {deleted_count} for linked_account={linked_account_id}"
-        )
-        raise UnexpectedException(
-            f"expected 1 row to be deleted, but got {deleted_count} for linked_account={linked_account_id}"
-        )
+
+    crud.linked_accounts.delete_linked_account(context.db_session, linked_account)
+
     context.db_session.commit()
 
 

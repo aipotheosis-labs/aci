@@ -244,16 +244,3 @@ class LinkedAccountNotFound(AipolabsException):
         super().__init__(
             title="Linked account not found", message=message, error_code=status.HTTP_404_NOT_FOUND
         )
-
-
-class LinkedAccountAccessDenied(AipolabsException):
-    """
-    Exception raised when a linked account is not accessible to a project
-    """
-
-    def __init__(self, message: str | None = None):
-        super().__init__(
-            title="Linked account access denied",
-            message=message,
-            error_code=status.HTTP_403_FORBIDDEN,
-        )

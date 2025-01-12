@@ -40,7 +40,7 @@ def setup_and_cleanup(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     app_configuration_1 = AppConfigurationPublic.model_validate(response.json())
 
     # create a mock app configuration for project 2
@@ -54,7 +54,7 @@ def setup_and_cleanup(
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_2},
     )
-    assert response.status_code == 200, response.json()
+    assert response.status_code == status.HTTP_200_OK
     app_configuration_2 = AppConfigurationPublic.model_validate(response.json())
 
     # create a mock linked account for project 1
@@ -120,10 +120,10 @@ def test_get_linked_account_not_found(
         f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/{NON_EXISTENT_ACCOUNT_ID}",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == status.HTTP_404_NOT_FOUND, response.json()
+    assert response.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_get_linked_account_forbidden(
+def test_get_linked_account_not_belong_to_project(
     test_client: TestClient,
     dummy_api_key: str,
     setup_and_cleanup: list[LinkedAccount],
@@ -134,4 +134,4 @@ def test_get_linked_account_forbidden(
         f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/{linked_account_2.id}",
         headers={"x-api-key": dummy_api_key},
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN, response.json()
+    assert response.status_code == status.HTTP_404_NOT_FOUND

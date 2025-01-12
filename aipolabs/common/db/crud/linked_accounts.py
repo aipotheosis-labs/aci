@@ -37,18 +37,21 @@ def get_linked_account(
     return linked_account
 
 
-def get_linked_account_by_id(db_session: Session, linked_account_id: UUID) -> LinkedAccount | None:
-    linked_account: LinkedAccount | None = db_session.execute(
-        select(LinkedAccount).filter_by(id=linked_account_id)
-    ).scalar_one_or_none()
+def get_linked_account_by_id(
+    db_session: Session, linked_account_id: UUID, project_id: UUID
+) -> LinkedAccount | None:
+    """Get a linked account by its id, with optional project filter
+    - linked_account_id uniquely identifies a linked account across the platform.
+    - project_id is extra precaution useful for access control, the linked account must belong to the project.
+    """
+    statement = select(LinkedAccount).filter_by(id=linked_account_id, project_id=project_id)
+    linked_account: LinkedAccount | None = db_session.execute(statement).scalar_one_or_none()
     return linked_account
 
 
-def delete_linked_account(db_session: Session, linked_account_id: UUID) -> int:
-    statement = delete(LinkedAccount).filter_by(id=linked_account_id)
-    result = db_session.execute(statement)
+def delete_linked_account(db_session: Session, linked_account: LinkedAccount) -> None:
+    db_session.delete(linked_account)
     db_session.flush()
-    return int(result.rowcount)
 
 
 def create_linked_account(
