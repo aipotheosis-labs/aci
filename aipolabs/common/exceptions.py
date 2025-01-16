@@ -130,6 +130,19 @@ class AppConfigurationNotFound(AipolabsException):
         )
 
 
+class AppConfigurationDisabled(AipolabsException):
+    """
+    Exception raised when an app configuration is disabled
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="App configuration disabled",
+            message=message,
+            error_code=status.HTTP_403_FORBIDDEN,
+        )
+
+
 class AppConfigurationAlreadyExists(AipolabsException):
     """
     Exception raised when an app configuration already exists
@@ -230,6 +243,17 @@ class LinkedAccountNotFound(AipolabsException):
     def __init__(self, message: str | None = None):
         super().__init__(
             title="Linked account not found", message=message, error_code=status.HTTP_404_NOT_FOUND
+        )
+
+
+class LinkedAccountDisabled(AipolabsException):
+    """
+    Exception raised when a linked account is disabled
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Linked account disabled", message=message, error_code=status.HTTP_403_FORBIDDEN
         )
 
 

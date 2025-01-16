@@ -6,6 +6,7 @@ from uuid import UUID
 import jsonschema
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
+from aipolabs.common.db.sql_models import MAX_STRING_LENGTH
 from aipolabs.common.enums import HttpLocation, HttpMethod, Protocol, Visibility
 from aipolabs.common.validator import (
     validate_function_parameters_schema_common,
@@ -112,7 +113,11 @@ class FunctionExecute(BaseModel):
     function_input: dict = Field(
         default_factory=dict, description="The input parameters for the function."
     )
-    # TODO: can add other params like linked_account_owner_id
+    linked_account_owner_id: str = Field(
+        ...,
+        max_length=MAX_STRING_LENGTH,
+        description="The owner id of the linked account. This is the id of the linked account owner in the linked account provider.",
+    )
 
 
 class FunctionBasic(BaseModel):

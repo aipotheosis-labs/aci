@@ -10,11 +10,10 @@ NON_EXISTENT_LINKED_ACCOUNT_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 def test_delete_linked_account(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_google_linked_account_under_dummy_project_1: LinkedAccount,
+    dummy_linked_account_google_project_1: LinkedAccount,
 ) -> None:
     ENDPOINT = (
-        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/"
-        f"{dummy_google_linked_account_under_dummy_project_1.id}"
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/" f"{dummy_linked_account_google_project_1.id}"
     )
 
     response = test_client.delete(ENDPOINT, headers={"x-api-key": dummy_api_key_1})
@@ -38,12 +37,11 @@ def test_delete_linked_account_not_found(
 def test_delete_linked_account_not_belong_to_project(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_google_linked_account_under_dummy_project_1: LinkedAccount,
-    dummy_google_linked_account_under_dummy_project_2: LinkedAccount,
+    dummy_linked_account_google_project_1: LinkedAccount,
+    dummy_linked_account_google_project_2: LinkedAccount,
 ) -> None:
     ENDPOINT = (
-        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/"
-        f"{dummy_google_linked_account_under_dummy_project_2.id}"
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/" f"{dummy_linked_account_google_project_2.id}"
     )
 
     response = test_client.delete(ENDPOINT, headers={"x-api-key": dummy_api_key_1})

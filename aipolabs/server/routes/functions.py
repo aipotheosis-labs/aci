@@ -12,8 +12,12 @@ from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import App, Function
 from aipolabs.common.enums import HttpLocation, Protocol, SecurityScheme, Visibility
 from aipolabs.common.exceptions import (
+    AppConfigurationDisabled,
+    AppConfigurationNotFound,
     FunctionNotFound,
     InvalidFunctionInput,
+    LinkedAccountDisabled,
+    LinkedAccountNotFound,
     UnexpectedException,
 )
 from aipolabs.common.logging import create_headline, get_logger
@@ -163,6 +167,8 @@ async def get_function_definition(
     return function_definition
 
 
+# TODO: is there any way to abstract and generalize the checks and validations
+# (enabled, configured, accessible, etc.)?
 @router.post(
     "/{function_id}/execute",
     response_model=FunctionExecutionResult,
@@ -184,7 +190,56 @@ async def execute(
         logger.error(f"function={function_id} not found")
         raise FunctionNotFound(str(function_id))
 
-    return _execute(function, body.function_input)
+    # check if the App (that this function belongs to) is configured
+    app_configuration = crud.app_configurations.get_app_configuration(
+        context.db_session, context.project.id, function.app_id
+    )
+    if not app_configuration:
+        logger.error(
+            f"app configuration not found for app={function.app_id}, project={context.project.id}"
+        )
+        raise AppConfigurationNotFound(
+            f"configuration for app={function.app_id} not found for project={context.project.id}"
+        )
+
+    # check if user has disabled the app configuration
+    if not app_configuration.enabled:
+        logger.error(
+            f"app configuration is disabled for app={function.app_id}, project={context.project.id}"
+        )
+        raise AppConfigurationDisabled(
+            f"configuration for app={function.app_id} is disabled for project={context.project.id}"
+        )
+
+    # check if the linked account is configured
+    linked_account = crud.linked_accounts.get_linked_account(
+        context.db_session, context.project.id, function.app_id, body.linked_account_owner_id
+    )
+    if not linked_account:
+        logger.error(
+            f"linked account not found for app={function.app_id}, "
+            f"project={context.project.id}, "
+            f"linked_account_owner_id={body.linked_account_owner_id}"
+        )
+        raise LinkedAccountNotFound(
+            f"app={function.app_id}, "
+            f"project={context.project.id}, "
+            f"linked_account_owner_id={body.linked_account_owner_id}"
+        )
+
+    if not linked_account.enabled:
+        logger.error(
+            f"linked account is not enabled for app={function.app_id}, "
+            f"project={context.project.id}, "
+            f"linked_account_owner_id={body.linked_account_owner_id}"
+        )
+        raise LinkedAccountDisabled(
+            f"app={function.app_id}, "
+            f"project={context.project.id}, "
+            f"linked_account_owner_id={body.linked_account_owner_id}"
+        )
+
+    return _execute(function, body.function_input, linked_account)
 
 
 # TODO: allow local code execution override by using AppBase.execute() e.g.,:
@@ -192,16 +247,25 @@ async def execute(
 # app_instance: AppBase = app_factory.get_app_instance(function_name)
 # app_instance.validate_input(function.parameters, function_execution_params.function_input)
 # return app_instance.execute(function_name, function_execution_params.function_input)
-def _execute(function: Function, function_input: dict) -> FunctionExecutionResult:
-    # validate user input against the visible parameters
+def _execute(
+    function: Function, function_input: dict, linked_account: LinkedAccount
+) -> FunctionExecutionResult:
+    """
+    Execute the function based on end-user input and end-user linked account.
+    Input validation, default values injection, and security credentials injection are done here.
+    """
+    logger.info(
+        f"executing function_id={function.id}, function_name={function.name}, "
+        f"function_input={function_input}, linked_account_owner_id={linked_account.linked_account_owner_id}"
+    )
+    # validate user input against the "visible" parameters
     try:
-        logger.info(f"validating function input for {function.name}")
         jsonschema.validate(
             instance=function_input,
             schema=processor.filter_visible_properties(function.parameters),
         )
     except jsonschema.ValidationError as e:
-        logger.exception("failed to validate function input")
+        logger.exception(f"failed to validate function input for function_id={function.id}")
         raise InvalidFunctionInput(e.message)
 
     logger.info(f"function_input before injecting defaults: {json.dumps(function_input)}")

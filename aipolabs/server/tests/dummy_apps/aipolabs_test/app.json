@@ -9,6 +9,15 @@
         "api_key": {
             "location": "header",
             "name": "X-Test-API-Key"
+        },
+        "oauth2": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer",
+            "client_id": "mock_client_id",
+            "client_secret": "mock_client_secret",
+            "scope": "openid email profile",
+            "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
         }
     },
     "default_security_credentials_by_scheme": {

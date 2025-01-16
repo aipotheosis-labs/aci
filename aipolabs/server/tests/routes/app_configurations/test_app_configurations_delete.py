@@ -9,11 +9,11 @@ from aipolabs.server import config
 def test_delete_app_configuration(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_google_app_configuration_under_dummy_project_1: AppConfigurationPublic,
+    dummy_app_configuration_google_project_1: AppConfigurationPublic,
 ) -> None:
     ENDPOINT = (
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/"
-        f"{dummy_google_app_configuration_under_dummy_project_1.app_id}"
+        f"{dummy_app_configuration_google_project_1.app_id}"
     )
 
     response = test_client.delete(ENDPOINT, headers={"x-api-key": dummy_api_key_1})

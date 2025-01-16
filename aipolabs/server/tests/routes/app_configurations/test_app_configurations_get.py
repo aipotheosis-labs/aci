@@ -9,17 +9,17 @@ from aipolabs.server import config
 def test_get_app_configuration(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_google_app_configuration_under_dummy_project_1: AppConfigurationPublic,
+    dummy_app_configuration_google_project_1: AppConfigurationPublic,
 ) -> None:
     ENDPOINT = (
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/"
-        f"{dummy_google_app_configuration_under_dummy_project_1.app_id}"
+        f"{dummy_app_configuration_google_project_1.app_id}"
     )
     response = test_client.get(ENDPOINT, headers={"x-api-key": dummy_api_key_1})
 
     assert response.status_code == status.HTTP_200_OK
     app_configuration = AppConfigurationPublic.model_validate(response.json())
-    assert app_configuration.id == dummy_google_app_configuration_under_dummy_project_1.id
+    assert app_configuration.id == dummy_app_configuration_google_project_1.id
 
 
 def test_get_app_configuration_with_non_existent_app_configuration(
