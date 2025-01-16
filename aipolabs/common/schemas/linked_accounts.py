@@ -33,9 +33,5 @@ class LinkedAccountPublic(BaseModel):
 
 
 class LinkedAccountsList(BaseModel):
-    """
-    Filters for listing linked accounts.
-    """
-
     app_id: UUID | None = None
     linked_account_owner_id: str | None = None

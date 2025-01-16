@@ -255,7 +255,7 @@ def _execute(
     Input validation, default values injection, and security credentials injection are done here.
     """
     logger.info(
-        f"executing function_id={function.id}, function_name={function.name}, "
+        f"executing function={function.id}, function_name={function.name}, "
         f"function_input={function_input}, linked_account_owner_id={linked_account.linked_account_owner_id}"
     )
     # validate user input against the "visible" parameters
@@ -265,7 +265,7 @@ def _execute(
             schema=processor.filter_visible_properties(function.parameters),
         )
     except jsonschema.ValidationError as e:
-        logger.exception(f"failed to validate function input for function_id={function.id}")
+        logger.exception(f"failed to validate function input for function={function.id}")
         raise InvalidFunctionInput(e.message)
 
     logger.info(f"function_input before injecting defaults: {json.dumps(function_input)}")
@@ -307,7 +307,7 @@ def _execute(
             json=body if body else None,
         )
 
-        # TODO: remove all print ?
+        # TODO: remove all print
         print(create_headline("FUNCTION EXECUTION HTTP REQUEST"))
 
         logger.info(
