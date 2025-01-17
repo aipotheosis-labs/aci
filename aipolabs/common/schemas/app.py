@@ -50,6 +50,9 @@ class AppsSearch(BaseModel):
         default=None,
         description="Natural language intent for vector similarity sorting. Results will be sorted by relevance to the intent.",
     )
+    configured_only: bool = Field(
+        default=False, description="If true, only return apps that have been configured."
+    )
     categories: list[str] | None = Field(
         default=None, description="List of categories for filtering."
     )
