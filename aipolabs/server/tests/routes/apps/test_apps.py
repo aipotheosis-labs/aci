@@ -5,8 +5,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
-from aipolabs.common.db.sql_models import App, Project
-from aipolabs.common.enums import Visibility
+from aipolabs.common.db.sql_models import App, AppConfiguration, Project
+from aipolabs.common.enums import SecurityScheme, Visibility
 from aipolabs.common.schemas.app import AppBasic
 from aipolabs.server import config
 
@@ -197,3 +197,138 @@ def test_search_apps_with_private_apps(
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps)
+
+
+def test_search_apps_configured_only(
+    db_session: Session,
+    test_client: TestClient,
+    dummy_apps: list[App],
+    dummy_project_1: Project,
+    dummy_api_key_1: str,
+) -> None:
+    # Create an app configuration for the first app
+    app_config = AppConfiguration(
+        project_id=dummy_project_1.id,
+        app_id=dummy_apps[0].id,
+        security_scheme=SecurityScheme.API_KEY,
+        security_config_overrides={},
+        enabled=True,
+        all_functions_enabled=True,
+        enabled_functions=[],
+    )
+    db_session.add(app_config)
+    db_session.commit()
+
+    # Test with configured_only=True
+    search_params = {
+        "configured_only": True,
+        "limit": 100,
+        "offset": 0,
+    }
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_APPS}/search",
+        params=search_params,
+        headers={"x-api-key": dummy_api_key_1},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
+    assert len(apps) == 1  # Should only return the one configured app
+    assert apps[0].name == dummy_apps[0].name  # assert that the correct app is returned
+
+    # Test with configured_only=False (should return all apps)
+    search_params["configured_only"] = False
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_APPS}/search",
+        params=search_params,
+        headers={"x-api-key": dummy_api_key_1},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
+    assert len(apps) == len(dummy_apps)  # Should return all apps
+
+
+def test_search_apps_configured_only_with_multiple_configurations(
+    db_session: Session,
+    test_client: TestClient,
+    dummy_apps: list[App],
+    dummy_project_1: Project,
+    dummy_project_2: Project,
+    dummy_api_key_1: str,
+) -> None:
+    # Configure the same app in multiple projects
+    app_config_1 = AppConfiguration(
+        project_id=dummy_project_1.id,
+        app_id=dummy_apps[0].id,
+        security_scheme=SecurityScheme.API_KEY,
+        security_config_overrides={},
+        enabled=True,
+        all_functions_enabled=True,
+        enabled_functions=[],
+    )
+    app_config_2 = AppConfiguration(
+        project_id=dummy_project_2.id,
+        app_id=dummy_apps[0].id,
+        security_scheme=SecurityScheme.API_KEY,
+        security_config_overrides={},
+        enabled=True,
+        all_functions_enabled=True,
+        enabled_functions=[],
+    )
+    db_session.add_all([app_config_1, app_config_2])
+    db_session.commit()
+
+    search_params = {
+        "configured_only": True,
+        "limit": 100,
+        "offset": 0,
+    }
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_APPS}/search",
+        params=search_params,
+        headers={"x-api-key": dummy_api_key_1},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
+    assert len(apps) == 1  # Should still only return one app despite multiple configurations
+    assert apps[0].name == dummy_apps[0].name  # assert that the correct app is returned
+
+
+def test_search_apps_with_specific_functions_enabled(
+    db_session: Session,
+    test_client: TestClient,
+    dummy_apps: list[App],
+    dummy_project_1: Project,
+    dummy_api_key_1: str,
+) -> None:
+    # Create configuration with specific functions enabled
+    app_config = AppConfiguration(
+        project_id=dummy_project_1.id,
+        app_id=dummy_apps[0].id,
+        security_scheme=SecurityScheme.API_KEY,
+        security_config_overrides={},
+        enabled=True,
+        all_functions_enabled=False,  # Only specific functions enabled
+        enabled_functions=[func.id for func in dummy_apps[0].functions],
+    )
+    db_session.add(app_config)
+    db_session.commit()
+
+    search_params = {
+        "configured_only": True,
+        "limit": 100,
+        "offset": 0,
+    }
+
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_APPS}/search",
+        params=search_params,
+        headers={"x-api-key": dummy_api_key_1},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
+    assert len(apps) == 1
+    assert apps[0].name == dummy_apps[0].name
