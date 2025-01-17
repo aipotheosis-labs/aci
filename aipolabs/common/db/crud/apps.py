@@ -7,7 +7,7 @@ from uuid import UUID
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db.sql_models import App
+from aipolabs.common.db.sql_models import App, AppConfiguration
 from aipolabs.common.enums import Visibility
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.app import AppCreate
@@ -124,3 +124,23 @@ def set_app_active_status(db_session: Session, app_id: UUID, active: bool) -> No
 def set_app_visibility(db_session: Session, app_id: UUID, visibility: Visibility) -> None:
     statement = update(App).filter_by(id=app_id).values(visibility=visibility)
     db_session.execute(statement)
+
+
+def filter_apps_by_configuration(
+    db_session: Session,
+    project_id: UUID,
+    apps: list[tuple[App, float | None]],
+) -> list[tuple[App, float | None]]:
+    """Filter apps list to only include apps that have configurations for this project."""
+    app_ids = [app.id for app, _ in apps]
+    statement = (
+        select(App, AppConfiguration)
+        .join(AppConfiguration)
+        .filter(AppConfiguration.project_id == project_id, App.id.in_(app_ids))
+    )
+    configured_app_ids = {row[0].id for row in db_session.execute(statement)}
+
+    # Filter original list to preserve ordering and scores
+    configured_apps = [(app, score) for app, score in apps if app.id in configured_app_ids]
+
+    return configured_apps
