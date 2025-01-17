@@ -82,9 +82,6 @@ def search_apps(
     """Get a list of apps with optional filtering by categories and sorting by vector similarity to intent. and pagination."""
     statement = select(App)
 
-    # filter out inactive apps
-    statement = statement.filter(App.active)
-
     # filter out private apps
     if public_only:
         statement = statement.filter(App.visibility == Visibility.PUBLIC)
