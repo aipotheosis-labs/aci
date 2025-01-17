@@ -1,26 +1,21 @@
 import json
-from typing import Annotated, Any
+from typing import Annotated
 from uuid import UUID
 
-import httpx
-import jsonschema
 from fastapi import APIRouter, Depends, Query
-from httpx import HTTPStatusError
 
 from aipolabs.common import processor
 from aipolabs.common.db import crud
-from aipolabs.common.db.sql_models import App, Function
-from aipolabs.common.enums import HttpLocation, Protocol, SecurityScheme, Visibility
+from aipolabs.common.db.sql_models import Function
+from aipolabs.common.enums import Visibility
 from aipolabs.common.exceptions import (
     AppConfigurationDisabled,
     AppConfigurationNotFound,
     FunctionNotFound,
-    InvalidFunctionInput,
     LinkedAccountDisabled,
     LinkedAccountNotFound,
-    UnexpectedException,
 )
-from aipolabs.common.logging import create_headline, get_logger
+from aipolabs.common.logging import get_logger
 from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.function import (
     AnthropicFunctionDefinition,
@@ -32,14 +27,11 @@ from aipolabs.common.schemas.function import (
     FunctionsSearch,
     InferenceProvider,
     OpenAIFunctionDefinition,
-    RestMetadata,
 )
-from aipolabs.common.schemas.security_scheme import (
-    APIKeyScheme,
-    APIKeySchemeCredentials,
-)
+
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
+from aipolabs.server.function_executors import FunctionExecutor
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -239,186 +231,6 @@ async def execute(
             f"linked_account_owner_id={body.linked_account_owner_id}"
         )
 
-    return _execute(function, body.function_input, linked_account)
-
-
-# TODO: allow local code execution override by using AppBase.execute() e.g.,:
-# app_factory = AppFactory()
-# app_instance: AppBase = app_factory.get_app_instance(function_name)
-# app_instance.validate_input(function.parameters, function_execution_params.function_input)
-# return app_instance.execute(function_name, function_execution_params.function_input)
-def _execute(
-    function: Function, function_input: dict, linked_account: LinkedAccount
-) -> FunctionExecutionResult:
-    """
-    Execute the function based on end-user input and end-user linked account.
-    Input validation, default values injection, and security credentials injection are done here.
-    """
-    logger.info(
-        f"executing function={function.id}, function_name={function.name}, "
-        f"function_input={function_input}, linked_account_owner_id={linked_account.linked_account_owner_id}"
+    return FunctionExecutor.get_executor(function.protocol).execute(
+        function, body.function_input, linked_account
     )
-    # validate user input against the "visible" parameters
-    try:
-        jsonschema.validate(
-            instance=function_input,
-            schema=processor.filter_visible_properties(function.parameters),
-        )
-    except jsonschema.ValidationError as e:
-        logger.exception(f"failed to validate function input for function={function.id}")
-        raise InvalidFunctionInput(e.message)
-
-    logger.info(f"function_input before injecting defaults: {json.dumps(function_input)}")
-
-    # inject non-visible defaults, note that should pass the original parameters schema not just visible ones
-    function_input = processor.inject_required_but_invisible_defaults(
-        function.parameters, function_input
-    )
-    logger.info(f"function_input after injecting defaults: {json.dumps(function_input)}")
-
-    if function.protocol == Protocol.REST:
-        # remove None values from the input
-        # TODO: better way to remove None values? and if it's ok to remove all of them?
-        function_input = processor.remove_none_values(function_input)
-        # Extract parameters by location
-        path = function_input.get("path", {})
-        query = function_input.get("query", {})
-        headers = function_input.get("header", {})
-        cookies = function_input.get("cookie", {})
-        body = function_input.get("body", {})
-
-        protocol_data = RestMetadata.model_validate(function.protocol_data)
-        # Construct URL with path parameters
-        url = f"{protocol_data.server_url}{protocol_data.path}"
-        if path:
-            # Replace path parameters in URL
-            for path_param_name, path_param_value in path.items():
-                url = url.replace(f"{{{path_param_name}}}", str(path_param_value))
-
-        _inject_security_credentials(function.app, headers, query, body, cookies)
-
-        # Create request object
-        request = httpx.Request(
-            method=protocol_data.method,
-            url=url,
-            params=query if query else None,
-            headers=headers if headers else None,
-            cookies=cookies if cookies else None,
-            json=body if body else None,
-        )
-
-        # TODO: remove all print
-        print(create_headline("FUNCTION EXECUTION HTTP REQUEST"))
-
-        logger.info(
-            f"Method: {request.method}\n"
-            f"URL: {request.url}\n"
-            f"Headers: {json.dumps(dict(request.headers))}\n"
-            f"Body: {json.dumps(json.loads(request.content)) if request.content else None}\n"
-        )
-
-        # TODO: one client for all requests?
-        with httpx.Client() as client:
-            try:
-                response = client.send(request)
-            except Exception as e:
-                logger.exception("failed to send request")
-                return FunctionExecutionResult(success=False, error=str(e))
-
-            # Raise an error for bad responses
-            try:
-                response.raise_for_status()
-            except HTTPStatusError as e:
-                logger.exception("http error occurred")
-                return FunctionExecutionResult(success=False, error=_get_error_message(response, e))
-
-            return FunctionExecutionResult(success=True, data=_get_response_data(response))
-    else:
-        # should never happen
-        logger.error(f"unsupported protocol for function={function.name}")
-        raise UnexpectedException(f"unsupported protocol for function={function.name}")
-
-
-def _inject_security_credentials(
-    app: App, headers: dict, query: dict, body: dict, cookies: dict
-) -> None:
-    """Injects authentication tokens based on the app's security schemes.
-
-    We assume the security credentials can only be in the header, query, cookie, or body.
-    Modifies the input dictionaries in place.
-
-    # TODO: the right way for injecting security credentials is to get from the linked account first,
-    # and if not found, then use the app's default
-
-    Args:
-        app (App): The application model containing security schemes and authentication info.
-        query (dict): The query parameters dictionary.
-        headers (dict): The headers dictionary.
-        cookies (dict): The cookies dictionary.
-        body (dict): The body dictionary.
-
-    Examples from app.json:
-    {
-        "security_schemes": {
-            "api_key": {
-                "in": "header",
-                "name": "X-Test-API-Key",
-                "default": ["test-api-key"]
-            }
-        },
-        "default_security_credentials_by_scheme": {
-            "api_key": {
-                "secret_key": "test-api-key"
-            }
-        }
-    }
-    """
-    for scheme_type, security_credentials in app.default_security_credentials_by_scheme.items():
-        match scheme_type:
-            case SecurityScheme.API_KEY:
-                api_key_scheme = APIKeyScheme.model_validate(app.security_schemes[scheme_type])
-                security_credentials = APIKeySchemeCredentials.model_validate(security_credentials)
-                match api_key_scheme.location:
-                    case HttpLocation.HEADER:
-                        headers[api_key_scheme.name] = security_credentials.secret_key
-                        break
-                    case HttpLocation.QUERY:
-                        query[api_key_scheme.name] = security_credentials.secret_key
-                        break
-                    case HttpLocation.BODY:
-                        body[api_key_scheme.name] = security_credentials.secret_key
-                        break
-                    case HttpLocation.COOKIE:
-                        cookies[api_key_scheme.name] = security_credentials.secret_key
-                        break
-                    case _:
-                        logger.error(
-                            f"unsupported api key location={api_key_scheme.location} for app={app.name}"
-                        )
-                        continue
-            case _:
-                logger.error(f"unsupported security scheme type={scheme_type} for app={app.name}")
-                continue
-
-
-def _get_response_data(response: httpx.Response) -> Any:
-    """Get the response data from the response.
-    If the response is json, return the json data, otherwise fallback to the text.
-    """
-    try:
-        response_data = response.json() if response.content else {}
-    except Exception:
-        logger.exception("error parsing json response")
-        response_data = response.text
-
-    return response_data
-
-
-def _get_error_message(response: httpx.Response, error: HTTPStatusError) -> str:
-    """Get the error message from the response or fallback to the error message from the HTTPStatusError.
-    Usually the response json contains more details about the error.
-    """
-    try:
-        return str(response.json())
-    except Exception:
-        return str(error)

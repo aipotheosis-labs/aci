@@ -11,6 +11,17 @@ class LinkedAccountOAuth2Create(BaseModel):
     linked_account_owner_id: str
 
 
+class LinkedAccountAPIKeyCreate(BaseModel):
+    app_id: UUID
+    linked_account_owner_id: str
+    api_key: str
+
+
+class LinkedAccountDefaultCreate(BaseModel):
+    app_id: UUID
+    linked_account_owner_id: str
+
+
 class LinkedAccountOAuth2CreateState(BaseModel):
     project_id: UUID
     app_id: UUID

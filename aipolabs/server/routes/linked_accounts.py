@@ -18,6 +18,7 @@ from aipolabs.common.exceptions import (
 )
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.linked_accounts import (
+    LinkedAccountDefaultCreate,
     LinkedAccountOAuth2Create,
     LinkedAccountOAuth2CreateState,
     LinkedAccountPublic,
@@ -55,6 +56,38 @@ There are a few tricky parts:
 
 - Also see: https://www.notion.so/Replace-authlib-to-support-both-browser-and-cli-authentication-16f8378d6a4780eda593ef149a205198
 """
+
+
+@router.post("/default")
+async def link_account_with_aipolabs_default_credentials(
+    request: Request,
+    context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
+    query_params: Annotated[LinkedAccountDefaultCreate, Query()],
+) -> None:
+    """
+    Create a linked account under an App using default credentials (e.g., API key, OAuth2, etc.)
+    provided by Aipolabs.
+    If there is no default credentials provided by Aipolabs for the specific App, the linked account will not be created,
+    and an error will be returned.
+    """
+    logger.info(
+        f"Linking account with Aipolabs default credentials for project={context.project.id}, "
+        f"app={query_params.app_id}, linked_account_owner_id={query_params.linked_account_owner_id}"
+    )
+    # TODO: duplicate code with other linked account creation routes
+    app_configuration = crud.app_configurations.get_app_configuration(
+        context.db_session, context.project.id, query_params.app_id
+    )
+    if not app_configuration:
+        logger.error(
+            f"configuration for app={query_params.app_id} not found for project={context.project.id}"
+        )
+        raise AppConfigurationNotFound(
+            f"configuration for app={query_params.app_id} not found for project={context.project.id}"
+        )
+
+    # need to make sure the App actully has default credentials provided by Aipolabs
+    # security_scheme = app_configuration.security_scheme
 
 
 # TODO:
