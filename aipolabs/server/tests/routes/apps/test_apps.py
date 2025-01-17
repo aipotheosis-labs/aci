@@ -236,8 +236,20 @@ def test_search_apps_configured_only(
     assert len(apps) == 1  # Should only return the one configured app
     assert apps[0].name == dummy_apps[0].name  # assert that the correct app is returned
 
-    # Test with configured_only=False (should return all apps)
-    search_params["configured_only"] = False
+
+def test_search_apps_configured_only_with_none_configured(
+    db_session: Session,
+    test_client: TestClient,
+    dummy_apps: list[App],
+    dummy_project_1: Project,
+    dummy_api_key_1: str,
+) -> None:
+    # Test with configured_only=True
+    search_params = {
+        "configured_only": True,
+        "limit": 100,
+        "offset": 0,
+    }
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search",
         params=search_params,
@@ -246,7 +258,7 @@ def test_search_apps_configured_only(
 
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
-    assert len(apps) == len(dummy_apps)  # Should return all apps
+    assert len(apps) == 0  # Should only return the one configured app
 
 
 def test_search_apps_configured_only_with_multiple_configurations(
