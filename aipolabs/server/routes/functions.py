@@ -30,6 +30,7 @@ from aipolabs.common.schemas.function import (
     OpenAIFunctionDefinition,
     RestMetadata,
 )
+from aipolabs.common.schemas.security_scheme import APIKeyScheme, OAuth2Scheme
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 
@@ -283,7 +284,7 @@ def _inject_security_credentials(
         }
     }
     """
-    security_schemes: dict[SecurityScheme, dict] = app.security_schemes
+    security_schemes: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme] = app.security_schemes
 
     for scheme_type, scheme in security_schemes.items():
         # if no default value is set for this scheme_type, skip to the next supported scheme

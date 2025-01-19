@@ -45,6 +45,7 @@ from aipolabs.common.enums import (
     SubscriptionStatus,
     Visibility,
 )
+from aipolabs.common.schemas.security_scheme import APIKeyScheme, OAuth2Scheme
 
 EMBEDDING_DIMENTION = 1024
 APP_DEFAULT_VERSION = "1.0.0"
@@ -422,8 +423,10 @@ class App(Base):
     visibility: Mapped[Visibility] = mapped_column(SqlEnum(Visibility), nullable=False)
     # operational status of the app, can be used to control if the app's discoverability
     active: Mapped[bool] = mapped_column(Boolean, nullable=False)
-    # security schemes and it's config supported by the app, e.g., API key, OAuth2, etc
-    security_schemes: Mapped[dict] = mapped_column(JSON, nullable=False)
+    # security schemes (including it's config) supported by the app, e.g., API key, OAuth2, etc
+    security_schemes: Mapped[dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]] = mapped_column(
+        JSON, nullable=False
+    )
     # embedding vector for similarity search
     embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENTION), nullable=False)
 

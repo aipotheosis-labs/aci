@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from aipolabs.common.enums import SecurityScheme, Visibility
 from aipolabs.common.schemas.function import FunctionBasic
+from aipolabs.common.schemas.security_scheme import APIKeyScheme, OAuth2Scheme
 
 
 class AppCreate(BaseModel):
@@ -19,8 +20,7 @@ class AppCreate(BaseModel):
     categories: list[str]
     visibility: Visibility
     active: bool
-    # TODO: consider making schema for each security scheme instead of using dict
-    security_schemes: dict[SecurityScheme, dict] = Field(default_factory=dict)
+    security_schemes: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]
 
     @field_validator("name")
     def validate_name(cls, v: str) -> str:
@@ -106,7 +106,7 @@ class AppDetails(BaseModel):
     # Note this field is different from security_schemes in the db model. Here it's just a list of supported SecurityScheme.
     # the security_schemes field in the db model is a dict of supported security schemes and their config,
     # which contains sensitive information like OAuth2 client secret.
-    security_schemes: list[SecurityScheme]
+    supported_security_schemes: list[SecurityScheme] = Field(alias="security_schemes")
     functions: list[FunctionBasic]
 
     created_at: datetime

@@ -25,6 +25,7 @@ from aipolabs.common.schemas.linked_accounts import (
     LinkedAccountPublic,
     LinkedAccountsList,
 )
+from aipolabs.common.schemas.security_scheme import OAuth2Scheme
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 
@@ -282,23 +283,23 @@ def _create_oauth2_client(app: App) -> StarletteOAuth2App:
     # TODO: load client's overrides if they specify any, for example, client_id, client_secret, scope, etc.
 
     # security_scheme of the app configuration must be one of the App's security_schemes, so we can safely cast it
-    app_default_oauth2_config = cast(dict, app.security_schemes[SecurityScheme.OAUTH2])
+    app_default_oauth2_config = cast(OAuth2Scheme, app.security_schemes[SecurityScheme.OAUTH2])
     oauth_client = OAuth().register(
         name=app.name,
-        client_id=app_default_oauth2_config["client_id"],
-        client_secret=app_default_oauth2_config["client_secret"],
+        client_id=app_default_oauth2_config.client_id,
+        client_secret=app_default_oauth2_config.client_secret,
         client_kwargs={
-            "scope": app_default_oauth2_config["scope"],
+            "scope": app_default_oauth2_config.scope,
             "prompt": "consent",
             "code_challenge_method": "S256",
         },
         # Note: usually if server_metadata_url (e.g., google's discovery doc https://accounts.google.com/.well-known/openid-configuration)
         # is provided, the other endpoints are not needed.
-        authorize_url=app_default_oauth2_config.get("authorize_url", None),
+        authorize_url=app_default_oauth2_config.authorize_url,
         authorize_params={"access_type": "offline"},
-        access_token_url=app_default_oauth2_config.get("access_token_url", None),
-        refresh_token_url=app_default_oauth2_config.get("refresh_token_url", None),
-        server_metadata_url=app_default_oauth2_config.get("server_metadata_url", None),
+        access_token_url=app_default_oauth2_config.access_token_url,
+        refresh_token_url=app_default_oauth2_config.refresh_token_url,
+        server_metadata_url=app_default_oauth2_config.server_metadata_url,
     )
     return cast(StarletteOAuth2App, oauth_client)
 
