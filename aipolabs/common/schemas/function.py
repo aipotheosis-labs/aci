@@ -91,6 +91,10 @@ class FunctionsSearch(BaseModel):
         default=None,
         description="Natural language intent for vector similarity sorting. Results will be sorted by relevance to the intent.",
     )
+    configured_only: bool = Field(
+        default=False,
+        description="If true, only returns functions of apps that are configured.",
+    )
     limit: int = Field(
         default=100, ge=1, le=1000, description="Maximum number of Apps per response."
     )
