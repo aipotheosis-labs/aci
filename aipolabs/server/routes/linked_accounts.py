@@ -202,8 +202,6 @@ async def linked_accounts_oauth2_callback(
         logger.exception("failed to retrieve oauth2 token")
         raise AuthenticationError("failed to retrieve oauth2 token")
 
-    # TODO: some of them might be optional (e.g., refresh_token, scope, expires_in, refresh_token_expires_in) and not provided by the OAuth2 provider
-    # we should handle None or provide default values (using pydantic)
     # TODO: we might want to verify scope authorized by end user is what we required
     security_credentials = {
         "access_token": token_response["access_token"],

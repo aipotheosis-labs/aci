@@ -77,3 +77,28 @@ class OAuth2Scheme(BaseModel):
 
 
 # TODO: add pydantic model for other security schemes (e.g., HTTP Basic, HTTP Bearer)
+
+
+class APIKeySchemeCredentials(BaseModel):
+    """
+    Credentials for API key scheme
+    Technically this can just be a string, but we use JSON to store the credentials in the database
+    for consistency and flexibility.
+    """
+
+    # TODO: use a different name 'secret_key' to avoid confusion with SecurityScheme.API_KEY, and for
+    # potential unification with http bearer scheme
+    secret_key: str
+
+
+class OAuth2SchemeCredentials(BaseModel):
+    """Credentials for OAuth2 scheme"""
+
+    # TODO: some of them might be optional (e.g., refresh_token, scope, expires_in,
+    # refresh_token_expires_in) and not provided by the OAuth2 provider
+    # we should handle None or provide default values
+    access_token: str
+    token_type: str
+    expires_in: int
+    scope: str
+    refresh_token: str

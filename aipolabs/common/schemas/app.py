@@ -114,7 +114,7 @@ class AppDetails(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    @field_validator("security_schemes", mode="before")
+    @field_validator("security_schemes", mode="before", check_fields=False)
     @classmethod
     def extract_supported_security_schemes(cls, v: Any) -> Any:
         if isinstance(v, dict):

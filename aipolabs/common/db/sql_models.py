@@ -45,7 +45,12 @@ from aipolabs.common.enums import (
     SubscriptionStatus,
     Visibility,
 )
-from aipolabs.common.schemas.security_scheme import APIKeyScheme, OAuth2Scheme
+from aipolabs.common.schemas.security_scheme import (
+    APIKeyScheme,
+    APIKeySchemeCredentials,
+    OAuth2Scheme,
+    OAuth2SchemeCredentials,
+)
 
 EMBEDDING_DIMENTION = 1024
 APP_DEFAULT_VERSION = "1.0.0"
@@ -427,6 +432,10 @@ class App(Base):
     security_schemes: Mapped[dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]] = mapped_column(
         JSON, nullable=False
     )
+    # default security credentials (provided by aipolabs, if any) for the app that can be used by any client
+    default_security_credentials_by_scheme: Mapped[
+        dict[SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials]
+    ] = mapped_column(JSON, nullable=False)
     # embedding vector for similarity search
     embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENTION), nullable=False)
 
@@ -541,7 +550,9 @@ class LinkedAccount(Base):
     linked_account_owner_id: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     security_scheme: Mapped[SecurityScheme] = mapped_column(SqlEnum(SecurityScheme), nullable=False)
     # security credentials are different for each security scheme, e.g., API key, OAuth2 (access token, refresh token, scope, etc) etc
-    security_credentials: Mapped[dict] = mapped_column(JSON, nullable=False)
+    security_credentials: Mapped[APIKeySchemeCredentials | OAuth2SchemeCredentials] = mapped_column(
+        JSON, nullable=False
+    )
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(

@@ -38,6 +38,7 @@ def upgrade() -> None:
         sa.Column("visibility", sa.Enum("PUBLIC", "PRIVATE", name="visibility"), nullable=False),
         sa.Column("active", sa.Boolean(), nullable=False),
         sa.Column("security_schemes", sa.JSON(), nullable=False),
+        sa.Column("default_security_credentials_by_scheme", sa.JSON(), nullable=False),
         sa.Column("embedding", Vector(dim=1024), nullable=False),
         sa.Column("created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
         sa.Column("updated_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False),
