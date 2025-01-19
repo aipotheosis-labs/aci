@@ -11,7 +11,7 @@ class AppConfigurationPublic(BaseModel):
     project_id: UUID
     app_id: UUID
     security_scheme: SecurityScheme
-    security_config_overrides: dict
+    security_scheme_overrides: dict
     enabled: bool
     all_functions_enabled: bool
     enabled_functions: list[UUID]
@@ -30,8 +30,8 @@ class AppConfigurationCreate(BaseModel):
 
     app_id: UUID
     security_scheme: SecurityScheme
-    # TODO: add typing/class to security_config_overrides
-    security_config_overrides: dict = Field(default_factory=dict)
+    # TODO: add typing/class to security_scheme_overrides
+    security_scheme_overrides: dict = Field(default_factory=dict)
     all_functions_enabled: bool = Field(default=True)
     enabled_functions: list[UUID] = Field(default_factory=list)
 
@@ -48,7 +48,7 @@ class AppConfigurationCreate(BaseModel):
 
 class AppConfigurationUpdate(BaseModel):
     security_scheme: SecurityScheme | None = None
-    security_config_overrides: dict | None = None
+    security_scheme_overrides: dict | None = None
     enabled: bool | None = None
     all_functions_enabled: bool | None = None
     enabled_functions: list[UUID] | None = None

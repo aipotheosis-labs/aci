@@ -32,7 +32,7 @@ async def create_app_configuration(
     body: AppConfigurationCreate,
 ) -> AppConfiguration:
     """Create an app configuration for a project"""
-    # TODO: validate security config
+    # TODO: validate security scheme
     app = crud.apps.get_app(
         context.db_session,
         body.app_id,

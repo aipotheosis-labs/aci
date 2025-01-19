@@ -25,7 +25,7 @@ def create_app_configuration(
         project_id=project_id,
         app_id=app_configuration_create.app_id,
         security_scheme=app_configuration_create.security_scheme,
-        security_config_overrides=app_configuration_create.security_config_overrides,
+        security_scheme_overrides=app_configuration_create.security_scheme_overrides,
         enabled=True,
         all_functions_enabled=app_configuration_create.all_functions_enabled,
         enabled_functions=app_configuration_create.enabled_functions,
@@ -49,8 +49,8 @@ def update_app_configuration(
     # TODO: a better way to do update?
     if update.security_scheme is not None:
         app_configuration.security_scheme = update.security_scheme
-    if update.security_config_overrides is not None:
-        app_configuration.security_config_overrides = update.security_config_overrides
+    if update.security_scheme_overrides is not None:
+        app_configuration.security_scheme_overrides = update.security_scheme_overrides
     if update.enabled is not None:
         app_configuration.enabled = update.enabled
     if update.all_functions_enabled is not None:

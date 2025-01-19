@@ -175,7 +175,7 @@ def upgrade() -> None:
             ),
             nullable=False,
         ),
-        sa.Column("security_config_overrides", sa.JSON(), nullable=False),
+        sa.Column("security_scheme_overrides", sa.JSON(), nullable=False),
         sa.Column("enabled", sa.Boolean(), nullable=False),
         sa.Column("all_functions_enabled", sa.Boolean(), nullable=False),
         sa.Column("enabled_functions", postgresql.ARRAY(sa.UUID()), nullable=False),

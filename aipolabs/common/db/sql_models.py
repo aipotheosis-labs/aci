@@ -476,9 +476,10 @@ class AppConfiguration(Base):
     # So, ultimately the actual security scheme and credentials should be decided by individual linked accounts
     # stored in linked_accounts table.
     security_scheme: Mapped[SecurityScheme] = mapped_column(SqlEnum(SecurityScheme), nullable=False)
-    # can store security config override for each app, e.g., store client id and secret for OAuth2 if client
+    # can store security scheme override for each app, e.g., store client id and secret for OAuth2 if client
     # want to use their own OAuth2 app for whitelabeling
-    security_config_overrides: Mapped[dict] = mapped_column(JSON, nullable=False)
+    # TODO: create a pydantic model for security scheme overrides once we finalize overridable fields
+    security_scheme_overrides: Mapped[dict] = mapped_column(JSON, nullable=False)
     # controlled by users to enable or disable the app
     # TODO: what are the implications of enabling/disabling the app?
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
