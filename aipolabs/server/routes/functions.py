@@ -80,6 +80,25 @@ async def search_functions(
         else None
     )
     logger.debug(f"Generated intent embedding: {intent_embedding}")
+
+    if query_params.configured_only:
+        configured_app_ids = crud.app_configurations.get_configured_app_ids(
+            context.db_session,
+            context.project.id,
+        )
+        # Filter app_ids based on configuration status
+        if query_params.app_ids:
+            # Intersection of query_params.app_ids and configured_app_ids
+            query_params.app_ids = [
+                app_id for app_id in query_params.app_ids if app_id in configured_app_ids
+            ]
+        else:
+            query_params.app_ids = configured_app_ids
+
+        # If no app_ids are available, return an empty list
+        if not query_params.app_ids:
+            return []
+
     functions = crud.functions.search_functions(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
