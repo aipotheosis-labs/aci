@@ -278,9 +278,6 @@ def _inject_security_credentials(
             "in": "header",
             "name": "X-API-KEY",
             "default": ["xxx"]
-        },
-        "http_bearer": {
-            "default": ["xxx"]
         }
     }
     """
@@ -316,9 +313,6 @@ def _inject_security_credentials(
                             f"unsupported api key location={api_key_location} for app={app.name}"
                         )
                         continue
-            case SecurityScheme.HTTP_BEARER:
-                headers["Authorization"] = f"Bearer {token}"
-                break
             case _:
                 logger.error(f"unsupported security scheme type={scheme_type} for app={app.name}")
                 continue

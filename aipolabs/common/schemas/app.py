@@ -7,7 +7,12 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from aipolabs.common.enums import SecurityScheme, Visibility
 from aipolabs.common.schemas.function import FunctionBasic
-from aipolabs.common.schemas.security_scheme import APIKeyScheme, OAuth2Scheme
+from aipolabs.common.schemas.security_scheme import (
+    APIKeyScheme,
+    APIKeySchemeCredentials,
+    OAuth2Scheme,
+    OAuth2SchemeCredentials,
+)
 
 
 class AppCreate(BaseModel):
@@ -21,6 +26,9 @@ class AppCreate(BaseModel):
     visibility: Visibility
     active: bool
     security_schemes: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]
+    default_security_credentials_by_scheme: dict[
+        SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials
+    ]
 
     @field_validator("name")
     def validate_name(cls, v: str) -> str:

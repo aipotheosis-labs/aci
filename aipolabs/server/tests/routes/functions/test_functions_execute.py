@@ -141,26 +141,3 @@ def test_execute_function_with_nested_args(
         b'"location": {"city": "New York", "country": "USA"}, '
         b'"greeting": "default-greeting"}'
     )
-
-
-@respx.mock
-def test_http_bearer_auth_token_injection(
-    test_client: TestClient,
-    dummy_api_key_1: str,
-    dummy_function_aipolabs_test__http_bearer__hello_world: Function,
-) -> None:
-    # Mock the HTTP endpoint
-    request = respx.get("https://api.mock.aipolabs.com/v1/hello_world").mock(
-        return_value=httpx.Response(200, json={})
-    )
-
-    response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__http_bearer__hello_world.id}/execute",
-        json={},
-        headers={"x-api-key": dummy_api_key_1},
-    )
-
-    # Verify the request was made as expected
-    assert request.called
-    assert request.calls.last.request.headers["Authorization"] == "Bearer test-bearer-token"
-    assert response.status_code == status.HTTP_200_OK

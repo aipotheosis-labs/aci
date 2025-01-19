@@ -258,17 +258,6 @@ def dummy_function_aipolabs_test__hello_world_no_args(
 
 
 @pytest.fixture(scope="function")
-def dummy_function_aipolabs_test__http_bearer__hello_world(
-    dummy_functions: list[Function],
-) -> Function:
-    dummy_function_aipolabs_test__http_bearer__hello_world = next(
-        func for func in dummy_functions if func.name == "AIPOLABS_TEST_HTTP_BEARER__HELLO_WORLD"
-    )
-    assert dummy_function_aipolabs_test__http_bearer__hello_world is not None
-    return dummy_function_aipolabs_test__http_bearer__hello_world
-
-
-@pytest.fixture(scope="function")
 def dummy_function_aipolabs_test__hello_world_with_args(
     dummy_functions: list[Function],
 ) -> Function:
