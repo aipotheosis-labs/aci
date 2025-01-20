@@ -306,8 +306,8 @@ def test_search_functions_configured_only_true(
 
 
 def test_search_functions_configured_only_false(
-    db_session: Session,
     test_client: TestClient,
+    dummy_google_app_configuration_under_dummy_project_1: AppConfigurationPublic,
     dummy_functions: list[Function],
     dummy_api_key_1: str,
 ) -> None:
