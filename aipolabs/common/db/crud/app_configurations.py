@@ -96,6 +96,20 @@ def get_app_configuration(
     return app_configuration
 
 
+def get_configured_app_ids(
+    db_session: Session,
+    project_id: UUID,
+) -> list[UUID]:
+    """Get just the app IDs that have configurations for a project."""
+    return [
+        r[0]
+        for r in db_session.query(AppConfiguration.app_id)
+        .filter(AppConfiguration.project_id == project_id)
+        .distinct()
+        .all()
+    ]
+
+
 def app_configuration_exists(db_session: Session, project_id: UUID, app_id: UUID) -> bool:
     """Check if an app configuration exists in the database."""
     return (
