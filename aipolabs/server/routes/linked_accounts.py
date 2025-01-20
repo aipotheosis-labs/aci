@@ -3,7 +3,7 @@ from typing import Annotated
 from uuid import UUID
 
 from authlib.jose import jwt
-from fastapi import APIRouter, Depends, Query, Request, status
+from fastapi import APIRouter, Body, Depends, Query, Request, status
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
@@ -58,12 +58,11 @@ There are a few tricky parts:
 """
 
 
-@router.post("/default")
+@router.post("/default", response_model=LinkedAccountPublic)
 async def link_account_with_aipolabs_default_credentials(
-    request: Request,
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
-    query_params: Annotated[LinkedAccountDefaultCreate, Query()],
-) -> None:
+    body: Annotated[LinkedAccountDefaultCreate, Body()],
+) -> LinkedAccount:
     """
     Create a linked account under an App using default credentials (e.g., API key, OAuth2, etc.)
     provided by Aipolabs.
@@ -72,22 +71,65 @@ async def link_account_with_aipolabs_default_credentials(
     """
     logger.info(
         f"Linking account with Aipolabs default credentials for project={context.project.id}, "
-        f"app={query_params.app_id}, linked_account_owner_id={query_params.linked_account_owner_id}"
+        f"app={body.app_id}, linked_account_owner_id={body.linked_account_owner_id}"
     )
-    # TODO: duplicate code with other linked account creation routes
+    # TODO: some duplicate code with other linked account creation routes
     app_configuration = crud.app_configurations.get_app_configuration(
-        context.db_session, context.project.id, query_params.app_id
+        context.db_session, context.project.id, body.app_id
     )
     if not app_configuration:
         logger.error(
-            f"configuration for app={query_params.app_id} not found for project={context.project.id}"
+            f"configuration for app={body.app_id} not found for project={context.project.id}"
         )
         raise AppConfigurationNotFound(
-            f"configuration for app={query_params.app_id} not found for project={context.project.id}"
+            f"configuration for app={body.app_id} not found for project={context.project.id}"
         )
 
     # need to make sure the App actully has default credentials provided by Aipolabs
-    # security_scheme = app_configuration.security_scheme
+    app_default_credentials = app_configuration.app.default_security_credentials_by_scheme.get(
+        app_configuration.security_scheme
+    )
+    if not app_default_credentials:
+        logger.error(
+            f"no default credentials provided by Aipolabs for app={body.app_id}, "
+            f"security_scheme={app_configuration.security_scheme}"
+        )
+        # TODO: consider choosing a different exception type?
+        raise NoImplementationFound(
+            f"no default credentials provided by Aipolabs for app={body.app_id}, "
+            f"security_scheme={app_configuration.security_scheme}"
+        )
+
+    linked_account = crud.linked_accounts.get_linked_account(
+        context.db_session,
+        context.project.id,
+        body.app_id,
+        body.linked_account_owner_id,
+    )
+    # TODO: same as OAuth2 linked account creation, we might want to separate the logic for updating and creating a linked account
+    # or give warning to clients if the linked account already exists to avoid accidental overwriting the account
+    if linked_account:
+        logger.info(f"updating linked_account={linked_account.id} with default credentials")
+        linked_account = crud.linked_accounts.update_linked_account(
+            context.db_session, linked_account, app_configuration.security_scheme, {}
+        )
+    else:
+        logger.info(
+            f"creating linked account with default credentials for project={context.project.id}, "
+            f"app={body.app_id}, linked_account_owner_id={body.linked_account_owner_id}"
+        )
+        linked_account = crud.linked_accounts.create_linked_account(
+            context.db_session,
+            context.project.id,
+            body.app_id,
+            body.linked_account_owner_id,
+            app_configuration.security_scheme,
+            {},
+            enabled=True,
+        )
+    context.db_session.commit()
+
+    return linked_account
 
 
 # TODO:

@@ -10,11 +10,11 @@ from aipolabs.server import config
 def test_update_app_configuration(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_app_configuration_google_project_1: AppConfigurationPublic,
+    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
 ) -> None:
     ENDPOINT = (
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/"
-        f"{dummy_app_configuration_google_project_1.app_id}"
+        f"{dummy_app_configuration_oauth2_google_project_1.app_id}"
     )
 
     response = test_client.get(ENDPOINT, headers={"x-api-key": dummy_api_key_1})
@@ -36,11 +36,11 @@ def test_update_app_configuration(
 def test_update_app_configuration_with_invalid_payload(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_app_configuration_google_project_1: AppConfigurationPublic,
+    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
 ) -> None:
     ENDPOINT = (
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/"
-        f"{dummy_app_configuration_google_project_1.app_id}"
+        f"{dummy_app_configuration_oauth2_google_project_1.app_id}"
     )
 
     # all_functions_enabled cannot be True when enabled_functions is provided

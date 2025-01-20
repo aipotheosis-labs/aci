@@ -15,10 +15,10 @@ NON_EXISTENT_LINKED_ACCOUNT_OWNER_ID = "dummy_linked_account_owner_id"
 def test_execute_non_existent_function(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_linked_account_aipolabs_test_project_1: LinkedAccount,
+    dummy_linked_account_apikey_aipolabs_test_project_1: LinkedAccount,
 ) -> None:
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_apikey_aipolabs_test_project_1.linked_account_owner_id,
     )
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{NON_EXISTENT_FUNCTION_ID}/execute",
@@ -53,9 +53,9 @@ def test_execute_function_whose_app_configuration_is_disabled(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_no_args: Function,
-    dummy_app_configuration_aipolabs_test_project_1: AppConfiguration,
+    dummy_app_configuration_apikey_aipolabs_test_project_1: AppConfiguration,
 ) -> None:
-    dummy_app_configuration_aipolabs_test_project_1.enabled = False
+    dummy_app_configuration_apikey_aipolabs_test_project_1.enabled = False
     db_session.commit()
 
     function_execute = FunctionExecute(
@@ -74,7 +74,7 @@ def test_execute_function_linked_account_not_found(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_no_args: Function,
-    dummy_app_configuration_aipolabs_test_project_1: AppConfiguration,
+    dummy_app_configuration_apikey_aipolabs_test_project_1: AppConfiguration,
 ) -> None:
     function_execute = FunctionExecute(
         linked_account_owner_id=NON_EXISTENT_LINKED_ACCOUNT_OWNER_ID,
@@ -93,14 +93,14 @@ def test_execute_function_linked_account_disabled(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_no_args: Function,
-    dummy_app_configuration_aipolabs_test_project_1: AppConfiguration,
-    dummy_linked_account_aipolabs_test_project_1: LinkedAccount,
+    dummy_app_configuration_apikey_aipolabs_test_project_1: AppConfiguration,
+    dummy_linked_account_apikey_aipolabs_test_project_1: LinkedAccount,
 ) -> None:
-    dummy_linked_account_aipolabs_test_project_1.enabled = False
+    dummy_linked_account_apikey_aipolabs_test_project_1.enabled = False
     db_session.commit()
 
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_apikey_aipolabs_test_project_1.linked_account_owner_id,
     )
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.id}/execute",
@@ -115,10 +115,10 @@ def test_execute_function_with_invalid_function_input(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_with_args: Function,
-    dummy_linked_account_aipolabs_test_project_1: LinkedAccount,
+    dummy_linked_account_apikey_aipolabs_test_project_1: LinkedAccount,
 ) -> None:
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_apikey_aipolabs_test_project_1.linked_account_owner_id,
         function_input={"path": {"random_key": "random_value"}},
     )
 
@@ -136,7 +136,7 @@ def test_mock_execute_function_with_no_args(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_no_args: Function,
-    dummy_linked_account_aipolabs_test_project_1: LinkedAccount,
+    dummy_linked_account_apikey_aipolabs_test_project_1: LinkedAccount,
 ) -> None:
     # Mock the HTTP endpoint
     response_data = {"message": "Hello, test_mock_execute_function_with_no_args!"}
@@ -145,7 +145,7 @@ def test_mock_execute_function_with_no_args(
     )
 
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_apikey_aipolabs_test_project_1.linked_account_owner_id,
     )
 
     response = test_client.post(
@@ -166,7 +166,7 @@ def test_execute_api_key_based_function_with_args(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_with_args: Function,
-    dummy_linked_account_aipolabs_test_project_1: LinkedAccount,
+    dummy_linked_account_apikey_aipolabs_test_project_1: LinkedAccount,
 ) -> None:
     # Mock the HTTP endpoint
     mock_response_data = {"message": "Hello, test_execute_api_key_based_function_with_args!"}
@@ -181,7 +181,7 @@ def test_execute_api_key_based_function_with_args(
     )
 
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_apikey_aipolabs_test_project_1.linked_account_owner_id,
         function_input={
             "path": {"userId": "John"},
             "query": {"lang": "en"},
@@ -214,7 +214,7 @@ def test_execute_api_key_based_function_with_nested_args(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_nested_args: Function,
-    dummy_linked_account_aipolabs_test_project_1: LinkedAccount,
+    dummy_linked_account_apikey_aipolabs_test_project_1: LinkedAccount,
 ) -> None:
     # Mock the HTTP endpoint
     mock_response_data = {"message": "Hello, test_execute_api_key_based_function_with_nested_args!"}
@@ -229,7 +229,7 @@ def test_execute_api_key_based_function_with_nested_args(
     )
 
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_apikey_aipolabs_test_project_1.linked_account_owner_id,
         function_input={
             "path": {"userId": "John"},
             # "query": {"lang": "en"}, query is not visible so no input here

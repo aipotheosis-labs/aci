@@ -16,6 +16,7 @@ for example,
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
@@ -550,9 +551,10 @@ class LinkedAccount(Base):
     linked_account_owner_id: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     security_scheme: Mapped[SecurityScheme] = mapped_column(SqlEnum(SecurityScheme), nullable=False)
     # security credentials are different for each security scheme, e.g., API key, OAuth2 (access token, refresh token, scope, etc) etc
-    security_credentials: Mapped[APIKeySchemeCredentials | OAuth2SchemeCredentials] = mapped_column(
-        JSON, nullable=False
-    )
+    # it can beempty dict because the linked account could be created to use default credentials provided by Aipolabs
+    security_credentials: Mapped[
+        APIKeySchemeCredentials | OAuth2SchemeCredentials | dict[str, Any]
+    ] = mapped_column(JSON, nullable=False)
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(

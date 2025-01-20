@@ -275,11 +275,12 @@ def dummy_function_aipolabs_test__hello_world_with_args(
 
 ################################################################################
 # Dummy App Configurations
+# Naming Convention: dummy_app_configuration_<security_scheme>_<app>_<project>
 ################################################################################
 
 
 @pytest.fixture(scope="function")
-def dummy_app_configuration_google_project_1(
+def dummy_app_configuration_oauth2_google_project_1(
     db_session: Session,
     dummy_project_1: Project,
     dummy_app_google: App,
@@ -287,18 +288,20 @@ def dummy_app_configuration_google_project_1(
     app_configuration_create = AppConfigurationCreate(
         app_id=dummy_app_google.id, security_scheme=SecurityScheme.OAUTH2
     )
-    dummy_app_configuration_google_project_1 = crud.app_configurations.create_app_configuration(
-        db_session,
-        dummy_project_1.id,
-        app_configuration_create,
+    dummy_app_configuration_oauth2_google_project_1 = (
+        crud.app_configurations.create_app_configuration(
+            db_session,
+            dummy_project_1.id,
+            app_configuration_create,
+        )
     )
     db_session.commit()
 
-    return dummy_app_configuration_google_project_1
+    return dummy_app_configuration_oauth2_google_project_1
 
 
 @pytest.fixture(scope="function")
-def dummy_app_configuration_google_project_2(
+def dummy_app_configuration_oauth2_google_project_2(
     db_session: Session,
     dummy_project_2: Project,
     dummy_app_google: App,
@@ -307,17 +310,19 @@ def dummy_app_configuration_google_project_2(
         app_id=dummy_app_google.id, security_scheme=SecurityScheme.OAUTH2
     )
 
-    dummy_app_configuration_google_project_2 = crud.app_configurations.create_app_configuration(
-        db_session,
-        dummy_project_2.id,
-        app_configuration_create,
+    dummy_app_configuration_oauth2_google_project_2 = (
+        crud.app_configurations.create_app_configuration(
+            db_session,
+            dummy_project_2.id,
+            app_configuration_create,
+        )
     )
     db_session.commit()
-    return dummy_app_configuration_google_project_2
+    return dummy_app_configuration_oauth2_google_project_2
 
 
 @pytest.fixture(scope="function")
-def dummy_app_configuration_github_project_1(
+def dummy_app_configuration_apikey_github_project_1(
     db_session: Session,
     dummy_project_1: Project,
     dummy_app_github: App,
@@ -325,17 +330,19 @@ def dummy_app_configuration_github_project_1(
     app_configuration_create = AppConfigurationCreate(
         app_id=dummy_app_github.id, security_scheme=SecurityScheme.API_KEY
     )
-    dummy_app_configuration_github_project_1 = crud.app_configurations.create_app_configuration(
-        db_session,
-        dummy_project_1.id,
-        app_configuration_create,
+    dummy_app_configuration_apikey_github_project_1 = (
+        crud.app_configurations.create_app_configuration(
+            db_session,
+            dummy_project_1.id,
+            app_configuration_create,
+        )
     )
     db_session.commit()
-    return dummy_app_configuration_github_project_1
+    return dummy_app_configuration_apikey_github_project_1
 
 
 @pytest.fixture(scope="function")
-def dummy_app_configuration_aipolabs_test_project_1(
+def dummy_app_configuration_apikey_aipolabs_test_project_1(
     db_session: Session,
     dummy_project_1: Project,
     dummy_app_aipolabs_test: App,
@@ -344,7 +351,7 @@ def dummy_app_configuration_aipolabs_test_project_1(
         app_id=dummy_app_aipolabs_test.id, security_scheme=SecurityScheme.API_KEY
     )
 
-    dummy_app_configuration_aipolabs_test_project_1 = (
+    dummy_app_configuration_apikey_aipolabs_test_project_1 = (
         crud.app_configurations.create_app_configuration(
             db_session,
             dummy_project_1.id,
@@ -352,81 +359,84 @@ def dummy_app_configuration_aipolabs_test_project_1(
         )
     )
     db_session.commit()
-    return dummy_app_configuration_aipolabs_test_project_1
+    return dummy_app_configuration_apikey_aipolabs_test_project_1
 
 
 ################################################################################
 # Dummy Linked Accounts
+# Naming Convention: dummy_linked_account_<security_scheme>_<app>_<project>
 ################################################################################
 
 
 @pytest.fixture(scope="function")
-def dummy_linked_account_google_project_1(
+def dummy_linked_account_oauth2_google_project_1(
     db_session: Session,
-    dummy_app_configuration_google_project_1: AppConfigurationPublic,
+    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_google_project_1 = crud.linked_accounts.create_linked_account(
+    dummy_linked_account_oauth2_google_project_1 = crud.linked_accounts.create_linked_account(
         db_session,
-        dummy_app_configuration_google_project_1.project_id,
-        dummy_app_configuration_google_project_1.app_id,
-        "dummy_linked_account_google_project_1",
-        dummy_app_configuration_google_project_1.security_scheme,
+        dummy_app_configuration_oauth2_google_project_1.project_id,
+        dummy_app_configuration_oauth2_google_project_1.app_id,
+        "dummy_linked_account_oauth2_google_project_1",
+        dummy_app_configuration_oauth2_google_project_1.security_scheme,
         {"access_token": "mock_access_token"},
         enabled=True,
     )
     db_session.commit()
-    yield dummy_linked_account_google_project_1
+    yield dummy_linked_account_oauth2_google_project_1
 
 
 @pytest.fixture(scope="function")
-def dummy_linked_account_github_project_1(
+def dummy_linked_account_apikey_github_project_1(
     db_session: Session,
-    dummy_app_configuration_github_project_1: AppConfigurationPublic,
+    dummy_app_configuration_apikey_github_project_1: AppConfigurationPublic,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_github_project_1 = crud.linked_accounts.create_linked_account(
+    dummy_linked_account_apikey_github_project_1 = crud.linked_accounts.create_linked_account(
         db_session,
-        dummy_app_configuration_github_project_1.project_id,
-        dummy_app_configuration_github_project_1.app_id,
-        "dummy_linked_account_github_project_1",
-        dummy_app_configuration_github_project_1.security_scheme,
+        dummy_app_configuration_apikey_github_project_1.project_id,
+        dummy_app_configuration_apikey_github_project_1.app_id,
+        "dummy_linked_account_apikey_github_project_1",
+        dummy_app_configuration_apikey_github_project_1.security_scheme,
         {"api_key": "mock_api_key"},
         enabled=True,
     )
     db_session.commit()
-    yield dummy_linked_account_github_project_1
+    yield dummy_linked_account_apikey_github_project_1
 
 
 @pytest.fixture(scope="function")
-def dummy_linked_account_google_project_2(
+def dummy_linked_account_oauth2_google_project_2(
     db_session: Session,
-    dummy_app_configuration_google_project_2: AppConfigurationPublic,
+    dummy_app_configuration_oauth2_google_project_2: AppConfigurationPublic,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_google_project_2 = crud.linked_accounts.create_linked_account(
+    dummy_linked_account_oauth2_google_project_2 = crud.linked_accounts.create_linked_account(
         db_session,
-        dummy_app_configuration_google_project_2.project_id,
-        dummy_app_configuration_google_project_2.app_id,
-        "dummy_linked_account_google_project_2",
-        dummy_app_configuration_google_project_2.security_scheme,
+        dummy_app_configuration_oauth2_google_project_2.project_id,
+        dummy_app_configuration_oauth2_google_project_2.app_id,
+        "dummy_linked_account_oauth2_google_project_2",
+        dummy_app_configuration_oauth2_google_project_2.security_scheme,
         {"access_token": "mock_access_token"},
         enabled=True,
     )
     db_session.commit()
-    yield dummy_linked_account_google_project_2
+    yield dummy_linked_account_oauth2_google_project_2
 
 
 @pytest.fixture(scope="function")
-def dummy_linked_account_aipolabs_test_project_1(
+def dummy_linked_account_apikey_aipolabs_test_project_1(
     db_session: Session,
-    dummy_app_configuration_aipolabs_test_project_1: AppConfigurationPublic,
+    dummy_app_configuration_apikey_aipolabs_test_project_1: AppConfigurationPublic,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_aipolabs_test_project_1 = crud.linked_accounts.create_linked_account(
-        db_session,
-        dummy_app_configuration_aipolabs_test_project_1.project_id,
-        dummy_app_configuration_aipolabs_test_project_1.app_id,
-        "dummy_linked_account_aipolabs_test_project_1",
-        dummy_app_configuration_aipolabs_test_project_1.security_scheme,
-        {"access_token": "mock_access_token"},
-        enabled=True,
+    dummy_linked_account_apikey_aipolabs_test_project_1 = (
+        crud.linked_accounts.create_linked_account(
+            db_session,
+            dummy_app_configuration_apikey_aipolabs_test_project_1.project_id,
+            dummy_app_configuration_apikey_aipolabs_test_project_1.app_id,
+            "dummy_linked_account_apikey_aipolabs_test_project_1",
+            dummy_app_configuration_apikey_aipolabs_test_project_1.security_scheme,
+            {"access_token": "mock_access_token"},
+            enabled=True,
+        )
     )
     db_session.commit()
-    yield dummy_linked_account_aipolabs_test_project_1
+    yield dummy_linked_account_apikey_aipolabs_test_project_1

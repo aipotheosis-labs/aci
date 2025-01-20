@@ -30,7 +30,7 @@ from aipolabs.common.schemas.function import (
 )
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
-from aipolabs.server.function_executors.factory import get_executor
+from aipolabs.server.function_executors import get_executor
 
 router = APIRouter()
 logger = get_logger(__name__)

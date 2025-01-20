@@ -25,12 +25,12 @@ MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX = (
 def test_link_oauth2_account_success(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_app_configuration_google_project_1: AppConfigurationPublic,
+    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     db_session: Session,
 ) -> None:
     # init account linking proces
     body = LinkedAccountOAuth2Create(
-        app_id=dummy_app_configuration_google_project_1.app_id,
+        app_id=dummy_app_configuration_oauth2_google_project_1.app_id,
         linked_account_owner_id="test_link_oauth2_account_success",
     )
     response = test_client.get(
@@ -46,8 +46,8 @@ def test_link_oauth2_account_success(
     state_jwt = qs_params.get("state", [None])[0]
     assert state_jwt is not None
     state = LinkedAccountOAuth2CreateState.model_validate(jwt.decode(state_jwt, config.SIGNING_KEY))
-    assert state.project_id == dummy_app_configuration_google_project_1.project_id
-    assert state.app_id == dummy_app_configuration_google_project_1.app_id
+    assert state.project_id == dummy_app_configuration_oauth2_google_project_1.project_id
+    assert state.app_id == dummy_app_configuration_oauth2_google_project_1.app_id
     assert state.linked_account_owner_id == "test_link_oauth2_account_success"
     assert (
         state.redirect_uri
@@ -92,7 +92,7 @@ def test_link_oauth2_account_success(
     assert linked_account.security_scheme == SecurityScheme.OAUTH2
     assert linked_account.security_credentials == mock_oauth2_token_response
     assert linked_account.enabled is True
-    assert linked_account.app_id == dummy_app_configuration_google_project_1.app_id
+    assert linked_account.app_id == dummy_app_configuration_oauth2_google_project_1.app_id
     assert linked_account.project_id == state.project_id
     assert linked_account.app_id == state.app_id
     assert linked_account.linked_account_owner_id == state.linked_account_owner_id
