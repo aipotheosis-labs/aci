@@ -280,8 +280,10 @@ def _create_oauth2_client(app: App) -> StarletteOAuth2App:
     # TODO: add correspinding validation of the oauth2 fields (e.g., client_id, client_secret, scope, etc.) when indexing an App.
     # TODO: load client's overrides if they specify any, for example, client_id, client_secret, scope, etc.
 
-    # security_scheme of the app configuration must be one of the App's security_schemes, so we can safely cast it
-    app_default_oauth2_config = cast(OAuth2Scheme, app.security_schemes[SecurityScheme.OAUTH2])
+    # security_scheme of the app configuration must be one of the App's security_schemes, so we can safely validate it
+    app_default_oauth2_config = OAuth2Scheme.model_validate(
+        app.security_schemes[SecurityScheme.OAUTH2]
+    )
     oauth_client = OAuth().register(
         name=app.name,
         client_id=app_default_oauth2_config.client_id,

@@ -22,17 +22,9 @@ def create_app(
 ) -> App:
     logger.debug(f"creating app: {app_create}")
 
+    app_create_dict = app_create.model_dump(mode="json", exclude_none=True)
     app = App(
-        name=app_create.name,
-        display_name=app_create.display_name,
-        provider=app_create.provider,
-        version=app_create.version,
-        description=app_create.description,
-        logo=app_create.logo,
-        categories=app_create.categories,
-        visibility=app_create.visibility,
-        active=app_create.active,
-        security_schemes=app_create.security_schemes,
+        **app_create_dict,
         embedding=app_embedding,
     )
 

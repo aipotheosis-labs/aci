@@ -7,16 +7,20 @@
     "description": "Google is a global technology company that provides a wide range of internet-based products and services. Best known for its search engine, Google enables users to search for information, websites, images, videos, and more across the web.",
     "security_schemes": {
         "api_key": {
-            "in": "header",
+            "location": "header",
             "name": "X-API-Key"
         },
         "oauth2": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer",
             "client_id": "mock_client_id",
             "client_secret": "mock_client_secret",
             "scope": "openid email profile https://www.googleapis.com/auth/calendar",
             "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
         }
     },
+    "default_security_credentials_by_scheme": {},
     "categories": [
         "devtools",
         "testcategory-2"

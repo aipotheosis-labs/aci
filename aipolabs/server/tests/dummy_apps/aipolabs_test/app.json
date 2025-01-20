@@ -7,9 +7,13 @@
     "description": "Aipolabs Test is a hypothetical application used to demonstrate how API schemas can be structured. It offers basic functionalities for testing purposes such as creating resources, retrieving data, and simulating user interactions.",
     "security_schemes": {
         "api_key": {
-            "in": "header",
-            "name": "X-Test-API-Key",
-            "default": ["test-api-key"]
+            "location": "header",
+            "name": "X-Test-API-Key"
+        }
+    },
+    "default_security_credentials_by_scheme": {
+        "api_key": {
+            "secret_key": "test-api-key"
         }
     },
     "categories": [

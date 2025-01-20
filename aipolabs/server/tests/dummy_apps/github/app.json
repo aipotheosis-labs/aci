@@ -7,10 +7,13 @@
     "description": "GitHub is a cloud-based platform that enables developers to store, manage, and share their code repositories. It provides version control using Git, a system that tracks changes to files, allowing multiple people to collaborate on a project efficiently. GitHub facilitates code sharing, collaboration, and management by providing tools for version tracking, branching, and merging of code.",
     "security_schemes": {
         "api_key": {
-            "in": "header",
+            "location": "header",
             "name": "X-API-Key"
         },
         "oauth2": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer",
             "client_id": "mock_client_id",
             "client_secret": "mock_client_secret",
             "scope": "openid email profile https://www.googleapis.com/auth/calendar",
@@ -19,6 +22,7 @@
             "refresh_token_url": "https://github.com/login/oauth/access_token"
         }
     },
+    "default_security_credentials_by_scheme": {},
     "categories": [
         "devtools",
         "testcategory-2"

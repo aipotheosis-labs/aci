@@ -10,7 +10,7 @@ from httpx import HTTPStatusError
 from aipolabs.common import processor
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import App, Function
-from aipolabs.common.enums import Protocol, SecurityScheme, Visibility
+from aipolabs.common.enums import HttpLocation, Protocol, SecurityScheme, Visibility
 from aipolabs.common.exceptions import (
     FunctionNotFound,
     InvalidFunctionInput,
@@ -30,7 +30,10 @@ from aipolabs.common.schemas.function import (
     OpenAIFunctionDefinition,
     RestMetadata,
 )
-from aipolabs.common.schemas.security_scheme import APIKeyScheme, OAuth2Scheme
+from aipolabs.common.schemas.security_scheme import (
+    APIKeyScheme,
+    APIKeySchemeCredentials,
+)
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 
@@ -272,45 +275,43 @@ def _inject_security_credentials(
         cookies (dict): The cookies dictionary.
         body (dict): The body dictionary.
 
-    Examples security schemes:
+    Examples from app.json:
     {
-        "api_key": {
-            "in": "header",
-            "name": "X-API-KEY",
-            "default": ["xxx"]
+        "security_schemes": {
+            "api_key": {
+                "in": "header",
+                "name": "X-Test-API-Key",
+                "default": ["test-api-key"]
+            }
+        },
+        "default_security_credentials_by_scheme": {
+            "api_key": {
+                "secret_key": "test-api-key"
+            }
         }
     }
     """
-    security_schemes: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme] = app.security_schemes
-
-    for scheme_type, scheme in security_schemes.items():
-        # if no default value is set for this scheme_type, skip to the next supported scheme
-        if not scheme.get("default"):
-            continue
-
-        # TODO: ideally we should do round robin for using shared default keys
-        token = scheme["default"][0]
-
+    for scheme_type, security_credentials in app.default_security_credentials_by_scheme.items():
         match scheme_type:
             case SecurityScheme.API_KEY:
-                api_key_location = scheme.get("in")
-                api_key_name = scheme.get("name")
-                match api_key_location:
-                    case "header":
-                        headers[api_key_name] = token
+                api_key_scheme = APIKeyScheme.model_validate(app.security_schemes[scheme_type])
+                security_credentials = APIKeySchemeCredentials.model_validate(security_credentials)
+                match api_key_scheme.location:
+                    case HttpLocation.HEADER:
+                        headers[api_key_scheme.name] = security_credentials.secret_key
                         break
-                    case "query":
-                        query[api_key_name] = token
+                    case HttpLocation.QUERY:
+                        query[api_key_scheme.name] = security_credentials.secret_key
                         break
-                    case "body":
-                        body[api_key_name] = token
+                    case HttpLocation.BODY:
+                        body[api_key_scheme.name] = security_credentials.secret_key
                         break
-                    case "cookie":
-                        cookies[api_key_name] = token
+                    case HttpLocation.COOKIE:
+                        cookies[api_key_scheme.name] = security_credentials.secret_key
                         break
                     case _:
                         logger.error(
-                            f"unsupported api key location={api_key_location} for app={app.name}"
+                            f"unsupported api key location={api_key_scheme.location} for app={app.name}"
                         )
                         continue
             case _:

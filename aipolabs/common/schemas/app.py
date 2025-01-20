@@ -114,7 +114,7 @@ class AppDetails(BaseModel):
     # Note this field is different from security_schemes in the db model. Here it's just a list of supported SecurityScheme.
     # the security_schemes field in the db model is a dict of supported security schemes and their config,
     # which contains sensitive information like OAuth2 client secret.
-    supported_security_schemes: list[SecurityScheme] = Field(alias="security_schemes")
+    security_schemes: list[SecurityScheme]
     functions: list[FunctionBasic]
 
     created_at: datetime
@@ -122,7 +122,7 @@ class AppDetails(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
-    @field_validator("security_schemes", mode="before", check_fields=False)
+    @field_validator("security_schemes", mode="before")
     @classmethod
     def extract_supported_security_schemes(cls, v: Any) -> Any:
         if isinstance(v, dict):

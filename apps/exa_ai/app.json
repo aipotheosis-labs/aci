@@ -7,11 +7,14 @@
     "description": "Exa is a search engine made for AIs. Exa finds the exact content you are looking for on the web, with three core functionalities: search, contents, find similar.",
     "security_schemes": {
         "api_key": {
-          "in": "header",
-          "name": "X-API-KEY",
-          "default": ["{{ AIPOLABS_PROVIDED_SHARED_API_KEY }}"]
-        },
-        "http_basic": {}
+          "location": "header",
+          "name": "X-API-KEY"
+        }
+    },
+    "default_security_credentials_by_scheme": {
+        "api_key": {
+          "secret_key": "{{ AIPOLABS_PROVIDED_SHARED_API_KEY }}"
+        }
     },
     "categories": [
         "search",

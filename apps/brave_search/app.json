@@ -7,9 +7,13 @@
     "description": "Brave Search API is a REST API to query Brave Search and get back search results from the web. It supports web search, summarizer search, image search, video search, news search.",
     "security_schemes": {
         "api_key": {
-          "in": "header",
-          "name": "X-Subscription-Token",
-          "default": ["{{ AIPOLABS_PROVIDED_SHARED_API_KEY }}"]
+          "location": "header",
+          "name": "X-Subscription-Token"
+        }
+    },
+    "default_security_credentials_by_scheme": {
+        "api_key": {
+          "secret_key": "{{ AIPOLABS_PROVIDED_SHARED_API_KEY }}"
         }
     },
     "categories": [

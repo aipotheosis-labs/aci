@@ -4,9 +4,8 @@ from aipolabs.common.enums import HttpLocation
 
 
 class APIKeyScheme(BaseModel):
-    in_: HttpLocation = Field(
+    location: HttpLocation = Field(
         ...,
-        alias="in",
         description="The location of the API key in the request, e.g., 'header'",
     )
     name: str = Field(
@@ -17,9 +16,8 @@ class APIKeyScheme(BaseModel):
 
 class OAuth2Scheme(BaseModel):
     # TODO: consider providing a default value for in_, name, prefix as they are usually the same for most apps
-    in_: HttpLocation = Field(
+    location: HttpLocation = Field(
         ...,
-        alias="in",
         description="The location of the OAuth2 access token in the request, e.g., 'header'",
     )
     name: str = Field(
@@ -86,8 +84,9 @@ class APIKeySchemeCredentials(BaseModel):
     for consistency and flexibility.
     """
 
-    # TODO: use a different name 'secret_key' to avoid confusion with SecurityScheme.API_KEY, and for
+    # here weuse a different name 'secret_key' to avoid confusion with SecurityScheme.API_KEY, and for
     # potential unification with http bearer scheme
+    # TODO: consider having a list of secret_keys for round robin http requests
     secret_key: str
 
 
