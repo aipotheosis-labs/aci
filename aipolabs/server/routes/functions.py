@@ -67,7 +67,7 @@ async def search_functions(
     Returns the basic information of a list of functions.
     """
     # TODO: currently the search is done across all apps, we might want to add flags to account for below scenarios:
-    # - when clients search for functions, if the app of the functions is not configured, should the functions be discoverable?
+    # - when clients search for functions, if the app of the functions is not configured, should the functions be discoverable? DONE
     # - when clients search for functions, if the app of the functions is configured but disabled by client, should the functions be discoverable?
     logger.debug(f"Getting functions with params: {query_params}")
     intent_embedding = (
@@ -95,7 +95,7 @@ async def search_functions(
         else:
             query_params.app_ids = configured_app_ids
 
-        # If no app_ids are available, return an empty list
+        # If no app_ids are available after intersection or configured search, return an empty list
         if not query_params.app_ids:
             return []
 
