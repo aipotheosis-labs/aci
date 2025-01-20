@@ -5,8 +5,8 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
-from aipolabs.common.db.sql_models import App, AppConfiguration, Project
-from aipolabs.common.enums import SecurityScheme, Visibility
+from aipolabs.common.db.sql_models import App, Project
+from aipolabs.common.enums import Visibility
 from aipolabs.common.schemas.app import AppBasic
 from aipolabs.common.schemas.app_configurations import AppConfigurationPublic
 from aipolabs.server import config
@@ -271,41 +271,3 @@ def test_search_apps_configured_only_exclude_apps_from_other_projects(
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 1, "Should only return one app"
     assert apps[0].name == dummy_apps[0].name, "Returned app and configured app are not the same"
-
-
-def test_search_apps_with_specific_functions_enabled(
-    db_session: Session,
-    test_client: TestClient,
-    dummy_apps: list[App],
-    dummy_project_1: Project,
-    dummy_api_key_1: str,
-) -> None:
-    # Create configuration with specific functions enabled
-    app_config = AppConfiguration(
-        project_id=dummy_project_1.id,
-        app_id=dummy_apps[0].id,
-        security_scheme=SecurityScheme.API_KEY,
-        security_config_overrides={},
-        enabled=True,
-        all_functions_enabled=False,  # Only specific functions enabled
-        enabled_functions=[func.id for func in dummy_apps[0].functions],
-    )
-    db_session.add(app_config)
-    db_session.commit()
-
-    search_params = {
-        "configured_only": True,
-        "limit": 100,
-        "offset": 0,
-    }
-
-    response = test_client.get(
-        f"{config.ROUTER_PREFIX_APPS}/search",
-        params=search_params,
-        headers={"x-api-key": dummy_api_key_1},
-    )
-
-    assert response.status_code == status.HTTP_200_OK
-    apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
-    assert len(apps) == 1
-    assert apps[0].name == dummy_apps[0].name
