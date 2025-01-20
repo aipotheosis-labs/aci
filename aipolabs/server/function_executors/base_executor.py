@@ -5,13 +5,9 @@ import jsonschema
 
 from aipolabs.common import processor
 from aipolabs.common.db.sql_models import Function, LinkedAccount
-from aipolabs.common.enums import Protocol
 from aipolabs.common.exceptions import InvalidFunctionInput
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.function import FunctionExecutionResult
-from aipolabs.server.function_executors.rest_function_executor import (
-    RestFunctionExecutor,
-)
 
 logger = get_logger(__name__)
 
@@ -20,13 +16,6 @@ class FunctionExecutor(ABC):
     """
     Base class for function executors.
     """
-
-    @classmethod
-    def get_executor(cls, protocol: Protocol) -> "FunctionExecutor":
-        if protocol == Protocol.REST:
-            return RestFunctionExecutor()
-        else:
-            raise ValueError(f"Unsupported protocol={protocol}")
 
     # TODO: allow local code execution override by using AppBase.execute() e.g.,:
     # app_factory = AppFactory()

@@ -341,7 +341,7 @@ def dummy_app_configuration_aipolabs_test_project_1(
     dummy_app_aipolabs_test: App,
 ) -> AppConfigurationPublic:
     app_configuration_create = AppConfigurationCreate(
-        app_id=dummy_app_aipolabs_test.id, security_scheme=SecurityScheme.OAUTH2
+        app_id=dummy_app_aipolabs_test.id, security_scheme=SecurityScheme.API_KEY
     )
 
     dummy_app_configuration_aipolabs_test_project_1 = (
@@ -370,7 +370,7 @@ def dummy_linked_account_google_project_1(
         dummy_app_configuration_google_project_1.project_id,
         dummy_app_configuration_google_project_1.app_id,
         "dummy_linked_account_google_project_1",
-        SecurityScheme.OAUTH2,
+        dummy_app_configuration_google_project_1.security_scheme,
         {"access_token": "mock_access_token"},
         enabled=True,
     )
@@ -388,7 +388,7 @@ def dummy_linked_account_github_project_1(
         dummy_app_configuration_github_project_1.project_id,
         dummy_app_configuration_github_project_1.app_id,
         "dummy_linked_account_github_project_1",
-        SecurityScheme.API_KEY,
+        dummy_app_configuration_github_project_1.security_scheme,
         {"api_key": "mock_api_key"},
         enabled=True,
     )
@@ -406,7 +406,7 @@ def dummy_linked_account_google_project_2(
         dummy_app_configuration_google_project_2.project_id,
         dummy_app_configuration_google_project_2.app_id,
         "dummy_linked_account_google_project_2",
-        SecurityScheme.OAUTH2,
+        dummy_app_configuration_google_project_2.security_scheme,
         {"access_token": "mock_access_token"},
         enabled=True,
     )
@@ -424,7 +424,7 @@ def dummy_linked_account_aipolabs_test_project_1(
         dummy_app_configuration_aipolabs_test_project_1.project_id,
         dummy_app_configuration_aipolabs_test_project_1.app_id,
         "dummy_linked_account_aipolabs_test_project_1",
-        SecurityScheme.OAUTH2,
+        dummy_app_configuration_aipolabs_test_project_1.security_scheme,
         {"access_token": "mock_access_token"},
         enabled=True,
     )

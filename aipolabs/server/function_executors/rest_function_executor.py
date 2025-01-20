@@ -5,13 +5,15 @@ import httpx
 from httpx import HTTPStatusError
 
 from aipolabs.common.db.sql_models import App, Function, LinkedAccount
-from aipolabs.common.enums import SecurityScheme
+from aipolabs.common.enums import HttpLocation, SecurityScheme
 from aipolabs.common.exceptions import NoImplementationFound
 from aipolabs.common.logging import create_headline, get_logger
 from aipolabs.common.schemas.function import FunctionExecutionResult, RestMetadata
-from aipolabs.server.function_executors.base import FunctionExecutor
-from aipolabs.common.schemas.security_scheme import APIKeyScheme, APIKeySchemeCredentials
-from aipolabs.common.enums import HttpLocation
+from aipolabs.common.schemas.security_scheme import (
+    APIKeyScheme,
+    APIKeySchemeCredentials,
+)
+from aipolabs.server.function_executors.base_executor import FunctionExecutor
 
 logger = get_logger(__name__)
 
@@ -138,36 +140,65 @@ class RestFunctionExecutor(FunctionExecutor):
             }
         }
         """
-        for scheme_type, security_credentials in app.default_security_credentials_by_scheme.items():
-            match scheme_type:
-                case SecurityScheme.API_KEY:
-                    api_key_scheme = APIKeyScheme.model_validate(app.security_schemes[scheme_type])
-                    security_credentials = APIKeySchemeCredentials.model_validate(
-                        security_credentials
-                    )
-                    match api_key_scheme.location:
-                        case HttpLocation.HEADER:
-                            headers[api_key_scheme.name] = security_credentials.secret_key
-                            break
-                        case HttpLocation.QUERY:
-                            query[api_key_scheme.name] = security_credentials.secret_key
-                            break
-                        case HttpLocation.BODY:
-                            body[api_key_scheme.name] = security_credentials.secret_key
-                            break
-                        case HttpLocation.COOKIE:
-                            cookies[api_key_scheme.name] = security_credentials.secret_key
-                            break
-                        case _:
-                            logger.error(
-                                f"unsupported api key location={api_key_scheme.location} for app={app.name}"
-                            )
-                            continue
-                case _:
-                    logger.error(
-                        f"unsupported security scheme type={scheme_type} for app={app.name}"
-                    )
-                    continue
+
+        api_key_scheme = APIKeyScheme.model_validate(app.security_schemes[SecurityScheme.API_KEY])
+        security_credentials = app.default_security_credentials_by_scheme.get(
+            linked_account.security_scheme
+        )
+        print("--------------------------------")
+        print(f"api_key_scheme={api_key_scheme}")
+        print(f"security_credentials={security_credentials}")
+        print(
+            f"app.default_security_credentials_by_scheme={app.default_security_credentials_by_scheme}"
+        )
+        print("--------------------------------")
+        if security_credentials is None:
+            logger.error(f"no default security credentials found for app={app.name}")
+            raise NoImplementationFound(f"no default security credentials found for app={app.name}")
+        api_key_credentials = APIKeySchemeCredentials.model_validate(security_credentials)
+        match api_key_scheme.location:
+            case HttpLocation.HEADER:
+                headers[api_key_scheme.name] = api_key_credentials.secret_key
+            case HttpLocation.QUERY:
+                query[api_key_scheme.name] = api_key_credentials.secret_key
+            case HttpLocation.BODY:
+                body[api_key_scheme.name] = api_key_credentials.secret_key
+            case HttpLocation.COOKIE:
+                cookies[api_key_scheme.name] = api_key_credentials.secret_key
+            case _:
+                logger.error(
+                    f"unsupported api key location={api_key_scheme.location} for app={app.name}"
+                )
+        # for scheme_type, security_credentials in app.default_security_credentials_by_scheme.items():
+        #     match scheme_type:
+        #         case SecurityScheme.API_KEY:
+        #             api_key_scheme = APIKeyScheme.model_validate(app.security_schemes[scheme_type])
+        #             security_credentials = APIKeySchemeCredentials.model_validate(
+        #                 security_credentials
+        #             )
+        #             match api_key_scheme.location:
+        #                 case HttpLocation.HEADER:
+        #                     headers[api_key_scheme.name] = security_credentials.secret_key
+        #                     break
+        #                 case HttpLocation.QUERY:
+        #                     query[api_key_scheme.name] = security_credentials.secret_key
+        #                     break
+        #                 case HttpLocation.BODY:
+        #                     body[api_key_scheme.name] = security_credentials.secret_key
+        #                     break
+        #                 case HttpLocation.COOKIE:
+        #                     cookies[api_key_scheme.name] = security_credentials.secret_key
+        #                     break
+        #                 case _:
+        #                     logger.error(
+        #                         f"unsupported api key location={api_key_scheme.location} for app={app.name}"
+        #                     )
+        #                     continue
+        #         case _:
+        #             logger.error(
+        #                 f"unsupported security scheme type={scheme_type} for app={app.name}"
+        #             )
+        #             continue
 
     def _get_response_data(self, response: httpx.Response) -> Any:
         """Get the response data from the response.

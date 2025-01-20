@@ -28,10 +28,9 @@ from aipolabs.common.schemas.function import (
     InferenceProvider,
     OpenAIFunctionDefinition,
 )
-
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
-from aipolabs.server.function_executors import FunctionExecutor
+from aipolabs.server.function_executors.factory import get_executor
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -231,6 +230,4 @@ async def execute(
             f"linked_account_owner_id={body.linked_account_owner_id}"
         )
 
-    return FunctionExecutor.get_executor(function.protocol).execute(
-        function, body.function_input, linked_account
-    )
+    return get_executor(function.protocol).execute(function, body.function_input, linked_account)
