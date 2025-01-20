@@ -242,7 +242,6 @@ def test_search_apps_configured_only_with_none_configured(
         params=search_params,
         headers={"x-api-key": dummy_api_key_1},
     )
-
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 0, "Should not return any apps"
