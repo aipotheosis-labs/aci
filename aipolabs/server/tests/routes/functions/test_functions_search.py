@@ -4,11 +4,8 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import App, Function, Project
-from aipolabs.common.enums import SecurityScheme, Visibility
-from aipolabs.common.schemas.app_configurations import (
-    AppConfigurationCreate,
-    AppConfigurationPublic,
-)
+from aipolabs.common.enums import Visibility
+from aipolabs.common.schemas.app_configurations import AppConfigurationPublic
 from aipolabs.common.schemas.function import FunctionBasic
 from aipolabs.server import config
 
@@ -354,27 +351,12 @@ def test_search_functions_no_configured_apps(
 
 
 def test_search_functions_with_app_ids_and_configured_only(
-    db_session: Session,
     test_client: TestClient,
-    dummy_project_1: Project,
+    dummy_github_app_configuration_under_dummy_project_1: AppConfigurationPublic,
     dummy_apps: list[App],
     dummy_functions: list[Function],
     dummy_api_key_1: str,
 ) -> None:
-    # Assume some functions are associated with configured apps
-    configured_app_ids = [dummy_apps[1].id]
-    # Create app configuration using the appropriate schema
-    body = AppConfigurationCreate(
-        app_id=configured_app_ids[0],
-        security_scheme=SecurityScheme.OAUTH2,
-    )
-    # Create app configuration use crud
-    crud.app_configurations.create_app_configuration(
-        db_session,
-        dummy_project_1.id,
-        body,
-    )
-    db_session.commit()
     # Case 1: 1 configured app and 2 app_ids are provided
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
@@ -403,60 +385,3 @@ def test_search_functions_with_app_ids_and_configured_only(
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == 0
-
-
-# def test_search_functions_with_visibility(
-#     db_session: Session,
-#     test_client: TestClient,
-#     dummy_project_1: Project,
-#     dummy_functions: list[Function],
-#     dummy_api_key_1: str,
-# ) -> None:
-#     # Test with public visibility
-#     response = test_client.get(
-#         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
-#         params={"configured_only": False},
-#         headers={"x-api-key": dummy_api_key_1},
-#     )
-#     assert response.status_code == status.HTTP_200_OK
-#     functions = [
-#         FunctionBasic.model_validate(response_function) for response_function in response.json()
-#     ]
-#     assert len(functions) == len(dummy_functions)
-
-#     # Test with private visibility
-#     crud.projects.set_project_visibility_access(db_session, dummy_project_1.id, Visibility.PRIVATE)
-#     db_session.commit()
-
-#     response = test_client.get(
-#         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
-#         params={"configured_only": False},
-#         headers={"x-api-key": dummy_api_key_1},
-#     )
-#     assert response.status_code == status.HTTP_200_OK
-#     functions = [
-#         FunctionBasic.model_validate(response_function) for response_function in response.json()
-#     ]
-#     assert len(functions) == len(dummy_functions)
-
-
-# def test_search_functions_with_active_status(
-#     db_session: Session,
-#     test_client: TestClient,
-#     dummy_functions: list[Function],
-#     dummy_api_key_1: str,
-# ) -> None:
-#     # Deactivate a function
-#     crud.functions.set_function_active_status(db_session, dummy_functions[0].id, False)
-#     db_session.commit()
-
-#     response = test_client.get(
-#         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
-#         params={"configured_only": False},
-#         headers={"x-api-key": dummy_api_key_1},
-#     )
-#     assert response.status_code == status.HTTP_200_OK
-#     functions = [
-#         FunctionBasic.model_validate(response_function) for response_function in response.json()
-#     ]
-#     assert len(functions) == len(dummy_functions) - 1
