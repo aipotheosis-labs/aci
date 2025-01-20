@@ -330,6 +330,27 @@ def dummy_github_app_configuration_under_dummy_project_1(
 
 
 @pytest.fixture(scope="function")
+def dummy_github_app_configuration_under_dummy_project_2(
+    test_client: TestClient,
+    dummy_api_key_2: str,
+    dummy_app_github: App,
+) -> AppConfigurationPublic:
+    body = AppConfigurationCreate(
+        app_id=dummy_app_github.id, security_scheme=SecurityScheme.API_KEY
+    )
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
+        json=body.model_dump(mode="json"),
+        headers={"x-api-key": dummy_api_key_2},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    github_app_configuration: AppConfigurationPublic = AppConfigurationPublic.model_validate(
+        response.json()
+    )
+    return github_app_configuration
+
+
+@pytest.fixture(scope="function")
 def dummy_google_linked_account_under_dummy_project_1(
     dummy_google_app_configuration_under_dummy_project_1: AppConfigurationPublic,
 ) -> Generator[LinkedAccount, None, None]:
