@@ -5,7 +5,10 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import App, Function, Project
 from aipolabs.common.enums import SecurityScheme, Visibility
-from aipolabs.common.schemas.app_configurations import AppConfigurationCreate
+from aipolabs.common.schemas.app_configurations import (
+    AppConfigurationCreate,
+    AppConfigurationPublic,
+)
 from aipolabs.common.schemas.function import FunctionBasic
 from aipolabs.server import config
 
@@ -283,27 +286,11 @@ def test_search_functions_pagination(
 
 
 def test_search_functions_configured_only_true(
-    db_session: Session,
     test_client: TestClient,
-    dummy_project_1: Project,
+    dummy_google_app_configuration_under_dummy_project_1: AppConfigurationPublic,
     dummy_apps: list[App],
     dummy_api_key_1: str,
 ) -> None:
-    # Some functions are associated with configured apps
-    configured_app_ids = [dummy_apps[0].id]
-    # Create app configuration using the appropriate schema
-    body = AppConfigurationCreate(
-        app_id=configured_app_ids[0],
-        security_scheme=SecurityScheme.OAUTH2,
-    )
-    # Create app configuration use crud
-    crud.app_configurations.create_app_configuration(
-        db_session,
-        dummy_project_1.id,
-        body,
-    )
-    db_session.commit()
-
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
         params={"configured_only": True},
