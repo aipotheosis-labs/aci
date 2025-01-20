@@ -8,6 +8,7 @@ from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import App, AppConfiguration, Project
 from aipolabs.common.enums import SecurityScheme, Visibility
 from aipolabs.common.schemas.app import AppBasic
+from aipolabs.common.schemas.app_configurations import AppConfigurationPublic
 from aipolabs.server import config
 
 
@@ -200,24 +201,11 @@ def test_search_apps_with_private_apps(
 
 
 def test_search_apps_configured_only(
-    db_session: Session,
     test_client: TestClient,
     dummy_apps: list[App],
-    dummy_project_1: Project,
+    dummy_google_app_configuration_under_dummy_project_1: AppConfigurationPublic,
     dummy_api_key_1: str,
 ) -> None:
-    # Create an app configuration for the first app
-    app_config = AppConfiguration(
-        project_id=dummy_project_1.id,
-        app_id=dummy_apps[0].id,
-        security_scheme=SecurityScheme.API_KEY,
-        security_config_overrides={},
-        enabled=True,
-        all_functions_enabled=True,
-        enabled_functions=[],
-    )
-    db_session.add(app_config)
-    db_session.commit()
 
     # Test with configured_only=True
     search_params = {
@@ -233,8 +221,8 @@ def test_search_apps_configured_only(
 
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
-    assert len(apps) == 1  # Should only return the one configured app
-    assert apps[0].name == dummy_apps[0].name  # assert that the correct app is returned
+    assert len(apps) == 1, "Should only return the one configured app"
+    assert apps[0].name == dummy_apps[0].name, "Returned app and configured app are not the same"
 
 
 def test_search_apps_configured_only_with_none_configured(
@@ -244,7 +232,6 @@ def test_search_apps_configured_only_with_none_configured(
     dummy_project_1: Project,
     dummy_api_key_1: str,
 ) -> None:
-    # Test with configured_only=True
     search_params = {
         "configured_only": True,
         "limit": 100,
@@ -258,7 +245,7 @@ def test_search_apps_configured_only_with_none_configured(
 
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
-    assert len(apps) == 0  # Should only return the one configured app
+    assert len(apps) == 0, "Should not return any apps"
 
 
 def test_search_apps_configured_only_with_multiple_configurations(
