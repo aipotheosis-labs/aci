@@ -15,16 +15,16 @@ MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX = (
 ENDPOINT = f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/default"
 
 
-def test_link_account_with_default_apikey_credentials(
+def test_link_account_with_default_api_key_credentials(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_app_configuration_apikey_github_project_1: AppConfigurationPublic,
+    dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
     db_session: Session,
 ) -> None:
     # link account with default apikey credentials
     body = LinkedAccountDefaultCreate(
-        app_id=dummy_app_configuration_apikey_github_project_1.app_id,
-        linked_account_owner_id="test_link_account_with_default_apikey_credentials_success",
+        app_id=dummy_app_configuration_api_key_github_project_1.app_id,
+        linked_account_owner_id="test_link_account_with_default_api_key_credentials_success",
     )
     response = test_client.post(
         ENDPOINT,
@@ -36,17 +36,17 @@ def test_link_account_with_default_apikey_credentials(
     # confirm linked account is created with correct values
     linked_account = crud.linked_accounts.get_linked_account(
         db_session,
-        dummy_app_configuration_apikey_github_project_1.project_id,
-        dummy_app_configuration_apikey_github_project_1.app_id,
+        dummy_app_configuration_api_key_github_project_1.project_id,
+        dummy_app_configuration_api_key_github_project_1.app_id,
         body.linked_account_owner_id,
     )
     assert linked_account is not None
-    assert linked_account.project_id == dummy_app_configuration_apikey_github_project_1.project_id
-    assert linked_account.app_id == dummy_app_configuration_apikey_github_project_1.app_id
+    assert linked_account.project_id == dummy_app_configuration_api_key_github_project_1.project_id
+    assert linked_account.app_id == dummy_app_configuration_api_key_github_project_1.app_id
     assert linked_account.linked_account_owner_id == body.linked_account_owner_id
     assert (
         linked_account.security_scheme
-        == dummy_app_configuration_apikey_github_project_1.security_scheme
+        == dummy_app_configuration_api_key_github_project_1.security_scheme
     )
     assert (
         linked_account.security_credentials == {}
@@ -88,7 +88,7 @@ def test_link_account_with_default_credentials_app_without_default_credentials(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_app_github: App,
-    dummy_app_configuration_apikey_github_project_1: AppConfigurationPublic,
+    dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
     db_session: Session,
 ) -> None:
     # remove the default credentials from the dummy app

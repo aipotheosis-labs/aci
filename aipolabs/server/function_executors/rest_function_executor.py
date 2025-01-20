@@ -27,11 +27,11 @@ class RestFunctionExecutor(FunctionExecutor):
         self, function: Function, function_input: dict, linked_account: LinkedAccount
     ) -> FunctionExecutionResult:
         # Extract parameters by location
-        path = function_input.get("path", {})
-        query = function_input.get("query", {})
-        headers = function_input.get("header", {})
-        cookies = function_input.get("cookie", {})
-        body = function_input.get("body", {})
+        path: dict = function_input.get("path", {})
+        query: dict = function_input.get("query", {})
+        headers: dict = function_input.get("header", {})
+        cookies: dict = function_input.get("cookie", {})
+        body: dict = function_input.get("body", {})
 
         protocol_data = RestMetadata.model_validate(function.protocol_data)
         # Construct URL with path parameters
@@ -41,11 +41,13 @@ class RestFunctionExecutor(FunctionExecutor):
             for path_param_name, path_param_value in path.items():
                 url = url.replace(f"{{{path_param_name}}}", str(path_param_value))
 
-        # TODO: better to abstract and unify the security scheme injection
+        # TODO: need a better way to abstract and unify the security scheme injection
         if linked_account.security_scheme == SecurityScheme.API_KEY:
             self._inject_api_key(function.app, linked_account, headers, query, body, cookies)
         elif linked_account.security_scheme == SecurityScheme.OAUTH2:
-            self._inject_access_token(function.app, linked_account, headers, query, body, cookies)
+            self._inject_oauth2_access_token(
+                function.app, linked_account, headers, query, body, cookies
+            )
         else:
             logger.error(f"Unsupported security scheme={linked_account.security_scheme}")
             raise NoImplementationFound(
@@ -64,10 +66,15 @@ class RestFunctionExecutor(FunctionExecutor):
         # TODO: remove all print
         print(create_headline("FUNCTION EXECUTION HTTP REQUEST"))
         logger.info(
-            f"Method: {request.method}\n"
-            f"URL: {request.url}\n"
-            f"Headers: {json.dumps(dict(request.headers))}\n"
-            f"Body: {json.dumps(json.loads(request.content)) if request.content else None}\n"
+            json.dumps(
+                {
+                    "Method": request.method,
+                    "URL": str(request.url),
+                    "Headers": dict(request.headers),
+                    "Body": json.loads(request.content) if request.content else None,
+                },
+                indent=2,
+            )
         )
 
         # TODO: one client for all requests?
@@ -89,17 +96,6 @@ class RestFunctionExecutor(FunctionExecutor):
 
             return FunctionExecutionResult(success=True, data=self._get_response_data(response))
 
-    def _inject_access_token(
-        self,
-        app: App,
-        linked_account: LinkedAccount,
-        headers: dict,
-        query: dict,
-        body: dict,
-        cookies: dict,
-    ) -> None:
-        pass
-
     def _inject_api_key(
         self,
         app: App,
@@ -109,13 +105,10 @@ class RestFunctionExecutor(FunctionExecutor):
         body: dict,
         cookies: dict,
     ) -> None:
-        """Injects authentication tokens based on the app's security schemes.
-
+        """Injects api key into the request, will modify the input dictionaries in place.
         We assume the security credentials can only be in the header, query, cookie, or body.
-        Modifies the input dictionaries in place.
-
-        # TODO: the right way for injecting security credentials is to get from the linked account first,
-        # and if not found, then use the app's default
+        - check if linked account has security credentials from end user
+        - if not, check if app has default security credentials
 
         Args:
             app (App): The application model containing security schemes and authentication info.
@@ -130,7 +123,6 @@ class RestFunctionExecutor(FunctionExecutor):
                 "api_key": {
                     "in": "header",
                     "name": "X-Test-API-Key",
-                    "default": ["test-api-key"]
                 }
             },
             "default_security_credentials_by_scheme": {
@@ -140,22 +132,19 @@ class RestFunctionExecutor(FunctionExecutor):
             }
         }
         """
+        # TODO: check if linked account has security credentials from end user before checking app's default
 
         api_key_scheme = APIKeyScheme.model_validate(app.security_schemes[SecurityScheme.API_KEY])
         security_credentials = app.default_security_credentials_by_scheme.get(
             linked_account.security_scheme
         )
-        print("--------------------------------")
-        print(f"api_key_scheme={api_key_scheme}")
-        print(f"security_credentials={security_credentials}")
-        print(
-            f"app.default_security_credentials_by_scheme={app.default_security_credentials_by_scheme}"
-        )
-        print("--------------------------------")
+
         if security_credentials is None:
             logger.error(f"no default security credentials found for app={app.name}")
             raise NoImplementationFound(f"no default security credentials found for app={app.name}")
+
         api_key_credentials = APIKeySchemeCredentials.model_validate(security_credentials)
+
         match api_key_scheme.location:
             case HttpLocation.HEADER:
                 headers[api_key_scheme.name] = api_key_credentials.secret_key
@@ -166,39 +155,25 @@ class RestFunctionExecutor(FunctionExecutor):
             case HttpLocation.COOKIE:
                 cookies[api_key_scheme.name] = api_key_credentials.secret_key
             case _:
+                # should never happen
                 logger.error(
                     f"unsupported api key location={api_key_scheme.location} for app={app.name}"
                 )
-        # for scheme_type, security_credentials in app.default_security_credentials_by_scheme.items():
-        #     match scheme_type:
-        #         case SecurityScheme.API_KEY:
-        #             api_key_scheme = APIKeyScheme.model_validate(app.security_schemes[scheme_type])
-        #             security_credentials = APIKeySchemeCredentials.model_validate(
-        #                 security_credentials
-        #             )
-        #             match api_key_scheme.location:
-        #                 case HttpLocation.HEADER:
-        #                     headers[api_key_scheme.name] = security_credentials.secret_key
-        #                     break
-        #                 case HttpLocation.QUERY:
-        #                     query[api_key_scheme.name] = security_credentials.secret_key
-        #                     break
-        #                 case HttpLocation.BODY:
-        #                     body[api_key_scheme.name] = security_credentials.secret_key
-        #                     break
-        #                 case HttpLocation.COOKIE:
-        #                     cookies[api_key_scheme.name] = security_credentials.secret_key
-        #                     break
-        #                 case _:
-        #                     logger.error(
-        #                         f"unsupported api key location={api_key_scheme.location} for app={app.name}"
-        #                     )
-        #                     continue
-        #         case _:
-        #             logger.error(
-        #                 f"unsupported security scheme type={scheme_type} for app={app.name}"
-        #             )
-        #             continue
+                raise NoImplementationFound(
+                    f"unsupported api key location={api_key_scheme.location} for app={app.name}"
+                )
+
+    def _inject_oauth2_access_token(
+        self,
+        app: App,
+        linked_account: LinkedAccount,
+        headers: dict,
+        query: dict,
+        body: dict,
+        cookies: dict,
+    ) -> None:
+        """Injects oauth2 access token into the request, will modify the input dictionaries in place."""
+        pass
 
     def _get_response_data(self, response: httpx.Response) -> Any:
         """Get the response data from the response.

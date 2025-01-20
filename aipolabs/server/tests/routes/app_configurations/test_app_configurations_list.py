@@ -13,7 +13,7 @@ def test_list_app_configuration(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
-    dummy_app_configuration_apikey_github_project_1: AppConfigurationPublic,
+    dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
 ) -> None:
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/", headers={"x-api-key": dummy_api_key_1}
@@ -21,7 +21,7 @@ def test_list_app_configuration(
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 2
     assert response.json()[0]["id"] == str(dummy_app_configuration_oauth2_google_project_1.id)
-    assert response.json()[1]["id"] == str(dummy_app_configuration_apikey_github_project_1.id)
+    assert response.json()[1]["id"] == str(dummy_app_configuration_api_key_github_project_1.id)
 
 
 def test_list_app_configuration_with_app_id(
@@ -29,7 +29,7 @@ def test_list_app_configuration_with_app_id(
     dummy_api_key_1: str,
     dummy_app_google: App,
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
-    dummy_app_configuration_apikey_github_project_1: AppConfigurationPublic,
+    dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
 ) -> None:
     query_params = AppConfigurationsList(app_id=dummy_app_google.id)
 
@@ -49,7 +49,7 @@ def test_list_non_existent_app_configuration(
     dummy_api_key_1: str,
     dummy_app_aipolabs_test: App,
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
-    dummy_app_configuration_apikey_github_project_1: AppConfigurationPublic,
+    dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
 ) -> None:
     query_params = AppConfigurationsList(app_id=dummy_app_aipolabs_test.id)
 
@@ -66,7 +66,7 @@ def test_list_app_configuration_with_limit_and_offset(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
-    dummy_app_configuration_apikey_github_project_1: AppConfigurationPublic,
+    dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
 ) -> None:
     query_params = AppConfigurationsList(limit=1, offset=0)
 
