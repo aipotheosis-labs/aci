@@ -248,36 +248,14 @@ def test_search_apps_configured_only_with_none_configured(
     assert len(apps) == 0, "Should not return any apps"
 
 
-def test_search_apps_configured_only_with_multiple_configurations(
+def test_search_apps_configured_only_exclude_apps_from_other_projects(
     db_session: Session,
     test_client: TestClient,
     dummy_apps: list[App],
-    dummy_project_1: Project,
-    dummy_project_2: Project,
+    dummy_google_app_configuration_under_dummy_project_1: AppConfigurationPublic,
+    dummy_github_app_configuration_under_dummy_project_2: AppConfigurationPublic,
     dummy_api_key_1: str,
 ) -> None:
-    # Configure the same app in multiple projects
-    app_config_1 = AppConfiguration(
-        project_id=dummy_project_1.id,
-        app_id=dummy_apps[0].id,
-        security_scheme=SecurityScheme.API_KEY,
-        security_config_overrides={},
-        enabled=True,
-        all_functions_enabled=True,
-        enabled_functions=[],
-    )
-    app_config_2 = AppConfiguration(
-        project_id=dummy_project_2.id,
-        app_id=dummy_apps[0].id,
-        security_scheme=SecurityScheme.API_KEY,
-        security_config_overrides={},
-        enabled=True,
-        all_functions_enabled=True,
-        enabled_functions=[],
-    )
-    db_session.add_all([app_config_1, app_config_2])
-    db_session.commit()
-
     search_params = {
         "configured_only": True,
         "limit": 100,
@@ -291,8 +269,8 @@ def test_search_apps_configured_only_with_multiple_configurations(
 
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
-    assert len(apps) == 1  # Should still only return one app despite multiple configurations
-    assert apps[0].name == dummy_apps[0].name  # assert that the correct app is returned
+    assert len(apps) == 1, "Should only return one app"
+    assert apps[0].name == dummy_apps[0].name, "Returned app and configured app are not the same"
 
 
 def test_search_apps_with_specific_functions_enabled(
