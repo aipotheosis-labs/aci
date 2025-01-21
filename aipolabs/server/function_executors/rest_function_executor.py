@@ -1,18 +1,13 @@
 import json
+from abc import abstractmethod
 from typing import Any
 
 import httpx
 from httpx import HTTPStatusError
 
 from aipolabs.common.db.sql_models import App, Function, LinkedAccount
-from aipolabs.common.enums import HttpLocation, SecurityScheme
-from aipolabs.common.exceptions import NoImplementationFound
 from aipolabs.common.logging import create_headline, get_logger
 from aipolabs.common.schemas.function import FunctionExecutionResult, RestMetadata
-from aipolabs.common.schemas.security_scheme import (
-    APIKeyScheme,
-    APIKeySchemeCredentials,
-)
 from aipolabs.server.function_executors.base_executor import FunctionExecutor
 
 logger = get_logger(__name__)
@@ -22,6 +17,18 @@ class RestFunctionExecutor(FunctionExecutor):
     """
     Function executor for REST functions.
     """
+
+    @abstractmethod
+    def _inject_credentials(
+        self,
+        app: App,
+        linked_account: LinkedAccount,
+        headers: dict,
+        query: dict,
+        body: dict,
+        cookies: dict,
+    ) -> None:
+        pass
 
     def _execute(
         self, function: Function, function_input: dict, linked_account: LinkedAccount
@@ -41,18 +48,7 @@ class RestFunctionExecutor(FunctionExecutor):
             for path_param_name, path_param_value in path.items():
                 url = url.replace(f"{{{path_param_name}}}", str(path_param_value))
 
-        # TODO: need a better way to abstract and unify the security scheme injection
-        if linked_account.security_scheme == SecurityScheme.API_KEY:
-            self._inject_api_key(function.app, linked_account, headers, query, body, cookies)
-        elif linked_account.security_scheme == SecurityScheme.OAUTH2:
-            self._inject_oauth2_access_token(
-                function.app, linked_account, headers, query, body, cookies
-            )
-        else:
-            logger.error(f"Unsupported security scheme={linked_account.security_scheme}")
-            raise NoImplementationFound(
-                f"Unsupported security scheme={linked_account.security_scheme}"
-            )
+        self._inject_credentials(function.app, linked_account, headers, query, body, cookies)
 
         request = httpx.Request(
             method=protocol_data.method,
@@ -63,6 +59,9 @@ class RestFunctionExecutor(FunctionExecutor):
             json=body if body else None,
         )
 
+        return self._send_request(request)
+
+    def _send_request(self, request: httpx.Request) -> FunctionExecutionResult:
         # TODO: remove all print
         print(create_headline("FUNCTION EXECUTION HTTP REQUEST"))
         logger.info(
@@ -77,7 +76,8 @@ class RestFunctionExecutor(FunctionExecutor):
             )
         )
 
-        # TODO: one client for all requests?
+        # TODO: one client for all requests? cache the client? concurrency control? async client?
+        # TODO: add retry
         with httpx.Client() as client:
             try:
                 response = client.send(request)
@@ -85,95 +85,15 @@ class RestFunctionExecutor(FunctionExecutor):
                 logger.exception("failed to send request")
                 return FunctionExecutionResult(success=False, error=str(e))
 
-            # Raise an error for bad responses
             try:
                 response.raise_for_status()
             except HTTPStatusError as e:
-                logger.exception("http error occurred")
+                logger.exception("http error occurred for function execution")
                 return FunctionExecutionResult(
                     success=False, error=self._get_error_message(response, e)
                 )
 
             return FunctionExecutionResult(success=True, data=self._get_response_data(response))
-
-    def _inject_api_key(
-        self,
-        app: App,
-        linked_account: LinkedAccount,
-        headers: dict,
-        query: dict,
-        body: dict,
-        cookies: dict,
-    ) -> None:
-        """Injects api key into the request, will modify the input dictionaries in place.
-        We assume the security credentials can only be in the header, query, cookie, or body.
-        - check if linked account has security credentials from end user
-        - if not, check if app has default security credentials
-
-        Args:
-            app (App): The application model containing security schemes and authentication info.
-            query (dict): The query parameters dictionary.
-            headers (dict): The headers dictionary.
-            cookies (dict): The cookies dictionary.
-            body (dict): The body dictionary.
-
-        Examples from app.json:
-        {
-            "security_schemes": {
-                "api_key": {
-                    "in": "header",
-                    "name": "X-Test-API-Key",
-                }
-            },
-            "default_security_credentials_by_scheme": {
-                "api_key": {
-                    "secret_key": "test-api-key"
-                }
-            }
-        }
-        """
-        # TODO: check if linked account has security credentials from end user before checking app's default
-
-        api_key_scheme = APIKeyScheme.model_validate(app.security_schemes[SecurityScheme.API_KEY])
-        security_credentials = app.default_security_credentials_by_scheme.get(
-            linked_account.security_scheme
-        )
-
-        if security_credentials is None:
-            logger.error(f"no default security credentials found for app={app.name}")
-            raise NoImplementationFound(f"no default security credentials found for app={app.name}")
-
-        api_key_credentials = APIKeySchemeCredentials.model_validate(security_credentials)
-
-        match api_key_scheme.location:
-            case HttpLocation.HEADER:
-                headers[api_key_scheme.name] = api_key_credentials.secret_key
-            case HttpLocation.QUERY:
-                query[api_key_scheme.name] = api_key_credentials.secret_key
-            case HttpLocation.BODY:
-                body[api_key_scheme.name] = api_key_credentials.secret_key
-            case HttpLocation.COOKIE:
-                cookies[api_key_scheme.name] = api_key_credentials.secret_key
-            case _:
-                # should never happen
-                logger.error(
-                    f"unsupported api key location={api_key_scheme.location} for app={app.name}"
-                )
-                raise NoImplementationFound(
-                    f"unsupported api key location={api_key_scheme.location} for app={app.name}"
-                )
-
-    def _inject_oauth2_access_token(
-        self,
-        app: App,
-        linked_account: LinkedAccount,
-        headers: dict,
-        query: dict,
-        body: dict,
-        cookies: dict,
-    ) -> None:
-        """Injects oauth2 access token into the request, will modify the input dictionaries in place."""
-        pass
 
     def _get_response_data(self, response: httpx.Response) -> Any:
         """Get the response data from the response.

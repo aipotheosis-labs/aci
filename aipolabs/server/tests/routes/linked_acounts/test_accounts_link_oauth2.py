@@ -1,3 +1,4 @@
+import time
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
 
@@ -15,6 +16,7 @@ from aipolabs.common.schemas.linked_accounts import (
     LinkedAccountOAuth2CreateState,
     LinkedAccountPublic,
 )
+from aipolabs.common.schemas.security_scheme import OAuth2SchemeCredentials
 from aipolabs.server import config
 
 MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX = (
@@ -61,7 +63,7 @@ def test_link_oauth2_account_success(
     mock_oauth2_token_response = {
         "access_token": "mock_access_token",
         "token_type": "Bearer",
-        "expires_in": 3600,
+        "expires_in": "3600",
         "scope": "mock_scope",
         "refresh_token": "mock_refresh_token",
     }
@@ -88,9 +90,16 @@ def test_link_oauth2_account_success(
         state.app_id,
         state.linked_account_owner_id,
     )
+    oauth2_credentials = OAuth2SchemeCredentials.model_validate(linked_account.security_credentials)
     assert linked_account is not None
     assert linked_account.security_scheme == SecurityScheme.OAUTH2
-    assert linked_account.security_credentials == mock_oauth2_token_response
+    assert oauth2_credentials.access_token == mock_oauth2_token_response["access_token"]
+    assert oauth2_credentials.token_type == mock_oauth2_token_response["token_type"]
+    assert oauth2_credentials.expires_at == int(time.time()) + int(
+        mock_oauth2_token_response["expires_in"]
+    )
+    assert oauth2_credentials.scope == mock_oauth2_token_response["scope"]
+    assert oauth2_credentials.refresh_token == mock_oauth2_token_response["refresh_token"]
     assert linked_account.enabled is True
     assert linked_account.app_id == dummy_app_configuration_oauth2_google_project_1.app_id
     assert linked_account.project_id == state.project_id

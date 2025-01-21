@@ -230,4 +230,6 @@ async def execute(
             f"linked_account_owner_id={body.linked_account_owner_id}"
         )
 
-    return get_executor(function.protocol).execute(function, body.function_input, linked_account)
+    return get_executor(function.protocol, linked_account.security_scheme).execute(
+        function, body.function_input, linked_account
+    )

@@ -260,3 +260,9 @@ def test_execute_api_key_based_function_with_nested_args(
         b'"location": {"city": "New York", "country": "USA"}, '
         b'"greeting": "default-greeting"}'
     )
+
+
+# TODO: test execute oauth2 based function with linked account credentials
+# TODO: test execute oauth2 based function with app's default credentials
+# TODO: test execute oauth2 based function expired access token
+# TODO: test execute oauth2 based function with invalidated refresh token

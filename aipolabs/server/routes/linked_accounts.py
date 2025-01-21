@@ -1,4 +1,5 @@
 import json
+import time
 from typing import Annotated
 from uuid import UUID
 
@@ -309,7 +310,7 @@ async def linked_accounts_oauth2_callback(
     security_credentials = {
         "access_token": token_response["access_token"],
         "token_type": token_response["token_type"],
-        "expires_in": token_response["expires_in"],
+        "expires_at": int(time.time()) + token_response["expires_in"],
         "scope": token_response["scope"],
         "refresh_token": token_response["refresh_token"],
     }

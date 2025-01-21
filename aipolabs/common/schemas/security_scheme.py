@@ -93,11 +93,11 @@ class APIKeySchemeCredentials(BaseModel):
 class OAuth2SchemeCredentials(BaseModel):
     """Credentials for OAuth2 scheme"""
 
-    # TODO: some of them might be optional (e.g., refresh_token, scope, expires_in,
+    # TODO: some of them might be optional (e.g., refresh_token, scope, expires_at,
     # refresh_token_expires_in) and not provided by the OAuth2 provider
     # we should handle None or provide default values
     access_token: str
     token_type: str
-    expires_in: int
+    expires_at: int
     scope: str
     refresh_token: str
