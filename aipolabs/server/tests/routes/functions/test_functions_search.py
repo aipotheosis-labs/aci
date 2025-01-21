@@ -353,15 +353,15 @@ def test_search_functions_no_configured_apps(
 def test_search_functions_with_app_ids_and_configured_only(
     test_client: TestClient,
     dummy_github_app_configuration_under_dummy_project_1: AppConfigurationPublic,
-    dummy_apps: list[App],
-    dummy_functions: list[Function],
+    dummy_app_github: App,
+    dummy_app_google: App,
     dummy_api_key_1: str,
 ) -> None:
     # Case 1: 1 configured app and 2 app_ids are provided
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
         params={
-            "app_ids": [dummy_functions[0].app_id, dummy_functions[1].app_id],
+            "app_ids": [dummy_app_github.id, dummy_app_google.id],
             "configured_only": True,
         },
         headers={"x-api-key": dummy_api_key_1},
@@ -370,14 +370,14 @@ def test_search_functions_with_app_ids_and_configured_only(
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
-    assert len(functions) == len(dummy_apps[1].functions)
-    dummy_app_function_names = [function.name for function in dummy_apps[1].functions]
-    assert all(function.name in dummy_app_function_names for function in functions)
+    assert len(functions) == len(dummy_app_github.functions)
+    dummy_app_github_function_names = [function.name for function in dummy_app_github.functions]
+    assert all(function.name in dummy_app_github_function_names for function in functions)
 
-    # Case 2: 1 configured app and a different app_ids is provided, should return 0 functions
+    # Case 2: 1 configured app and a different app_id is provided, should return 0 functions
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
-        params={"app_ids": [dummy_functions[0].app_id], "configured_only": True},
+        params={"app_ids": [dummy_app_google.id], "configured_only": True},
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_200_OK
