@@ -284,7 +284,7 @@ def test_search_functions_pagination(
 
 def test_search_functions_configured_only_true(
     test_client: TestClient,
-    dummy_google_app_configuration_under_dummy_project_1: AppConfigurationPublic,
+    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     dummy_apps: list[App],
     dummy_api_key_1: str,
 ) -> None:
@@ -304,7 +304,7 @@ def test_search_functions_configured_only_true(
 
 def test_search_functions_configured_only_false(
     test_client: TestClient,
-    dummy_google_app_configuration_under_dummy_project_1: AppConfigurationPublic,
+    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     dummy_functions: list[Function],
     dummy_api_key_1: str,
 ) -> None:
@@ -352,7 +352,7 @@ def test_search_functions_no_configured_apps(
 
 def test_search_functions_with_app_ids_and_configured_only(
     test_client: TestClient,
-    dummy_github_app_configuration_under_dummy_project_1: AppConfigurationPublic,
+    dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
     dummy_app_github: App,
     dummy_app_google: App,
     dummy_api_key_1: str,

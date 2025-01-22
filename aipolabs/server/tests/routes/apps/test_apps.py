@@ -203,7 +203,7 @@ def test_search_apps_with_private_apps(
 def test_search_apps_configured_only(
     test_client: TestClient,
     dummy_apps: list[App],
-    dummy_google_app_configuration_under_dummy_project_1: AppConfigurationPublic,
+    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     dummy_api_key_1: str,
 ) -> None:
 
@@ -251,8 +251,8 @@ def test_search_apps_configured_only_exclude_apps_from_other_projects(
     db_session: Session,
     test_client: TestClient,
     dummy_apps: list[App],
-    dummy_google_app_configuration_under_dummy_project_1: AppConfigurationPublic,
-    dummy_github_app_configuration_under_dummy_project_2: AppConfigurationPublic,
+    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
+    dummy_app_configuration_api_key_github_project_2: AppConfigurationPublic,
     dummy_api_key_1: str,
 ) -> None:
     search_params = {

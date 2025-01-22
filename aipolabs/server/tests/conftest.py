@@ -342,6 +342,26 @@ def dummy_app_configuration_api_key_github_project_1(
 
 
 @pytest.fixture(scope="function")
+def dummy_app_configuration_api_key_github_project_2(
+    db_session: Session,
+    dummy_project_2: Project,
+    dummy_app_github: App,
+) -> AppConfigurationPublic:
+    app_configuration_create = AppConfigurationCreate(
+        app_id=dummy_app_github.id, security_scheme=SecurityScheme.API_KEY
+    )
+    dummy_app_configuration_api_key_github_project_2 = (
+        crud.app_configurations.create_app_configuration(
+            db_session,
+            dummy_project_2.id,
+            app_configuration_create,
+        )
+    )
+    db_session.commit()
+    return dummy_app_configuration_api_key_github_project_2
+
+
+@pytest.fixture(scope="function")
 def dummy_app_configuration_api_key_aipolabs_test_project_1(
     db_session: Session,
     dummy_project_1: Project,
