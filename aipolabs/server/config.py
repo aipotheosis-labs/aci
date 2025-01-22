@@ -24,10 +24,7 @@ GOOGLE_AUTH_CLIENT_SECRET = check_and_get_env_variable("SERVER_GOOGLE_AUTH_CLIEN
 GOOGLE_AUTH_SERVER_METADATA_URL = check_and_get_env_variable(
     "SERVER_GOOGLE_AUTH_SERVER_METADATA_URL"
 )
-GOOGLE_AUTH_CLIENT_KWARGS = {
-    "scope": "openid email profile",
-    "prompt": "consent",  # Force the user to consent again (help if need to get the refresh token)
-}
+GOOGLE_AUTH_CLIENT_SCOPE = "openid email profile"
 DB_SCHEME = check_and_get_env_variable("SERVER_DB_SCHEME")
 DB_USER = check_and_get_env_variable("SERVER_DB_USER")
 DB_PASSWORD = check_and_get_env_variable("SERVER_DB_PASSWORD")

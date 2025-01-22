@@ -1,21 +1,19 @@
 import json
-from typing import Annotated, Any, cast
+from typing import Annotated
 from uuid import UUID
 
-from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from authlib.jose import jwt
 from fastapi import APIRouter, Depends, Query, Request, status
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
-from aipolabs.common.db.sql_models import App, LinkedAccount
+from aipolabs.common.db.sql_models import LinkedAccount
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.exceptions import (
     AppConfigurationNotFound,
     AppNotFound,
     AuthenticationError,
     LinkedAccountNotFound,
-    LinkedAccountOAuth2Error,
     NoImplementationFound,
 )
 from aipolabs.common.logging import get_logger
@@ -28,6 +26,7 @@ from aipolabs.common.schemas.linked_accounts import (
 from aipolabs.common.schemas.security_scheme import OAuth2Scheme
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
+from aipolabs.server import oauth2
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -97,7 +96,23 @@ async def link_oauth2_account(
             f"app={query_params.app_id} is not configured with OAuth2, but {app_configuration.security_scheme}"
         )
 
-    oauth2_client = _create_oauth2_client(app_configuration.app)
+    # TODO: add correspinding validation of the oauth2 fields (e.g., client_id, client_secret, scope, etc.)
+    # when indexing an App. For example, if server_metadata_url is None, other url must be provided
+    # TODO: load client's overrides if they specify any, for example, client_id, client_secret, scope, etc.
+    # security_scheme of the app configuration must be one of the App's security_schemes, so we can safely validate it
+    app_default_oauth2_config = OAuth2Scheme.model_validate(
+        app_configuration.app.security_schemes[SecurityScheme.OAUTH2]
+    )
+    oauth2_client = oauth2.create_oauth2_client(
+        name=app_configuration.app.name,
+        client_id=app_default_oauth2_config.client_id,
+        client_secret=app_default_oauth2_config.client_secret,
+        scope=app_default_oauth2_config.scope,
+        authorize_url=app_default_oauth2_config.authorize_url,
+        access_token_url=app_default_oauth2_config.access_token_url,
+        refresh_token_url=app_default_oauth2_config.refresh_token_url,
+        server_metadata_url=app_default_oauth2_config.server_metadata_url,
+    )
     path = request.url_for(LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
     redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
     # NOTE: normally we should generate "state"/"state_jwt" first, and then
@@ -129,7 +144,7 @@ async def link_oauth2_account(
     #     },
     #     "exp": 1735786775.4127536
     # }
-    authorization_data = await oauth2_client.create_authorization_url(redirect_uri)
+    authorization_data = await oauth2.create_authorization_url(oauth2_client, redirect_uri)
     logger.info(f"authorization_data: \n {json.dumps(authorization_data, indent=2)}")
     # create and encode the state payload. Including code_verifier in state is definitely a compromise.
     # NOTE: the state payload is jwt encoded (signed), but it's not encrypted, anyone can decode it
@@ -186,14 +201,27 @@ async def linked_accounts_oauth2_callback(
     if not app:
         logger.error(f"app={state.app_id} not found")
         raise AppNotFound(state.app_id)
-    oauth2_client = _create_oauth2_client(app)
+
+    app_default_oauth2_config = OAuth2Scheme.model_validate(
+        app.security_schemes[SecurityScheme.OAUTH2]
+    )
+    oauth2_client = oauth2.create_oauth2_client(
+        name=app.name,
+        client_id=app_default_oauth2_config.client_id,
+        client_secret=app_default_oauth2_config.client_secret,
+        scope=app_default_oauth2_config.scope,
+        authorize_url=app_default_oauth2_config.authorize_url,
+        access_token_url=app_default_oauth2_config.access_token_url,
+        refresh_token_url=app_default_oauth2_config.refresh_token_url,
+        server_metadata_url=app_default_oauth2_config.server_metadata_url,
+    )
 
     # get oauth2 account credentials
     # TODO: can each OAuth2 provider return different fields? if so, need to handle them accordingly. Maybe can
     # store the auth reponse schema in the App record in db. and cast the auth_response to the schema here.
     try:
         logger.info("retrieving oauth2 token")
-        token_response = await _authorize_access_token(
+        token_response = await oauth2.authorize_access_token_without_browser_session(
             oauth2_client, request, state.redirect_uri, state.code_verifier, state.nonce
         )
         # TODO: remove PII log
@@ -269,72 +297,6 @@ async def list_linked_accounts(
         query_params.linked_account_owner_id,
     )
     return linked_accounts
-
-
-def _create_oauth2_client(app: App) -> StarletteOAuth2App:
-    """
-    Create an OAuth2 client for the given app.
-    """
-    # TODO: create our own oauth2 client to abstract away the details and the authlib dependency, and
-    # it would be easier if later we decide to implement oauth2 requests manually.
-    # TODO: add correspinding validation of the oauth2 fields (e.g., client_id, client_secret, scope, etc.) when indexing an App.
-    # TODO: load client's overrides if they specify any, for example, client_id, client_secret, scope, etc.
-
-    # security_scheme of the app configuration must be one of the App's security_schemes, so we can safely validate it
-    app_default_oauth2_config = OAuth2Scheme.model_validate(
-        app.security_schemes[SecurityScheme.OAUTH2]
-    )
-    oauth_client = OAuth().register(
-        name=app.name,
-        client_id=app_default_oauth2_config.client_id,
-        client_secret=app_default_oauth2_config.client_secret,
-        client_kwargs={
-            "scope": app_default_oauth2_config.scope,
-            "prompt": "consent",
-            "code_challenge_method": "S256",
-        },
-        # Note: usually if server_metadata_url (e.g., google's discovery doc https://accounts.google.com/.well-known/openid-configuration)
-        # is provided, the other endpoints are not needed.
-        authorize_url=app_default_oauth2_config.authorize_url,
-        authorize_params={"access_type": "offline"},
-        access_token_url=app_default_oauth2_config.access_token_url,
-        refresh_token_url=app_default_oauth2_config.refresh_token_url,
-        server_metadata_url=app_default_oauth2_config.server_metadata_url,
-    )
-    return cast(StarletteOAuth2App, oauth_client)
-
-
-# a modified version of the authorize_access_token method in authlib/integrations/starlette_client/apps.py
-async def _authorize_access_token(
-    oauth2_client: StarletteOAuth2App,
-    request: Request,
-    redirect_uri: str,
-    code_verifier: str,
-    nonce: str | None = None,
-    **kwargs: Any,
-) -> dict:
-    error = request.query_params.get("error")
-    if error:
-        description = request.query_params.get("error_description")
-        logger.error(f"OAuth2 error: {error}, error_description: {description}")
-        raise LinkedAccountOAuth2Error(message=description)
-
-    params = {
-        "code": request.query_params.get("code"),
-        "state": request.query_params.get("state"),
-        "redirect_uri": redirect_uri,
-        "code_verifier": code_verifier,
-    }
-
-    claims_options = kwargs.pop("claims_options", None)
-    token = cast(dict, await oauth2_client.fetch_access_token(**params, **kwargs))
-
-    if "id_token" in token and nonce:
-        userinfo = await oauth2_client.parse_id_token(
-            token, nonce=nonce, claims_options=claims_options
-        )
-        token["userinfo"] = userinfo
-    return token
 
 
 @router.get("/{linked_account_id}", response_model=LinkedAccountPublic)

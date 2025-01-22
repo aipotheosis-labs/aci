@@ -1,18 +1,20 @@
 from datetime import datetime, timedelta, timezone
 from enum import Enum
-from typing import Annotated, Any, cast
+from typing import Annotated
 
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from authlib.jose import jwt
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
+from starlette.responses import RedirectResponse
 
 from aipolabs.common.db import crud
-from aipolabs.common.exceptions import UnexpectedException, UnsupportedIdentityProvider
+from aipolabs.common.exceptions import UnexpectedException
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.user import AuthResponse, UserCreate
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
+from aipolabs.server import oauth2
 
 logger = get_logger(__name__)
 # Create router instance
@@ -20,19 +22,22 @@ router = APIRouter()
 oauth = OAuth()
 
 
-class AuthProvider(str, Enum):
+class ClientIdentityProvider(str, Enum):
     GOOGLE = "google"
-    GITHUB = "github"
+    # GITHUB = "github"
 
 
-# Register Google OAuth
-oauth.register(
-    name=AuthProvider.GOOGLE,
-    client_id=config.GOOGLE_AUTH_CLIENT_ID,
-    client_secret=config.GOOGLE_AUTH_CLIENT_SECRET,
-    client_kwargs=config.GOOGLE_AUTH_CLIENT_KWARGS,
-    server_metadata_url=config.GOOGLE_AUTH_SERVER_METADATA_URL,
-)
+# oauth2 clients for our clients to login/signup with our developer portal
+# TODO: is oauth2 client from authlib thread safe?
+OAUTH2_CLIENTS: dict[ClientIdentityProvider, StarletteOAuth2App] = {
+    ClientIdentityProvider.GOOGLE: oauth2.create_oauth2_client(
+        name=ClientIdentityProvider.GOOGLE,
+        client_id=config.GOOGLE_AUTH_CLIENT_ID,
+        client_secret=config.GOOGLE_AUTH_CLIENT_SECRET,
+        scope=config.GOOGLE_AUTH_CLIENT_SCOPE,
+        server_metadata_url=config.GOOGLE_AUTH_SERVER_METADATA_URL,
+    ),
+}
 
 
 # Function to generate JWT using Authlib
@@ -56,17 +61,14 @@ def create_access_token(user_id: str, expires_delta: timedelta) -> str:
 
 # login route for different identity providers
 @router.get("/login/{provider}", include_in_schema=True)
-async def login(request: Request, provider: str) -> Any:
-    if provider not in oauth._registry:
-        logger.error(f"unsupported identity provider={provider}")
-        raise UnsupportedIdentityProvider(provider)
+async def login(request: Request, provider: ClientIdentityProvider) -> RedirectResponse:
+    oauth2_client = OAUTH2_CLIENTS[provider]
 
     path = request.url_for("auth_callback", provider=provider).path
     redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
     logger.info(f"initiating login for provider={provider}, redirecting to={redirect_uri}")
-    oauth_client = cast(StarletteOAuth2App, oauth.create_client(provider))
 
-    return await oauth_client.authorize_redirect(request, redirect_uri)
+    return await oauth2.authorize_redirect(oauth2_client, request, redirect_uri)
 
 
 # callback route for different identity providers
@@ -74,31 +76,25 @@ async def login(request: Request, provider: str) -> Any:
 @router.get(
     "/callback/{provider}",
     name="auth_callback",
-    response_model=AuthResponse,
     include_in_schema=True,
 )
 async def auth_callback(
-    request: Request, provider: str, db_session: Annotated[Session, Depends(deps.yield_db_session)]
-) -> Any:
+    request: Request,
+    provider: ClientIdentityProvider,
+    db_session: Annotated[Session, Depends(deps.yield_db_session)],
+) -> AuthResponse:
     logger.info(f"callback received for identity provider={provider}")
-    if provider not in oauth._registry:
-        logger.error(f"unsupported identity provider={provider} during callback")
-        raise UnsupportedIdentityProvider(provider)
-
-    oauth_client = cast(StarletteOAuth2App, oauth.create_client(provider))
-
     # TODO: try/except, retry?
-    logger.info(f"retrieving access token for provider={provider}")
-    auth_response = await oauth_client.authorize_access_token(request)
+    auth_response = await oauth2.authorize_access_token(OAUTH2_CLIENTS[provider], request)
     logger.debug(
         f"access token requested successfully for provider={provider}, "
         f"auth_response={auth_response}"
     )
 
-    if provider == AuthProvider.GOOGLE.value:
+    if provider == ClientIdentityProvider.GOOGLE:
         user_info = auth_response["userinfo"]
     else:
-        # TODO: implement other identity providers
+        # TODO: implement other identity providers if added
         pass
 
     if not user_info["sub"]:

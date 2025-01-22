@@ -1,6 +1,5 @@
 from unittest.mock import patch
 
-from authlib.integrations.starlette_client import StarletteOAuth2App
 from authlib.jose import jwt
 from fastapi import status
 from fastapi.testclient import TestClient
@@ -37,9 +36,8 @@ def test_login_google(test_client: TestClient) -> None:
 # mock_oauth_provider to mock google Oauth user info
 def test_callback_google(test_client: TestClient, db_session: Session) -> None:
     # mock the oauth2 client's authorize_access_token method
-    with patch.object(
-        StarletteOAuth2App,
-        "authorize_access_token",
+    with patch(
+        "aipolabs.server.oauth2.authorize_access_token",
         return_value=MOCK_USER_GOOGLE_AUTH_DATA,
     ):
         response = test_client.get(f"{config.ROUTER_PREFIX_AUTH}/callback/google")
@@ -66,5 +64,4 @@ def test_callback_google(test_client: TestClient, db_session: Session) -> None:
 
 def test_login_unsupported_provider(test_client: TestClient) -> None:
     response = test_client.get(f"{config.ROUTER_PREFIX_AUTH}/login/unsupported")
-    assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert str(response.json()["error"]).startswith("Unsupported identity provider")
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY

@@ -58,19 +58,6 @@ class UnexpectedException(AipolabsException):
         )
 
 
-class UnsupportedIdentityProvider(AipolabsException):
-    """
-    Exception raised when an unsupported identity provider is used
-    """
-
-    def __init__(self, message: str | None = None):
-        super().__init__(
-            title="Unsupported identity provider",
-            message=message,
-            error_code=status.HTTP_400_BAD_REQUEST,
-        )
-
-
 class AuthenticationError(AipolabsException):
     """
     Exception raised when an authentication error occurs

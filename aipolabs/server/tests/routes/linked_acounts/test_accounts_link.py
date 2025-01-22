@@ -66,7 +66,7 @@ def test_link_oauth2_account_success(
         "refresh_token": "mock_refresh_token",
     }
     with patch(
-        "aipolabs.server.routes.linked_accounts._authorize_access_token",
+        "aipolabs.server.oauth2.authorize_access_token_without_browser_session",
         return_value=mock_oauth2_token_response,
     ):
         # simulate the OAuth2 provider calling back with 'state' & 'code'
