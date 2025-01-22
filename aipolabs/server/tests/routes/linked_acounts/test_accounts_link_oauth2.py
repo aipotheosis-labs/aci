@@ -1,4 +1,5 @@
 import time
+from typing import cast
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
 
@@ -63,7 +64,7 @@ def test_link_oauth2_account_success(
     mock_oauth2_token_response = {
         "access_token": "mock_access_token",
         "token_type": "Bearer",
-        "expires_in": "3600",
+        "expires_in": 3600,
         "scope": "mock_scope",
         "refresh_token": "mock_refresh_token",
     }
@@ -95,8 +96,8 @@ def test_link_oauth2_account_success(
     assert linked_account.security_scheme == SecurityScheme.OAUTH2
     assert oauth2_credentials.access_token == mock_oauth2_token_response["access_token"]
     assert oauth2_credentials.token_type == mock_oauth2_token_response["token_type"]
-    assert oauth2_credentials.expires_at == int(time.time()) + int(
-        mock_oauth2_token_response["expires_in"]
+    assert oauth2_credentials.expires_at == int(time.time()) + cast(
+        int, mock_oauth2_token_response["expires_in"]
     )
     assert oauth2_credentials.scope == mock_oauth2_token_response["scope"]
     assert oauth2_credentials.refresh_token == mock_oauth2_token_response["refresh_token"]

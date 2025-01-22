@@ -2,7 +2,7 @@ from aipolabs.common.db.sql_models import App, LinkedAccount
 from aipolabs.common.exceptions import NoImplementationFound
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.security_scheme import OAuth2SchemeCredentials
-from aipolabs.server import oauth2_credentials_manager as ocm
+from aipolabs.server import security_credentials_manager as scm
 from aipolabs.server.function_executors.rest_function_executor import (
     RestFunctionExecutor,
 )
@@ -55,7 +55,7 @@ class RestOAuth2FunctionExecutor(RestFunctionExecutor):
             )
 
         oauth2_credentials = OAuth2SchemeCredentials.model_validate(oauth2_credentials)
-        if ocm.access_token_is_expired(oauth2_credentials):
+        if scm._access_token_is_expired(oauth2_credentials):
             logger.warning(f"access token expired for linked account={linked_account.id}")
         else:
             logger.info(f"access token is valid for linked account={linked_account.id}")

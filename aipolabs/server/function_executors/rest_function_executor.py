@@ -59,9 +59,6 @@ class RestFunctionExecutor(FunctionExecutor):
             json=body if body else None,
         )
 
-        return self._send_request(request)
-
-    def _send_request(self, request: httpx.Request) -> FunctionExecutionResult:
         # TODO: remove all print
         print(create_headline("FUNCTION EXECUTION HTTP REQUEST"))
         logger.info(
@@ -76,6 +73,10 @@ class RestFunctionExecutor(FunctionExecutor):
             )
         )
 
+        return self._send_request(request)
+
+    def _send_request(self, request: httpx.Request) -> FunctionExecutionResult:
+
         # TODO: one client for all requests? cache the client? concurrency control? async client?
         # TODO: add retry
         with httpx.Client() as client:
@@ -87,7 +88,7 @@ class RestFunctionExecutor(FunctionExecutor):
 
             try:
                 response.raise_for_status()
-            except HTTPStatusError as e:
+            except httpx.HTTPStatusError as e:
                 logger.exception("http error occurred for function execution")
                 return FunctionExecutionResult(
                     success=False, error=self._get_error_message(response, e)
