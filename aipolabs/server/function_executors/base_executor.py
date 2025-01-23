@@ -1,18 +1,22 @@
 import json
 from abc import ABC, abstractmethod
+from typing import Generic, TypeVar
 
 import jsonschema
 
 from aipolabs.common import processor
-from aipolabs.common.db.sql_models import Function, LinkedAccount
+from aipolabs.common.db.sql_models import Function
 from aipolabs.common.exceptions import InvalidFunctionInput
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.function import FunctionExecutionResult
 
 logger = get_logger(__name__)
 
+TCred = TypeVar("TCred")
+TScheme = TypeVar("TScheme")
 
-class FunctionExecutor(ABC):
+
+class FunctionExecutor(ABC, Generic[TScheme, TCred]):
     """
     Base class for function executors.
     """
@@ -23,19 +27,23 @@ class FunctionExecutor(ABC):
     # app_instance.validate_input(function.parameters, function_execution_params.function_input)
     # return app_instance.execute(function_name, function_execution_params.function_input)
     def execute(
-        self, function: Function, function_input: dict, linked_account: LinkedAccount
+        self,
+        function: Function,
+        function_input: dict,
+        security_scheme: TScheme,
+        security_credentials: TCred,
     ) -> FunctionExecutionResult:
         """
-        Execute the function based on end-user input and end-user linked account.
+        Execute the function based on end-user input and security credentials.
         Input validation, default values injection, and security credentials injection are done here.
         """
         logger.info(
             f"executing function={function.id}, function_name={function.name}, "
-            f"function_input={function_input}, linked_account_owner_id={linked_account.linked_account_owner_id}"
+            f"function_input={function_input}"
         )
         function_input = self._preprocess_function_input(function, function_input)
 
-        return self._execute(function, function_input, linked_account)
+        return self._execute(function, function_input, security_scheme, security_credentials)
 
     def _preprocess_function_input(self, function: Function, function_input: dict) -> dict:
         # validate user input against the "visible" parameters
@@ -64,6 +72,10 @@ class FunctionExecutor(ABC):
 
     @abstractmethod
     def _execute(
-        self, function: Function, function_input: dict, linked_account: LinkedAccount
+        self,
+        function: Function,
+        function_input: dict,
+        security_scheme: TScheme,
+        security_credentials: TCred,
     ) -> FunctionExecutionResult:
         pass

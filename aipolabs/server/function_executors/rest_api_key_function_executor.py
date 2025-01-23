@@ -1,5 +1,4 @@
-from aipolabs.common.db.sql_models import App, LinkedAccount
-from aipolabs.common.enums import HttpLocation, SecurityScheme
+from aipolabs.common.enums import HttpLocation
 from aipolabs.common.exceptions import NoImplementationFound
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.security_scheme import (
@@ -13,15 +12,15 @@ from aipolabs.server.function_executors.rest_function_executor import (
 logger = get_logger(__name__)
 
 
-class RestAPIKeyFunctionExecutor(RestFunctionExecutor):
+class RestAPIKeyFunctionExecutor(RestFunctionExecutor[APIKeyScheme, APIKeySchemeCredentials]):
     """
     Function executor for API key based REST functions.
     """
 
     def _inject_credentials(
         self,
-        app: App,
-        linked_account: LinkedAccount,
+        security_scheme: APIKeyScheme,
+        security_credentials: APIKeySchemeCredentials,
         headers: dict,
         query: dict,
         body: dict,
@@ -52,33 +51,19 @@ class RestAPIKeyFunctionExecutor(RestFunctionExecutor):
             }
         }
         """
-        # TODO: check if linked account has security credentials from end user before checking app's default
 
-        # check and use App's default security credentials if exists
-        security_credentials = app.default_security_credentials_by_scheme.get(
-            linked_account.security_scheme
-        )
-        if security_credentials is None:
-            logger.error(f"no default security credentials found for app={app.name}")
-            raise NoImplementationFound(f"no default security credentials found for app={app.name}")
-        api_key_credentials = APIKeySchemeCredentials.model_validate(security_credentials)
-
-        # inject api key into the request based on App's security scheme configuration
-        api_key_scheme = APIKeyScheme.model_validate(app.security_schemes[SecurityScheme.API_KEY])
-        match api_key_scheme.location:
+        match security_scheme.location:
             case HttpLocation.HEADER:
-                headers[api_key_scheme.name] = api_key_credentials.secret_key
+                headers[security_scheme.name] = security_credentials.secret_key
             case HttpLocation.QUERY:
-                query[api_key_scheme.name] = api_key_credentials.secret_key
+                query[security_scheme.name] = security_credentials.secret_key
             case HttpLocation.BODY:
-                body[api_key_scheme.name] = api_key_credentials.secret_key
+                body[security_scheme.name] = security_credentials.secret_key
             case HttpLocation.COOKIE:
-                cookies[api_key_scheme.name] = api_key_credentials.secret_key
+                cookies[security_scheme.name] = security_credentials.secret_key
             case _:
                 # should never happen
-                logger.error(
-                    f"unsupported api key location={api_key_scheme.location} for app={app.name}"
-                )
+                logger.error(f"unsupported api key location={security_scheme.location}")
                 raise NoImplementationFound(
-                    f"unsupported api key location={api_key_scheme.location} for app={app.name}"
+                    f"unsupported api key location={security_scheme.location}"
                 )

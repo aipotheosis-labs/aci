@@ -1,8 +1,10 @@
-from aipolabs.common.db.sql_models import App, LinkedAccount
+from aipolabs.common.enums import HttpLocation
 from aipolabs.common.exceptions import NoImplementationFound
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.security_scheme import OAuth2SchemeCredentials
-from aipolabs.server import security_credentials_manager as scm
+from aipolabs.common.schemas.security_scheme import (
+    OAuth2Scheme,
+    OAuth2SchemeCredentials,
+)
 from aipolabs.server.function_executors.rest_function_executor import (
     RestFunctionExecutor,
 )
@@ -10,52 +12,39 @@ from aipolabs.server.function_executors.rest_function_executor import (
 logger = get_logger(__name__)
 
 
-class RestOAuth2FunctionExecutor(RestFunctionExecutor):
+class RestOAuth2FunctionExecutor(RestFunctionExecutor[OAuth2Scheme, OAuth2SchemeCredentials]):
     """
     Function executor for REST OAuth2 functions.
     """
 
     def _inject_credentials(
         self,
-        app: App,
-        linked_account: LinkedAccount,
+        security_scheme: OAuth2Scheme,
+        security_credentials: OAuth2SchemeCredentials,
         headers: dict,
         query: dict,
         body: dict,
         cookies: dict,
     ) -> None:
-        """Injects oauth2 access token into the request, will modify the input dictionaries in place."""
+        """Injects oauth2 access token into the request"""
+        access_token = (
+            security_credentials.access_token
+            if not security_scheme.prefix
+            else f"{security_scheme.prefix} {security_credentials.access_token}"
+        )
 
-        if linked_account.security_credentials:
-            logger.info(
-                f"using security credentials from linked account={linked_account.id}, "
-                f"security scheme={linked_account.security_scheme}"
-            )
-            oauth2_credentials = linked_account.security_credentials
-
-        elif app.default_security_credentials_by_scheme.get(linked_account.security_scheme):
-            logger.info(
-                f"using default security credentials from app={app.name}, "
-                f"security scheme={linked_account.security_scheme}, "
-                f"linked account={linked_account.id}"
-            )
-            oauth2_credentials = app.default_security_credentials_by_scheme[
-                linked_account.security_scheme
-            ]
-        else:
-            logger.error(
-                f"no security credentials usable for app={app.name}, "
-                f"security scheme={linked_account.security_scheme}, "
-                f"linked account={linked_account.id}"
-            )
-            raise NoImplementationFound(
-                f"no security credentials usable for app={app.name}, "
-                f"security scheme={linked_account.security_scheme}, "
-                f"linked account={linked_account.id}"
-            )
-
-        oauth2_credentials = OAuth2SchemeCredentials.model_validate(oauth2_credentials)
-        if scm._access_token_is_expired(oauth2_credentials):
-            logger.warning(f"access token expired for linked account={linked_account.id}")
-        else:
-            logger.info(f"access token is valid for linked account={linked_account.id}")
+        match security_scheme.location:
+            case HttpLocation.HEADER:
+                headers[security_scheme.name] = access_token
+            case HttpLocation.QUERY:
+                query[security_scheme.name] = access_token
+            case HttpLocation.BODY:
+                body[security_scheme.name] = access_token
+            case HttpLocation.COOKIE:
+                cookies[security_scheme.name] = access_token
+            case _:
+                # should never happen
+                logger.error(f"unsupported api key location={security_scheme.location}")
+                raise NoImplementationFound(
+                    f"unsupported api key location={security_scheme.location}"
+                )

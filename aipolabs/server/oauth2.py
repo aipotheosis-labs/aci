@@ -73,6 +73,15 @@ async def authorize_access_token(
     return cast(dict, await oauth2_client.authorize_access_token(request, **kwargs))
 
 
+async def refresh_access_token(oauth2_client: StarletteOAuth2App, refresh_token: str) -> dict:
+    return cast(
+        dict,
+        await oauth2_client.fetch_access_token(
+            grant_type="refresh_token", refresh_token=refresh_token
+        ),
+    )
+
+
 async def authorize_access_token_without_browser_session(
     oauth2_client: StarletteOAuth2App,
     request: Request,

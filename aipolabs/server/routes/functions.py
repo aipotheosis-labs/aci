@@ -30,7 +30,9 @@ from aipolabs.common.schemas.function import (
 )
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
+from aipolabs.server import security_credentials_manager as scm
 from aipolabs.server.function_executors import get_executor
+from aipolabs.server.security_credentials_manager import SecurityCredentialsResponse
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -202,7 +204,7 @@ async def execute(
             f"configuration for app={function.app_id} is disabled for project={context.project.id}"
         )
 
-    # check if the linked account is configured
+    # check if the linked account status (configured, enabled, etc.)
     linked_account = crud.linked_accounts.get_linked_account(
         context.db_session, context.project.id, function.app_id, body.linked_account_owner_id
     )
@@ -230,8 +232,36 @@ async def execute(
             f"linked_account_owner_id={body.linked_account_owner_id}"
         )
 
-    # security_credentials = cm.get_security_credentials(function.app, linked_account)
+    security_credentials_response: SecurityCredentialsResponse = await scm.get_security_credentials(
+        function.app, linked_account
+    )
+    # if the security credentials are updated during fetch (e.g, access token refreshed), we need to write back
+    # to the database with the updated credentials, either to linked account or app configuration depending
+    # on if the default or linked account credentials were used
+    # TODO: this is an unnnecessary unification? Technically the update only apply to oauth2 based
+    # credentials. Might need to structure differently to have a less generic solution (but without adding
+    # more complexity to the logic). It almost smells like an indicator to break down to microservices and/or
+    # use a message queue like kafka for async/downstream updates.
+    if security_credentials_response.is_updated:
+        if security_credentials_response.is_app_default_credentials:
+            crud.apps.update_app_default_security_credentials(
+                context.db_session,
+                function.app,
+                linked_account.security_scheme,
+                security_credentials_response.credentials.model_dump(),
+            )
+        else:
+            crud.linked_accounts.update_linked_account(
+                context.db_session,
+                linked_account,
+                security_credentials=security_credentials_response.credentials.model_dump(),
+            )
+        context.db_session.commit()
+    function_executor = get_executor(function.protocol, linked_account.security_scheme)
 
-    return get_executor(function.protocol, linked_account.security_scheme).execute(
-        function, body.function_input, linked_account
+    return function_executor.execute(
+        function,
+        body.function_input,
+        security_credentials_response.scheme,
+        security_credentials_response.credentials,
     )

@@ -1,19 +1,27 @@
 import json
 from abc import abstractmethod
-from typing import Any
+from typing import Any, Generic, TypeVar
 
 import httpx
 from httpx import HTTPStatusError
 
-from aipolabs.common.db.sql_models import App, Function, LinkedAccount
+from aipolabs.common.db.sql_models import Function
 from aipolabs.common.logging import create_headline, get_logger
 from aipolabs.common.schemas.function import FunctionExecutionResult, RestMetadata
+from aipolabs.common.schemas.security_scheme import (
+    APIKeyScheme,
+    APIKeySchemeCredentials,
+    OAuth2Scheme,
+    OAuth2SchemeCredentials,
+)
 from aipolabs.server.function_executors.base_executor import FunctionExecutor
 
 logger = get_logger(__name__)
+TScheme = TypeVar("TScheme", APIKeyScheme, OAuth2Scheme)
+TCred = TypeVar("TCred", APIKeySchemeCredentials, OAuth2SchemeCredentials)
 
 
-class RestFunctionExecutor(FunctionExecutor):
+class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TCred]):
     """
     Function executor for REST functions.
     """
@@ -21,8 +29,8 @@ class RestFunctionExecutor(FunctionExecutor):
     @abstractmethod
     def _inject_credentials(
         self,
-        app: App,
-        linked_account: LinkedAccount,
+        security_scheme: TScheme,
+        security_credentials: TCred,
         headers: dict,
         query: dict,
         body: dict,
@@ -31,7 +39,11 @@ class RestFunctionExecutor(FunctionExecutor):
         pass
 
     def _execute(
-        self, function: Function, function_input: dict, linked_account: LinkedAccount
+        self,
+        function: Function,
+        function_input: dict,
+        security_scheme: TScheme,
+        security_credentials: TCred,
     ) -> FunctionExecutionResult:
         # Extract parameters by location
         path: dict = function_input.get("path", {})
@@ -48,7 +60,9 @@ class RestFunctionExecutor(FunctionExecutor):
             for path_param_name, path_param_value in path.items():
                 url = url.replace(f"{{{path_param_name}}}", str(path_param_value))
 
-        self._inject_credentials(function.app, linked_account, headers, query, body, cookies)
+        self._inject_credentials(
+            security_scheme, security_credentials, headers, query, body, cookies
+        )
 
         request = httpx.Request(
             method=protocol_data.method,

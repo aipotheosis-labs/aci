@@ -8,7 +8,7 @@ from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import App
-from aipolabs.common.enums import Visibility
+from aipolabs.common.enums import SecurityScheme, Visibility
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.app import AppCreate
 
@@ -32,6 +32,15 @@ def create_app(
     db_session.flush()
     db_session.refresh(app)
     return app
+
+
+def update_app_default_security_credentials(
+    db_session: Session,
+    app: App,
+    security_scheme: SecurityScheme,
+    security_credentials: dict,
+) -> None:
+    app.default_security_credentials_by_scheme[security_scheme] = security_credentials
 
 
 def get_app(db_session: Session, app_id: UUID, public_only: bool, active_only: bool) -> App | None:

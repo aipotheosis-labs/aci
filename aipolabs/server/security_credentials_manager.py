@@ -1,33 +1,51 @@
 import time
-from typing import Any, cast
+
+from pydantic import BaseModel
 
 from aipolabs.common.db.sql_models import App, LinkedAccount
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.exceptions import NoImplementationFound
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.security_scheme import (
+    APIKeyScheme,
     APIKeySchemeCredentials,
+    OAuth2Scheme,
     OAuth2SchemeCredentials,
 )
+from aipolabs.server import oauth2
 
 logger = get_logger(__name__)
 
 
-def get_security_credentials(
+# TODO: only pass necessary data to the functions
+class SecurityCredentialsResponse(BaseModel):
+    scheme: APIKeyScheme | OAuth2Scheme
+    credentials: APIKeySchemeCredentials | OAuth2SchemeCredentials
+    is_app_default_credentials: bool
+    is_updated: bool
+
+
+async def get_security_credentials(
     app: App, linked_account: LinkedAccount
-) -> APIKeySchemeCredentials | OAuth2SchemeCredentials | dict[str, Any]:
+) -> SecurityCredentialsResponse:
     if linked_account.security_scheme == SecurityScheme.API_KEY:
-        return get_api_key_credentials(app, linked_account)
+        return _get_api_key_credentials(app, linked_account)
     elif linked_account.security_scheme == SecurityScheme.OAUTH2:
-        return get_oauth2_credentials(app, linked_account)
+        return await _get_oauth2_credentials(app, linked_account)
     else:
-        raise NoImplementationFound(f"no security credentials usable for app={app.id}")
+        raise NoImplementationFound("unsupported security scheme")
 
 
-def get_oauth2_credentials(app: App, linked_account: LinkedAccount) -> OAuth2SchemeCredentials:
+async def _get_oauth2_credentials(
+    app: App, linked_account: LinkedAccount
+) -> SecurityCredentialsResponse:
     """Get OAuth2 credentials from linked account or app's default credentials.
     If the access token is expired, it will be refreshed.
     """
+    is_app_default_credentials = False
+    is_updated = False
+    oauth2_scheme = OAuth2Scheme.model_validate(app.security_schemes[SecurityScheme.OAUTH2])
+
     if linked_account.security_credentials:
         logger.info(
             f"using security credentials from linked account={linked_account.id}, "
@@ -36,8 +54,9 @@ def get_oauth2_credentials(app: App, linked_account: LinkedAccount) -> OAuth2Sch
         oauth2_credentials = linked_account.security_credentials
 
     elif app.default_security_credentials_by_scheme.get(linked_account.security_scheme):
+        is_app_default_credentials = True
         logger.info(
-            f"using default security credentials from app={app.name}, "
+            f"using default security credentials from app={app.id}, "
             f"security scheme={linked_account.security_scheme}, "
             f"linked account={linked_account.id}"
         )
@@ -58,14 +77,54 @@ def get_oauth2_credentials(app: App, linked_account: LinkedAccount) -> OAuth2Sch
         )
 
     oauth2_scheme_credentials = OAuth2SchemeCredentials.model_validate(oauth2_credentials)
-    return cast(OAuth2SchemeCredentials, oauth2_scheme_credentials)
+    if _access_token_is_expired(oauth2_scheme_credentials):
+        logger.warning(f"access token expired for linked account={linked_account.id}")
+        token_response = await _refresh_oauth2_access_token(
+            app, oauth2_scheme_credentials.refresh_token
+        )
+        # TODO: use pydantic for validation; should we update "scope", "token_type" etc as well if
+        # returned by the provider?
+        oauth2_scheme_credentials = oauth2_scheme_credentials.model_copy(
+            update={
+                "access_token": token_response["access_token"],
+                "expires_at": int(time.time()) + token_response["expires_in"],
+            }
+        )
+        is_updated = True
+    else:
+        logger.info(f"access token is valid for linked account={linked_account.id}")
+
+    return SecurityCredentialsResponse(
+        scheme=oauth2_scheme,
+        credentials=oauth2_scheme_credentials,
+        is_app_default_credentials=is_app_default_credentials,
+        is_updated=is_updated,
+    )
 
 
-# def get_new_oauth2_access_token(app: App, linked_account: LinkedAccount) -> OAuth2SchemeCredentials:
-#     pass
+async def _refresh_oauth2_access_token(app: App, refresh_token: str) -> dict:
+    app_default_oauth2_config = OAuth2Scheme.model_validate(
+        app.security_schemes[SecurityScheme.OAUTH2]
+    )
+    oauth2_client = oauth2.create_oauth2_client(
+        name=app.name,
+        client_id=app_default_oauth2_config.client_id,
+        client_secret=app_default_oauth2_config.client_secret,
+        scope=app_default_oauth2_config.scope,
+        authorize_url=app_default_oauth2_config.authorize_url,
+        access_token_url=app_default_oauth2_config.access_token_url,
+        refresh_token_url=app_default_oauth2_config.refresh_token_url,
+        server_metadata_url=app_default_oauth2_config.server_metadata_url,
+    )
+    token_response = await oauth2.refresh_access_token(oauth2_client, refresh_token)
+    logger.info(f"oauth2 access token refreshed, token_response={token_response}")
+
+    return token_response
 
 
-def get_api_key_credentials(app: App, linked_account: LinkedAccount) -> APIKeySchemeCredentials:
+def _get_api_key_credentials(
+    app: App, linked_account: LinkedAccount
+) -> SecurityCredentialsResponse:
     """
     Examples from app.json:
     {
@@ -84,6 +143,7 @@ def get_api_key_credentials(app: App, linked_account: LinkedAccount) -> APIKeySc
     """
     # TODO: check if linked account has security credentials from end user before checking app's default
 
+    api_key_scheme = APIKeyScheme.model_validate(app.security_schemes[SecurityScheme.API_KEY])
     # check and use App's default security credentials if exists
     security_credentials = app.default_security_credentials_by_scheme.get(
         linked_account.security_scheme
@@ -95,8 +155,14 @@ def get_api_key_credentials(app: App, linked_account: LinkedAccount) -> APIKeySc
         security_credentials
     )
 
-    return api_key_credentials
+    return SecurityCredentialsResponse(
+        scheme=api_key_scheme,
+        credentials=api_key_credentials,
+        is_app_default_credentials=True,
+        is_updated=False,
+    )
 
 
+# TODO: consider adding leeway for expiration
 def _access_token_is_expired(oauth2_credentials: OAuth2SchemeCredentials) -> bool:
     return oauth2_credentials.expires_at < int(time.time())
