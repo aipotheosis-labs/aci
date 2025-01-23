@@ -17,8 +17,13 @@ with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
         AppConfigurationPublic,
     )
     from aipolabs.common.db.sql_models import LinkedAccount
+    from aipolabs.common.schemas.security_scheme import (
+        OAuth2SchemeCredentials,
+        APIKeySchemeCredentials,
+    )
 
 import logging
+import time
 from datetime import timedelta
 from typing import Generator, cast
 
@@ -382,6 +387,47 @@ def dummy_app_configuration_api_key_aipolabs_test_project_1(
     return dummy_app_configuration_api_key_aipolabs_test_project_1
 
 
+@pytest.fixture(scope="function")
+def dummy_app_configuration_oauth2_aipolabs_test_project_1(
+    db_session: Session,
+    dummy_project_1: Project,
+    dummy_app_aipolabs_test: App,
+) -> AppConfigurationPublic:
+    app_configuration_create = AppConfigurationCreate(
+        app_id=dummy_app_aipolabs_test.id, security_scheme=SecurityScheme.OAUTH2
+    )
+
+    dummy_app_configuration_oauth2_aipolabs_test_project_1 = (
+        crud.app_configurations.create_app_configuration(
+            db_session,
+            dummy_project_1.id,
+            app_configuration_create,
+        )
+    )
+    db_session.commit()
+    return dummy_app_configuration_oauth2_aipolabs_test_project_1
+
+
+################################################################################
+# Dummy Linked Accounts Security Credentials
+################################################################################
+@pytest.fixture(scope="function")
+def dummy_linked_account_api_key_credentials() -> APIKeySchemeCredentials:
+    return APIKeySchemeCredentials(
+        secret_key="dummy_linked_account_api_key_credentials_secret_key",
+    )
+
+
+@pytest.fixture(scope="function")
+def dummy_linked_account_oauth2_credentials() -> OAuth2SchemeCredentials:
+    return OAuth2SchemeCredentials(
+        access_token="dummy_linked_account_oauth2_credentials_access_token",
+        token_type="Bearer",
+        expires_at=int(time.time()) + 3600,
+        refresh_token="dummy_linked_account_oauth2_credentials_refresh_token",
+    )
+
+
 ################################################################################
 # Dummy Linked Accounts
 # Naming Convention: dummy_linked_account_<security_scheme>_<app>_<project>
@@ -391,6 +437,7 @@ def dummy_app_configuration_api_key_aipolabs_test_project_1(
 @pytest.fixture(scope="function")
 def dummy_linked_account_oauth2_google_project_1(
     db_session: Session,
+    dummy_linked_account_oauth2_credentials: OAuth2SchemeCredentials,
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
 ) -> Generator[LinkedAccount, None, None]:
     dummy_linked_account_oauth2_google_project_1 = crud.linked_accounts.create_linked_account(
@@ -399,7 +446,7 @@ def dummy_linked_account_oauth2_google_project_1(
         dummy_app_configuration_oauth2_google_project_1.app_id,
         "dummy_linked_account_oauth2_google_project_1",
         dummy_app_configuration_oauth2_google_project_1.security_scheme,
-        {"access_token": "mock_access_token"},
+        dummy_linked_account_oauth2_credentials.model_dump(),
         enabled=True,
     )
     db_session.commit()
@@ -410,6 +457,7 @@ def dummy_linked_account_oauth2_google_project_1(
 def dummy_linked_account_api_key_github_project_1(
     db_session: Session,
     dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
+    dummy_linked_account_api_key_credentials: APIKeySchemeCredentials,
 ) -> Generator[LinkedAccount, None, None]:
     dummy_linked_account_api_key_github_project_1 = crud.linked_accounts.create_linked_account(
         db_session,
@@ -417,7 +465,7 @@ def dummy_linked_account_api_key_github_project_1(
         dummy_app_configuration_api_key_github_project_1.app_id,
         "dummy_linked_account_api_key_github_project_1",
         dummy_app_configuration_api_key_github_project_1.security_scheme,
-        {"api_key": "mock_api_key"},
+        dummy_linked_account_api_key_credentials.model_dump(),
         enabled=True,
     )
     db_session.commit()
@@ -428,6 +476,7 @@ def dummy_linked_account_api_key_github_project_1(
 def dummy_linked_account_oauth2_google_project_2(
     db_session: Session,
     dummy_app_configuration_oauth2_google_project_2: AppConfigurationPublic,
+    dummy_linked_account_oauth2_credentials: OAuth2SchemeCredentials,
 ) -> Generator[LinkedAccount, None, None]:
     dummy_linked_account_oauth2_google_project_2 = crud.linked_accounts.create_linked_account(
         db_session,
@@ -435,7 +484,7 @@ def dummy_linked_account_oauth2_google_project_2(
         dummy_app_configuration_oauth2_google_project_2.app_id,
         "dummy_linked_account_oauth2_google_project_2",
         dummy_app_configuration_oauth2_google_project_2.security_scheme,
-        {"access_token": "mock_access_token"},
+        dummy_linked_account_oauth2_credentials.model_dump(),
         enabled=True,
     )
     db_session.commit()
@@ -446,6 +495,7 @@ def dummy_linked_account_oauth2_google_project_2(
 def dummy_linked_account_api_key_aipolabs_test_project_1(
     db_session: Session,
     dummy_app_configuration_api_key_aipolabs_test_project_1: AppConfigurationPublic,
+    dummy_linked_account_api_key_credentials: APIKeySchemeCredentials,
 ) -> Generator[LinkedAccount, None, None]:
     dummy_linked_account_api_key_aipolabs_test_project_1 = (
         crud.linked_accounts.create_linked_account(
@@ -454,9 +504,51 @@ def dummy_linked_account_api_key_aipolabs_test_project_1(
             dummy_app_configuration_api_key_aipolabs_test_project_1.app_id,
             "dummy_linked_account_api_key_aipolabs_test_project_1",
             dummy_app_configuration_api_key_aipolabs_test_project_1.security_scheme,
-            {"access_token": "mock_access_token"},
+            dummy_linked_account_api_key_credentials.model_dump(),
             enabled=True,
         )
     )
     db_session.commit()
     yield dummy_linked_account_api_key_aipolabs_test_project_1
+
+
+@pytest.fixture(scope="function")
+def dummy_linked_account_oauth2_aipolabs_test_project_1(
+    db_session: Session,
+    dummy_app_configuration_oauth2_aipolabs_test_project_1: AppConfigurationPublic,
+    dummy_linked_account_oauth2_credentials: OAuth2SchemeCredentials,
+) -> Generator[LinkedAccount, None, None]:
+    dummy_linked_account_oauth2_aipolabs_test_project_1 = (
+        crud.linked_accounts.create_linked_account(
+            db_session,
+            dummy_app_configuration_oauth2_aipolabs_test_project_1.project_id,
+            dummy_app_configuration_oauth2_aipolabs_test_project_1.app_id,
+            "dummy_linked_account_oauth2_aipolabs_test_project_1",
+            dummy_app_configuration_oauth2_aipolabs_test_project_1.security_scheme,
+            dummy_linked_account_oauth2_credentials.model_dump(),
+            enabled=True,
+        )
+    )
+    db_session.commit()
+    yield dummy_linked_account_oauth2_aipolabs_test_project_1
+
+
+@pytest.fixture(scope="function")
+def dummy_linked_account_default_aipolabs_test_project_1(
+    db_session: Session,
+    dummy_app_configuration_oauth2_aipolabs_test_project_1: AppConfigurationPublic,
+    dummy_linked_account_oauth2_credentials: OAuth2SchemeCredentials,
+) -> Generator[LinkedAccount, None, None]:
+    dummy_linked_account_default_aipolabs_test_project_1 = (
+        crud.linked_accounts.create_linked_account(
+            db_session,
+            dummy_app_configuration_oauth2_aipolabs_test_project_1.project_id,
+            dummy_app_configuration_oauth2_aipolabs_test_project_1.app_id,
+            "dummy_linked_account_default_aipolabs_test_project_1",
+            dummy_app_configuration_oauth2_aipolabs_test_project_1.security_scheme,
+            {},
+            enabled=True,
+        )
+    )
+    db_session.commit()
+    yield dummy_linked_account_default_aipolabs_test_project_1

@@ -16,7 +16,6 @@ for example,
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
@@ -28,6 +27,7 @@ from sqlalchemy import ForeignKey, Integer, String, Text, UniqueConstraint, func
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import (
     DeclarativeBase,
     Mapped,
@@ -47,9 +47,7 @@ from aipolabs.common.enums import (
     Visibility,
 )
 from aipolabs.common.schemas.security_scheme import (
-    APIKeyScheme,
     APIKeySchemeCredentials,
-    OAuth2Scheme,
     OAuth2SchemeCredentials,
 )
 
@@ -387,11 +385,11 @@ class Function(Base):
     # can be used to control if the app's discoverability
     active: Mapped[bool] = mapped_column(Boolean, nullable=False)
     protocol: Mapped[Protocol] = mapped_column(SqlEnum(Protocol), nullable=False)
-    protocol_data: Mapped[dict] = mapped_column(JSON, nullable=False)
+    protocol_data: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
     # empty dict for function that takes no args
-    parameters: Mapped[dict] = mapped_column(JSON, nullable=False)
+    parameters: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
     # TODO: should response schema be generic (data + execution success of not + optional error) or specific to the function
-    response: Mapped[dict] = mapped_column(JSON, nullable=False)
+    response: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
     # TODO: should we provide EMBEDDING_DIMENTION here? which makes it less flexible if we want to change the embedding dimention in the future
     embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENTION), nullable=False)
 
@@ -430,13 +428,13 @@ class App(Base):
     # operational status of the app, can be used to control if the app's discoverability
     active: Mapped[bool] = mapped_column(Boolean, nullable=False)
     # security schemes (including it's config) supported by the app, e.g., API key, OAuth2, etc
-    security_schemes: Mapped[dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]] = mapped_column(
-        JSON, nullable=False
+    security_schemes: Mapped[dict[SecurityScheme, dict]] = mapped_column(
+        MutableDict.as_mutable(JSON), nullable=False
     )
     # default security credentials (provided by aipolabs, if any) for the app that can be used by any client
     default_security_credentials_by_scheme: Mapped[
         dict[SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials]
-    ] = mapped_column(JSON, nullable=False)
+    ] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
     # embedding vector for similarity search
     embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENTION), nullable=False)
 
@@ -489,7 +487,9 @@ class AppConfiguration(Base):
     # can store security scheme override for each app, e.g., store client id and secret for OAuth2 if client
     # want to use their own OAuth2 app for whitelabeling
     # TODO: create a pydantic model for security scheme overrides once we finalize overridable fields
-    security_scheme_overrides: Mapped[dict] = mapped_column(JSON, nullable=False)
+    security_scheme_overrides: Mapped[dict] = mapped_column(
+        MutableDict.as_mutable(JSON), nullable=False
+    )
     # controlled by users to enable or disable the app
     # TODO: what are the implications of enabling/disabling the app?
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
@@ -552,9 +552,7 @@ class LinkedAccount(Base):
     security_scheme: Mapped[SecurityScheme] = mapped_column(SqlEnum(SecurityScheme), nullable=False)
     # security credentials are different for each security scheme, e.g., API key, OAuth2 (access token, refresh token, scope, etc) etc
     # it can beempty dict because the linked account could be created to use default credentials provided by Aipolabs
-    security_credentials: Mapped[
-        APIKeySchemeCredentials | OAuth2SchemeCredentials | dict[str, Any]
-    ] = mapped_column(JSON, nullable=False)
+    security_credentials: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(

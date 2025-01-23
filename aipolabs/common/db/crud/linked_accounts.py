@@ -77,12 +77,18 @@ def create_linked_account(
     return linked_account
 
 
+# TODO: caller might pass inconsistent security_scheme and security_credentials
+# e.g., caller passes security_scheme=APIKeyScheme but security_credentials is OAuth2SchemeCredentials
 def update_linked_account(
     db_session: Session,
     linked_account: LinkedAccount,
     security_scheme: SecurityScheme | None = None,
     security_credentials: dict | None = None,
 ) -> LinkedAccount:
+    logger.info(
+        f"updating linked account={linked_account.id}, security_scheme={security_scheme}, "
+        f"security_credentials={security_credentials}"
+    )
     if security_scheme:
         linked_account.security_scheme = security_scheme
     if security_credentials:

@@ -242,6 +242,9 @@ async def execute(
     # credentials. Might need to structure differently to have a less generic solution (but without adding
     # more complexity to the logic). It almost smells like an indicator to break down to microservices and/or
     # use a message queue like kafka for async/downstream updates.
+    logger.info(
+        f"security_credentials_response={json.dumps(security_credentials_response.model_dump(mode='json'), indent=2)}"
+    )
     if security_credentials_response.is_updated:
         if security_credentials_response.is_app_default_credentials:
             crud.apps.update_app_default_security_credentials(

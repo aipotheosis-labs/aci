@@ -306,12 +306,12 @@ async def linked_accounts_oauth2_callback(
         logger.exception("failed to retrieve oauth2 token")
         raise AuthenticationError("failed to retrieve oauth2 token")
 
-    # TODO: we might want to verify scope authorized by end user is what we required
+    # TODO: we might want to verify scope authorized by end user (token_response["scope"]) is what we asked
+    # TODO: use the pydantic model class
     security_credentials = {
         "access_token": token_response["access_token"],
         "token_type": token_response["token_type"],
         "expires_at": int(time.time()) + token_response["expires_in"],
-        "scope": token_response["scope"],
         "refresh_token": token_response["refresh_token"],
     }
     logger.info(f"security_credentials: \n {json.dumps(security_credentials, indent=2)}")

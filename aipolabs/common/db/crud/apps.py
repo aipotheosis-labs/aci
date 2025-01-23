@@ -40,6 +40,8 @@ def update_app_default_security_credentials(
     security_scheme: SecurityScheme,
     security_credentials: dict,
 ) -> None:
+    # Note: this update works because of the MutableDict.as_mutable(JSON) in the sql_models.py
+    # TODO: check if this is the best practice and double confirm that nested dict update does NOT work
     app.default_security_credentials_by_scheme[security_scheme] = security_credentials
 
 

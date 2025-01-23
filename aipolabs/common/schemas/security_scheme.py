@@ -97,7 +97,6 @@ class OAuth2SchemeCredentials(BaseModel):
     # refresh_token_expires_in) and not provided by the OAuth2 provider
     # we should handle None or provide default values
     access_token: str
-    token_type: str
+    token_type: str  # TODO: consider removing because security_schemes.oauth2.prefix have the required information
     expires_at: int
-    scope: str
     refresh_token: str

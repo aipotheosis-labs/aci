@@ -65,7 +65,6 @@ def test_link_oauth2_account_success(
         "access_token": "mock_access_token",
         "token_type": "Bearer",
         "expires_in": 3600,
-        "scope": "mock_scope",
         "refresh_token": "mock_refresh_token",
     }
     with patch(
@@ -99,7 +98,6 @@ def test_link_oauth2_account_success(
     assert oauth2_credentials.expires_at == int(time.time()) + cast(
         int, mock_oauth2_token_response["expires_in"]
     )
-    assert oauth2_credentials.scope == mock_oauth2_token_response["scope"]
     assert oauth2_credentials.refresh_token == mock_oauth2_token_response["refresh_token"]
     assert linked_account.enabled is True
     assert linked_account.app_id == dummy_app_configuration_oauth2_google_project_1.app_id
