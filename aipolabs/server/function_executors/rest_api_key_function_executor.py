@@ -30,9 +30,10 @@ class RestAPIKeyFunctionExecutor(RestFunctionExecutor[APIKeyScheme, APIKeyScheme
         We assume the security credentials can only be in the header, query, cookie, or body.
 
         Args:
-            app (App): The application model containing security schemes and authentication info.
-            query (dict): The query parameters dictionary.
+            security_scheme (APIKeyScheme): The security scheme.
+            security_credentials (APIKeySchemeCredentials): The security credentials.
             headers (dict): The headers dictionary.
+            query (dict): The query parameters dictionary.
             cookies (dict): The cookies dictionary.
             body (dict): The body dictionary.
 

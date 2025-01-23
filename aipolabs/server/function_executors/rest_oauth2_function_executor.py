@@ -44,7 +44,7 @@ class RestOAuth2FunctionExecutor(RestFunctionExecutor[OAuth2Scheme, OAuth2Scheme
                 cookies[security_scheme.name] = access_token
             case _:
                 # should never happen
-                logger.error(f"unsupported api key location={security_scheme.location}")
+                logger.error(f"unsupported oauth2 location={security_scheme.location}")
                 raise NoImplementationFound(
-                    f"unsupported api key location={security_scheme.location}"
+                    f"unsupported oauth2 location={security_scheme.location}"
                 )

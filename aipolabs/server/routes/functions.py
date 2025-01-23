@@ -262,6 +262,7 @@ async def execute(
         context.db_session.commit()
     function_executor = get_executor(function.protocol, linked_account.security_scheme)
 
+    # TODO: async calls?
     return function_executor.execute(
         function,
         body.function_input,
