@@ -61,20 +61,3 @@ services:
       db_init:
         condition: service_completed_successfully
     restart: no
-
-  test:
-    profiles: ["test"]
-    build:
-      context: .
-      dockerfile: Dockerfile.server
-    working_dir: /working_dir
-    volumes:
-      - .:/working_dir
-    environment:
-      SERVER_DB_HOST: db
-      SERVER_OPENAI_API_KEY: ${SERVER_OPENAI_API_KEY?}
-    depends_on:
-      server:
-        condition: service_healthy
-    # poetry install is needed because the Dockerfile.server skipped dev dependencies
-    command: sh -c "poetry install && poetry run pytest"
