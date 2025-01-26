@@ -24,6 +24,18 @@ jobs:
 
       - name: Run compose test
         run: |
-          docker compose --profile test up --exit-code-from test
+          docker compose --profile run test
+      
+      - name: Get service names
+        id: service_names
+        run: |
+          SERVICE_NAMES=$(docker compose config --services)
+          echo "::set-output name=names::$SERVICE_NAMES"
 
+      - name: Print logs for each service
+        run: |
+          for service in ${{ steps.service_names.outputs.names }}; do
+            echo "Logs for service: $service"
+            docker compose logs $service
+          done
 
