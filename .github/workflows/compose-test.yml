@@ -24,7 +24,7 @@ jobs:
 
       - name: Run compose test
         run: |
-          docker compose --profile run test
+          docker compose --profile test run test
       
       - name: Get service names
         id: service_names
