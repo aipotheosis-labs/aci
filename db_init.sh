@@ -2,5 +2,5 @@
 
 set -eou pipefail
 
-poetry install
+poetry install # needed because the Dockerfile.server skipped dev dependencies
 poetry run alembic upgrade head
