@@ -1,0 +1,78 @@
+services:
+  db:
+    # Note: we need to use the pgvector/pgvector:pg17 image to use the pgvector extension, instead of the official postgres image
+    image: pgvector/pgvector:pg17
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${SERVER_DB_USER?} -d ${SERVER_DB_NAME?}"]
+      interval: 1s
+      retries: 5
+      start_period: 1s
+      timeout: 10s
+    environment:
+      POSTGRES_USER: ${SERVER_DB_USER?}
+      POSTGRES_PASSWORD: ${SERVER_DB_PASSWORD?}
+      POSTGRES_DB: ${SERVER_DB_NAME?}
+    ports:
+      - "${SERVER_DB_PORT?}:${SERVER_DB_PORT?}"
+    restart: no
+
+  db_init:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    working_dir: /working_dir
+    volumes:
+      - .:/working_dir
+    environment:
+      # override the default ALEMBIC_DB_HOST value in .env
+      ALEMBIC_DB_HOST: db
+    command: bash -c "./db_init.sh"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    healthcheck:
+      test: ["CMD-SHELL", "curl localhost:8000/v1/health"]
+      interval: 10s
+      retries: 5
+      start_period: 3s
+      timeout: 10s
+    # env_file:
+    #   - .env
+    environment:
+      # override the default SERVER_DB_HOST value in .env
+      SERVER_DB_HOST: db
+      SERVER_OPENAI_API_KEY: ${SERVER_OPENAI_API_KEY?}
+    # useful for development, changes take effect in the container without needing to rebuild the image.
+    volumes:
+      - ./aipolabs/server:/aipolabs/server
+      - ./aipolabs/common:/aipolabs/common
+    ports:
+      - "8000:8000"
+    # this overrides the default CMD specified in the Dockerfile, use this for local development
+    command: fastapi dev server/main.py --host 0.0.0.0 --port 8000
+    depends_on:
+      db:
+        condition: service_healthy
+      db_init:
+        condition: service_completed_successfully
+    restart: no
+
+  test:
+    profiles: ["test"]
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    working_dir: /working_dir
+    volumes:
+      - .:/working_dir
+    environment:
+      SERVER_DB_HOST: db
+    depends_on:
+      server:
+        condition: service_healthy
+    command: sh -c "poetry install && poetry run pytest"
