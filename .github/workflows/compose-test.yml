@@ -23,5 +23,6 @@ jobs:
         with:
           compose-file: "./compose.yml"
           compose-flags: "--profile test"
+          up-flags: "--exit-code-from test"
         env:
           SERVER_DB_HOST: "db"
