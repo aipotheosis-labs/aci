@@ -15,9 +15,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Create .env file from .env.example
+        run: |
+          cp .env.example .env
+
       - uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           compose-file: "./compose.yml"
-          compose-flags: "--profile test --env-file .env.example"
+          compose-flags: "--profile test"
         env:
           SERVER_DB_HOST: "db"
