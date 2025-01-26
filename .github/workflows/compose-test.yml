@@ -24,6 +24,6 @@ jobs:
 
       - name: Run compose test
         run: |
-          docker-compose --profile test up --exit-code-from test
+          docker compose --profile test up --exit-code-from test
 
 
