@@ -18,6 +18,6 @@ jobs:
       - uses: hoverkraft-tech/compose-action@v2.0.1
         with:
           compose-file: "./compose.yml"
-          compose-flags: "--profile test"
+          compose-flags: "--profile test --env-file .env.example"
         env:
           SERVER_DB_HOST: "db"
