@@ -23,6 +23,8 @@ jobs:
         uses: docker/setup-compose-action@v1
 
       - name: Run compose test
+        env:
+          SERVER_OPENAI_API_KEY: ${{ secrets.SERVER_OPENAI_API_KEY }}
         run: |
           docker compose --profile test run test
       
