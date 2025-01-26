@@ -19,10 +19,11 @@ jobs:
         run: |
           cp .env.example .env
 
-      - uses: hoverkraft-tech/compose-action@v2.0.1
-        with:
-          compose-file: "./compose.yml"
-          compose-flags: "--profile test"
-          up-flags: "--exit-code-from test"
-        env:
-          SERVER_DB_HOST: "db"
+      - name: Set up Docker Compose
+        uses: docker/setup-compose-action@v1
+
+      - name: Run compose test
+        run: |
+          docker-compose --profile test up --exit-code-from test
+
+
