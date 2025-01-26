@@ -32,7 +32,9 @@ jobs:
         id: service_names
         run: |
           SERVICE_NAMES=$(docker compose config --services)
-          echo "::set-output name=names::$SERVICE_NAMES"
+          echo "names<<EOF" >> $GITHUB_OUTPUT
+          echo "$SERVICE_NAMES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Print logs for each service
         run: |
