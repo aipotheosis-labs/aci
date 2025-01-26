@@ -42,7 +42,7 @@ services:
       start_period: 3s
       timeout: 10s
     env_file:
-      - .env
+      - .env.example
     environment:
       # override the default SERVER_DB_HOST value in .env
       SERVER_DB_HOST: db
