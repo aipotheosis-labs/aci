@@ -72,6 +72,7 @@ services:
       - .:/working_dir
     environment:
       SERVER_DB_HOST: db
+      SERVER_OPENAI_API_KEY: ${SERVER_OPENAI_API_KEY?}
     depends_on:
       server:
         condition: service_healthy
