@@ -12,7 +12,6 @@ from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import User
 from aipolabs.common.exceptions import UnexpectedException
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.app_configurations import AppConfigurationCreate
 from aipolabs.common.schemas.user import AuthResponse, UserCreate
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
@@ -155,14 +154,3 @@ def _onboard_new_user(db_session: Session, user: User) -> None:
         excluded_functions=[],
     )
     logger.info(f"created default agent={agent.id} for project={project.id}")
-    # configure all Apps with default values for the new user
-    apps = crud.apps.get_all_apps(db_session, public_only=True, active_only=True)
-    for app in apps:
-        app_supported_security_schemes = list(app.security_schemes.keys())
-        app_configuration_create = AppConfigurationCreate(
-            app_id=app.id, security_scheme=app_supported_security_schemes[0]
-        )
-        crud.app_configurations.create_app_configuration(
-            db_session, project.id, app_configuration_create
-        )
-    logger.info(f"configured all apps for user={user.id}")

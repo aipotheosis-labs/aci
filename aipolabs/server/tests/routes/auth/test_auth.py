@@ -78,9 +78,6 @@ def test_callback_google(
     assert len(project.agents) == 1
     agent = project.agents[0]
     assert len(agent.api_keys) == 1
-    assert len(project.app_configurations) == len(
-        dummy_apps
-    ), "should have one app configuration per app created"
 
 
 def test_login_unsupported_provider(test_client: TestClient) -> None:
