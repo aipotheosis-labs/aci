@@ -69,8 +69,7 @@ Follow all guidelines below for setting up the development environment, running 
   <summary>Run pytest</summary>
 
   - Make sure a local db is running by `docker-compose up db` (no need to run `server` for `pytest`)
-  - Make sure you have applied the latest migrations to the database, and all tables are empty
-    - `alembic upgrade head`
+    - The `db_init` container will run `alembic upgrade head` to apply the latest migrations to the database
   - Run tests
     - `pytest -vv -s`
 </details>
