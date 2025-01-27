@@ -71,7 +71,7 @@ def test_callback_google(
     assert user.name == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["name"]
     assert user.profile_picture == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["picture"]
 
-    # check defaults (project, agent, api key, app configuration etc.) are created
+    # check defaults (project, agent, api key) are created
     projects = crud.projects.get_projects_by_owner(db_session, user_id)
     assert len(projects) == 1
     project = projects[0]
