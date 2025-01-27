@@ -1,4 +1,5 @@
 from unittest.mock import patch
+from urllib.parse import parse_qs, urlparse
 
 from authlib.jose import jwt
 from fastapi import status
@@ -29,6 +30,13 @@ def test_login_google(test_client: TestClient) -> None:
     # This is a redirect response, but we are not following the redirect
     # (set follow_redirects=False when creating the test client)
     response = test_client.get(f"{config.ROUTER_PREFIX_AUTH}/login/google")
+    location = response.headers["location"]
+    redirect_uri = parse_qs(urlparse(location).query)["redirect_uri"][0]
+
+    assert (
+        redirect_uri
+        == f"{config.AIPOLABS_REDIRECT_URI_BASE}{config.ROUTER_PREFIX_AUTH}/callback/google"
+    )
     assert response.headers["location"].startswith(MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX)
     assert response.status_code == status.HTTP_302_FOUND
 

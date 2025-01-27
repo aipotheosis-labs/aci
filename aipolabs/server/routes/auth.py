@@ -64,7 +64,7 @@ def create_access_token(user_id: str, expires_delta: timedelta) -> str:
 async def login(request: Request, provider: ClientIdentityProvider) -> RedirectResponse:
     oauth2_client = OAUTH2_CLIENTS[provider]
 
-    path = request.url_for("auth_callback", provider=provider).path
+    path = request.url_for("auth_callback", provider=provider.value).path
     redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
     logger.info(f"initiating login for provider={provider}, redirecting to={redirect_uri}")
 
