@@ -51,7 +51,7 @@ from aipolabs.common.schemas.security_scheme import (
     OAuth2SchemeCredentials,
 )
 
-EMBEDDING_DIMENTION = 1024
+EMBEDDING_DIMENSION = 1024
 APP_DEFAULT_VERSION = "1.0.0"
 # need app to be shorter because it's used as prefix for function name
 APP_NAME_MAX_LENGTH = 100
@@ -393,8 +393,8 @@ class Function(Base):
     parameters: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
     # TODO: should response schema be generic (data + execution success of not + optional error) or specific to the function
     response: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
-    # TODO: should we provide EMBEDDING_DIMENTION here? which makes it less flexible if we want to change the embedding dimention in the future
-    embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENTION), nullable=False)
+    # TODO: should we provide EMBEDDING_DIMENSION here? which makes it less flexible if we want to change the embedding dimention in the future
+    embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENSION), nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
@@ -439,7 +439,7 @@ class App(Base):
         dict[SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials]
     ] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
     # embedding vector for similarity search
-    embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENTION), nullable=False)
+    embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENSION), nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
