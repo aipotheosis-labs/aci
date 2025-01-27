@@ -4,10 +4,10 @@ from urllib.parse import parse_qs, urlparse
 from authlib.jose import jwt
 from fastapi import status
 from fastapi.testclient import TestClient
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db.sql_models import User
+from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import App
 from aipolabs.server import config
 
 MOCK_USER_GOOGLE_AUTH_DATA = {
@@ -42,7 +42,9 @@ def test_login_google(test_client: TestClient) -> None:
 
 
 # mock_oauth_provider to mock google Oauth user info
-def test_callback_google(test_client: TestClient, db_session: Session) -> None:
+def test_callback_google(
+    test_client: TestClient, db_session: Session, dummy_apps: list[App]
+) -> None:
     # mock the oauth2 client's authorize_access_token method
     with patch(
         "aipolabs.server.oauth2.authorize_access_token",
@@ -61,13 +63,24 @@ def test_callback_google(test_client: TestClient, db_session: Session) -> None:
     user_id = payload.get("sub")
     # get user by id and check user is created
 
-    user = db_session.execute(select(User).filter(User.id == user_id)).scalar_one_or_none()
+    user = crud.users.get_user_by_id(db_session, user_id)
     assert user is not None
     assert user.identity_provider == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["iss"]
     assert user.user_id_by_provider == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["sub"]
     assert user.email == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["email"]
     assert user.name == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["name"]
     assert user.profile_picture == MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]["picture"]
+
+    # check defaults (project, agent, api key, app configuration etc.) are created
+    projects = crud.projects.get_projects_by_owner(db_session, user_id)
+    assert len(projects) == 1
+    project = projects[0]
+    assert len(project.agents) == 1
+    agent = project.agents[0]
+    assert len(agent.api_keys) == 1
+    assert len(project.app_configurations) == len(
+        dummy_apps
+    ), "should have one app configuration per app created"
 
 
 def test_login_unsupported_provider(test_client: TestClient) -> None:

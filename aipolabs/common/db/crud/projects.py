@@ -51,6 +51,13 @@ def get_project(db_session: Session, project_id: UUID) -> Project | None:
     return project
 
 
+def get_projects_by_owner(db_session: Session, owner_id: UUID) -> list[Project]:
+    projects: list[Project] = (
+        db_session.execute(select(Project).filter_by(owner_id=owner_id)).scalars().all()
+    )
+    return projects
+
+
 def get_project_by_api_key_id(db_session: Session, api_key_id: UUID) -> Project | None:
     # api key id -> agent id -> project id
     project: Project | None = db_session.execute(

@@ -278,9 +278,12 @@ class Project(Base):
         init=False,
     )
 
-    # deleting project will delete all agents under the project
+    # deleting project will delete all associated resources under the project
     agents: Mapped[list[Agent]] = relationship(
         "Agent", lazy="select", cascade="all, delete-orphan", init=False
+    )
+    app_configurations: Mapped[list[AppConfiguration]] = relationship(
+        "AppConfiguration", lazy="select", cascade="all, delete-orphan", init=False
     )
 
 

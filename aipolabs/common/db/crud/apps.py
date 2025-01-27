@@ -70,13 +70,22 @@ def get_app_by_name(
 def get_apps(
     db_session: Session, public_only: bool, active_only: bool, limit: int, offset: int
 ) -> list[App]:
-    """Get all apps, order by App name"""
     statement = select(App)
     if public_only:
         statement = statement.filter(App.visibility == Visibility.PUBLIC)
     if active_only:
         statement = statement.filter(App.active)
     statement = statement.order_by(App.name).offset(offset).limit(limit)
+    apps: list[App] = db_session.execute(statement).scalars().all()
+    return apps
+
+
+def get_all_apps(db_session: Session, public_only: bool, active_only: bool) -> list[App]:
+    statement = select(App)
+    if public_only:
+        statement = statement.filter(App.visibility == Visibility.PUBLIC)
+    if active_only:
+        statement = statement.filter(App.active)
     apps: list[App] = db_session.execute(statement).scalars().all()
     return apps
 
