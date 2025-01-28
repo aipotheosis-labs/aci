@@ -16,6 +16,7 @@ for example,
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Dict
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
