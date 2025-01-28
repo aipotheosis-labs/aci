@@ -268,3 +268,14 @@ class LinkedAccountOAuth2Error(AipolabsException):
             message=message,
             error_code=status.HTTP_400_BAD_REQUEST,
         )
+
+
+class AgentNotFound(AipolabsException):
+    """
+    Exception raised when an agent is not found
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Agent not found", message=message, error_code=status.HTTP_404_NOT_FOUND
+        )
