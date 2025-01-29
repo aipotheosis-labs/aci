@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy import select
@@ -182,3 +184,91 @@ def test_create_two_custom_instructions(
     assert agent is not None
     assert agent.custom_instructions.get(str(dummy_app_google.id)) == body_1.instructions
     assert agent.custom_instructions.get(str(dummy_app_github.id)) == body_2.instructions
+
+
+def test_create_custom_instructions_nonexistent_agent(
+    test_client: TestClient,
+    db_session: Session,
+    dummy_app_google: App,
+    dummy_user_bearer_token: str,
+) -> None:
+    body = CustomInstructionsCreate(
+        app_id=dummy_app_google.id,
+        instructions="test instructions",
+    )
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{uuid4()}/custom-instructions/",
+        json=body.model_dump(mode="json"),
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_create_custom_instructions_nonexistent_app(
+    test_client: TestClient,
+    db_session: Session,
+    dummy_agent_1: Agent,
+    dummy_user_bearer_token: str,
+) -> None:
+    body = CustomInstructionsCreate(
+        app_id=uuid4(),
+        instructions="test instructions",
+    )
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}/custom-instructions/",
+        json=body.model_dump(mode="json"),
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_create_custom_instructions_unauthorized_user(
+    test_client: TestClient,
+    db_session: Session,
+    dummy_agent_1: Agent,
+    dummy_app_google: App,
+    dummy_user_2_bearer_token: str,  # Need to add this fixture
+) -> None:
+    body = CustomInstructionsCreate(
+        app_id=dummy_app_google.id,
+        instructions="test instructions",
+    )
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}/custom-instructions/",
+        json=body.model_dump(mode="json"),
+        headers={"Authorization": f"Bearer {dummy_user_2_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+# TODO: will have to update this when there are multiple filters per app
+def test_create_custom_instructions_edge_cases(
+    test_client: TestClient,
+    db_session: Session,
+    dummy_agent_1: Agent,
+    dummy_app_google: App,
+    dummy_user_bearer_token: str,
+) -> None:
+    test_cases = [
+        {"instructions": "a" * 10000},  # Very long instructions
+        {"instructions": ""},  # Empty string
+        {"instructions": "Special chars: !@#$%^&*()_+"},  # Special characters
+        {"instructions": "Multi\nline\ninstructions"},  # Multi-line
+    ]
+
+    for case in test_cases:
+        body = CustomInstructionsCreate(
+            app_id=dummy_app_google.id,
+            instructions=case["instructions"],
+        )
+        response = test_client.post(
+            f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}/custom-instructions/",
+            json=body.model_dump(mode="json"),
+            headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+        db_session.refresh(dummy_agent_1)
+        assert (
+            dummy_agent_1.custom_instructions.get(str(dummy_app_google.id)) == case["instructions"]
+        )

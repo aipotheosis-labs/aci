@@ -113,8 +113,30 @@ def dummy_user(
 
 
 @pytest.fixture(scope="function")
+def dummy_user_2(
+    db_session: Session, database_setup_and_cleanup: None
+) -> Generator[User, None, None]:
+    dummy_user_2 = crud.users.create_user(
+        db_session,
+        UserCreate(
+            identity_provider="dummy_identity_provider_2",
+            user_id_by_provider="dummy_user_id_by_provider_2",
+            name="Dummy User 2",
+            email="dummy2@example.com",
+        ),
+    )
+    db_session.commit()
+    yield dummy_user_2
+
+
+@pytest.fixture(scope="function")
 def dummy_user_bearer_token(dummy_user: User) -> str:
     return create_access_token(str(dummy_user.id), timedelta(minutes=15))
+
+
+@pytest.fixture(scope="function")
+def dummy_user_2_bearer_token(dummy_user_2: User) -> str:
+    return create_access_token(str(dummy_user_2.id), timedelta(minutes=15))
 
 
 @pytest.fixture(scope="function")
