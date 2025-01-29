@@ -96,7 +96,9 @@ async def create_custom_instructions(
         logger.error(f"Agent not found: {agent_id}")
         raise AgentNotFound(str(agent_id))
     acl.validate_user_access_to_project(db_session, user.id, agent.project_id)
-
+    if body.app_id in agent.excluded_apps:
+        logger.error(f"App {body.app_id} is in agent's excluded_apps list")
+        raise AppNotFound(f"App {body.app_id} is excluded for this agent")
     # get project
     project = crud.projects.get_project(db_session, agent.project_id)
     if not project:
