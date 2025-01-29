@@ -20,6 +20,7 @@ class AgentPublic(BaseModel):
     description: str
     excluded_apps: list[UUID] = []
     excluded_functions: list[UUID] = []
+    custom_instructions: dict[UUID, str] = {}
 
     created_at: datetime
     updated_at: datetime

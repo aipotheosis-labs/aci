@@ -82,7 +82,7 @@ async def create_agent(
     return agent
 
 
-@router.post("/agents/{agent_id}/custom-instructions/")
+@router.post("/agents/{agent_id}/custom-instructions/", response_model=AgentPublic)
 async def create_custom_instructions(
     agent_id: UUID,
     body: CustomInstructionsCreate,
