@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db.sql_models import Agent, APIKey, Project
 from aipolabs.common.enums import APIKeyStatus, Visibility
 from aipolabs.common.logging import get_logger
+from aipolabs.common.schemas.agent import AgentUpdate, CustomInstructions
 
 logger = get_logger(__name__)
 
@@ -120,6 +121,7 @@ def create_agent(
     description: str,
     excluded_apps: list[UUID],
     excluded_functions: list[UUID],
+    custom_instructions: CustomInstructions,
 ) -> Agent:
     """
     Create a new agent under a project, and create a new API key for the agent.
@@ -131,12 +133,39 @@ def create_agent(
         description=description,
         excluded_apps=excluded_apps,
         excluded_functions=excluded_functions,
+        custom_instructions=custom_instructions,
     )
     db_session.add(agent)
 
     # Create the API key for the agent
     api_key = APIKey(key=secrets.token_hex(32), agent_id=agent.id, status=APIKeyStatus.ACTIVE)
     db_session.add(api_key)
+
+    db_session.flush()
+    db_session.refresh(agent)
+
+    return agent
+
+
+def update_agent(
+    db_session: Session,
+    agent: Agent,
+    update: AgentUpdate,
+) -> Agent:
+    """
+    Update Agent record by agent id
+    """
+
+    if update.name is not None:
+        agent.name = update.name
+    if update.description is not None:
+        agent.description = update.description
+    if update.excluded_apps is not None:
+        agent.excluded_apps = update.excluded_apps
+    if update.excluded_functions is not None:
+        agent.excluded_functions = update.excluded_functions
+    if update.custom_instructions is not None:
+        agent.custom_instructions = update.custom_instructions
 
     db_session.flush()
     db_session.refresh(agent)

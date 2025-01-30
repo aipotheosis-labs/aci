@@ -6,14 +6,10 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import Agent, Project, User
-from aipolabs.common.enums import OrganizationRole, Visibility
-from aipolabs.common.exceptions import AgentNotFound, AppNotFound, ProjectNotFound
+from aipolabs.common.enums import OrganizationRole
+from aipolabs.common.exceptions import AgentNotFound
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.agent import (
-    AgentCreate,
-    AgentPublic,
-    CustomInstructionsCreate,
-)
+from aipolabs.common.schemas.agent import AgentCreate, AgentPublic, AgentUpdate
 from aipolabs.common.schemas.project import ProjectCreate, ProjectPublic
 from aipolabs.server import acl
 from aipolabs.server import dependencies as deps
@@ -76,44 +72,31 @@ async def create_agent(
         body.description,
         body.excluded_apps,
         body.excluded_functions,
+        body.custom_instructions,
     )
     db_session.commit()
     logger.info(f"Created agent: {AgentPublic.model_validate(agent)}")
     return agent
 
 
-@router.post("/agents/{agent_id}/custom-instructions/", response_model=AgentPublic)
-async def create_custom_instructions(
+@router.patch("/agents/{agent_id}", response_model=AgentPublic)
+async def update_agent(
+    # project_id: UUID,
     agent_id: UUID,
-    body: CustomInstructionsCreate,
+    body: AgentUpdate,
     user: Annotated[User, Depends(deps.validate_http_bearer)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Agent:
-    logger.info(f"Creating custom instructions for agent={agent_id}, and app={body.app_id}")
+    logger.info(f"Updating agent={agent_id}, and app={body.app_id}")
     # Get project id from agent
     agent = crud.projects.get_agent_by_id(db_session, agent_id)
     if not agent:
-        logger.error(f"Agent not found: {agent_id}")
+        logger.error(f"agent={agent_id} not found")
         raise AgentNotFound(str(agent_id))
-    acl.validate_user_access_to_project(db_session, user.id, agent.project_id)
-    if body.app_id in agent.excluded_apps:
-        logger.error(f"App {body.app_id} is in agent's excluded_apps list")
-        raise AppNotFound(f"App {body.app_id} is excluded for this agent")
-    # get project
-    project = crud.projects.get_project(db_session, agent.project_id)
-    if not project:
-        logger.error(f"Project not found: {agent.project_id}")
-        raise ProjectNotFound(str(agent.project_id))
-    # Validate that the app exists
-    app = crud.apps.get_app(
-        db_session, body.app_id, project.visibility_access == Visibility.PUBLIC, True
-    )
-    if not app:
-        logger.error(f"App not found: {body.app_id}")
-        raise AppNotFound(str(body.app_id))
 
-    # Update the custom_instructions dictionary
-    agent.custom_instructions[str(body.app_id)] = body.instructions
+    acl.validate_user_access_to_project(db_session, user.id, agent.project_id)
+
+    crud.projects.update_agent(db_session, agent, body)
     db_session.commit()
-    logger.info(f"Created custom instructions for agent={agent_id}, and app={body.app_id}")
+
     return agent
