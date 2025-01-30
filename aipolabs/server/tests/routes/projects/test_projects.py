@@ -7,11 +7,7 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import User
 from aipolabs.common.enums import Visibility
-from aipolabs.common.schemas.agent import (
-    AgentCreate,
-    AgentPublic,
-    CustomInstructionsCreate,
-)
+from aipolabs.common.schemas.agent import AgentCreate, AgentPublic
 from aipolabs.common.schemas.project import ProjectCreate, ProjectPublic
 from aipolabs.server import config
 
@@ -86,30 +82,24 @@ def test_get_projects_under_user(
 def test_create_custom_instructions(
     test_client: TestClient,
     db_session: Session,
+    dummy_user: User,
     dummy_agent_1: Agent,
     dummy_app_google: App,
     dummy_user_bearer_token: str,
 ) -> None:
-    body = CustomInstructionsCreate(
-        app_id=dummy_app_google.id,
-        instructions="test instructions",
-    )
-    response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}/custom-instructions/",
-        json=body.model_dump(mode="json"),
+
+    ENDPOINT = f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}"
+    response = test_client.patch(
+        ENDPOINT,
+        json={"custom_instructions": {str(dummy_app_google.id): "test instructions"}},
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
-    # get agent from db
-    db_session.refresh(dummy_agent_1)
-    agent = db_session.execute(
-        select(Agent).filter(Agent.id == dummy_agent_1.id)
-    ).scalar_one_or_none()
-    assert agent is not None
-    assert agent.custom_instructions.get(str(dummy_app_google.id)) == body.instructions
+    agent_public = AgentPublic.model_validate(response.json())
+    assert agent_public.custom_instructions == {str(dummy_app_google.id): "test instructions"}
 
 
-def test_create_two_custom_instructions(
+def test_update_agent(
     test_client: TestClient,
     db_session: Session,
     dummy_agent_1: Agent,
@@ -117,33 +107,85 @@ def test_create_two_custom_instructions(
     dummy_app_github: App,
     dummy_user_bearer_token: str,
 ) -> None:
-    body_1 = CustomInstructionsCreate(
-        app_id=dummy_app_google.id,
-        instructions="test instructions 1",
-    )
-    body_2 = CustomInstructionsCreate(
-        app_id=dummy_app_github.id,
-        instructions="test instructions 2",
-    )
-    response_1 = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}/custom-instructions/",
-        json=body_1.model_dump(mode="json"),
+    ENDPOINT = f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}"
+
+    # Test updating name and description
+    response = test_client.patch(
+        ENDPOINT,
+        json={"name": "Updated Agent Name", "description": "Updated description"},
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
-    assert response_1.status_code == status.HTTP_200_OK
-    response_2 = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}/custom-instructions/",
-        json=body_2.model_dump(mode="json"),
+    assert response.status_code == status.HTTP_200_OK
+    agent_public = AgentPublic.model_validate(response.json())
+    assert agent_public.name == "Updated Agent Name"
+    assert agent_public.description == "Updated description"
+
+    # Test updating excluded apps and functions
+    response = test_client.patch(
+        ENDPOINT,
+        json={
+            "excluded_apps": [str(dummy_app_google.id)],
+            "excluded_functions": [],
+        },
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
-    assert response_2.status_code == status.HTTP_200_OK
-    db_session.refresh(dummy_agent_1)
-    agent = db_session.execute(
-        select(Agent).filter(Agent.id == dummy_agent_1.id)
-    ).scalar_one_or_none()
-    assert agent is not None
-    assert agent.custom_instructions.get(str(dummy_app_google.id)) == body_1.instructions
-    assert agent.custom_instructions.get(str(dummy_app_github.id)) == body_2.instructions
+    assert response.status_code == status.HTTP_200_OK
+    agent_public = AgentPublic.model_validate(response.json())
+    assert dummy_app_google.id in agent_public.excluded_apps
+    assert len(agent_public.excluded_functions) == 0
+
+    # Test updating custom instructions
+    response = test_client.patch(
+        ENDPOINT,
+        json={"custom_instructions": {str(dummy_app_github.id): "Custom GitHub instructions"}},
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    agent_public = AgentPublic.model_validate(response.json())
+    assert agent_public.custom_instructions == {
+        str(dummy_app_github.id): "Custom GitHub instructions"
+    }
+
+
+def test_update_multiple_custom_instructions(
+    test_client: TestClient,
+    db_session: Session,
+    dummy_agent_1: Agent,
+    dummy_app_google: App,
+    dummy_app_github: App,
+    dummy_user_bearer_token: str,
+) -> None:
+    ENDPOINT = f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}"
+
+    # Add first custom instruction for Google app
+    response = test_client.patch(
+        ENDPOINT,
+        json={"custom_instructions": {str(dummy_app_google.id): "Custom Google instructions"}},
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    agent_public = AgentPublic.model_validate(response.json())
+    assert agent_public.custom_instructions == {
+        str(dummy_app_google.id): "Custom Google instructions"
+    }
+
+    # Add second custom instruction for GitHub app while preserving Google app instruction
+    response = test_client.patch(
+        ENDPOINT,
+        json={
+            "custom_instructions": {
+                str(dummy_app_google.id): "Custom Google instructions",
+                str(dummy_app_github.id): "Custom GitHub instructions",
+            }
+        },
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    agent_public = AgentPublic.model_validate(response.json())
+    assert agent_public.custom_instructions == {
+        str(dummy_app_google.id): "Custom Google instructions",
+        str(dummy_app_github.id): "Custom GitHub instructions",
+    }
 
 
 def test_create_custom_instructions_nonexistent_agent(
@@ -152,31 +194,17 @@ def test_create_custom_instructions_nonexistent_agent(
     dummy_app_google: App,
     dummy_user_bearer_token: str,
 ) -> None:
-    body = CustomInstructionsCreate(
-        app_id=dummy_app_google.id,
-        instructions="test instructions",
-    )
-    response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{uuid4()}/custom-instructions/",
-        json=body.model_dump(mode="json"),
-        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
-    )
-    assert response.status_code == status.HTTP_404_NOT_FOUND
+    """Test that attempting to create custom instructions for a nonexistent agent returns 404"""
+    # Generate a random UUID that doesn't exist in the database
+    nonexistent_agent_id = uuid4()
 
-
-def test_create_custom_instructions_nonexistent_app(
-    test_client: TestClient,
-    db_session: Session,
-    dummy_agent_1: Agent,
-    dummy_user_bearer_token: str,
-) -> None:
-    body = CustomInstructionsCreate(
-        app_id=uuid4(),
-        instructions="test instructions",
-    )
-    response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}/custom-instructions/",
-        json=body.model_dump(mode="json"),
+    response = test_client.patch(
+        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{nonexistent_agent_id}",
+        json={
+            "custom_instructions": {
+                str(dummy_app_google.id): "Custom instructions for nonexistent agent"
+            }
+        },
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -189,46 +217,41 @@ def test_create_custom_instructions_unauthorized_user(
     dummy_app_google: App,
     dummy_user_2_bearer_token: str,  # Need to add this fixture
 ) -> None:
-    body = CustomInstructionsCreate(
-        app_id=dummy_app_google.id,
-        instructions="test instructions",
-    )
-    response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}/custom-instructions/",
-        json=body.model_dump(mode="json"),
+    """Test that unauthorized users cannot update custom instructions"""
+    response = test_client.patch(
+        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}",
+        json={
+            "custom_instructions": {
+                str(dummy_app_google.id): "Custom instructions from unauthorized user"
+            }
+        },
         headers={"Authorization": f"Bearer {dummy_user_2_bearer_token}"},
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-# TODO: will have to update this when there are multiple filters per app
-def test_create_custom_instructions_edge_cases(
+def test_custom_instructions_restrictions(
     test_client: TestClient,
     db_session: Session,
     dummy_agent_1: Agent,
     dummy_app_google: App,
     dummy_user_bearer_token: str,
 ) -> None:
-    test_cases = [
-        {"instructions": "a" * 10000},  # Very long instructions
-        {"instructions": ""},  # Empty string
-        {"instructions": "Special chars: !@#$%^&*()_+"},  # Special characters
-        {"instructions": "Multi\nline\ninstructions"},  # Multi-line
-    ]
+    """Test that custom instructions cannot be empty strings"""
+    response = test_client.patch(
+        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}",
+        json={
+            "custom_instructions": {str(dummy_app_google.id): ""}  # Empty string should be rejected
+        },
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-    for case in test_cases:
-        body = CustomInstructionsCreate(
-            app_id=dummy_app_google.id,
-            instructions=case["instructions"],
-        )
-        response = test_client.post(
-            f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}/custom-instructions/",
-            json=body.model_dump(mode="json"),
-            headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
-        )
-        assert response.status_code == status.HTTP_200_OK
-
-        db_session.refresh(dummy_agent_1)
-        assert (
-            dummy_agent_1.custom_instructions.get(str(dummy_app_google.id)) == case["instructions"]
-        )
+    # Verify valid instructions still work
+    response = test_client.patch(
+        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}",
+        json={"custom_instructions": {str(dummy_app_google.id): "Valid instructions"}},
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["custom_instructions"][str(dummy_app_google.id)] == "Valid instructions"
