@@ -52,13 +52,14 @@ def test_callback_google(
     ):
         response = test_client.get(f"{config.ROUTER_PREFIX_AUTH}/callback/google")
 
-    data = response.json()
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
+
+    accessToken = response.cookies.get("accessToken")
+
     # check jwt token is generated
-    assert data["access_token"] is not None
-    assert data["token_type"] == "bearer"
+    assert accessToken is not None
     # check user is created
-    payload = jwt.decode(data["access_token"], config.SIGNING_KEY)
+    payload = jwt.decode(accessToken, config.SIGNING_KEY)
     payload.validate()
     user_id = payload.get("sub")
     # get user by id and check user is created
