@@ -50,12 +50,3 @@ class AgentPublic(BaseModel):
     api_keys: list[APIKeyPublic]
 
     model_config = ConfigDict(from_attributes=True)
-
-
-class CustomInstructionsCreate(BaseModel):
-    """
-    Custom instructions for a agent to follow for an app within a project
-    """
-
-    app_id: UUID
-    instructions: ValidInstruction
