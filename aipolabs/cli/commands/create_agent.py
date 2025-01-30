@@ -58,6 +58,7 @@ def create_agent(
     description: str,
     excluded_apps: list[UUID],
     excluded_functions: list[UUID],
+    custom_instructions: dict[UUID, str],
     skip_dry_run: bool,
 ) -> UUID:
     """
@@ -69,6 +70,7 @@ def create_agent(
         description,
         excluded_apps,
         excluded_functions,
+        custom_instructions,
         skip_dry_run,
     )
 
@@ -79,6 +81,7 @@ def create_agent_helper(
     description: str,
     excluded_apps: list[UUID],
     excluded_functions: list[UUID],
+    custom_instructions: dict[UUID, str],
     skip_dry_run: bool,
 ) -> UUID:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
@@ -90,6 +93,7 @@ def create_agent_helper(
             description,
             excluded_apps,
             excluded_functions,
+            custom_instructions,
         )
 
         if not skip_dry_run:

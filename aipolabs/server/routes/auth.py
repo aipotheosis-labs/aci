@@ -162,5 +162,6 @@ def _onboard_new_user(db_session: Session, user: User) -> None:
         description="Default Agent",
         excluded_apps=[],
         excluded_functions=[],
+        custom_instructions={},
     )
     logger.info(f"created default agent={agent.id} for project={project.id}")

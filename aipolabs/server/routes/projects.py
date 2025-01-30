@@ -86,7 +86,7 @@ async def update_agent(
     user: Annotated[User, Depends(deps.validate_http_bearer)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Agent:
-    logger.info(f"Updating agent={agent_id}, and app={body.app_id}")
+    logger.info(f"Updating agent={agent_id}")
     # Get project id from agent
     agent = crud.projects.get_agent_by_id(db_session, agent_id)
     if not agent:
