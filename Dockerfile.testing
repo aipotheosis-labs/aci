@@ -11,18 +11,13 @@ RUN poetry config virtualenvs.create false
 # Copy poetry.lock* in case it doesn't exist in the repo
 COPY ./pyproject.toml ./poetry.lock* /aipolabs/
 
-# skip dev dependencies
-RUN poetry install --no-root --only main
+RUN poetry install --no-root
 
 # Check if PYTHONPATH exists and append /aipolabs, otherwise set it to /aipolabs
 RUN if [ -z "$PYTHONPATH" ]; then export PYTHONPATH=/aipolabs; else export PYTHONPATH=/aipolabs:$PYTHONPATH; fi
 
 # .env files will be skipped by default specified in .dockerignore
-COPY ./aipolabs/server /aipolabs/server
-COPY ./aipolabs/common /aipolabs/common
-COPY ./aipolabs/__init__.py /aipolabs/__init__.py
-
-# remove unecessary or sensitive files (.env files are skipped by default specified in .dockerignore)
-RUN rm -rf /aipolabs/server/tests
-
-CMD ["fastapi", "run", "server/main.py", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]
+COPY ./aipolabs /aipolabs/aipolabs
+COPY ./apps /aipolabs/apps
+COPY ./scripts /aipolabs/scripts
+COPY ./alembic.ini /aipolabs/alembic.ini
