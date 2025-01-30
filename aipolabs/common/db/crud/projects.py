@@ -121,7 +121,8 @@ def create_agent(
     description: str,
     excluded_apps: list[UUID],
     excluded_functions: list[UUID],
-    custom_instructions: CustomInstructions,
+    # TODO: decide if is best to set default to empty dict here
+    custom_instructions: CustomInstructions = {},
 ) -> Agent:
     """
     Create a new agent under a project, and create a new API key for the agent.
