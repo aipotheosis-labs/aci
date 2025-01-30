@@ -16,7 +16,6 @@ for example,
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Dict
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
@@ -313,7 +312,7 @@ class Agent(Base):
     )
     # TODO: should we use JSONB instead? As this will be frequently queried
     # Custom instructions for the agent to follow for each app
-    custom_instructions: Mapped[Dict[UUID, str]] = mapped_column(
+    custom_instructions: Mapped[dict[UUID, str]] = mapped_column(
         MutableDict.as_mutable(JSON), nullable=False, default_factory=dict
     )
 
