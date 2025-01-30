@@ -200,6 +200,7 @@ def dummy_agent_1(db_session: Session, dummy_project_1: Project) -> Generator[Ag
         description="Dummy Agent 1",
         excluded_apps=[],
         excluded_functions=[],
+        custom_instructions={},
     )
     db_session.commit()
     yield dummy_agent_1
