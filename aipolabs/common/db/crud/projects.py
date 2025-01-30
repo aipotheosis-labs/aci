@@ -122,7 +122,7 @@ def create_agent(
     excluded_apps: list[UUID],
     excluded_functions: list[UUID],
     # TODO: decide if is best to set default to empty dict here
-    custom_instructions: CustomInstructions = {},
+    custom_instructions: CustomInstructions | None = None,
 ) -> Agent:
     """
     Create a new agent under a project, and create a new API key for the agent.
@@ -134,7 +134,7 @@ def create_agent(
         description=description,
         excluded_apps=excluded_apps,
         excluded_functions=excluded_functions,
-        custom_instructions=custom_instructions,
+        custom_instructions=custom_instructions if custom_instructions is not None else {},
     )
     db_session.add(agent)
 
