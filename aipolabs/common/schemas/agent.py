@@ -16,7 +16,7 @@ def validate_instruction(v: str) -> str:
 
 
 ValidInstruction = Annotated[str, BeforeValidator(validate_instruction)]
-CustomInstructions = dict[UUID, ValidInstruction]
+CustomInstructions = dict[str, ValidInstruction]
 
 
 class AgentCreate(BaseModel):
