@@ -202,7 +202,7 @@ def test_search_apps_with_private_apps(
 
 def test_search_apps_configured_only(
     test_client: TestClient,
-    dummy_apps: list[App],
+    dummy_app_google: App,
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     dummy_api_key_1: str,
 ) -> None:
@@ -222,7 +222,7 @@ def test_search_apps_configured_only(
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 1, "Should only return the one configured app"
-    assert apps[0].name == dummy_apps[0].name, "Returned app and configured app are not the same"
+    assert apps[0].name == dummy_app_google.name, "Returned app and configured app are not the same"
 
 
 def test_search_apps_configured_only_with_none_configured(
@@ -250,7 +250,7 @@ def test_search_apps_configured_only_with_none_configured(
 def test_search_apps_configured_only_exclude_apps_from_other_projects(
     db_session: Session,
     test_client: TestClient,
-    dummy_apps: list[App],
+    dummy_app_google: App,
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     dummy_app_configuration_api_key_github_project_2: AppConfigurationPublic,
     dummy_api_key_1: str,
@@ -269,4 +269,4 @@ def test_search_apps_configured_only_exclude_apps_from_other_projects(
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 1, "Should only return one app"
-    assert apps[0].name == dummy_apps[0].name, "Returned app and configured app are not the same"
+    assert apps[0].name == dummy_app_google.name, "Returned app and configured app are not the same"

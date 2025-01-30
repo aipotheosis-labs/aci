@@ -284,8 +284,8 @@ def test_search_functions_pagination(
 
 def test_search_functions_configured_only_true(
     test_client: TestClient,
-    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
-    dummy_apps: list[App],
+    dummy_app_configuration_oauth2_aipolabs_test_project_1: AppConfigurationPublic,
+    dummy_app_aipolabs_test: App,
     dummy_api_key_1: str,
 ) -> None:
     response = test_client.get(
@@ -297,8 +297,8 @@ def test_search_functions_configured_only_true(
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
-    assert len(functions) == len(dummy_apps[0].functions)
-    dummy_app_function_names = [function.name for function in dummy_apps[0].functions]
+    assert len(functions) == len(dummy_app_aipolabs_test.functions)
+    dummy_app_function_names = [function.name for function in dummy_app_aipolabs_test.functions]
     assert all(function.name in dummy_app_function_names for function in functions)
 
 
