@@ -4,7 +4,7 @@ from typing import Annotated
 
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from authlib.jose import jwt
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 from starlette.responses import RedirectResponse
 
@@ -12,7 +12,7 @@ from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import User
 from aipolabs.common.exceptions import UnexpectedException
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.user import AuthResponse, UserCreate
+from aipolabs.common.schemas.user import UserCreate
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 from aipolabs.server import oauth2
@@ -81,9 +81,10 @@ async def login(request: Request, provider: ClientIdentityProvider) -> RedirectR
 )
 async def auth_callback(
     request: Request,
+    response: Response,
     provider: ClientIdentityProvider,
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-) -> AuthResponse:
+) -> RedirectResponse:
     logger.info(f"callback received for identity provider={provider}")
     # TODO: try/except, retry?
     auth_response = await oauth2.authorize_access_token(OAUTH2_CLIENTS[provider], request)
@@ -135,7 +136,16 @@ async def auth_callback(
         f"JWT generated successfully for user={user.id}, jwt_token={jwt_token[:4]}...{jwt_token[-4:]}"
     )
 
-    return AuthResponse(access_token=jwt_token, token_type="bearer", user_id=user.id)
+    response = RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
+    response.set_cookie(
+        key="accessToken",
+        value=jwt_token,
+        # httponly=True, # TODO: set after initial release
+        # secure=True, # TODO: set after initial release
+        samesite="lax",
+        max_age=config.DEV_PORTAL_COOKIE_AGE,
+    )
+    return response
 
 
 # TODO: For the Feb 2025 release, we decided to create default project (and agent, api key, app confiiguration, etc)
