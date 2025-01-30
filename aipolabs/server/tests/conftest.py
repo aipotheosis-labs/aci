@@ -1,38 +1,44 @@
-from unittest.mock import patch
-
-# override the rate limit to a high number for testing before importing aipolabs modules
-with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
-    from aipolabs.common import utils
-    from aipolabs.common.db import crud
-    from aipolabs.common.db.sql_models import Base, User, Project, App, Function
-    from aipolabs.common.enums import Visibility
-    from aipolabs.common.schemas.user import UserCreate
-    from aipolabs.server import config
-    from aipolabs.server.main import app as fastapi_app
-    from aipolabs.server.routes.auth import create_access_token
-    from aipolabs.server.tests import helper
-    from aipolabs.common.enums import SecurityScheme
-    from aipolabs.common.schemas.app_configurations import (
-        AppConfigurationCreate,
-        AppConfigurationPublic,
-    )
-    from aipolabs.common.db.sql_models import LinkedAccount
-    from aipolabs.common.schemas.security_scheme import (
-        OAuth2SchemeCredentials,
-        APIKeySchemeCredentials,
-    )
-
 import logging
 import time
 from datetime import timedelta
 from typing import Generator, cast
+from unittest.mock import patch
 
 import pytest
+from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from sqlalchemy import inspect
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import Session
 
+load_dotenv()
+
+# override the rate limit to a high number for testing before importing aipolabs modules
+with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
+    from aipolabs.common import utils
+    from aipolabs.common.db import crud
+    from aipolabs.common.db.sql_models import (
+        App,
+        Base,
+        Function,
+        LinkedAccount,
+        Project,
+        User,
+    )
+    from aipolabs.common.enums import SecurityScheme, Visibility
+    from aipolabs.common.schemas.app_configurations import (
+        AppConfigurationCreate,
+        AppConfigurationPublic,
+    )
+    from aipolabs.common.schemas.security_scheme import (
+        APIKeySchemeCredentials,
+        OAuth2SchemeCredentials,
+    )
+    from aipolabs.common.schemas.user import UserCreate
+    from aipolabs.server import config
+    from aipolabs.server.main import app as fastapi_app
+    from aipolabs.server.routes.auth import create_access_token
+    from aipolabs.server.tests import helper
 logger = logging.getLogger(__name__)
 
 # call this one time for entire tests because it's slow and costs money (negligible) as it needs

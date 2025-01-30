@@ -1,9 +1,4 @@
-from dotenv import load_dotenv
-
 from aipolabs.common.utils import check_and_get_env_variable, construct_db_url
-
-load_dotenv()
-
 
 # LLM
 OPENAI_API_KEY = check_and_get_env_variable("SERVER_OPENAI_API_KEY")
