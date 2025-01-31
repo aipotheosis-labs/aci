@@ -143,7 +143,7 @@ async def auth_callback(
         # httponly=True, # TODO: set after initial release
         # secure=True, # TODO: set after initial release
         samesite="lax",
-        max_age=config.DEV_PORTAL_COOKIE_AGE,
+        max_age=config.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
     return response
 

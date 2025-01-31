@@ -62,4 +62,3 @@ ROUTER_PREFIX_LINKED_ACCOUNTS = "/v1/linked-accounts"
 
 # DEV PORTAL
 DEV_PORTAL_URL = check_and_get_env_variable("DEV_PORTAL_URL")
-DEV_PORTAL_COOKIE_AGE = 24 * 60 * 60  # 24 hours
