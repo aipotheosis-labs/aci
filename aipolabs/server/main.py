@@ -68,7 +68,7 @@ app.add_middleware(
     allow_origins=[config.DEV_PORTAL_URL],
     allow_credentials=True,
     allow_methods=["GET"],
-    allow_headers=["Authorization"],
+    allow_headers=["Authorization", "X-API-KEY"],
 )
 
 
