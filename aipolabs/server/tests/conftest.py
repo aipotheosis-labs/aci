@@ -5,13 +5,10 @@ from typing import Generator, cast
 from unittest.mock import patch
 
 import pytest
-from dotenv import load_dotenv
 from fastapi.testclient import TestClient
 from sqlalchemy import inspect
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import Session
-
-load_dotenv()
 
 # override the rate limit to a high number for testing before importing aipolabs modules
 with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
