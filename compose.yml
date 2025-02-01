@@ -64,11 +64,12 @@ services:
         condition: service_healthy
     restart: no
 
-  # "testing" service that uses a stock Python image, no Dockerfile needed
-  testing:
+  # can think of runner as an staging host for executing any commands
+  # e.g., run pytest, seed db etc.
+  runner:
     build:
       context: .
-      dockerfile: Dockerfile.testing
+      dockerfile: Dockerfile.runner
     env_file:
       - .env
     environment:
