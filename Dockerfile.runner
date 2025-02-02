@@ -15,9 +15,3 @@ RUN poetry install --no-root
 
 # Check if PYTHONPATH exists and append /aipolabs, otherwise set it to /aipolabs
 RUN if [ -z "$PYTHONPATH" ]; then export PYTHONPATH=/aipolabs; else export PYTHONPATH=/aipolabs:$PYTHONPATH; fi
-
-# .env files will be skipped by default specified in .dockerignore
-COPY ./aipolabs /aipolabs/aipolabs
-COPY ./apps /aipolabs/apps
-COPY ./scripts /aipolabs/scripts
-COPY ./alembic.ini /aipolabs/alembic.ini
