@@ -160,6 +160,7 @@ def dummy_api_key_1(db_session: Session, dummy_project_1: Project) -> Generator[
         description="Dummy Agent",
         excluded_apps=[],
         excluded_functions=[],
+        custom_instructions={},
     )
     db_session.commit()
     yield dummy_agent.api_keys[0].key
@@ -186,6 +187,7 @@ def dummy_api_key_2(db_session: Session, dummy_project_2: Project) -> Generator[
         description="Dummy Agent 2",
         excluded_apps=[],
         excluded_functions=[],
+        custom_instructions={},
     )
     db_session.commit()
     yield dummy_agent.api_keys[0].key
