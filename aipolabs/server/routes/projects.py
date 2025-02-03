@@ -79,7 +79,6 @@ async def create_agent(
     return agent
 
 
-# TODO: add add project_id to the endpoint
 @router.patch("/{project_id}/agents/{agent_id}", response_model=AgentPublic, include_in_schema=True)
 async def update_agent(
     project_id: UUID,
