@@ -15,6 +15,7 @@ with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
     from aipolabs.common import utils
     from aipolabs.common.db import crud
     from aipolabs.common.db.sql_models import (
+        Agent,
         App,
         Base,
         Function,
@@ -166,6 +167,20 @@ def dummy_api_key_2(db_session: Session, dummy_project_2: Project) -> Generator[
     )
     db_session.commit()
     yield dummy_agent.api_keys[0].key
+
+
+@pytest.fixture(scope="function")
+def dummy_agent_1(db_session: Session, dummy_project_1: Project) -> Generator[Agent, None, None]:
+    dummy_agent_1 = crud.projects.create_agent(
+        db_session,
+        project_id=dummy_project_1.id,
+        name="Dummy Agent 1",
+        description="Dummy Agent 1",
+        excluded_apps=[],
+        excluded_functions=[],
+    )
+    db_session.commit()
+    yield dummy_agent_1
 
 
 ################################################################################
