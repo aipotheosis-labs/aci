@@ -5,7 +5,11 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import User
 from aipolabs.common.enums import Visibility
-from aipolabs.common.schemas.agent import AgentCreate, AgentPublic
+from aipolabs.common.schemas.agent import (
+    AgentCreate,
+    AgentPublic,
+    CustomInstructionsCreate,
+)
 from aipolabs.common.schemas.project import ProjectCreate, ProjectPublic
 from aipolabs.server import config
 
@@ -75,3 +79,66 @@ def test_get_projects_under_user(
         assert len(agents_public) == number_of_agents_per_project
         for agent in agents_public:
             assert len(agent.api_keys) == 1, "each agent should have one api key"
+
+
+def test_create_custom_instructions(
+    test_client: TestClient,
+    db_session: Session,
+    dummy_agent_1: Agent,
+    dummy_app_google: App,
+    dummy_user_bearer_token: str,
+) -> None:
+    body = CustomInstructionsCreate(
+        app_id=dummy_app_google.id,
+        instructions="test instructions",
+    )
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}/custom-instructions/",
+        json=body.model_dump(mode="json"),
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    # get agent from db
+    db_session.refresh(dummy_agent_1)
+    agent = db_session.execute(
+        select(Agent).filter(Agent.id == dummy_agent_1.id)
+    ).scalar_one_or_none()
+    assert agent is not None
+    assert agent.custom_instructions.get(str(dummy_app_google.id)) == body.instructions
+
+
+def test_create_two_custom_instructions(
+    test_client: TestClient,
+    db_session: Session,
+    dummy_agent_1: Agent,
+    dummy_app_google: App,
+    dummy_app_github: App,
+    dummy_user_bearer_token: str,
+) -> None:
+    body_1 = CustomInstructionsCreate(
+        app_id=dummy_app_google.id,
+        instructions="test instructions 1",
+    )
+    body_2 = CustomInstructionsCreate(
+        app_id=dummy_app_github.id,
+        instructions="test instructions 2",
+    )
+    response_1 = test_client.post(
+        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}/custom-instructions/",
+        json=body_1.model_dump(mode="json"),
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response_1.status_code == status.HTTP_200_OK
+    response_2 = test_client.post(
+        f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}/custom-instructions/",
+        json=body_2.model_dump(mode="json"),
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response_2.status_code == status.HTTP_200_OK
+    db_session.refresh(dummy_agent_1)
+    agent = db_session.execute(
+        select(Agent).filter(Agent.id == dummy_agent_1.id)
+    ).scalar_one_or_none()
+    assert agent is not None
+    assert agent.custom_instructions.get(str(dummy_app_google.id)) == body_1.instructions
+    assert agent.custom_instructions.get(str(dummy_app_github.id)) == body_2.instructions
