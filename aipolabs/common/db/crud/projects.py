@@ -166,7 +166,9 @@ def update_agent(
     if update.excluded_functions is not None:
         agent.excluded_functions = update.excluded_functions
     if update.custom_instructions is not None:
-        agent.custom_instructions = update.custom_instructions
+        agent.custom_instructions = update.model_dump(mode="json", exclude_none=True)[
+            "custom_instructions"
+        ]
 
     db_session.flush()
     db_session.refresh(agent)
