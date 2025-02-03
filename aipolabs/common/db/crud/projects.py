@@ -121,7 +121,6 @@ def create_agent(
     description: str,
     excluded_apps: list[UUID],
     excluded_functions: list[UUID],
-    # TODO: decide if is best to set default to empty dict here
     custom_instructions: CustomInstructions,
 ) -> Agent:
     """
