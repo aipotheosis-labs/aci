@@ -58,7 +58,7 @@ def test_create_custom_instructions(
     dummy_user_bearer_token: str,
 ) -> None:
 
-    ENDPOINT = f"{config.ROUTER_PREFIX_PROJECTS}/agents/{dummy_agent_1.id}"
+    ENDPOINT = f"{config.ROUTER_PREFIX_PROJECTS}/agents/{str(dummy_agent_1.id)}"
     response = test_client.patch(
         ENDPOINT,
         json={"custom_instructions": {str(dummy_app_google.id): "test instructions"}},

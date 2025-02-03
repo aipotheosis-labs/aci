@@ -16,7 +16,7 @@ def validate_instruction(v: str) -> str:
 
 
 ValidInstruction = Annotated[str, BeforeValidator(validate_instruction)]
-CustomInstructions = dict[str, ValidInstruction]
+CustomInstructions = dict[UUID, ValidInstruction]
 
 
 class AgentCreate(BaseModel):
@@ -32,7 +32,8 @@ class AgentUpdate(BaseModel):
     description: str | None = None
     excluded_apps: list[UUID] | None = None
     excluded_functions: list[UUID] | None = None
-    custom_instructions: CustomInstructions | None = None
+    # custom_instructions: CustomInstructions | None = None
+    custom_instructions: CustomInstructions = Field(default_factory=dict)
 
 
 class AgentPublic(BaseModel):
