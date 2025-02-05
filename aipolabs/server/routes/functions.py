@@ -9,12 +9,15 @@ from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import Function
 from aipolabs.common.enums import Visibility
 from aipolabs.common.exceptions import (
+    AgentNotFound,
     AppConfigurationDisabled,
     AppConfigurationNotFound,
+    CustomInstructionFailed,
     FunctionNotFound,
     LinkedAccountDisabled,
     LinkedAccountNotFound,
 )
+from aipolabs.common.filter import filter_function_call
 from aipolabs.common.logging import get_logger
 from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.function import (
@@ -260,6 +263,30 @@ async def execute(
                 security_credentials=security_credentials_response.credentials.model_dump(),
             )
         context.db_session.commit()
+
+    agent = crud.projects.get_agent_by_api_key_id(context.db_session, context.api_key_id)
+    if not agent:
+        logger.error(f"agent not found for api_key_id={context.api_key_id}")
+        raise AgentNotFound(f"agent not found for api_key_id={context.api_key_id}")
+
+    if str(function.app_id) in agent.custom_instructions.keys():
+        filter_result = filter_function_call(
+            openai_service,
+            function,
+            body.function_input,
+            agent.custom_instructions[str(function.app_id)],
+        )
+        logger.info(f"Filter Result: {filter_result}")
+        # Filter has failed
+        if not filter_result.success:
+            raise CustomInstructionFailed(
+                f"Function execution for function: {function.name}\n with description:"
+                f"{function.description}, \nparameters: {function.parameters} \nand input: "
+                f"{body.function_input} \nhas been rejected because of rule: "
+                f"{agent.custom_instructions[str(function.app_id)]} \nand the reason from"
+                f"the filter is: {filter_result.reason}"
+            )
+
     function_executor = get_executor(function.protocol, linked_account.security_scheme)
 
     # TODO: async calls?
