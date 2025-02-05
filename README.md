@@ -39,11 +39,8 @@ Follow all guidelines below for setting up the development environment, running 
 <details>
   <summary>Local Development</summary>
 
-  - Set up `.env` file according to `.env.example`, note that most of the variables are already set in the `compose.yml` file, so ideally you only need to set the ones that are not set in the `compose.yml` file., for example (might not be the complete list),
-    - `SERVER_OPENAI_API_KEY`
-    - `SERVER_GOOGLE_AUTH_CLIENT_ID`
-    - `SERVER_GOOGLE_AUTH_CLIENT_SECRET`
-    - `CLI_OPENAI_API_KEY`
+  - Set up `.env` file according to `.env.example`
+    - Note that most of the variables needed are already set in the `.env.shared` file, that's why you don't need to set them in the `.env` file
   - Use docker compose to run necessary services locally: `docker compose up --build`, which contains:
     - `server`: the backend service
     - `db`: the postgres db
