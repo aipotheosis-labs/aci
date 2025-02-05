@@ -4,6 +4,7 @@ from typing import Any
 from openai import OpenAI
 
 from aipolabs.common.logging import get_logger
+from aipolabs.common.schemas.function import FilterResponse
 
 logger = get_logger(__name__)
 
@@ -79,3 +80,14 @@ class OpenAIService:
                 return json.loads(tool_call.function.arguments)
         else:
             raise ValueError("No tool call was generated")
+
+    # TODO: change model, note this is a beta feature from OpenAI
+    # TODO: update filter model after evals
+    def filter(self, messages: list[dict], response_model: type[FilterResponse]) -> Any:
+        """Boolean function to filter whether an action should be taken"""
+        response = self.openai_client.beta.chat.completions.parse(
+            model="gpt-4o-mini",
+            messages=messages,
+            response_format=response_model,
+        )
+        return response.choices[0].message.parsed
