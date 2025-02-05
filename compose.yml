@@ -50,6 +50,7 @@ services:
       SERVER_PROJECT_DAILY_QUOTA: 100000
       SERVER_APPLICATION_LOAD_BALANCER_DNS: 127.0.0.1
       SERVER_AIPOLABS_REDIRECT_URI_BASE: http://localhost:8000
+      SERVER_DEV_PORTAL_URL: http://localhost:3000
 
     # useful for development, changes take effect in the container without needing to rebuild the image.
     volumes:
