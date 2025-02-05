@@ -24,6 +24,7 @@ with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
         User,
     )
     from aipolabs.common.enums import SecurityScheme, Visibility
+    from aipolabs.common.schemas.agent import AgentCreate
     from aipolabs.common.schemas.app_configurations import (
         AppConfigurationCreate,
         AppConfigurationPublic,
@@ -215,16 +216,21 @@ def dummy_agent_with_github_apple_instructions(
     dummy_app_github: App,
     dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
 ) -> Generator[Agent, None, None]:
+    body = AgentCreate(
+        name="Dummy Agent with GitHub Instructions",
+        description="Agent with custom GitHub instructions",
+        custom_instructions={
+            dummy_app_github.id: "Don't create any repositories with the word apple in the name"
+        },
+    )
     dummy_agent = crud.projects.create_agent(
         db_session,
         project_id=dummy_project_1.id,
-        name="Dummy Agent with GitHub Instructions",
-        description="Agent with custom GitHub instructions",
-        excluded_apps=[],
-        excluded_functions=[],
-        custom_instructions={
-            dummy_app_github.id: "Don't create any repositories with the word apple in the name",
-        },
+        name=body.name,
+        description=body.description,
+        excluded_apps=body.excluded_apps,
+        excluded_functions=body.excluded_functions,
+        custom_instructions=body.model_dump(mode="json")["custom_instructions"],
     )
     db_session.commit()
     yield dummy_agent
