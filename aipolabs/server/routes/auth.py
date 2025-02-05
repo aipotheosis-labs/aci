@@ -136,7 +136,7 @@ async def auth_callback(
         f"JWT generated successfully for user={user.id}, jwt_token={jwt_token[:4]}...{jwt_token[-4:]}"
     )
 
-    response = RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
+    response = RedirectResponse(url=f"{config.SERVER_DEV_PORTAL_URL}")
     response.set_cookie(
         key="accessToken",
         value=jwt_token,

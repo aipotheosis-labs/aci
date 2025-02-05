@@ -56,4 +56,4 @@ ROUTER_PREFIX_APP_CONFIGURATIONS = "/v1/app-configurations"
 ROUTER_PREFIX_LINKED_ACCOUNTS = "/v1/linked-accounts"
 
 # DEV PORTAL
-DEV_PORTAL_URL = check_and_get_env_variable("DEV_PORTAL_URL")
+SERVER_DEV_PORTAL_URL = check_and_get_env_variable("SERVER_DEV_PORTAL_URL")
