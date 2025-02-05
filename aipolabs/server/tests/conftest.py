@@ -208,6 +208,28 @@ def dummy_agent_1(db_session: Session, dummy_project_1: Project) -> Generator[Ag
     yield dummy_agent_1
 
 
+@pytest.fixture(scope="function")
+def dummy_agent_with_github_apple_instructions(
+    db_session: Session,
+    dummy_project_1: Project,
+    dummy_app_github: App,
+    dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
+) -> Generator[Agent, None, None]:
+    dummy_agent = crud.projects.create_agent(
+        db_session,
+        project_id=dummy_project_1.id,
+        name="Dummy Agent with GitHub Instructions",
+        description="Agent with custom GitHub instructions",
+        excluded_apps=[],
+        excluded_functions=[],
+        custom_instructions={
+            dummy_app_github.id: "Don't create any repositories with the word apple in the name",
+        },
+    )
+    db_session.commit()
+    yield dummy_agent
+
+
 ################################################################################
 # Dummy Apps
 ################################################################################

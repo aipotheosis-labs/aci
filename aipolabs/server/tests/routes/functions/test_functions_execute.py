@@ -5,7 +5,12 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
-from aipolabs.common.db.sql_models import AppConfiguration, Function, LinkedAccount
+from aipolabs.common.db.sql_models import (
+    Agent,
+    AppConfiguration,
+    Function,
+    LinkedAccount,
+)
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.schemas.function import FunctionExecute, FunctionExecutionResult
 from aipolabs.common.schemas.security_scheme import (
@@ -127,7 +132,6 @@ def test_execute_function_with_invalid_function_input(
         linked_account_owner_id=dummy_linked_account_api_key_aipolabs_test_project_1.linked_account_owner_id,
         function_input={"path": {"random_key": "random_value"}},
     )
-
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.id}/execute",
         json=function_execute.model_dump(mode="json"),
@@ -570,3 +574,80 @@ def test_execute_oauth2_based_function_with_expired_app_default_access_token(
         app.default_security_credentials_by_scheme[SecurityScheme.OAUTH2]["access_token"]
         == mock_refresh_token_response["access_token"]
     )
+
+
+@respx.mock
+def test_execute_function_with_custom_instructions_success(
+    db_session: Session,
+    test_client: TestClient,
+    dummy_agent_with_github_apple_instructions: Agent,
+    dummy_linked_account_api_key_github_project_1: LinkedAccount,
+    dummy_function_github__create_repository: Function,
+) -> None:
+    # Allow real calls to OpenAI API
+    respx.post("https://api.openai.com/v1/chat/completions").pass_through()
+
+    # Mock only the GitHub API endpoint
+    mock_response_data = {"id": 123, "name": "test-repo"}
+    github_request = respx.post("https://api.github.com/repositories").mock(
+        return_value=httpx.Response(201, json=mock_response_data)
+    )
+
+    function_execute = FunctionExecute(
+        linked_account_owner_id=dummy_linked_account_api_key_github_project_1.linked_account_owner_id,
+        function_input={
+            "body": {
+                "name": "test-repo",  # Note: not using "apple" in name so it passes the filter
+                "description": "Test repository",
+                "private": True,
+            }
+        },
+    )
+
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.id}/execute",
+        json=function_execute.model_dump(mode="json"),
+        headers={"x-api-key": dummy_agent_with_github_apple_instructions.api_keys[0].key},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert "error" not in response.json()
+    function_execution_response = FunctionExecutionResult.model_validate(response.json())
+    assert function_execution_response.success
+    assert function_execution_response.data == mock_response_data
+
+    # Verify the GitHub request was made as expected
+    assert github_request.called
+    assert github_request.calls.last.request.url == "https://api.github.com/repositories"
+    assert (
+        github_request.calls.last.request.content
+        == b'{"name": "test-repo", "description": "Test repository", "private": true}'
+    )
+
+
+def test_execute_function_with_custom_instructions_rejected(
+    db_session: Session,
+    test_client: TestClient,
+    # dummy_api_key_1: str,
+    dummy_agent_with_github_apple_instructions: Agent,
+    dummy_linked_account_api_key_github_project_1: LinkedAccount,
+    dummy_function_github__create_repository: Function,
+) -> None:
+    function_execute = FunctionExecute(
+        linked_account_owner_id=dummy_linked_account_api_key_github_project_1.linked_account_owner_id,
+        function_input={
+            "body": {"name": "apple-test-repo", "description": "Test repository", "private": True}
+        },
+    )
+
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.id}/execute",
+        json=function_execute.model_dump(mode="json"),
+        headers={"x-api-key": dummy_agent_with_github_apple_instructions.api_keys[0].key},
+    )
+
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+    apple_custom_instructions = dummy_agent_with_github_apple_instructions.custom_instructions[
+        str(dummy_function_github__create_repository.app_id)
+    ]
+    assert apple_custom_instructions in response.json()["error"]
