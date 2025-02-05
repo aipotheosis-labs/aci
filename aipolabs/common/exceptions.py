@@ -279,3 +279,14 @@ class AgentNotFound(AipolabsException):
         super().__init__(
             title="Agent not found", message=message, error_code=status.HTTP_404_NOT_FOUND
         )
+
+
+class CustomInstructionFailed(AipolabsException):
+    """
+    Exception raised when a function execution is reject due to a custom instruction
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Custom instruction failed", message=message, error_code=status.HTTP_403_FORBIDDEN
+        )
