@@ -77,7 +77,7 @@ async def list_app_configurations(
     return crud.app_configurations.get_app_configurations(
         context.db_session,
         context.project.id,
-        query_params.app_id,
+        query_params.app_ids,
         query_params.limit,
         query_params.offset,
     )

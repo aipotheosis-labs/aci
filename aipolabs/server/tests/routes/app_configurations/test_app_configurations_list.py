@@ -31,7 +31,7 @@ def test_list_app_configuration_with_app_id(
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
 ) -> None:
-    query_params = AppConfigurationsList(app_id=dummy_app_google.id)
+    query_params = AppConfigurationsList(app_ids=[dummy_app_google.id])
 
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
@@ -51,7 +51,7 @@ def test_list_non_existent_app_configuration(
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
 ) -> None:
-    query_params = AppConfigurationsList(app_id=dummy_app_aipolabs_test.id)
+    query_params = AppConfigurationsList(app_ids=[dummy_app_aipolabs_test.id])
 
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",

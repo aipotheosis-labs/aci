@@ -63,7 +63,7 @@ class AppConfigurationUpdate(BaseModel):
 
 
 class AppConfigurationsList(BaseModel):
-    app_id: UUID | None = Field(default=None, description="Filter by app id.")
+    app_ids: list[UUID] | None = Field(default=None, description="Filter by app ids.")
     limit: int = Field(
         default=100, ge=1, le=1000, description="Maximum number of results per response."
     )

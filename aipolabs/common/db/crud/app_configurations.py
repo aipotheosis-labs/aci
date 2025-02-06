@@ -72,15 +72,12 @@ def delete_app_configuration(db_session: Session, project_id: UUID, app_id: UUID
 
 
 def get_app_configurations(
-    db_session: Session, project_id: UUID, app_id: UUID | None, limit: int, offset: int
+    db_session: Session, project_id: UUID, app_ids: list[UUID] | None, limit: int, offset: int
 ) -> list[AppConfiguration]:
-    """Get all app configurations for a project, optionally filtered by app id"""
-    logger.error(
-        f"Getting app configurations for project={project_id}, app_id={app_id}, limit={limit}, offset={offset}"
-    )
+    """Get all app configurations for a project, optionally filtered by app ids"""
     statement = select(AppConfiguration).filter_by(project_id=project_id)
-    if app_id:
-        statement = statement.filter_by(app_id=app_id)
+    if app_ids:
+        statement = statement.filter(AppConfiguration.app_id.in_(app_ids))
     statement = statement.offset(offset).limit(limit)
     app_configurations: list[AppConfiguration] = db_session.execute(statement).scalars().all()
     return app_configurations
