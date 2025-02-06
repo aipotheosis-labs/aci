@@ -5,7 +5,12 @@ Internal admin CLI tool for Aipolabs to manage apps, functions, users, etc.
 Follow the [setup instructions](../README.md) for the project.
 
 ## Commands
-For commands that require database connection, make sure the database you are connecting to is running and the `CLI_DB_` variables in `.env` file is set up correctly.
+For commands that require database connection and/or locally running server, make sure local containers are running.
+And most cases you should execute the commands via the `runner` container.
+e.g.,
+```bash
+docker compose exec runner python -m aipolabs.cli.aipolabs create-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
+```
 
 <details>
   <summary>Create App</summary>
