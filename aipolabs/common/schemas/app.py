@@ -83,9 +83,9 @@ class AppsSearch(BaseModel):
 class AppsList(BaseModel):
     """
     Parameters for listing Apps.
-    TODO: add filters
     """
 
+    app_ids: list[UUID] | None = Field(default=None, description="List of app ids to filter by.")
     limit: int = Field(
         default=100, ge=1, le=1000, description="Maximum number of Apps per response."
     )
