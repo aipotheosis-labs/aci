@@ -34,5 +34,7 @@ def filter_function_call(
             ),
         },
     ]
-
+    # TODO: abstract out to InferenceService
+    # - make an inference layer to handle embeddings, filtering, rag etc
+    # - bad to have business logic inside openai_service
     return openai_service.filter(messages, FilterResponse)
