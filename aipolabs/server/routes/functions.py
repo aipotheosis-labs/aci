@@ -12,7 +12,7 @@ from aipolabs.common.exceptions import (
     AgentNotFound,
     AppConfigurationDisabled,
     AppConfigurationNotFound,
-    CustomInstructionFailed,
+    CustomInstructionViolation,
     FunctionNotFound,
     LinkedAccountDisabled,
     LinkedAccountNotFound,
@@ -279,7 +279,7 @@ async def execute(
         logger.info(f"Filter Result: {filter_result}")
         # Filter has failed
         if not filter_result.success:
-            raise CustomInstructionFailed(
+            raise CustomInstructionViolation(
                 f"Function execution for function: {function.name}\n with description:"
                 f"{function.description}, \nparameters: {function.parameters} \nand input: "
                 f"{body.function_input} \nhas been rejected because of rule: "

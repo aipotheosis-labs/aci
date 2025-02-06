@@ -281,7 +281,7 @@ class AgentNotFound(AipolabsException):
         )
 
 
-class CustomInstructionFailed(AipolabsException):
+class CustomInstructionViolation(AipolabsException):
     """
     Exception raised when a function execution is reject due to a custom instruction
     """
