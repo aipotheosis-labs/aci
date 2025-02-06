@@ -584,6 +584,7 @@ def test_execute_function_with_custom_instructions_success(
     dummy_linked_account_api_key_github_project_1: LinkedAccount,
     dummy_function_github__create_repository: Function,
 ) -> None:
+    # TODO: change needed here when we abstract out to InferenceService
     # Allow real calls to OpenAI API
     respx.post("https://api.openai.com/v1/chat/completions").pass_through()
 
