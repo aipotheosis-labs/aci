@@ -133,7 +133,7 @@ def create_agent(
         description=description,
         excluded_apps=excluded_apps,
         excluded_functions=excluded_functions,
-        custom_instructions=custom_instructions if custom_instructions is not None else {},
+        custom_instructions=custom_instructions,
     )
     db_session.add(agent)
 
