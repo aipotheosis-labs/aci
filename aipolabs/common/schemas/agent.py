@@ -19,14 +19,7 @@ ValidInstruction = Annotated[str, BeforeValidator(validate_instruction)]
 CustomInstructions = dict[UUID, ValidInstruction]
 
 
-class AgentInstructionsConfig(BaseModel):
-    """Base configuration for agent instructions"""
-
-    model_config = ConfigDict(from_attributes=True, json_encoders={UUID: str})
-    custom_instructions: CustomInstructions = Field(default_factory=dict)
-
-
-class AgentCreate(AgentInstructionsConfig):
+class AgentCreate(BaseModel):
     name: str
     description: str
     excluded_apps: list[UUID] = []
@@ -35,7 +28,7 @@ class AgentCreate(AgentInstructionsConfig):
     model_config = ConfigDict(json_encoders={UUID: str})
 
 
-class AgentUpdate(AgentInstructionsConfig):
+class AgentUpdate(BaseModel):
     name: str | None = None
     description: str | None = None
     excluded_apps: list[UUID] | None = None
@@ -44,13 +37,14 @@ class AgentUpdate(AgentInstructionsConfig):
     model_config = ConfigDict(json_encoders={UUID: str})
 
 
-class AgentPublic(AgentInstructionsConfig):
+class AgentPublic(BaseModel):
     id: UUID
     project_id: UUID
     name: str
     description: str
     excluded_apps: list[UUID] = []
     excluded_functions: list[UUID] = []
+    custom_instructions: CustomInstructions = Field(default_factory=dict)
 
     created_at: datetime
     updated_at: datetime
