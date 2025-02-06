@@ -1,6 +1,7 @@
-"""Test function execution with GPT-generated inputs."""
+"""Sanity check function execution with GPT-generated inputs."""
 
 import json
+from uuid import UUID
 
 import click
 import httpx
@@ -12,11 +13,11 @@ from aipolabs.common.openai_service import OpenAIService
 
 @click.command()
 @click.option(
-    "--function-name",
-    "function_name",
+    "--function-id",
+    "function_id",
     required=True,
-    type=str,
-    help="Name of the function to test",
+    type=UUID,
+    help="ID of the function to test",
 )
 @click.option(
     "--aipolabs-api-key",
@@ -25,16 +26,29 @@ from aipolabs.common.openai_service import OpenAIService
     type=str,
     help="Aipolabs API key to use for authentication",
 )
-def fuzzy_test_function_execution(function_name: str, aipolabs_api_key: str) -> None:
+@click.option(
+    "--linked-account-owner-id",
+    "linked_account_owner_id",
+    required=True,
+    type=str,
+    help="ID of the linked account owner to use for authentication",
+)
+def fuzzy_test_function_execution(
+    aipolabs_api_key: str, function_id: UUID, linked_account_owner_id: UUID
+) -> None:
     """Test function execution with GPT-generated inputs."""
-    return fuzzy_test_function_execution_helper(function_name, aipolabs_api_key)
+    return fuzzy_test_function_execution_helper(
+        aipolabs_api_key, function_id, linked_account_owner_id
+    )
 
 
-def fuzzy_test_function_execution_helper(function_name: str, aipolabs_api_key: str) -> None:
+def fuzzy_test_function_execution_helper(
+    aipolabs_api_key: str, function_id: UUID, linked_account_owner_id: UUID
+) -> None:
     """Test function execution with GPT-generated inputs."""
     # Get function definition
     response = httpx.get(
-        f"{config.SERVER_URL}/v1/functions/{function_name}",
+        f"{config.SERVER_URL}/v1/functions/{function_id}/definition",
         params={"inference_provider": "openai"},
         headers={"x-api-key": aipolabs_api_key},
     )
@@ -53,8 +67,11 @@ def fuzzy_test_function_execution_helper(function_name: str, aipolabs_api_key: s
 
     # Execute function with generated input
     response = httpx.post(
-        f"{config.SERVER_URL}/v1/functions/{function_name}/execute",
-        json={"function_input": function_args},
+        f"{config.SERVER_URL}/v1/functions/{function_id}/execute",
+        json={
+            "function_input": function_args,
+            "linked_account_owner_id": linked_account_owner_id,
+        },
         headers={"x-api-key": aipolabs_api_key},
     )
 
@@ -62,5 +79,5 @@ def fuzzy_test_function_execution_helper(function_name: str, aipolabs_api_key: s
         raise click.ClickException(f"Function execution failed: {response.json()}")
 
     result = response.json()
-    click.echo(create_headline(f"Execution result for {function_name}"))
+    click.echo(create_headline(f"Execution result for {function_id}"))
     click.echo(f"{json.dumps(result)}")
