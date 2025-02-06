@@ -3,6 +3,7 @@ from typing import Annotated
 from uuid import UUID
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
+from pydantic.functional_serializers import PlainSerializer
 
 from aipolabs.common.schemas.apikey import APIKeyPublic
 
@@ -16,7 +17,10 @@ def validate_instruction(v: str) -> str:
 
 
 ValidInstruction = Annotated[str, BeforeValidator(validate_instruction)]
-CustomInstructions = dict[UUID, ValidInstruction]
+SerializedUUID = Annotated[
+    UUID, PlainSerializer(lambda x: str(x), return_type=str, when_used="json")
+]
+CustomInstructions = dict[SerializedUUID, ValidInstruction]
 
 
 class AgentCreate(BaseModel):
@@ -25,7 +29,6 @@ class AgentCreate(BaseModel):
     excluded_apps: list[UUID] = []
     excluded_functions: list[UUID] = []
     custom_instructions: CustomInstructions = Field(default_factory=dict)
-    model_config = ConfigDict(json_encoders={UUID: str})
 
 
 class AgentUpdate(BaseModel):
@@ -34,7 +37,6 @@ class AgentUpdate(BaseModel):
     excluded_apps: list[UUID] | None = None
     excluded_functions: list[UUID] | None = None
     custom_instructions: CustomInstructions = Field(default_factory=dict)
-    model_config = ConfigDict(json_encoders={UUID: str})
 
 
 class AgentPublic(BaseModel):
@@ -51,4 +53,4 @@ class AgentPublic(BaseModel):
 
     api_keys: list[APIKeyPublic]
 
-    model_config = ConfigDict(from_attributes=True, json_encoders={UUID: str})
+    model_config = ConfigDict(from_attributes=True)
