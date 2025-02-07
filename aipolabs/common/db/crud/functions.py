@@ -135,9 +135,12 @@ def get_functions(
 
 
 def get_function(
-    db_session: Session, function_id: UUID, public_only: bool, active_only: bool
+    db_session: Session, function_id_or_name: str, public_only: bool, active_only: bool
 ) -> Function | None:
-    statement = select(Function).filter_by(id=function_id)
+    if utils.is_uuid(function_id_or_name):
+        statement = select(Function).filter_by(id=function_id_or_name)
+    else:
+        statement = select(Function).filter_by(name=function_id_or_name)
 
     # filter out all functions of inactive apps and all inactive functions
     # (where app is active buy specific functions can be inactive)

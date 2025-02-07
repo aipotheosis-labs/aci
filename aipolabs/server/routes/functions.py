@@ -1,6 +1,5 @@
 import json
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
 
@@ -117,13 +116,13 @@ async def search_functions(
 # TODO: client sdk can use pydantic to validate model output for parameters used for function execution
 # TODO: "flatten" flag to make sure nested parameters are flattened?
 @router.get(
-    "/{function_id}/definition",
+    "/{function_id_or_name}/definition",
     response_model=OpenAIFunctionDefinition | AnthropicFunctionDefinition,
     response_model_exclude_none=True,  # having this to exclude "strict" field in openai's function definition if not set
 )
 async def get_function_definition(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
-    function_id: UUID,
+    function_id_or_name: str,
     inference_provider: InferenceProvider = Query(
         default=InferenceProvider.OPENAI,
         description="The inference provider, which determines the format of the function definition.",
@@ -135,13 +134,13 @@ async def get_function_definition(
     """
     function: Function | None = crud.functions.get_function(
         context.db_session,
-        function_id,
+        function_id_or_name,
         context.project.visibility_access == Visibility.PUBLIC,
         True,
     )
     if not function:
-        logger.error(f"function={function_id} not found")
-        raise FunctionNotFound(str(function_id))
+        logger.error(f"function={function_id_or_name} not found")
+        raise FunctionNotFound(function_id_or_name)
 
     visible_parameters = processor.filter_visible_properties(function.parameters)
     logger.debug(f"Filtered parameters: {json.dumps(visible_parameters)}")
@@ -166,25 +165,25 @@ async def get_function_definition(
 # TODO: is there any way to abstract and generalize the checks and validations
 # (enabled, configured, accessible, etc.)?
 @router.post(
-    "/{function_id}/execute",
+    "/{function_id_or_name}/execute",
     response_model=FunctionExecutionResult,
     response_model_exclude_none=True,
 )
 async def execute(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
-    function_id: UUID,
+    function_id_or_name: str,
     body: FunctionExecute,
 ) -> FunctionExecutionResult:
     # Fetch function definition
     function = crud.functions.get_function(
         context.db_session,
-        function_id,
+        function_id_or_name,
         context.project.visibility_access == Visibility.PUBLIC,
         True,
     )
     if not function:
-        logger.error(f"function={function_id} not found")
-        raise FunctionNotFound(str(function_id))
+        logger.error(f"function={function_id_or_name} not found")
+        raise FunctionNotFound(function_id_or_name)
 
     # check if the App (that this function belongs to) is configured
     app_configuration = crud.app_configurations.get_app_configuration(

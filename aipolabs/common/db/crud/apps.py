@@ -7,6 +7,7 @@ from uuid import UUID
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
+from aipolabs.common import utils
 from aipolabs.common.db.sql_models import App
 from aipolabs.common.enums import SecurityScheme, Visibility
 from aipolabs.common.logging import get_logger
@@ -45,8 +46,14 @@ def update_app_default_security_credentials(
     app.default_security_credentials_by_scheme[security_scheme] = security_credentials
 
 
-def get_app(db_session: Session, app_id: UUID, public_only: bool, active_only: bool) -> App | None:
-    statement = select(App).filter_by(id=app_id)
+def get_app(
+    db_session: Session, app_id_or_name: str, public_only: bool, active_only: bool
+) -> App | None:
+    if utils.is_uuid(app_id_or_name):
+        statement = select(App).filter_by(id=app_id_or_name)
+    else:
+        statement = select(App).filter_by(name=app_id_or_name)
+
     if active_only:
         statement = statement.filter(App.active)
     if public_only:

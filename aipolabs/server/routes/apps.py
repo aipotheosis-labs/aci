@@ -1,5 +1,4 @@
 from typing import Annotated
-from uuid import UUID
 
 from fastapi import APIRouter, Depends, Query
 
@@ -96,23 +95,24 @@ async def search_apps(
     return apps
 
 
-@router.get("/{app_id}", response_model=AppBasicWithFunctions)
+@router.get("/{app_id_or_name}", response_model=AppBasicWithFunctions)
 async def get_app_details(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
-    app_id: UUID,
+    app_id_or_name: str,
 ) -> AppBasicWithFunctions:
     """
     Returns an application (name, description, and functions).
     """
     app = crud.apps.get_app(
         context.db_session,
-        app_id,
+        app_id_or_name,
         context.project.visibility_access == Visibility.PUBLIC,
         True,
     )
+
     if not app:
-        logger.error(f"app={app_id} not found")
-        raise AppNotFound(str(app_id))
+        logger.error(f"app={app_id_or_name} not found")
+        raise AppNotFound(app_id_or_name)
 
     # filter functions by project visibility and active status
     # TODO: better way and place for crud filtering/acl logic like this?

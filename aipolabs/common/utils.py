@@ -1,5 +1,6 @@
 import os
 import re
+from uuid import UUID
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
@@ -61,3 +62,13 @@ def snake_to_camel(string: str) -> str:
     """
     parts = string.split("_")
     return parts[0] + "".join(word.capitalize() for word in parts[1:])
+
+
+def is_uuid(value: str | UUID) -> bool:
+    if isinstance(value, UUID):
+        return True
+    try:
+        UUID(value)
+        return True
+    except ValueError:
+        return False
