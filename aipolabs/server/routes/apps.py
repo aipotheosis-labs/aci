@@ -35,7 +35,7 @@ async def list_apps(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
         True,
-        query_params.app_ids,
+        query_params.app_names,
         query_params.limit,
         query_params.offset,
     )

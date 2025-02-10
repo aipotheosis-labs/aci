@@ -78,7 +78,7 @@ def get_apps(
     db_session: Session,
     public_only: bool,
     active_only: bool,
-    app_ids: list[UUID] | None,
+    app_names: list[str] | None,
     limit: int | None,
     offset: int | None,
 ) -> list[App]:
@@ -87,8 +87,8 @@ def get_apps(
         statement = statement.filter(App.visibility == Visibility.PUBLIC)
     if active_only:
         statement = statement.filter(App.active)
-    if app_ids is not None:
-        statement = statement.filter(App.id.in_(app_ids))
+    if app_names is not None:
+        statement = statement.filter(App.name.in_(app_names))
     if offset is not None:
         statement = statement.offset(offset)
     if limit is not None:

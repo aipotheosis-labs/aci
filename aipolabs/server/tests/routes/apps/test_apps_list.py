@@ -100,19 +100,19 @@ def test_list_apps_with_private_apps(
     assert len(apps) == len(dummy_apps)
 
 
-def test_list_apps_with_app_ids(
+def test_list_apps_with_app_names(
     test_client: TestClient,
     dummy_apps: list[App],
     dummy_api_key_1: str,
 ) -> None:
-    expected_app_ids = [dummy_apps[0].id, dummy_apps[1].id]
+    expected_app_names = [dummy_apps[0].name, dummy_apps[1].name]
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/",
-        params={"app_ids": expected_app_ids},
+        params={"app_names": expected_app_names},
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_200_OK
     apps = [AppDetails.model_validate(response_app) for response_app in response.json()]
-    returned_app_ids = [app.id for app in apps]
+    returned_app_names = [app.name for app in apps]
     # sort both lists by app id for comparison
-    assert returned_app_ids.sort() == expected_app_ids.sort()
+    assert returned_app_names.sort() == expected_app_names.sort()
