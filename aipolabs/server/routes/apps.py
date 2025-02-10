@@ -65,21 +65,21 @@ async def search_apps(
     logger.debug(f"Generated intent embedding: {intent_embedding}")
 
     # If configured_only is False, None is passed to the search_apps function and no filtering is done
-    configured_app_ids = None
+    configured_app_names = None
     if query_params.configured_only:
-        configured_app_ids = crud.app_configurations.get_configured_app_ids(
+        configured_app_names = crud.app_configurations.get_configured_app_names(
             context.db_session,
             context.project.id,
         )
         # if no apps are configured, return an empty list
-        if not configured_app_ids:
+        if not configured_app_names:
             return []
 
     apps_with_scores = crud.apps.search_apps(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
         True,
-        configured_app_ids,
+        configured_app_names,
         query_params.categories,
         intent_embedding,
         query_params.limit,

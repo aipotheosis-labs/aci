@@ -31,7 +31,7 @@ def test_list_apps(
     assert len(apps) == len(dummy_apps)
     # assert each app has the correct functions
     for app in apps:
-        assert len(app.functions) == len([f for f in dummy_functions if f.app_id == app.id])
+        assert len(app.functions) == len([f for f in dummy_functions if f.app.name == app.name])
 
 
 def test_list_apps_pagination(
@@ -72,7 +72,7 @@ def test_list_apps_with_private_apps(
     dummy_api_key_1: str,
 ) -> None:
     # private app should not be reachable for project with only public access
-    crud.apps.set_app_visibility(db_session, dummy_apps[0].id, Visibility.PRIVATE)
+    crud.apps.set_app_visibility(db_session, dummy_apps[0].name, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(

@@ -75,19 +75,19 @@ def test_update_agent(
     response = test_client.patch(
         ENDPOINT,
         json={
-            "excluded_apps": [str(dummy_app_google.id)],
+            "excluded_apps": [dummy_app_google.name],
             "excluded_functions": [],
         },
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
     agent_public = AgentPublic.model_validate(response.json())
-    assert dummy_app_google.id in agent_public.excluded_apps
+    assert dummy_app_google.name in agent_public.excluded_apps
     assert len(agent_public.excluded_functions) == 0
 
     # Test updating custom instructions
     body = AgentUpdate(
-        custom_instructions={dummy_app_github.id: "Custom GitHub instructions"},
+        custom_instructions={dummy_app_github.name: "Custom GitHub instructions"},
     )
     response = test_client.patch(
         ENDPOINT,
@@ -96,7 +96,7 @@ def test_update_agent(
     )
     assert response.status_code == status.HTTP_200_OK
     agent_public = AgentPublic.model_validate(response.json())
-    assert agent_public.custom_instructions == {dummy_app_github.id: "Custom GitHub instructions"}
+    assert agent_public.custom_instructions == {dummy_app_github.name: "Custom GitHub instructions"}
 
 
 def test_update_agent_multiple_custom_instructions(
@@ -112,7 +112,7 @@ def test_update_agent_multiple_custom_instructions(
 
     # Add first custom instruction for Google app
     body = AgentUpdate(
-        custom_instructions={dummy_app_google.id: "Custom Google instructions"},
+        custom_instructions={dummy_app_google.name: "Custom Google instructions"},
     )
     response = test_client.patch(
         ENDPOINT,
@@ -121,13 +121,13 @@ def test_update_agent_multiple_custom_instructions(
     )
     assert response.status_code == status.HTTP_200_OK
     agent_public = AgentPublic.model_validate(response.json())
-    assert agent_public.custom_instructions == {dummy_app_google.id: "Custom Google instructions"}
+    assert agent_public.custom_instructions == {dummy_app_google.name: "Custom Google instructions"}
 
     # Add second custom instruction for GitHub app while preserving Google app instruction
     body = AgentUpdate(
         custom_instructions={
-            dummy_app_google.id: "Custom Google instructions",
-            dummy_app_github.id: "Custom GitHub instructions",
+            dummy_app_google.name: "Custom Google instructions",
+            dummy_app_github.name: "Custom GitHub instructions",
         },
     )
     response = test_client.patch(
@@ -138,8 +138,8 @@ def test_update_agent_multiple_custom_instructions(
     assert response.status_code == status.HTTP_200_OK
     agent_public = AgentPublic.model_validate(response.json())
     assert agent_public.custom_instructions == {
-        dummy_app_google.id: "Custom Google instructions",
-        dummy_app_github.id: "Custom GitHub instructions",
+        dummy_app_google.name: "Custom Google instructions",
+        dummy_app_github.name: "Custom GitHub instructions",
     }
 
 
@@ -154,7 +154,7 @@ def test_update_agent_nonexistent_agent(
     # Generate a random UUID that doesn't exist in the database
     nonexistent_agent_id = uuid4()
     body = AgentUpdate(
-        custom_instructions={dummy_app_google.id: "Custom Google instructions"},
+        custom_instructions={dummy_app_google.name: "Custom Google instructions"},
     )
     response = test_client.patch(
         f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{nonexistent_agent_id}",
@@ -174,7 +174,7 @@ def test_update_agent_unauthorized_user(
 ) -> None:
     """Test that unauthorized users cannot update custom instructions"""
     body = AgentUpdate(
-        custom_instructions={dummy_app_google.id: "Custom Google instructions"},
+        custom_instructions={dummy_app_google.name: "Custom Google instructions"},
     )
     response = test_client.patch(
         f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{dummy_agent_1.id}",
@@ -201,7 +201,7 @@ def test_update_agent_custom_instructions_restrictions(
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     # Verify valid instructions still work
     body = AgentUpdate(
-        custom_instructions={dummy_app_google.id: "Valid instructions"},
+        custom_instructions={dummy_app_google.name: "Valid instructions"},
     )
     response = test_client.patch(
         f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{dummy_agent_1.id}",
@@ -209,4 +209,4 @@ def test_update_agent_custom_instructions_restrictions(
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
-    assert response.json()["custom_instructions"][str(dummy_app_google.id)] == "Valid instructions"
+    assert response.json()["custom_instructions"][dummy_app_google.name] == "Valid instructions"

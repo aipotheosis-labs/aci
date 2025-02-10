@@ -415,6 +415,10 @@ class Function(Base):
     # the App that this function belongs to
     app: Mapped[App] = relationship("App", lazy="select", back_populates="functions", init=False)
 
+    @property
+    def app_name(self) -> str:
+        return str(self.app.name)
+
 
 class App(Base):
     __tablename__ = "apps"
@@ -521,6 +525,10 @@ class AppConfiguration(Base):
 
     app: Mapped[App] = relationship("App", lazy="select", init=False)
 
+    @property
+    def app_name(self) -> str:
+        return str(self.app.name)
+
     # unique constraint
     __table_args__ = (
         # If in the future we want to allow a project to integrate the same app multiple times, we can remove the unique constraint
@@ -575,6 +583,10 @@ class LinkedAccount(Base):
     )
 
     app: Mapped[App] = relationship("App", lazy="select", init=False)
+
+    @property
+    def app_name(self) -> str:
+        return str(self.app.name)
 
     __table_args__ = (
         # TODO: write test

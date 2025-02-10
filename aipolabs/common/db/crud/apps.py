@@ -2,8 +2,6 @@
 CRUD operations for apps. (not including app_configurations)
 """
 
-from uuid import UUID
-
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
@@ -95,7 +93,7 @@ def search_apps(
     db_session: Session,
     public_only: bool,
     active_only: bool,
-    app_ids: list[UUID] | None,
+    app_names: list[str] | None,
     categories: list[str] | None,
     intent_embedding: list[float] | None,
     limit: int,
@@ -112,9 +110,9 @@ def search_apps(
     if active_only:
         statement = statement.filter(App.active)
 
-    # filter out apps by app_ids
-    if app_ids:
-        statement = statement.filter(App.id.in_(app_ids))
+    # filter out apps by app_names
+    if app_names:
+        statement = statement.filter(App.name.in_(app_names))
 
     # filter out apps by categories
     # TODO: Is there any way to get typing for cosine_distance, label, overlap?
@@ -139,11 +137,11 @@ def search_apps(
         return [(app, None) for app, in results]
 
 
-def set_app_active_status(db_session: Session, app_id: UUID, active: bool) -> None:
-    statement = update(App).filter_by(id=app_id).values(active=active)
+def set_app_active_status(db_session: Session, app_name: str, active: bool) -> None:
+    statement = update(App).filter_by(name=app_name).values(active=active)
     db_session.execute(statement)
 
 
-def set_app_visibility(db_session: Session, app_id: UUID, visibility: Visibility) -> None:
-    statement = update(App).filter_by(id=app_id).values(visibility=visibility)
+def set_app_visibility(db_session: Session, app_name: str, visibility: Visibility) -> None:
+    statement = update(App).filter_by(name=app_name).values(visibility=visibility)
     db_session.execute(statement)

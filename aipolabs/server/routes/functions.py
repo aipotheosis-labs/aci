@@ -51,7 +51,7 @@ async def list_functions(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
         True,
-        query_params.app_ids,
+        query_params.app_names,
         query_params.limit,
         query_params.offset,
     )
@@ -80,28 +80,28 @@ async def search_functions(
     logger.debug(f"Generated intent embedding: {intent_embedding}")
 
     if query_params.configured_only:
-        configured_app_ids = crud.app_configurations.get_configured_app_ids(
+        configured_app_names = crud.app_configurations.get_configured_app_names(
             context.db_session,
             context.project.id,
         )
-        # Filter app_ids based on configuration status
-        if query_params.app_ids:
-            # Intersection of query_params.app_ids and configured_app_ids
-            query_params.app_ids = [
-                app_id for app_id in query_params.app_ids if app_id in configured_app_ids
+        # Filter apps based on configuration status
+        if query_params.app_names:
+            # Intersection of query_params.app_names and configured_app_names
+            query_params.app_names = [
+                app_name for app_name in query_params.app_names if app_name in configured_app_names
             ]
         else:
-            query_params.app_ids = configured_app_ids
+            query_params.app_names = configured_app_names
 
-        # If no app_ids are available after intersection or configured search, return an empty list
-        if not query_params.app_ids:
+        # If no app_names are available after intersection or configured search, return an empty list
+        if not query_params.app_names:
             return []
 
     functions = crud.functions.search_functions(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
         True,
-        query_params.app_ids,
+        query_params.app_names,
         intent_embedding,
         query_params.limit,
         query_params.offset,
@@ -116,13 +116,13 @@ async def search_functions(
 # TODO: client sdk can use pydantic to validate model output for parameters used for function execution
 # TODO: "flatten" flag to make sure nested parameters are flattened?
 @router.get(
-    "/{function_id_or_name}/definition",
+    "/{function_name}/definition",
     response_model=OpenAIFunctionDefinition | AnthropicFunctionDefinition,
     response_model_exclude_none=True,  # having this to exclude "strict" field in openai's function definition if not set
 )
 async def get_function_definition(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
-    function_id_or_name: str,
+    function_name: str,
     inference_provider: InferenceProvider = Query(
         default=InferenceProvider.OPENAI,
         description="The inference provider, which determines the format of the function definition.",
@@ -134,13 +134,13 @@ async def get_function_definition(
     """
     function: Function | None = crud.functions.get_function(
         context.db_session,
-        function_id_or_name,
+        function_name,
         context.project.visibility_access == Visibility.PUBLIC,
         True,
     )
     if not function:
-        logger.error(f"function={function_id_or_name} not found")
-        raise FunctionNotFound(function_id_or_name)
+        logger.error(f"function={function_name} not found")
+        raise FunctionNotFound(function_name)
 
     visible_parameters = processor.filter_visible_properties(function.parameters)
     logger.debug(f"Filtered parameters: {json.dumps(visible_parameters)}")
@@ -165,71 +165,71 @@ async def get_function_definition(
 # TODO: is there any way to abstract and generalize the checks and validations
 # (enabled, configured, accessible, etc.)?
 @router.post(
-    "/{function_id_or_name}/execute",
+    "/{function_name}/execute",
     response_model=FunctionExecutionResult,
     response_model_exclude_none=True,
 )
 async def execute(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
-    function_id_or_name: str,
+    function_name: str,
     body: FunctionExecute,
 ) -> FunctionExecutionResult:
     # Fetch function definition
     function = crud.functions.get_function(
         context.db_session,
-        function_id_or_name,
+        function_name,
         context.project.visibility_access == Visibility.PUBLIC,
         True,
     )
     if not function:
-        logger.error(f"function={function_id_or_name} not found")
-        raise FunctionNotFound(function_id_or_name)
+        logger.error(f"function={function_name} not found")
+        raise FunctionNotFound(function_name)
 
     # check if the App (that this function belongs to) is configured
     app_configuration = crud.app_configurations.get_app_configuration(
-        context.db_session, context.project.id, function.app_id
+        context.db_session, context.project.id, function.app.name
     )
     if not app_configuration:
         logger.error(
-            f"app configuration not found for app={function.app_id}, project={context.project.id}"
+            f"app configuration not found for app={function.app.name}, project={context.project.id}"
         )
         raise AppConfigurationNotFound(
-            f"configuration for app={function.app_id} not found for project={context.project.id}"
+            f"configuration for app={function.app.name} not found for project={context.project.id}"
         )
 
     # check if user has disabled the app configuration
     if not app_configuration.enabled:
         logger.error(
-            f"app configuration is disabled for app={function.app_id}, project={context.project.id}"
+            f"app configuration is disabled for app={function.app.name}, project={context.project.id}"
         )
         raise AppConfigurationDisabled(
-            f"configuration for app={function.app_id} is disabled for project={context.project.id}"
+            f"configuration for app={function.app.name} is disabled for project={context.project.id}"
         )
 
     # check if the linked account status (configured, enabled, etc.)
     linked_account = crud.linked_accounts.get_linked_account(
-        context.db_session, context.project.id, function.app_id, body.linked_account_owner_id
+        context.db_session, context.project.id, function.app.name, body.linked_account_owner_id
     )
     if not linked_account:
         logger.error(
-            f"linked account not found for app={function.app_id}, "
+            f"linked account not found for app={function.app.name}, "
             f"project={context.project.id}, "
             f"linked_account_owner_id={body.linked_account_owner_id}"
         )
         raise LinkedAccountNotFound(
-            f"app={function.app_id}, "
+            f"app={function.app.name}, "
             f"project={context.project.id}, "
             f"linked_account_owner_id={body.linked_account_owner_id}"
         )
 
     if not linked_account.enabled:
         logger.error(
-            f"linked account is not enabled for app={function.app_id}, "
+            f"linked account is not enabled for app={function.app.name}, "
             f"project={context.project.id}, "
             f"linked_account_owner_id={body.linked_account_owner_id}"
         )
         raise LinkedAccountDisabled(
-            f"app={function.app_id}, "
+            f"app={function.app.name}, "
             f"project={context.project.id}, "
             f"linked_account_owner_id={body.linked_account_owner_id}"
         )

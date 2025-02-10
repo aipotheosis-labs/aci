@@ -10,7 +10,6 @@ from aipolabs.common.exceptions import (
     AppConfigurationNotFound,
     AppNotFound,
     AppSecuritySchemeNotSupported,
-    UnexpectedException,
 )
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.app_configurations import (
@@ -122,20 +121,18 @@ async def delete_app_configuration(
 
     # TODO: double check atomic operations like below in other api endpoints
     # 1. Delete all linked accounts for this app configuration
-    crud.linked_accounts.delete_linked_accounts(context.db_session, context.project.id, app_name)
-    # 2. Delete the app configuration record
-    deleted_count = crud.app_configurations.delete_app_configuration(
+    number_of_linked_accounts_deleted = crud.linked_accounts.delete_linked_accounts(
         context.db_session, context.project.id, app_name
     )
-    if deleted_count != 1:
-        logger.error(
-            f"unexpected error deleting app configuration for app={app_name}, project={context.project.id}, "
-            f"wrong number of rows will be deleted={deleted_count}"
-        )
-        raise UnexpectedException(
-            f"unexpected error deleting app configuration for app={app_name}, project={context.project.id}, "
-            f"wrong number of rows will be deleted={deleted_count}"
-        )
+    logger.info(
+        f"deleted {number_of_linked_accounts_deleted} linked accounts for app={app_name}, project={context.project.id}"
+    )
+    # 2. Delete the app configuration record
+    crud.app_configurations.delete_app_configuration(
+        context.db_session, context.project.id, app_name
+    )
+    logger.info(f"deleted app configuration for app={app_name}, project={context.project.id}")
+
     context.db_session.commit()
 
 

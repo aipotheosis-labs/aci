@@ -1,5 +1,4 @@
 import httpx
-import pytest
 import respx
 from fastapi import status
 from fastapi.testclient import TestClient
@@ -20,7 +19,7 @@ from aipolabs.common.schemas.security_scheme import (
 )
 from aipolabs.server import config
 
-NON_EXISTENT_FUNCTION_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+NON_EXISTENT_FUNCTION_NAME = "non_existent_function_name"
 NON_EXISTENT_LINKED_ACCOUNT_OWNER_ID = "dummy_linked_account_owner_id"
 
 
@@ -33,7 +32,7 @@ def test_execute_non_existent_function(
         linked_account_owner_id=dummy_linked_account_api_key_aipolabs_test_project_1.linked_account_owner_id,
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{NON_EXISTENT_FUNCTION_ID}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{NON_EXISTENT_FUNCTION_NAME}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -43,21 +42,16 @@ def test_execute_non_existent_function(
 
 # Note that if no app configuration or linkedin account is injected to test as fixture,
 # the app will not be configured.
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_execute_function_whose_app_is_not_configured(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_no_args: Function,
-    identifier_field: str,
 ) -> None:
-    function_id_or_name = getattr(
-        dummy_function_aipolabs_test__hello_world_no_args, identifier_field
-    )
     function_execute = FunctionExecute(
         linked_account_owner_id=NON_EXISTENT_LINKED_ACCOUNT_OWNER_ID,
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -65,14 +59,12 @@ def test_execute_function_whose_app_is_not_configured(
     assert response.json()["error"] == "App configuration not found"
 
 
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_execute_function_whose_app_configuration_is_disabled(
     db_session: Session,
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_no_args: Function,
     dummy_app_configuration_api_key_aipolabs_test_project_1: AppConfiguration,
-    identifier_field: str,
 ) -> None:
     dummy_app_configuration_api_key_aipolabs_test_project_1.enabled = False
     db_session.commit()
@@ -80,11 +72,8 @@ def test_execute_function_whose_app_configuration_is_disabled(
     function_execute = FunctionExecute(
         linked_account_owner_id=NON_EXISTENT_LINKED_ACCOUNT_OWNER_ID,
     )
-    function_id_or_name = getattr(
-        dummy_function_aipolabs_test__hello_world_no_args, identifier_field
-    )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -92,22 +81,17 @@ def test_execute_function_whose_app_configuration_is_disabled(
     assert response.json()["error"] == "App configuration disabled"
 
 
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_execute_function_linked_account_not_found(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_no_args: Function,
     dummy_app_configuration_api_key_aipolabs_test_project_1: AppConfiguration,
-    identifier_field: str,
 ) -> None:
     function_execute = FunctionExecute(
         linked_account_owner_id=NON_EXISTENT_LINKED_ACCOUNT_OWNER_ID,
     )
-    function_id_or_name = getattr(
-        dummy_function_aipolabs_test__hello_world_no_args, identifier_field
-    )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -115,7 +99,6 @@ def test_execute_function_linked_account_not_found(
     assert response.json()["error"] == "Linked account not found"
 
 
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_execute_function_linked_account_disabled(
     db_session: Session,
     test_client: TestClient,
@@ -123,7 +106,6 @@ def test_execute_function_linked_account_disabled(
     dummy_function_aipolabs_test__hello_world_no_args: Function,
     dummy_app_configuration_api_key_aipolabs_test_project_1: AppConfiguration,
     dummy_linked_account_api_key_aipolabs_test_project_1: LinkedAccount,
-    identifier_field: str,
 ) -> None:
     dummy_linked_account_api_key_aipolabs_test_project_1.enabled = False
     db_session.commit()
@@ -131,11 +113,8 @@ def test_execute_function_linked_account_disabled(
     function_execute = FunctionExecute(
         linked_account_owner_id=dummy_linked_account_api_key_aipolabs_test_project_1.linked_account_owner_id,
     )
-    function_id_or_name = getattr(
-        dummy_function_aipolabs_test__hello_world_no_args, identifier_field
-    )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -143,23 +122,18 @@ def test_execute_function_linked_account_disabled(
     assert response.json()["error"] == "Linked account disabled"
 
 
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_execute_function_with_invalid_function_input(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_with_args: Function,
     dummy_linked_account_api_key_aipolabs_test_project_1: LinkedAccount,
-    identifier_field: str,
 ) -> None:
     function_execute = FunctionExecute(
         linked_account_owner_id=dummy_linked_account_api_key_aipolabs_test_project_1.linked_account_owner_id,
         function_input={"path": {"random_key": "random_value"}},
     )
-    function_id_or_name = getattr(
-        dummy_function_aipolabs_test__hello_world_with_args, identifier_field
-    )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -168,13 +142,11 @@ def test_execute_function_with_invalid_function_input(
 
 
 @respx.mock
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_mock_execute_function_with_no_args(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_no_args: Function,
     dummy_linked_account_api_key_aipolabs_test_project_1: LinkedAccount,
-    identifier_field: str,
 ) -> None:
     # Mock the HTTP endpoint
     response_data = {"message": "Hello, test_mock_execute_function_with_no_args!"}
@@ -185,11 +157,8 @@ def test_mock_execute_function_with_no_args(
     function_execute = FunctionExecute(
         linked_account_owner_id=dummy_linked_account_api_key_aipolabs_test_project_1.linked_account_owner_id,
     )
-    function_id_or_name = getattr(
-        dummy_function_aipolabs_test__hello_world_no_args, identifier_field
-    )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -202,13 +171,11 @@ def test_mock_execute_function_with_no_args(
 
 
 @respx.mock
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_execute_api_key_based_function_with_args(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_with_args: Function,
     dummy_linked_account_api_key_aipolabs_test_project_1: LinkedAccount,
-    identifier_field: str,
 ) -> None:
     # Mock the HTTP endpoint
     mock_response_data = {"message": "Hello, test_execute_api_key_based_function_with_args!"}
@@ -231,11 +198,8 @@ def test_execute_api_key_based_function_with_args(
             # "cookie" property is not visible in our test schema so no input here
         },
     )
-    function_id_or_name = getattr(
-        dummy_function_aipolabs_test__hello_world_with_args, identifier_field
-    )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -254,13 +218,11 @@ def test_execute_api_key_based_function_with_args(
 
 
 @respx.mock
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_execute_api_key_based_function_with_nested_args(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_nested_args: Function,
     dummy_linked_account_api_key_aipolabs_test_project_1: LinkedAccount,
-    identifier_field: str,
 ) -> None:
     # Mock the HTTP endpoint
     mock_response_data = {"message": "Hello, test_execute_api_key_based_function_with_nested_args!"}
@@ -285,11 +247,8 @@ def test_execute_api_key_based_function_with_nested_args(
             },
         },
     )
-    function_id_or_name = getattr(
-        dummy_function_aipolabs_test__hello_world_nested_args, identifier_field
-    )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_nested_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -311,13 +270,11 @@ def test_execute_api_key_based_function_with_nested_args(
 
 
 @respx.mock
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_execute_oauth2_based_function_with_linked_account_credentials(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_with_args: Function,
     dummy_linked_account_oauth2_aipolabs_test_project_1: LinkedAccount,
-    identifier_field: str,
 ) -> None:
     # Mock the HTTP endpoint and response
     mock_response_data = {
@@ -341,11 +298,8 @@ def test_execute_oauth2_based_function_with_linked_account_credentials(
             # "cookie" property is not visible in our test schema so no input here
         },
     )
-    function_id_or_name = getattr(
-        dummy_function_aipolabs_test__hello_world_with_args, identifier_field
-    )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -379,14 +333,12 @@ def test_execute_oauth2_based_function_with_linked_account_credentials(
 
 
 @respx.mock
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
     db_session: Session,
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_with_args: Function,
     dummy_linked_account_oauth2_aipolabs_test_project_1: LinkedAccount,
-    identifier_field: str,
 ) -> None:
     # Mock the function's HTTP endpoint and response
     mock_response_data = {
@@ -435,11 +387,8 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
             # "cookie" property is not visible in our test schema so no input here
         },
     )
-    function_id_or_name = getattr(
-        dummy_function_aipolabs_test__hello_world_with_args, identifier_field
-    )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -475,13 +424,11 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
 
 
 @respx.mock
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_execute_oauth2_based_function_with_app_default_credentials(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_with_args: Function,
     dummy_linked_account_default_aipolabs_test_project_1: LinkedAccount,
-    identifier_field: str,
 ) -> None:
     # Mock the HTTP endpoint and response
     mock_response_data = {
@@ -505,11 +452,8 @@ def test_execute_oauth2_based_function_with_app_default_credentials(
             # "cookie" property is not visible in our test schema so no input here
         },
     )
-    function_id_or_name = getattr(
-        dummy_function_aipolabs_test__hello_world_with_args, identifier_field
-    )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -540,14 +484,12 @@ def test_execute_oauth2_based_function_with_app_default_credentials(
 
 
 @respx.mock
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_execute_oauth2_based_function_with_expired_app_default_access_token(
     db_session: Session,
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_aipolabs_test__hello_world_with_args: Function,
     dummy_linked_account_default_aipolabs_test_project_1: LinkedAccount,
-    identifier_field: str,
 ) -> None:
     # Mock the HTTP endpoint and response
     mock_response_data = {
@@ -599,11 +541,8 @@ def test_execute_oauth2_based_function_with_expired_app_default_access_token(
             # "cookie" property is not visible in our test schema so no input here
         },
     )
-    function_id_or_name = getattr(
-        dummy_function_aipolabs_test__hello_world_with_args, identifier_field
-    )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -637,14 +576,11 @@ def test_execute_oauth2_based_function_with_expired_app_default_access_token(
 
 
 @respx.mock
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_execute_function_with_custom_instructions_success(
-    db_session: Session,
     test_client: TestClient,
     dummy_agent_with_github_apple_instructions: Agent,
     dummy_linked_account_api_key_github_project_1: LinkedAccount,
     dummy_function_github__create_repository: Function,
-    identifier_field: str,
 ) -> None:
     # TODO: change needed here when we abstract out to InferenceService
     # Allow real calls to OpenAI API
@@ -666,9 +602,8 @@ def test_execute_function_with_custom_instructions_success(
             }
         },
     )
-    function_id_or_name = getattr(dummy_function_github__create_repository, identifier_field)
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_with_github_apple_instructions.api_keys[0].key},
     )
@@ -688,15 +623,11 @@ def test_execute_function_with_custom_instructions_success(
     )
 
 
-@pytest.mark.parametrize("identifier_field", ["id", "name"])
 def test_execute_function_with_custom_instructions_rejected(
-    db_session: Session,
     test_client: TestClient,
-    # dummy_api_key_1: str,
     dummy_agent_with_github_apple_instructions: Agent,
     dummy_linked_account_api_key_github_project_1: LinkedAccount,
     dummy_function_github__create_repository: Function,
-    identifier_field: str,
 ) -> None:
     function_execute = FunctionExecute(
         linked_account_owner_id=dummy_linked_account_api_key_github_project_1.linked_account_owner_id,
@@ -704,9 +635,8 @@ def test_execute_function_with_custom_instructions_rejected(
             "body": {"name": "apple-test-repo", "description": "Test repository", "private": True}
         },
     )
-    function_id_or_name = getattr(dummy_function_github__create_repository, identifier_field)
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{function_id_or_name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_with_github_apple_instructions.api_keys[0].key},
     )

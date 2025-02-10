@@ -41,7 +41,7 @@ def test_get_inactive_app(
     dummy_apps: list[App],
     dummy_api_key_1: str,
 ) -> None:
-    crud.apps.set_app_active_status(db_session, dummy_apps[0].id, False)
+    crud.apps.set_app_active_status(db_session, dummy_apps[0].name, False)
     db_session.commit()
 
     app_name = dummy_apps[0].name
@@ -60,7 +60,7 @@ def test_get_private_app(
     dummy_api_key_1: str,
 ) -> None:
     # private app should not be reachable for project with only public access
-    crud.apps.set_app_visibility(db_session, dummy_apps[0].id, Visibility.PRIVATE)
+    crud.apps.set_app_visibility(db_session, dummy_apps[0].name, Visibility.PRIVATE)
     db_session.commit()
 
     app_name = dummy_apps[0].name

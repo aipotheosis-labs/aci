@@ -3,7 +3,6 @@ from typing import Annotated
 from uuid import UUID
 
 from pydantic import BaseModel, BeforeValidator, ConfigDict, Field
-from pydantic.functional_serializers import PlainSerializer
 
 from aipolabs.common.schemas.apikey import APIKeyPublic
 
@@ -17,26 +16,22 @@ def validate_instruction(v: str) -> str:
 
 
 ValidInstruction = Annotated[str, BeforeValidator(validate_instruction)]
-SerializedUUID = Annotated[
-    UUID, PlainSerializer(lambda x: str(x), return_type=str, when_used="json")
-]
-CustomInstructions = dict[SerializedUUID, ValidInstruction]
 
 
 class AgentCreate(BaseModel):
     name: str
     description: str
-    excluded_apps: list[UUID] = []
-    excluded_functions: list[UUID] = []
-    custom_instructions: CustomInstructions = Field(default_factory=dict)
+    excluded_apps: list[str] = []
+    excluded_functions: list[str] = []
+    custom_instructions: dict[str, ValidInstruction] = Field(default_factory=dict)
 
 
 class AgentUpdate(BaseModel):
     name: str | None = None
     description: str | None = None
-    excluded_apps: list[UUID] | None = None
-    excluded_functions: list[UUID] | None = None
-    custom_instructions: CustomInstructions = Field(default_factory=dict)
+    excluded_apps: list[str] | None = None
+    excluded_functions: list[str] | None = None
+    custom_instructions: dict[str, ValidInstruction] = Field(default_factory=dict)
 
 
 class AgentPublic(BaseModel):
@@ -44,9 +39,9 @@ class AgentPublic(BaseModel):
     project_id: UUID
     name: str
     description: str
-    excluded_apps: list[UUID] = []
-    excluded_functions: list[UUID] = []
-    custom_instructions: CustomInstructions = Field(default_factory=dict)
+    excluded_apps: list[str] = []
+    excluded_functions: list[str] = []
+    custom_instructions: dict[str, ValidInstruction] = Field(default_factory=dict)
 
     created_at: datetime
     updated_at: datetime

@@ -55,14 +55,14 @@ def test_list_all_functions_pagination(
     assert len(functions) == 1
 
 
-def test_list_functions_with_app_ids(
+def test_list_functions_with_app_names(
     test_client: TestClient,
     dummy_apps: list[App],
     dummy_functions: list[Function],
     dummy_api_key_1: str,
 ) -> None:
     query_params = {
-        "app_ids": [dummy_apps[0].id, dummy_apps[1].id],
+        "app_names": [dummy_apps[0].name, dummy_apps[1].name],
         "limit": 100,
         "offset": 0,
     }
@@ -74,7 +74,8 @@ def test_list_functions_with_app_ids(
     assert response.status_code == status.HTTP_200_OK
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
     assert len(functions) == sum(
-        function.app_id in [dummy_apps[0].id, dummy_apps[1].id] for function in dummy_functions
+        function.app.name in [dummy_apps[0].name, dummy_apps[1].name]
+        for function in dummy_functions
     )
 
 
@@ -86,7 +87,7 @@ def test_list_functions_with_private_functions(
     dummy_api_key_1: str,
 ) -> None:
     # private functions should not be reachable for project with only public access
-    crud.functions.set_function_visibility(db_session, dummy_functions[0].id, Visibility.PRIVATE)
+    crud.functions.set_function_visibility(db_session, dummy_functions[0].name, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -116,7 +117,7 @@ def test_list_functions_with_private_apps(
     dummy_api_key_1: str,
 ) -> None:
     # all functions (public and private) under private apps should not be reachable for project with only public access
-    crud.apps.set_app_visibility(db_session, dummy_functions[0].app_id, Visibility.PRIVATE)
+    crud.apps.set_app_visibility(db_session, dummy_functions[0].app.name, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -126,7 +127,7 @@ def test_list_functions_with_private_apps(
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
 
     private_functions_count = sum(
-        function.app_id == dummy_functions[0].app_id for function in dummy_functions
+        function.app.name == dummy_functions[0].app.name for function in dummy_functions
     )
     assert private_functions_count > 0, "there should be at least one private function"
     assert (

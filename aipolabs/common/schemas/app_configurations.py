@@ -1,10 +1,8 @@
 from datetime import datetime
-from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
-from aipolabs.common.db.sql_models import AppConfiguration
 from aipolabs.common.enums import SecurityScheme
 
 
@@ -21,13 +19,6 @@ class AppConfigurationPublic(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
-
-    @model_validator(mode="before")
-    @classmethod
-    def extract_app_name(cls, data: Any) -> Any:
-        if isinstance(data, AppConfiguration):
-            data["app_name"] = data.app.name
-        return data
 
 
 class AppConfigurationCreate(BaseModel):

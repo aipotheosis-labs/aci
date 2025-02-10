@@ -37,10 +37,7 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
         Execute the function based on end-user input and security credentials.
         Input validation, default values injection, and security credentials injection are done here.
         """
-        logger.info(
-            f"executing function={function.id}, function_name={function.name}, "
-            f"function_input={function_input}"
-        )
+        logger.info(f"executing function={function.name}, function_input={function_input}")
         function_input = self._preprocess_function_input(function, function_input)
 
         return self._execute(function, function_input, security_scheme, security_credentials)
@@ -53,7 +50,7 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
                 schema=processor.filter_visible_properties(function.parameters),
             )
         except jsonschema.ValidationError as e:
-            logger.exception(f"failed to validate function input for function={function.id}")
+            logger.exception(f"failed to validate function input for function={function.name}")
             raise InvalidFunctionInput(e.message)
 
         logger.info(f"function_input before injecting defaults: {json.dumps(function_input)}")

@@ -1,6 +1,7 @@
+from typing import cast
 from uuid import UUID
 
-from sqlalchemy import delete, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import App, AppConfiguration
@@ -21,9 +22,12 @@ def create_app_configuration(
     """
     Create a new app configuration record
     """
+    app_id = db_session.execute(
+        select(App.id).filter_by(name=app_configuration_create.app_name)
+    ).scalar_one()
     app_configuration = AppConfiguration(
         project_id=project_id,
-        app_id=app_configuration_create.app_id,
+        app_id=app_id,
         security_scheme=app_configuration_create.security_scheme,
         security_scheme_overrides=app_configuration_create.security_scheme_overrides,
         enabled=True,
@@ -64,13 +68,15 @@ def update_app_configuration(
     return app_configuration
 
 
-def delete_app_configuration(db_session: Session, project_id: UUID, app_name: str) -> int:
-    app_id = db_session.execute(select(App.id).filter_by(name=app_name)).scalar_one()
-    delete_result = db_session.execute(
-        delete(AppConfiguration).filter_by(project_id=project_id, app_id=app_id)
+def delete_app_configuration(db_session: Session, project_id: UUID, app_name: str) -> None:
+    statement = (
+        select(AppConfiguration)
+        .join(App, AppConfiguration.app_id == App.id)
+        .filter_by(name=app_name, project_id=project_id)
     )
+    app_to_delete = db_session.execute(statement).scalar_one()
+    db_session.delete(app_to_delete)
     db_session.flush()
-    return int(delete_result.rowcount)
 
 
 def get_app_configurations(
@@ -99,18 +105,16 @@ def get_app_configuration(
     return app_configuration
 
 
-def get_configured_app_ids(
+def get_configured_app_names(
     db_session: Session,
     project_id: UUID,
-) -> list[UUID]:
-    """Get just the app IDs that have configurations for a project."""
-    return [
-        r[0]
-        for r in db_session.query(AppConfiguration.app_id)
+) -> list[str]:
+    statement = (
+        select(App.name)
+        .join(AppConfiguration, AppConfiguration.app_id == App.id)
         .filter(AppConfiguration.project_id == project_id)
-        .distinct()
-        .all()
-    ]
+    )
+    return cast(list[str], db_session.execute(statement).scalars().all())
 
 
 def app_configuration_exists(db_session: Session, project_id: UUID, app_name: str) -> bool:

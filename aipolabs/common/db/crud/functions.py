@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
@@ -74,18 +72,18 @@ def search_functions(
     db_session: Session,
     public_only: bool,
     active_only: bool,
-    app_ids: list[UUID] | None,
+    app_names: list[str] | None,
     intent_embedding: list[float] | None,
     limit: int,
     offset: int,
 ) -> list[Function]:
     """Get a list of functions with optional filtering by app names and sorting by vector similarity to intent."""
-    statement = select(Function)
+    statement = select(Function).join(App, Function.app_id == App.id)
 
     # filter out all functions of inactive apps and all inactive functions
     # (where app is active buy specific functions can be inactive)
     if active_only:
-        statement = statement.join(App).filter(App.active).filter(Function.active)
+        statement = statement.filter(App.active).filter(Function.active)
     # if the corresponding project (api key belongs to) can only access public apps and functions,
     # filter out all functions of private apps and all private functions (where app is public but specific function is private)
     if public_only:
@@ -93,8 +91,8 @@ def search_functions(
             Function.visibility == Visibility.PUBLIC
         )
     # filter out functions that are not in the specified apps
-    if app_ids:
-        statement = statement.filter(App.id.in_(app_ids))
+    if app_names:
+        statement = statement.filter(App.name.in_(app_names))
 
     if intent_embedding:
         similarity_score = Function.embedding.cosine_distance(intent_embedding)
@@ -110,15 +108,15 @@ def get_functions(
     db_session: Session,
     public_only: bool,
     active_only: bool,
-    app_ids: list[UUID] | None,
+    app_names: list[str] | None,
     limit: int,
     offset: int,
 ) -> list[Function]:
     """Get a list of functions and their details. Sorted by function name."""
-    statement = select(Function).join(App)
+    statement = select(Function).join(App, Function.app_id == App.id)
 
-    if app_ids:
-        statement = statement.filter(App.id.in_(app_ids))
+    if app_names:
+        statement = statement.filter(App.name.in_(app_names))
 
     # exclude private Apps's functions and private functions if public_only is True
     if public_only:
@@ -135,12 +133,9 @@ def get_functions(
 
 
 def get_function(
-    db_session: Session, function_id_or_name: str, public_only: bool, active_only: bool
+    db_session: Session, function_name: str, public_only: bool, active_only: bool
 ) -> Function | None:
-    if utils.is_uuid(function_id_or_name):
-        statement = select(Function).filter_by(id=function_id_or_name)
-    else:
-        statement = select(Function).filter_by(name=function_id_or_name)
+    statement = select(Function).filter_by(name=function_name)
 
     # filter out all functions of inactive apps and all inactive functions
     # (where app is active buy specific functions can be inactive)
@@ -158,11 +153,13 @@ def get_function(
     return function
 
 
-def set_function_active_status(db_session: Session, function_id: UUID, active: bool) -> None:
-    statement = update(Function).filter_by(id=function_id).values(active=active)
+def set_function_active_status(db_session: Session, function_name: str, active: bool) -> None:
+    statement = update(Function).filter_by(name=function_name).values(active=active)
     db_session.execute(statement)
 
 
-def set_function_visibility(db_session: Session, function_id: UUID, visibility: Visibility) -> None:
-    statement = update(Function).filter_by(id=function_id).values(visibility=visibility)
+def set_function_visibility(
+    db_session: Session, function_name: str, visibility: Visibility
+) -> None:
+    statement = update(Function).filter_by(name=function_name).values(visibility=visibility)
     db_session.execute(statement)

@@ -11,7 +11,7 @@ from aipolabs.common.schemas.app_configurations import (
 )
 from aipolabs.server import config
 
-NON_EXISTENT_APP_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+NON_EXISTENT_APP_NAME = "non-existent-app"
 
 
 def test_create_app_configuration(
@@ -66,7 +66,7 @@ def test_create_app_configuration_app_not_found(
     dummy_api_key_1: str,
 ) -> None:
     body = AppConfigurationCreate(
-        app_name=NON_EXISTENT_APP_ID, security_scheme=SecurityScheme.OAUTH2
+        app_name=NON_EXISTENT_APP_NAME, security_scheme=SecurityScheme.OAUTH2
     )
     response = test_client.post(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
@@ -83,7 +83,7 @@ def test_create_app_configuration_app_not_enabled(
     dummy_api_key_1: str,
     dummy_app_google: App,
 ) -> None:
-    crud.apps.set_app_active_status(db_session, dummy_app_google.id, False)
+    crud.apps.set_app_active_status(db_session, dummy_app_google.name, False)
     db_session.commit()
 
     # try creating app configuration
@@ -106,7 +106,7 @@ def test_create_app_configuration_project_does_not_have_access(
     dummy_app_google: App,
 ) -> None:
     # set the app to private
-    crud.apps.set_app_visibility(db_session, dummy_app_google.id, Visibility.PRIVATE)
+    crud.apps.set_app_visibility(db_session, dummy_app_google.name, Visibility.PRIVATE)
     db_session.commit()
 
     # try creating app configuration

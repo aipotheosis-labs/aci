@@ -17,7 +17,7 @@ def test_search_functions_with_inactive_functions(
     dummy_api_key_1: str,
 ) -> None:
     # inactive functions should not be returned
-    crud.functions.set_function_active_status(db_session, dummy_functions[0].id, False)
+    crud.functions.set_function_active_status(db_session, dummy_functions[0].name, False)
     db_session.commit()
 
     response = test_client.get(
@@ -39,7 +39,7 @@ def test_search_functions_with_inactive_apps(
     dummy_api_key_1: str,
 ) -> None:
     # all functions (active or not) under inactive apps should not be returned
-    crud.apps.set_app_active_status(db_session, dummy_functions[0].app_id, False)
+    crud.apps.set_app_active_status(db_session, dummy_functions[0].app.name, False)
     db_session.commit()
 
     response = test_client.get(
@@ -53,7 +53,7 @@ def test_search_functions_with_inactive_apps(
     ]
 
     inactive_functions_count = sum(
-        function.app_id == dummy_functions[0].app_id for function in dummy_functions
+        function.app.name == dummy_functions[0].app.name for function in dummy_functions
     )
     assert inactive_functions_count > 0, "there should be at least one inactive function"
     assert (
@@ -69,7 +69,7 @@ def test_search_functions_with_private_functions(
     dummy_api_key_1: str,
 ) -> None:
     # private functions should not be reachable for project with only public access
-    crud.functions.set_function_visibility(db_session, dummy_functions[0].id, Visibility.PRIVATE)
+    crud.functions.set_function_visibility(db_session, dummy_functions[0].name, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -107,7 +107,7 @@ def test_search_functions_with_private_apps(
     dummy_api_key_1: str,
 ) -> None:
     # all functions (public and private) under private apps should not be reachable for project with only public access
-    crud.apps.set_app_visibility(db_session, dummy_functions[0].app_id, Visibility.PRIVATE)
+    crud.apps.set_app_visibility(db_session, dummy_functions[0].app.name, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -121,7 +121,7 @@ def test_search_functions_with_private_apps(
     ]
 
     private_functions_count = sum(
-        function.app_id == dummy_functions[0].app_id for function in dummy_functions
+        function.app.name == dummy_functions[0].app.name for function in dummy_functions
     )
     assert private_functions_count > 0, "there should be at least one private function"
     assert (
@@ -144,11 +144,11 @@ def test_search_functions_with_private_apps(
     assert len(functions) == len(dummy_functions)
 
 
-def test_search_functions_with_app_ids(
+def test_search_functions_with_app_names(
     test_client: TestClient, dummy_functions: list[Function], dummy_api_key_1: str
 ) -> None:
     search_param = {
-        "app_ids": [dummy_functions[0].app_id, dummy_functions[1].app_id],
+        "app_names": [dummy_functions[0].app.name, dummy_functions[1].app.name],
         "limit": 100,
         "offset": 0,
     }
@@ -169,7 +169,7 @@ def test_search_functions_with_app_ids(
         )
     # total number of functions should be the sum of functions from the given app ids
     assert len(functions) == sum(
-        function.app_id in [dummy_functions[0].app_id, dummy_functions[1].app_id]
+        function.app.name in [dummy_functions[0].app.name, dummy_functions[1].app.name]
         for function in dummy_functions
     )
 
@@ -216,14 +216,14 @@ def test_search_functions_with_intent(
     assert functions[0].name == dummy_function_google__calendar_create_event.name
 
 
-def test_search_functions_with_app_ids_and_intent(
+def test_search_functions_with_app_names_and_intent(
     test_client: TestClient,
     dummy_functions: list[Function],
     dummy_api_key_1: str,
     dummy_app_github: App,
 ) -> None:
     search_param = {
-        "app_ids": [dummy_app_github.id],
+        "app_names": [dummy_app_github.name],
         "intent": "i want to create a new code repo for my project",
         "limit": 100,
         "offset": 0,
@@ -243,7 +243,7 @@ def test_search_functions_with_app_ids_and_intent(
         assert function.name.startswith(dummy_app_github.name)
     # total number of functions should be the sum of functions from the given app ids
     assert len(functions) == sum(
-        function.app_id == dummy_app_github.id for function in dummy_functions
+        function.app.name == dummy_app_github.name for function in dummy_functions
     )
     assert functions[0].name.startswith(dummy_app_github.name)
 
@@ -337,10 +337,10 @@ def test_search_functions_no_configured_apps(
     ]
     assert len(functions) == 0
 
-    # Case 2: No app configurations, app_ids are provided but no functions should be returned
+    # Case 2: No app configurations, app_names are provided but no functions should be returned
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
-        params={"app_ids": [dummy_apps[0].id], "configured_only": True},
+        params={"app_names": [dummy_apps[0].name], "configured_only": True},
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_200_OK
@@ -350,18 +350,18 @@ def test_search_functions_no_configured_apps(
     assert len(functions) == 0
 
 
-def test_search_functions_with_app_ids_and_configured_only(
+def test_search_functions_with_app_names_and_configured_only(
     test_client: TestClient,
     dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
     dummy_app_github: App,
     dummy_app_google: App,
     dummy_api_key_1: str,
 ) -> None:
-    # Case 1: 1 configured app and 2 app_ids are provided
+    # Case 1: 1 configured app and 2 app_names are provided
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
         params={
-            "app_ids": [dummy_app_github.id, dummy_app_google.id],
+            "app_names": [dummy_app_github.name, dummy_app_google.name],
             "configured_only": True,
         },
         headers={"x-api-key": dummy_api_key_1},
@@ -374,10 +374,10 @@ def test_search_functions_with_app_ids_and_configured_only(
     dummy_app_github_function_names = [function.name for function in dummy_app_github.functions]
     assert all(function.name in dummy_app_github_function_names for function in functions)
 
-    # Case 2: 1 configured app and a different app_id is provided, should return 0 functions
+    # Case 2: 1 configured app and a different app_name is provided, should return 0 functions
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
-        params={"app_ids": [dummy_app_google.id], "configured_only": True},
+        params={"app_names": [dummy_app_google.name], "configured_only": True},
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_200_OK

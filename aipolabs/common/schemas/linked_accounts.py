@@ -1,14 +1,9 @@
 from datetime import datetime
-from typing import Any
 from uuid import UUID
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import BaseModel, ConfigDict, Field
 
-from aipolabs.common.db.sql_models import (
-    MAX_STRING_LENGTH,
-    LinkedAccount,
-    SecurityScheme,
-)
+from aipolabs.common.db.sql_models import MAX_STRING_LENGTH, SecurityScheme
 
 
 class LinkedAccountOAuth2Create(BaseModel):
@@ -48,13 +43,6 @@ class LinkedAccountPublic(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
-
-    @model_validator(mode="before")
-    @classmethod
-    def extract_app_name(cls, data: Any) -> Any:
-        if isinstance(data, LinkedAccount):
-            data["app_name"] = data.app.name
-        return data
 
 
 class LinkedAccountsList(BaseModel):

@@ -74,8 +74,8 @@ class FunctionCreate(BaseModel):
 
 
 class FunctionsList(BaseModel):
-    app_ids: list[UUID] | None = Field(
-        default=None, description="List of app ids for filtering functions."
+    app_names: list[str] | None = Field(
+        default=None, description="List of app names for filtering functions."
     )
     limit: int = Field(
         default=100, ge=1, le=1000, description="Maximum number of Functions per response."
@@ -85,8 +85,8 @@ class FunctionsList(BaseModel):
 
 # TODO: add flag (e.g., verbose=true) to include detailed function info? (e.g., dev portal will need this)
 class FunctionsSearch(BaseModel):
-    app_ids: list[UUID] | None = Field(
-        default=None, description="List of app ids for filtering functions."
+    app_names: list[str] | None = Field(
+        default=None, description="List of app names for filtering functions."
     )
     intent: str | None = Field(
         default=None,
@@ -129,7 +129,7 @@ class FunctionBasic(BaseModel):
 
 class FunctionDetails(BaseModel):
     id: UUID
-    app_id: UUID
+    app_name: str
     name: str
     description: str
     tags: list[str]

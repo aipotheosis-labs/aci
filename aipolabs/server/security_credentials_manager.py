@@ -56,7 +56,7 @@ async def _get_oauth2_credentials(
     elif app.default_security_credentials_by_scheme.get(linked_account.security_scheme):
         is_app_default_credentials = True
         logger.info(
-            f"using default security credentials from app={app.id}, "
+            f"using default security credentials from app={app.name}, "
             f"security scheme={linked_account.security_scheme}, "
             f"linked account={linked_account.id}"
         )
@@ -65,13 +65,13 @@ async def _get_oauth2_credentials(
         ]
     else:
         logger.error(
-            f"no security credentials usable for app={app.id}, "
+            f"no security credentials usable for app={app.name}, "
             f"security scheme={linked_account.security_scheme}, "
             f"linked account={linked_account.id}"
         )
         # TODO: check all 'NoImplementationFound' exceptions see if a more suitable exception can be used
         raise NoImplementationFound(
-            f"no security credentials usable for app={app.id}, "
+            f"no security credentials usable for app={app.name}, "
             f"security scheme={linked_account.security_scheme}, "
             f"linked account={linked_account.id}"
         )
@@ -153,8 +153,8 @@ def _get_api_key_credentials(
         linked_account.security_scheme
     )
     if not security_credentials:
-        logger.error(f"no default security credentials found for app={app.id}")
-        raise NoImplementationFound(f"no default security credentials found for app={app.id}")
+        logger.error(f"no default security credentials found for app={app.name}")
+        raise NoImplementationFound(f"no default security credentials found for app={app.name}")
     api_key_credentials: APIKeySchemeCredentials = APIKeySchemeCredentials.model_validate(
         security_credentials
     )

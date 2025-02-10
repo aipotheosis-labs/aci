@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import delete, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import App, LinkedAccount
@@ -16,8 +16,7 @@ def get_linked_accounts(
     """Get all linked accounts under a project, with optional filters"""
     statement = select(LinkedAccount).filter_by(project_id=project_id)
     if app_name:
-        app_id = db_session.execute(select(App.id).filter_by(name=app_name)).scalar_one()
-        statement = statement.filter(LinkedAccount.app_id == app_id)
+        statement = statement.join(App, LinkedAccount.app_id == App.id).filter(App.name == app_name)
     if linked_account_owner_id:
         statement = statement.filter(
             LinkedAccount.linked_account_owner_id == linked_account_owner_id
@@ -104,11 +103,13 @@ def update_linked_account(
 
 
 def delete_linked_accounts(db_session: Session, project_id: UUID, app_name: str) -> int:
-    app_id = db_session.execute(select(App.id).filter_by(name=app_name)).scalar_one()
-    delete_result = db_session.execute(
-        delete(LinkedAccount).filter(
-            LinkedAccount.project_id == project_id, LinkedAccount.app_id == app_id
-        )
+    statement = (
+        select(LinkedAccount)
+        .join(App, LinkedAccount.app_id == App.id)
+        .filter(LinkedAccount.project_id == project_id, App.name == app_name)
     )
+    linked_accounts_to_delete = db_session.execute(statement).scalars().all()
+    for linked_account in linked_accounts_to_delete:
+        db_session.delete(linked_account)
     db_session.flush()
-    return int(delete_result.rowcount)
+    return len(linked_accounts_to_delete)
