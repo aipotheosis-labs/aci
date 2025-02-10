@@ -13,7 +13,7 @@ def test_delete_app_configuration(
 ) -> None:
     ENDPOINT = (
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/"
-        f"{dummy_app_configuration_oauth2_google_project_1.app_id}"
+        f"{dummy_app_configuration_oauth2_google_project_1.app.name}"
     )
 
     response = test_client.delete(ENDPOINT, headers={"x-api-key": dummy_api_key_1})
@@ -31,7 +31,7 @@ def test_delete_non_existent_app_configuration(
     dummy_app_aipolabs_test: App,
 ) -> None:
     response = test_client.delete(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{dummy_app_aipolabs_test.id}",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{dummy_app_aipolabs_test.name}",
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND

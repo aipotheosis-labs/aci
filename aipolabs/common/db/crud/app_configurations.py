@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db.sql_models import AppConfiguration
+from aipolabs.common.db.sql_models import App, AppConfiguration
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
@@ -64,31 +64,37 @@ def update_app_configuration(
     return app_configuration
 
 
-def delete_app_configuration(db_session: Session, project_id: UUID, app_id: UUID) -> int:
-    statement = delete(AppConfiguration).filter_by(project_id=project_id, app_id=app_id)
-    result = db_session.execute(statement)
+def delete_app_configuration(db_session: Session, project_id: UUID, app_name: str) -> int:
+    app_id = db_session.execute(select(App.id).filter_by(name=app_name)).scalar_one()
+    delete_result = db_session.execute(
+        delete(AppConfiguration).filter_by(project_id=project_id, app_id=app_id)
+    )
     db_session.flush()
-    return int(result.rowcount)
+    return int(delete_result.rowcount)
 
 
 def get_app_configurations(
-    db_session: Session, project_id: UUID, app_ids: list[UUID] | None, limit: int, offset: int
+    db_session: Session, project_id: UUID, app_names: list[str] | None, limit: int, offset: int
 ) -> list[AppConfiguration]:
-    """Get all app configurations for a project, optionally filtered by app ids"""
+    """Get all app configurations for a project, optionally filtered by app names"""
     statement = select(AppConfiguration).filter_by(project_id=project_id)
-    if app_ids:
-        statement = statement.filter(AppConfiguration.app_id.in_(app_ids))
+    if app_names:
+        statement = statement.join(App, AppConfiguration.app_id == App.id).filter(
+            App.name.in_(app_names)
+        )
     statement = statement.offset(offset).limit(limit)
     app_configurations: list[AppConfiguration] = db_session.execute(statement).scalars().all()
     return app_configurations
 
 
 def get_app_configuration(
-    db_session: Session, project_id: UUID, app_id: UUID
+    db_session: Session, project_id: UUID, app_name: str
 ) -> AppConfiguration | None:
-    """Get an app configuration by project id and app id"""
+    """Get an app configuration by project id and app name"""
     app_configuration: AppConfiguration | None = db_session.execute(
-        select(AppConfiguration).filter_by(project_id=project_id, app_id=app_id)
+        select(AppConfiguration)
+        .join(App, AppConfiguration.app_id == App.id)
+        .filter_by(project_id=project_id, name=app_name)
     ).scalar_one_or_none()
     return app_configuration
 
@@ -107,11 +113,13 @@ def get_configured_app_ids(
     ]
 
 
-def app_configuration_exists(db_session: Session, project_id: UUID, app_id: UUID) -> bool:
-    """Check if an app configuration exists in the database."""
-    return (
-        db_session.execute(
-            select(AppConfiguration).filter_by(project_id=project_id, app_id=app_id)
-        ).scalar_one_or_none()
-        is not None
+def app_configuration_exists(db_session: Session, project_id: UUID, app_name: str) -> bool:
+    stmt = (
+        select(AppConfiguration)
+        .join(App, AppConfiguration.app_id == App.id)
+        .filter(
+            AppConfiguration.project_id == project_id,
+            App.name == app_name,
+        )
     )
+    return db_session.execute(stmt).scalar_one_or_none() is not None

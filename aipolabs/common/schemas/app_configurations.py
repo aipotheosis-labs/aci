@@ -1,15 +1,17 @@
 from datetime import datetime
+from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from aipolabs.common.db.sql_models import AppConfiguration
 from aipolabs.common.enums import SecurityScheme
 
 
 class AppConfigurationPublic(BaseModel):
     id: UUID
     project_id: UUID
-    app_id: UUID
+    app_name: str
     security_scheme: SecurityScheme
     security_scheme_overrides: dict
     enabled: bool
@@ -20,6 +22,13 @@ class AppConfigurationPublic(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+    @model_validator(mode="before")
+    @classmethod
+    def extract_app_name(cls, data: Any) -> Any:
+        if isinstance(data, AppConfiguration):
+            data["app_name"] = data.app.name
+        return data
+
 
 class AppConfigurationCreate(BaseModel):
     """Create a new app configuration
@@ -28,7 +37,7 @@ class AppConfigurationCreate(BaseModel):
     “all_functions_enabled=False” AND empty enabled_functions → all functions disabled.
     """
 
-    app_id: UUID
+    app_name: str
     security_scheme: SecurityScheme
     # TODO: add typing/class to security_scheme_overrides
     security_scheme_overrides: dict = Field(default_factory=dict)
@@ -63,7 +72,7 @@ class AppConfigurationUpdate(BaseModel):
 
 
 class AppConfigurationsList(BaseModel):
-    app_ids: list[UUID] | None = Field(default=None, description="Filter by app ids.")
+    app_names: list[str] | None = Field(default=None, description="Filter by app names.")
     limit: int = Field(
         default=100, ge=1, le=1000, description="Maximum number of results per response."
     )

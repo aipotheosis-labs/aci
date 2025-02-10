@@ -573,6 +573,9 @@ class LinkedAccount(Base):
         nullable=False,
         init=False,
     )
+
+    app: Mapped[App] = relationship("App", lazy="select", init=False)
+
     __table_args__ = (
         # TODO: write test
         UniqueConstraint(

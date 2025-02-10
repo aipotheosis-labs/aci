@@ -362,7 +362,7 @@ def dummy_app_configuration_oauth2_google_project_1(
     dummy_app_google: App,
 ) -> AppConfigurationPublic:
     app_configuration_create = AppConfigurationCreate(
-        app_id=dummy_app_google.id, security_scheme=SecurityScheme.OAUTH2
+        app_name=dummy_app_google.name, security_scheme=SecurityScheme.OAUTH2
     )
     dummy_app_configuration_oauth2_google_project_1 = (
         crud.app_configurations.create_app_configuration(
@@ -383,7 +383,7 @@ def dummy_app_configuration_oauth2_google_project_2(
     dummy_app_google: App,
 ) -> AppConfigurationPublic:
     app_configuration_create = AppConfigurationCreate(
-        app_id=dummy_app_google.id, security_scheme=SecurityScheme.OAUTH2
+        app_name=dummy_app_google.name, security_scheme=SecurityScheme.OAUTH2
     )
 
     dummy_app_configuration_oauth2_google_project_2 = (
@@ -404,7 +404,7 @@ def dummy_app_configuration_api_key_github_project_1(
     dummy_app_github: App,
 ) -> AppConfigurationPublic:
     app_configuration_create = AppConfigurationCreate(
-        app_id=dummy_app_github.id, security_scheme=SecurityScheme.API_KEY
+        app_name=dummy_app_github.name, security_scheme=SecurityScheme.API_KEY
     )
     dummy_app_configuration_api_key_github_project_1 = (
         crud.app_configurations.create_app_configuration(
@@ -424,7 +424,7 @@ def dummy_app_configuration_api_key_github_project_2(
     dummy_app_github: App,
 ) -> AppConfigurationPublic:
     app_configuration_create = AppConfigurationCreate(
-        app_id=dummy_app_github.id, security_scheme=SecurityScheme.API_KEY
+        app_name=dummy_app_github.name, security_scheme=SecurityScheme.API_KEY
     )
     dummy_app_configuration_api_key_github_project_2 = (
         crud.app_configurations.create_app_configuration(
@@ -444,7 +444,7 @@ def dummy_app_configuration_api_key_aipolabs_test_project_1(
     dummy_app_aipolabs_test: App,
 ) -> AppConfigurationPublic:
     app_configuration_create = AppConfigurationCreate(
-        app_id=dummy_app_aipolabs_test.id, security_scheme=SecurityScheme.API_KEY
+        app_name=dummy_app_aipolabs_test.name, security_scheme=SecurityScheme.API_KEY
     )
 
     dummy_app_configuration_api_key_aipolabs_test_project_1 = (
@@ -465,7 +465,7 @@ def dummy_app_configuration_oauth2_aipolabs_test_project_1(
     dummy_app_aipolabs_test: App,
 ) -> AppConfigurationPublic:
     app_configuration_create = AppConfigurationCreate(
-        app_id=dummy_app_aipolabs_test.id, security_scheme=SecurityScheme.OAUTH2
+        app_name=dummy_app_aipolabs_test.name, security_scheme=SecurityScheme.OAUTH2
     )
 
     dummy_app_configuration_oauth2_aipolabs_test_project_1 = (
@@ -514,7 +514,7 @@ def dummy_linked_account_oauth2_google_project_1(
     dummy_linked_account_oauth2_google_project_1 = crud.linked_accounts.create_linked_account(
         db_session,
         dummy_app_configuration_oauth2_google_project_1.project_id,
-        dummy_app_configuration_oauth2_google_project_1.app_id,
+        dummy_app_configuration_oauth2_google_project_1.app_name,
         "dummy_linked_account_oauth2_google_project_1",
         dummy_app_configuration_oauth2_google_project_1.security_scheme,
         dummy_linked_account_oauth2_credentials.model_dump(),
@@ -533,7 +533,7 @@ def dummy_linked_account_api_key_github_project_1(
     dummy_linked_account_api_key_github_project_1 = crud.linked_accounts.create_linked_account(
         db_session,
         dummy_app_configuration_api_key_github_project_1.project_id,
-        dummy_app_configuration_api_key_github_project_1.app_id,
+        dummy_app_configuration_api_key_github_project_1.app_name,
         "dummy_linked_account_api_key_github_project_1",
         dummy_app_configuration_api_key_github_project_1.security_scheme,
         dummy_linked_account_api_key_credentials.model_dump(),
@@ -552,7 +552,7 @@ def dummy_linked_account_oauth2_google_project_2(
     dummy_linked_account_oauth2_google_project_2 = crud.linked_accounts.create_linked_account(
         db_session,
         dummy_app_configuration_oauth2_google_project_2.project_id,
-        dummy_app_configuration_oauth2_google_project_2.app_id,
+        dummy_app_configuration_oauth2_google_project_2.app_name,
         "dummy_linked_account_oauth2_google_project_2",
         dummy_app_configuration_oauth2_google_project_2.security_scheme,
         dummy_linked_account_oauth2_credentials.model_dump(),
@@ -572,7 +572,7 @@ def dummy_linked_account_api_key_aipolabs_test_project_1(
         crud.linked_accounts.create_linked_account(
             db_session,
             dummy_app_configuration_api_key_aipolabs_test_project_1.project_id,
-            dummy_app_configuration_api_key_aipolabs_test_project_1.app_id,
+            dummy_app_configuration_api_key_aipolabs_test_project_1.app_name,
             "dummy_linked_account_api_key_aipolabs_test_project_1",
             dummy_app_configuration_api_key_aipolabs_test_project_1.security_scheme,
             dummy_linked_account_api_key_credentials.model_dump(),
@@ -593,7 +593,7 @@ def dummy_linked_account_oauth2_aipolabs_test_project_1(
         crud.linked_accounts.create_linked_account(
             db_session,
             dummy_app_configuration_oauth2_aipolabs_test_project_1.project_id,
-            dummy_app_configuration_oauth2_aipolabs_test_project_1.app_id,
+            dummy_app_configuration_oauth2_aipolabs_test_project_1.app_name,
             "dummy_linked_account_oauth2_aipolabs_test_project_1",
             dummy_app_configuration_oauth2_aipolabs_test_project_1.security_scheme,
             dummy_linked_account_oauth2_credentials.model_dump(),
@@ -614,7 +614,7 @@ def dummy_linked_account_default_aipolabs_test_project_1(
         crud.linked_accounts.create_linked_account(
             db_session,
             dummy_app_configuration_oauth2_aipolabs_test_project_1.project_id,
-            dummy_app_configuration_oauth2_aipolabs_test_project_1.app_id,
+            dummy_app_configuration_oauth2_aipolabs_test_project_1.app_name,
             "dummy_linked_account_default_aipolabs_test_project_1",
             dummy_app_configuration_oauth2_aipolabs_test_project_1.security_scheme,
             {},

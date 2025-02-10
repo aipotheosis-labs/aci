@@ -23,7 +23,7 @@ def test_link_account_with_default_api_key_credentials(
 ) -> None:
     # link account with default apikey credentials
     body = LinkedAccountDefaultCreate(
-        app_id=dummy_app_configuration_api_key_github_project_1.app_id,
+        app_name=dummy_app_configuration_api_key_github_project_1.app.name,
         linked_account_owner_id="test_link_account_with_default_api_key_credentials_success",
     )
     response = test_client.post(
@@ -37,12 +37,12 @@ def test_link_account_with_default_api_key_credentials(
     linked_account = crud.linked_accounts.get_linked_account(
         db_session,
         dummy_app_configuration_api_key_github_project_1.project_id,
-        dummy_app_configuration_api_key_github_project_1.app_id,
+        dummy_app_configuration_api_key_github_project_1.app_name,
         body.linked_account_owner_id,
     )
     assert linked_account is not None
     assert linked_account.project_id == dummy_app_configuration_api_key_github_project_1.project_id
-    assert linked_account.app_id == dummy_app_configuration_api_key_github_project_1.app_id
+    assert linked_account.app.name == dummy_app_configuration_api_key_github_project_1.app_name
     assert linked_account.linked_account_owner_id == body.linked_account_owner_id
     assert (
         linked_account.security_scheme
@@ -74,7 +74,7 @@ def test_link_account_with_default_credentials_non_existent_app_configuration(
     dummy_app_github: App,
 ) -> None:
     body = LinkedAccountDefaultCreate(
-        app_id=dummy_app_github.id,
+        app_name=dummy_app_github.name,
         linked_account_owner_id="test_link_account_with_default_credentials_non_existent_app_configuration",
     )
     response = test_client.post(
@@ -97,7 +97,7 @@ def test_link_account_with_default_credentials_app_without_default_credentials(
 
     # try to link account using default credentials
     body = LinkedAccountDefaultCreate(
-        app_id=dummy_app_github.id,
+        app_name=dummy_app_github.name,
         linked_account_owner_id="test_link_account_with_default_credentials_app_without_default_credentials",
     )
     response = test_client.post(

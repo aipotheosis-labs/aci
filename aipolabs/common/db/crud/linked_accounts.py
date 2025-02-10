@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db.sql_models import LinkedAccount
+from aipolabs.common.db.sql_models import App, LinkedAccount
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.logging import get_logger
 
@@ -11,11 +11,12 @@ logger = get_logger(__name__)
 
 
 def get_linked_accounts(
-    db_session: Session, project_id: UUID, app_id: UUID | None, linked_account_owner_id: str | None
+    db_session: Session, project_id: UUID, app_name: str | None, linked_account_owner_id: str | None
 ) -> list[LinkedAccount]:
     """Get all linked accounts under a project, with optional filters"""
     statement = select(LinkedAccount).filter_by(project_id=project_id)
-    if app_id:
+    if app_name:
+        app_id = db_session.execute(select(App.id).filter_by(name=app_name)).scalar_one()
         statement = statement.filter(LinkedAccount.app_id == app_id)
     if linked_account_owner_id:
         statement = statement.filter(
@@ -27,10 +28,14 @@ def get_linked_accounts(
 
 
 def get_linked_account(
-    db_session: Session, project_id: UUID, app_id: UUID, linked_account_owner_id: str
+    db_session: Session, project_id: UUID, app_name: str, linked_account_owner_id: str
 ) -> LinkedAccount | None:
-    statement = select(LinkedAccount).filter_by(
-        project_id=project_id, app_id=app_id, linked_account_owner_id=linked_account_owner_id
+    statement = (
+        select(LinkedAccount)
+        .join(App)
+        .filter_by(
+            project_id=project_id, name=app_name, linked_account_owner_id=linked_account_owner_id
+        )
     )
     linked_account: LinkedAccount | None = db_session.execute(statement).scalar_one_or_none()
 
@@ -57,12 +62,13 @@ def delete_linked_account(db_session: Session, linked_account: LinkedAccount) ->
 def create_linked_account(
     db_session: Session,
     project_id: UUID,
-    app_id: UUID,
+    app_name: str,
     linked_account_owner_id: str,
     security_scheme: SecurityScheme,
     security_credentials: dict,
     enabled: bool = True,
 ) -> LinkedAccount:
+    app_id = db_session.execute(select(App.id).filter_by(name=app_name)).scalar_one()
     linked_account = LinkedAccount(
         project_id=project_id,
         app_id=app_id,
@@ -97,9 +103,12 @@ def update_linked_account(
     return linked_account
 
 
-def delete_linked_accounts(db_session: Session, project_id: UUID, app_id: UUID) -> int:
-    statement = delete(LinkedAccount).filter_by(project_id=project_id, app_id=app_id)
-    result = db_session.execute(statement)
-
+def delete_linked_accounts(db_session: Session, project_id: UUID, app_name: str) -> int:
+    app_id = db_session.execute(select(App.id).filter_by(name=app_name)).scalar_one()
+    delete_result = db_session.execute(
+        delete(LinkedAccount).filter(
+            LinkedAccount.project_id == project_id, LinkedAccount.app_id == app_id
+        )
+    )
     db_session.flush()
-    return int(result.rowcount)
+    return int(delete_result.rowcount)

@@ -21,7 +21,7 @@ def test_create_app_configuration(
 ) -> None:
     # success case
     dummy_app = dummy_apps[0]
-    body = AppConfigurationCreate(app_id=dummy_app.id, security_scheme=SecurityScheme.OAUTH2)
+    body = AppConfigurationCreate(app_name=dummy_app.name, security_scheme=SecurityScheme.OAUTH2)
 
     response = test_client.post(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
@@ -47,7 +47,9 @@ def test_create_app_configuration_security_scheme_not_supported(
     dummy_apps: list[App],
 ) -> None:
     dummy_app = dummy_apps[0]
-    body = AppConfigurationCreate(app_id=dummy_app.id, security_scheme=SecurityScheme.HTTP_BASIC)
+    body = AppConfigurationCreate(
+        app_name=dummy_app.name, security_scheme=SecurityScheme.HTTP_BASIC
+    )
     response = test_client.post(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
@@ -63,7 +65,9 @@ def test_create_app_configuration_app_not_found(
     test_client: TestClient,
     dummy_api_key_1: str,
 ) -> None:
-    body = AppConfigurationCreate(app_id=NON_EXISTENT_APP_ID, security_scheme=SecurityScheme.OAUTH2)
+    body = AppConfigurationCreate(
+        app_name=NON_EXISTENT_APP_ID, security_scheme=SecurityScheme.OAUTH2
+    )
     response = test_client.post(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
@@ -83,7 +87,9 @@ def test_create_app_configuration_app_not_enabled(
     db_session.commit()
 
     # try creating app configuration
-    body = AppConfigurationCreate(app_id=dummy_app_google.id, security_scheme=SecurityScheme.OAUTH2)
+    body = AppConfigurationCreate(
+        app_name=dummy_app_google.name, security_scheme=SecurityScheme.OAUTH2
+    )
     response = test_client.post(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),
@@ -104,7 +110,9 @@ def test_create_app_configuration_project_does_not_have_access(
     db_session.commit()
 
     # try creating app configuration
-    body = AppConfigurationCreate(app_id=dummy_app_google.id, security_scheme=SecurityScheme.OAUTH2)
+    body = AppConfigurationCreate(
+        app_name=dummy_app_google.name, security_scheme=SecurityScheme.OAUTH2
+    )
     response = test_client.post(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
         json=body.model_dump(mode="json"),

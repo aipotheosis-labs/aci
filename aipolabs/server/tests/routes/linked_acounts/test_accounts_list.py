@@ -20,7 +20,7 @@ def test_list_linked_accounts_no_filters(
     assert len(response.json()) == 2, "Should only return linked accounts under dummy project 1"
 
 
-def test_list_linked_accounts_filter_by_app_id(
+def test_list_linked_accounts_filter_by_app_name(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_linked_account_oauth2_google_project_1: LinkedAccount,
@@ -30,13 +30,13 @@ def test_list_linked_accounts_filter_by_app_id(
     response = test_client.get(
         f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
         headers={"x-api-key": dummy_api_key_1},
-        params={"app_id": str(dummy_linked_account_oauth2_google_project_1.app_id)},
+        params={"app_name": dummy_linked_account_oauth2_google_project_1.app.name},
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
     assert (
         len(response.json()) == 1
     ), "Should only return linked accounts of google app under dummy project 1"
-    assert response.json()[0]["app_id"] == str(dummy_linked_account_oauth2_google_project_1.app_id)
+    assert response.json()[0]["app_name"] == dummy_linked_account_oauth2_google_project_1.app.name
     assert (
         response.json()[0]["linked_account_owner_id"]
         == dummy_linked_account_oauth2_google_project_1.linked_account_owner_id
@@ -62,14 +62,14 @@ def test_list_linked_accounts_filter_by_account_name(
     assert (
         len(response.json()) == 1
     ), "Should only return linked accounts of specific account owner under dummy project 1"
-    assert response.json()[0]["app_id"] == str(dummy_linked_account_api_key_github_project_1.app_id)
+    assert response.json()[0]["app_name"] == dummy_linked_account_api_key_github_project_1.app.name
     assert (
         response.json()[0]["linked_account_owner_id"]
         == dummy_linked_account_api_key_github_project_1.linked_account_owner_id
     )
 
 
-def test_list_linked_accounts_filter_by_app_id_and_account_owner_id(
+def test_list_linked_accounts_filter_by_app_name_and_account_owner_id(
     test_client: TestClient,
     dummy_api_key_2: str,
     dummy_linked_account_oauth2_google_project_1: LinkedAccount,
@@ -81,13 +81,13 @@ def test_list_linked_accounts_filter_by_app_id_and_account_owner_id(
         f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
         headers={"x-api-key": dummy_api_key_2},
         params={
-            "app_id": str(dummy_linked_account_oauth2_google_project_2.app_id),
+            "app_name": dummy_linked_account_oauth2_google_project_2.app.name,
             "linked_account_owner_id": dummy_linked_account_oauth2_google_project_2.linked_account_owner_id,
         },
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
     assert len(response.json()) == 1
-    assert response.json()[0]["app_id"] == str(dummy_linked_account_oauth2_google_project_2.app_id)
+    assert response.json()[0]["app_name"] == dummy_linked_account_oauth2_google_project_2.app.name
     assert (
         response.json()[0]["linked_account_owner_id"]
         == dummy_linked_account_oauth2_google_project_2.linked_account_owner_id
@@ -102,7 +102,7 @@ def test_list_linked_accounts_filter_by_non_existent_app_configuration(
     response = test_client.get(
         f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
         headers={"x-api-key": dummy_api_key_1},
-        params={"app_id": str(dummy_app_aipolabs_test.id)},
+        params={"app_name": dummy_app_aipolabs_test.name},
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
     assert len(response.json()) == 0
