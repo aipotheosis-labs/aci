@@ -23,7 +23,7 @@ def test_link_account_with_default_api_key_credentials(
 ) -> None:
     # link account with default apikey credentials
     body = LinkedAccountDefaultCreate(
-        app_name=dummy_app_configuration_api_key_github_project_1.app.name,
+        app_name=dummy_app_configuration_api_key_github_project_1.app_name,
         linked_account_owner_id="test_link_account_with_default_api_key_credentials_success",
     )
     response = test_client.post(

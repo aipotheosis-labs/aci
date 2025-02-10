@@ -268,12 +268,12 @@ async def execute(
         logger.error(f"agent not found for api_key_id={context.api_key_id}")
         raise AgentNotFound(f"agent not found for api_key_id={context.api_key_id}")
 
-    if str(function.app_id) in agent.custom_instructions.keys():
+    if function.app.name in agent.custom_instructions.keys():
         filter_result = filter_function_call(
             openai_service,
             function,
             body.function_input,
-            agent.custom_instructions[str(function.app_id)],
+            agent.custom_instructions[function.app.name],
         )
         logger.info(f"Filter Result: {filter_result}")
         # Filter has failed
@@ -282,7 +282,7 @@ async def execute(
                 f"Function execution for function: {function.name}\n with description:"
                 f"{function.description}, \nparameters: {function.parameters} \nand input: "
                 f"{body.function_input} \nhas been rejected because of rule: "
-                f"{agent.custom_instructions[str(function.app_id)]} \nand the reason from"
+                f"{agent.custom_instructions[function.app.name]} \nand the reason from"
                 f"the filter is: {filter_result.reason}"
             )
 

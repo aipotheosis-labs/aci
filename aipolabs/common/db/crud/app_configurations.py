@@ -72,7 +72,7 @@ def delete_app_configuration(db_session: Session, project_id: UUID, app_name: st
     statement = (
         select(AppConfiguration)
         .join(App, AppConfiguration.app_id == App.id)
-        .filter_by(name=app_name, project_id=project_id)
+        .filter(AppConfiguration.project_id == project_id, App.name == app_name)
     )
     app_to_delete = db_session.execute(statement).scalar_one()
     db_session.delete(app_to_delete)
@@ -100,7 +100,7 @@ def get_app_configuration(
     app_configuration: AppConfiguration | None = db_session.execute(
         select(AppConfiguration)
         .join(App, AppConfiguration.app_id == App.id)
-        .filter_by(project_id=project_id, name=app_name)
+        .filter(AppConfiguration.project_id == project_id, App.name == app_name)
     ).scalar_one_or_none()
     return app_configuration
 

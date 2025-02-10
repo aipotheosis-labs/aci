@@ -643,6 +643,6 @@ def test_execute_function_with_custom_instructions_rejected(
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
     apple_custom_instructions = dummy_agent_with_github_apple_instructions.custom_instructions[
-        str(dummy_function_github__create_repository.app_id)
+        dummy_function_github__create_repository.app.name
     ]
     assert apple_custom_instructions in response.json()["error"]

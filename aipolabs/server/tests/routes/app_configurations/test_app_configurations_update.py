@@ -14,7 +14,7 @@ def test_update_app_configuration(
 ) -> None:
     ENDPOINT = (
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/"
-        f"{dummy_app_configuration_oauth2_google_project_1.app.name}"
+        f"{dummy_app_configuration_oauth2_google_project_1.app_name}"
     )
 
     response = test_client.get(ENDPOINT, headers={"x-api-key": dummy_api_key_1})
@@ -40,7 +40,7 @@ def test_update_app_configuration_with_invalid_payload(
 ) -> None:
     ENDPOINT = (
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/"
-        f"{dummy_app_configuration_oauth2_google_project_1.app.name}"
+        f"{dummy_app_configuration_oauth2_google_project_1.app_name}"
     )
 
     # all_functions_enabled cannot be True when enabled_functions is provided

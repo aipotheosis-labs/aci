@@ -135,12 +135,16 @@ def get_functions(
 def get_function(
     db_session: Session, function_name: str, public_only: bool, active_only: bool
 ) -> Function | None:
-    statement = select(Function).filter_by(name=function_name)
+    statement = select(Function).filter(Function.name == function_name)
 
     # filter out all functions of inactive apps and all inactive functions
     # (where app is active buy specific functions can be inactive)
     if active_only:
-        statement = statement.join(App).filter(App.active).filter(Function.active)
+        statement = (
+            statement.join(App, Function.app_id == App.id)
+            .filter(App.active)
+            .filter(Function.active)
+        )
     # if the corresponding project (api key belongs to) can only access public apps and functions,
     # filter out all functions of private apps and all private functions (where app is public but specific function is private)
     if public_only:

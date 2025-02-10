@@ -115,7 +115,7 @@ def test_get_function_that_is_inactive(
     dummy_api_key_1: str,
 ) -> None:
     # inactive function should not be reachable
-    crud.functions.set_function_active_status(db_session, dummy_functions[0].app.name, False)
+    crud.functions.set_function_active_status(db_session, dummy_functions[0].name, False)
     db_session.commit()
 
     response = test_client.get(

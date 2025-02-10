@@ -31,9 +31,11 @@ def get_linked_account(
 ) -> LinkedAccount | None:
     statement = (
         select(LinkedAccount)
-        .join(App)
-        .filter_by(
-            project_id=project_id, name=app_name, linked_account_owner_id=linked_account_owner_id
+        .join(App, LinkedAccount.app_id == App.id)
+        .filter(
+            LinkedAccount.project_id == project_id,
+            App.name == app_name,
+            LinkedAccount.linked_account_owner_id == linked_account_owner_id,
         )
     )
     linked_account: LinkedAccount | None = db_session.execute(statement).scalar_one_or_none()

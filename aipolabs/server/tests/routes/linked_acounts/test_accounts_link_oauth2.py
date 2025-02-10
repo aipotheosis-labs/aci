@@ -33,7 +33,7 @@ def test_link_oauth2_account_success(
 ) -> None:
     # init account linking proces
     body = LinkedAccountOAuth2Create(
-        app_name=dummy_app_configuration_oauth2_google_project_1.app.name,
+        app_name=dummy_app_configuration_oauth2_google_project_1.app_name,
         linked_account_owner_id="test_link_oauth2_account_success",
     )
     response = test_client.get(
@@ -50,7 +50,7 @@ def test_link_oauth2_account_success(
     assert state_jwt is not None
     state = LinkedAccountOAuth2CreateState.model_validate(jwt.decode(state_jwt, config.SIGNING_KEY))
     assert state.project_id == dummy_app_configuration_oauth2_google_project_1.project_id
-    assert state.app_name == dummy_app_configuration_oauth2_google_project_1.app.name
+    assert state.app_name == dummy_app_configuration_oauth2_google_project_1.app_name
     assert state.linked_account_owner_id == "test_link_oauth2_account_success"
     assert (
         state.redirect_uri

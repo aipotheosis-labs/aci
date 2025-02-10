@@ -183,7 +183,7 @@ def get_agent_by_id(db_session: Session, agent_id: UUID) -> Agent | None:
 
 def get_agent_by_api_key_id(db_session: Session, api_key_id: UUID) -> Agent | None:
     agent: Agent | None = db_session.execute(
-        select(Agent).join(APIKey).filter(APIKey.id == str(api_key_id))
+        select(Agent).join(APIKey, Agent.id == APIKey.agent_id).filter(APIKey.id == str(api_key_id))
     ).scalar_one_or_none()
 
     return agent
