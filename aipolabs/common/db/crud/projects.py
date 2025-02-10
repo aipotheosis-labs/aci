@@ -119,8 +119,8 @@ def create_agent(
     project_id: UUID,
     name: str,
     description: str,
-    excluded_apps: list[UUID],
-    excluded_functions: list[UUID],
+    excluded_apps: list[str],
+    excluded_functions: list[str],
     custom_instructions: dict[str, ValidInstruction],
 ) -> Agent:
     """

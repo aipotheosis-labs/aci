@@ -306,13 +306,15 @@ class Agent(Base):
     description: Mapped[str] = mapped_column(Text, nullable=False)
     # agent level control of what apps and functions are not accessible by the agent, apart from the project level control
     # TODO: reconsider if this should be in a separate table to enforce data integrity, or use periodic task to clean up
-    excluded_apps: Mapped[list[UUID]] = mapped_column(ARRAY(PGUUID(as_uuid=True)), nullable=False)
-    excluded_functions: Mapped[list[UUID]] = mapped_column(
-        ARRAY(PGUUID(as_uuid=True)), nullable=False
+    excluded_apps: Mapped[list[str]] = mapped_column(
+        ARRAY(String(MAX_STRING_LENGTH)), nullable=False
+    )
+    excluded_functions: Mapped[list[str]] = mapped_column(
+        ARRAY(String(MAX_STRING_LENGTH)), nullable=False
     )
     # TODO: should we use JSONB instead? As this will be frequently queried
     # Custom instructions for the agent to follow for each app
-    custom_instructions: Mapped[dict[UUID, str]] = mapped_column(
+    custom_instructions: Mapped[dict[str, str]] = mapped_column(
         MutableDict.as_mutable(JSON), nullable=False, default_factory=dict
     )
 
@@ -507,9 +509,9 @@ class AppConfiguration(Base):
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
     # indicate if all functions of the app are enabled for this app
     all_functions_enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
-    # if all_functions_enabled is false, this list contains the unqiue ids of the functions that are enabled for this app
-    enabled_functions: Mapped[list[UUID]] = mapped_column(
-        ARRAY(PGUUID(as_uuid=True)), nullable=False
+    # if all_functions_enabled is false, this list contains the unqiue names of the functions that are enabled for this app
+    enabled_functions: Mapped[list[str]] = mapped_column(
+        ARRAY(String(MAX_STRING_LENGTH)), nullable=False
     )
 
     created_at: Mapped[datetime] = mapped_column(

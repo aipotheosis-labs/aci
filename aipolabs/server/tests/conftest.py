@@ -220,7 +220,7 @@ def dummy_agent_with_github_apple_instructions(
         name="Dummy Agent with GitHub Instructions",
         description="Agent with custom GitHub instructions",
         custom_instructions={
-            dummy_app_github.id: "Don't create any repositories with the word apple in the name"
+            dummy_app_github.name: "Don't create any repositories with the word apple in the name"
         },
     )
     dummy_agent = crud.projects.create_agent(

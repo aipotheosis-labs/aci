@@ -14,7 +14,7 @@ class AppConfigurationPublic(BaseModel):
     security_scheme_overrides: dict
     enabled: bool
     all_functions_enabled: bool
-    enabled_functions: list[UUID]
+    enabled_functions: list[str]
     created_at: datetime
     updated_at: datetime
 
@@ -33,7 +33,7 @@ class AppConfigurationCreate(BaseModel):
     # TODO: add typing/class to security_scheme_overrides
     security_scheme_overrides: dict = Field(default_factory=dict)
     all_functions_enabled: bool = Field(default=True)
-    enabled_functions: list[UUID] = Field(default_factory=list)
+    enabled_functions: list[str] = Field(default_factory=list)
 
     # validate:
     # when all_functions_enabled is True, enabled_functions provided by user should be empty
@@ -51,7 +51,7 @@ class AppConfigurationUpdate(BaseModel):
     security_scheme_overrides: dict | None = None
     enabled: bool | None = None
     all_functions_enabled: bool | None = None
-    enabled_functions: list[UUID] | None = None
+    enabled_functions: list[str] | None = None
 
     @model_validator(mode="after")
     def check_all_functions_enabled(self) -> "AppConfigurationUpdate":
