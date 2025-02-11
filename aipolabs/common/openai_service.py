@@ -1,12 +1,14 @@
 import json
-from typing import Any
+from typing import Any, Type, TypeVar, cast
 
 from openai import OpenAI
+from pydantic import BaseModel
 
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.function import FilterResponse
 
 logger = get_logger(__name__)
+
+T = TypeVar("T", bound=BaseModel)
 
 
 # TODO: if multiple concurrent requests, would this be a bottleneck and potentially banned?
@@ -81,13 +83,9 @@ class OpenAIService:
         else:
             raise ValueError("No tool call was generated")
 
-    # TODO: change model, note this is a beta feature from OpenAI
-    # TODO: update filter model after evals
-    def filter(self, messages: list[dict], response_model: type[FilterResponse]) -> Any:
-        """Boolean function to filter whether an action should be taken"""
-        response = self.openai_client.beta.chat.completions.parse(
-            model="gpt-4o-mini",
-            messages=messages,
-            response_format=response_model,
-        )
-        return response.choices[0].message.parsed
+    # TODO: note this is a beta feature from OpenAI
+    def get_structured_response(self, response_format: Type[T], **kwargs: Any) -> T:
+        """Returns a structured response from OpenAI API"""
+        kwargs["response_format"] = response_format
+        response = self.openai_client.beta.chat.completions.parse(**kwargs)
+        return cast(T, response.choices[0].message.parsed)
