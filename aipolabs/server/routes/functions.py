@@ -279,11 +279,11 @@ async def execute(
         # Filter has failed
         if not filter_result.success:
             raise CustomInstructionViolation(
-                f"Function execution for function: {function.name}\n with description:"
-                f"{function.description}, \nparameters: {function.parameters} \nand input: "
-                f"{body.function_input} \nhas been rejected because of rule: "
-                f"{agent.custom_instructions[function.app.name]} \nand the reason from"
-                f"the filter is: {filter_result.reason}"
+                f"Function execution for function: {function.name} with"
+                f"description: {function.description}"
+                f"and input: {body.function_input}"
+                f"has been rejected because of rule: {agent.custom_instructions[function.app.name]}"
+                f"the reason supplied by the filter is: {filter_result.reason}"
             )
 
     function_executor = get_executor(function.protocol, linked_account.security_scheme)
