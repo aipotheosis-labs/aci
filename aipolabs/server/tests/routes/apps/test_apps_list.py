@@ -115,4 +115,4 @@ def test_list_apps_with_app_names(
     apps = [AppDetails.model_validate(response_app) for response_app in response.json()]
     returned_app_names = [app.name for app in apps]
     # sort both lists by app id for comparison
-    assert returned_app_names.sort() == expected_app_names.sort()
+    assert sorted(returned_app_names) == sorted(expected_app_names)
