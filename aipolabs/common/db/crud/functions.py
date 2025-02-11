@@ -41,7 +41,7 @@ def create_functions(
         raise ValueError("All functions must belong to the same app")
     app_name = app_names.pop()
     # check if the app exists: allow creating even if app is inactive
-    app = crud.apps.get_app_by_name(db_session, app_name, False, False)
+    app = crud.apps.get_app(db_session, app_name, False, False)
     if not app:
         raise ValueError(f"App {app_name} does not exist")
 

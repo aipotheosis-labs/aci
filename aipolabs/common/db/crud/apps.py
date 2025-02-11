@@ -54,18 +54,6 @@ def get_app(db_session: Session, app_name: str, public_only: bool, active_only: 
     return app
 
 
-def get_app_by_name(
-    db_session: Session, app_name: str, public_only: bool, active_only: bool
-) -> App | None:
-    statement = select(App).filter_by(name=app_name)
-    if active_only:
-        statement = statement.filter(App.active)
-    if public_only:
-        statement = statement.filter(App.visibility == Visibility.PUBLIC)
-    app: App | None = db_session.execute(statement).scalar_one_or_none()
-    return app
-
-
 def get_apps(
     db_session: Session,
     public_only: bool,
