@@ -58,7 +58,7 @@ def create_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UU
         else:
             click.echo(create_headline(f"committing creation of {len(functions)} functions"))
             for function in functions:
-                click.echo(f"function id={function.id}, name={function.name}")
+                click.echo(function.name)
             db_session.commit()
 
         return [function.id for function in functions]
