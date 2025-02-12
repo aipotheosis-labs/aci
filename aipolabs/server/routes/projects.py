@@ -88,20 +88,19 @@ async def update_agent(
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Agent:
     logger.info(f"Updating agent={agent_id} in project={project_id}")
-
     agent = crud.projects.get_agent_by_id(db_session, agent_id)
     if not agent:
-        logger.error(f"agent={agent_id} not found")
-        raise AgentNotFound(str(agent_id))
-
+        logger.error(f"agent={agent_id} not found in project={project_id}")
+        raise AgentNotFound(f"agent={agent_id} not found in project={project_id}")
+    # TODO: get project direct from agent through relationship
     project = crud.projects.get_project(db_session, project_id)
     if not project:
         logger.error(f"project={project_id} not found")
-        raise ProjectNotFound(str(project_id))
+        raise ProjectNotFound(f"project={project_id} not found")
 
     if agent.project_id != project_id:
         logger.error(f"agent={agent_id} is not in project={project_id}")
-        raise AgentNotFound(str(agent_id))
+        raise AgentNotFound(f"agent={agent_id} not found in project={project_id}")
 
     acl.validate_user_access_to_project(db_session, user.id, agent.project_id)
 

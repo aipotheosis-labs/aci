@@ -31,21 +31,7 @@ class AipolabsException(Exception):
         return self.title
 
 
-class UnknownException(AipolabsException):
-    """
-    Exception raised when an unknown error occurs
-    """
-
-    def __init__(
-        self,
-        title: str = "An unknown error occurred",
-        message: str | None = None,
-        error_code: int = status.HTTP_500_INTERNAL_SERVER_ERROR,
-    ):
-        super().__init__(title=title, message=message, error_code=error_code)
-
-
-class UnexpectedException(AipolabsException):
+class UnexpectedError(AipolabsException):
     """
     Exception raised when an unexpected error occurs
     """

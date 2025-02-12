@@ -56,7 +56,7 @@ class AppBase(ABC):
             logger.exception(
                 f"validation error for function_input={function_input}, function_parameters_schema={function_parameters_schema}"
             )
-            raise InvalidFunctionInput(e.message)
+            raise InvalidFunctionInput(f"invalid function input: {e.message}")
 
 
 class AppFactory:

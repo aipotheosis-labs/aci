@@ -140,7 +140,7 @@ async def get_function_definition(
     )
     if not function:
         logger.error(f"function={function_name} not found")
-        raise FunctionNotFound(function_name)
+        raise FunctionNotFound(f"function={function_name} not found")
 
     visible_parameters = processor.filter_visible_properties(function.parameters)
     logger.debug(f"Filtered parameters: {json.dumps(visible_parameters)}")
@@ -183,7 +183,7 @@ async def execute(
     )
     if not function:
         logger.error(f"function={function_name} not found")
-        raise FunctionNotFound(function_name)
+        raise FunctionNotFound(f"function={function_name} not found")
 
     # check if the App (that this function belongs to) is configured
     app_configuration = crud.app_configurations.get_app_configuration(
@@ -217,19 +217,19 @@ async def execute(
             f"linked_account_owner_id={body.linked_account_owner_id}"
         )
         raise LinkedAccountNotFound(
-            f"app={function.app.name}, "
+            f"linked account not found for app={function.app.name}, "
             f"project={context.project.id}, "
             f"linked_account_owner_id={body.linked_account_owner_id}"
         )
 
     if not linked_account.enabled:
         logger.error(
-            f"linked account is not enabled for app={function.app.name}, "
+            f"linked account is disabled for app={function.app.name}, "
             f"project={context.project.id}, "
             f"linked_account_owner_id={body.linked_account_owner_id}"
         )
         raise LinkedAccountDisabled(
-            f"app={function.app.name}, "
+            f"linked account is disabled for app={function.app.name}, "
             f"project={context.project.id}, "
             f"linked_account_owner_id={body.linked_account_owner_id}"
         )

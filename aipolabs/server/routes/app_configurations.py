@@ -39,7 +39,7 @@ async def create_app_configuration(
     )
     if not app:
         logger.error(f"app={body.app_name} not found")
-        raise AppNotFound(body.app_name)
+        raise AppNotFound(f"app={body.app_name} not found")
 
     if crud.app_configurations.app_configuration_exists(
         context.db_session, context.project.id, body.app_name

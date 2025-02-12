@@ -112,7 +112,7 @@ async def get_app_details(
 
     if not app:
         logger.error(f"app={app_name} not found")
-        raise AppNotFound(app_name)
+        raise AppNotFound(f"app={app_name} not found")
 
     # filter functions by project visibility and active status
     # TODO: better way and place for crud filtering/acl logic like this?

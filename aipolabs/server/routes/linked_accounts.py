@@ -165,12 +165,12 @@ async def link_oauth2_account(
     # TODO: for now we require the security_schema used for accounts under an App must be the same as the security_schema configured in the app
     # configuration. But in the future, we might lift this restriction and allow any security_schema as long the App supports it.
     if app_configuration.security_scheme != SecurityScheme.OAUTH2:
-        logger.error(
-            f"app={query_params.app_name} is not configured with OAuth2, but {app_configuration.security_scheme}"
+        error_message = (
+            f"the security_scheme configured in app={query_params.app_name} is "
+            f"{app_configuration.security_scheme} not OAuth2"
         )
-        raise NoImplementationFound(
-            f"app={query_params.app_name} is not configured with OAuth2, but {app_configuration.security_scheme}"
-        )
+        logger.error(error_message)
+        raise NoImplementationFound(error_message)
 
     # TODO: add correspinding validation of the oauth2 fields (e.g., client_id, client_secret, scope, etc.)
     # when indexing an App. For example, if server_metadata_url is None, other url must be provided
@@ -260,8 +260,8 @@ async def linked_accounts_oauth2_callback(
     logger.info(f"Callback received, state_jwt={state_jwt}")
 
     if not state_jwt:
-        logger.error("Missing state parameter")
-        raise AuthenticationError("Missing state parameter")
+        logger.error("Missing state parameter in account linking callback")
+        raise AuthenticationError("missing state parameter during account linking")
     # decode the state payload
     try:
         state = LinkedAccountOAuth2CreateState.model_validate(
@@ -270,13 +270,13 @@ async def linked_accounts_oauth2_callback(
         logger.info(f"state: {state}")
     except Exception:
         logger.exception(f"failed to decode state_jwt={state_jwt}")
-        raise AuthenticationError("failed to decode state")
+        raise AuthenticationError("invalid state parameter during account linking")
 
     # create oauth2 client
     app = crud.apps.get_app(db_session, state.app_name, False, True)
     if not app:
         logger.error(f"app={state.app_name} not found")
-        raise AppNotFound(state.app_name)
+        raise AppNotFound(f"app={state.app_name} not found")
 
     app_default_oauth2_config = OAuth2Scheme.model_validate(
         app.security_schemes[SecurityScheme.OAUTH2]
@@ -304,7 +304,7 @@ async def linked_accounts_oauth2_callback(
         logger.warning(f"oauth2 token requested successfully, token_response: {token_response}")
     except Exception:
         logger.exception("failed to retrieve oauth2 token")
-        raise AuthenticationError("failed to retrieve oauth2 token")
+        raise AuthenticationError("failed to retrieve oauth2 token during account linking")
 
     # TODO: we might want to verify scope authorized by end user (token_response["scope"]) is what we asked
     # TODO: use the pydantic model class
@@ -390,7 +390,7 @@ async def get_linked_account(
     )
     if not linked_account:
         logger.error(f"linked account={linked_account_id} not found")
-        raise LinkedAccountNotFound(str(linked_account_id))
+        raise LinkedAccountNotFound(f"linked account={linked_account_id} not found")
 
     return linked_account
 
@@ -408,7 +408,7 @@ async def delete_linked_account(
     )
     if not linked_account:
         logger.error(f"linked account={linked_account_id} not found")
-        raise LinkedAccountNotFound(str(linked_account_id))
+        raise LinkedAccountNotFound(f"linked account={linked_account_id} not found")
 
     crud.linked_accounts.delete_linked_account(context.db_session, linked_account)
 

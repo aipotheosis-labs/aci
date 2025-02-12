@@ -25,8 +25,9 @@ def validate_user_access_to_project(db_session: Session, user_id: UUID, project_
     # for now, just check if project owner is the user
     project = crud.projects.get_project(db_session, project_id)
     if not project:
-        logger.error(f"project not found, project={project_id}")
-        raise ProjectNotFound(str(project_id))
+        logger.error(f"project={project_id} not found")
+        raise ProjectNotFound(f"project={project_id} not found")
     if project.owner_id != user_id:
-        logger.error(f"user={user_id} does not have access to project={project_id}")
-        raise ProjectAccessDenied(f"access denied to project={project_id}")
+        error_message = f"user={user_id} does not have access to project={project_id}"
+        logger.error(error_message)
+        raise ProjectAccessDenied(error_message)

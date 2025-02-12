@@ -37,7 +37,7 @@ def test_execute_non_existent_function(
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json()["error"] == "Function not found"
+    assert str(response.json()["error"]).startswith("Function not found")
 
 
 # Note that if no app configuration or linkedin account is injected to test as fixture,
@@ -56,7 +56,7 @@ def test_execute_function_whose_app_is_not_configured(
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json()["error"] == "App configuration not found"
+    assert str(response.json()["error"]).startswith("App configuration not found")
 
 
 def test_execute_function_whose_app_configuration_is_disabled(
@@ -78,7 +78,7 @@ def test_execute_function_whose_app_configuration_is_disabled(
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json()["error"] == "App configuration disabled"
+    assert str(response.json()["error"]).startswith("App configuration disabled")
 
 
 def test_execute_function_linked_account_not_found(
@@ -96,7 +96,7 @@ def test_execute_function_linked_account_not_found(
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert response.json()["error"] == "Linked account not found"
+    assert str(response.json()["error"]).startswith("Linked account not found")
 
 
 def test_execute_function_linked_account_disabled(
@@ -119,7 +119,7 @@ def test_execute_function_linked_account_disabled(
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
-    assert response.json()["error"] == "Linked account disabled"
+    assert str(response.json()["error"]).startswith("Linked account disabled")
 
 
 def test_execute_function_with_invalid_function_input(
@@ -138,7 +138,7 @@ def test_execute_function_with_invalid_function_input(
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json()["error"] == "Invalid function input"
+    assert str(response.json()["error"]).startswith("Invalid function input")
 
 
 @respx.mock

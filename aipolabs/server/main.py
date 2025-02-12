@@ -6,7 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
-from aipolabs.common.exceptions import AipolabsException, CustomInstructionViolation
+from aipolabs.common.exceptions import AipolabsException
 from aipolabs.common.logging import get_logger, setup_logging
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
@@ -78,12 +78,7 @@ app.add_middleware(
 async def global_exception_handler(request: Request, exc: AipolabsException) -> JSONResponse:
     return JSONResponse(
         status_code=exc.error_code,
-        # TODO: add if-else to check if exc is FilterFailed
-        # - can optimise this later
-        # - can use title in tests like assert str(response.json()["error"]).startswith("App not found")
-        content=(
-            {"error": exc.title if not isinstance(exc, CustomInstructionViolation) else exc.message}
-        ),
+        content={"error": f"{exc.title}, {exc.message}" if exc.message else exc.title},
     )
 
 

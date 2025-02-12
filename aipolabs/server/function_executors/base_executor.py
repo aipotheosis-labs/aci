@@ -51,7 +51,9 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
             )
         except jsonschema.ValidationError as e:
             logger.exception(f"failed to validate function input for function={function.name}")
-            raise InvalidFunctionInput(e.message)
+            raise InvalidFunctionInput(
+                f"invalid function input for function={function.name}, error={e.message}"
+            )
 
         logger.info(f"function_input before injecting defaults: {json.dumps(function_input)}")
 

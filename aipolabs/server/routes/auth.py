@@ -10,7 +10,7 @@ from starlette.responses import RedirectResponse
 
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import User
-from aipolabs.common.exceptions import UnexpectedException
+from aipolabs.common.exceptions import UnexpectedError
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.user import UserCreate
 from aipolabs.server import config
@@ -104,7 +104,7 @@ async def auth_callback(
             f"'sub' not found in user information for identity provider={provider}, "
             f"user_info={user_info}"
         )
-        raise UnexpectedException(
+        raise UnexpectedError(
             f"'sub' not found in user information for identity provider={provider}"
         )
 

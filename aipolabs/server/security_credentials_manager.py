@@ -33,7 +33,11 @@ async def get_security_credentials(
     elif linked_account.security_scheme == SecurityScheme.OAUTH2:
         return await _get_oauth2_credentials(app, linked_account)
     else:
-        raise NoImplementationFound("unsupported security scheme")
+        error_message = (
+            f"unsupported security scheme={linked_account.security_scheme.value}, app={app.name}"
+        )
+        logger.error(error_message)
+        raise NoImplementationFound(error_message)
 
 
 async def _get_oauth2_credentials(
@@ -64,16 +68,12 @@ async def _get_oauth2_credentials(
             linked_account.security_scheme
         ]
     else:
-        logger.error(
-            f"no security credentials usable for app={app.name}, "
-            f"security scheme={linked_account.security_scheme}, "
-            f"linked account={linked_account.id}"
-        )
+        logger.error(f"no security credentials usable for linked_account={linked_account.id}")
         # TODO: check all 'NoImplementationFound' exceptions see if a more suitable exception can be used
         raise NoImplementationFound(
             f"no security credentials usable for app={app.name}, "
-            f"security scheme={linked_account.security_scheme}, "
-            f"linked account={linked_account.id}"
+            f"security_scheme={linked_account.security_scheme}, "
+            f"linked_account_owner_id={linked_account.linked_account_owner_id}"
         )
 
     oauth2_scheme_credentials = OAuth2SchemeCredentials.model_validate(oauth2_credentials)

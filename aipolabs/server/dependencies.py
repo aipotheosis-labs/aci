@@ -68,7 +68,7 @@ def validate_http_bearer(
         user = crud.users.get_user_by_id(db_session, UUID(user_id))
         if not user:
             logger.error(f"user decoded from http bearer token not found, user={user_id}")
-            raise UserNotFound(user_id)
+            raise UserNotFound(f"user={user_id} not found")
 
         logger.debug(f"http bearer token validation successful, user={user_id}")
         return user
@@ -107,6 +107,7 @@ def validate_api_key(
 
 # TODO: use cache (redis)
 # TODO: better way to handle replace(tzinfo=datetime.timezone.utc) ?
+# TODO: context return api key object instead of api_key_id
 def validate_project_quota(
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
@@ -116,7 +117,7 @@ def validate_project_quota(
     project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
     if not project:
         logger.error(f"project not found, api_key_id={api_key_id}")
-        raise ProjectNotFound()
+        raise ProjectNotFound(f"project not found for api_key_id={api_key_id}")
 
     now: datetime = datetime.now(timezone.utc)
     need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=timezone.utc) + timedelta(
@@ -127,7 +128,10 @@ def validate_project_quota(
         logger.warning(
             f"daily quota exceeded for project={project.id}, daily quota used={project.daily_quota_used}"
         )
-        raise DailyQuotaExceeded()
+        raise DailyQuotaExceeded(
+            f"daily quota exceeded for project={project.id}, daily quota used={project.daily_quota_used}, "
+            f"daily quota={config.PROJECT_DAILY_QUOTA}"
+        )
 
     crud.projects.increase_project_quota_usage(db_session, project)
     # TODO: commit here with the same db_session or should create a separate db_session?

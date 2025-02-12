@@ -97,8 +97,11 @@ async def authorize_access_token_without_browser_session(
     error = request.query_params.get("error")
     if error:
         description = request.query_params.get("error_description")
-        logger.error(f"OAuth2 error: {error}, error_description: {description}")
-        raise LinkedAccountOAuth2Error(message=description)
+        error_msg = f"account linking failed due to OAuth2 error from provider. error={error}"
+        if description:
+            error_msg += f", error_description={description}"
+        logger.error(error_msg)
+        raise LinkedAccountOAuth2Error(error_msg)
 
     params = {
         "code": request.query_params.get("code"),
