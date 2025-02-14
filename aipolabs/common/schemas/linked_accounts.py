@@ -9,6 +9,7 @@ from aipolabs.common.db.sql_models import MAX_STRING_LENGTH, SecurityScheme
 class LinkedAccountOAuth2Create(BaseModel):
     app_name: str
     linked_account_owner_id: str
+    after_oauth2_link_redirect_url: str | None = None
 
 
 class LinkedAccountAPIKeyCreate(BaseModel):
@@ -29,6 +30,7 @@ class LinkedAccountOAuth2CreateState(BaseModel):
     redirect_uri: str
     code_verifier: str
     nonce: str | None = None
+    after_oauth2_link_redirect_url: str | None = None
 
 
 class LinkedAccountPublic(BaseModel):

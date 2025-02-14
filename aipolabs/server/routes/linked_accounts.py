@@ -6,6 +6,7 @@ from uuid import UUID
 from authlib.jose import jwt
 from fastapi import APIRouter, Body, Depends, Query, Request, status
 from sqlalchemy.orm import Session
+from starlette.responses import RedirectResponse
 
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import LinkedAccount
@@ -232,9 +233,12 @@ async def link_oauth2_account(
         redirect_uri=redirect_uri,
         code_verifier=authorization_data["code_verifier"],
         nonce=authorization_data.get("nonce", None),  # nonce only exists for openid
+        after_oauth2_link_redirect_url=query_params.after_oauth2_link_redirect_url,
     )
     new_state_jwt = jwt.encode(
-        {"alg": config.JWT_ALGORITHM}, new_state.model_dump(mode="json"), config.SIGNING_KEY
+        {"alg": config.JWT_ALGORITHM},
+        new_state.model_dump(mode="json", exclude_none=True),
+        config.SIGNING_KEY,
     ).decode()  # decode() is needed to convert the bytes to a string (not decoding the jwt payload) for this jwt library.
 
     # replace the state jwt token in the url parameter with the new state_jwt
@@ -251,7 +255,7 @@ async def link_oauth2_account(
 async def linked_accounts_oauth2_callback(
     request: Request,
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-) -> LinkedAccount:
+) -> LinkedAccount | RedirectResponse:
     """
     Callback endpoint for OAuth2 account linking.
     - A linked account (with necessary credentials from the OAuth2 provider) will be created in the database.
@@ -346,6 +350,11 @@ async def linked_accounts_oauth2_callback(
             enabled=True,
         )
     db_session.commit()
+
+    if state.after_oauth2_link_redirect_url:
+        return RedirectResponse(
+            url=state.after_oauth2_link_redirect_url, status_code=status.HTTP_302_FOUND
+        )
 
     return linked_account
 
