@@ -3,6 +3,7 @@ from typing import cast
 from unittest.mock import patch
 from urllib.parse import parse_qs, urlparse
 
+import pytest
 from authlib.jose import jwt
 from fastapi import status
 from fastapi.testclient import TestClient
@@ -25,20 +26,30 @@ MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX = (
 )
 
 
+@pytest.mark.parametrize(
+    "after_oauth2_link_redirect_url,callback_response_code",
+    [
+        (None, status.HTTP_200_OK),
+        ("https://devportal.aipolabs.xyz", status.HTTP_302_FOUND),
+    ],
+)
 def test_link_oauth2_account_success(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     db_session: Session,
+    after_oauth2_link_redirect_url: str | None,
+    callback_response_code: int,
 ) -> None:
     # init account linking proces
     body = LinkedAccountOAuth2Create(
         app_name=dummy_app_configuration_oauth2_google_project_1.app_name,
         linked_account_owner_id="test_link_oauth2_account_success",
+        after_oauth2_link_redirect_url=after_oauth2_link_redirect_url,
     )
     response = test_client.get(
         f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2",
-        params=body.model_dump(mode="json"),
+        params=body.model_dump(mode="json", exclude_none=True),
         headers={"x-api-key": dummy_api_key_1},
     )
 
@@ -52,6 +63,7 @@ def test_link_oauth2_account_success(
     assert state.project_id == dummy_app_configuration_oauth2_google_project_1.project_id
     assert state.app_name == dummy_app_configuration_oauth2_google_project_1.app_name
     assert state.linked_account_owner_id == "test_link_oauth2_account_success"
+    assert state.after_oauth2_link_redirect_url == after_oauth2_link_redirect_url
     assert (
         state.redirect_uri
         == f"{config.AIPOLABS_REDIRECT_URI_BASE}{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback"
@@ -80,8 +92,9 @@ def test_link_oauth2_account_success(
         response = test_client.get(
             f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback", params=callback_params
         )
-        assert response.status_code == status.HTTP_200_OK
-        linked_account = LinkedAccountPublic.model_validate(response.json())
+        assert response.status_code == callback_response_code
+        if not after_oauth2_link_redirect_url:
+            linked_account = LinkedAccountPublic.model_validate(response.json())
 
     # check linked account is created with the correct values
     linked_account = crud.linked_accounts.get_linked_account(
