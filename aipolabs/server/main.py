@@ -67,7 +67,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[config.SERVER_DEV_PORTAL_URL],
     allow_credentials=True,
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST"],
     allow_headers=["Authorization", "X-API-KEY"],
 )
 
