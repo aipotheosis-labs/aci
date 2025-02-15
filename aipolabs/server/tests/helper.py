@@ -4,7 +4,7 @@ from pathlib import Path
 
 from aipolabs.common import embeddings
 from aipolabs.common.openai_service import OpenAIService
-from aipolabs.common.schemas.app import AppCreate
+from aipolabs.common.schemas.app import AppCreate, AppEmbeddingFields
 from aipolabs.common.schemas.function import FunctionCreate
 from aipolabs.server import config
 
@@ -29,7 +29,9 @@ def prepare_dummy_apps_and_functions() -> (
         app_file = app_dir / "app.json"
         functions_file = app_dir / "functions.json"
         with open(app_file, "r") as f:
-            app_create: AppCreate = AppCreate.model_validate(json.load(f))
+            app_data = json.load(f)
+            app_create: AppCreate = AppCreate.model_validate(app_data)
+            app_embedding_fields = AppEmbeddingFields.model_validate(app_data)
         with open(functions_file, "r") as f:
             functions_create: list[FunctionCreate] = [
                 FunctionCreate.model_validate(function) for function in json.load(f)
@@ -39,7 +41,7 @@ def prepare_dummy_apps_and_functions() -> (
             assert function_create.name.startswith(app_create.name)
 
         app_embedding = embeddings.generate_app_embedding(
-            app_create,
+            app_embedding_fields,
             openai_service,
             config.OPENAI_EMBEDDING_MODEL,
             config.OPENAI_EMBEDDING_DIMENSION,

@@ -15,6 +15,18 @@ from aipolabs.common.schemas.security_scheme import (
 )
 
 
+class AppEmbeddingFields(BaseModel):
+    """
+    Fields used to generate app embedding.
+    """
+
+    name: str
+    display_name: str
+    provider: str
+    description: str
+    categories: list[str]
+
+
 class AppCreate(BaseModel):
     name: str
     display_name: str

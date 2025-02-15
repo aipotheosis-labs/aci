@@ -10,7 +10,7 @@ from aipolabs.common import embeddings, utils
 from aipolabs.common.db import crud
 from aipolabs.common.logging import create_headline
 from aipolabs.common.openai_service import OpenAIService
-from aipolabs.common.schemas.app import AppCreate
+from aipolabs.common.schemas.app import AppCreate, AppEmbeddingFields
 
 openai_service = OpenAIService(config.OPENAI_API_KEY)
 
@@ -52,11 +52,10 @@ def create_app_helper(app_file: Path, secrets_file: Path | None, skip_dry_run: b
     app_data = json.loads(rendered_content)
     print(create_headline("CREATED APP DATA"))
     print(app_data)
-    app_create: AppCreate = AppCreate.model_validate(app_data)
-
+    app_create = AppCreate.model_validate(app_data)
     # Generate app embedding
     app_embedding = embeddings.generate_app_embedding(
-        app_create,
+        AppEmbeddingFields.model_validate(app_data),
         openai_service,
         config.OPENAI_EMBEDDING_MODEL,
         config.OPENAI_EMBEDDING_DIMENSION,

@@ -1,13 +1,13 @@
 from aipolabs.common.logging import get_logger
 from aipolabs.common.openai_service import OpenAIService
-from aipolabs.common.schemas.app import AppCreate
+from aipolabs.common.schemas.app import AppEmbeddingFields
 from aipolabs.common.schemas.function import FunctionCreate
 
 logger = get_logger(__name__)
 
 
 def generate_app_embedding(
-    app_create: AppCreate,
+    app: AppEmbeddingFields,
     openai_service: OpenAIService,
     embedding_model: str,
     embedding_dimension: int,
@@ -16,14 +16,14 @@ def generate_app_embedding(
     Generate embedding for app.
     TODO: what else should be included or not in the embedding?
     """
-    logger.debug(f"Generating embedding for app: {app_create.name}...")
+    logger.debug(f"Generating embedding for app: {app.name}...")
     # generate app embeddings based on app config's name, display_name, provider, description, categories
     text_for_embedding = (
-        f"{app_create.name}\n"
-        f"{app_create.display_name}\n"
-        f"{app_create.provider}\n"
-        f"{app_create.description}\n"
-        f"{' '.join(app_create.categories)}"
+        f"{app.name}\n"
+        f"{app.display_name}\n"
+        f"{app.provider}\n"
+        f"{app.description}\n"
+        f"{' '.join(app.categories)}"
     )
 
     return openai_service.generate_embedding(
