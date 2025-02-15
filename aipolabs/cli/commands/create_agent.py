@@ -36,16 +36,16 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
     "excluded_apps",
     required=False,
     default=[],
-    type=list[UUID],
-    help="list of app ids to exclude from the agent",
+    type=list[str],
+    help="list of app names to exclude from the agent",
 )
 @click.option(
     "--excluded-functions",
     "excluded_functions",
     required=False,
     default=[],
-    type=list[UUID],
-    help="list of function ids to exclude from the agent",
+    type=list[str],
+    help="list of function names to exclude from the agent",
 )
 @click.option(
     "--skip-dry-run",
@@ -56,9 +56,9 @@ def create_agent(
     project_id: UUID,
     name: str,
     description: str,
-    excluded_apps: list[UUID],
-    excluded_functions: list[UUID],
-    custom_instructions: dict[UUID, str],
+    excluded_apps: list[str],
+    excluded_functions: list[str],
+    custom_instructions: dict[str, str],
     skip_dry_run: bool,
 ) -> UUID:
     """
@@ -79,9 +79,9 @@ def create_agent_helper(
     project_id: UUID,
     name: str,
     description: str,
-    excluded_apps: list[UUID],
-    excluded_functions: list[UUID],
-    custom_instructions: dict[UUID, str],
+    excluded_apps: list[str],
+    excluded_functions: list[str],
+    custom_instructions: dict[str, str],
     skip_dry_run: bool,
 ) -> UUID:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
