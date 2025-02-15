@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db.sql_models import App
 from aipolabs.common.enums import SecurityScheme, Visibility
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.app import AppCreate
+from aipolabs.common.schemas.app import AppCreate, AppUpdate
 
 logger = get_logger(__name__)
 
@@ -27,6 +27,29 @@ def create_app(
     )
 
     db_session.add(app)
+    db_session.flush()
+    db_session.refresh(app)
+    return app
+
+
+def update_app(
+    db_session: Session,
+    app: App,
+    app_update: AppUpdate,
+    app_embedding: list[float] | None = None,
+) -> App:
+    """
+    Update an existing app.
+    With the option to update the app embedding. (recommended if AppEmbeddingFields are updated)
+    """
+    update_data = app_update.model_dump(exclude_unset=True)
+
+    for field, value in update_data.items():
+        setattr(app, field, value)
+
+    if app_embedding is not None:
+        app.embedding = app_embedding
+
     db_session.flush()
     db_session.refresh(app)
     return app

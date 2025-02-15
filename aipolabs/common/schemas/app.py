@@ -51,6 +51,23 @@ class AppCreate(BaseModel):
         return v
 
 
+class AppUpdate(BaseModel):
+    # TODO: changes to app name has implications (e.g., custom instructions)
+    name: str | None = None
+    display_name: str | None = None
+    provider: str | None = None
+    version: str | None = None
+    description: str | None = None
+    logo: str | None = None
+    categories: list[str] | None = None
+    visibility: Visibility | None = None
+    active: bool | None = None
+    security_schemes: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme] | None = None
+    default_security_credentials_by_scheme: (
+        dict[SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials] | None
+    ) = None
+
+
 class AppsSearch(BaseModel):
     """
     Parameters for searching applications.
