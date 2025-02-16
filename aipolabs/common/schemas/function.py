@@ -73,6 +73,17 @@ class FunctionUpsert(BaseModel):
         return self
 
 
+class FunctionEmbeddingFields(BaseModel):
+    """
+    Fields used to generate function embedding.
+    """
+
+    # TODO: more relevant fields?
+    name: str
+    description: str
+    parameters: dict
+
+
 class FunctionsList(BaseModel):
     app_names: list[str] | None = Field(
         default=None, description="List of app names for filtering functions."

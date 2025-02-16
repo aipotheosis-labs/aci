@@ -5,7 +5,7 @@ from pathlib import Path
 from aipolabs.common import embeddings
 from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.app import AppEmbeddingFields, AppUpsert
-from aipolabs.common.schemas.function import FunctionUpsert
+from aipolabs.common.schemas.function import FunctionEmbeddingFields, FunctionUpsert
 from aipolabs.server import config
 
 logger = logging.getLogger(__name__)
@@ -29,12 +29,15 @@ def prepare_dummy_apps_and_functions() -> (
         app_file = app_dir / "app.json"
         functions_file = app_dir / "functions.json"
         with open(app_file, "r") as f:
-            app_data = json.load(f)
-            app_upsert: AppUpsert = AppUpsert.model_validate(app_data)
-            app_embedding_fields = AppEmbeddingFields.model_validate(app_data)
+            app_upsert: AppUpsert = AppUpsert.model_validate(json.load(f))
+            app_embedding_fields = AppEmbeddingFields.model_validate(app_upsert.model_dump())
         with open(functions_file, "r") as f:
             functions_upsert: list[FunctionUpsert] = [
                 FunctionUpsert.model_validate(function) for function in json.load(f)
+            ]
+            functions_embedding_fields: list[FunctionEmbeddingFields] = [
+                FunctionEmbeddingFields.model_validate(function_upsert.model_dump())
+                for function_upsert in functions_upsert
             ]
         # check function names match app name
         for function_upsert in functions_upsert:
@@ -47,7 +50,7 @@ def prepare_dummy_apps_and_functions() -> (
             config.OPENAI_EMBEDDING_DIMENSION,
         )
         function_embeddings = embeddings.generate_function_embeddings(
-            functions_upsert,
+            functions_embedding_fields,
             openai_service,
             config.OPENAI_EMBEDDING_MODEL,
             config.OPENAI_EMBEDDING_DIMENSION,

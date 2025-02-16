@@ -9,7 +9,7 @@ from aipolabs.common import embeddings, utils
 from aipolabs.common.db import crud
 from aipolabs.common.logging import create_headline
 from aipolabs.common.openai_service import OpenAIService
-from aipolabs.common.schemas.function import FunctionUpsert
+from aipolabs.common.schemas.function import FunctionEmbeddingFields, FunctionUpsert
 
 openai_service = OpenAIService(config.OPENAI_API_KEY)
 
@@ -40,7 +40,10 @@ def create_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UU
             ]
 
         function_embeddings = embeddings.generate_function_embeddings(
-            functions_upsert,
+            [
+                FunctionEmbeddingFields.model_validate(function_upsert.model_dump())
+                for function_upsert in functions_upsert
+            ],
             openai_service,
             embedding_model=config.OPENAI_EMBEDDING_MODEL,
             embedding_dimension=config.OPENAI_EMBEDDING_DIMENSION,
