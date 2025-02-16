@@ -18,12 +18,6 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
 
 @click.command()
 @click.option(
-    "--app-name",
-    "app_name",
-    required=True,
-    help="Name of the app to create functions for",
-)
-@click.option(
     "--functions-file",
     "functions_file",
     required=True,
@@ -35,7 +29,7 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
     is_flag=True,
     help="Provide this flag to run the command and apply changes to the database",
 )
-def upsert_functions(app_name: str, functions_file: Path, skip_dry_run: bool) -> list[UUID]:
+def upsert_functions(functions_file: Path, skip_dry_run: bool) -> list[UUID]:
     """
     Upsert functions in the DB from a JSON file.
 
@@ -46,10 +40,10 @@ def upsert_functions(app_name: str, functions_file: Path, skip_dry_run: bool) ->
 
     Batch creation and update operations are performed.
     """
-    return upsert_functions_helper(app_name, functions_file, skip_dry_run)
+    return upsert_functions_helper(functions_file, skip_dry_run)
 
 
-def upsert_functions_helper(app_name: str, functions_file: Path, skip_dry_run: bool) -> list[UUID]:
+def upsert_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UUID]:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
         with open(functions_file, "r") as f:
             functions_data = json.load(f)
@@ -58,8 +52,9 @@ def upsert_functions_helper(app_name: str, functions_file: Path, skip_dry_run: b
         functions_upsert = [
             FunctionUpsert.model_validate(func_data) for func_data in functions_data
         ]
+        app_name = _validate_all_functions_belong_to_the_app(functions_upsert)
         _validate_app_exists(db_session, app_name)
-        _validate_all_functions_belong_to_the_app(app_name, functions_upsert)
+        click.echo(create_headline(f"Upserting functions for App={app_name}"))
 
         new_functions: list[FunctionUpsert] = []
         existing_functions: list[FunctionUpsert] = []
@@ -193,20 +188,16 @@ def _validate_app_exists(db_session: Session, app_name: str) -> None:
         raise click.ClickException(f"App={app_name} does not exist")
 
 
-def _validate_all_functions_belong_to_the_app(
-    app_name: str, functions_upsert: list[FunctionUpsert]
-) -> None:
+def _validate_all_functions_belong_to_the_app(functions_upsert: list[FunctionUpsert]) -> str:
     app_names = set(
         [utils.parse_app_name_from_function_name(func.name) for func in functions_upsert]
     )
     if len(app_names) != 1:
         raise click.ClickException(
-            f"All functions must belong to App={app_name}, instead found multiple apps={app_names}"
+            f"All functions must belong to the same app, instead found multiple apps={app_names}"
         )
-    if app_names.pop() != app_name:
-        raise click.ClickException(
-            f"Functions' App name={app_names.pop()} does not match the provided App name={app_name}"
-        )
+
+    return app_names.pop()
 
 
 def _need_function_embedding_regeneration(

@@ -44,8 +44,6 @@ def test_create_functions(
     # create the functions
     runner = CliRunner()
     command = [
-        "--app-name",
-        dummy_app_data["name"],
         "--functions-file",
         dummy_functions_file,
     ]
@@ -132,8 +130,6 @@ def test_update_functions(
     # update the functions
     runner = CliRunner()
     command = [
-        "--app-name",
-        dummy_app_data["name"],
         "--functions-file",
         dummy_functions_file,
     ]
@@ -166,7 +162,7 @@ def test_update_functions(
 
 # TODO:
 # - test throw error if app does not exist
-# - test throw error if function doesn not belong to app provided
+# - test throw error if functions file contains functions for different apps
 # - test embedding is updated if app embedding fields are changed
 # - test embedding is not updated if app embedding fields are not changed
 # - test functions file contains both new and existing functions
