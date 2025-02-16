@@ -11,53 +11,28 @@ from aipolabs.common.schemas.function import FunctionUpsert
 logger = get_logger(__name__)
 
 
-# TODO: move logic check to schema validation or caller
-# - pass app id
-# - app exists
-# - app is active
-# - function names are unique
-# - all functions belong to the same app
-# - function names are valid etc
 def create_functions(
     db_session: Session,
     functions_upsert: list[FunctionUpsert],
     functions_embeddings: list[list[float]],
 ) -> list[Function]:
-    """Create functions of the same app"""
+    """
+    Create functions.
+    Note: each function might be of different app.
+    """
     logger.debug(f"upserting functions: {functions_upsert}")
-    # each function name must be unique
-    if len(functions_upsert) != len(
-        set(function_upsert.name for function_upsert in functions_upsert)
-    ):
-        raise ValueError("Function names must be unique")
-    # all functions must belong to the same app
-    app_names = set(
-        [
-            utils.parse_app_name_from_function_name(function_upsert.name)
-            for function_upsert in functions_upsert
-        ]
-    )
-    if len(app_names) != 1:
-        raise ValueError("All functions must belong to the same app")
-    app_name = app_names.pop()
-    # check if the app exists: allow creating even if app is inactive
-    app = crud.apps.get_app(db_session, app_name, False, False)
-    if not app:
-        raise ValueError(f"App {app_name} does not exist")
 
     functions = []
     for i, function_upsert in enumerate(functions_upsert):
+        app_name = utils.parse_app_name_from_function_name(function_upsert.name)
+        app = crud.apps.get_app(db_session, app_name, False, False)
+        if not app:
+            logger.error(f"App={app_name} does not exist for function={function_upsert.name}")
+            raise ValueError(f"App={app_name} does not exist for function={function_upsert.name}")
+        function_data = function_upsert.model_dump(mode="json", exclude_none=True)
         function = Function(
             app_id=app.id,
-            name=function_upsert.name,
-            description=function_upsert.description,
-            tags=function_upsert.tags,
-            visibility=function_upsert.visibility,
-            active=function_upsert.active,
-            protocol=function_upsert.protocol,
-            protocol_data=function_upsert.protocol_data.model_dump(),
-            parameters=function_upsert.parameters,
-            response=function_upsert.response,
+            **function_data,
             embedding=functions_embeddings[i],
         )
         db_session.add(function)
