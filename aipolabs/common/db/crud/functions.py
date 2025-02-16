@@ -43,6 +43,36 @@ def create_functions(
     return functions
 
 
+def update_functions(
+    db_session: Session,
+    functions_upsert: list[FunctionUpsert],
+    functions_embeddings: list[list[float] | None],
+) -> list[Function]:
+    """
+    Update functions.
+    Note: each function might be of different app.
+    With the option to update the function embedding. (needed if FunctionEmbeddingFields are updated)
+    """
+    logger.debug(f"updating functions: {functions_upsert}")
+    functions = []
+    for i, function_upsert in enumerate(functions_upsert):
+        function = crud.functions.get_function(db_session, function_upsert.name, False, False)
+        if not function:
+            logger.error(f"Function={function_upsert.name} does not exist")
+            raise ValueError(f"Function={function_upsert.name} does not exist")
+
+        function_data = function_upsert.model_dump(mode="json", exclude_unset=True)
+        for field, value in function_data.items():
+            setattr(function, field, value)
+        if functions_embeddings[i] is not None:
+            function.embedding = functions_embeddings[i]
+        functions.append(function)
+
+    db_session.flush()
+
+    return functions
+
+
 def search_functions(
     db_session: Session,
     public_only: bool,

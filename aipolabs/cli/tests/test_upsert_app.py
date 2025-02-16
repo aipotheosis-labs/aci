@@ -9,55 +9,6 @@ from aipolabs.cli.commands.upsert_app import upsert_app
 from aipolabs.common.db import crud
 
 
-@pytest.fixture
-def dummy_app_data() -> dict:
-    return {
-        "name": "GOOGLE_CALENDAR",
-        "display_name": "Google Calendar",
-        "logo": "https://example.com/google-logo.png",
-        "provider": "Google",
-        "version": "3.0.0",
-        "description": "The Google Calendar API is a RESTful API that can be accessed through explicit HTTP calls. The API exposes most of the features available in the Google Calendar Web interface.",
-        "security_schemes": {
-            "oauth2": {
-                "location": "header",
-                "name": "Authorization",
-                "prefix": "Bearer",
-                "client_id": "{{ AIPOLABS_GOOGLE_APP_CLIENT_ID }}",
-                "client_secret": "{{ AIPOLABS_GOOGLE_APP_CLIENT_SECRET }}",
-                "scope": "openid email profile https://www.googleapis.com/auth/calendar",
-                "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration",
-            }
-        },
-        "default_security_credentials_by_scheme": {},
-        "categories": ["calendar"],
-        "visibility": "public",
-        "active": True,
-    }
-
-
-@pytest.fixture
-def dummy_app_secrets_data() -> dict:
-    return {
-        "AIPOLABS_GOOGLE_APP_CLIENT_ID": "dummy_client_id",
-        "AIPOLABS_GOOGLE_APP_CLIENT_SECRET": "dummy_client_secret",
-    }
-
-
-@pytest.fixture
-def dummy_app_file(tmp_path: Path, dummy_app_data: dict) -> Path:
-    dummy_app_file = tmp_path / "app.json"
-    dummy_app_file.write_text(json.dumps(dummy_app_data))
-    return dummy_app_file
-
-
-@pytest.fixture
-def dummy_app_secrets_file(tmp_path: Path, dummy_app_secrets_data: dict) -> Path:
-    dummy_app_secrets_file = tmp_path / ".app.secrets.json"
-    dummy_app_secrets_file.write_text(json.dumps(dummy_app_secrets_data))
-    return dummy_app_secrets_file
-
-
 @pytest.mark.parametrize("skip_dry_run", [True, False])
 def test_create_app(
     db_session: Session,
@@ -151,17 +102,15 @@ def test_update_app(
     app = crud.apps.get_app(
         db_session, dummy_app_data["name"], public_only=False, active_only=False
     )
+    assert app is not None
+    assert app.name == dummy_app_data["name"]
 
     if skip_dry_run:
-        assert app is not None
-        assert app.name == dummy_app_data["name"]
         assert app.security_schemes["oauth2"]["scope"] == new_oauth2_scope
         assert app.security_schemes["oauth2"]["client_id"] == new_oauth2_client_id
         assert app.security_schemes["api_key"] == new_api_key
     else:
         # nothing should change for dry run
-        assert app is not None
-        assert app.name == dummy_app_data["name"]
         assert (
             app.security_schemes["oauth2"]["scope"]
             == "openid email profile https://www.googleapis.com/auth/calendar"

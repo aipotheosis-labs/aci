@@ -165,4 +165,4 @@ def _render_template_to_string(template_path: Path, secrets: dict[str, str]) -> 
 
 def _need_emdedding_regeneration(old_app: AppUpsert, new_app: AppUpsert) -> bool:
     fields = AppEmbeddingFields.model_fields.keys()
-    return bool(DeepDiff(old_app.model_dump(include=fields), new_app.model_dump(include=fields)))
+    return bool(old_app.model_dump(include=fields) != new_app.model_dump(include=fields))
