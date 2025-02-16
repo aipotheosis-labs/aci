@@ -42,6 +42,7 @@ def upsert_app(app_file: Path, secrets_file: Path | None, skip_dry_run: bool) ->
     """
     Insert or update an App in the DB from a JSON file, optionally injecting secrets.
     If an app with the given name already exists, performs an update; otherwise, creates a new app.
+    For changing the app name of an existing app, use the <PLACEHOLDER> command.
     """
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
         return upsert_app_helper(db_session, app_file, secrets_file, skip_dry_run)

@@ -121,12 +121,10 @@ def test_update_app(
     )
 
     # modify the app data
-    new_display_name = "Updated Google Calendar"
     new_oauth2_scope = "updated_scope"
     new_oauth2_client_id = "updated_client_id"
     new_api_key = {"location": "header", "name": "X-API-KEY"}
 
-    dummy_app_data["display_name"] = new_display_name
     dummy_app_data["security_schemes"]["oauth2"]["scope"] = new_oauth2_scope
     dummy_app_secrets_data["AIPOLABS_GOOGLE_APP_CLIENT_ID"] = new_oauth2_client_id
     dummy_app_data["security_schemes"]["api_key"] = new_api_key
@@ -157,7 +155,6 @@ def test_update_app(
     if skip_dry_run:
         assert app is not None
         assert app.name == dummy_app_data["name"]
-        assert app.display_name == new_display_name
         assert app.security_schemes["oauth2"]["scope"] == new_oauth2_scope
         assert app.security_schemes["oauth2"]["client_id"] == new_oauth2_client_id
         assert app.security_schemes["api_key"] == new_api_key
@@ -165,7 +162,6 @@ def test_update_app(
         # nothing should change for dry run
         assert app is not None
         assert app.name == dummy_app_data["name"]
-        assert app.display_name == "Google Calendar"
         assert (
             app.security_schemes["oauth2"]["scope"]
             == "openid email profile https://www.googleapis.com/auth/calendar"

@@ -15,19 +15,32 @@ from aipolabs.common.schemas.security_scheme import (
 )
 
 
-class AppEmbeddingFields(BaseModel):
-    """
-    Fields used to generate app embedding.
-    """
+class AppValidationMixin(BaseModel):
+    @field_validator("name", check_fields=False)
+    def validate_name(cls, v: str) -> str:
+        if not re.match(r"^[A-Z_]+$", v) or "__" in v:
+            raise ValueError(
+                "name must be uppercase, contain only letters and underscores, and not have consecutive underscores"
+            )
+        return v
 
-    name: str
-    display_name: str
-    provider: str
-    description: str
-    categories: list[str]
+    @field_validator("security_schemes", check_fields=False)
+    def validate_security_schemes(
+        cls, v: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]
+    ) -> dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]:
+        for scheme_type, scheme_config in v.items():
+            if scheme_type == SecurityScheme.API_KEY and not isinstance(
+                scheme_config, APIKeyScheme
+            ):
+                raise ValueError(f"Invalid configuration for API_KEY scheme: {scheme_config}")
+            elif scheme_type == SecurityScheme.OAUTH2 and not isinstance(
+                scheme_config, OAuth2Scheme
+            ):
+                raise ValueError(f"Invalid configuration for OAUTH2 scheme: {scheme_config}")
+        return v
 
 
-class AppCreate(BaseModel):
+class AppCreate(AppValidationMixin):
     name: str
     display_name: str
     provider: str
@@ -37,33 +50,14 @@ class AppCreate(BaseModel):
     categories: list[str]
     visibility: Visibility
     active: bool
-    # TODO: need to validate value according to the security_schemes keys
-    # e.g., below should not be valid (because prefix is not a valid field for api_key) but it seems
-    # current implmentation will accept it
-    # {
-    #     "api_key": {
-    #         "location": "header",
-    #         "name": "X-API-KEY",
-    #         "prefix": "Bearer",
-    #     },
-    # }
     security_schemes: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]
     default_security_credentials_by_scheme: dict[
         SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials
     ]
 
-    @field_validator("name")
-    def validate_name(cls, v: str) -> str:
-        if not re.match(r"^[A-Z_]+$", v) or "__" in v:
-            raise ValueError(
-                "name must be uppercase, contain only letters and underscores, and not have consecutive underscores"
-            )
-        return v
 
-
-class AppUpdate(BaseModel):
-    # TODO: changes to app name has implications (e.g., custom instructions)
-    name: str | None = None
+class AppUpdate(AppValidationMixin):
+    # Note: does not allow app name change through this operation because it has implications (e.g., custom instructions)
     display_name: str | None = None
     provider: str | None = None
     version: str | None = None
@@ -76,6 +70,18 @@ class AppUpdate(BaseModel):
     default_security_credentials_by_scheme: (
         dict[SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials] | None
     ) = None
+
+
+class AppEmbeddingFields(BaseModel):
+    """
+    Fields used to generate app embedding.
+    """
+
+    name: str
+    display_name: str
+    provider: str
+    description: str
+    categories: list[str]
 
 
 class AppsSearch(BaseModel):
