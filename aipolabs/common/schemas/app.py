@@ -37,6 +37,16 @@ class AppCreate(BaseModel):
     categories: list[str]
     visibility: Visibility
     active: bool
+    # TODO: need to validate value according to the security_schemes keys
+    # e.g., below should not be valid (because prefix is not a valid field for api_key) but it seems
+    # current implmentation will accept it
+    # {
+    #     "api_key": {
+    #         "location": "header",
+    #         "name": "X-API-KEY",
+    #         "prefix": "Bearer",
+    #     },
+    # }
     security_schemes: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]
     default_security_credentials_by_scheme: dict[
         SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials
