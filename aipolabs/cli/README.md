@@ -13,14 +13,15 @@ docker compose exec runner python -m aipolabs.cli.aipolabs create-app --app-file
 ```
 
 <details>
-  <summary>Create App</summary>
+  <summary>Upsert App</summary>
   
-  - Create an app (without its functions) in the database, based on the app json file provided.
+  - Create an app (without its functions) or update an existing app (identified by the app name) in the database, based on the app json file provided.
   - --secrets-file is optional, it is to temporarily store sensitive data such as default api key, default OAuth2 client secret etc, which will be used to populate the placeholders in app.json file.
+  - Note: the app name change is not supported by this command.
   - Example files: [`google_calendar`](../../apps/google_calendar/app.json).
 
   ```bash
-  python -m aipolabs.cli.aipolabs create-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
+  python -m aipolabs.cli.aipolabs upsert-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
   ```
 </details>
 
