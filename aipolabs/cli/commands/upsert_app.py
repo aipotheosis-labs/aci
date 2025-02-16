@@ -120,7 +120,7 @@ def update_app_helper(
 
     # Determine if any fields affecting the embedding have changed
     new_embedding = None
-    if _need_emdedding_regeneration(existing_app_upsert, app_upsert):
+    if _need_embedding_regeneration(existing_app_upsert, app_upsert):
         new_embedding = embeddings.generate_app_embedding(
             AppEmbeddingFields.model_validate(app_upsert.model_dump()),
             openai_service,
@@ -163,6 +163,6 @@ def _render_template_to_string(template_path: Path, secrets: dict[str, str]) -> 
     return rendered_content
 
 
-def _need_emdedding_regeneration(old_app: AppUpsert, new_app: AppUpsert) -> bool:
+def _need_embedding_regeneration(old_app: AppUpsert, new_app: AppUpsert) -> bool:
     fields = AppEmbeddingFields.model_fields.keys()
     return bool(old_app.model_dump(include=fields) != new_app.model_dump(include=fields))

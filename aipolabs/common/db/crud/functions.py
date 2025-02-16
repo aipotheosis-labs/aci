@@ -20,7 +20,7 @@ def create_functions(
     Create functions.
     Note: each function might be of different app.
     """
-    logger.debug(f"upserting functions: {functions_upsert}")
+    logger.debug(f"creating functions: {functions_upsert}")
 
     functions = []
     for i, function_upsert in enumerate(functions_upsert):
