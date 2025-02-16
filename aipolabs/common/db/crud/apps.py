@@ -8,21 +8,21 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db.sql_models import App
 from aipolabs.common.enums import SecurityScheme, Visibility
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.app import AppCreate, AppUpdate
+from aipolabs.common.schemas.app import AppUpsert
 
 logger = get_logger(__name__)
 
 
 def create_app(
     db_session: Session,
-    app_create: AppCreate,
+    app_upsert: AppUpsert,
     app_embedding: list[float],
 ) -> App:
-    logger.debug(f"creating app: {app_create}")
+    logger.debug(f"creating app: {app_upsert}")
 
-    app_create_dict = app_create.model_dump(mode="json", exclude_none=True)
+    app_data = app_upsert.model_dump(mode="json", exclude_none=True)
     app = App(
-        **app_create_dict,
+        **app_data,
         embedding=app_embedding,
     )
 
@@ -35,16 +35,16 @@ def create_app(
 def update_app(
     db_session: Session,
     app: App,
-    app_update: AppUpdate,
+    app_upsert: AppUpsert,
     app_embedding: list[float] | None = None,
 ) -> App:
     """
     Update an existing app.
-    With the option to update the app embedding. (recommended if AppEmbeddingFields are updated)
+    With the option to update the app embedding. (needed if AppEmbeddingFields are updated)
     """
-    update_data = app_update.model_dump(exclude_unset=True)
+    new_app_data = app_upsert.model_dump(mode="json", exclude_unset=True)
 
-    for field, value in update_data.items():
+    for field, value in new_app_data.items():
         setattr(app, field, value)
 
     if app_embedding is not None:

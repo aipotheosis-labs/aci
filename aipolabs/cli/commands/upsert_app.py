@@ -3,6 +3,7 @@ from pathlib import Path
 from uuid import UUID
 
 import click
+from deepdiff import DeepDiff
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, Template
 from sqlalchemy.orm import Session
 
@@ -12,7 +13,7 @@ from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import App
 from aipolabs.common.logging import create_headline
 from aipolabs.common.openai_service import OpenAIService
-from aipolabs.common.schemas.app import AppCreate, AppEmbeddingFields, AppUpdate
+from aipolabs.common.schemas.app import AppEmbeddingFields, AppUpsert
 
 openai_service = OpenAIService(config.OPENAI_API_KEY)
 
@@ -58,40 +59,38 @@ def upsert_app_helper(
             secrets = json.load(f)
     # Render the template in-memory and load JSON data
     rendered_content = _render_template_to_string(app_file, secrets)
-    app_data: dict = json.loads(rendered_content)
+    app_upsert = AppUpsert.model_validate(json.loads(rendered_content))
+
     click.echo(create_headline("Provided App Data"))
-    click.echo(app_data)
+    click.echo(app_upsert.model_dump_json(indent=2))
 
-    # Ensure mandatory 'name' field exists
-    app_name: str | None = app_data.get("name")
-    if not app_name:
-        raise click.ClickException("Missing 'name' in app file.")
-
-    # NOTE: We set public_only and active_only to False here so that we can find the app regardless.
-    existing_app = crud.apps.get_app(db_session, app_name, public_only=False, active_only=False)
+    existing_app = crud.apps.get_app(
+        db_session, app_upsert.name, public_only=False, active_only=False
+    )
     if existing_app is None:
-        return create_app_helper(db_session, app_data, skip_dry_run)
+        click.echo(create_headline(f"New App '{app_upsert.name}' Found, Will Create"))
+        return create_app_helper(db_session, app_upsert, skip_dry_run)
     else:
-        return update_app_helper(db_session, existing_app, app_data, skip_dry_run)
+        click.echo(create_headline(f"App'{app_upsert.name}' Exists, Will Update"))
+        return update_app_helper(
+            db_session,
+            existing_app,
+            app_upsert,
+            skip_dry_run,
+        )
 
 
-def create_app_helper(db_session: Session, app_data: dict, skip_dry_run: bool) -> UUID:
-    """
-    Create a new app in the database.
-    Validates the input against AppCreate and generates app embeddings.
-    """
-    # Validate and parse the app data against AppCreate schema
-    app_create = AppCreate.model_validate(app_data)
+def create_app_helper(db_session: Session, app_upsert: AppUpsert, skip_dry_run: bool) -> UUID:
     # Generate app embedding using the fields defined in AppEmbeddingFields
     app_embedding = embeddings.generate_app_embedding(
-        AppEmbeddingFields.model_validate(app_data),
+        AppEmbeddingFields.model_validate(app_upsert.model_dump()),
         openai_service,
         config.OPENAI_EMBEDDING_MODEL,
         config.OPENAI_EMBEDDING_DIMENSION,
     )
 
     # Create the app entry in the database
-    app = crud.apps.create_app(db_session, app_create, app_embedding)
+    app = crud.apps.create_app(db_session, app_upsert, app_embedding)
 
     if not skip_dry_run:
         click.echo(create_headline(f"Will create new app '{app.name}'"))
@@ -107,65 +106,41 @@ def create_app_helper(db_session: Session, app_data: dict, skip_dry_run: bool) -
 
 
 def update_app_helper(
-    db_session: Session, existing_app: App, app_data: dict, skip_dry_run: bool
+    db_session: Session, existing_app: App, app_upsert: AppUpsert, skip_dry_run: bool
 ) -> UUID:
     """
     Update an existing app in the database.
     If fields used for generating embeddings (name, display_name, provider, description, categories) are changed,
     re-generates the app embedding.
     """
-    # Validate and parse the app data against AppUpdate schema
-    app_update = AppUpdate.model_validate(app_data)
-    update_fields = app_update.model_dump(exclude_unset=True)
+    existing_app_upsert = AppUpsert.model_validate(existing_app, from_attributes=True)
+    if existing_app_upsert == app_upsert:
+        click.echo(create_headline(f"No changes to app '{existing_app.name}'"))
+        return existing_app.id  # type: ignore
 
     # Determine if any fields affecting the embedding have changed
-    embedding_fields = AppEmbeddingFields.model_fields.keys()
-    recalc_embedding = False
-    diffs = []
-
-    for field, new_val in update_fields.items():
-        old_val = getattr(existing_app, field, None)
-        if new_val != old_val:
-            diffs.append(f"{field}: {old_val} -> {new_val}")
-            if field in embedding_fields:
-                recalc_embedding = True
-
-    if recalc_embedding:
-        diffs.append("embedding: will be updated")
-
-    # Re-generate embedding if necessary
     new_embedding = None
-    if recalc_embedding:
-        # Merge existing embedding fields with any updated values
-        embedding_data = {}
-        for field in embedding_fields:
-            embedding_data[field] = update_fields.get(field, getattr(existing_app, field))
+    if _need_emdedding_regeneration(existing_app_upsert, app_upsert):
         new_embedding = embeddings.generate_app_embedding(
-            AppEmbeddingFields.model_validate(embedding_data),
+            AppEmbeddingFields.model_validate(app_upsert.model_dump()),
             openai_service,
             config.OPENAI_EMBEDDING_MODEL,
             config.OPENAI_EMBEDDING_DIMENSION,
         )
 
     # Update the app in the database with the new fields and optional embedding update
-    updated_app = crud.apps.update_app(db_session, existing_app, app_update, new_embedding)
+    updated_app = crud.apps.update_app(db_session, existing_app, app_upsert, new_embedding)
 
+    diff = DeepDiff(existing_app_upsert.model_dump(), app_upsert.model_dump(), ignore_order=True)
+    click.echo(
+        create_headline(f"Will update app '{existing_app.name}' with the following changes:")
+    )
+    click.echo(diff.pretty())
     if not skip_dry_run:
-        if diffs:
-            click.echo(
-                create_headline(
-                    f"Will update app '{existing_app.name}' with the following changes:"
-                )
-            )
-            for diff in diffs:
-                click.echo(diff)
-            click.echo(create_headline("Provide --skip-dry-run to commit changes"))
-        else:
-            click.echo(create_headline(f"No changes to app '{existing_app.name}'"))
+        click.echo(create_headline("Provide --skip-dry-run to commit changes"))
         db_session.rollback()
     else:
         click.echo(create_headline(f"Committing update of app '{existing_app.name}'"))
-        click.echo(updated_app)
         db_session.commit()
 
     return updated_app.id  # type: ignore
@@ -186,3 +161,8 @@ def _render_template_to_string(template_path: Path, secrets: dict[str, str]) -> 
     template: Template = env.get_template(template_path.name)
     rendered_content: str = template.render(secrets)
     return rendered_content
+
+
+def _need_emdedding_regeneration(old_app: AppUpsert, new_app: AppUpsert) -> bool:
+    fields = AppEmbeddingFields.model_fields.keys()
+    return bool(DeepDiff(old_app.model_dump(include=fields), new_app.model_dump(include=fields)))

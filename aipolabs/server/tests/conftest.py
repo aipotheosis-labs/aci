@@ -247,12 +247,12 @@ def dummy_apps(
 ) -> Generator[list[App], None, None]:
     dummy_apps: list[App] = []
     for (
-        app_create,
+        app_upsert,
         functions_create,
         app_embedding,
         functions_embeddings,
     ) in dummy_apps_and_functions_to_be_inserted_into_db:
-        app = crud.apps.create_app(db_session, app_create, app_embedding)
+        app = crud.apps.create_app(db_session, app_upsert, app_embedding)
         crud.functions.create_functions(db_session, functions_create, functions_embeddings)
         db_session.commit()
         dummy_apps.append(app)

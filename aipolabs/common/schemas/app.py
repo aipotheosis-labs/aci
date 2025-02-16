@@ -15,7 +15,21 @@ from aipolabs.common.schemas.security_scheme import (
 )
 
 
-class AppValidationMixin(BaseModel):
+class AppUpsert(BaseModel):
+    name: str
+    display_name: str
+    provider: str
+    version: str
+    description: str
+    logo: str
+    categories: list[str]
+    visibility: Visibility
+    active: bool
+    security_schemes: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]
+    default_security_credentials_by_scheme: dict[
+        SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials
+    ]
+
     @field_validator("name", check_fields=False)
     def validate_name(cls, v: str) -> str:
         if not re.match(r"^[A-Z_]+$", v) or "__" in v:
@@ -38,38 +52,6 @@ class AppValidationMixin(BaseModel):
             ):
                 raise ValueError(f"Invalid configuration for OAUTH2 scheme: {scheme_config}")
         return v
-
-
-class AppCreate(AppValidationMixin):
-    name: str
-    display_name: str
-    provider: str
-    version: str
-    description: str
-    logo: str
-    categories: list[str]
-    visibility: Visibility
-    active: bool
-    security_schemes: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]
-    default_security_credentials_by_scheme: dict[
-        SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials
-    ]
-
-
-class AppUpdate(AppValidationMixin):
-    # Note: does not allow app name change through this operation because it has implications (e.g., custom instructions)
-    display_name: str | None = None
-    provider: str | None = None
-    version: str | None = None
-    description: str | None = None
-    logo: str | None = None
-    categories: list[str] | None = None
-    visibility: Visibility | None = None
-    active: bool | None = None
-    security_schemes: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme] | None = None
-    default_security_credentials_by_scheme: (
-        dict[SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials] | None
-    ) = None
 
 
 class AppEmbeddingFields(BaseModel):

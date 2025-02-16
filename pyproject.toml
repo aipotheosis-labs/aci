@@ -23,6 +23,7 @@ limits = "^3.13.0"
 aws-cdk-lib = "^2.164.1"
 constructs = ">=10.0.0,<11.0.0"
 jinja2 = "^3.1.5"
+deepdiff = "^8.2.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
