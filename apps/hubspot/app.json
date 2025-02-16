@@ -1,0 +1,33 @@
+{
+    "name": "HUBSPOT",
+    "display_name": "HubSpot",
+    "logo": "https://example.com/hubspot-logo.png",
+    "provider": "HubSpot, Inc.",
+    "version": "3.0.0",
+    "description": "The HubSpot API is a REST API to use HubSpot's suite of marketing, sales, and customer service tools.",
+    "security_schemes": {
+        "oauth2": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer",
+            "client_id": "{{ AIPOLABS_HUBSPOT_APP_CLIENT_ID }}",
+            "client_secret": "{{ AIPOLABS_HUBSPOT_APP_CLIENT_SECRET }}",
+            "scope": "account-info.security.read accounting automation cms.domains.read cms.domains.write content crm.export crm.import crm.lists.read crm.lists.write crm.objects.companies.read crm.objects.companies.write crm.objects.contacts.read crm.objects.contacts.write crm.objects.custom.read crm.objects.custom.write crm.objects.deals.read crm.objects.deals.write crm.objects.marketing_events.read crm.objects.marketing_events.write crm.objects.owners.read crm.objects.quotes.read crm.objects.quotes.write crm.schemas.companies.read crm.schemas.companies.write crm.schemas.contacts.read crm.schemas.contacts.write crm.schemas.custom.read crm.schemas.deals.read crm.schemas.deals.write e-commerce oauth settings.users.read settings.users.write tickets timeline",
+            "token_endpoint_auth_method": "client_secret_post",
+            "authorize_url": "https://app.hubspot.com/oauth/authorize",
+            "access_token_url": "https://api.hubapi.com/oauth/v1/token",  
+            "refresh_token_url": "https://api.hubapi.com/oauth/v1/token"
+        } 
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "crm",
+        "marketing",
+        "sales",
+        "customer_service",
+        "tracking",
+        "campaigns"
+    ],
+    "visibility": "public",
+    "active": true
+}

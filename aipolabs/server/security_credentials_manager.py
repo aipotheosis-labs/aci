@@ -111,6 +111,7 @@ async def _refresh_oauth2_access_token(app: App, refresh_token: str) -> dict:
         client_id=app_default_oauth2_config.client_id,
         client_secret=app_default_oauth2_config.client_secret,
         scope=app_default_oauth2_config.scope,
+        token_endpoint_auth_method=app_default_oauth2_config.token_endpoint_auth_method,
         authorize_url=app_default_oauth2_config.authorize_url,
         access_token_url=app_default_oauth2_config.access_token_url,
         refresh_token_url=app_default_oauth2_config.refresh_token_url,

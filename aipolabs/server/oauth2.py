@@ -27,6 +27,7 @@ def create_oauth2_client(
     prompt: str = "consent",
     code_challenge_method: str = "S256",
     access_type: str = "offline",
+    token_endpoint_auth_method: str | None = None,
     authorize_url: str | None = None,
     access_token_url: str | None = None,
     refresh_token_url: str | None = None,
@@ -43,6 +44,7 @@ def create_oauth2_client(
             "scope": scope,
             "prompt": prompt,
             "code_challenge_method": code_challenge_method,
+            "token_endpoint_auth_method": token_endpoint_auth_method,
         },
         # Note: usually if server_metadata_url (e.g., google's discovery doc https://accounts.google.com/.well-known/openid-configuration)
         # is provided, the other endpoints are not needed.

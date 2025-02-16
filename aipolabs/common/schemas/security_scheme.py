@@ -41,6 +41,11 @@ class OAuth2Scheme(BaseModel):
         description="Space separated scopes of the OAuth2 client (provided by Aipolabs) used for the app, "
         "e.g., 'openid email profile https://www.googleapis.com/auth/calendar'",
     )
+    token_endpoint_auth_method: str | None = Field(
+        default=None,
+        description="The authentication method for the OAuth2 token endpoint, e.g., 'client_secret_post' "
+        "for some providers that require client_id/client_secret to be sent in the body of the token request, like Hubspot",
+    )
     # making below fields optional because if server_metadata_url is provided, the other endpoints are usually not needed
     authorize_url: str | None = Field(
         default=None,
