@@ -9,7 +9,7 @@ from aipolabs.common import embeddings, utils
 from aipolabs.common.db import crud
 from aipolabs.common.logging import create_headline
 from aipolabs.common.openai_service import OpenAIService
-from aipolabs.common.schemas.function import FunctionCreate
+from aipolabs.common.schemas.function import FunctionUpsert
 
 openai_service = OpenAIService(config.OPENAI_API_KEY)
 
@@ -35,19 +35,19 @@ def create_functions(functions_file: Path, skip_dry_run: bool) -> list[UUID]:
 def create_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UUID]:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
         with open(functions_file, "r") as f:
-            functions_create: list[FunctionCreate] = [
-                FunctionCreate.model_validate(function) for function in json.load(f)
+            functions_upsert: list[FunctionUpsert] = [
+                FunctionUpsert.model_validate(function) for function in json.load(f)
             ]
 
         function_embeddings = embeddings.generate_function_embeddings(
-            functions_create,
+            functions_upsert,
             openai_service,
             embedding_model=config.OPENAI_EMBEDDING_MODEL,
             embedding_dimension=config.OPENAI_EMBEDDING_DIMENSION,
         )
 
         functions = crud.functions.create_functions(
-            db_session, functions_create, function_embeddings
+            db_session, functions_upsert, function_embeddings
         )
         if not skip_dry_run:
             click.echo(create_headline(f"will create {len(functions)} functions"))
