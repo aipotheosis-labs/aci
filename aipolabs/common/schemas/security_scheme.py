@@ -98,10 +98,7 @@ class APIKeySchemeCredentials(BaseModel):
 class OAuth2SchemeCredentials(BaseModel):
     """Credentials for OAuth2 scheme"""
 
-    # TODO: some of them might be optional (e.g., refresh_token, scope, expires_at,
-    # refresh_token_expires_in) and not provided by the OAuth2 provider
-    # we should handle None or provide default values
     access_token: str
-    token_type: str  # TODO: consider removing because security_schemes.oauth2.prefix have the required information
-    expires_at: int
-    refresh_token: str
+    token_type: str | None = None
+    expires_at: int | None = None
+    refresh_token: str | None = None
