@@ -57,3 +57,7 @@ ROUTER_PREFIX_LINKED_ACCOUNTS = "/v1/linked-accounts"
 
 # DEV PORTAL
 SERVER_DEV_PORTAL_URL = check_and_get_env_variable("SERVER_DEV_PORTAL_URL")
+
+# SIGN UP
+# Read permitted signup codes from an environment variable, e.g. "abc123,def456"
+PERMITTED_SIGNUP_CODES = check_and_get_env_variable("SERVER_SIGNUP_CODES").split(",")
