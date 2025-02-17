@@ -126,7 +126,7 @@ async def auth_callback(
         logger.debug(
             f"JWT generated successfully for user={user.id}, jwt_token={jwt_token[:4]}...{jwt_token[-4:]}"
         )
-        response = RedirectResponse(url=f"{config.SERVER_DEV_PORTAL_URL}")
+        response = RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
         response.set_cookie(
             key="accessToken",
             value=jwt_token,
@@ -139,9 +139,7 @@ async def auth_callback(
     else:
         # For new users, redirect to signup code page, passing along the user_info as needed.
         # For example, store user_info in session or use a temporary token.
-        signup_redirect_url = (
-            f"{config.SERVER_DEV_PORTAL_URL}/complete-signup?provider={provider.value}"
-        )
+        signup_redirect_url = f"{config.DEV_PORTAL_URL}/complete-signup?provider={provider.value}"
         return RedirectResponse(url=signup_redirect_url)
 
 
@@ -221,7 +219,7 @@ async def complete_signup(
     logger.debug(
         f"JWT generated successfully for user={user.id}, jwt_token={jwt_token[:4]}...{jwt_token[-4:]}"
     )
-    response = RedirectResponse(url=f"{config.SERVER_DEV_PORTAL_URL}")
+    response = RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
     response.set_cookie(
         key="accessToken",
         value=jwt_token,
