@@ -18,3 +18,11 @@ class UserCreate(BaseModel):
     email: str
     profile_picture: str | None = None
     plan: SubscriptionPlan = SubscriptionPlan.FREE
+
+
+class IdentityProviderUserInfo(BaseModel):
+    iss: str
+    sub: str
+    name: str
+    email: str
+    picture: str | None = None

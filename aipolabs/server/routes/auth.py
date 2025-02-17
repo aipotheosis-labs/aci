@@ -1,22 +1,18 @@
-import os
 from datetime import datetime, timedelta, timezone
 from enum import Enum
 from typing import Annotated
 
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from authlib.jose import jwt
-from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
-
-# !For testing only.
-from pydantic import BaseModel, Field
+from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 from starlette.responses import RedirectResponse
 
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import User
-from aipolabs.common.exceptions import UnexpectedError
+from aipolabs.common.exceptions import AuthenticationError, UnexpectedError
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.user import UserCreate
+from aipolabs.common.schemas.user import IdentityProviderUserInfo, UserCreate
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 from aipolabs.server import oauth2
@@ -44,6 +40,9 @@ OAUTH2_CLIENTS: dict[ClientIdentityProvider, StarletteOAuth2App] = {
     ),
 }
 
+LOGIN_CALLBACK_PATH_NAME = "auth_login_callback"
+SIGNUP_CALLBACK_PATH_NAME = "auth_signup_callback"
+
 
 # Function to generate JWT using Authlib
 def create_access_token(user_id: str, expires_delta: timedelta) -> str:
@@ -69,21 +68,105 @@ def create_access_token(user_id: str, expires_delta: timedelta) -> str:
 async def login(request: Request, provider: ClientIdentityProvider) -> RedirectResponse:
     oauth2_client = OAUTH2_CLIENTS[provider]
 
-    path = request.url_for("auth_callback", provider=provider.value).path
+    path = request.url_for(LOGIN_CALLBACK_PATH_NAME, provider=provider.value).path
     redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
     logger.info(f"initiating login for provider={provider}, redirecting to={redirect_uri}")
 
     return await oauth2.authorize_redirect(oauth2_client, request, redirect_uri)
 
 
+@router.get("/signup/{provider}", include_in_schema=True)
+async def signup(
+    request: Request,
+    provider: ClientIdentityProvider,
+    signup_code: str,
+    db_session: Annotated[Session, Depends(deps.yield_db_session)],
+) -> RedirectResponse:
+    _validate_signup(db_session, signup_code)
+    oauth2_client = OAUTH2_CLIENTS[provider]
+
+    path = request.url_for(SIGNUP_CALLBACK_PATH_NAME, provider=provider.value).path
+    redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}?signup_code={signup_code}"
+    logger.info(
+        f"initiating signup for provider={provider}, signup_code={signup_code}, redirecting to={redirect_uri}"
+    )
+
+    return await oauth2.authorize_redirect(oauth2_client, request, redirect_uri)
+
+
+@router.get(
+    "/signup/callback/{provider}",
+    name=SIGNUP_CALLBACK_PATH_NAME,
+    include_in_schema=True,
+)
+async def signup_callback(
+    request: Request,
+    response: Response,
+    provider: ClientIdentityProvider,
+    signup_code: str,
+    db_session: Annotated[Session, Depends(deps.yield_db_session)],
+) -> RedirectResponse:
+    logger.info(
+        f"signup callback received for identity provider={provider}, signup_code={signup_code}"
+    )
+    # TODO: probably not necessary to check again here, but just in case
+    _validate_signup(db_session, signup_code)
+    # TODO: try/except, retry?
+    auth_response = await oauth2.authorize_access_token(OAUTH2_CLIENTS[provider], request)
+    logger.debug(
+        f"access token requested successfully for provider={provider}, "
+        f"auth_response={auth_response}"
+    )
+
+    if provider == ClientIdentityProvider.GOOGLE:
+        if "userinfo" not in auth_response:
+            logger.error(f"userinfo not found in auth_response={auth_response}")
+            raise UnexpectedError(f"userinfo not found in auth_response={auth_response}")
+        user_info = IdentityProviderUserInfo.model_validate(auth_response["userinfo"])
+    else:
+        # TODO: implement other identity providers if added
+        raise AuthenticationError(f"unsupported identity provider={provider}")
+
+    user = crud.users.get_user(
+        db_session, identity_provider=user_info.iss, user_id_by_provider=user_info.sub
+    )
+    # avoid duplicate signup
+    if user:
+        logger.error(
+            f"user={user.id}, email={user.email} already exists for identity provider={provider}"
+        )
+        raise AuthenticationError(
+            f"user={user.id}, email={user.email} already exists for identity provider={provider}"
+        )
+
+    user = crud.users.create_user(
+        db_session,
+        UserCreate(
+            identity_provider=user_info.iss,
+            user_id_by_provider=user_info.sub,
+            name=user_info.name,
+            email=user_info.email,
+            profile_picture=user_info.picture,
+        ),
+    )
+    _onboard_new_user(db_session, user)
+
+    db_session.commit()
+    logger.info(
+        f"created new user={user.id}, email={user.email}, identity provider={provider}, signup_code={signup_code}"
+    )
+    # redirect to login page
+    return RedirectResponse(url=f"{config.DEV_PORTAL_URL}/login")
+
+
 # callback route for different identity providers
 # TODO: decision between long-lived JWT v.s session based v.s refresh token based auth
 @router.get(
-    "/callback/{provider}",
-    name="auth_callback",
+    "/login/callback/{provider}",
+    name=LOGIN_CALLBACK_PATH_NAME,
     include_in_schema=True,
 )
-async def auth_callback(
+async def login_callback(
     request: Request,
     response: Response,
     provider: ClientIdentityProvider,
@@ -98,120 +181,24 @@ async def auth_callback(
     )
 
     if provider == ClientIdentityProvider.GOOGLE:
-        user_info = auth_response["userinfo"]
+        if "userinfo" not in auth_response:
+            logger.error(f"userinfo not found in auth_response={auth_response}")
+            raise UnexpectedError(f"userinfo not found in auth_response={auth_response}")
+        user_info = IdentityProviderUserInfo.model_validate(auth_response["userinfo"])
     else:
         # TODO: implement other identity providers if added
-        pass
+        raise AuthenticationError(f"unsupported identity provider={provider}")
 
-    if not user_info["sub"]:
-        logger.error(
-            f"'sub' not found in user information for identity provider={provider}, "
-            f"user_info={user_info}"
-        )
-        raise UnexpectedError(
-            f"'sub' not found in user information for identity provider={provider}"
-        )
-
-    # Check if user already exists
     user = crud.users.get_user(
-        db_session, identity_provider=user_info["iss"], user_id_by_provider=user_info["sub"]
+        db_session, identity_provider=user_info.iss, user_id_by_provider=user_info.sub
     )
-    if user:
-        # Generate JWT token for the user
-        # TODO: try/except, retry?
-        jwt_token = create_access_token(
-            str(user.id),
-            timedelta(minutes=config.JWT_ACCESS_TOKEN_EXPIRE_MINUTES),
-        )
-        logger.debug(
-            f"JWT generated successfully for user={user.id}, jwt_token={jwt_token[:4]}...{jwt_token[-4:]}"
-        )
-        response = RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
-        response.set_cookie(
-            key="accessToken",
-            value=jwt_token,
-            # httponly=True, # TODO: set after initial release
-            # secure=True, # TODO: set after initial release
-            samesite="lax",
-            max_age=config.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        )
-        return response
-    else:
-        # For new users, redirect to signup code page, passing along the user_info as needed.
-        # For example, store user_info in session or use a temporary token.
-        signup_redirect_url = f"{config.DEV_PORTAL_URL}/complete-signup?provider={provider.value}"
-        return RedirectResponse(url=signup_redirect_url)
+    # redirect to signup page if user doesn't exist
+    if not user:
+        logger.error(f"user not found for identity provider={provider}, user_info={user_info}")
+        return RedirectResponse(url=f"{config.DEV_PORTAL_URL}/signup")
 
-
-# !For testing only. Define a model for the user info
-class UserInfo(BaseModel):
-    iss: str = Field(..., description="Issuer, e.g. https://accounts.google.com")
-    sub: str = Field(
-        ..., description="Unique identifier for the user provided by the identity provider"
-    )
-    name: str = Field(..., description="User's full name")
-    email: str = Field(..., description="User's email address")
-    picture: str = Field(..., description="URL for the user's profile picture")
-
-
-# !For testing only. Define the complete signup payload model
-class CompleteSignupPayload(BaseModel):
-    signup_code: str = Field(..., description="The signup code provided by the user")
-    provider: str = Field(..., description="Identity provider, e.g. 'google'")
-    user_info: UserInfo = Field(..., description="User info obtained from the identity provider")
-
-
-@router.post("/complete-signup", include_in_schema=True)
-async def complete_signup(
-    # request: Request,
-    data: CompleteSignupPayload,  # !For testing only
-    db_session: Annotated[Session, Depends(deps.yield_db_session)],
-) -> RedirectResponse:
-    """
-    Endpoint to complete signup by verifying a signup code.
-    Expected JSON payload:
-    {
-      "signup_code": "user entered code",
-      "provider": "google",
-      "user_info": { ... }  # user info from oauth callback, ideally securely passed via token/session
-    }
-    """
-    # Global user cap from env variable, default to 5000
-    max_users = int(os.getenv("MAX_USERS", "5000"))
-    current_user_count = db_session.query(User).count()
-    if current_user_count >= max_users:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Signups are currently closed. User limit reached.",
-        )
-
-    # data = await request.json()
-    # signup_code = data.get("signup_code")
-    signup_code = data.signup_code  # !For testing only
-    if signup_code not in config.PERMITTED_SIGNUP_CODES:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Invalid signup code.")
-
-    # user_info = data.get("user_info")
-    user_info = data.user_info  # !For testing only
-    # if not user_info or not user_info.get("sub"):
-    if not user_info or not user_info.sub:  # !For testing only
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid user info.")
-
-    # Create user record
-    user = crud.users.create_user(
-        db_session,
-        UserCreate(
-            identity_provider=user_info["iss"],
-            user_id_by_provider=user_info["sub"],
-            name=user_info["name"],
-            email=user_info["email"],
-            profile_picture=user_info["picture"],
-        ),
-    )
-    _onboard_new_user(db_session, user)
-    db_session.commit()
-
-    # Generate JWT token and return or redirect
+    # Generate JWT token for the user
+    # TODO: try/except, retry?
     jwt_token = create_access_token(
         str(user.id),
         timedelta(minutes=config.JWT_ACCESS_TOKEN_EXPIRE_MINUTES),
@@ -219,6 +206,7 @@ async def complete_signup(
     logger.debug(
         f"JWT generated successfully for user={user.id}, jwt_token={jwt_token[:4]}...{jwt_token[-4:]}"
     )
+
     response = RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
     response.set_cookie(
         key="accessToken",
@@ -248,3 +236,18 @@ def _onboard_new_user(db_session: Session, user: User) -> None:
         custom_instructions={},
     )
     logger.info(f"created default agent={agent.id} for project={project.id}")
+
+
+def _validate_signup(db_session: Session, signup_code: str) -> None:
+    if signup_code not in config.PERMITTED_SIGNUP_CODES:
+        logger.error(f"invalid signup code={signup_code}")
+        raise AuthenticationError(f"invalid signup code={signup_code}")
+
+    total_users = crud.users.get_total_number_of_users(db_session)
+    if total_users >= config.MAX_USERS:
+        logger.error(
+            f"max number of users={config.MAX_USERS} reached, signup failed with signup_code={signup_code}"
+        )
+        raise AuthenticationError(
+            "no longer accepting new users, please email us contact@aipolabs.xyz if you still like to access"
+        )

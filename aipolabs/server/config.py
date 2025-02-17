@@ -60,3 +60,4 @@ DEV_PORTAL_URL = check_and_get_env_variable("SERVER_DEV_PORTAL_URL")
 
 # SIGN UP
 PERMITTED_SIGNUP_CODES = check_and_get_env_variable("SERVER_SIGNUP_CODES").split(",")
+MAX_USERS = int(check_and_get_env_variable("SERVER_MAX_USERS"))

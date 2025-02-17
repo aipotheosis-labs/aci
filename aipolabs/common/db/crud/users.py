@@ -4,7 +4,7 @@ User (Aipolabs direct clients, not end users) CRUD operations
 
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import Subscription, User
@@ -58,3 +58,7 @@ def get_user_by_id(db_session: Session, user_id: UUID) -> User | None:
     """
     user: User | None = db_session.execute(select(User).filter_by(id=user_id)).scalar_one_or_none()
     return user
+
+
+def get_total_number_of_users(db_session: Session) -> int:
+    return int(db_session.execute(select(func.count(User.id))).scalar_one())
