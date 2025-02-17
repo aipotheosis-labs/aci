@@ -170,4 +170,6 @@ def _get_api_key_credentials(
 
 # TODO: consider adding leeway for expiration
 def _access_token_is_expired(oauth2_credentials: OAuth2SchemeCredentials) -> bool:
+    if oauth2_credentials.expires_at is None:
+        return False
     return oauth2_credentials.expires_at < int(time.time())
