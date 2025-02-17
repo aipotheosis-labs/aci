@@ -26,7 +26,10 @@ from aipolabs.common.schemas.linked_accounts import (
     LinkedAccountPublic,
     LinkedAccountsList,
 )
-from aipolabs.common.schemas.security_scheme import OAuth2Scheme
+from aipolabs.common.schemas.security_scheme import (
+    OAuth2Scheme,
+    OAuth2SchemeCredentials,
+)
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 from aipolabs.server import oauth2
@@ -313,13 +316,18 @@ async def linked_accounts_oauth2_callback(
         raise AuthenticationError("failed to retrieve oauth2 token during account linking")
 
     # TODO: we might want to verify scope authorized by end user (token_response["scope"]) is what we asked
-    # TODO: use the pydantic model class
-    security_credentials = {
-        "access_token": token_response["access_token"],
-        "token_type": token_response["token_type"],
-        "expires_at": int(time.time()) + token_response["expires_in"],
-        "refresh_token": token_response["refresh_token"],
-    }
+    security_credentials = OAuth2SchemeCredentials(
+        access_token=token_response["access_token"],
+        token_type=token_response["token_type"],
+        expires_at=(
+            int(time.time()) + token_response["expires_in"]
+            if "expires_in" in token_response
+            else None
+        ),
+        refresh_token=(
+            token_response["refresh_token"] if "refresh_token" in token_response else None
+        ),
+    )
     logger.info(f"security_credentials: \n {json.dumps(security_credentials, indent=2)}")
 
     # if the linked account already exists, update it, otherwise create a new one
