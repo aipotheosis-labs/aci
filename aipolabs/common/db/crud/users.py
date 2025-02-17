@@ -54,11 +54,36 @@ def get_user(db_session: Session, identity_provider: str, user_id_by_provider: s
 
 def get_user_by_id(db_session: Session, user_id: UUID) -> User | None:
     """
-    Get a user by ID.
+    Retrieve a user by their unique identifier.
+    
+    This function queries the database using the given session to locate a user record with
+    an id matching the provided UUID. If a matching user is found, the corresponding User
+    object is returned; otherwise, None is returned.
+    
+    Parameters:
+        db_session (Session): An active SQLAlchemy session for executing database operations.
+        user_id (UUID): The unique identifier of the user to retrieve.
+    
+    Returns:
+        User | None: The User object if found, or None if no user matches the provided id.
     """
     user: User | None = db_session.execute(select(User).filter_by(id=user_id)).scalar_one_or_none()
     return user
 
 
 def get_total_number_of_users(db_session: Session) -> int:
+    """
+    Count the total number of user records in the database.
+    
+    This function executes a SQL query to count the number of user IDs in the User table using SQLAlchemy's ORM capabilities. The count is retrieved as a scalar value and returned as an integer.
+    
+    Parameters:
+        db_session (Session): A SQLAlchemy session object used for database interaction.
+    
+    Returns:
+        int: The total number of users present in the database.
+    
+    Raises:
+        Any exceptions raised by the database layer during query execution should be handled by the caller.
+    """
     return int(db_session.execute(select(func.count(User.id))).scalar_one())
