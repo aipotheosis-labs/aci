@@ -7,9 +7,10 @@ from starlette.middleware.sessions import SessionMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from aipolabs.common.exceptions import AipolabsException
-from aipolabs.common.logging import get_logger, setup_logging
+from aipolabs.common.logging import setup_logging
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
+from aipolabs.server.middleware.logging import LoggingMiddleware, RequestIDLogFilter
 from aipolabs.server.middleware.ratelimit import RateLimitMiddleware
 from aipolabs.server.routes import (
     app_configurations,
@@ -31,8 +32,10 @@ def custom_generate_unique_id(route: APIRoute) -> str:
 #     sentry_sdk.init(dsn=str(settings.SENTRY_DSN), enable_tracing=True)
 
 # Configure logging
-setup_logging()
-logger = get_logger(__name__)
+setup_logging(
+    log_format="%(asctime)s - %(name)s - %(levelname)s - [req:%(request_id)s] - %(message)s",
+    filters=[RequestIDLogFilter()],
+)
 
 # TODO: move to config
 app = FastAPI(
@@ -48,7 +51,6 @@ app = FastAPI(
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=[config.APPLICATION_LOAD_BALANCER_DNS])
 app.add_middleware(SessionMiddleware, secret_key=config.SIGNING_KEY)
-
 # TODO: for now, we don't use TrustedHostMiddleware because it blocks health check from AWS ALB:
 # When ALB send health check request, it uses the task IP as the host, instead of the DNS name.
 # ALB health check headers example: Headers({'host': '10.0.164.143:8000', 'user-agent': 'ELB-HealthChecker/2.0'})
@@ -62,7 +64,6 @@ app.add_middleware(SessionMiddleware, secret_key=config.SIGNING_KEY)
 #         config.AIPOLABS_DNS,
 #     ],
 # )
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[config.DEV_PORTAL_URL],
@@ -70,6 +71,7 @@ app.add_middleware(
     allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["Authorization", "X-API-KEY"],
 )
+app.add_middleware(LoggingMiddleware)
 
 
 # NOTE: generic exception handler (type Exception) for all exceptions doesn't work
