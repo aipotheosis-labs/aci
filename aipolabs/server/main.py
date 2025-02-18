@@ -2,6 +2,7 @@
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
+from pythonjsonlogger.jsonlogger import JsonFormatter
 from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
@@ -33,7 +34,11 @@ def custom_generate_unique_id(route: APIRoute) -> str:
 
 # Configure logging
 setup_logging(
-    log_format="%(asctime)s - %(name)s - %(levelname)s - [req:%(request_id)s] - %(message)s",
+    formatter=JsonFormatter(
+        "{asctime} {name} {levelname} {message}",
+        style="{",
+        rename_fields={"asctime": "timestamp", "name": "file", "levelname": "level"},
+    ),
     filters=[RequestIDLogFilter()],
 )
 

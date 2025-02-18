@@ -1,4 +1,3 @@
-import json
 import logging
 import uuid
 from datetime import UTC, datetime
@@ -24,37 +23,30 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         request_id = str(uuid.uuid4())
         request_id_ctx_var.set(request_id)
 
-        # Log the incoming request
         request_log_data = {
-            "message": "Request received",
             "method": request.method,
             "url": str(request.url),
             "query_params": dict(request.query_params),
             "client_ip": request.client.host if request.client else "unknown",
             "user_agent": request.headers.get("User-Agent", "unknown"),
         }
-        logger.info(json.dumps(request_log_data))
+        logger.info("received request", extra=request_log_data)
 
         try:
             response = await call_next(request)
         except Exception as e:
-            # Log the exception details if something goes wrong
-            error_log_data = {
-                "message": "Exception occurred",
-                "error": str(e),
-                "duration": (datetime.now(UTC) - start_time).total_seconds(),
-            }
-            logger.exception(json.dumps(error_log_data))
+            logger.exception(
+                e,
+                extra={"duration": (datetime.now(UTC) - start_time).total_seconds()},
+            )
             raise
 
-        # Log the response details
         response_log_data = {
-            "message": "Response sent",
             "status_code": response.status_code,
             "duration": (datetime.now(UTC) - start_time).total_seconds(),
             "content_length": response.headers.get("content-length"),
         }
-        logger.info(json.dumps(response_log_data))
+        logger.info("response sent", extra=response_log_data)
 
         response.headers["X-Request-ID"] = request_id
 
