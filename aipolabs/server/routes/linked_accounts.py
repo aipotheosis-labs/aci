@@ -129,7 +129,6 @@ async def link_account_with_aipolabs_default_credentials(
             body.app_name,
             body.linked_account_owner_id,
             app_configuration.security_scheme,
-            {},
             enabled=True,
         )
     context.db_session.commit()
@@ -328,7 +327,9 @@ async def linked_accounts_oauth2_callback(
             token_response["refresh_token"] if "refresh_token" in token_response else None
         ),
     )
-    logger.info(f"security_credentials: \n {json.dumps(security_credentials, indent=2)}")
+    logger.info(
+        f"security_credentials: \n {json.dumps(security_credentials.model_dump(mode='json'), indent=2)}"
+    )
 
     # if the linked account already exists, update it, otherwise create a new one
     # TODO: consider separating the logic for updating and creating a linked account or give warning to clients
