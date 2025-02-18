@@ -6,6 +6,10 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db.sql_models import App, LinkedAccount
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.logging import get_logger
+from aipolabs.common.schemas.security_scheme import (
+    APIKeySchemeCredentials,
+    OAuth2SchemeCredentials,
+)
 
 logger = get_logger(__name__)
 
@@ -66,7 +70,7 @@ def create_linked_account(
     app_name: str,
     linked_account_owner_id: str,
     security_scheme: SecurityScheme,
-    security_credentials: dict,
+    security_credentials: OAuth2SchemeCredentials | APIKeySchemeCredentials,
     enabled: bool = True,
 ) -> LinkedAccount:
     app_id = db_session.execute(select(App.id).filter_by(name=app_name)).scalar_one()
@@ -75,7 +79,7 @@ def create_linked_account(
         app_id=app_id,
         linked_account_owner_id=linked_account_owner_id,
         security_scheme=security_scheme,
-        security_credentials=security_credentials,
+        security_credentials=security_credentials.model_dump(mode="json"),
         enabled=enabled,
     )
     db_session.add(linked_account)
