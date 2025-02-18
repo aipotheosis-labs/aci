@@ -24,7 +24,10 @@ class AipolabsTest(AppBase):
     """
 
     def hello_world(self, name: str, greeting: str) -> dict:
-        logger.info(f"executing hello_world with name: {name} and message: {greeting}")
+        logger.info(
+            "executing hello_world",
+            extra={"name": name, "greeting": greeting},
+        )
         return {"message": f"{greeting}, {name}!"}
 
     def hello_world_nested_args(self, person: Person, greeting: str, location: Location) -> dict:
@@ -34,7 +37,12 @@ class AipolabsTest(AppBase):
         if isinstance(location, dict):
             location = Location(**location)
         logger.info(
-            f"executing hello_world_nested_args with person: {person}, greeting: {greeting}, location: {location}"
+            "executing hello_world_nested_args",
+            extra={
+                "person": person,
+                "greeting": greeting,
+                "location": location,
+            },
         )
         return {
             "message": f"{greeting}, {person.title} {person.name} in {location.city}, {location.country}!"

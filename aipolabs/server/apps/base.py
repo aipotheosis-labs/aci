@@ -32,20 +32,37 @@ class AppBase(ABC):
         _, _, method_name = parse_function_name(function_name)
         method = getattr(self, method_name, None)
         if not method:
-            logger.error(f"method={method_name} not found in class={self.__class__.__name__}")
+            logger.error(
+                "method not found",
+                extra={"method_name": method_name, "class_name": self.__class__.__name__},
+            )
             raise NoImplementationFound(
                 f"method={method_name} not found in class={self.__class__.__name__}"
             )
 
         try:
             logger.info(
-                f"executing method {method_name} in {self.__class__.__name__} with args: {args}"
+                "executing method",
+                extra={
+                    "method_name": method_name,
+                    "class_name": self.__class__.__name__,
+                    "args": args,
+                },
             )
             result = method(**args)
-            logger.info(f"execution result: \n {result}")
+            logger.info(
+                "execution result",
+                extra={"result": result},
+            )
             return FunctionExecutionResult(success=True, data=result)
         except Exception as e:
-            logger.exception(f"error executing method {method_name} in {self.__class__.__name__}")
+            logger.exception(
+                f"error executing method, {e}",
+                extra={
+                    "method_name": method_name,
+                    "class_name": self.__class__.__name__,
+                },
+            )
             return FunctionExecutionResult(success=False, error=str(e))
 
     @staticmethod
@@ -54,7 +71,11 @@ class AppBase(ABC):
             validate(instance=function_input, schema=function_parameters_schema)
         except ValidationError as e:
             logger.exception(
-                f"validation error for function_input={function_input}, function_parameters_schema={function_parameters_schema}"
+                f"function input validation error, {e}",
+                extra={
+                    "function_input": function_input,
+                    "function_parameters_schema": function_parameters_schema,
+                },
             )
             raise InvalidFunctionInput(f"invalid function input: {e.message}")
 
@@ -68,11 +89,17 @@ class AppFactory:
 
         try:
             app_class: Type[AppBase] = getattr(importlib.import_module(module_name), class_name)
-            logger.info(f"found app class for {function_name}: {app_class}")
+            logger.debug(
+                "found app class for function_name",
+                extra={"function_name": function_name, "app_class": app_class},
+            )
             app_instance: AppBase = app_class()
             return app_instance
         except (ModuleNotFoundError, AttributeError):
-            logger.exception(f"failed to find app class for function_name={function_name}")
+            logger.exception(
+                f"failed to find app class for function_name={function_name}",
+                extra={"function_name": function_name},
+            )
             raise NoImplementationFound(
                 f"failed to find app class for function_name={function_name}"
             )

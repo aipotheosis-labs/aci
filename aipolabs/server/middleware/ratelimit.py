@@ -32,6 +32,13 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         for rate_limit_name, rate_limit in self.rate_limits.items():
             if not await self.limiter.hit(rate_limit, rate_limit_key):
                 # NOTE: raising a custom AipolabsException here doesn't work as expected
+                logger.warning(
+                    "rate limit exceeded",
+                    extra={
+                        "rate_limit_name": rate_limit_name,
+                        "rate_limit_key": rate_limit_key,
+                    },
+                )
                 return Response(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
                     content=json.dumps({"error": f"Rate limit exceeded: {rate_limit_name}"}),
@@ -50,12 +57,10 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
     # consider api key based rate limiting in dependencies where api key is validated
     def _get_rate_limit_key(self, request: Request) -> str:
         # Note: client.host will be set correctly (if running behind proxy like ALB) because of ProxyHeadersMiddleware.
-        # TODO: remove logs
-        logger.warning(f"request.client: {request.client}")
         if request.client and request.client.host:
             return f"ip:{request.client.host}"
         else:
-            logger.error("request.client.host not set")
+            logger.error("failed to generate rate limit key, request.client.host not set")
             return "ip:127.0.0.1"
 
     async def _get_rate_limit_headers(self, key: str) -> dict:

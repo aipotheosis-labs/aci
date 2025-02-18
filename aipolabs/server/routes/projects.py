@@ -25,7 +25,13 @@ async def create_project(
     user: Annotated[User, Depends(deps.validate_http_bearer)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Project:
-    logger.info(f"Creating project={body}, user={user.id}")
+    logger.info(
+        "create project",
+        extra={
+            "project_create": body.model_dump(exclude_none=True),
+            "user_id": user.id,
+        },
+    )
     owner_id = body.organization_id or user.id
     # if project is to be created under an organization, check if user has admin access to the organization
     # TODO: add tests for this path
@@ -36,7 +42,10 @@ async def create_project(
 
     project = crud.projects.create_project(db_session, owner_id, body.name)
     db_session.commit()
-    logger.info(f"Created project: {project}")
+    logger.info(
+        "created project",
+        extra={"project_id": project.id, "user_id": user.id},
+    )
     return project
 
 
@@ -50,8 +59,12 @@ async def get_projects(
     """
     # TODO: for now, we only support getting projects that the user is the owner of,
     # we will need to support getting projects that the user has access to (a member of an organization)
-    logger.info(f"Getting projects for user={user.id}")
+    logger.info(
+        "get projects",
+        extra={"user_id": user.id},
+    )
     projects = crud.projects.get_projects_by_owner(db_session, user.id)
+
     return projects
 
 
@@ -62,7 +75,14 @@ async def create_agent(
     user: Annotated[User, Depends(deps.validate_http_bearer)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Agent:
-    logger.info(f"Creating agent in project={project_id}, user={user.id}")
+    logger.info(
+        "create agent",
+        extra={
+            "agent_create": body.model_dump(exclude_none=True),
+            "project_id": project_id,
+            "user_id": user.id,
+        },
+    )
     acl.validate_user_access_to_project(db_session, user.id, project_id)
 
     agent = crud.projects.create_agent(
@@ -75,7 +95,10 @@ async def create_agent(
         body.custom_instructions,
     )
     db_session.commit()
-    logger.info(f"Created agent: {AgentPublic.model_validate(agent)}")
+    logger.info(
+        "created agent",
+        extra={"agent_id": agent.id},
+    )
     return agent
 
 
@@ -87,19 +110,43 @@ async def update_agent(
     user: Annotated[User, Depends(deps.validate_http_bearer)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Agent:
-    logger.info(f"Updating agent={agent_id} in project={project_id}")
+    logger.info(
+        "update agent",
+        extra={
+            "agent_id": agent_id,
+            "project_id": project_id,
+            "agent_update": body.model_dump(exclude_none=True),
+            "user_id": user.id,
+        },
+    )
     agent = crud.projects.get_agent_by_id(db_session, agent_id)
     if not agent:
-        logger.error(f"agent={agent_id} not found in project={project_id}")
+        logger.error(
+            "agent not found",
+            extra={
+                "agent_id": agent_id,
+                "project_id": project_id,
+            },
+        )
         raise AgentNotFound(f"agent={agent_id} not found in project={project_id}")
     # TODO: get project direct from agent through relationship
     project = crud.projects.get_project(db_session, project_id)
     if not project:
-        logger.error(f"project={project_id} not found")
+        logger.error(
+            "project not found",
+            extra={"project_id": project_id},
+        )
         raise ProjectNotFound(f"project={project_id} not found")
 
     if agent.project_id != project_id:
-        logger.error(f"agent={agent_id} is not in project={project_id}")
+        logger.error(
+            "agent does not belong to project",
+            extra={
+                "agent_id": agent_id,
+                "agent_project_id": agent.project_id,
+                "project_id": project_id,
+            },
+        )
         raise AgentNotFound(f"agent={agent_id} not found in project={project_id}")
 
     acl.validate_user_access_to_project(db_session, user.id, agent.project_id)

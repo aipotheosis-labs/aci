@@ -38,6 +38,7 @@ with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
     from aipolabs.server.main import app as fastapi_app
     from aipolabs.server.routes.auth import create_access_token
     from aipolabs.server.tests import helper
+
 logger = logging.getLogger(__name__)
 
 # call this one time for entire tests because it's slow and costs money (negligible) as it needs

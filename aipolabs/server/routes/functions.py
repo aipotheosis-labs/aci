@@ -1,4 +1,3 @@
-import json
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
@@ -47,6 +46,10 @@ async def list_functions(
     query_params: Annotated[FunctionsList, Query()],
 ) -> list[Function]:
     """Get a list of functions and their details. Sorted by function name."""
+    logger.info(
+        "list functions",
+        extra={"function_list": query_params.model_dump(exclude_none=True)},
+    )
     return crud.functions.get_functions(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
@@ -67,7 +70,10 @@ async def search_functions(
     """
     # TODO: currently the search is done across all apps, we might want to add flags to account for below scenarios:
     # - when clients search for functions, if the app of the functions is configured but disabled by client, should the functions be discoverable?
-    logger.debug(f"Getting functions with params: {query_params}")
+    logger.info(
+        "search functions",
+        extra={"function_search": query_params.model_dump(exclude_none=True)},
+    )
     intent_embedding = (
         openai_service.generate_embedding(
             query_params.intent,
@@ -77,7 +83,10 @@ async def search_functions(
         if query_params.intent
         else None
     )
-    logger.debug(f"Generated intent embedding: {intent_embedding}")
+    logger.debug(
+        "generated intent embedding",
+        extra={"intent": query_params.intent, "intent_embedding": intent_embedding},
+    )
 
     if query_params.configured_only:
         configured_app_names = crud.app_configurations.get_configured_app_names(
@@ -95,6 +104,7 @@ async def search_functions(
 
         # If no app_names are available after intersection or configured search, return an empty list
         if not query_params.app_names:
+            logger.info("no apps suitable for configured function search, returning empty list")
             return []
 
     functions = crud.functions.search_functions(
@@ -106,7 +116,10 @@ async def search_functions(
         query_params.limit,
         query_params.offset,
     )
-    logger.debug(f"functions: \n {functions}")
+    logger.info(
+        "search functions result",
+        extra={"function_names": [function.name for function in functions]},
+    )
     return functions
 
 
@@ -132,6 +145,10 @@ async def get_function_definition(
     Return the function definition that can be used directly by LLM.
     The actual content depends on the intended model (inference provider, e.g., OpenAI, Anthropic, etc.) and the function itself.
     """
+    logger.info(
+        "get function definition",
+        extra={"function_name": function_name, "inference_provider": inference_provider.value},
+    )
     function: Function | None = crud.functions.get_function(
         context.db_session,
         function_name,
@@ -139,11 +156,20 @@ async def get_function_definition(
         True,
     )
     if not function:
-        logger.error(f"function={function_name} not found")
+        logger.error(
+            "failed to get function definition, function not found",
+            extra={"function_name": function_name},
+        )
         raise FunctionNotFound(f"function={function_name} not found")
 
     visible_parameters = processor.filter_visible_properties(function.parameters)
-    logger.debug(f"Filtered parameters: {json.dumps(visible_parameters)}")
+    logger.debug(
+        "visible parameters",
+        extra={
+            "function_name": function_name,
+            "parameters": visible_parameters,
+        },
+    )
 
     if inference_provider == InferenceProvider.OPENAI:
         function_definition = OpenAIFunctionDefinition(
@@ -159,6 +185,15 @@ async def get_function_definition(
             description=function.description,
             input_schema=visible_parameters,
         )
+
+    logger.info(
+        "function definition to return",
+        extra={
+            "inference_provider": inference_provider.value,
+            "function_name": function_name,
+            "function_definition": function_definition.model_dump(exclude_none=True),
+        },
+    )
     return function_definition
 
 
@@ -175,6 +210,13 @@ async def execute(
     body: FunctionExecute,
 ) -> FunctionExecutionResult:
     # Fetch function definition
+    logger.info(
+        "execute function",
+        extra={
+            "function_name": function_name,
+            "function_execute": body.model_dump(exclude_none=True),
+        },
+    )
     function = crud.functions.get_function(
         context.db_session,
         function_name,
@@ -182,7 +224,13 @@ async def execute(
         True,
     )
     if not function:
-        logger.error(f"function={function_name} not found")
+        logger.error(
+            "failed to execute function, function not found",
+            extra={
+                "function_name": function_name,
+                "linked_account_owner_id": body.linked_account_owner_id,
+            },
+        )
         raise FunctionNotFound(f"function={function_name} not found")
 
     # check if the App (that this function belongs to) is configured
@@ -191,7 +239,11 @@ async def execute(
     )
     if not app_configuration:
         logger.error(
-            f"app configuration not found for app={function.app.name}, project={context.project.id}"
+            "failed to execute function, app configuration not found",
+            extra={
+                "function_name": function_name,
+                "app_name": function.app.name,
+            },
         )
         raise AppConfigurationNotFound(
             f"configuration for app={function.app.name} not found for project={context.project.id}"
@@ -200,7 +252,12 @@ async def execute(
     # check if user has disabled the app configuration
     if not app_configuration.enabled:
         logger.error(
-            f"app configuration is disabled for app={function.app.name}, project={context.project.id}"
+            "failed to execute function, app configuration is disabled",
+            extra={
+                "function_name": function_name,
+                "app_name": function.app.name,
+                "app_configuration_id": app_configuration.id,
+            },
         )
         raise AppConfigurationDisabled(
             f"configuration for app={function.app.name} is disabled for project={context.project.id}"
@@ -212,9 +269,12 @@ async def execute(
     )
     if not linked_account:
         logger.error(
-            f"linked account not found for app={function.app.name}, "
-            f"project={context.project.id}, "
-            f"linked_account_owner_id={body.linked_account_owner_id}"
+            "failed to execute function, linked account not found",
+            extra={
+                "function_name": function_name,
+                "app_name": function.app.name,
+                "linked_account_owner_id": body.linked_account_owner_id,
+            },
         )
         raise LinkedAccountNotFound(
             f"linked account not found for app={function.app.name}, "
@@ -224,9 +284,13 @@ async def execute(
 
     if not linked_account.enabled:
         logger.error(
-            f"linked account is disabled for app={function.app.name}, "
-            f"project={context.project.id}, "
-            f"linked_account_owner_id={body.linked_account_owner_id}"
+            "failed to execute function, linked account is disabled",
+            extra={
+                "function_name": function_name,
+                "app_name": function.app.name,
+                "linked_account_owner_id": body.linked_account_owner_id,
+                "linked_account_id": linked_account.id,
+            },
         )
         raise LinkedAccountDisabled(
             f"linked account is disabled for app={function.app.name}, "
@@ -245,7 +309,16 @@ async def execute(
     # more complexity to the logic). It almost smells like an indicator to break down to microservices and/or
     # use a message queue like kafka for async/downstream updates.
     logger.info(
-        f"security_credentials_response={json.dumps(security_credentials_response.model_dump(mode='json'), indent=2)}"
+        "fetched security credentials for function execution",
+        extra={
+            "function_name": function_name,
+            "app_name": function.app.name,
+            "linked_account_owner_id": body.linked_account_owner_id,
+            "linked_account_id": linked_account.id,
+            "scheme": security_credentials_response.scheme.model_dump(exclude_none=True),
+            "is_app_default_credentials": security_credentials_response.is_app_default_credentials,
+            "is_updated": security_credentials_response.is_updated,
+        },
     )
     if security_credentials_response.is_updated:
         if security_credentials_response.is_app_default_credentials:
@@ -265,7 +338,10 @@ async def execute(
 
     agent = crud.projects.get_agent_by_api_key_id(context.db_session, context.api_key_id)
     if not agent:
-        logger.error(f"agent not found for api_key_id={context.api_key_id}")
+        logger.error(
+            "failed to execute function, agent not found",
+            extra={"api_key_id": context.api_key_id},
+        )
         raise AgentNotFound(f"agent not found for api_key_id={context.api_key_id}")
 
     if function.app.name in agent.custom_instructions.keys():
@@ -275,13 +351,18 @@ async def execute(
             body.function_input,
             agent.custom_instructions[function.app.name],
         )
-        logger.info(f"Filter Result: {filter_result}")
         # Filter has failed
         if not filter_result.success:
+            logger.error(
+                "custom instruction violation",
+                extra={
+                    "function_name": function_name,
+                    "filter_result": filter_result.model_dump(exclude_none=True),
+                },
+            )
             raise CustomInstructionViolation(
                 f"Function execution for function: {function.name} with"
-                f"description: {function.description}"
-                f"and input: {body.function_input}"
+                f"input: {body.function_input}"
                 f"has been rejected because of rule: {agent.custom_instructions[function.app.name]}"
                 f"the reason supplied by the filter is: {filter_result.reason}"
             )
@@ -289,9 +370,18 @@ async def execute(
     function_executor = get_executor(function.protocol, linked_account.security_scheme)
 
     # TODO: async calls?
-    return function_executor.execute(
+    execution_result = function_executor.execute(
         function,
         body.function_input,
         security_credentials_response.scheme,
         security_credentials_response.credentials,
     )
+    if not execution_result.success:
+        logger.error(
+            "function execution result error",
+            extra={
+                "function_name": function_name,
+                "error": execution_result.error,
+            },
+        )
+    return execution_result

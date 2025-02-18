@@ -30,7 +30,6 @@ def test_validate_project_quota_valid(test_client: TestClient, dummy_api_key_1: 
             params={"limit": 1},
             headers={"x-api-key": dummy_api_key_1},
         )
-        logger.info(f"response: {response.json()}")
         assert response.status_code == status.HTTP_200_OK
 
 

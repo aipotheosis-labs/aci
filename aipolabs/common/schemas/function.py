@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 from uuid import UUID
 
 import jsonschema
@@ -188,4 +188,4 @@ class FunctionExecutionResult(BaseModel):
 
 class FilterResponse(BaseModel):
     success: bool
-    reason: Optional[str] = None
+    reason: str | None = None

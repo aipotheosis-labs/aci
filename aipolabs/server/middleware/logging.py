@@ -28,6 +28,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             "url": str(request.url),
             "query_params": dict(request.query_params),
             "client_ip": request.client.host if request.client else "unknown",
+            "client_port": request.client.port if request.client else "unknown",
             "user_agent": request.headers.get("User-Agent", "unknown"),
         }
         logger.info("received request", extra=request_log_data)

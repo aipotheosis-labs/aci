@@ -30,6 +30,10 @@ async def create_app_configuration(
     body: AppConfigurationCreate,
 ) -> AppConfiguration:
     """Create an app configuration for a project"""
+    logger.info(
+        "create app configuration",
+        extra={"app_configuration_create": body.model_dump(exclude_none=True)},
+    )
     # TODO: validate security scheme
     app = crud.apps.get_app(
         context.db_session,
@@ -38,23 +42,30 @@ async def create_app_configuration(
         True,
     )
     if not app:
-        logger.error(f"app={body.app_name} not found")
+        logger.error(
+            "app not found",
+            extra={"app_name": body.app_name},
+        )
         raise AppNotFound(f"app={body.app_name} not found")
 
     if crud.app_configurations.app_configuration_exists(
         context.db_session, context.project.id, body.app_name
     ):
         logger.error(
-            f"app configuration already exists for app={body.app_name}, project={context.project.id}"
+            "app configuration already exists",
+            extra={"app_name": body.app_name},
         )
         raise AppConfigurationAlreadyExists(
             f"app={body.app_name} already configured for project={context.project.id}"
         )
 
     if app.security_schemes.get(body.security_scheme) is None:
-        logger.error(f"app={body.app_name} does not support security_scheme={body.security_scheme}")
+        logger.error(
+            "app does not support specified security scheme",
+            extra={"app_name": body.app_name, "security_scheme": body.security_scheme.value},
+        )
         raise AppSecuritySchemeNotSupported(
-            f"app={body.app_name} does not support security_scheme={body.security_scheme}"
+            f"app={body.app_name} does not support security_scheme={body.security_scheme.value}"
         )
     app_configuration = crud.app_configurations.create_app_configuration(
         context.db_session,
@@ -72,6 +83,10 @@ async def list_app_configurations(
     query_params: Annotated[AppConfigurationsList, Query()],
 ) -> list[AppConfiguration]:
     """List all app configurations for a project, with optionally filters"""
+    logger.info(
+        "list app configurations",
+        extra={"app_configurations_list": query_params.model_dump(exclude_none=True)},
+    )
     return crud.app_configurations.get_app_configurations(
         context.db_session,
         context.project.id,
@@ -87,12 +102,17 @@ async def get_app_configuration(
     app_name: str,
 ) -> AppConfiguration:
     """Get an app configuration by app name"""
+    logger.info(
+        "get app configuration",
+        extra={"app_name": app_name},
+    )
     app_configuration = crud.app_configurations.get_app_configuration(
         context.db_session, context.project.id, app_name
     )
     if not app_configuration:
         logger.error(
-            f"app configuration not found for app={app_name}, project={context.project.id}"
+            "app configuration not found",
+            extra={"app_name": app_name},
         )
         raise AppConfigurationNotFound(
             f"configuration for app={app_name} not found for project={context.project.id}"
@@ -110,11 +130,18 @@ async def delete_app_configuration(
     Warning: This will delete the app configuration from the project,
     associated linked accounts, and then the app configuration record itself.
     """
+    logger.info(
+        "delete app configuration",
+        extra={"app_name": app_name},
+    )
     app_configuration = crud.app_configurations.get_app_configuration(
         context.db_session, context.project.id, app_name
     )
     if not app_configuration:
-        logger.error(f"app configuration not found, app={app_name}, project={context.project.id}")
+        logger.error(
+            "app configuration not found",
+            extra={"app_name": app_name},
+        )
         raise AppConfigurationNotFound(
             f"configuration for app={app_name} not found for project={context.project.id}"
         )
@@ -124,14 +151,17 @@ async def delete_app_configuration(
     number_of_linked_accounts_deleted = crud.linked_accounts.delete_linked_accounts(
         context.db_session, context.project.id, app_name
     )
-    logger.info(
-        f"deleted {number_of_linked_accounts_deleted} linked accounts for app={app_name}, project={context.project.id}"
+    logger.warning(
+        "deleted linked accounts",
+        extra={
+            "number_of_linked_accounts_deleted": number_of_linked_accounts_deleted,
+            "app_name": app_name,
+        },
     )
     # 2. Delete the app configuration record
     crud.app_configurations.delete_app_configuration(
         context.db_session, context.project.id, app_name
     )
-    logger.info(f"deleted app configuration for app={app_name}, project={context.project.id}")
 
     context.db_session.commit()
 
@@ -146,12 +176,22 @@ async def update_app_configuration(
     Update an app configuration by app name.
     If a field is not included in the request body, it will not be changed.
     """
+    logger.info(
+        "update app configuration",
+        extra={
+            "app_name": app_name,
+            "app_configuration_update": body.model_dump(exclude_none=True),
+        },
+    )
     # validations
     app_configuration = crud.app_configurations.get_app_configuration(
         context.db_session, context.project.id, app_name
     )
     if not app_configuration:
-        logger.error(f"app configuration not found, app={app_name}, project={context.project.id}")
+        logger.error(
+            "app configuration not found",
+            extra={"app_name": app_name},
+        )
         raise AppConfigurationNotFound(
             f"configuration for app={app_name} not found for project={context.project.id}"
         )

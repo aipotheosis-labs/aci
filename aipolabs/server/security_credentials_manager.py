@@ -33,11 +33,17 @@ async def get_security_credentials(
     elif linked_account.security_scheme == SecurityScheme.OAUTH2:
         return await _get_oauth2_credentials(app, linked_account)
     else:
-        error_message = (
+        logger.error(
+            "unsupported security scheme",
+            extra={
+                "linked_account": linked_account.id,
+                "security_scheme": linked_account.security_scheme.value,
+                "app": app.name,
+            },
+        )
+        raise NoImplementationFound(
             f"unsupported security scheme={linked_account.security_scheme.value}, app={app.name}"
         )
-        logger.error(error_message)
-        raise NoImplementationFound(error_message)
 
 
 async def _get_oauth2_credentials(
@@ -51,24 +57,37 @@ async def _get_oauth2_credentials(
     oauth2_scheme = OAuth2Scheme.model_validate(app.security_schemes[SecurityScheme.OAUTH2])
 
     if linked_account.security_credentials:
-        logger.info(
-            f"using security credentials from linked account={linked_account.id}, "
-            f"security scheme={linked_account.security_scheme}"
+        logger.debug(
+            "using linked account's security credentials",
+            extra={
+                "linked_account": linked_account.id,
+                "security_scheme": linked_account.security_scheme,
+            },
         )
         oauth2_credentials = linked_account.security_credentials
 
     elif app.default_security_credentials_by_scheme.get(linked_account.security_scheme):
         is_app_default_credentials = True
         logger.info(
-            f"using default security credentials from app={app.name}, "
-            f"security scheme={linked_account.security_scheme}, "
-            f"linked account={linked_account.id}"
+            "using app's default security credentials",
+            extra={
+                "app": app.name,
+                "security_scheme": linked_account.security_scheme,
+                "linked_account": linked_account.id,
+            },
         )
         oauth2_credentials = app.default_security_credentials_by_scheme[
             linked_account.security_scheme
         ]
     else:
-        logger.error(f"no security credentials usable for linked_account={linked_account.id}")
+        logger.error(
+            "no security credentials usable",
+            extra={
+                "linked_account": linked_account.id,
+                "security_scheme": linked_account.security_scheme,
+                "app": app.name,
+            },
+        )
         # TODO: check all 'NoImplementationFound' exceptions see if a more suitable exception can be used
         raise NoImplementationFound(
             f"no security credentials usable for app={app.name}, "
@@ -78,7 +97,14 @@ async def _get_oauth2_credentials(
 
     oauth2_scheme_credentials = OAuth2SchemeCredentials.model_validate(oauth2_credentials)
     if _access_token_is_expired(oauth2_scheme_credentials):
-        logger.warning(f"access token expired for linked account={linked_account.id}")
+        logger.warning(
+            "access token expired",
+            extra={
+                "linked_account": linked_account.id,
+                "security_scheme": linked_account.security_scheme,
+                "app": app.name,
+            },
+        )
         token_response = await _refresh_oauth2_access_token(
             app, oauth2_scheme_credentials.refresh_token
         )
@@ -92,7 +118,14 @@ async def _get_oauth2_credentials(
         )
         is_updated = True
     else:
-        logger.info(f"access token is valid for linked account={linked_account.id}")
+        logger.debug(
+            "access token is valid",
+            extra={
+                "linked_account": linked_account.id,
+                "security_scheme": linked_account.security_scheme,
+                "app": app.name,
+            },
+        )
 
     return SecurityCredentialsResponse(
         scheme=oauth2_scheme,
@@ -122,7 +155,10 @@ async def _refresh_oauth2_access_token(app: App, refresh_token: str) -> dict:
     # TODO: seems the token_response contains both "expires_at" and "expires_in", in which care
     # the "expires_at" should be used. Need to double check if it's the same for "authorize_access_token" method
     # and other providers.
-    logger.info(f"oauth2 access token refreshed, token_response={token_response}")
+    logger.debug(
+        "oauth2 access token refreshed",
+        extra={"token_response": token_response, "app": app.name},
+    )
 
     return token_response
 
@@ -154,8 +190,15 @@ def _get_api_key_credentials(
         linked_account.security_scheme
     )
     if not security_credentials:
-        logger.error(f"no default security credentials found for app={app.name}")
-        raise NoImplementationFound(f"no default security credentials found for app={app.name}")
+        logger.error(
+            "app does not have default security credentials",
+            extra={
+                "app": app.name,
+                "security_scheme": linked_account.security_scheme,
+                "linked_account": linked_account.id,
+            },
+        )
+        raise NoImplementationFound(f"app={app.name} does not have default security credentials")
     api_key_credentials: APIKeySchemeCredentials = APIKeySchemeCredentials.model_validate(
         security_credentials
     )

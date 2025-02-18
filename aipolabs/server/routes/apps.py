@@ -31,6 +31,13 @@ async def list_apps(
     """
     Get a list of Apps and their details. Sorted by App name.
     """
+    logger.info(
+        "list apps",
+        extra={
+            "apps_list": query_params.model_dump(exclude_none=True),
+        },
+    )
+
     return crud.apps.get_apps(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
@@ -52,7 +59,12 @@ async def search_apps(
     """
     # TODO: currently the search is done across all apps, we might want to add flags to account for below scenarios:
     # - when clients search for apps, if an app is configured but disabled by client, should it be discoverable?
-    logger.info(f"Getting apps with filter params: {query_params}")
+    logger.info(
+        "search apps",
+        extra={
+            "apps_search": query_params.model_dump(exclude_none=True),
+        },
+    )
     intent_embedding = (
         openai_service.generate_embedding(
             query_params.intent,
@@ -62,7 +74,10 @@ async def search_apps(
         if query_params.intent
         else None
     )
-    logger.debug(f"Generated intent embedding: {intent_embedding}")
+    logger.debug(
+        "generated intent embedding",
+        extra={"intent": query_params.intent, "intent_embedding": intent_embedding},
+    )
 
     # If configured_only is False, None is passed to the search_apps function and no filtering is done
     configured_app_names = None
@@ -73,6 +88,7 @@ async def search_apps(
         )
         # if no apps are configured, return an empty list
         if not configured_app_names:
+            logger.info("no apps configured, returning empty list")
             return []
 
     apps_with_scores = crud.apps.search_apps(
@@ -86,11 +102,12 @@ async def search_apps(
         query_params.offset,
     )
 
-    # build apps list with similarity scores if they exist
     apps: list[AppBasic] = []
     for app, _ in apps_with_scores:
         app = AppBasic.model_validate(app)
         apps.append(app)
+
+    logger.info("search apps response", extra={"app_names": [app.name for app in apps]})
 
     return apps
 
@@ -103,6 +120,8 @@ async def get_app_details(
     """
     Returns an application (name, description, and functions).
     """
+    logger.info("get app details", extra={"app_name": app_name})
+
     app = crud.apps.get_app(
         context.db_session,
         app_name,
@@ -111,7 +130,8 @@ async def get_app_details(
     )
 
     if not app:
-        logger.error(f"app={app_name} not found")
+        logger.error("app not found", extra={"app_name": app_name})
+
         raise AppNotFound(f"app={app_name} not found")
 
     # filter functions by project visibility and active status

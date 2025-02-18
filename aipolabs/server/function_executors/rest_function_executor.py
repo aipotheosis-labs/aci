@@ -6,7 +6,7 @@ import httpx
 from httpx import HTTPStatusError
 
 from aipolabs.common.db.sql_models import Function
-from aipolabs.common.logging import create_headline, get_logger
+from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.function import FunctionExecutionResult, RestMetadata
 from aipolabs.common.schemas.security_scheme import (
     APIKeyScheme,
@@ -73,18 +73,16 @@ class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TC
             json=body if body else None,
         )
 
-        # TODO: remove all print
-        print(create_headline("FUNCTION EXECUTION HTTP REQUEST"))
+        # TODO: remove sensitive data
         logger.info(
-            json.dumps(
-                {
-                    "Method": request.method,
-                    "URL": str(request.url),
-                    "Headers": dict(request.headers),
-                    "Body": json.loads(request.content) if request.content else None,
-                },
-                indent=2,
-            )
+            "function execution http request",
+            extra={
+                "function_name": function.name,
+                "method": request.method,
+                "url": str(request.url),
+                "headers": dict(request.headers),
+                "body": json.loads(request.content) if request.content else None,
+            },
         )
 
         return self._send_request(request)
@@ -97,13 +95,13 @@ class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TC
             try:
                 response = client.send(request)
             except Exception as e:
-                logger.exception("failed to send request")
+                logger.exception(f"failed to send function execution http request, {e}")
                 return FunctionExecutionResult(success=False, error=str(e))
 
             try:
                 response.raise_for_status()
             except httpx.HTTPStatusError as e:
-                logger.exception("http error occurred for function execution")
+                logger.exception(f"http error occurred for function execution, {e}")
                 return FunctionExecutionResult(
                     success=False, error=self._get_error_message(response, e)
                 )
@@ -116,8 +114,8 @@ class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TC
         """
         try:
             response_data = response.json() if response.content else {}
-        except Exception:
-            logger.exception("error parsing json response")
+        except Exception as e:
+            logger.exception(f"error parsing function execution http response, {e}")
             response_data = response.text
 
         return response_data

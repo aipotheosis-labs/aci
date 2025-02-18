@@ -96,6 +96,10 @@ async def authorize_access_token_without_browser_session(
     This is a modified version of the authorize_access_token method in authlib/integrations/starlette_client/apps.py
     This is to bypass a need of browser session for oauth2 flow
     """
+    logger.debug(
+        "authorizing access token without browser session",
+        extra={"redirect_uri": redirect_uri, "code_verifier": code_verifier},
+    )
     error = request.query_params.get("error")
     if error:
         description = request.query_params.get("error_description")
@@ -113,6 +117,10 @@ async def authorize_access_token_without_browser_session(
     }
 
     claims_options = kwargs.pop("claims_options", None)
+    logger.debug(
+        "fetching access token",
+        extra=params,
+    )
     token = cast(dict, await oauth2_client.fetch_access_token(**params, **kwargs))
 
     if "id_token" in token and nonce:

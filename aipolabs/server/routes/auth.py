@@ -66,11 +66,17 @@ def create_access_token(user_id: str, expires_delta: timedelta) -> str:
 # login route for different identity providers
 @router.get("/login/{provider}", include_in_schema=True)
 async def login(request: Request, provider: ClientIdentityProvider) -> RedirectResponse:
+    logger.info("login", extra={"provider": provider.value})
+
     oauth2_client = OAUTH2_CLIENTS[provider]
 
     path = request.url_for(LOGIN_CALLBACK_PATH_NAME, provider=provider.value).path
     redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
-    logger.info(f"initiating login for provider={provider}, redirecting to={redirect_uri}")
+
+    logger.info(
+        "authorizing login redirect",
+        extra={"provider": provider.value, "redirect_uri": redirect_uri},
+    )
 
     return await oauth2.authorize_redirect(oauth2_client, request, redirect_uri)
 
@@ -91,6 +97,10 @@ async def signup(
     signup_code: str,
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> RedirectResponse:
+    logger.info(
+        "signup",
+        extra={"provider": provider.value, "signup_code": signup_code},
+    )
     _validate_signup(db_session, signup_code)
     oauth2_client = OAUTH2_CLIENTS[provider]
 
@@ -99,7 +109,12 @@ async def signup(
     path = request.url_for(SIGNUP_CALLBACK_PATH_NAME, provider=provider.value).path
     redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
     logger.info(
-        f"initiating signup for provider={provider}, signup_code={signup_code}, redirecting to={redirect_uri}"
+        "authorizing signup redirect",
+        extra={
+            "provider": provider.value,
+            "signup_code": signup_code,
+            "redirect_uri": redirect_uri,
+        },
     )
 
     return await oauth2.authorize_redirect(oauth2_client, request, redirect_uri)
@@ -124,20 +139,24 @@ async def signup_callback(
     del request.session["signup_code"]  # Clear session data after use
 
     logger.info(
-        f"signup callback received for identity provider={provider}, signup_code={signup_code}"
+        "signup callback received",
+        extra={"provider": provider.value, "signup_code": signup_code},
     )
     # TODO: probably not necessary to check again here, but just in case
     _validate_signup(db_session, signup_code)
     # TODO: try/except, retry?
     auth_response = await oauth2.authorize_access_token(OAUTH2_CLIENTS[provider], request)
     logger.debug(
-        f"access token requested successfully for provider={provider}, "
-        f"auth_response={auth_response}"
+        "access token requested successfully",
+        extra={"provider": provider.value, "auth_response": auth_response},
     )
 
     if provider == ClientIdentityProvider.GOOGLE:
         if "userinfo" not in auth_response:
-            logger.error(f"userinfo not found in auth_response={auth_response}")
+            logger.error(
+                "userinfo not found in auth_response",
+                extra={"auth_response": auth_response},
+            )
             raise UnexpectedError(f"userinfo not found in auth_response={auth_response}")
         user_info = IdentityProviderUserInfo.model_validate(auth_response["userinfo"])
     else:
@@ -150,8 +169,9 @@ async def signup_callback(
 
     # avoid duplicate signup
     if user:
-        logger.info(
-            f"user={user.id}, email={user.email} already exists for identity provider={provider}"
+        logger.warning(
+            "duplicate signup, user already exists",
+            extra={"user_id": user.id},
         )
     else:
         user = crud.users.create_user(
@@ -168,7 +188,13 @@ async def signup_callback(
 
         db_session.commit()
         logger.info(
-            f"created new user={user.id}, email={user.email}, identity provider={provider}, signup_code={signup_code}"
+            "created new user",
+            extra={
+                "user_id": user.id,
+                "user_email": user.email,
+                "provider": provider.value,
+                "signup_code": signup_code,
+            },
         )
 
     jwt_token = create_access_token(
@@ -204,17 +230,23 @@ async def login_callback(
     provider: ClientIdentityProvider,
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> RedirectResponse:
-    logger.info(f"callback received for identity provider={provider}")
+    logger.info(
+        "login callback received",
+        extra={"provider": provider.value},
+    )
     # TODO: try/except, retry?
     auth_response = await oauth2.authorize_access_token(OAUTH2_CLIENTS[provider], request)
     logger.debug(
-        f"access token requested successfully for provider={provider}, "
-        f"auth_response={auth_response}"
+        "access token requested successfully",
+        extra={"provider": provider.value, "auth_response": auth_response},
     )
 
     if provider == ClientIdentityProvider.GOOGLE:
         if "userinfo" not in auth_response:
-            logger.error(f"userinfo not found in auth_response={auth_response}")
+            logger.error(
+                "userinfo not found in auth_response",
+                extra={"auth_response": auth_response},
+            )
             raise UnexpectedError(f"userinfo not found in auth_response={auth_response}")
         user_info = IdentityProviderUserInfo.model_validate(auth_response["userinfo"])
     else:
@@ -226,7 +258,13 @@ async def login_callback(
     )
     # redirect to signup page if user doesn't exist
     if not user:
-        logger.error(f"user not found for identity provider={provider}, user_info={user_info}")
+        logger.error(
+            "login failed, user not found",
+            extra={
+                "provider": provider.value,
+                "user_info": user_info.model_dump(exclude_none=True),
+            },
+        )
         # TODO: Return a cookie to signal the frontend that the user hasn't logged
         return RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
 
@@ -237,7 +275,8 @@ async def login_callback(
         timedelta(minutes=config.JWT_ACCESS_TOKEN_EXPIRE_MINUTES),
     )
     logger.debug(
-        f"JWT generated successfully for user={user.id}, jwt_token={jwt_token[:4]}...{jwt_token[-4:]}"
+        "JWT generated successfully",
+        extra={"user_id": user.id, "jwt_token": jwt_token[:4] + "..." + jwt_token[-4:]},
     )
 
     response = RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
@@ -256,9 +295,15 @@ async def login_callback(
 # for new users to decrease friction of onboarding. Need to revisit if we should keep this (or some of it)
 # for the future releases.
 def _onboard_new_user(db_session: Session, user: User) -> None:
-    logger.info(f"onboarding new user={user.id}")
+    logger.info(
+        "onboarding new user",
+        extra={"user_id": user.id},
+    )
     project = crud.projects.create_project(db_session, owner_id=user.id, name="Default Project")
-    logger.info(f"created default project={project.id} for user={user.id}")
+    logger.info(
+        "created default project",
+        extra={"project_id": project.id, "user_id": user.id},
+    )
     agent = crud.projects.create_agent(
         db_session,
         project.id,
@@ -268,19 +313,26 @@ def _onboard_new_user(db_session: Session, user: User) -> None:
         excluded_functions=[],
         custom_instructions={},
     )
-    logger.info(f"created default agent={agent.id} for project={project.id}")
+    logger.info(
+        "created default agent",
+        extra={"agent_id": agent.id, "project_id": project.id, "user_id": user.id},
+    )
 
 
 def _validate_signup(db_session: Session, signup_code: str) -> None:
     if signup_code not in config.PERMITTED_SIGNUP_CODES:
-        logger.error(f"invalid signup code={signup_code}")
+        logger.error(
+            "invalid signup code",
+            extra={"signup_code": signup_code},
+        )
         raise AuthenticationError(f"invalid signup code={signup_code}")
 
     total_users = crud.users.get_total_number_of_users(db_session)
     if total_users >= config.MAX_USERS:
         logger.error(
-            f"max number of users={config.MAX_USERS} reached, signup failed with signup_code={signup_code}"
+            "max number of users reached",
+            extra={"signup_code": signup_code, "total_users": total_users},
         )
         raise AuthenticationError(
-            "no longer accepting new users, please email us contact@aipolabs.xyz if you still like to access"
+            "no longer accepting new users, please email us support@aipolabs.xyz if you still like to access"
         )

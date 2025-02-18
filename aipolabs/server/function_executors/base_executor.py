@@ -1,4 +1,3 @@
-import json
 from abc import ABC, abstractmethod
 from typing import Generic, TypeVar
 
@@ -37,7 +36,10 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
         Execute the function based on end-user input and security credentials.
         Input validation, default values injection, and security credentials injection are done here.
         """
-        logger.info(f"executing function={function.name}, function_input={function_input}")
+        logger.info(
+            "executing function",
+            extra={"function_name": function.name, "function_input": function_input},
+        )
         function_input = self._preprocess_function_input(function, function_input)
 
         return self._execute(function, function_input, security_scheme, security_credentials)
@@ -50,18 +52,27 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
                 schema=processor.filter_visible_properties(function.parameters),
             )
         except jsonschema.ValidationError as e:
-            logger.exception(f"failed to validate function input for function={function.name}")
+            logger.exception(
+                f"failed to validate function input, {e}",
+                extra={"function_name": function.name},
+            )
             raise InvalidFunctionInput(
                 f"invalid function input for function={function.name}, error={e.message}"
             )
 
-        logger.info(f"function_input before injecting defaults: {json.dumps(function_input)}")
+        logger.debug(
+            "function_input before injecting defaults",
+            extra={"function_name": function.name, "function_input": function_input},
+        )
 
         # inject non-visible defaults, note that should pass the original parameters schema not just visible ones
         function_input = processor.inject_required_but_invisible_defaults(
             function.parameters, function_input
         )
-        logger.info(f"function_input after injecting defaults: {json.dumps(function_input)}")
+        logger.debug(
+            "function_input after injecting defaults",
+            extra={"function_name": function.name, "function_input": function_input},
+        )
 
         # remove None values from the input
         # TODO: better way to remove None values? and if it's ok to remove all of them?

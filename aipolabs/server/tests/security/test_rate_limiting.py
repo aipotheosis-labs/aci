@@ -39,7 +39,6 @@ def test_rate_limiting_ip_per_second(test_client: TestClient, dummy_api_key_1: s
 
         # Test successful requests
         for counter in range(OVERRIDE_RATE_LIMIT_IP_PER_SECOND):
-            logger.info(f"counter: {counter}")
             response = test_client.get(
                 f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key_1}
             )
@@ -78,7 +77,6 @@ def test_rate_limiting_ip_per_day(test_client: TestClient, dummy_api_key_1: str)
 
         # Test successful requests
         for counter in range(OVERRIDE_RATE_LIMIT_IP_PER_DAY):
-            logger.info(f"counter: {counter}")
             response = test_client.get(
                 f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key_1}
             )

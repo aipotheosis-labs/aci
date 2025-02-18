@@ -1,4 +1,3 @@
-import json
 import time
 from typing import Annotated
 from uuid import UUID
@@ -75,8 +74,8 @@ async def link_account_with_aipolabs_default_credentials(
     and an error will be returned.
     """
     logger.info(
-        f"Linking account with Aipolabs default credentials for project={context.project.id}, "
-        f"app={body.app_name}, linked_account_owner_id={body.linked_account_owner_id}"
+        "Linking account with Aipolabs default credentials",
+        extra={"app_name": body.app_name, "linked_account_owner_id": body.linked_account_owner_id},
     )
     # TODO: some duplicate code with other linked account creation routes
     app_configuration = crud.app_configurations.get_app_configuration(
@@ -84,7 +83,8 @@ async def link_account_with_aipolabs_default_credentials(
     )
     if not app_configuration:
         logger.error(
-            f"configuration for app={body.app_name} not found for project={context.project.id}"
+            "failed to link account with Aipolabs default credentials, app configuration not found",
+            extra={"app_name": body.app_name},
         )
         raise AppConfigurationNotFound(
             f"configuration for app={body.app_name} not found for project={context.project.id}"
@@ -96,8 +96,11 @@ async def link_account_with_aipolabs_default_credentials(
     )
     if not app_default_credentials:
         logger.error(
-            f"no default credentials provided by Aipolabs for app={body.app_name}, "
-            f"security_scheme={app_configuration.security_scheme}"
+            "failed to link account with Aipolabs default credentials, no default credentials provided by Aipolabs",
+            extra={
+                "app_name": body.app_name,
+                "security_scheme": app_configuration.security_scheme,
+            },
         )
         # TODO: consider choosing a different exception type?
         raise NoImplementationFound(
@@ -114,14 +117,24 @@ async def link_account_with_aipolabs_default_credentials(
     # TODO: same as OAuth2 linked account creation, we might want to separate the logic for updating and creating a linked account
     # or give warning to clients if the linked account already exists to avoid accidental overwriting the account
     if linked_account:
-        logger.info(f"updating linked_account={linked_account.id} with default credentials")
+        logger.info(
+            "updating linked account to use Aipolabs default credentials",
+            extra={
+                "linked_account_id": linked_account.id,
+                "linked_account_owner_id": body.linked_account_owner_id,
+                "app_name": body.app_name,
+            },
+        )
         linked_account = crud.linked_accounts.update_linked_account(
             context.db_session, linked_account, app_configuration.security_scheme, {}
         )
     else:
         logger.info(
-            f"creating linked account with default credentials for project={context.project.id}, "
-            f"app={body.app_name}, linked_account_owner_id={body.linked_account_owner_id}"
+            "creating linked account with Aipolabs default credentials",
+            extra={
+                "linked_account_owner_id": body.linked_account_owner_id,
+                "app_name": body.app_name,
+            },
         )
         linked_account = crud.linked_accounts.create_linked_account(
             context.db_session,
@@ -151,16 +164,18 @@ async def link_oauth2_account(
     It will return a redirect url (as a string, instead of RedirectResponse) to the OAuth2 provider's authorization endpoint.
     """
     logger.info(
-        f"Linking OAuth2 account for project={context.project.id}, "
-        f"app={query_params.app_name}, "
-        f"linked_account_owner_id={query_params.linked_account_owner_id}"
+        "Linking OAuth2 account",
+        extra={
+            "linked_account_oauth2_create": query_params.model_dump(exclude_none=True),
+        },
     )
     app_configuration = crud.app_configurations.get_app_configuration(
         context.db_session, context.project.id, query_params.app_name
     )
     if not app_configuration:
         logger.error(
-            f"configuration for app={query_params.app_name} not found for project={context.project.id}"
+            "failed to link OAuth2 account, app configuration not found",
+            extra={"app_name": query_params.app_name},
         )
         raise AppConfigurationNotFound(
             f"configuration for app={query_params.app_name} not found for project={context.project.id}"
@@ -168,12 +183,18 @@ async def link_oauth2_account(
     # TODO: for now we require the security_schema used for accounts under an App must be the same as the security_schema configured in the app
     # configuration. But in the future, we might lift this restriction and allow any security_schema as long the App supports it.
     if app_configuration.security_scheme != SecurityScheme.OAUTH2:
-        error_message = (
-            f"the security_scheme configured in app={query_params.app_name} is "
-            f"{app_configuration.security_scheme} not OAuth2"
+
+        logger.error(
+            "failed to link OAuth2 account, app configuration security scheme is not OAuth2",
+            extra={
+                "app_name": query_params.app_name,
+                "security_scheme": app_configuration.security_scheme.value,
+            },
         )
-        logger.error(error_message)
-        raise NoImplementationFound(error_message)
+        raise NoImplementationFound(
+            f"the security_scheme configured in app={query_params.app_name} is "
+            f"{app_configuration.security_scheme}, not OAuth2"
+        )
 
     # TODO: add correspinding validation of the oauth2 fields (e.g., client_id, client_secret, scope, etc.)
     # when indexing an App. For example, if server_metadata_url is None, other url must be provided
@@ -225,7 +246,10 @@ async def link_oauth2_account(
     #     "exp": 1735786775.4127536
     # }
     authorization_data = await oauth2.create_authorization_url(oauth2_client, redirect_uri)
-    logger.info(f"authorization_data: \n {json.dumps(authorization_data, indent=2)}")
+    logger.info(
+        "authorization data",
+        extra={"authorization_data": authorization_data},
+    )
     # create and encode the state payload. Including code_verifier in state is definitely a compromise.
     # NOTE: the state payload is jwt encoded (signed), but it's not encrypted, anyone can decode it
     # TODO: add expiration check to the state payload for extra security
@@ -245,9 +269,14 @@ async def link_oauth2_account(
     ).decode()  # decode() is needed to convert the bytes to a string (not decoding the jwt payload) for this jwt library.
 
     # replace the state jwt token in the url parameter with the new state_jwt
-    return {
-        "url": str(authorization_data["url"]).replace(authorization_data["state"], new_state_jwt)
-    }
+    authorization_url = str(authorization_data["url"]).replace(
+        authorization_data["state"], new_state_jwt
+    )
+    logger.info(
+        "authorization_url url after replacing the state jwt token",
+        extra={"authorization_url": authorization_url},
+    )
+    return {"url": authorization_url}
 
 
 @router.get(
@@ -264,25 +293,37 @@ async def linked_accounts_oauth2_callback(
     - A linked account (with necessary credentials from the OAuth2 provider) will be created in the database.
     """
     state_jwt = request.query_params.get("state")
-    logger.info(f"Callback received, state_jwt={state_jwt}")
+    logger.info(
+        "oauth2 account linking callback received, state_jwt",
+        extra={"state_jwt": state_jwt},
+    )
 
     if not state_jwt:
-        logger.error("Missing state parameter in account linking callback")
+        logger.error("missing state parameter during account linking")
         raise AuthenticationError("missing state parameter during account linking")
     # decode the state payload
     try:
         state = LinkedAccountOAuth2CreateState.model_validate(
             jwt.decode(state_jwt, config.SIGNING_KEY)
         )
-        logger.info(f"state: {state}")
-    except Exception:
-        logger.exception(f"failed to decode state_jwt={state_jwt}")
+        logger.info(
+            "oauth2 account linking callback received, decoded state",
+            extra={"state": state.model_dump(exclude_none=True)},
+        )
+    except Exception as e:
+        logger.exception(
+            f"failed to decode state_jwt, {str(e)}",
+            extra={"state_jwt": state_jwt},
+        )
         raise AuthenticationError("invalid state parameter during account linking")
 
     # create oauth2 client
-    app = crud.apps.get_app(db_session, state.app_name, False, True)
+    app = crud.apps.get_app(db_session, state.app_name, False, False)
     if not app:
-        logger.error(f"app={state.app_name} not found")
+        logger.error(
+            "unable to create oauth2 client, app not found",
+            extra={"app_name": state.app_name},
+        )
         raise AppNotFound(f"app={state.app_name} not found")
 
     app_default_oauth2_config = OAuth2Scheme.model_validate(
@@ -309,9 +350,12 @@ async def linked_accounts_oauth2_callback(
             oauth2_client, request, state.redirect_uri, state.code_verifier, state.nonce
         )
         # TODO: remove PII log
-        logger.warning(f"oauth2 token requested successfully, token_response: {token_response}")
-    except Exception:
-        logger.exception("failed to retrieve oauth2 token")
+        logger.debug(
+            "oauth2 token requested successfully",
+            extra={"token_response": token_response},
+        )
+    except Exception as e:
+        logger.exception(f"failed to retrieve oauth2 token, {str(e)}")
         raise AuthenticationError("failed to retrieve oauth2 token during account linking")
 
     # TODO: we might want to verify scope authorized by end user (token_response["scope"]) is what we asked
@@ -325,8 +369,9 @@ async def linked_accounts_oauth2_callback(
         ),
         refresh_token=token_response.get("refresh_token", None),
     )
-    logger.info(
-        f"security_credentials: \n {json.dumps(security_credentials.model_dump(mode='json'), indent=2)}"
+    logger.debug(
+        "security_credentials",
+        extra={"security_credentials": security_credentials.model_dump(exclude_none=True)},
     )
 
     # if the linked account already exists, update it, otherwise create a new one
@@ -340,14 +385,20 @@ async def linked_accounts_oauth2_callback(
         state.linked_account_owner_id,
     )
     if linked_account:
-        logger.info(f"updating oauth2 credentials for linked account={linked_account.id}")
+        logger.info(
+            "updating oauth2 credentials for linked account",
+            extra={"linked_account_id": linked_account.id},
+        )
         linked_account = crud.linked_accounts.update_linked_account(
             db_session, linked_account, SecurityScheme.OAUTH2, security_credentials
         )
     else:
         logger.info(
-            f"creating oauth2 linked account for project={state.project_id}, "
-            f"app={state.app_name}, linked_account_owner_id={state.linked_account_owner_id}"
+            "creating oauth2 linked account",
+            extra={
+                "app_name": state.app_name,
+                "linked_account_owner_id": state.linked_account_owner_id,
+            },
         )
         linked_account = crud.linked_accounts.create_linked_account(
             db_session,
@@ -381,7 +432,10 @@ async def list_linked_accounts(
     - This can be an alternatively way to GET /linked-accounts/{linked_account_id} for getting a specific linked account.
     """
     logger.info(
-        f"Listing linked accounts for api_key_id={context.api_key_id}, query_params={query_params}"
+        "listing linked accounts",
+        extra={
+            "linked_accounts_list": query_params.model_dump(exclude_none=True),
+        },
     )
 
     linked_accounts = crud.linked_accounts.get_linked_accounts(
@@ -390,6 +444,7 @@ async def list_linked_accounts(
         query_params.app_name,
         query_params.linked_account_owner_id,
     )
+
     return linked_accounts
 
 
@@ -402,12 +457,19 @@ async def get_linked_account(
     Get a linked account by its id.
     - linked_account_id uniquely identifies a linked account across the platform.
     """
+    logger.info(
+        "get linked account",
+        extra={"linked_account_id": linked_account_id},
+    )
     # validations
     linked_account = crud.linked_accounts.get_linked_account_by_id(
         context.db_session, linked_account_id, context.project.id
     )
     if not linked_account:
-        logger.error(f"linked account={linked_account_id} not found")
+        logger.error(
+            "linked account not found",
+            extra={"linked_account_id": linked_account_id},
+        )
         raise LinkedAccountNotFound(f"linked account={linked_account_id} not found")
 
     return linked_account
@@ -421,11 +483,18 @@ async def delete_linked_account(
     """
     Delete a linked account by its id.
     """
+    logger.info(
+        "delete linked account",
+        extra={"linked_account_id": linked_account_id},
+    )
     linked_account = crud.linked_accounts.get_linked_account_by_id(
         context.db_session, linked_account_id, context.project.id
     )
     if not linked_account:
-        logger.error(f"linked account={linked_account_id} not found")
+        logger.error(
+            "linked account not found",
+            extra={"linked_account_id": linked_account_id},
+        )
         raise LinkedAccountNotFound(f"linked account={linked_account_id} not found")
 
     crud.linked_accounts.delete_linked_account(context.db_session, linked_account)
