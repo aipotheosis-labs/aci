@@ -517,7 +517,7 @@ def dummy_linked_account_oauth2_google_project_1(
         dummy_app_configuration_oauth2_google_project_1.app_name,
         "dummy_linked_account_oauth2_google_project_1",
         dummy_app_configuration_oauth2_google_project_1.security_scheme,
-        dummy_linked_account_oauth2_credentials.model_dump(),
+        dummy_linked_account_oauth2_credentials,
         enabled=True,
     )
     db_session.commit()
@@ -536,7 +536,7 @@ def dummy_linked_account_api_key_github_project_1(
         dummy_app_configuration_api_key_github_project_1.app_name,
         "dummy_linked_account_api_key_github_project_1",
         dummy_app_configuration_api_key_github_project_1.security_scheme,
-        dummy_linked_account_api_key_credentials.model_dump(),
+        dummy_linked_account_api_key_credentials,
         enabled=True,
     )
     db_session.commit()
@@ -555,7 +555,7 @@ def dummy_linked_account_oauth2_google_project_2(
         dummy_app_configuration_oauth2_google_project_2.app_name,
         "dummy_linked_account_oauth2_google_project_2",
         dummy_app_configuration_oauth2_google_project_2.security_scheme,
-        dummy_linked_account_oauth2_credentials.model_dump(),
+        dummy_linked_account_oauth2_credentials,
         enabled=True,
     )
     db_session.commit()
@@ -575,7 +575,7 @@ def dummy_linked_account_api_key_aipolabs_test_project_1(
             dummy_app_configuration_api_key_aipolabs_test_project_1.app_name,
             "dummy_linked_account_api_key_aipolabs_test_project_1",
             dummy_app_configuration_api_key_aipolabs_test_project_1.security_scheme,
-            dummy_linked_account_api_key_credentials.model_dump(),
+            dummy_linked_account_api_key_credentials,
             enabled=True,
         )
     )
@@ -596,7 +596,7 @@ def dummy_linked_account_oauth2_aipolabs_test_project_1(
             dummy_app_configuration_oauth2_aipolabs_test_project_1.app_name,
             "dummy_linked_account_oauth2_aipolabs_test_project_1",
             dummy_app_configuration_oauth2_aipolabs_test_project_1.security_scheme,
-            dummy_linked_account_oauth2_credentials.model_dump(),
+            dummy_linked_account_oauth2_credentials,
             enabled=True,
         )
     )
@@ -617,7 +617,6 @@ def dummy_linked_account_default_aipolabs_test_project_1(
             dummy_app_configuration_oauth2_aipolabs_test_project_1.app_name,
             "dummy_linked_account_default_aipolabs_test_project_1",
             dummy_app_configuration_oauth2_aipolabs_test_project_1.security_scheme,
-            {},
             enabled=True,
         )
     )
