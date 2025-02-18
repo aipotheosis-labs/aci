@@ -64,7 +64,7 @@ if [ "$SEED_APPS" = true ]; then
   for app_dir in ./apps/*/; do
     app_file="${app_dir}app.json"
     secrets_file="${app_dir}.app.secrets.json"
-    python -m aipolabs.cli.aipolabs create-app \
+    python -m aipolabs.cli.aipolabs upsert-app \
       --app-file "$app_file" \
       --secrets-file "$secrets_file" \
       --skip-dry-run
@@ -74,7 +74,7 @@ fi
 # Seed the database with Functions
 if [ "$SEED_FUNCTIONS" = true ]; then
   for functions_file in ./apps/*/functions.json; do
-    python -m aipolabs.cli.aipolabs create-functions \
+    python -m aipolabs.cli.aipolabs upsert-functions \
       --functions-file "$functions_file" \
       --skip-dry-run
   done
