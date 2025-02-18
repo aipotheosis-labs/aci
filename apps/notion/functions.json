@@ -1,0 +1,66 @@
+[
+    {
+        "name": "NOTION__GET_PAGE",
+        "description": "Retrieves a Page object using the ID specified.",
+        "tags": ["productivity"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/pages/{page_id}",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "path parameters",
+                    "properties": {
+                        "page_id": {
+                            "type": "string",
+                            "description": "The ID of the page to retrieve."
+                        }
+                    },
+                    "required": ["page_id"],
+                    "visible": ["page_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "query parameters",
+                    "properties": {
+                        "filter_properties": {
+                            "type": "array",
+                            "description": "A list of property names to filter the page by.",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [],
+                    "visible": ["filter_properties"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": ["Notion-Version"],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header"],
+            "visible": ["path", "header"],
+            "additionalProperties": false
+        }
+    }
+]
