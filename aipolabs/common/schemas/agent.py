@@ -31,7 +31,7 @@ class AgentUpdate(BaseModel):
     description: str | None = None
     excluded_apps: list[str] | None = None
     excluded_functions: list[str] | None = None
-    custom_instructions: dict[str, ValidInstruction] = Field(default_factory=dict)
+    custom_instructions: dict[str, ValidInstruction] | None = None
 
 
 class AgentPublic(BaseModel):
