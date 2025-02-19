@@ -7,14 +7,15 @@ from logging.handlers import RotatingFileHandler
 
 # the setup is called once at the start of the app
 def setup_logging(
-    formatter: logging.Formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    ),
+    formatter: logging.Formatter | None = None,
     level: int = logging.INFO,
     filters: list[logging.Filter] = [],
     include_file_handler: bool = False,
     file_path: str | None = None,
 ) -> None:
+    if formatter is None:
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
     root_logger = logging.getLogger()
     root_logger.setLevel(level)  # Set the root logger level
 
