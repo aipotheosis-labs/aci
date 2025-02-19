@@ -125,6 +125,7 @@ async def signup_callback(
         raise AuthenticationError("no signup_code in session")
 
     signup_code = request.session["signup_code"]
+    del request.session["signup_code"]  # Clear session data after use
 
     logger.info(
         f"signup callback received for identity provider={provider}, signup_code={signup_code}"
