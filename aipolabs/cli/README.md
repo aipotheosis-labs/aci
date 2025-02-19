@@ -71,6 +71,17 @@ docker compose exec runner python -m aipolabs.cli.aipolabs create-app --app-file
 </details>
 
 <details>
+  <summary>Update Agent</summary>
+  
+  - Update an agent in the database.
+  - You need to create the project and an agent first before updating the agent.
+
+  ```bash
+  python -m aipolabs.cli.aipolabs update-agent --project-id "0347ae5f-60c2-43c1-8a29-8b657c97693e" --agent-id "0347ae5f-60c2-43c1-8a29-8b657c97693e" --name "My Updated Agent Name" --description "My Updated Agent Description" --custom-instructions '{"BRAVE_SEARCH": "My custom instructions"}'
+  ```
+</details>
+
+<details>
   <summary>Create Random API Key</summary>
   
   - Create an api key for random user and project and agent.

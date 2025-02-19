@@ -1,3 +1,4 @@
+import json
 from uuid import UUID
 
 import click
@@ -6,9 +7,6 @@ from aipolabs.cli import config
 from aipolabs.common import utils
 from aipolabs.common.db import crud
 from aipolabs.common.logging import create_headline
-from aipolabs.common.openai_service import OpenAIService
-
-openai_service = OpenAIService(config.OPENAI_API_KEY)
 
 
 @click.command()
@@ -48,6 +46,13 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
     help="list of function names to exclude from the agent",
 )
 @click.option(
+    "--custom-instructions",
+    "custom_instructions",
+    required=False,
+    type=str,
+    help="new custom instructions for the agent",
+)
+@click.option(
     "--skip-dry-run",
     is_flag=True,
     help="provide this flag to run the command and apply changes to the database",
@@ -58,7 +63,7 @@ def create_agent(
     description: str,
     excluded_apps: list[str],
     excluded_functions: list[str],
-    custom_instructions: dict[str, str],
+    custom_instructions: str | None,
     skip_dry_run: bool,
 ) -> UUID:
     """
@@ -81,10 +86,12 @@ def create_agent_helper(
     description: str,
     excluded_apps: list[str],
     excluded_functions: list[str],
-    custom_instructions: dict[str, str],
+    custom_instructions: str | None,
     skip_dry_run: bool,
 ) -> UUID:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
+        if custom_instructions:
+            custom_instructions = json.loads(custom_instructions)
 
         agent = crud.projects.create_agent(
             db_session,
@@ -93,7 +100,7 @@ def create_agent_helper(
             description,
             excluded_apps,
             excluded_functions,
-            custom_instructions,
+            custom_instructions,  # type: ignore
         )
 
         if not skip_dry_run:

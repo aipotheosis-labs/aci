@@ -7,10 +7,7 @@ from aipolabs.common import utils
 from aipolabs.common.db import crud
 from aipolabs.common.enums import SubscriptionPlan
 from aipolabs.common.logging import create_headline
-from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.user import UserCreate
-
-openai_service = OpenAIService(config.OPENAI_API_KEY)
 
 
 @click.command()
