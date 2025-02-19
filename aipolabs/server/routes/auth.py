@@ -230,7 +230,8 @@ async def login_callback(
     # redirect to signup page if user doesn't exist
     if not user:
         logger.error(f"user not found for identity provider={provider}, user_info={user_info}")
-        return RedirectResponse(url=f"{config.DEV_PORTAL_URL}/signup")
+        # TODO: Return a cookie to signal the frontend that the user hasn't logged
+        return RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
 
     # Generate JWT token for the user
     # TODO: try/except, retry?
