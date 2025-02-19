@@ -317,15 +317,13 @@ async def linked_accounts_oauth2_callback(
     # TODO: we might want to verify scope authorized by end user (token_response["scope"]) is what we asked
     security_credentials = OAuth2SchemeCredentials(
         access_token=token_response["access_token"],
-        token_type=token_response["token_type"],
+        token_type=token_response.get("token_type", None),
         expires_at=(
             int(time.time()) + token_response["expires_in"]
             if "expires_in" in token_response
             else None
         ),
-        refresh_token=(
-            token_response["refresh_token"] if "refresh_token" in token_response else None
-        ),
+        refresh_token=token_response.get("refresh_token", None),
     )
     logger.info(
         f"security_credentials: \n {json.dumps(security_credentials.model_dump(mode='json'), indent=2)}"
