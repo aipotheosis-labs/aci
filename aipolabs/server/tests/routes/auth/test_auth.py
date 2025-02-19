@@ -81,8 +81,8 @@ def test_login_callback_google_user_does_not_exist(test_client: TestClient) -> N
 
     assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
     assert (
-        response.headers["location"] == f"{config.DEV_PORTAL_URL}/signup"
-    ), "should redirect to signup page if user does not exist"
+        response.headers["location"] == f"{config.DEV_PORTAL_URL}"
+    ), "should redirect to dev portal if user does not exist"
 
 
 def test_login_unsupported_provider(test_client: TestClient) -> None:
@@ -113,7 +113,7 @@ def test_signup_with_valid_signup_code(test_client: TestClient) -> None:
     assert location.startswith(MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX)
     assert (
         redirect_uri
-        == f"{config.AIPOLABS_REDIRECT_URI_BASE}{config.ROUTER_PREFIX_AUTH}/signup/callback/google?signup_code={VALID_SIGNUP_CODE}"
+        == f"{config.AIPOLABS_REDIRECT_URI_BASE}{config.ROUTER_PREFIX_AUTH}/signup/callback/google"
     )
 
 
@@ -134,9 +134,11 @@ def test_signup_max_users_reached(test_client: TestClient, db_session: Session) 
 
     # try to signup
     VALID_SIGNUP_CODE = config.PERMITTED_SIGNUP_CODES[0]
-    response = test_client.get(
-        f"{config.ROUTER_PREFIX_AUTH}/signup/callback/google?signup_code={VALID_SIGNUP_CODE}"
-    )
+    with patch("aipolabs.server.oauth2.authorize_redirect", return_value=None):
+        response = test_client.get(
+            f"{config.ROUTER_PREFIX_AUTH}/signup/google?signup_code={VALID_SIGNUP_CODE}"
+        )
+
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
     assert "no longer accepting new users" in response.json()["error"]
 
@@ -145,18 +147,24 @@ def test_signup_callback_google(
     test_client: TestClient, db_session: Session, dummy_apps: list[App]
 ) -> None:
     VALID_SIGNUP_CODE = config.PERMITTED_SIGNUP_CODES[0]
-    with patch(
-        "aipolabs.server.oauth2.authorize_access_token",
-        return_value=MOCK_USER_GOOGLE_AUTH_DATA,
+    with (
+        patch(
+            "aipolabs.server.oauth2.authorize_access_token",
+            return_value=MOCK_USER_GOOGLE_AUTH_DATA,
+        ),
+        patch("aipolabs.server.oauth2.authorize_redirect", return_value=None),
     ):
+        test_client.get(
+            f"{config.ROUTER_PREFIX_AUTH}/signup/google?signup_code={VALID_SIGNUP_CODE}"
+        )
         response = test_client.get(
             f"{config.ROUTER_PREFIX_AUTH}/signup/callback/google?signup_code={VALID_SIGNUP_CODE}"
         )
 
     assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
     assert (
-        response.headers["location"] == f"{config.DEV_PORTAL_URL}/login"
-    ), "should redirect to login after signup"
+        response.headers["location"] == f"{config.DEV_PORTAL_URL}"
+    ), "should redirect to dev portal after signup"
 
     # get user by id and check user is created
     identity_provider_user_info = IdentityProviderUserInfo.model_validate(
@@ -188,18 +196,26 @@ def test_signup_callback_google_user_already_exists(
 ) -> None:
     VALID_SIGNUP_CODE = config.PERMITTED_SIGNUP_CODES[0]
 
-    user: User = _create_mock_user(db_session)
+    _create_mock_user(db_session)
 
-    with patch(
-        "aipolabs.server.oauth2.authorize_access_token",
-        return_value=MOCK_USER_GOOGLE_AUTH_DATA,
+    with (
+        patch(
+            "aipolabs.server.oauth2.authorize_access_token",
+            return_value=MOCK_USER_GOOGLE_AUTH_DATA,
+        ),
+        patch("aipolabs.server.oauth2.authorize_redirect", return_value=None),
     ):
+        test_client.get(
+            f"{config.ROUTER_PREFIX_AUTH}/signup/google?signup_code={VALID_SIGNUP_CODE}"
+        )
         response = test_client.get(
             f"{config.ROUTER_PREFIX_AUTH}/signup/callback/google?signup_code={VALID_SIGNUP_CODE}"
         )
 
-    assert response.status_code == status.HTTP_401_UNAUTHORIZED
-    assert f"user={user.id}, email={user.email} already exists" in response.json()["error"]
+    assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
+    assert (
+        response.headers["location"] == f"{config.DEV_PORTAL_URL}"
+    ), "should redirect to dev portal if user already signed up"
 
 
 def _create_mock_user(db_session: Session) -> User:
