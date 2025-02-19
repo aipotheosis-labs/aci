@@ -4,7 +4,7 @@ from typing import Annotated
 
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from authlib.jose import jwt
-from fastapi import APIRouter, Depends, Request, Response, status
+from fastapi import APIRouter, Body, Depends, Request, Response, status
 from sqlalchemy.orm import Session
 from starlette.responses import RedirectResponse
 
@@ -12,11 +12,7 @@ from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import User
 from aipolabs.common.exceptions import AuthenticationError, UnexpectedError
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.user import (
-    IdentityProviderUserInfo,
-    SignUpCodeValidate,
-    UserCreate,
-)
+from aipolabs.common.schemas.user import IdentityProviderUserInfo, UserCreate
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 from aipolabs.server import oauth2
@@ -81,10 +77,10 @@ async def login(request: Request, provider: ClientIdentityProvider) -> RedirectR
 
 @router.post("/validate-signup-code/", include_in_schema=True)
 async def check_signup_code(
-    body: SignUpCodeValidate,
+    signup_code: Annotated[str, Body(embed=True)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Response:
-    _validate_signup(db_session, body.signup_code)
+    _validate_signup(db_session, signup_code)
     return Response(status_code=status.HTTP_200_OK)
 
 
