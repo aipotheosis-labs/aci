@@ -98,6 +98,23 @@ def test_update_agent(
     agent_public = AgentPublic.model_validate(response.json())
     assert agent_public.custom_instructions == {dummy_app_github.name: "Custom GitHub instructions"}
 
+    # Test updating only name preserves other fields
+    previous_state = agent_public.model_dump()
+    response = test_client.patch(
+        ENDPOINT,
+        json={"name": "Final Name Update"},
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    agent_public = AgentPublic.model_validate(response.json())
+
+    # Verify name changed but everything else stayed the same
+    assert agent_public.name == "Final Name Update"
+    assert agent_public.description == previous_state["description"]
+    assert agent_public.excluded_apps == previous_state["excluded_apps"]
+    assert agent_public.excluded_functions == previous_state["excluded_functions"]
+    assert agent_public.custom_instructions == previous_state["custom_instructions"]
+
 
 def test_update_agent_multiple_custom_instructions(
     test_client: TestClient,
