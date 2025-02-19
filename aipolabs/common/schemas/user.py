@@ -26,3 +26,7 @@ class IdentityProviderUserInfo(BaseModel):
     name: str
     email: str
     picture: str | None = None
+
+
+class SignUpCodeValidate(BaseModel):
+    signup_code: str

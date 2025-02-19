@@ -4,7 +4,7 @@ from typing import Annotated
 
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
 from authlib.jose import jwt
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Request, Response, status
 from sqlalchemy.orm import Session
 from starlette.responses import RedirectResponse
 
@@ -12,7 +12,11 @@ from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import User
 from aipolabs.common.exceptions import AuthenticationError, UnexpectedError
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.user import IdentityProviderUserInfo, UserCreate
+from aipolabs.common.schemas.user import (
+    IdentityProviderUserInfo,
+    SignUpCodeValidate,
+    UserCreate,
+)
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 from aipolabs.server import oauth2
@@ -75,6 +79,15 @@ async def login(request: Request, provider: ClientIdentityProvider) -> RedirectR
     return await oauth2.authorize_redirect(oauth2_client, request, redirect_uri)
 
 
+@router.post("/validate-signup-code/", include_in_schema=True)
+async def check_signup_code(
+    body: SignUpCodeValidate,
+    db_session: Annotated[Session, Depends(deps.yield_db_session)],
+) -> Response:
+    _validate_signup(db_session, body.signup_code)
+    return Response(status_code=status.HTTP_200_OK)
+
+
 @router.get("/signup/{provider}", include_in_schema=True)
 async def signup(
     request: Request,
@@ -85,8 +98,10 @@ async def signup(
     _validate_signup(db_session, signup_code)
     oauth2_client = OAUTH2_CLIENTS[provider]
 
+    request.session["signup_code"] = signup_code
+
     path = request.url_for(SIGNUP_CALLBACK_PATH_NAME, provider=provider.value).path
-    redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}?signup_code={signup_code}"
+    redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
     logger.info(
         f"initiating signup for provider={provider}, signup_code={signup_code}, redirecting to={redirect_uri}"
     )
@@ -103,9 +118,14 @@ async def signup_callback(
     request: Request,
     response: Response,
     provider: ClientIdentityProvider,
-    signup_code: str,
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> RedirectResponse:
+    if "signup_code" not in request.session:
+        logger.error("no signup_code in session")
+        raise AuthenticationError("no signup_code in session")
+
+    signup_code = request.session["signup_code"]
+
     logger.info(
         f"signup callback received for identity provider={provider}, signup_code={signup_code}"
     )
@@ -130,33 +150,48 @@ async def signup_callback(
     user = crud.users.get_user(
         db_session, identity_provider=user_info.iss, user_id_by_provider=user_info.sub
     )
+
     # avoid duplicate signup
     if user:
-        logger.error(
+        logger.info(
             f"user={user.id}, email={user.email} already exists for identity provider={provider}"
         )
-        raise AuthenticationError(
-            f"user={user.id}, email={user.email} already exists for identity provider={provider}"
+    else:
+        user = crud.users.create_user(
+            db_session,
+            UserCreate(
+                identity_provider=user_info.iss,
+                user_id_by_provider=user_info.sub,
+                name=user_info.name,
+                email=user_info.email,
+                profile_picture=user_info.picture,
+            ),
+        )
+        _onboard_new_user(db_session, user)
+
+        db_session.commit()
+        logger.info(
+            f"created new user={user.id}, email={user.email}, identity provider={provider}, signup_code={signup_code}"
         )
 
-    user = crud.users.create_user(
-        db_session,
-        UserCreate(
-            identity_provider=user_info.iss,
-            user_id_by_provider=user_info.sub,
-            name=user_info.name,
-            email=user_info.email,
-            profile_picture=user_info.picture,
-        ),
+    jwt_token = create_access_token(
+        str(user.id),
+        timedelta(minutes=config.JWT_ACCESS_TOKEN_EXPIRE_MINUTES),
     )
-    _onboard_new_user(db_session, user)
+    logger.debug(
+        f"JWT generated successfully for user={user.id}, jwt_token={jwt_token[:4]}...{jwt_token[-4:]}"
+    )
 
-    db_session.commit()
-    logger.info(
-        f"created new user={user.id}, email={user.email}, identity provider={provider}, signup_code={signup_code}"
+    response = RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
+    response.set_cookie(
+        key="accessToken",
+        value=jwt_token,
+        # httponly=True, # TODO: set after initial release
+        # secure=True, # TODO: set after initial release
+        samesite="lax",
+        max_age=config.JWT_ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
-    # redirect to login page
-    return RedirectResponse(url=f"{config.DEV_PORTAL_URL}/login")
+    return response
 
 
 # callback route for different identity providers
