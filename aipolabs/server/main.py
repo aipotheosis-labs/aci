@@ -73,7 +73,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[config.DEV_PORTAL_URL],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "DELETE"],
+    allow_methods=["GET", "POST", "DELETE", "PATCH"],
     allow_headers=["Authorization", "X-API-KEY"],
 )
 app.add_middleware(LoggingMiddleware)
