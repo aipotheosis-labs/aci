@@ -2,8 +2,6 @@ import logging
 import shutil
 from logging.handlers import RotatingFileHandler
 
-# from logging.handlers import RotatingFileHandler
-
 
 # the setup is called once at the start of the app
 def setup_logging(
