@@ -49,6 +49,7 @@ from aipolabs.common.logging import create_headline
     "--custom-instructions",
     "custom_instructions",
     required=False,
+    default="{}",
     type=str,
     help="new custom instructions for the agent",
 )
@@ -63,21 +64,19 @@ def create_agent(
     description: str,
     excluded_apps: list[str],
     excluded_functions: list[str],
-    custom_instructions: str | None,
+    custom_instructions: str,
     skip_dry_run: bool,
 ) -> UUID:
     """
     Create an agent in db.
     """
-    if custom_instructions:
-        custom_instructions = json.loads(custom_instructions)
     return create_agent_helper(
         project_id,
         name,
         description,
         excluded_apps,
         excluded_functions,
-        custom_instructions,  # type: ignore
+        json.loads(custom_instructions),
         skip_dry_run,
     )
 
