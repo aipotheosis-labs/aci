@@ -42,7 +42,10 @@ class OpenAIService:
             raise
 
     def generate_fuzzy_function_call_arguments(
-        self, function_definition: dict, chat_model: str = "gpt-4o-mini"
+        self,
+        function_definition: dict,
+        chat_model: str = "gpt-4o-mini",
+        prompt: str | None = None,
     ) -> Any:
         """
         Generate fuzzy input arguments for a function using GPT-4.
@@ -60,7 +63,13 @@ class OpenAIService:
                 "content": f"Generate test input for this function {function_definition['function']['name']}, definition provided to you separately.",
             },
         ]
-
+        if prompt:
+            messages.append(
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            )
         response = self.openai_client.chat.completions.create(
             model=chat_model,
             messages=messages,

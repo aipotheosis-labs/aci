@@ -34,17 +34,29 @@ from aipolabs.common.schemas.function import FunctionExecute, InferenceProvider
     type=str,
     help="ID of the linked account owner to use for authentication",
 )
+@click.option(
+    "--prompt",
+    "prompt",
+    type=str,
+    help="Prompt for LLM to generate function call arguments",
+)
 def fuzzy_test_function_execution(
-    aipolabs_api_key: str, function_name: str, linked_account_owner_id: UUID
+    aipolabs_api_key: str,
+    function_name: str,
+    linked_account_owner_id: UUID,
+    prompt: str | None = None,
 ) -> None:
     """Test function execution with GPT-generated inputs."""
     return fuzzy_test_function_execution_helper(
-        aipolabs_api_key, function_name, linked_account_owner_id
+        aipolabs_api_key, function_name, linked_account_owner_id, prompt
     )
 
 
 def fuzzy_test_function_execution_helper(
-    aipolabs_api_key: str, function_name: str, linked_account_owner_id: UUID
+    aipolabs_api_key: str,
+    function_name: str,
+    linked_account_owner_id: UUID,
+    prompt: str | None = None,
 ) -> None:
     """Test function execution with GPT-generated inputs."""
     # Get function definition
@@ -62,7 +74,9 @@ def fuzzy_test_function_execution_helper(
 
     # Use OpenAI function calling to generate a random input
     openai_service = OpenAIService(config.OPENAI_API_KEY)
-    function_args = openai_service.generate_fuzzy_function_call_arguments(function_definition)
+    function_args = openai_service.generate_fuzzy_function_call_arguments(
+        function_definition, prompt=prompt
+    )
     click.echo(create_headline("Generated function call arguments"))
     click.echo(f"{json.dumps(function_args)}")
 

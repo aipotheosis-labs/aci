@@ -1,0 +1,78 @@
+[
+    {
+        "name": "GITHUB__LIST_STARGAZERS",
+        "description": "Lists the users who have starred a specified repository",
+        "tags": ["repository", "stargazer", "user"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/repos/{owner}/{repo}/stargazers",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        }
+                    },
+                    "required": ["accept", "user-agent"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        }
+                    },
+                    "required": ["owner", "repo"],
+                    "visible": ["owner", "repo"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "per_page": {
+                            "type": "integer",
+                            "description": "The number of results per page (max 100). For more information, see https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api",
+                            "default": 30
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "The page number of the results to fetch",
+                            "default": 1
+                        }
+                    },
+                    "required": [],
+                    "visible": ["per_page", "page"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    }
+]
