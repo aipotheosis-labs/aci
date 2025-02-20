@@ -64,16 +64,13 @@ def update_agent(
     """
     Update an existing agent in db.
     """
-    if custom_instructions:
-        custom_instructions = json.loads(custom_instructions)
-
     return update_agent_helper(
         agent_id,
         name,
         description,
         excluded_apps,
         excluded_functions,
-        custom_instructions,  # type: ignore
+        json.loads(custom_instructions) if custom_instructions else None,
         skip_dry_run,
     )
 
