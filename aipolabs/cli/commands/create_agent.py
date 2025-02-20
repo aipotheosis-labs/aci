@@ -69,13 +69,15 @@ def create_agent(
     """
     Create an agent in db.
     """
+    if custom_instructions:
+        custom_instructions = json.loads(custom_instructions)
     return create_agent_helper(
         project_id,
         name,
         description,
         excluded_apps,
         excluded_functions,
-        custom_instructions,
+        custom_instructions,  # type: ignore
         skip_dry_run,
     )
 
@@ -86,12 +88,10 @@ def create_agent_helper(
     description: str,
     excluded_apps: list[str],
     excluded_functions: list[str],
-    custom_instructions: str | None,
+    custom_instructions: dict[str, str],
     skip_dry_run: bool,
 ) -> UUID:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
-        if custom_instructions:
-            custom_instructions = json.loads(custom_instructions)
 
         agent = crud.projects.create_agent(
             db_session,
@@ -100,7 +100,7 @@ def create_agent_helper(
             description,
             excluded_apps,
             excluded_functions,
-            custom_instructions,  # type: ignore
+            custom_instructions,
         )
 
         if not skip_dry_run:

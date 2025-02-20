@@ -77,7 +77,7 @@ docker compose exec runner python -m aipolabs.cli.aipolabs create-app --app-file
   - You need to create the project and an agent first before updating the agent.
 
   ```bash
-  python -m aipolabs.cli.aipolabs update-agent --project-id "0347ae5f-60c2-43c1-8a29-8b657c97693e" --agent-id "0347ae5f-60c2-43c1-8a29-8b657c97693e" --name "My Updated Agent Name" --description "My Updated Agent Description" --custom-instructions '{"BRAVE_SEARCH": "My custom instructions"}'
+  python -m aipolabs.cli.aipolabs update-agent --agent-id "0347ae5f-60c2-43c1-8a29-8b657c97693e" --name "My Updated Agent Name" --description "My Updated Agent Description" --custom-instructions '{"BRAVE_SEARCH": "My custom instructions"}'
   ```
 </details>
 
