@@ -1,7 +1,7 @@
 {
     "name": "HUBSPOT",
     "display_name": "HubSpot",
-    "logo": "https://example.com/hubspot-logo.png",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/hubspot.svg",
     "provider": "HubSpot, Inc.",
     "version": "3.0.0",
     "description": "The HubSpot API is a REST API to use HubSpot's suite of marketing, sales, and customer service tools.",

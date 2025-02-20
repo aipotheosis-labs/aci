@@ -1,7 +1,7 @@
 {
     "name": "EXA_AI",
     "display_name": "Exa AI",
-    "logo": "https://example.com/exa-logo.png",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/exaai.png",
     "provider": "Exa Labs, Inc.",
     "version": "aipolabs_0.0.1",
     "description": "Exa is a search engine made for AIs. Exa finds the exact content you are looking for on the web, with three core functionalities: search, contents, find similar.",
