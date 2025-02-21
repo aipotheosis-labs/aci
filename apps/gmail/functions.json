@@ -1,0 +1,50 @@
+[
+    {
+        "name": "GMAIL__SEND_EMAIL",
+        "description": "Sends an email on behalf of the user",
+        "tags": ["email"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/users/{userId}/messages/send",
+            "server_url": "https://www.googleapis.com/gmail/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "userId": {
+                            "type": "string",
+                            "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+                            "default": "me"
+                        }
+                    },
+                    "required": ["userId"],
+                    "visible": ["userId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Body parameters for the http request",
+                    "properties": {
+                        "raw": {
+                            "type": "string",
+                            "description": "The entire email message (including headers like From, To, Subject, etc.) as an RFC 2822 formatted and base64url encoded string"
+                        }
+                    },
+                    "required": ["raw"],
+                    "visible": ["raw"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    }
+]

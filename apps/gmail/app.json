@@ -1,0 +1,25 @@
+{
+    "name": "GMAIL",
+    "display_name": "Gmail",
+    "logo": "https://example.com/gmail-logo.png",
+    "provider": "Google",
+    "version": "1.0.0",
+    "description": "The Gmail API is a RESTful API that enables sending, reading, and managing emails. This integration allows sending emails on behalf of the user.",
+    "security_schemes": {
+        "oauth2": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer",
+            "client_id": "{{ AIPOLABS_GMAIL_APP_CLIENT_ID }}",
+            "client_secret": "{{ AIPOLABS_GMAIL_APP_CLIENT_SECRET }}",
+            "scope": "https://www.googleapis.com/auth/gmail.labels https://www.googleapis.com/auth/gmail.send https://www.googleapis.com/auth/gmail.readonly https://www.googleapis.com/auth/gmail.compose https://www.googleapis.com/auth/gmail.insert https://www.googleapis.com/auth/gmail.modify https://www.googleapis.com/auth/gmail.metadata",
+            "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "email"
+    ],
+    "visibility": "public",
+    "active": true
+}
