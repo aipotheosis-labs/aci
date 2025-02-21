@@ -207,6 +207,9 @@ async def signup_callback(
 
     response = RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
     response.set_cookie(
+        # TODO: need to get rid of this when we switch to secure http cookie authentication
+        # Allow the frontend domain to see the accessToken as well
+        domain="platform.aipotheosis.xyz",
         key="accessToken",
         value=jwt_token,
         # httponly=True, # TODO: set after initial release
@@ -281,6 +284,9 @@ async def login_callback(
 
     response = RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
     response.set_cookie(
+        # TODO: need to get rid of this when we switch to secure http cookie authentication
+        # Allow the frontend domain to see the accessToken as well
+        domain="platform.aipotheosis.xyz",
         key="accessToken",
         value=jwt_token,
         # httponly=True, # TODO: set after initial release
