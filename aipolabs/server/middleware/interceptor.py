@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
-from starlette.responses import Response
+from starlette.responses import JSONResponse, Response
 
 from aipolabs.common.logging import get_logger
 from aipolabs.server.context import request_id_ctx_var
@@ -12,7 +12,7 @@ from aipolabs.server.context import request_id_ctx_var
 logger = get_logger(__name__)
 
 
-class LoggingMiddleware(BaseHTTPMiddleware):
+class InterceptorMiddleware(BaseHTTPMiddleware):
     """
     Middleware for logging structured analytics data for every request/response.
     It generates a unique request ID and logs some baseline details.
@@ -40,7 +40,10 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                 e,
                 extra={"duration": (datetime.now(UTC) - start_time).total_seconds()},
             )
-            raise
+            return JSONResponse(
+                status_code=500,
+                content={"error": "Internal server error"},
+            )
 
         response_log_data = {
             "status_code": response.status_code,

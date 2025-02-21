@@ -11,7 +11,10 @@ from aipolabs.common.exceptions import AipolabsException
 from aipolabs.common.logging import setup_logging
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
-from aipolabs.server.middleware.logging import LoggingMiddleware, RequestIDLogFilter
+from aipolabs.server.middleware.interceptor import (
+    InterceptorMiddleware,
+    RequestIDLogFilter,
+)
 from aipolabs.server.middleware.ratelimit import RateLimitMiddleware
 from aipolabs.server.routes import (
     app_configurations,
@@ -76,7 +79,7 @@ app.add_middleware(
     allow_methods=["GET", "POST", "DELETE", "PATCH"],
     allow_headers=["Authorization", "X-API-KEY"],
 )
-app.add_middleware(LoggingMiddleware)
+app.add_middleware(InterceptorMiddleware)
 
 
 # NOTE: generic exception handler (type Exception) for all exceptions doesn't work
