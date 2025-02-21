@@ -1,0 +1,74 @@
+[
+    {
+        "name": "SLACK__CONVERSATIONS_LIST",
+        "description": "Lists all channels in a Slack team",
+        "tags": ["chat", "search"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/conversations.list",
+            "server_url": "https://slack.com/api"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "query parameters",
+                    "properties": {
+                        "cursor": {
+                            "type": "string",
+                            "description": "Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous request's response_metadata. Default value fetches the first \"page\" of the collection.",
+                            "default": null
+                        },
+                        "exclude_archived": {
+                            "type": "boolean",
+                            "description": "Exclude archived channels from the list",
+                            "default": false
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "The maximum number of items to return. Fewer than the requested number of items may be returned, even if the end of the list hasn't been reached. Must be an integer under 1000.",
+                            "default": 100
+                        },
+                        "team_id": {
+                            "type": "string",
+                            "description": "encoded team id to list channels in, required if token belongs to org-wide app",
+                            "default": null
+                        },
+                        "types": {
+                            "type": "array",
+                            "description": "Mix and match channel types by providing a comma-separated list of any combination of public_channel, private_channel, mpim, im",
+                            "items": {
+                                "type": "string",
+                                "enum": ["public_channel", "private_channel", "mpim", "im"]
+                            },
+                            "default": null
+                        }
+                    },
+                    "required": [],
+                    "visible": ["cursor", "exclude_archived", "limit", "team_id", "types"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "token": {
+                            "type": "string",
+                            "description": "Authentication token"
+                        }
+                    },  
+                    "required": ["token"],
+                    "visible": ["token"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header"],
+            "visible": ["query", "header"],
+            "additionalProperties": false
+        }
+    }
+]
