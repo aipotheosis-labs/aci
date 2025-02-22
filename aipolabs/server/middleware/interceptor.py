@@ -27,8 +27,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
             "method": request.method,
             "url": str(request.url),
             "query_params": dict(request.query_params),
-            "client_ip": request.client.host if request.client else "unknown",
-            "client_port": request.client.port if request.client else "unknown",
+            "client_ip": self._get_client_ip(request),
             "user_agent": request.headers.get("User-Agent", "unknown"),
         }
         logger.info("received request", extra=request_log_data)
@@ -55,6 +54,19 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
         response.headers["X-Request-ID"] = request_id
 
         return response
+
+    def _get_client_ip(self, request: Request) -> str:
+        """
+        Get the actual client IP if the server is running behind a proxy.
+        """
+
+        x_forwarded_for = request.headers.get("X-Forwarded-For")
+        if x_forwarded_for is not None:
+            # X-Forwarded-For is a list of IPs, the first one is the actual client IP
+            return x_forwarded_for.split(",")[0].strip()
+
+        else:
+            return request.client.host
 
 
 class RequestIDLogFilter(logging.Filter):

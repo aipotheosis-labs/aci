@@ -84,6 +84,7 @@ app.add_middleware(InterceptorMiddleware)
 
 # NOTE: generic exception handler (type Exception) for all exceptions doesn't work
 # https://github.com/fastapi/fastapi/discussions/9478
+# That's why we have another catch-all in the interceptor middleware
 @app.exception_handler(AipolabsException)
 async def global_exception_handler(request: Request, exc: AipolabsException) -> JSONResponse:
     return JSONResponse(
