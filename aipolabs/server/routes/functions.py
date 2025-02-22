@@ -277,9 +277,8 @@ async def execute(
             },
         )
         raise LinkedAccountNotFound(
-            f"linked account not found for app={function.app.name}, "
-            f"project={context.project.id}, "
-            f"linked_account_owner_id={body.linked_account_owner_id}"
+            f"linked account with linked_account_owner_id={body.linked_account_owner_id} not found for app={function.app.name},"
+            f"please link the account for this app here: {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
         )
 
     if not linked_account.enabled:
@@ -293,9 +292,8 @@ async def execute(
             },
         )
         raise LinkedAccountDisabled(
-            f"linked account is disabled for app={function.app.name}, "
-            f"project={context.project.id}, "
-            f"linked_account_owner_id={body.linked_account_owner_id}"
+            f"linked account with linked_account_owner_id={body.linked_account_owner_id} is disabled for app={function.app.name},"
+            f"please enable the account for this app here: {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
         )
 
     security_credentials_response: SecurityCredentialsResponse = await scm.get_security_credentials(
