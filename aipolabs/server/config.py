@@ -12,6 +12,7 @@ JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(
     check_and_get_env_variable("SERVER_JWT_ACCESS_TOKEN_EXPIRE_MINUTES")
 )
 AIPOLABS_REDIRECT_URI_BASE = check_and_get_env_variable("SERVER_AIPOLABS_REDIRECT_URI_BASE")
+AIPOLABS_ROOT_DOMAIN = check_and_get_env_variable("SERVER_AIPOLABS_ROOT_DOMAIN")
 
 # Google Auth
 GOOGLE_AUTH_CLIENT_ID = check_and_get_env_variable("SERVER_GOOGLE_AUTH_CLIENT_ID")

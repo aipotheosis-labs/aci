@@ -209,7 +209,7 @@ async def signup_callback(
     response.set_cookie(
         # TODO: need to get rid of this when we switch to secure http cookie authentication
         # Allow the frontend domain to see the accessToken as well
-        domain=config.DEV_PORTAL_URL,
+        domain=config.AIPOLABS_ROOT_DOMAIN,
         key="accessToken",
         value=jwt_token,
         # httponly=True, # TODO: set after initial release
@@ -286,7 +286,7 @@ async def login_callback(
     response.set_cookie(
         # TODO: need to get rid of this when we switch to secure http cookie authentication
         # Allow the frontend domain to see the accessToken as well
-        domain=config.DEV_PORTAL_URL,
+        domain=config.AIPOLABS_ROOT_DOMAIN,
         key="accessToken",
         value=jwt_token,
         # httponly=True, # TODO: set after initial release
