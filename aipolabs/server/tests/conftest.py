@@ -169,10 +169,10 @@ def dummy_api_key_1(db_session: Session, dummy_project_1: Project) -> Generator[
 
 
 @pytest.fixture(scope="function")
-def dummy_project_2(db_session: Session, dummy_user: User) -> Generator[Project, None, None]:
+def dummy_project_2(db_session: Session, dummy_user_2: User) -> Generator[Project, None, None]:
     dummy_project_2 = crud.projects.create_project(
         db_session,
-        owner_id=dummy_user.id,
+        owner_id=dummy_user_2.id,
         name="Dummy Project 2",
         visibility_access=Visibility.PUBLIC,
     )

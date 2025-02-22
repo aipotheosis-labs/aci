@@ -155,3 +155,44 @@ async def update_agent(
     db_session.commit()
 
     return agent
+
+
+@router.delete("/{project_id}/agents/{agent_id}", include_in_schema=True)
+async def delete_agent(
+    project_id: UUID,
+    agent_id: UUID,
+    user: Annotated[User, Depends(deps.validate_http_bearer)],
+    db_session: Annotated[Session, Depends(deps.yield_db_session)],
+) -> dict[str, str]:
+    """
+    Delete an agent by agent id
+    """
+    logger.info(
+        "delete agent",
+        extra={
+            "agent_id": agent_id,
+            "project_id": project_id,
+            "user_id": user.id,
+        },
+    )
+    acl.validate_user_access_to_project(db_session, user.id, project_id)
+    agent = crud.projects.get_agent_by_id(db_session, agent_id)
+    if not agent:
+        logger.error(
+            "agent not found",
+            extra={"agent_id": agent_id, "project_id": project_id},
+        )
+        raise AgentNotFound(f"agent={agent_id} not found")
+
+    if agent.project_id != project_id:
+        logger.error(
+            "agent does not belong to project",
+            extra={"agent_id": agent_id, "project_id": project_id},
+        )
+        # raise 404 instead of 403 to avoid leaking information about the existence of the agent
+        raise AgentNotFound(f"agent={agent_id} not found")
+
+    crud.projects.delete_agent(db_session, agent)
+    db_session.commit()
+
+    return {"message": f"Agent={agent.name} deleted successfully"}

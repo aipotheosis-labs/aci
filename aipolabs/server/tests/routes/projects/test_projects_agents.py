@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import Agent, APIKey, App, Project
 from aipolabs.common.schemas.agent import AgentCreate, AgentPublic, AgentUpdate
 from aipolabs.server import config
@@ -227,3 +228,51 @@ def test_update_agent_custom_instructions_restrictions(
     )
     assert response.status_code == status.HTTP_200_OK
     assert response.json()["custom_instructions"][dummy_app_google.name] == "Valid instructions"
+
+
+def test_delete_agent(
+    test_client: TestClient,
+    db_session: Session,
+    dummy_project_1: Project,
+    dummy_agent_1: Agent,
+    dummy_user_bearer_token: str,
+) -> None:
+    response = test_client.delete(
+        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{dummy_agent_1.id}",
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    agent = crud.projects.get_agent_by_id(db_session, dummy_agent_1.id)
+    assert agent is None, "agent should be deleted"
+
+    api_key = crud.projects.get_api_key_by_agent_id(db_session, dummy_agent_1.id)
+    assert api_key is None, "api key associated with agent should be deleted"
+
+
+def test_delete_agent_not_found(
+    test_client: TestClient,
+    dummy_project_1: Project,
+    dummy_user_bearer_token: str,
+) -> None:
+    response = test_client.delete(
+        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{uuid4()}",
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_delete_agent_unauthorized(
+    test_client: TestClient,
+    dummy_project_2: Project,
+    dummy_user_2_bearer_token: str,
+    dummy_agent_1: Agent,
+) -> None:
+    """
+    user2 with access to dummy_project_2 should not be able to delete dummy_agent_1 (belongs to dummy_project_1)
+    """
+    response = test_client.delete(
+        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_2.id}/agents/{dummy_agent_1.id}",
+        headers={"Authorization": f"Bearer {dummy_user_2_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_404_NOT_FOUND
