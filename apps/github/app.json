@@ -1,7 +1,7 @@
 {
     "name": "GITHUB",
     "display_name": "GitHub",
-    "logo": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/github.svg",
     "provider": "GitHub",
     "version": "2022-11-28",
     "description": "The GitHub API allows you to interact with GitHub programmatically, including repository management, pull requests, issues, commits, and more.",

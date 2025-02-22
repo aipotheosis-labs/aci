@@ -1,7 +1,7 @@
 {
     "name": "BRAVE_SEARCH",
     "display_name": "Brave Search",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/bravesearch.svg",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/brave_search.svg",
     "provider": "Brave Software, Inc.",
     "version": "1.0.0",
     "description": "Brave Search API is a REST API to query Brave Search and get back search results from the web. It supports web search, summarizer search, image search, video search, news search.",

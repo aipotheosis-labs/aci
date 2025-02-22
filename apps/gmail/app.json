@@ -1,7 +1,7 @@
 {
     "name": "GMAIL",
     "display_name": "Gmail",
-    "logo": "https://example.com/gmail-logo.png",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/gmail.svg",
     "provider": "Google",
     "version": "1.0.0",
     "description": "The Gmail API is a RESTful API that enables sending, reading, and managing emails. This integration allows sending emails on behalf of the user.",
