@@ -218,6 +218,18 @@ def test_signup_callback_google_user_already_exists(
     ), "should redirect to dev portal if user already signed up"
 
 
+def test_logout(test_client: TestClient, db_session: Session) -> None:
+    test_client.cookies.set("accessToken", "randomToken")
+
+    response = test_client.post(f"{config.ROUTER_PREFIX_AUTH}/logout/")
+
+    assert response.status_code == 200
+
+    assert "Set-Cookie" in response.headers
+    assert "accessToken=" in response.headers["Set-Cookie"]
+    assert "Max-Age=0" in response.headers["Set-Cookie"]
+
+
 def _create_mock_user(db_session: Session) -> User:
     identity_provider_user_info = IdentityProviderUserInfo.model_validate(
         MOCK_USER_GOOGLE_AUTH_DATA["userinfo"]

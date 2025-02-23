@@ -297,6 +297,17 @@ async def login_callback(
     return response
 
 
+@router.post("/logout/", include_in_schema=True)
+async def logout() -> Response:
+    response = Response(status_code=status.HTTP_200_OK)
+    response.delete_cookie(
+        key="accessToken",
+        domain=config.AIPOLABS_ROOT_DOMAIN,
+        samesite="lax",
+    )
+    return response
+
+
 # TODO: For the Feb 2025 release, we decided to create default project (and agent, api key, app confiiguration, etc)
 # for new users to decrease friction of onboarding. Need to revisit if we should keep this (or some of it)
 # for the future releases.
