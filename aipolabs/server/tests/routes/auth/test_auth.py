@@ -227,6 +227,7 @@ def test_logout(test_client: TestClient, db_session: Session) -> None:
 
     assert "Set-Cookie" in response.headers
     assert f'{config.COOKIE_KEY_FOR_AUTH_TOKEN}=""' in response.headers["Set-Cookie"]
+    assert f"Domain={config.AIPOLABS_ROOT_DOMAIN}" in response.headers["Set-Cookie"]
     assert "Max-Age=0" in response.headers["Set-Cookie"]
 
 
