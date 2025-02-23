@@ -58,7 +58,7 @@ def test_login_callback_google_user_exists(
 
     assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
 
-    accessToken = response.cookies.get("accessToken")
+    accessToken = response.cookies.get(config.COOKIE_KEY_FOR_AUTH_TOKEN)
 
     # check jwt token is generated
     assert accessToken is not None
@@ -219,14 +219,14 @@ def test_signup_callback_google_user_already_exists(
 
 
 def test_logout(test_client: TestClient, db_session: Session) -> None:
-    test_client.cookies.set("accessToken", "randomToken")
+    test_client.cookies.set(config.COOKIE_KEY_FOR_AUTH_TOKEN, "randomToken")
 
     response = test_client.post(f"{config.ROUTER_PREFIX_AUTH}/logout/")
 
     assert response.status_code == 200
 
     assert "Set-Cookie" in response.headers
-    assert "accessToken=" in response.headers["Set-Cookie"]
+    assert f'{config.COOKIE_KEY_FOR_AUTH_TOKEN}=""' in response.headers["Set-Cookie"]
     assert "Max-Age=0" in response.headers["Set-Cookie"]
 
 

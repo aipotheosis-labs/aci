@@ -208,9 +208,9 @@ async def signup_callback(
     response = RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
     response.set_cookie(
         # TODO: need to get rid of this when we switch to secure http cookie authentication
-        # Allow the frontend domain to see the accessToken as well
+        # Allow the dev portal domain to see the cookie as well
         domain=config.AIPOLABS_ROOT_DOMAIN,
-        key="accessToken",
+        key=config.COOKIE_KEY_FOR_AUTH_TOKEN,
         value=jwt_token,
         # httponly=True, # TODO: set after initial release
         # secure=True, # TODO: set after initial release
@@ -285,9 +285,9 @@ async def login_callback(
     response = RedirectResponse(url=f"{config.DEV_PORTAL_URL}")
     response.set_cookie(
         # TODO: need to get rid of this when we switch to secure http cookie authentication
-        # Allow the frontend domain to see the accessToken as well
+        # Allow the dev portal domain to see the cookie as well
         domain=config.AIPOLABS_ROOT_DOMAIN,
-        key="accessToken",
+        key=config.COOKIE_KEY_FOR_AUTH_TOKEN,
         value=jwt_token,
         # httponly=True, # TODO: set after initial release
         # secure=True, # TODO: set after initial release
@@ -301,7 +301,7 @@ async def login_callback(
 async def logout() -> Response:
     response = Response(status_code=status.HTTP_200_OK)
     response.delete_cookie(
-        key="accessToken",
+        key=config.COOKIE_KEY_FOR_AUTH_TOKEN,
         domain=config.AIPOLABS_ROOT_DOMAIN,
         samesite="lax",
     )
