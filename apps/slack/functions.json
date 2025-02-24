@@ -51,23 +51,10 @@
                     "required": [],
                     "visible": ["cursor", "exclude_archived", "limit", "team_id", "types"],
                     "additionalProperties": false
-                },
-                "header": {
-                    "type": "object",
-                    "description": "header parameters",
-                    "properties": {
-                        "token": {
-                            "type": "string",
-                            "description": "Authentication token"
-                        }
-                    },  
-                    "required": ["token"],
-                    "visible": ["token"],
-                    "additionalProperties": false
                 }
             },
-            "required": ["header"],
-            "visible": ["query", "header"],
+            "required": [],
+            "visible": ["query"],
             "additionalProperties": false
         }
     }
