@@ -21,7 +21,7 @@ services:
       context: .
       dockerfile: Dockerfile.server
     healthcheck:
-      test: ["CMD-SHELL", "curl localhost:8000/v1/health/"]
+      test: ["CMD-SHELL", "curl localhost:8000/v1/health"]
       interval: 10s
       retries: 5
       start_period: 3s
