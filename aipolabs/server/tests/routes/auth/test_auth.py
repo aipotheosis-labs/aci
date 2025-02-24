@@ -221,7 +221,7 @@ def test_signup_callback_google_user_already_exists(
 def test_logout(test_client: TestClient, db_session: Session) -> None:
     test_client.cookies.set(config.COOKIE_KEY_FOR_AUTH_TOKEN, "randomToken")
 
-    response = test_client.post(f"{config.ROUTER_PREFIX_AUTH}/logout/")
+    response = test_client.post(f"{config.ROUTER_PREFIX_AUTH}/logout")
 
     assert response.status_code == 200
 

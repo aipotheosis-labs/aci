@@ -297,7 +297,7 @@ async def login_callback(
     return response
 
 
-@router.post("/logout/", include_in_schema=True)
+@router.post("/logout", include_in_schema=True)
 async def logout() -> Response:
     response = Response(status_code=status.HTTP_200_OK)
     response.delete_cookie(

@@ -27,7 +27,7 @@ def test_get_app_configuration_with_non_existent_app_configuration(
     dummy_api_key_1: str,
     dummy_app_aipolabs_test: App,
 ) -> None:
-    ENDPOINT = f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/" f"{dummy_app_aipolabs_test.name}"
+    ENDPOINT = f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{dummy_app_aipolabs_test.name}"
     response = test_client.get(ENDPOINT, headers={"x-api-key": dummy_api_key_1})
 
     assert response.status_code == status.HTTP_404_NOT_FOUND

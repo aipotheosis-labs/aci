@@ -60,7 +60,7 @@ def test_update_non_existent_app_configuration(
     dummy_api_key_1: str,
     dummy_app_aipolabs_test: App,
 ) -> None:
-    ENDPOINT = f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/" f"{dummy_app_aipolabs_test.name}"
+    ENDPOINT = f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{dummy_app_aipolabs_test.name}"
 
     response = test_client.patch(
         ENDPOINT,
