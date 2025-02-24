@@ -1,7 +1,7 @@
 
 FROM python:3.12
 
-WORKDIR /aipolabs
+WORKDIR /workdir
 
 # Install Poetry, make sure poetry is in the PATH, and configure poetry to not create virtual environments
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 -
@@ -9,9 +9,9 @@ RUN cd /usr/local/bin && ln -s /opt/poetry/bin/poetry
 RUN poetry config virtualenvs.create false
 
 # Copy poetry.lock* in case it doesn't exist in the repo
-COPY ./pyproject.toml ./poetry.lock* /aipolabs/
+COPY ./pyproject.toml ./poetry.lock* /workdir/
 
 RUN poetry install --no-root
 
-# Check if PYTHONPATH exists and append /aipolabs, otherwise set it to /aipolabs
-RUN if [ -z "$PYTHONPATH" ]; then export PYTHONPATH=/aipolabs; else export PYTHONPATH=/aipolabs:$PYTHONPATH; fi
+# Check if PYTHONPATH exists and append /workdir, otherwise set it to /workdir
+RUN if [ -z "$PYTHONPATH" ]; then export PYTHONPATH=/workdir; else export PYTHONPATH=/workdir:$PYTHONPATH; fi

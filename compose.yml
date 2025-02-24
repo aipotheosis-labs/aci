@@ -34,12 +34,12 @@ services:
       - SERVER_GOOGLE_AUTH_CLIENT_SECRET=${SERVER_GOOGLE_AUTH_CLIENT_SECRET?}
     # useful for development, changes take effect in the container without needing to rebuild the image.
     volumes:
-      - ./aipolabs/server:/aipolabs/server
-      - ./aipolabs/common:/aipolabs/common
+      - ./aipolabs/server:/workdir/aipolabs/server
+      - ./aipolabs/common:/workdir/aipolabs/common
     ports:
       - "8000:8000"
     # this overrides the default CMD specified in the Dockerfile, use this for local development
-    command: fastapi dev server/main.py --host 0.0.0.0 --port 8000
+    command: uvicorn aipolabs.server.main:app --proxy-headers --forwarded-allow-ips=* --host 0.0.0.0 --port 8000 --reload
     depends_on:
       db:
         condition: service_healthy
@@ -60,10 +60,10 @@ services:
       - CLI_OPENAI_API_KEY=${CLI_OPENAI_API_KEY?}
     # Mount the local code into the container so you can run scripts / Alembic
     volumes:
-      - ./aipolabs:/aipolabs/aipolabs
-      - ./apps:/aipolabs/apps
-      - ./scripts:/aipolabs/scripts
-      - ./alembic.ini:/aipolabs/alembic.ini
+      - ./aipolabs:/workdir/aipolabs
+      - ./apps:/workdir/apps
+      - ./scripts:/workdir/scripts
+      - ./alembic.ini:/workdir/alembic.ini
     command: >
       /bin/sh -c "alembic upgrade head && tail -f /dev/null"
     depends_on:

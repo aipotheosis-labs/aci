@@ -1,7 +1,7 @@
 
 FROM python:3.12
 
-WORKDIR /aipolabs
+WORKDIR /workdir
 
 # Install Poetry, make sure poetry is in the PATH, and configure poetry to not create virtual environments
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 -
@@ -9,20 +9,20 @@ RUN cd /usr/local/bin && ln -s /opt/poetry/bin/poetry
 RUN poetry config virtualenvs.create false
 
 # Copy poetry.lock* in case it doesn't exist in the repo
-COPY ./pyproject.toml ./poetry.lock* /aipolabs/
+COPY ./pyproject.toml ./poetry.lock* /workdir/
 
 # skip dev dependencies
 RUN poetry install --no-root --only main
 
-# Check if PYTHONPATH exists and append /aipolabs, otherwise set it to /aipolabs
-RUN if [ -z "$PYTHONPATH" ]; then export PYTHONPATH=/aipolabs; else export PYTHONPATH=/aipolabs:$PYTHONPATH; fi
+# Check if PYTHONPATH exists and append /workdir, otherwise set it to /workdir
+RUN if [ -z "$PYTHONPATH" ]; then export PYTHONPATH=/workdir; else export PYTHONPATH=/workdir:$PYTHONPATH; fi
 
 # .env files will be skipped by default specified in .dockerignore
-COPY ./aipolabs/server /aipolabs/server
-COPY ./aipolabs/common /aipolabs/common
-COPY ./aipolabs/__init__.py /aipolabs/__init__.py
+COPY ./aipolabs/server /workdir/aipolabs/server
+COPY ./aipolabs/common /workdir/aipolabs/common
+COPY ./aipolabs/__init__.py /workdir/aipolabs/__init__.py
 
 # remove unecessary or sensitive files (.env files are skipped by default specified in .dockerignore)
-RUN rm -rf /aipolabs/server/tests
+RUN rm -rf /workdir/aipolabs/server/tests
 
-CMD ["fastapi", "run", "server/main.py", "--proxy-headers", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "aipolabs.server.main:app", "--proxy-headers", "--forwarded-allow-ips=*", "--host", "0.0.0.0", "--port", "8000"]
