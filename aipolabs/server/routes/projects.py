@@ -19,7 +19,7 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 
-@router.post("/", response_model=ProjectPublic, include_in_schema=True)
+@router.post("", response_model=ProjectPublic, include_in_schema=True)
 async def create_project(
     body: ProjectCreate,
     user: Annotated[User, Depends(deps.validate_http_bearer)],
@@ -49,7 +49,7 @@ async def create_project(
     return project
 
 
-@router.get("/", response_model=list[ProjectPublic], include_in_schema=True)
+@router.get("", response_model=list[ProjectPublic], include_in_schema=True)
 async def get_projects(
     user: Annotated[User, Depends(deps.validate_http_bearer)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
@@ -68,7 +68,7 @@ async def get_projects(
     return projects
 
 
-@router.post("/{project_id}/agents/", response_model=AgentPublic, include_in_schema=True)
+@router.post("/{project_id}/agents", response_model=AgentPublic, include_in_schema=True)
 async def create_agent(
     project_id: UUID,
     body: AgentCreate,

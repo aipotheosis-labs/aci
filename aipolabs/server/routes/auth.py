@@ -81,7 +81,7 @@ async def login(request: Request, provider: ClientIdentityProvider) -> RedirectR
     return await oauth2.authorize_redirect(oauth2_client, request, redirect_uri)
 
 
-@router.post("/validate-signup-code/", include_in_schema=True)
+@router.post("/validate-signup-code", include_in_schema=True)
 async def check_signup_code(
     signup_code: Annotated[str, Body(embed=True)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],

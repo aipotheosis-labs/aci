@@ -23,7 +23,7 @@ def test_create_agent(
     )
 
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/",
+        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents",
         json=body.model_dump(mode="json"),
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )

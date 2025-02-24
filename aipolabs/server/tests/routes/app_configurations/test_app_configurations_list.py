@@ -16,7 +16,7 @@ def test_list_app_configuration(
     dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
 ) -> None:
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/", headers={"x-api-key": dummy_api_key_1}
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}", headers={"x-api-key": dummy_api_key_1}
     )
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 2
@@ -34,7 +34,7 @@ def test_list_app_configuration_with_app_id(
     query_params = AppConfigurationsList(app_names=[dummy_app_google.name])
 
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",
         headers={"x-api-key": dummy_api_key_1},
         params=query_params.model_dump(mode="json"),
     )
@@ -54,7 +54,7 @@ def test_list_non_existent_app_configuration(
     query_params = AppConfigurationsList(app_names=[dummy_app_aipolabs_test.name])
 
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",
         headers={"x-api-key": dummy_api_key_1},
         params=query_params.model_dump(mode="json"),
     )
@@ -71,7 +71,7 @@ def test_list_app_configuration_with_limit_and_offset(
     query_params = AppConfigurationsList(limit=1, offset=0)
 
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",
         headers={"x-api-key": dummy_api_key_1},
         # Note: need to exclude None values, otherwise it won't be injected into the query params correctly
         params=query_params.model_dump(exclude_none=True),

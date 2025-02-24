@@ -24,7 +24,7 @@ def test_create_app_configuration(
     body = AppConfigurationCreate(app_name=dummy_app.name, security_scheme=SecurityScheme.OAUTH2)
 
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -33,7 +33,7 @@ def test_create_app_configuration(
 
     # failure case: App already configured
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -51,7 +51,7 @@ def test_create_app_configuration_security_scheme_not_supported(
         app_name=dummy_app.name, security_scheme=SecurityScheme.HTTP_BASIC
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -69,7 +69,7 @@ def test_create_app_configuration_app_not_found(
         app_name=NON_EXISTENT_APP_NAME, security_scheme=SecurityScheme.OAUTH2
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -91,7 +91,7 @@ def test_create_app_configuration_app_not_enabled(
         app_name=dummy_app_google.name, security_scheme=SecurityScheme.OAUTH2
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -114,7 +114,7 @@ def test_create_app_configuration_project_does_not_have_access(
         app_name=dummy_app_google.name, security_scheme=SecurityScheme.OAUTH2
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",
         json=body.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )

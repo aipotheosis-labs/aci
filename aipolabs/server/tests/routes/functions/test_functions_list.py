@@ -19,7 +19,7 @@ def test_list_all_functions(
         "offset": 0,
     }
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}",
         params=query_params,
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -36,7 +36,7 @@ def test_list_all_functions_pagination(
         "offset": 0,
     }
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}",
         params=query_params,
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -46,7 +46,7 @@ def test_list_all_functions_pagination(
 
     query_params["offset"] = len(dummy_functions) - 1
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}",
         params=query_params,
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -67,7 +67,7 @@ def test_list_functions_with_app_names(
         "offset": 0,
     }
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}",
         params=query_params,
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -91,7 +91,7 @@ def test_list_functions_with_private_functions(
     db_session.commit()
 
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/", params={}, headers={"x-api-key": dummy_api_key_1}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}", params={}, headers={"x-api-key": dummy_api_key_1}
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
@@ -102,7 +102,7 @@ def test_list_functions_with_private_functions(
     db_session.commit()
 
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/", params={}, headers={"x-api-key": dummy_api_key_1}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}", params={}, headers={"x-api-key": dummy_api_key_1}
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
@@ -121,7 +121,7 @@ def test_list_functions_with_private_apps(
     db_session.commit()
 
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/", params={}, headers={"x-api-key": dummy_api_key_1}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}", params={}, headers={"x-api-key": dummy_api_key_1}
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [FunctionDetails.model_validate(func) for func in response.json()]
@@ -139,7 +139,7 @@ def test_list_functions_with_private_apps(
     db_session.commit()
 
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/", params={}, headers={"x-api-key": dummy_api_key_1}
+        f"{config.ROUTER_PREFIX_FUNCTIONS}", params={}, headers={"x-api-key": dummy_api_key_1}
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [FunctionDetails.model_validate(func) for func in response.json()]

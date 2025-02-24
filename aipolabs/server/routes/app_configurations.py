@@ -24,7 +24,7 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 
-@router.post("/", response_model=AppConfigurationPublic)
+@router.post("", response_model=AppConfigurationPublic)
 async def create_app_configuration(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     body: AppConfigurationCreate,
@@ -77,7 +77,7 @@ async def create_app_configuration(
     return app_configuration
 
 
-@router.get("/", response_model=list[AppConfigurationPublic])
+@router.get("", response_model=list[AppConfigurationPublic])
 async def list_app_configurations(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[AppConfigurationsList, Query()],

@@ -18,7 +18,7 @@ def test_create_project_under_user(
 ) -> None:
     body = ProjectCreate(name="project_test_create_project_under_user")
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}/",
+        f"{config.ROUTER_PREFIX_PROJECTS}",
         json=body.model_dump(mode="json"),
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
@@ -44,7 +44,7 @@ def test_get_projects_under_user(
     for i in range(number_of_projects):
         body = ProjectCreate(name=f"project_{i}")
         response = test_client.post(
-            f"{config.ROUTER_PREFIX_PROJECTS}/",
+            f"{config.ROUTER_PREFIX_PROJECTS}",
             json=body.model_dump(mode="json"),
             headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
         )
@@ -56,7 +56,7 @@ def test_get_projects_under_user(
                 name=f"project_{i}_agent_{j}", description=f"project_{i}_agent_{j} description"
             )
             response = test_client.post(
-                f"{config.ROUTER_PREFIX_PROJECTS}/{project_public.id}/agents/",
+                f"{config.ROUTER_PREFIX_PROJECTS}/{project_public.id}/agents",
                 json=body.model_dump(mode="json"),
                 headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
             )
@@ -64,7 +64,7 @@ def test_get_projects_under_user(
 
     # get projects under the user
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_PROJECTS}/",
+        f"{config.ROUTER_PREFIX_PROJECTS}",
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
     assert response.status_code == status.HTTP_200_OK

@@ -23,7 +23,7 @@ router = APIRouter()
 openai_service = OpenAIService(config.OPENAI_API_KEY)
 
 
-@router.get("/", response_model=list[AppDetails])
+@router.get("", response_model=list[AppDetails])
 async def list_apps(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[AppsList, Query()],

@@ -8,7 +8,7 @@ from aipolabs.server import config
 def test_without_bearer_token(test_client: TestClient) -> None:
     body = {"name": "project test_without_bearer_token"}
 
-    response = test_client.post(f"{config.ROUTER_PREFIX_PROJECTS}/", json=body)
+    response = test_client.post(f"{config.ROUTER_PREFIX_PROJECTS}", json=body)
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
@@ -17,7 +17,7 @@ def test_with_invalid_bearer_token(test_client: TestClient) -> None:
     body = {"name": "project test_with_invalid_bearer_token"}
 
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}/",
+        f"{config.ROUTER_PREFIX_PROJECTS}",
         json=body,
         headers={"Authorization": "Bearer xxx"},
     )
@@ -29,7 +29,7 @@ def test_with_valid_bearer_token(test_client: TestClient, dummy_user_bearer_toke
     body = {"name": "project test_with_valid_bearer_token"}
 
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}/",
+        f"{config.ROUTER_PREFIX_PROJECTS}",
         json=body,
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )

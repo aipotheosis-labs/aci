@@ -22,7 +22,7 @@ def test_list_apps(
         "offset": 0,
     }
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APPS}/",
+        f"{config.ROUTER_PREFIX_APPS}",
         params=query_params,
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -45,7 +45,7 @@ def test_list_apps_pagination(
     }
 
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APPS}/", params=query_params, headers={"x-api-key": dummy_api_key_1}
+        f"{config.ROUTER_PREFIX_APPS}", params=query_params, headers={"x-api-key": dummy_api_key_1}
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -54,7 +54,7 @@ def test_list_apps_pagination(
 
     query_params["offset"] = len(dummy_apps) - 1
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APPS}/",
+        f"{config.ROUTER_PREFIX_APPS}",
         params=query_params,
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -76,7 +76,7 @@ def test_list_apps_with_private_apps(
     db_session.commit()
 
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APPS}/",
+        f"{config.ROUTER_PREFIX_APPS}",
         params={},
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -90,7 +90,7 @@ def test_list_apps_with_private_apps(
     db_session.commit()
 
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APPS}/",
+        f"{config.ROUTER_PREFIX_APPS}",
         params={},
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -107,7 +107,7 @@ def test_list_apps_with_app_names(
 ) -> None:
     expected_app_names = [dummy_apps[0].name, dummy_apps[1].name]
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APPS}/",
+        f"{config.ROUTER_PREFIX_APPS}",
         params={"app_names": expected_app_names},
         headers={"x-api-key": dummy_api_key_1},
     )

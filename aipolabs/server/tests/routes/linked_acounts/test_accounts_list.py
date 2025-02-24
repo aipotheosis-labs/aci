@@ -13,7 +13,7 @@ def test_list_linked_accounts_no_filters(
     dummy_linked_account_api_key_github_project_1: LinkedAccount,
 ) -> None:
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}",
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
@@ -28,7 +28,7 @@ def test_list_linked_accounts_filter_by_app_name(
     dummy_linked_account_api_key_github_project_1: LinkedAccount,
 ) -> None:
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}",
         headers={"x-api-key": dummy_api_key_1},
         params={"app_name": dummy_linked_account_oauth2_google_project_1.app.name},
     )
@@ -52,7 +52,7 @@ def test_list_linked_accounts_filter_by_account_name(
 ) -> None:
 
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}",
         headers={"x-api-key": dummy_api_key_1},
         params={
             "linked_account_owner_id": dummy_linked_account_api_key_github_project_1.linked_account_owner_id
@@ -78,7 +78,7 @@ def test_list_linked_accounts_filter_by_app_name_and_account_owner_id(
 ) -> None:
 
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}",
         headers={"x-api-key": dummy_api_key_2},
         params={
             "app_name": dummy_linked_account_oauth2_google_project_2.app.name,
@@ -100,7 +100,7 @@ def test_list_linked_accounts_filter_by_non_existent_app_configuration(
     dummy_app_aipolabs_test: App,
 ) -> None:
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/",
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}",
         headers={"x-api-key": dummy_api_key_1},
         params={"app_name": dummy_app_aipolabs_test.name},
     )
