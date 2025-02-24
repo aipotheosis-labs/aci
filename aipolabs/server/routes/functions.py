@@ -246,7 +246,7 @@ async def execute(
             },
         )
         raise AppConfigurationNotFound(
-            f"configuration for app={function.app.name} not found for project={context.project.id}"
+            f"configuration for app={function.app.name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{function.app.name}"
         )
 
     # check if user has disabled the app configuration
@@ -260,7 +260,7 @@ async def execute(
             },
         )
         raise AppConfigurationDisabled(
-            f"configuration for app={function.app.name} is disabled for project={context.project.id}"
+            f"configuration for app={function.app.name} is disabled, please enable the app first {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
         )
 
     # check if the linked account status (configured, enabled, etc.)

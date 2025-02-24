@@ -18,6 +18,7 @@ from aipolabs.common.schemas.app_configurations import (
     AppConfigurationsList,
     AppConfigurationUpdate,
 )
+from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 
 router = APIRouter()
@@ -115,7 +116,7 @@ async def get_app_configuration(
             extra={"app_name": app_name},
         )
         raise AppConfigurationNotFound(
-            f"configuration for app={app_name} not found for project={context.project.id}"
+            f"configuration for app={app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{app_name}"
         )
     return app_configuration
 
@@ -143,7 +144,7 @@ async def delete_app_configuration(
             extra={"app_name": app_name},
         )
         raise AppConfigurationNotFound(
-            f"configuration for app={app_name} not found for project={context.project.id}"
+            f"configuration for app={app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{app_name}"
         )
 
     # TODO: double check atomic operations like below in other api endpoints
@@ -193,7 +194,7 @@ async def update_app_configuration(
             extra={"app_name": app_name},
         )
         raise AppConfigurationNotFound(
-            f"configuration for app={app_name} not found for project={context.project.id}"
+            f"configuration for app={app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{app_name}"
         )
 
     crud.app_configurations.update_app_configuration(context.db_session, app_configuration, body)

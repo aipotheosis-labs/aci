@@ -87,7 +87,7 @@ async def link_account_with_aipolabs_default_credentials(
             extra={"app_name": body.app_name},
         )
         raise AppConfigurationNotFound(
-            f"configuration for app={body.app_name} not found for project={context.project.id}"
+            f"configuration for app={body.app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{body.app_name}"
         )
 
     # need to make sure the App actully has default credentials provided by Aipolabs
@@ -178,7 +178,7 @@ async def link_oauth2_account(
             extra={"app_name": query_params.app_name},
         )
         raise AppConfigurationNotFound(
-            f"configuration for app={query_params.app_name} not found for project={context.project.id}"
+            f"configuration for app={query_params.app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{query_params.app_name}"
         )
     # TODO: for now we require the security_schema used for accounts under an App must be the same as the security_schema configured in the app
     # configuration. But in the future, we might lift this restriction and allow any security_schema as long the App supports it.
