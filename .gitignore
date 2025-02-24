@@ -1,5 +1,5 @@
 # Ignore all .secrets.json files
-.app.secrets.json
+.app.secrets.*
 
 # CDK asset staging directory
 .cdk.staging

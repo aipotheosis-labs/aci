@@ -30,7 +30,7 @@ MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX = (
     "after_oauth2_link_redirect_url,callback_response_code",
     [
         (None, status.HTTP_200_OK),
-        ("https://devportal.aipolabs.xyz", status.HTTP_302_FOUND),
+        ("https://platform.aci.dev", status.HTTP_302_FOUND),
     ],
 )
 def test_link_oauth2_account_success(
