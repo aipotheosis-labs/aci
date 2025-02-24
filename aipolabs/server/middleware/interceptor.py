@@ -29,6 +29,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
             "query_params": dict(request.query_params),
             "client_ip": self._get_client_ip(request),
             "user_agent": request.headers.get("User-Agent", "unknown"),
+            "x-forwarded-proto": request.headers.get("X-Forwarded-Proto", "unknown"),
         }
         logger.info("received request", extra=request_log_data)
 
