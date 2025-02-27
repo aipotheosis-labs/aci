@@ -167,46 +167,34 @@ def _get_api_key_credentials(
     app: App, linked_account: LinkedAccount
 ) -> SecurityCredentialsResponse:
     """
-    Examples from app.json:
-    {
-        "security_schemes": {
-            "api_key": {
-                "in": "header",
-                "name": "X-Test-API-Key",
-            }
-        },
-        "default_security_credentials_by_scheme": {
-            "api_key": {
-                "secret_key": "default-shared-api-key"
-            }
-        }
-    }
+    Get API key credentials from linked account or use app's default credentials if no linked account's API key is found
+    and if the app has a default shared API key.
     """
-    # TODO: check if linked account has security credentials from end user before checking app's default
-
-    api_key_scheme = APIKeyScheme.model_validate(app.security_schemes[SecurityScheme.API_KEY])
-    # check and use App's default security credentials if exists
-    security_credentials = app.default_security_credentials_by_scheme.get(
-        linked_account.security_scheme
+    security_credentials = (
+        linked_account.security_credentials
+        or app.default_security_credentials_by_scheme.get(linked_account.security_scheme)
     )
+
+    # use "not" to cover empty dict case
     if not security_credentials:
         logger.error(
-            "app does not have default security credentials",
+            "no api key credentials usable",
             extra={
                 "app": app.name,
                 "security_scheme": linked_account.security_scheme,
                 "linked_account": linked_account.id,
             },
         )
-        raise NoImplementationFound(f"app={app.name} does not have default security credentials")
-    api_key_credentials: APIKeySchemeCredentials = APIKeySchemeCredentials.model_validate(
-        security_credentials
-    )
+        raise NoImplementationFound(
+            f"no api key credentials usable for app={app.name}, "
+            f"security_scheme={linked_account.security_scheme}, "
+            f"linked_account_owner_id={linked_account.linked_account_owner_id}"
+        )
 
     return SecurityCredentialsResponse(
-        scheme=api_key_scheme,
-        credentials=api_key_credentials,
-        is_app_default_credentials=True,
+        scheme=APIKeyScheme.model_validate(app.security_schemes[SecurityScheme.API_KEY]),
+        credentials=APIKeySchemeCredentials.model_validate(security_credentials),
+        is_app_default_credentials=not bool(linked_account.security_credentials),
         is_updated=False,
     )
 

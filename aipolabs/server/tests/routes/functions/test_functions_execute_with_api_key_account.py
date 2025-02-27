@@ -4,9 +4,53 @@ import respx
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from aipolabs.common.db.sql_models import LinkedAccount
+from aipolabs.common.db.sql_models import Function, LinkedAccount
 from aipolabs.common.schemas.function import FunctionExecute, FunctionExecutionResult
+from aipolabs.common.schemas.security_scheme import APIKeySchemeCredentials
 from aipolabs.server import config
+
+
+@respx.mock
+def test_execute_function_with_linked_account_api_key(
+    test_client: TestClient,
+    dummy_api_key_1: str,
+    dummy_function_aipolabs_test__hello_world_no_args: Function,
+    dummy_linked_account_api_key_aipolabs_test_project_1: LinkedAccount,
+) -> None:
+    """
+    Test that the function is executed with the end-user's linked account API key
+    """
+    response_data = {"message": "Hello, test_mock_execute_function_with_no_args!"}
+    mock_request = respx.get("https://api.mock.aipolabs.com/v1/hello_world_no_args").mock(
+        return_value=httpx.Response(200, json=response_data)
+    )
+
+    function_execute = FunctionExecute(
+        linked_account_owner_id=dummy_linked_account_api_key_aipolabs_test_project_1.linked_account_owner_id,
+    )
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
+        json=function_execute.model_dump(mode="json"),
+        headers={"x-api-key": dummy_api_key_1},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    assert "error" not in response.json()
+    function_execution_response = FunctionExecutionResult.model_validate(response.json())
+    assert function_execution_response.success
+    assert function_execution_response.data == response_data
+    assert mock_request.called, "Request should be made"
+    assert (
+        mock_request.calls.last.request.headers["X-Test-API-Key"] != "default-shared-api-key"
+    ), "API key used should NOT be the default shared API key"
+
+    linked_account_api_key = APIKeySchemeCredentials.model_validate(
+        dummy_linked_account_api_key_aipolabs_test_project_1.security_credentials
+    )
+    assert (
+        mock_request.calls.last.request.headers["X-Test-API-Key"]
+        == linked_account_api_key.secret_key
+    )
 
 
 @respx.mock
