@@ -46,10 +46,6 @@ from aipolabs.common.enums import (
     SubscriptionStatus,
     Visibility,
 )
-from aipolabs.common.schemas.security_scheme import (
-    APIKeySchemeCredentials,
-    OAuth2SchemeCredentials,
-)
 
 EMBEDDING_DIMENSION = 1024
 APP_DEFAULT_VERSION = "1.0.0"
@@ -446,9 +442,9 @@ class App(Base):
         MutableDict.as_mutable(JSON), nullable=False
     )
     # default security credentials (provided by aipolabs, if any) for the app that can be used by any client
-    default_security_credentials_by_scheme: Mapped[
-        dict[SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials]
-    ] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
+    default_security_credentials_by_scheme: Mapped[dict[SecurityScheme, dict]] = mapped_column(
+        MutableDict.as_mutable(JSON), nullable=False
+    )
     # embedding vector for similarity search
     embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENSION), nullable=False)
 

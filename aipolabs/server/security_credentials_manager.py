@@ -177,7 +177,7 @@ def _get_api_key_credentials(
         },
         "default_security_credentials_by_scheme": {
             "api_key": {
-                "secret_key": "test-api-key"
+                "secret_key": "default-shared-api-key"
             }
         }
     }
