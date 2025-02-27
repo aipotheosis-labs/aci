@@ -89,9 +89,9 @@ class APIKeySchemeCredentials(BaseModel):
     for consistency and flexibility.
     """
 
-    # here weuse a different name 'secret_key' to avoid confusion with SecurityScheme.API_KEY, and for
+    # here we use a different name 'secret_key' to avoid confusion with SecurityScheme.API_KEY, and for
     # potential unification with http bearer scheme
-    # TODO: consider having a list of secret_keys for round robin http requests
+    # TODO: consider allowing a list of secret_keys for round robin http requests
     secret_key: str
 
 

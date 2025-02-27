@@ -73,6 +73,9 @@ def create_linked_account(
     security_credentials: OAuth2SchemeCredentials | APIKeySchemeCredentials | None = None,
     enabled: bool = True,
 ) -> LinkedAccount:
+    """Create a linked account
+    when security_credentials is None, the linked account will be using App's default security credentials if exists
+    """
     app_id = db_session.execute(select(App.id).filter_by(name=app_name)).scalar_one()
     linked_account = LinkedAccount(
         project_id=project_id,
@@ -107,6 +110,8 @@ def update_linked_account(
     if security_credentials:
         linked_account.security_credentials = security_credentials
 
+    db_session.flush()
+    db_session.refresh(linked_account)
     return linked_account
 
 

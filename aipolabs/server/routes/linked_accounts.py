@@ -19,6 +19,7 @@ from aipolabs.common.exceptions import (
 )
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.linked_accounts import (
+    LinkedAccountAPIKeyCreate,
     LinkedAccountDefaultCreate,
     LinkedAccountOAuth2Create,
     LinkedAccountOAuth2CreateState,
@@ -26,6 +27,7 @@ from aipolabs.common.schemas.linked_accounts import (
     LinkedAccountsList,
 )
 from aipolabs.common.schemas.security_scheme import (
+    APIKeySchemeCredentials,
     OAuth2Scheme,
     OAuth2SchemeCredentials,
 )
@@ -144,6 +146,96 @@ async def link_account_with_aipolabs_default_credentials(
             app_configuration.security_scheme,
             enabled=True,
         )
+    context.db_session.commit()
+
+    return linked_account
+
+
+@router.post("/api-key", response_model=LinkedAccountPublic)
+async def link_account_with_api_key(
+    context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
+    body: LinkedAccountAPIKeyCreate,
+) -> LinkedAccount:
+    """
+    Create a linked account under an API key based App.
+    """
+    logger.info(
+        "linking api_key account",
+        extra={
+            "app_name": body.app_name,
+            "linked_account_api_key_create": body.model_dump(exclude_none=True),
+        },
+    )
+    app_configuration = crud.app_configurations.get_app_configuration(
+        context.db_session, context.project.id, body.app_name
+    )
+    if not app_configuration:
+        logger.error(
+            "failed to link api_key account, app configuration not found",
+            extra={"app_name": body.app_name},
+        )
+        raise AppConfigurationNotFound(
+            f"configuration for app={body.app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{body.app_name}"
+        )
+    # TODO: for now we require the security_schema used for accounts under an App must be the same as the security_schema configured in the app
+    # configuration. But in the future, we might lift this restriction and allow any security_schema as long as the App supports it.
+    if app_configuration.security_scheme != SecurityScheme.API_KEY:
+        logger.error(
+            f"failed to link api_key account, app configuration security scheme is "
+            f"{app_configuration.security_scheme.value} instead of api_key",
+            extra={
+                "app_name": body.app_name,
+                "security_scheme": app_configuration.security_scheme.value,
+            },
+        )
+        raise NoImplementationFound(
+            f"the security_scheme configured for app={body.app_name} is "
+            f"{app_configuration.security_scheme.value}, not api_key"
+        )
+    linked_account = crud.linked_accounts.get_linked_account(
+        context.db_session,
+        context.project.id,
+        body.app_name,
+        body.linked_account_owner_id,
+    )
+    security_credentials = APIKeySchemeCredentials(
+        secret_key=body.api_key,
+    )
+    # TODO: same as other linked account creation, we might want to separate the logic for updating and creating a linked account
+    # or give warning to clients if the linked account already exists to avoid accidental overwriting the account
+    if linked_account:
+        logger.info(
+            "updating api_key linked account",
+            extra={
+                "linked_account_id": linked_account.id,
+                "linked_account_owner_id": body.linked_account_owner_id,
+                "app_name": body.app_name,
+            },
+        )
+        linked_account = crud.linked_accounts.update_linked_account(
+            context.db_session,
+            linked_account,
+            SecurityScheme.API_KEY,
+            security_credentials.model_dump(mode="json", exclude_none=True),
+        )
+    else:
+        logger.info(
+            "creating api_key linked account",
+            extra={
+                "linked_account_owner_id": body.linked_account_owner_id,
+                "app_name": body.app_name,
+            },
+        )
+        linked_account = crud.linked_accounts.create_linked_account(
+            context.db_session,
+            context.project.id,
+            body.app_name,
+            body.linked_account_owner_id,
+            SecurityScheme.API_KEY,
+            security_credentials,
+            enabled=True,
+        )
+
     context.db_session.commit()
 
     return linked_account
