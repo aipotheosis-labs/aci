@@ -327,10 +327,10 @@ async def execute(
                 security_credentials_response.credentials.model_dump(),
             )
         else:
-            crud.linked_accounts.update_linked_account(
+            crud.linked_accounts.update_linked_account_credentials(
                 context.db_session,
                 linked_account,
-                security_credentials=security_credentials_response.credentials.model_dump(),
+                security_credentials=security_credentials_response.credentials,
             )
         context.db_session.commit()
 

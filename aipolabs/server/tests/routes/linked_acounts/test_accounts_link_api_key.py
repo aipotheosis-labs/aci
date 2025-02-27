@@ -47,29 +47,11 @@ def test_link_api_key_account(
     )
     assert security_credentials.secret_key == body.api_key
 
-    # linking the same account again should update the stored API key
-    # TODO: update this if later we have separate endpoints for updating existing accounts.
-    body.api_key = "test_linked_account_api_key_2"
+    # linking the same account again should fail
+    # TODO: update this if later we support updating existing api_key linked accounts
     response = test_client.post(
         f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/api-key",
         json=body.model_dump(mode="json", exclude_none=True),
         headers={"x-api-key": dummy_api_key_1},
     )
-    assert response.status_code == status.HTTP_200_OK
-    # expire the session to get the latest data
-    db_session.expire_all()
-
-    updated_linked_account_db = crud.linked_accounts.get_linked_account(
-        db_session,
-        dummy_app_configuration_api_key_github_project_1.project_id,
-        dummy_app_configuration_api_key_github_project_1.app_name,
-        body.linked_account_owner_id,
-    )
-    assert updated_linked_account_db is not None
-    assert updated_linked_account_db.id == linked_account_db.id, "should be the same linked account"
-    updated_security_credentials = APIKeySchemeCredentials.model_validate(
-        updated_linked_account_db.security_credentials
-    )
-    assert (
-        updated_security_credentials.secret_key == body.api_key
-    ), "should update the stored API key"
+    assert response.status_code == status.HTTP_409_CONFLICT

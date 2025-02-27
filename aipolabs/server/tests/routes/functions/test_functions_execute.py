@@ -369,10 +369,10 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
     )
     old_access_token = linked_account_oauth2_credentials.access_token
     linked_account_oauth2_credentials.expires_at = 0
-    crud.linked_accounts.update_linked_account(
+    crud.linked_accounts.update_linked_account_credentials(
         db_session,
         dummy_linked_account_oauth2_aipolabs_test_project_1,
-        security_credentials=linked_account_oauth2_credentials.model_dump(),
+        security_credentials=linked_account_oauth2_credentials,
     )
     db_session.commit()
 

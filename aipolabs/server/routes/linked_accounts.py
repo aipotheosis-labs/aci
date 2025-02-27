@@ -14,6 +14,7 @@ from aipolabs.common.exceptions import (
     AppConfigurationNotFound,
     AppNotFound,
     AuthenticationError,
+    LinkedAccountAlreadyExists,
     LinkedAccountNotFound,
     NoImplementationFound,
 )
@@ -119,16 +120,16 @@ async def link_account_with_aipolabs_default_credentials(
     # TODO: same as OAuth2 linked account creation, we might want to separate the logic for updating and creating a linked account
     # or give warning to clients if the linked account already exists to avoid accidental overwriting the account
     if linked_account:
-        logger.info(
-            "updating linked account to use Aipolabs default credentials",
+        # TODO: support updating any type of linked account to use Aipolabs default credentials
+        logger.error(
+            "failed to link account with Aipolabs default credentials, linked account already exists",
             extra={
-                "linked_account_id": linked_account.id,
                 "linked_account_owner_id": body.linked_account_owner_id,
                 "app_name": body.app_name,
             },
         )
-        linked_account = crud.linked_accounts.update_linked_account(
-            context.db_session, linked_account, app_configuration.security_scheme, {}
+        raise LinkedAccountAlreadyExists(
+            f"linked account with linked_account_owner_id={body.linked_account_owner_id} already exists for app={body.app_name}"
         )
     else:
         logger.info(
@@ -204,19 +205,16 @@ async def link_account_with_api_key(
     # TODO: same as other linked account creation, we might want to separate the logic for updating and creating a linked account
     # or give warning to clients if the linked account already exists to avoid accidental overwriting the account
     if linked_account:
-        logger.info(
-            "updating api_key linked account",
+        # TODO: support updating api_key linked account
+        logger.error(
+            "failed to link api_key account, linked account already exists",
             extra={
-                "linked_account_id": linked_account.id,
                 "linked_account_owner_id": body.linked_account_owner_id,
                 "app_name": body.app_name,
             },
         )
-        linked_account = crud.linked_accounts.update_linked_account(
-            context.db_session,
-            linked_account,
-            SecurityScheme.API_KEY,
-            security_credentials.model_dump(mode="json", exclude_none=True),
+        raise LinkedAccountAlreadyExists(
+            f"linked account with linked_account_owner_id={body.linked_account_owner_id} already exists for app={body.app_name}"
         )
     else:
         logger.info(
@@ -481,8 +479,8 @@ async def linked_accounts_oauth2_callback(
             "updating oauth2 credentials for linked account",
             extra={"linked_account_id": linked_account.id},
         )
-        linked_account = crud.linked_accounts.update_linked_account(
-            db_session, linked_account, SecurityScheme.OAUTH2, security_credentials
+        linked_account = crud.linked_accounts.update_linked_account_credentials(
+            db_session, linked_account, security_credentials
         )
     else:
         logger.info(

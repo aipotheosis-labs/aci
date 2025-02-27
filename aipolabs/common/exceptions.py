@@ -221,6 +221,19 @@ class InvalidFunctionInput(AipolabsException):
         )
 
 
+class LinkedAccountAlreadyExists(AipolabsException):
+    """
+    Exception raised when a linked account already exists
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Linked account already exists",
+            message=message,
+            error_code=status.HTTP_409_CONFLICT,
+        )
+
+
 class LinkedAccountNotFound(AipolabsException):
     """
     Exception raised when a linked account is not found
