@@ -189,6 +189,7 @@ async def link_account_with_api_key(
                 "security_scheme": app_configuration.security_scheme.value,
             },
         )
+        # TODO: consider choosing a different exception type?
         raise NoImplementationFound(
             f"the security_scheme configured for app={body.app_name} is "
             f"{app_configuration.security_scheme.value}, not api_key"

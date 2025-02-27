@@ -55,3 +55,22 @@ def test_link_api_key_account(
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_409_CONFLICT
+
+
+def test_link_api_key_account_under_non_api_key_app_configuration_should_fail(
+    test_client: TestClient,
+    dummy_api_key_1: str,
+    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
+) -> None:
+    body = LinkedAccountAPIKeyCreate(
+        app_name=dummy_app_configuration_oauth2_google_project_1.app_name,
+        linked_account_owner_id="test_link_api_key_account_under_non_api_key_app_configuration",
+        api_key="test_linked_account_api_key",
+    )
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/api-key",
+        json=body.model_dump(mode="json", exclude_none=True),
+        headers={"x-api-key": dummy_api_key_1},
+    )
+    assert response.status_code == status.HTTP_501_NOT_IMPLEMENTED
+    assert str(response.json()["error"]).startswith("No implementation found")
