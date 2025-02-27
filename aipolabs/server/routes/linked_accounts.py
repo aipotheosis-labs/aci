@@ -164,7 +164,7 @@ async def link_account_with_api_key(
         "linking api_key account",
         extra={
             "app_name": body.app_name,
-            "linked_account_api_key_create": body.model_dump(exclude_none=True),
+            "linked_account_owner_id": body.linked_account_owner_id,
         },
     )
     app_configuration = crud.app_configurations.get_app_configuration(
