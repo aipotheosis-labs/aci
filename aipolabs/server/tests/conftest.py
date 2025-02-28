@@ -569,19 +569,19 @@ def dummy_linked_account_api_key_aipolabs_test_project_1(
     dummy_app_configuration_api_key_aipolabs_test_project_1: AppConfigurationPublic,
     dummy_linked_account_api_key_credentials: APIKeySchemeCredentials,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_default_api_key_aipolabs_test_project_1 = (
+    dummy_linked_account_api_key_aipolabs_test_project_1 = (
         crud.linked_accounts.create_linked_account(
             db_session,
             dummy_app_configuration_api_key_aipolabs_test_project_1.project_id,
             dummy_app_configuration_api_key_aipolabs_test_project_1.app_name,
-            "dummy_linked_account_default_api_key_aipolabs_test_project_1",
+            "dummy_linked_account_api_key_aipolabs_test_project_1",
             dummy_app_configuration_api_key_aipolabs_test_project_1.security_scheme,
             dummy_linked_account_api_key_credentials,
             enabled=True,
         )
     )
     db_session.commit()
-    yield dummy_linked_account_default_api_key_aipolabs_test_project_1
+    yield dummy_linked_account_api_key_aipolabs_test_project_1
 
 
 @pytest.fixture(scope="function")
