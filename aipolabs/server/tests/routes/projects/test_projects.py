@@ -35,6 +35,32 @@ def test_create_project_under_user(
     assert project_public.model_dump() == ProjectPublic.model_validate(project).model_dump()
 
 
+def test_create_project_reached_max_projects_per_user(
+    test_client: TestClient,
+    dummy_user_bearer_token: str,
+) -> None:
+    # create max number of projects under the user
+    for i in range(config.MAX_PROJECTS_PER_USER):
+        body = ProjectCreate(name=f"project_{i}")
+        response = test_client.post(
+            f"{config.ROUTER_PREFIX_PROJECTS}",
+            json=body.model_dump(mode="json"),
+            headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+        )
+        assert (
+            response.status_code == status.HTTP_200_OK
+        ), f"should be able to create {config.MAX_PROJECTS_PER_USER} projects"
+
+    # try to create one more project under the user
+    body = ProjectCreate(name=f"project_{config.MAX_PROJECTS_PER_USER}")
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_PROJECTS}",
+        json=body.model_dump(mode="json"),
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
 def test_get_projects_under_user(
     test_client: TestClient, db_session: Session, dummy_user_bearer_token: str, dummy_user: User
 ) -> None:

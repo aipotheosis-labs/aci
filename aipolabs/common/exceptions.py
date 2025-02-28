@@ -188,6 +188,19 @@ class DailyQuotaExceeded(AipolabsException):
         )
 
 
+class MaxProjectsReached(AipolabsException):
+    """
+    Exception raised when a user/organization has reached the maximum number of projects
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Max projects reached",
+            message=message,
+            error_code=status.HTTP_403_FORBIDDEN,
+        )
+
+
 class UserNotFound(AipolabsException):
     """
     Exception raised when a user is not found

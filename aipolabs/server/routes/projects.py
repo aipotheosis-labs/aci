@@ -13,6 +13,7 @@ from aipolabs.common.schemas.agent import AgentCreate, AgentPublic, AgentUpdate
 from aipolabs.common.schemas.project import ProjectCreate, ProjectPublic
 from aipolabs.server import acl
 from aipolabs.server import dependencies as deps
+from aipolabs.server import quota_manager
 
 # Create router instance
 router = APIRouter()
@@ -39,7 +40,7 @@ async def create_project(
         acl.validate_user_access_to_org(
             db_session, user.id, body.organization_id, OrganizationRole.ADMIN
         )
-
+    quota_manager.check_project_limit(db_session, owner_id)
     project = crud.projects.create_project(db_session, owner_id, body.name)
     db_session.commit()
     logger.info(
