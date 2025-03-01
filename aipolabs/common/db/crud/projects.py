@@ -178,6 +178,13 @@ def delete_agent(db_session: Session, agent: Agent) -> None:
     db_session.flush()
 
 
+def get_agents_by_project(db_session: Session, project_id: UUID) -> list[Agent]:
+    agents: list[Agent] = (
+        db_session.execute(select(Agent).filter_by(project_id=project_id)).scalars().all()
+    )
+    return agents
+
+
 def get_agent_by_id(db_session: Session, agent_id: UUID) -> Agent | None:
     agent: Agent | None = db_session.execute(
         select(Agent).filter_by(id=agent_id)

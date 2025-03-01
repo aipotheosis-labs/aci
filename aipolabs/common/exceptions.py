@@ -201,6 +201,19 @@ class MaxProjectsReached(AipolabsException):
         )
 
 
+class MaxAgentsReached(AipolabsException):
+    """
+    Exception raised when a project has reached the maximum number of agents
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Max agents reached",
+            message=message,
+            error_code=status.HTTP_403_FORBIDDEN,
+        )
+
+
 class UserNotFound(AipolabsException):
     """
     Exception raised when a user is not found

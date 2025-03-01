@@ -40,7 +40,7 @@ async def create_project(
         acl.validate_user_access_to_org(
             db_session, user.id, body.organization_id, OrganizationRole.ADMIN
         )
-    quota_manager.check_project_limit(db_session, owner_id)
+    quota_manager.enforce_project_creation_quota(db_session, owner_id)
     project = crud.projects.create_project(db_session, owner_id, body.name)
     db_session.commit()
     logger.info(
@@ -85,6 +85,7 @@ async def create_agent(
         },
     )
     acl.validate_user_access_to_project(db_session, user.id, project_id)
+    quota_manager.enforce_agent_creation_quota(db_session, project_id)
 
     agent = crud.projects.create_agent(
         db_session,

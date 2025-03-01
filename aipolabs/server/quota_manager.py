@@ -11,16 +11,16 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
-from aipolabs.common.exceptions import MaxProjectsReached
+from aipolabs.common.exceptions import MaxAgentsReached, MaxProjectsReached
 from aipolabs.common.logging import get_logger
 from aipolabs.server import config
 
 logger = get_logger(__name__)
 
 
-def check_project_limit(db_session: Session, owner_id: UUID) -> None:
+def enforce_project_creation_quota(db_session: Session, owner_id: UUID) -> None:
     """
-    Check and enforce that the user/organization hasn't exceeded their project creation limit.
+    Check and enforce that the user/organization hasn't exceeded their project creation quota.
 
     Args:
         db_session: Database session
@@ -33,7 +33,7 @@ def check_project_limit(db_session: Session, owner_id: UUID) -> None:
     projects = crud.projects.get_projects_by_owner(db_session, owner_id)
     if len(projects) >= config.MAX_PROJECTS_PER_USER:
         logger.error(
-            "user/organization has reached maximum projects limit",
+            "user/organization has reached maximum projects quota",
             extra={
                 "owner_id": owner_id,
                 "max_projects": config.MAX_PROJECTS_PER_USER,
@@ -41,3 +41,27 @@ def check_project_limit(db_session: Session, owner_id: UUID) -> None:
             },
         )
         raise MaxProjectsReached()
+
+
+def enforce_agent_creation_quota(db_session: Session, project_id: UUID) -> None:
+    """
+    Check and enforce that the project hasn't exceeded its agent creation quota.
+
+    Args:
+        db_session: Database session
+        project_id: ID of the project to check
+
+    Raises:
+        MaxAgentsReached: If the project has reached its maximum allowed agents
+    """
+    agents = crud.projects.get_agents_by_project(db_session, project_id)
+    if len(agents) >= config.MAX_AGENTS_PER_PROJECT:
+        logger.error(
+            "project has reached maximum agents quota",
+            extra={
+                "project_id": project_id,
+                "max_agents": config.MAX_AGENTS_PER_PROJECT,
+                "num_agents": len(agents),
+            },
+        )
+        raise MaxAgentsReached()

@@ -50,6 +50,34 @@ def test_create_agent(
     assert agent_public.api_keys[0].key == api_key.key
 
 
+def test_create_agent_reached_max_agents_per_project(
+    test_client: TestClient,
+    dummy_project_1: Project,
+    dummy_user_bearer_token: str,
+) -> None:
+    # create max number of agents under the project
+    for i in range(config.MAX_AGENTS_PER_PROJECT):
+        body = AgentCreate(name=f"agent_{i}", description=f"agent_{i} description")
+        response = test_client.post(
+            f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents",
+            json=body.model_dump(mode="json"),
+            headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+        )
+        assert response.status_code == status.HTTP_200_OK
+
+    # try to create one more agent under the project
+    body = AgentCreate(
+        name=f"agent_{config.MAX_AGENTS_PER_PROJECT}",
+        description=f"agent_{config.MAX_AGENTS_PER_PROJECT} description",
+    )
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents",
+        json=body.model_dump(mode="json"),
+        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
 def test_update_agent(
     test_client: TestClient,
     db_session: Session,
