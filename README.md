@@ -48,7 +48,7 @@ Follow all guidelines below for setting up the development environment, running 
   - (Optional) Connect to the database using a GUI client like `DBeaver`
     - Parameters for the db connection can be found in the `.env` file
   - (Optional) To seed the db with some data: `docker compose exec runner ./scripts/seed_db.sh`
-  - You can access the `Swagger UI` at `http://localhost:8000/v1/docs`
+  - You can access the `Swagger UI` at `http://localhost:8000/v1/notforhuman-docs`
   - To run `pytest`, make sure the db is empty (in case you have seeded the db before), and then: `docker compose exec runner pytest`
 </details>
 
