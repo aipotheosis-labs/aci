@@ -43,10 +43,10 @@ APPLICATION_LOAD_BALANCER_DNS = check_and_get_env_variable("SERVER_APPLICATION_L
 
 # APP
 APP_TITLE = "Aipolabs"
-APP_VERSION = "0.0.1-beta.3"
-APP_DOCS_URL = "/v1/docs"
-APP_REDOC_URL = "/v1/redoc"
-APP_OPENAPI_URL = "/v1/openapi.json"
+APP_VERSION = "0.0.1-beta.4"
+APP_DOCS_URL = "/v1/notforhuman-docs"
+APP_REDOC_URL = "/v1/notforhuman-redoc"
+APP_OPENAPI_URL = "/v1/notforhuman-openapi.json"
 
 # ROUTERS
 ROUTER_PREFIX_HEALTH = "/v1/health"
