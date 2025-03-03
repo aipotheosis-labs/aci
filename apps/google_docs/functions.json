@@ -1,0 +1,137 @@
+[
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_CREATE",
+        "description": "Creates a blank document using the provided title.",
+        "tags": ["documents"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/documents",
+            "server_url": "https://docs.googleapis.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "description": "The title of the document."
+                        }
+                    },
+                    "required": ["title"],
+                    "visible": ["title"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_UPDATE",
+        "description": "Applies one or more updates to a Google Document using the batchUpdate method. Only supports inserting text now.",
+        "tags": ["documents", "update"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/documents/{documentId}:batchUpdate",
+            "server_url": "https://docs.googleapis.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the Google Document to update."
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "requests": {
+                            "type": "array",
+                            "description": "A list of update requests to apply to the document.",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "insertText": {
+                                        "type": "object",
+                                        "properties": {
+                                            "location": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "index": {"type": "integer"}
+                                                },
+                                                "required": ["index"],
+                                                "default": { "index": 1 }
+                                            },
+                                            "text": {"type": "string"}
+                                        },
+                                        "required": ["location", "text"]
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "required": ["requests"],
+                    "visible": ["requests"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_GET",
+        "description": "Retrieves the latest version of the specified Google Document.",
+        "tags": ["docs"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/documents/{documentId}",
+            "server_url": "https://docs.googleapis.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the document to retrieve."
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    }
+]
