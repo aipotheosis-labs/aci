@@ -27,16 +27,15 @@ from aipolabs.server.routes import (
 )
 import logfire
 
+from aipolabs.server.sentry import setup_sentry
+
 
 def custom_generate_unique_id(route: APIRoute) -> str:
     return f"{route.tags[0]}-{route.name}"
 
 
-# TODO: Sentry
-# if settings.SENTRY_DSN and settings.ENVIRONMENT != "local":
-#     sentry_sdk.init(dsn=str(settings.SENTRY_DSN), enable_tracing=True)
+setup_sentry()
 
-# Configure logging
 setup_logging(
     formatter=JsonFormatter(
         "{levelname} {asctime} {name} {message}",

@@ -2729,6 +2729,64 @@ files = [
 ]
 
 [[package]]
+name = "sentry-sdk"
+version = "2.22.0"
+description = "Python client for Sentry (https://sentry.io)"
+optional = false
+python-versions = ">=3.6"
+groups = ["main"]
+files = [
+    {file = "sentry_sdk-2.22.0-py2.py3-none-any.whl", hash = "sha256:3d791d631a6c97aad4da7074081a57073126c69487560c6f8bffcf586461de66"},
+    {file = "sentry_sdk-2.22.0.tar.gz", hash = "sha256:b4bf43bb38f547c84b2eadcefbe389b36ef75f3f38253d7a74d6b928c07ae944"},
+]
+
+[package.dependencies]
+certifi = "*"
+fastapi = {version = ">=0.79.0", optional = true, markers = "extra == \"fastapi\""}
+urllib3 = ">=1.26.11"
+
+[package.extras]
+aiohttp = ["aiohttp (>=3.5)"]
+anthropic = ["anthropic (>=0.16)"]
+arq = ["arq (>=0.23)"]
+asyncpg = ["asyncpg (>=0.23)"]
+beam = ["apache-beam (>=2.12)"]
+bottle = ["bottle (>=0.12.13)"]
+celery = ["celery (>=3)"]
+celery-redbeat = ["celery-redbeat (>=2)"]
+chalice = ["chalice (>=1.16.0)"]
+clickhouse-driver = ["clickhouse-driver (>=0.2.0)"]
+django = ["django (>=1.8)"]
+falcon = ["falcon (>=1.4)"]
+fastapi = ["fastapi (>=0.79.0)"]
+flask = ["blinker (>=1.1)", "flask (>=0.11)", "markupsafe"]
+grpcio = ["grpcio (>=1.21.1)", "protobuf (>=3.8.0)"]
+http2 = ["httpcore[http2] (==1.*)"]
+httpx = ["httpx (>=0.16.0)"]
+huey = ["huey (>=2)"]
+huggingface-hub = ["huggingface_hub (>=0.22)"]
+langchain = ["langchain (>=0.0.210)"]
+launchdarkly = ["launchdarkly-server-sdk (>=9.8.0)"]
+litestar = ["litestar (>=2.0.0)"]
+loguru = ["loguru (>=0.5)"]
+openai = ["openai (>=1.0.0)", "tiktoken (>=0.3.0)"]
+openfeature = ["openfeature-sdk (>=0.7.1)"]
+opentelemetry = ["opentelemetry-distro (>=0.35b0)"]
+opentelemetry-experimental = ["opentelemetry-distro"]
+pure-eval = ["asttokens", "executing", "pure_eval"]
+pymongo = ["pymongo (>=3.1)"]
+pyspark = ["pyspark (>=2.4.4)"]
+quart = ["blinker (>=1.1)", "quart (>=0.16.1)"]
+rq = ["rq (>=0.6)"]
+sanic = ["sanic (>=0.8)"]
+sqlalchemy = ["sqlalchemy (>=1.2)"]
+starlette = ["starlette (>=0.19.1)"]
+starlite = ["starlite (>=1.48)"]
+statsig = ["statsig (>=0.55.3)"]
+tornado = ["tornado (>=6)"]
+unleash = ["UnleashClient (>=6.0.1)"]
+
+[[package]]
 name = "shellingham"
 version = "1.5.4"
 description = "Tool to Detect Surrounding Shell"
@@ -3371,4 +3429,4 @@ type = ["pytest-mypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.12"
-content-hash = "7e1e2666520cc5aba6e05baa6231b3c5f35e7c90b06952b49b36d0bf55905247"
+content-hash = "da0a31a3375ebb11d4e7ef73373e65eba4a1287675588ee7eef06d26c41ccee2"
