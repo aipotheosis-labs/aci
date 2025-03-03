@@ -1,5 +1,7 @@
 from aipolabs.common.utils import check_and_get_env_variable, construct_db_url
 
+ENVIRONMENT = check_and_get_env_variable("SERVER_ENVIRONMENT")
+
 # LLM
 OPENAI_API_KEY = check_and_get_env_variable("SERVER_OPENAI_API_KEY")
 OPENAI_EMBEDDING_MODEL = check_and_get_env_variable("SERVER_OPENAI_EMBEDDING_MODEL")
@@ -63,3 +65,6 @@ DEV_PORTAL_URL = check_and_get_env_variable("SERVER_DEV_PORTAL_URL")
 # SIGN UP
 PERMITTED_SIGNUP_CODES = check_and_get_env_variable("SERVER_SIGNUP_CODES").split(",")
 MAX_USERS = int(check_and_get_env_variable("SERVER_MAX_USERS"))
+
+# LOGFIRE
+LOGFIRE_WRITE_TOKEN = check_and_get_env_variable("SERVER_LOGFIRE_WRITE_TOKEN")

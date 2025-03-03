@@ -25,6 +25,7 @@ from aipolabs.server.routes import (
     linked_accounts,
     projects,
 )
+import logfire
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:
@@ -55,6 +56,10 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id,
 )
 
+if config.ENVIRONMENT != "local":
+    logfire.configure(token=config.LOGFIRE_WRITE_TOKEN, environment=config.ENVIRONMENT)
+    logfire.instrument_fastapi(app, capture_headers=True)
+
 """middlewares are executed in the reverse order"""
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(SessionMiddleware, secret_key=config.SIGNING_KEY)
@@ -79,14 +84,18 @@ app.add_middleware(
     allow_headers=["Authorization", "X-API-KEY"],
 )
 app.add_middleware(InterceptorMiddleware)
-app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=[config.APPLICATION_LOAD_BALANCER_DNS])
+app.add_middleware(
+    ProxyHeadersMiddleware, trusted_hosts=[config.APPLICATION_LOAD_BALANCER_DNS]
+)
 
 
 # NOTE: generic exception handler (type Exception) for all exceptions doesn't work
 # https://github.com/fastapi/fastapi/discussions/9478
 # That's why we have another catch-all in the interceptor middleware
 @app.exception_handler(AipolabsException)
-async def global_exception_handler(request: Request, exc: AipolabsException) -> JSONResponse:
+async def global_exception_handler(
+    request: Request, exc: AipolabsException
+) -> JSONResponse:
     return JSONResponse(
         status_code=exc.error_code,
         content={"error": f"{exc.title}, {exc.message}" if exc.message else exc.title},
