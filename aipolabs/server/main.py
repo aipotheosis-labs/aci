@@ -44,6 +44,7 @@ setup_logging(
         rename_fields={"asctime": "timestamp", "name": "file", "levelname": "level"},
     ),
     filters=[RequestIDLogFilter()],
+    environment=config.ENVIRONMENT,
 )
 
 # TODO: move to config

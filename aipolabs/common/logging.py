@@ -4,8 +4,6 @@ from logging.handlers import RotatingFileHandler
 
 import logfire
 
-from aipolabs.server import config
-
 
 # the setup is called once at the start of the app
 def setup_logging(
@@ -14,6 +12,7 @@ def setup_logging(
     filters: list[logging.Filter] = [],
     include_file_handler: bool = False,
     file_path: str | None = None,
+    environment: str = "local",
 ) -> None:
     if formatter is None:
         formatter = logging.Formatter(
@@ -43,7 +42,7 @@ def setup_logging(
             file_handler.addFilter(filter)
         root_logger.addHandler(file_handler)
 
-    if config.ENVIRONMENT != "local":
+    if environment != "local":
         root_logger.addHandler(logfire.LogfireLoggingHandler())
 
     # Set up module-specific loggers if necessary (e.g., with different levels)
