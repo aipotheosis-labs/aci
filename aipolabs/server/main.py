@@ -57,9 +57,20 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id,
 )
 
+
+def scrubbing_callback(m: logfire.ScrubMatch):
+    if m.path == ("attributes", "api_key_id"):
+        return m.value
+
+
 if config.ENVIRONMENT != "local":
-    logfire.configure(token=config.LOGFIRE_WRITE_TOKEN, environment=config.ENVIRONMENT)
+    logfire.configure(
+        token=config.LOGFIRE_WRITE_TOKEN,
+        environment=config.ENVIRONMENT,
+        scrubbing=logfire.ScrubbingOptions(callback=scrubbing_callback),
+    )
     logfire.instrument_fastapi(app, capture_headers=True)
+    logfire.instrument_sqlalchemy()
 
 """middlewares are executed in the reverse order"""
 app.add_middleware(RateLimitMiddleware)
