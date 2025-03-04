@@ -50,7 +50,7 @@
             "properties": {
                 "path": {
                     "type": "object",
-                    "description": "Path parameters",
+                    "description": "Path parameters for the request.",
                     "properties": {
                         "documentId": {
                             "type": "string",
@@ -77,13 +77,27 @@
                                             "location": {
                                                 "type": "object",
                                                 "properties": {
-                                                    "index": {"type": "integer"}
+                                                    "index": {
+                                                        "type": "integer", 
+                                                        "description": "The index at which to insert the text. The default is 1, so the text is inserted at the beginning of the document.",
+                                                        "default": 1
+                                                    },
+                                                    "segmentId": {
+                                                        "type": "string",
+                                                        "description": "The ID of the header, footer, footnote, or endnote to insert the text into.",
+                                                        "default": null
+                                                    },
+                                                    "tabId": {
+                                                        "type": "string",
+                                                        "description": "The ID of the tab to insert the text into.",
+                                                        "default": null
+                                                    }
                                                 },
-                                                "required": ["index"],
-                                                "default": { "index": 1 }
+                                                "required": ["index"]
                                             },
                                             "text": {"type": "string"}
                                         },
+                                        "visible" : ["text"],
                                         "required": ["location", "text"]
                                     }
                                 }
@@ -126,6 +140,26 @@
                     },
                     "required": ["documentId"],
                     "visible": ["documentId"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the request.",
+                    "properties": {
+                        "suggestionsViewMode": {
+                            "type": "string",
+                            "description": "The suggestions view mode to apply to the document.",
+                            "default": "DEFAULT_FOR_CURRENT_ACCESS",
+                            "enum": ["DEFAULT_FOR_CURRENT_ACCESS", "SUGGESTIONS_INLINE", "PREVIEW_SUGGESTIONS_ACCEPTED", "PREVIEW_WITHOUT_SUGGESTIONS"]
+                        },
+                        "includeTabsContent": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Whether to populate the Document.tabs field instead of the text content fields like body and documentStyle on Document."
+                        }
+                    },
+                    "required": ["suggestionsViewMode", "includeTabsContent"],
+                    "visible": [],
                     "additionalProperties": false
                 }
             },
