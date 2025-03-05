@@ -2,7 +2,7 @@
 Internal admin CLI tool for Aipolabs to manage apps, functions, users, etc.
 
 ## Setup
-Follow the [setup instructions](../README.md) for the project.
+Follow the [setup instructions](../../README.md) for the project.
 
 ## Commands
 For commands that require database connection and/or locally running server, make sure local containers are running.
