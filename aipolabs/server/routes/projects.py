@@ -104,7 +104,11 @@ async def create_agent(
     return agent
 
 
-@router.patch("/{project_id}/agents/{agent_id}", response_model=AgentPublic, include_in_schema=True)
+@router.patch(
+    "/{project_id}/agents/{agent_id}",
+    response_model=AgentPublic,
+    include_in_schema=True,
+)
 async def update_agent(
     project_id: UUID,
     agent_id: UUID,

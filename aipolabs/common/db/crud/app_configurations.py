@@ -68,7 +68,9 @@ def update_app_configuration(
     return app_configuration
 
 
-def delete_app_configuration(db_session: Session, project_id: UUID, app_name: str) -> None:
+def delete_app_configuration(
+    db_session: Session, project_id: UUID, app_name: str
+) -> None:
     statement = (
         select(AppConfiguration)
         .join(App, AppConfiguration.app_id == App.id)
@@ -80,7 +82,11 @@ def delete_app_configuration(db_session: Session, project_id: UUID, app_name: st
 
 
 def get_app_configurations(
-    db_session: Session, project_id: UUID, app_names: list[str] | None, limit: int, offset: int
+    db_session: Session,
+    project_id: UUID,
+    app_names: list[str] | None,
+    limit: int,
+    offset: int,
 ) -> list[AppConfiguration]:
     """Get all app configurations for a project, optionally filtered by app names"""
     statement = select(AppConfiguration).filter_by(project_id=project_id)
@@ -89,7 +95,9 @@ def get_app_configurations(
             App.name.in_(app_names)
         )
     statement = statement.offset(offset).limit(limit)
-    app_configurations: list[AppConfiguration] = db_session.execute(statement).scalars().all()
+    app_configurations: list[AppConfiguration] = (
+        db_session.execute(statement).scalars().all()
+    )
     return app_configurations
 
 
@@ -117,7 +125,9 @@ def get_configured_app_names(
     return cast(list[str], db_session.execute(statement).scalars().all())
 
 
-def app_configuration_exists(db_session: Session, project_id: UUID, app_name: str) -> bool:
+def app_configuration_exists(
+    db_session: Session, project_id: UUID, app_name: str
+) -> bool:
     stmt = (
         select(AppConfiguration)
         .join(App, AppConfiguration.app_id == App.id)

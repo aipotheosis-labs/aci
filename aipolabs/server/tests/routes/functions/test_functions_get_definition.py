@@ -27,7 +27,10 @@ def test_get_function_definition_openai_by_identifier(
 
     function_definition = OpenAIFunctionDefinition.model_validate(response_json)
     assert function_definition.type == "function"
-    assert function_definition.function.name == dummy_function_github__create_repository.name
+    assert (
+        function_definition.function.name
+        == dummy_function_github__create_repository.name
+    )
     # Sanity check: ensure that the description is the same
     assert (
         function_definition.function.description
@@ -49,7 +52,10 @@ def test_get_function_definition_anthropic_by_identifier(
     function_definition = AnthropicFunctionDefinition.model_validate(response.json())
     assert function_definition.name == dummy_function_github__create_repository.name
     # sanity check: if description is the same
-    assert function_definition.description == dummy_function_github__create_repository.description
+    assert (
+        function_definition.description
+        == dummy_function_github__create_repository.description
+    )
 
 
 def test_get_private_function(
@@ -60,7 +66,9 @@ def test_get_private_function(
     dummy_project_1: Project,
 ) -> None:
     # private function should not be reachable for project with only public access
-    crud.functions.set_function_visibility(db_session, dummy_functions[0].name, Visibility.PRIVATE)
+    crud.functions.set_function_visibility(
+        db_session, dummy_functions[0].name, Visibility.PRIVATE
+    )
     db_session.commit()
 
     response = test_client.get(
@@ -70,7 +78,9 @@ def test_get_private_function(
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # should be reachable for project with private access
-    crud.projects.set_project_visibility_access(db_session, dummy_project_1.id, Visibility.PRIVATE)
+    crud.projects.set_project_visibility_access(
+        db_session, dummy_project_1.id, Visibility.PRIVATE
+    )
     db_session.commit()
 
     response = test_client.get(
@@ -88,7 +98,9 @@ def test_get_function_that_is_under_private_app(
     dummy_project_1: Project,
 ) -> None:
     # public function under private app should not be reachable for project with only public access
-    crud.apps.set_app_visibility(db_session, dummy_functions[0].app.name, Visibility.PRIVATE)
+    crud.apps.set_app_visibility(
+        db_session, dummy_functions[0].app.name, Visibility.PRIVATE
+    )
     db_session.commit()
 
     response = test_client.get(
@@ -98,7 +110,9 @@ def test_get_function_that_is_under_private_app(
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # should be reachable for project with private access
-    crud.projects.set_project_visibility_access(db_session, dummy_project_1.id, Visibility.PRIVATE)
+    crud.projects.set_project_visibility_access(
+        db_session, dummy_project_1.id, Visibility.PRIVATE
+    )
     db_session.commit()
 
     response = test_client.get(
@@ -115,7 +129,9 @@ def test_get_function_that_is_inactive(
     dummy_api_key_1: str,
 ) -> None:
     # inactive function should not be reachable
-    crud.functions.set_function_active_status(db_session, dummy_functions[0].name, False)
+    crud.functions.set_function_active_status(
+        db_session, dummy_functions[0].name, False
+    )
     db_session.commit()
 
     response = test_client.get(

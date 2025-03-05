@@ -39,7 +39,9 @@ def create_user(db_session: Session, user_create: UserCreate) -> User:
     return user
 
 
-def get_user(db_session: Session, identity_provider: str, user_id_by_provider: str) -> User | None:
+def get_user(
+    db_session: Session, identity_provider: str, user_id_by_provider: str
+) -> User | None:
     """
     Get a user by identity provider and user id by provider.
     """
@@ -56,7 +58,9 @@ def get_user_by_id(db_session: Session, user_id: UUID) -> User | None:
     """
     Get a user by ID.
     """
-    user: User | None = db_session.execute(select(User).filter_by(id=user_id)).scalar_one_or_none()
+    user: User | None = db_session.execute(
+        select(User).filter_by(id=user_id)
+    ).scalar_one_or_none()
     return user
 
 

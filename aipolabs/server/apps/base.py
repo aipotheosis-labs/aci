@@ -34,7 +34,10 @@ class AppBase(ABC):
         if not method:
             logger.error(
                 "method not found",
-                extra={"method_name": method_name, "class_name": self.__class__.__name__},
+                extra={
+                    "method_name": method_name,
+                    "class_name": self.__class__.__name__,
+                },
             )
             raise NoImplementationFound(
                 f"method={method_name} not found in class={self.__class__.__name__}"
@@ -84,11 +87,12 @@ class AppFactory:
     # TODO: caching? singleton per app per enduser account? executing in a thread pool?
 
     def get_app_instance(self, function_name: str) -> AppBase:
-
         module_name, class_name, _ = parse_function_name(function_name)
 
         try:
-            app_class: Type[AppBase] = getattr(importlib.import_module(module_name), class_name)
+            app_class: Type[AppBase] = getattr(
+                importlib.import_module(module_name), class_name
+            )
             logger.debug(
                 "found app class for function_name",
                 extra={"function_name": function_name, "app_class": app_class},

@@ -59,8 +59,12 @@ def test_link_oauth2_account_success(
     qs_params = parse_qs(urlparse(authorization_url).query)
     state_jwt = qs_params.get("state", [None])[0]
     assert state_jwt is not None
-    state = LinkedAccountOAuth2CreateState.model_validate(jwt.decode(state_jwt, config.SIGNING_KEY))
-    assert state.project_id == dummy_app_configuration_oauth2_google_project_1.project_id
+    state = LinkedAccountOAuth2CreateState.model_validate(
+        jwt.decode(state_jwt, config.SIGNING_KEY)
+    )
+    assert (
+        state.project_id == dummy_app_configuration_oauth2_google_project_1.project_id
+    )
     assert state.app_name == dummy_app_configuration_oauth2_google_project_1.app_name
     assert state.linked_account_owner_id == "test_link_oauth2_account_success"
     assert state.after_oauth2_link_redirect_url == after_oauth2_link_redirect_url
@@ -68,9 +72,9 @@ def test_link_oauth2_account_success(
         state.redirect_uri
         == f"{config.AIPOLABS_REDIRECT_URI_BASE}{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback"
     )
-    assert (
-        state.nonce is not None
-    ), "nonce should be present for google oauth2 if openid is requested"
+    assert state.nonce is not None, (
+        "nonce should be present for google oauth2 if openid is requested"
+    )
 
     # mock the oauth2 client's authorize_access_token method
     mock_oauth2_token_response = {
@@ -82,10 +86,13 @@ def test_link_oauth2_account_success(
 
     # Mock time.time() to return a consistent value
     mock_oauth2_token_retrieval_time = int(time.time())
-    with patch(
-        "aipolabs.server.oauth2.authorize_access_token_without_browser_session",
-        return_value=mock_oauth2_token_response,
-    ), patch("time.time", return_value=mock_oauth2_token_retrieval_time):
+    with (
+        patch(
+            "aipolabs.server.oauth2.authorize_access_token_without_browser_session",
+            return_value=mock_oauth2_token_response,
+        ),
+        patch("time.time", return_value=mock_oauth2_token_retrieval_time),
+    ):
         # simulate the OAuth2 provider calling back with 'state' & 'code'
         callback_params = {
             "state": state_jwt,
@@ -93,7 +100,8 @@ def test_link_oauth2_account_success(
             "code": "mock_auth_code",
         }
         response = test_client.get(
-            f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback", params=callback_params
+            f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback",
+            params=callback_params,
         )
         assert response.status_code == callback_response_code
         if not after_oauth2_link_redirect_url:
@@ -111,14 +119,23 @@ def test_link_oauth2_account_success(
         )
         assert linked_account is not None
         assert linked_account.security_scheme == SecurityScheme.OAUTH2
-        assert oauth2_credentials.access_token == mock_oauth2_token_response["access_token"]
+        assert (
+            oauth2_credentials.access_token
+            == mock_oauth2_token_response["access_token"]
+        )
         assert oauth2_credentials.token_type == mock_oauth2_token_response["token_type"]
         assert oauth2_credentials.expires_at == mock_oauth2_token_retrieval_time + cast(
             int, mock_oauth2_token_response["expires_in"]
         )
-        assert oauth2_credentials.refresh_token == mock_oauth2_token_response["refresh_token"]
+        assert (
+            oauth2_credentials.refresh_token
+            == mock_oauth2_token_response["refresh_token"]
+        )
         assert linked_account.enabled is True
-        assert linked_account.app.name == dummy_app_configuration_oauth2_google_project_1.app_name
+        assert (
+            linked_account.app.name
+            == dummy_app_configuration_oauth2_google_project_1.app_name
+        )
         assert linked_account.app.name == state.app_name
         assert linked_account.project_id == state.project_id
         assert linked_account.linked_account_owner_id == state.linked_account_owner_id

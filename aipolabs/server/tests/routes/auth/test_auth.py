@@ -80,9 +80,9 @@ def test_login_callback_google_user_does_not_exist(test_client: TestClient) -> N
         response = test_client.get(f"{config.ROUTER_PREFIX_AUTH}/login/callback/google")
 
     assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
-    assert (
-        response.headers["location"] == f"{config.DEV_PORTAL_URL}"
-    ), "should redirect to dev portal if user does not exist"
+    assert response.headers["location"] == f"{config.DEV_PORTAL_URL}", (
+        "should redirect to dev portal if user does not exist"
+    )
 
 
 def test_login_unsupported_provider(test_client: TestClient) -> None:
@@ -162,9 +162,9 @@ def test_signup_callback_google(
         )
 
     assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
-    assert (
-        response.headers["location"] == f"{config.DEV_PORTAL_URL}"
-    ), "should redirect to dev portal after signup"
+    assert response.headers["location"] == f"{config.DEV_PORTAL_URL}", (
+        "should redirect to dev portal after signup"
+    )
 
     # get user by id and check user is created
     identity_provider_user_info = IdentityProviderUserInfo.model_validate(
@@ -213,9 +213,9 @@ def test_signup_callback_google_user_already_exists(
         )
 
     assert response.status_code == status.HTTP_307_TEMPORARY_REDIRECT
-    assert (
-        response.headers["location"] == f"{config.DEV_PORTAL_URL}"
-    ), "should redirect to dev portal if user already signed up"
+    assert response.headers["location"] == f"{config.DEV_PORTAL_URL}", (
+        "should redirect to dev portal if user already signed up"
+    )
 
 
 def test_logout(test_client: TestClient, db_session: Session) -> None:

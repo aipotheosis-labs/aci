@@ -157,7 +157,9 @@ def test_search_apps_with_inactive_apps(
 
     # inactive app should not be returned
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APPS}/search", params={}, headers={"x-api-key": dummy_api_key_1}
+        f"{config.ROUTER_PREFIX_APPS}/search",
+        params={},
+        headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
@@ -186,7 +188,9 @@ def test_search_apps_with_private_apps(
     assert len(apps) == len(dummy_apps) - 1
 
     # private app should be reachable for project with private access
-    crud.projects.set_project_visibility_access(db_session, dummy_project_1.id, Visibility.PRIVATE)
+    crud.projects.set_project_visibility_access(
+        db_session, dummy_project_1.id, Visibility.PRIVATE
+    )
     db_session.commit()
 
     response = test_client.get(
@@ -206,7 +210,6 @@ def test_search_apps_configured_only(
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     dummy_api_key_1: str,
 ) -> None:
-
     # Test with configured_only=True
     search_params = {
         "configured_only": True,
@@ -222,7 +225,9 @@ def test_search_apps_configured_only(
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 1, "Should only return the one configured app"
-    assert apps[0].name == dummy_app_google.name, "Returned app and configured app are not the same"
+    assert apps[0].name == dummy_app_google.name, (
+        "Returned app and configured app are not the same"
+    )
 
 
 def test_search_apps_configured_only_with_none_configured(
@@ -269,4 +274,6 @@ def test_search_apps_configured_only_exclude_apps_from_other_projects(
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 1, "Should only return one app"
-    assert apps[0].name == dummy_app_google.name, "Returned app and configured app are not the same"
+    assert apps[0].name == dummy_app_google.name, (
+        "Returned app and configured app are not the same"
+    )

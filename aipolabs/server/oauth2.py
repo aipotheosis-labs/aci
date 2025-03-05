@@ -60,10 +60,14 @@ def create_oauth2_client(
 async def authorize_redirect(
     oauth2_client: StarletteOAuth2App, request: Request, redirect_uri: str
 ) -> RedirectResponse:
-    return cast(RedirectResponse, await oauth2_client.authorize_redirect(request, redirect_uri))
+    return cast(
+        RedirectResponse, await oauth2_client.authorize_redirect(request, redirect_uri)
+    )
 
 
-async def create_authorization_url(oauth2_client: StarletteOAuth2App, redirect_uri: str) -> dict:
+async def create_authorization_url(
+    oauth2_client: StarletteOAuth2App, redirect_uri: str
+) -> dict:
     return cast(dict, await oauth2_client.create_authorization_url(redirect_uri))
 
 
@@ -75,7 +79,9 @@ async def authorize_access_token(
     return cast(dict, await oauth2_client.authorize_access_token(request, **kwargs))
 
 
-async def refresh_access_token(oauth2_client: StarletteOAuth2App, refresh_token: str) -> dict:
+async def refresh_access_token(
+    oauth2_client: StarletteOAuth2App, refresh_token: str
+) -> dict:
     return cast(
         dict,
         await oauth2_client.fetch_access_token(
@@ -103,7 +109,9 @@ async def authorize_access_token_without_browser_session(
     error = request.query_params.get("error")
     if error:
         description = request.query_params.get("error_description")
-        error_msg = f"account linking failed due to OAuth2 error from provider. error={error}"
+        error_msg = (
+            f"account linking failed due to OAuth2 error from provider. error={error}"
+        )
         if description:
             error_msg += f", error_description={description}"
         logger.error(error_msg)

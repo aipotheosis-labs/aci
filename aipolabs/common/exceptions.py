@@ -77,7 +77,9 @@ class ProjectNotFound(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Project not found", message=message, error_code=status.HTTP_404_NOT_FOUND
+            title="Project not found",
+            message=message,
+            error_code=status.HTTP_404_NOT_FOUND,
         )
 
 
@@ -88,7 +90,9 @@ class ProjectAccessDenied(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Project access denied", message=message, error_code=status.HTTP_403_FORBIDDEN
+            title="Project access denied",
+            message=message,
+            error_code=status.HTTP_403_FORBIDDEN,
         )
 
 
@@ -162,7 +166,9 @@ class InvalidBearerToken(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Invalid bearer token", message=message, error_code=status.HTTP_401_UNAUTHORIZED
+            title="Invalid bearer token",
+            message=message,
+            error_code=status.HTTP_401_UNAUTHORIZED,
         )
 
 
@@ -173,7 +179,9 @@ class InvalidAPIKey(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Invalid API key", message=message, error_code=status.HTTP_401_UNAUTHORIZED
+            title="Invalid API key",
+            message=message,
+            error_code=status.HTTP_401_UNAUTHORIZED,
         )
 
 
@@ -184,7 +192,9 @@ class DailyQuotaExceeded(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Daily quota exceeded", message=message, error_code=status.HTTP_401_UNAUTHORIZED
+            title="Daily quota exceeded",
+            message=message,
+            error_code=status.HTTP_401_UNAUTHORIZED,
         )
 
 
@@ -221,7 +231,9 @@ class UserNotFound(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="User not found", message=message, error_code=status.HTTP_404_NOT_FOUND
+            title="User not found",
+            message=message,
+            error_code=status.HTTP_404_NOT_FOUND,
         )
 
 
@@ -232,7 +244,9 @@ class FunctionNotFound(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Function not found", message=message, error_code=status.HTTP_404_NOT_FOUND
+            title="Function not found",
+            message=message,
+            error_code=status.HTTP_404_NOT_FOUND,
         )
 
 
@@ -243,7 +257,9 @@ class InvalidFunctionInput(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Invalid function input", message=message, error_code=status.HTTP_400_BAD_REQUEST
+            title="Invalid function input",
+            message=message,
+            error_code=status.HTTP_400_BAD_REQUEST,
         )
 
 
@@ -267,7 +283,9 @@ class LinkedAccountNotFound(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Linked account not found", message=message, error_code=status.HTTP_404_NOT_FOUND
+            title="Linked account not found",
+            message=message,
+            error_code=status.HTTP_404_NOT_FOUND,
         )
 
 
@@ -278,7 +296,9 @@ class LinkedAccountDisabled(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Linked account disabled", message=message, error_code=status.HTTP_403_FORBIDDEN
+            title="Linked account disabled",
+            message=message,
+            error_code=status.HTTP_403_FORBIDDEN,
         )
 
 
@@ -302,7 +322,9 @@ class AgentNotFound(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Agent not found", message=message, error_code=status.HTTP_404_NOT_FOUND
+            title="Agent not found",
+            message=message,
+            error_code=status.HTTP_404_NOT_FOUND,
         )
 
 
@@ -313,5 +335,7 @@ class CustomInstructionViolation(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Custom instruction failed", message=message, error_code=status.HTTP_403_FORBIDDEN
+            title="Custom instruction failed",
+            message=message,
+            error_code=status.HTTP_403_FORBIDDEN,
         )

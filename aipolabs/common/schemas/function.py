@@ -40,12 +40,15 @@ class FunctionUpsert(BaseModel):
     # validate parameters json schema
     @model_validator(mode="after")
     def validate_parameters(self) -> "FunctionUpsert":
-
         # Validate that parameters schema itself is a valid JSON Schema
-        jsonschema.validate(instance=self.parameters, schema=jsonschema.Draft7Validator.META_SCHEMA)
+        jsonschema.validate(
+            instance=self.parameters, schema=jsonschema.Draft7Validator.META_SCHEMA
+        )
 
         # common validation
-        validate_function_parameters_schema_common(self.parameters, f"{self.name}.parameters")
+        validate_function_parameters_schema_common(
+            self.parameters, f"{self.name}.parameters"
+        )
 
         # specific validation per protocol
         if self.protocol == Protocol.REST:
@@ -89,7 +92,10 @@ class FunctionsList(BaseModel):
         default=None, description="List of app names for filtering functions."
     )
     limit: int = Field(
-        default=100, ge=1, le=1000, description="Maximum number of Functions per response."
+        default=100,
+        ge=1,
+        le=1000,
+        description="Maximum number of Functions per response.",
     )
     offset: int = Field(default=0, ge=0, description="Pagination offset.")
 

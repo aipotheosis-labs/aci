@@ -43,7 +43,9 @@ def test_get_linked_account_not_found(
     test_client: TestClient,
     dummy_api_key_1: str,
 ) -> None:
-    ENDPOINT = f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/{NON_EXISTENT_LINKED_ACCOUNT_ID}"
+    ENDPOINT = (
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/{NON_EXISTENT_LINKED_ACCOUNT_ID}"
+    )
 
     response = test_client.get(ENDPOINT, headers={"x-api-key": dummy_api_key_1})
     assert response.status_code == status.HTTP_404_NOT_FOUND

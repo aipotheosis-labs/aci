@@ -88,7 +88,6 @@ class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TC
         return self._send_request(request)
 
     def _send_request(self, request: httpx.Request) -> FunctionExecutionResult:
-
         # TODO: one client for all requests? cache the client? concurrency control? async client?
         # TODO: add retry
         with httpx.Client() as client:
@@ -106,7 +105,9 @@ class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TC
                     success=False, error=self._get_error_message(response, e)
                 )
 
-            return FunctionExecutionResult(success=True, data=self._get_response_data(response))
+            return FunctionExecutionResult(
+                success=True, data=self._get_response_data(response)
+            )
 
     def _get_response_data(self, response: httpx.Response) -> Any:
         """Get the response data from the response.
@@ -120,7 +121,9 @@ class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TC
 
         return response_data
 
-    def _get_error_message(self, response: httpx.Response, error: HTTPStatusError) -> str:
+    def _get_error_message(
+        self, response: httpx.Response, error: HTTPStatusError
+    ) -> str:
         """Get the error message from the response or fallback to the error message from the HTTPStatusError.
         Usually the response json contains more details about the error.
         """

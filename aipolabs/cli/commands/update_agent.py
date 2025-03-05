@@ -13,7 +13,9 @@ from aipolabs.common.schemas.agent import AgentUpdate
 
 # TODO: Make an upsert update agent command so you can use json files to update the agent
 @click.command()
-@click.option("--agent-id", "agent_id", required=True, type=UUID, help="id of the agent to update")
+@click.option(
+    "--agent-id", "agent_id", required=True, type=UUID, help="id of the agent to update"
+)
 @click.option(
     "--name",
     "name",
@@ -105,7 +107,9 @@ def update_agent_helper(
             click.echo(create_headline("provide --skip-dry-run to commit changes"))
             db_session.rollback()
         else:
-            click.echo(create_headline(f"committing update of agent {updated_agent.name}"))
+            click.echo(
+                create_headline(f"committing update of agent {updated_agent.name}")
+            )
             click.echo(updated_agent)
             db_session.commit()
 

@@ -21,7 +21,9 @@ EXECUTOR_MAP: dict[Protocol, dict[SecurityScheme, Type[FunctionExecutor]]] = {
 }
 
 
-def get_executor(protocol: Protocol, security_scheme: SecurityScheme) -> FunctionExecutor:
+def get_executor(
+    protocol: Protocol, security_scheme: SecurityScheme
+) -> FunctionExecutor:
     return EXECUTOR_MAP[protocol][security_scheme]()
 
 

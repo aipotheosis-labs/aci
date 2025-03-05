@@ -66,7 +66,9 @@ def fuzzy_test_function_execution_helper(
         headers={"x-api-key": aipolabs_api_key},
     )
     if response.status_code != 200:
-        raise click.ClickException(f"Failed to get function definition: {response.json()}")
+        raise click.ClickException(
+            f"Failed to get function definition: {response.json()}"
+        )
 
     function_definition = response.json()
     click.echo(create_headline("Function definition fetched"))

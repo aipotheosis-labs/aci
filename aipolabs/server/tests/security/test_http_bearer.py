@@ -25,7 +25,9 @@ def test_with_invalid_bearer_token(test_client: TestClient) -> None:
 
 
 # sending a request with a valid bearer token should succeed
-def test_with_valid_bearer_token(test_client: TestClient, dummy_user_bearer_token: str) -> None:
+def test_with_valid_bearer_token(
+    test_client: TestClient, dummy_user_bearer_token: str
+) -> None:
     body = {"name": "project test_with_valid_bearer_token"}
 
     response = test_client.post(

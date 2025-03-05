@@ -15,7 +15,9 @@ from aipolabs.common.schemas.user import UserCreate
     "--auth-provider",
     "identity_provider",
     required=True,
-    type=click.Choice(["google"]),  # TODO: update according to identity provider when db finalized
+    type=click.Choice(
+        ["google"]
+    ),  # TODO: update according to identity provider when db finalized
     help="identity provider",
 )
 @click.option(
@@ -64,7 +66,13 @@ def create_user(
 ) -> UUID:
     """Create a user in db."""
     return create_user_helper(
-        identity_provider, user_id_by_provider, name, email, profile_picture, plan, skip_dry_run
+        identity_provider,
+        user_id_by_provider,
+        name,
+        email,
+        profile_picture,
+        plan,
+        skip_dry_run,
     )
 
 

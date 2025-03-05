@@ -72,7 +72,9 @@ def upsert_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UU
         click.echo(create_headline(f"New Functions to Create: {len(new_functions)}"))
         for func in new_functions:
             click.echo(func.name)
-        click.echo(create_headline(f"Existing Functions to Update: {len(existing_functions)}"))
+        click.echo(
+            create_headline(f"Existing Functions to Update: {len(existing_functions)}")
+        )
         for func in existing_functions:
             click.echo(func.name)
 
@@ -102,7 +104,10 @@ def create_functions_helper(
     Returns a list of created function UUIDs.
     """
     functions_embeddings = embeddings.generate_function_embeddings(
-        [FunctionEmbeddingFields.model_validate(func.model_dump()) for func in functions_upsert],
+        [
+            FunctionEmbeddingFields.model_validate(func.model_dump())
+            for func in functions_upsert
+        ],
         openai_service,
         embedding_model=config.OPENAI_EMBEDDING_MODEL,
         embedding_dimension=config.OPENAI_EMBEDDING_DIMENSION,
@@ -156,7 +161,9 @@ def update_functions_helper(
             )
             click.echo(diff.pretty())
 
-        if _need_function_embedding_regeneration(existing_function_upsert, function_upsert):
+        if _need_function_embedding_regeneration(
+            existing_function_upsert, function_upsert
+        ):
             functions_with_new_embeddings.append(function_upsert)
         else:
             functions_without_new_embeddings.append(function_upsert)
@@ -188,9 +195,14 @@ def _validate_app_exists(db_session: Session, app_name: str) -> None:
         raise click.ClickException(f"App={app_name} does not exist")
 
 
-def _validate_all_functions_belong_to_the_app(functions_upsert: list[FunctionUpsert]) -> str:
+def _validate_all_functions_belong_to_the_app(
+    functions_upsert: list[FunctionUpsert],
+) -> str:
     app_names = set(
-        [utils.parse_app_name_from_function_name(func.name) for func in functions_upsert]
+        [
+            utils.parse_app_name_from_function_name(func.name)
+            for func in functions_upsert
+        ]
     )
     if len(app_names) != 1:
         raise click.ClickException(
@@ -208,4 +220,6 @@ def _need_function_embedding_regeneration(
     fields used for embedding (name, description, parameters).
     """
     fields = FunctionEmbeddingFields.model_fields.keys()
-    return bool(old_func.model_dump(include=fields) != new_func.model_dump(include=fields))
+    return bool(
+        old_func.model_dump(include=fields) != new_func.model_dump(include=fields)
+    )

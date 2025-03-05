@@ -21,9 +21,9 @@ def test_execute_function_with_linked_account_api_key(
     Test that the function is executed with the end-user's linked account API key
     """
     response_data = {"message": "Hello, test_mock_execute_function_with_no_args!"}
-    mock_request = respx.get("https://api.mock.aipolabs.com/v1/hello_world_no_args").mock(
-        return_value=httpx.Response(200, json=response_data)
-    )
+    mock_request = respx.get(
+        "https://api.mock.aipolabs.com/v1/hello_world_no_args"
+    ).mock(return_value=httpx.Response(200, json=response_data))
 
     function_execute = FunctionExecute(
         linked_account_owner_id=dummy_linked_account_api_key_aipolabs_test_project_1.linked_account_owner_id,
@@ -36,12 +36,15 @@ def test_execute_function_with_linked_account_api_key(
 
     assert response.status_code == status.HTTP_200_OK
     assert "error" not in response.json()
-    function_execution_response = FunctionExecutionResult.model_validate(response.json())
+    function_execution_response = FunctionExecutionResult.model_validate(
+        response.json()
+    )
     assert function_execution_response.success
     assert function_execution_response.data == response_data
     assert mock_request.called, "Request should be made"
     assert (
-        mock_request.calls.last.request.headers["X-Test-API-Key"] != "default-shared-api-key"
+        mock_request.calls.last.request.headers["X-Test-API-Key"]
+        != "default-shared-api-key"
     ), "API key used should NOT be the default shared API key"
 
     linked_account_api_key = APIKeySchemeCredentials.model_validate(
@@ -86,7 +89,9 @@ def test_execute_function_with_linked_account_api_key(
                 "path": {"userId": "John"},
                 # "query": {"lang": "en"}, query is not visible so no input here
                 "body": {
-                    "person": {"name": "John"},  # "title" is not visible so no input here
+                    "person": {
+                        "name": "John"
+                    },  # "title" is not visible so no input here
                     # "greeting": "Hello", greeting is not visible so no input here
                     "location": {"city": "New York", "country": "USA"},
                 },
@@ -142,7 +147,9 @@ def test_execute_function_with_app_default_api_key(
     # Verify response
     assert response.status_code == status.HTTP_200_OK
     assert "error" not in response.json()
-    function_execution_response = FunctionExecutionResult.model_validate(response.json())
+    function_execution_response = FunctionExecutionResult.model_validate(
+        response.json()
+    )
     assert function_execution_response.success
     assert function_execution_response.data == expected_response_data
 
@@ -153,12 +160,16 @@ def test_execute_function_with_app_default_api_key(
     # Check API key header for cases with args
     if "no_args" not in function_fixture:
         assert (
-            mock_request.calls.last.request.headers["X-Test-API-Key"] == "default-shared-api-key"
+            mock_request.calls.last.request.headers["X-Test-API-Key"]
+            == "default-shared-api-key"
         ), "API key used should be default-shared-api-key set for the App"
 
         # Check for custom header in the with_args test case
         if function_input and "X-CUSTOM-HEADER" in function_input.get("header", {}):
-            assert mock_request.calls.last.request.headers["X-CUSTOM-HEADER"] == "header123"
+            assert (
+                mock_request.calls.last.request.headers["X-CUSTOM-HEADER"]
+                == "header123"
+            )
 
         # Verify request content for cases with args
         assert mock_request.calls.last.request.content == expected_content

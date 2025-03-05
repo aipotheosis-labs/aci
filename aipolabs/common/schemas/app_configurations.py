@@ -63,8 +63,13 @@ class AppConfigurationUpdate(BaseModel):
 
 
 class AppConfigurationsList(BaseModel):
-    app_names: list[str] | None = Field(default=None, description="Filter by app names.")
+    app_names: list[str] | None = Field(
+        default=None, description="Filter by app names."
+    )
     limit: int = Field(
-        default=100, ge=1, le=1000, description="Maximum number of results per response."
+        default=100,
+        ge=1,
+        le=1000,
+        description="Maximum number of results per response.",
     )
     offset: int = Field(default=0, ge=0, description="Pagination offset.")

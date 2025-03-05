@@ -12,7 +12,6 @@ def filter_function_call(
     function_input: dict,
     custom_instructions: str,
 ) -> FilterResponse:
-
     args = {
         "model": "gpt-4o-mini",
         "messages": [
@@ -38,4 +37,6 @@ def filter_function_call(
 
     # TODO: abstract out to InferenceService
     # - make an inference layer to handle embeddings, filtering, rag etc
-    return openai_service.get_structured_response(response_format=FilterResponse, **args)
+    return openai_service.get_structured_response(
+        response_format=FilterResponse, **args
+    )

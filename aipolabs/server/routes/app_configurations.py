@@ -63,7 +63,10 @@ async def create_app_configuration(
     if app.security_schemes.get(body.security_scheme) is None:
         logger.error(
             "app does not support specified security scheme",
-            extra={"app_name": body.app_name, "security_scheme": body.security_scheme.value},
+            extra={
+                "app_name": body.app_name,
+                "security_scheme": body.security_scheme.value,
+            },
         )
         raise AppSecuritySchemeNotSupported(
             f"app={body.app_name} does not support security_scheme={body.security_scheme.value}"
@@ -197,7 +200,9 @@ async def update_app_configuration(
             f"configuration for app={app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{app_name}"
         )
 
-    crud.app_configurations.update_app_configuration(context.db_session, app_configuration, body)
+    crud.app_configurations.update_app_configuration(
+        context.db_session, app_configuration, body
+    )
     context.db_session.commit()
 
     return app_configuration

@@ -12,7 +12,9 @@ from aipolabs.server.function_executors.rest_function_executor import (
 logger = get_logger(__name__)
 
 
-class RestAPIKeyFunctionExecutor(RestFunctionExecutor[APIKeyScheme, APIKeySchemeCredentials]):
+class RestAPIKeyFunctionExecutor(
+    RestFunctionExecutor[APIKeyScheme, APIKeySchemeCredentials]
+):
     """
     Function executor for API key based REST functions.
     """

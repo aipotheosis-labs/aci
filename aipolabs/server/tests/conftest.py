@@ -43,7 +43,9 @@ logger = logging.getLogger(__name__)
 
 # call this one time for entire tests because it's slow and costs money (negligible) as it needs
 # to generate embeddings using OpenAI for each app and function
-dummy_apps_and_functions_to_be_inserted_into_db = helper.prepare_dummy_apps_and_functions()
+dummy_apps_and_functions_to_be_inserted_into_db = (
+    helper.prepare_dummy_apps_and_functions()
+)
 GOOGLE_APP_NAME = "GOOGLE"
 GITHUB_APP_NAME = "GITHUB"
 AIPOLABS_TEST_APP_NAME = "AIPOLABS_TEST"
@@ -53,7 +55,9 @@ AIPOLABS_TEST_APP_NAME = "AIPOLABS_TEST"
 def test_client() -> Generator[TestClient, None, None]:
     # disable following redirects for testing login
     # NOTE: need to set base_url to http://localhost because we set TrustedHostMiddleware in main.py
-    with TestClient(fastapi_app, base_url="http://localhost", follow_redirects=False) as c:
+    with TestClient(
+        fastapi_app, base_url="http://localhost", follow_redirects=False
+    ) as c:
         yield c
 
 
@@ -142,7 +146,9 @@ def dummy_user_2_bearer_token(dummy_user_2: User) -> str:
 
 
 @pytest.fixture(scope="function")
-def dummy_project_1(db_session: Session, dummy_user: User) -> Generator[Project, None, None]:
+def dummy_project_1(
+    db_session: Session, dummy_user: User
+) -> Generator[Project, None, None]:
     dummy_project_1 = crud.projects.create_project(
         db_session,
         owner_id=dummy_user.id,
@@ -154,7 +160,9 @@ def dummy_project_1(db_session: Session, dummy_user: User) -> Generator[Project,
 
 
 @pytest.fixture(scope="function")
-def dummy_api_key_1(db_session: Session, dummy_project_1: Project) -> Generator[str, None, None]:
+def dummy_api_key_1(
+    db_session: Session, dummy_project_1: Project
+) -> Generator[str, None, None]:
     dummy_agent = crud.projects.create_agent(
         db_session,
         project_id=dummy_project_1.id,
@@ -169,7 +177,9 @@ def dummy_api_key_1(db_session: Session, dummy_project_1: Project) -> Generator[
 
 
 @pytest.fixture(scope="function")
-def dummy_project_2(db_session: Session, dummy_user_2: User) -> Generator[Project, None, None]:
+def dummy_project_2(
+    db_session: Session, dummy_user_2: User
+) -> Generator[Project, None, None]:
     dummy_project_2 = crud.projects.create_project(
         db_session,
         owner_id=dummy_user_2.id,
@@ -181,7 +191,9 @@ def dummy_project_2(db_session: Session, dummy_user_2: User) -> Generator[Projec
 
 
 @pytest.fixture(scope="function")
-def dummy_api_key_2(db_session: Session, dummy_project_2: Project) -> Generator[str, None, None]:
+def dummy_api_key_2(
+    db_session: Session, dummy_project_2: Project
+) -> Generator[str, None, None]:
     dummy_agent = crud.projects.create_agent(
         db_session,
         project_id=dummy_project_2.id,
@@ -196,7 +208,9 @@ def dummy_api_key_2(db_session: Session, dummy_project_2: Project) -> Generator[
 
 
 @pytest.fixture(scope="function")
-def dummy_agent_1(db_session: Session, dummy_project_1: Project) -> Generator[Agent, None, None]:
+def dummy_agent_1(
+    db_session: Session, dummy_project_1: Project
+) -> Generator[Agent, None, None]:
     dummy_agent_1 = crud.projects.create_agent(
         db_session,
         project_id=dummy_project_1.id,
@@ -254,7 +268,9 @@ def dummy_apps(
         functions_embeddings,
     ) in dummy_apps_and_functions_to_be_inserted_into_db:
         app = crud.apps.create_app(db_session, app_upsert, app_embedding)
-        crud.functions.create_functions(db_session, functions_upsert, functions_embeddings)
+        crud.functions.create_functions(
+            db_session, functions_upsert, functions_embeddings
+        )
         db_session.commit()
         dummy_apps.append(app)
 
@@ -277,7 +293,9 @@ def dummy_app_github(dummy_apps: list[App]) -> App:
 
 @pytest.fixture(scope="function")
 def dummy_app_aipolabs_test(dummy_apps: list[App]) -> App:
-    dummy_app_aipolabs_test = next(app for app in dummy_apps if app.name == AIPOLABS_TEST_APP_NAME)
+    dummy_app_aipolabs_test = next(
+        app for app in dummy_apps if app.name == AIPOLABS_TEST_APP_NAME
+    )
     assert dummy_app_aipolabs_test is not None
     return dummy_app_aipolabs_test
 
@@ -322,7 +340,9 @@ def dummy_function_aipolabs_test__hello_world_nested_args(
     dummy_functions: list[Function],
 ) -> Function:
     dummy_function_aipolabs_test__hello_world_nested_args = next(
-        func for func in dummy_functions if func.name == "AIPOLABS_TEST__HELLO_WORLD_NESTED_ARGS"
+        func
+        for func in dummy_functions
+        if func.name == "AIPOLABS_TEST__HELLO_WORLD_NESTED_ARGS"
     )
     assert dummy_function_aipolabs_test__hello_world_nested_args is not None
     return dummy_function_aipolabs_test__hello_world_nested_args
@@ -333,7 +353,9 @@ def dummy_function_aipolabs_test__hello_world_no_args(
     dummy_functions: list[Function],
 ) -> Function:
     dummy_function_aipolabs_test__hello_world_no_args = next(
-        func for func in dummy_functions if func.name == "AIPOLABS_TEST__HELLO_WORLD_NO_ARGS"
+        func
+        for func in dummy_functions
+        if func.name == "AIPOLABS_TEST__HELLO_WORLD_NO_ARGS"
     )
     assert dummy_function_aipolabs_test__hello_world_no_args is not None
     return dummy_function_aipolabs_test__hello_world_no_args
@@ -344,7 +366,9 @@ def dummy_function_aipolabs_test__hello_world_with_args(
     dummy_functions: list[Function],
 ) -> Function:
     dummy_function_aipolabs_test__hello_world_with_args = next(
-        func for func in dummy_functions if func.name == "AIPOLABS_TEST__HELLO_WORLD_WITH_ARGS"
+        func
+        for func in dummy_functions
+        if func.name == "AIPOLABS_TEST__HELLO_WORLD_WITH_ARGS"
     )
     assert dummy_function_aipolabs_test__hello_world_with_args is not None
     return dummy_function_aipolabs_test__hello_world_with_args
@@ -512,14 +536,16 @@ def dummy_linked_account_oauth2_google_project_1(
     dummy_linked_account_oauth2_credentials: OAuth2SchemeCredentials,
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_oauth2_google_project_1 = crud.linked_accounts.create_linked_account(
-        db_session,
-        dummy_app_configuration_oauth2_google_project_1.project_id,
-        dummy_app_configuration_oauth2_google_project_1.app_name,
-        "dummy_linked_account_oauth2_google_project_1",
-        dummy_app_configuration_oauth2_google_project_1.security_scheme,
-        dummy_linked_account_oauth2_credentials,
-        enabled=True,
+    dummy_linked_account_oauth2_google_project_1 = (
+        crud.linked_accounts.create_linked_account(
+            db_session,
+            dummy_app_configuration_oauth2_google_project_1.project_id,
+            dummy_app_configuration_oauth2_google_project_1.app_name,
+            "dummy_linked_account_oauth2_google_project_1",
+            dummy_app_configuration_oauth2_google_project_1.security_scheme,
+            dummy_linked_account_oauth2_credentials,
+            enabled=True,
+        )
     )
     db_session.commit()
     yield dummy_linked_account_oauth2_google_project_1
@@ -531,14 +557,16 @@ def dummy_linked_account_api_key_github_project_1(
     dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
     dummy_linked_account_api_key_credentials: APIKeySchemeCredentials,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_api_key_github_project_1 = crud.linked_accounts.create_linked_account(
-        db_session,
-        dummy_app_configuration_api_key_github_project_1.project_id,
-        dummy_app_configuration_api_key_github_project_1.app_name,
-        "dummy_linked_account_api_key_github_project_1",
-        dummy_app_configuration_api_key_github_project_1.security_scheme,
-        dummy_linked_account_api_key_credentials,
-        enabled=True,
+    dummy_linked_account_api_key_github_project_1 = (
+        crud.linked_accounts.create_linked_account(
+            db_session,
+            dummy_app_configuration_api_key_github_project_1.project_id,
+            dummy_app_configuration_api_key_github_project_1.app_name,
+            "dummy_linked_account_api_key_github_project_1",
+            dummy_app_configuration_api_key_github_project_1.security_scheme,
+            dummy_linked_account_api_key_credentials,
+            enabled=True,
+        )
     )
     db_session.commit()
     yield dummy_linked_account_api_key_github_project_1
@@ -550,14 +578,16 @@ def dummy_linked_account_oauth2_google_project_2(
     dummy_app_configuration_oauth2_google_project_2: AppConfigurationPublic,
     dummy_linked_account_oauth2_credentials: OAuth2SchemeCredentials,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_oauth2_google_project_2 = crud.linked_accounts.create_linked_account(
-        db_session,
-        dummy_app_configuration_oauth2_google_project_2.project_id,
-        dummy_app_configuration_oauth2_google_project_2.app_name,
-        "dummy_linked_account_oauth2_google_project_2",
-        dummy_app_configuration_oauth2_google_project_2.security_scheme,
-        dummy_linked_account_oauth2_credentials,
-        enabled=True,
+    dummy_linked_account_oauth2_google_project_2 = (
+        crud.linked_accounts.create_linked_account(
+            db_session,
+            dummy_app_configuration_oauth2_google_project_2.project_id,
+            dummy_app_configuration_oauth2_google_project_2.app_name,
+            "dummy_linked_account_oauth2_google_project_2",
+            dummy_app_configuration_oauth2_google_project_2.security_scheme,
+            dummy_linked_account_oauth2_credentials,
+            enabled=True,
+        )
     )
     db_session.commit()
     yield dummy_linked_account_oauth2_google_project_2
@@ -589,16 +619,14 @@ def dummy_linked_account_default_api_key_aipolabs_test_project_1(
     db_session: Session,
     dummy_app_configuration_api_key_aipolabs_test_project_1: AppConfigurationPublic,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_default_api_key_aipolabs_test_project_1 = (
-        crud.linked_accounts.create_linked_account(
-            db_session,
-            dummy_app_configuration_api_key_aipolabs_test_project_1.project_id,
-            dummy_app_configuration_api_key_aipolabs_test_project_1.app_name,
-            "dummy_linked_account_default_api_key_aipolabs_test_project_1",
-            dummy_app_configuration_api_key_aipolabs_test_project_1.security_scheme,
-            security_credentials=None,  # assign None to use the app's default security credentials
-            enabled=True,
-        )
+    dummy_linked_account_default_api_key_aipolabs_test_project_1 = crud.linked_accounts.create_linked_account(
+        db_session,
+        dummy_app_configuration_api_key_aipolabs_test_project_1.project_id,
+        dummy_app_configuration_api_key_aipolabs_test_project_1.app_name,
+        "dummy_linked_account_default_api_key_aipolabs_test_project_1",
+        dummy_app_configuration_api_key_aipolabs_test_project_1.security_scheme,
+        security_credentials=None,  # assign None to use the app's default security credentials
+        enabled=True,
     )
     db_session.commit()
     yield dummy_linked_account_default_api_key_aipolabs_test_project_1

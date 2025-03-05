@@ -40,7 +40,6 @@ def _check_and_get_env_variable(name: str) -> str:
 
 
 def _get_db_url() -> str:
-
     # construct db url from env variables
     DB_SCHEME = _check_and_get_env_variable("ALEMBIC_DB_SCHEME")
     DB_USER = _check_and_get_env_variable("ALEMBIC_DB_USER")

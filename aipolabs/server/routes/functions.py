@@ -97,14 +97,18 @@ async def search_functions(
         if query_params.app_names:
             # Intersection of query_params.app_names and configured_app_names
             query_params.app_names = [
-                app_name for app_name in query_params.app_names if app_name in configured_app_names
+                app_name
+                for app_name in query_params.app_names
+                if app_name in configured_app_names
             ]
         else:
             query_params.app_names = configured_app_names
 
         # If no app_names are available after intersection or configured search, return an empty list
         if not query_params.app_names:
-            logger.info("no apps suitable for configured function search, returning empty list")
+            logger.info(
+                "no apps suitable for configured function search, returning empty list"
+            )
             return []
 
     functions = crud.functions.search_functions(
@@ -147,7 +151,10 @@ async def get_function_definition(
     """
     logger.info(
         "get function definition",
-        extra={"function_name": function_name, "inference_provider": inference_provider.value},
+        extra={
+            "function_name": function_name,
+            "inference_provider": inference_provider.value,
+        },
     )
     function: Function | None = crud.functions.get_function(
         context.db_session,
@@ -265,7 +272,10 @@ async def execute(
 
     # check if the linked account status (configured, enabled, etc.)
     linked_account = crud.linked_accounts.get_linked_account(
-        context.db_session, context.project.id, function.app.name, body.linked_account_owner_id
+        context.db_session,
+        context.project.id,
+        function.app.name,
+        body.linked_account_owner_id,
     )
     if not linked_account:
         logger.error(
@@ -296,8 +306,8 @@ async def execute(
             f"please enable the account for this app here: {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
         )
 
-    security_credentials_response: SecurityCredentialsResponse = await scm.get_security_credentials(
-        function.app, linked_account
+    security_credentials_response: SecurityCredentialsResponse = (
+        await scm.get_security_credentials(function.app, linked_account)
     )
     # if the security credentials are updated during fetch (e.g, access token refreshed), we need to write back
     # to the database with the updated credentials, either to linked account or app configuration depending
@@ -313,7 +323,9 @@ async def execute(
             "app_name": function.app.name,
             "linked_account_owner_id": body.linked_account_owner_id,
             "linked_account_id": linked_account.id,
-            "scheme": security_credentials_response.scheme.model_dump(exclude_none=True),
+            "scheme": security_credentials_response.scheme.model_dump(
+                exclude_none=True
+            ),
             "is_app_default_credentials": security_credentials_response.is_app_default_credentials,
             "is_updated": security_credentials_response.is_updated,
         },
@@ -334,7 +346,9 @@ async def execute(
             )
         context.db_session.commit()
 
-    agent = crud.projects.get_agent_by_api_key_id(context.db_session, context.api_key_id)
+    agent = crud.projects.get_agent_by_api_key_id(
+        context.db_session, context.api_key_id
+    )
     if not agent:
         logger.error(
             "failed to execute function, agent not found",

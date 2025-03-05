@@ -13,10 +13,12 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
 DUMMY_APPS_DIR = Path(__file__).parent / "dummy_apps"
 
 
-def prepare_dummy_apps_and_functions() -> (
-    list[tuple[AppUpsert, list[FunctionUpsert], list[float], list[list[float]]]]
-):
-    results: list[tuple[AppUpsert, list[FunctionUpsert], list[float], list[list[float]]]] = []
+def prepare_dummy_apps_and_functions() -> list[
+    tuple[AppUpsert, list[FunctionUpsert], list[float], list[list[float]]]
+]:
+    results: list[
+        tuple[AppUpsert, list[FunctionUpsert], list[float], list[list[float]]]
+    ] = []
     """
     Prepare dummy apps and functions for testing.
     Returns a list of tuples, where each tuple contains:
@@ -30,7 +32,9 @@ def prepare_dummy_apps_and_functions() -> (
         functions_file = app_dir / "functions.json"
         with open(app_file, "r") as f:
             app_upsert: AppUpsert = AppUpsert.model_validate(json.load(f))
-            app_embedding_fields = AppEmbeddingFields.model_validate(app_upsert.model_dump())
+            app_embedding_fields = AppEmbeddingFields.model_validate(
+                app_upsert.model_dump()
+            )
         with open(functions_file, "r") as f:
             functions_upsert: list[FunctionUpsert] = [
                 FunctionUpsert.model_validate(function) for function in json.load(f)
@@ -55,5 +59,7 @@ def prepare_dummy_apps_and_functions() -> (
             config.OPENAI_EMBEDDING_MODEL,
             config.OPENAI_EMBEDDING_DIMENSION,
         )
-        results.append((app_upsert, functions_upsert, app_embedding, function_embeddings))
+        results.append(
+            (app_upsert, functions_upsert, app_embedding, function_embeddings)
+        )
     return results

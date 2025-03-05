@@ -78,7 +78,10 @@ async def link_account_with_aipolabs_default_credentials(
     """
     logger.info(
         "Linking account with Aipolabs default credentials",
-        extra={"app_name": body.app_name, "linked_account_owner_id": body.linked_account_owner_id},
+        extra={
+            "app_name": body.app_name,
+            "linked_account_owner_id": body.linked_account_owner_id,
+        },
     )
     # TODO: some duplicate code with other linked account creation routes
     app_configuration = crud.app_configurations.get_app_configuration(
@@ -94,8 +97,10 @@ async def link_account_with_aipolabs_default_credentials(
         )
 
     # need to make sure the App actully has default credentials provided by Aipolabs
-    app_default_credentials = app_configuration.app.default_security_credentials_by_scheme.get(
-        app_configuration.security_scheme
+    app_default_credentials = (
+        app_configuration.app.default_security_credentials_by_scheme.get(
+            app_configuration.security_scheme
+        )
     )
     if not app_default_credentials:
         logger.error(
@@ -274,7 +279,6 @@ async def link_oauth2_account(
     # TODO: for now we require the security_schema used for accounts under an App must be the same as the security_schema configured in the app
     # configuration. But in the future, we might lift this restriction and allow any security_schema as long the App supports it.
     if app_configuration.security_scheme != SecurityScheme.OAUTH2:
-
         logger.error(
             "failed to link OAuth2 account, app configuration security scheme is not OAuth2",
             extra={
@@ -336,7 +340,9 @@ async def link_oauth2_account(
     #     },
     #     "exp": 1735786775.4127536
     # }
-    authorization_data = await oauth2.create_authorization_url(oauth2_client, redirect_uri)
+    authorization_data = await oauth2.create_authorization_url(
+        oauth2_client, redirect_uri
+    )
     logger.info(
         "authorization data",
         extra={"authorization_data": authorization_data},
@@ -447,7 +453,9 @@ async def linked_accounts_oauth2_callback(
         )
     except Exception as e:
         logger.exception(f"failed to retrieve oauth2 token, {str(e)}")
-        raise AuthenticationError("failed to retrieve oauth2 token during account linking")
+        raise AuthenticationError(
+            "failed to retrieve oauth2 token during account linking"
+        )
 
     # TODO: we might want to verify scope authorized by end user (token_response["scope"]) is what we asked
     security_credentials = OAuth2SchemeCredentials(
@@ -462,7 +470,9 @@ async def linked_accounts_oauth2_callback(
     )
     logger.debug(
         "security_credentials",
-        extra={"security_credentials": security_credentials.model_dump(exclude_none=True)},
+        extra={
+            "security_credentials": security_credentials.model_dump(exclude_none=True)
+        },
     )
 
     # if the linked account already exists, update it, otherwise create a new one

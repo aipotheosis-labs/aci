@@ -67,11 +67,14 @@ def validate_http_bearer(
         user = crud.users.get_user_by_id(db_session, UUID(user_id))
         if not user:
             logger.error(
-                "user decoded from http bearer token not found", extra={"user_id": user_id}
+                "user decoded from http bearer token not found",
+                extra={"user_id": user_id},
             )
             raise UserNotFound(f"user={user_id} not found")
 
-        logger.info("http bearer token validation successful", extra={"user_id": user_id})
+        logger.info(
+            "http bearer token validation successful", extra={"user_id": user_id}
+        )
         return user
 
     except JoseError:
@@ -121,9 +124,9 @@ def validate_project_quota(
         raise ProjectNotFound(f"project not found for api_key_id={api_key_id}")
 
     now: datetime = datetime.now(timezone.utc)
-    need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=timezone.utc) + timedelta(
-        days=1
-    )
+    need_reset = now >= project.daily_quota_reset_at.replace(
+        tzinfo=timezone.utc
+    ) + timedelta(days=1)
 
     if not need_reset and project.daily_quota_used >= config.PROJECT_DAILY_QUOTA:
         logger.warning(

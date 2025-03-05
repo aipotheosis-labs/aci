@@ -46,16 +46,17 @@ def test_link_account_with_default_api_key_credentials(
         == dummy_app_configuration_api_key_aipolabs_test_project_1.project_id
     )
     assert (
-        linked_account.app.name == dummy_app_configuration_api_key_aipolabs_test_project_1.app_name
+        linked_account.app.name
+        == dummy_app_configuration_api_key_aipolabs_test_project_1.app_name
     )
     assert linked_account.linked_account_owner_id == body.linked_account_owner_id
     assert (
         linked_account.security_scheme
         == dummy_app_configuration_api_key_aipolabs_test_project_1.security_scheme
     )
-    assert (
-        linked_account.security_credentials == {}
-    ), "linked account using default credentials should have empty security credentials"
+    assert linked_account.security_credentials == {}, (
+        "linked account using default credentials should have empty security credentials"
+    )
     assert linked_account.enabled is True
 
 
@@ -83,7 +84,9 @@ def test_link_account_with_default_credentials_non_existent_app_configuration(
         linked_account_owner_id="test_link_account_with_default_credentials_non_existent_app_configuration",
     )
     response = test_client.post(
-        ENDPOINT, json=body.model_dump(mode="json"), headers={"x-api-key": dummy_api_key_1}
+        ENDPOINT,
+        json=body.model_dump(mode="json"),
+        headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert str(response.json()["error"]).startswith("App configuration not found")
@@ -106,7 +109,9 @@ def test_link_account_with_default_credentials_app_without_default_credentials(
         linked_account_owner_id="test_link_account_with_default_credentials_app_without_default_credentials",
     )
     response = test_client.post(
-        ENDPOINT, json=body.model_dump(mode="json"), headers={"x-api-key": dummy_api_key_1}
+        ENDPOINT,
+        json=body.model_dump(mode="json"),
+        headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_501_NOT_IMPLEMENTED
     assert str(response.json()["error"]).startswith("No implementation found")

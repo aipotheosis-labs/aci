@@ -80,7 +80,9 @@ def upsert_app_helper(
         )
 
 
-def create_app_helper(db_session: Session, app_upsert: AppUpsert, skip_dry_run: bool) -> UUID:
+def create_app_helper(
+    db_session: Session, app_upsert: AppUpsert, skip_dry_run: bool
+) -> UUID:
     # Generate app embedding using the fields defined in AppEmbeddingFields
     app_embedding = embeddings.generate_app_embedding(
         AppEmbeddingFields.model_validate(app_upsert.model_dump()),
@@ -129,11 +131,17 @@ def update_app_helper(
         )
 
     # Update the app in the database with the new fields and optional embedding update
-    updated_app = crud.apps.update_app(db_session, existing_app, app_upsert, new_embedding)
+    updated_app = crud.apps.update_app(
+        db_session, existing_app, app_upsert, new_embedding
+    )
 
-    diff = DeepDiff(existing_app_upsert.model_dump(), app_upsert.model_dump(), ignore_order=True)
+    diff = DeepDiff(
+        existing_app_upsert.model_dump(), app_upsert.model_dump(), ignore_order=True
+    )
     click.echo(
-        create_headline(f"Will update app '{existing_app.name}' with the following changes:")
+        create_headline(
+            f"Will update app '{existing_app.name}' with the following changes:"
+        )
     )
     click.echo(diff.pretty())
     if not skip_dry_run:
@@ -165,4 +173,6 @@ def _render_template_to_string(template_path: Path, secrets: dict[str, str]) -> 
 
 def _need_embedding_regeneration(old_app: AppUpsert, new_app: AppUpsert) -> bool:
     fields = AppEmbeddingFields.model_fields.keys()
-    return bool(old_app.model_dump(include=fields) != new_app.model_dump(include=fields))
+    return bool(
+        old_app.model_dump(include=fields) != new_app.model_dump(include=fields)
+    )

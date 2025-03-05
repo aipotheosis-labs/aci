@@ -40,7 +40,7 @@ respx = "^0.21.1"
 [tool.ruff]
 line-length = 88
 target-version = "py312"
-extend-exclude = [".venv", "venv", "build", "dist"]
+extend-exclude = [".venv", "venv", "build", "dist", "aipolabs/alembic/versions"]
 
 [tool.ruff.lint]
 select = [

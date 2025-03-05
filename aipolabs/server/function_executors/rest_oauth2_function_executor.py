@@ -12,7 +12,9 @@ from aipolabs.server.function_executors.rest_function_executor import (
 logger = get_logger(__name__)
 
 
-class RestOAuth2FunctionExecutor(RestFunctionExecutor[OAuth2Scheme, OAuth2SchemeCredentials]):
+class RestOAuth2FunctionExecutor(
+    RestFunctionExecutor[OAuth2Scheme, OAuth2SchemeCredentials]
+):
     """
     Function executor for REST OAuth2 functions.
     """
