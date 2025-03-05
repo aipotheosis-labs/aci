@@ -15,7 +15,7 @@ repos:
       - id: format
         name: running format checks
         language: system
-        entry: poetry run ruff format . --diff
+        entry: poetry run ruff format .
         pass_filenames: false
         require_serial: true
       - id: lint
