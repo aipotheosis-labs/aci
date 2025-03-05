@@ -6,10 +6,10 @@ Follow the [setup instructions](../../README.md) for the project.
 
 ## Commands
 For commands that require database connection and/or locally running server, make sure local containers are running.
-And most cases you should execute the commands via the `runner` container.
+And most cases you should execute the commands via the `runner` container. Note that most commands can take a `--quiet` flag to suppress output if desired, especially useful when running evals.
 e.g.,
 ```bash
-docker compose exec runner python -m aipolabs.cli.aipolabs create-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
+docker compose exec runner python -m aipolabs.cli.aipolabs upsert-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
 ```
 
 <details>
