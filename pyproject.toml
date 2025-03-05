@@ -64,10 +64,38 @@ indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
 
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[tool.mypy]
+python_version = "3.12"
+# Keep import-not-found errors
+ignore_missing_imports = false
+disallow_untyped_calls = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+warn_unused_ignores = true
+warn_return_any = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unreachable = true
+strict_equality = true
+
+# Ignore missing type stubs for specific modules
+[[tool.mypy.overrides]]
+module = "pgvector.sqlalchemy"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "authlib.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "requests"
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 log_cli = true
 log_cli_level = "INFO"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
