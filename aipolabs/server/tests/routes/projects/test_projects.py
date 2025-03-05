@@ -32,10 +32,7 @@ def test_create_project_under_user(
     project = crud.projects.get_project(db_session, project_public.id)
 
     assert project is not None
-    assert (
-        project_public.model_dump()
-        == ProjectPublic.model_validate(project).model_dump()
-    )
+    assert project_public.model_dump() == ProjectPublic.model_validate(project).model_dump()
 
 
 def test_create_project_reached_max_projects_per_user(
@@ -101,9 +98,7 @@ def test_get_projects_under_user(
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
-    projects_public = [
-        ProjectPublic.model_validate(project) for project in response.json()
-    ]
+    projects_public = [ProjectPublic.model_validate(project) for project in response.json()]
     assert len(projects_public) == number_of_projects
     for project in projects_public:
         agents_public = [AgentPublic.model_validate(agent) for agent in project.agents]

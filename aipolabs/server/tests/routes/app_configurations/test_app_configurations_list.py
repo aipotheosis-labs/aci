@@ -21,12 +21,8 @@ def test_list_app_configuration(
     )
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 2
-    assert response.json()[0]["id"] == str(
-        dummy_app_configuration_oauth2_google_project_1.id
-    )
-    assert response.json()[1]["id"] == str(
-        dummy_app_configuration_api_key_github_project_1.id
-    )
+    assert response.json()[0]["id"] == str(dummy_app_configuration_oauth2_google_project_1.id)
+    assert response.json()[1]["id"] == str(dummy_app_configuration_api_key_github_project_1.id)
 
 
 def test_list_app_configuration_with_app_id(
@@ -46,9 +42,7 @@ def test_list_app_configuration_with_app_id(
 
     assert response.status_code == status.HTTP_200_OK
     assert len(response.json()) == 1
-    assert response.json()[0]["id"] == str(
-        dummy_app_configuration_oauth2_google_project_1.id
-    )
+    assert response.json()[0]["id"] == str(dummy_app_configuration_oauth2_google_project_1.id)
 
 
 def test_list_non_existent_app_configuration(

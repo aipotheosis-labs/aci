@@ -41,14 +41,10 @@ class FunctionUpsert(BaseModel):
     @model_validator(mode="after")
     def validate_parameters(self) -> "FunctionUpsert":
         # Validate that parameters schema itself is a valid JSON Schema
-        jsonschema.validate(
-            instance=self.parameters, schema=jsonschema.Draft7Validator.META_SCHEMA
-        )
+        jsonschema.validate(instance=self.parameters, schema=jsonschema.Draft7Validator.META_SCHEMA)
 
         # common validation
-        validate_function_parameters_schema_common(
-            self.parameters, f"{self.name}.parameters"
-        )
+        validate_function_parameters_schema_common(self.parameters, f"{self.name}.parameters")
 
         # specific validation per protocol
         if self.protocol == Protocol.REST:

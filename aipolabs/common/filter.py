@@ -37,6 +37,4 @@ def filter_function_call(
 
     # TODO: abstract out to InferenceService
     # - make an inference layer to handle embeddings, filtering, rag etc
-    return openai_service.get_structured_response(
-        response_format=FilterResponse, **args
-    )
+    return openai_service.get_structured_response(response_format=FilterResponse, **args)

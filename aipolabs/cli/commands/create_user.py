@@ -15,9 +15,7 @@ from aipolabs.common.schemas.user import UserCreate
     "--auth-provider",
     "identity_provider",
     required=True,
-    type=click.Choice(
-        ["google"]
-    ),  # TODO: update according to identity provider when db finalized
+    type=click.Choice(["google"]),  # TODO: update according to identity provider when db finalized
     help="identity provider",
 )
 @click.option(

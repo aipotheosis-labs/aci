@@ -17,9 +17,7 @@ def test_search_functions_with_inactive_functions(
     dummy_api_key_1: str,
 ) -> None:
     # inactive functions should not be returned
-    crud.functions.set_function_active_status(
-        db_session, dummy_functions[0].name, False
-    )
+    crud.functions.set_function_active_status(db_session, dummy_functions[0].name, False)
     db_session.commit()
 
     response = test_client.get(
@@ -29,8 +27,7 @@ def test_search_functions_with_inactive_functions(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions) - 1
 
@@ -52,16 +49,13 @@ def test_search_functions_with_inactive_apps(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
 
     inactive_functions_count = sum(
         function.app.name == dummy_functions[0].app.name for function in dummy_functions
     )
-    assert inactive_functions_count > 0, (
-        "there should be at least one inactive function"
-    )
+    assert inactive_functions_count > 0, "there should be at least one inactive function"
     assert len(functions) == len(dummy_functions) - inactive_functions_count, (
         "no functions should be returned under inactive apps"
     )
@@ -75,9 +69,7 @@ def test_search_functions_with_private_functions(
     dummy_api_key_1: str,
 ) -> None:
     # private functions should not be reachable for project with only public access
-    crud.functions.set_function_visibility(
-        db_session, dummy_functions[0].name, Visibility.PRIVATE
-    )
+    crud.functions.set_function_visibility(db_session, dummy_functions[0].name, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -87,15 +79,12 @@ def test_search_functions_with_private_functions(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions) - 1
 
     # private functions should be reachable for project with private access
-    crud.projects.set_project_visibility_access(
-        db_session, dummy_project_1.id, Visibility.PRIVATE
-    )
+    crud.projects.set_project_visibility_access(db_session, dummy_project_1.id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -105,8 +94,7 @@ def test_search_functions_with_private_functions(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions)
 
@@ -120,9 +108,7 @@ def test_search_functions_with_private_apps(
 ) -> None:
     # all functions (public and private) under private apps should not be
     # reachable for project with only public access
-    crud.apps.set_app_visibility(
-        db_session, dummy_functions[0].app.name, Visibility.PRIVATE
-    )
+    crud.apps.set_app_visibility(db_session, dummy_functions[0].app.name, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -132,8 +118,7 @@ def test_search_functions_with_private_apps(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
 
     private_functions_count = sum(
@@ -146,9 +131,7 @@ def test_search_functions_with_private_apps(
 
     # all functions (public and private) under private apps should be reachable
     # for project with private access
-    crud.projects.set_project_visibility_access(
-        db_session, dummy_project_1.id, Visibility.PRIVATE
-    )
+    crud.projects.set_project_visibility_access(db_session, dummy_project_1.id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -158,8 +141,7 @@ def test_search_functions_with_private_apps(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions)
 
@@ -180,14 +162,13 @@ def test_search_functions_with_app_names(
 
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     # only functions from the given app ids should be returned
     for function in functions:
-        assert function.name.startswith(
-            dummy_functions[0].app.name
-        ) or function.name.startswith(dummy_functions[1].app.name)
+        assert function.name.startswith(dummy_functions[0].app.name) or function.name.startswith(
+            dummy_functions[1].app.name
+        )
     # total number of functions should be the sum of functions from the given app ids
     assert len(functions) == sum(
         function.app.name in [dummy_functions[0].app.name, dummy_functions[1].app.name]
@@ -216,8 +197,7 @@ def test_search_functions_with_intent(
 
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions)
     assert functions[0].name == dummy_function_github__create_repository.name
@@ -231,8 +211,7 @@ def test_search_functions_with_intent(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions)
     assert functions[0].name == dummy_function_google__calendar_create_event.name
@@ -258,8 +237,7 @@ def test_search_functions_with_app_names_and_intent(
 
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     # only functions from the given app ids should be returned
     for function in functions:
@@ -288,8 +266,7 @@ def test_search_functions_pagination(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions) - 1
 
@@ -301,8 +278,7 @@ def test_search_functions_pagination(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == 1
 
@@ -320,13 +296,10 @@ def test_search_functions_configured_only_true(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_app_aipolabs_test.functions)
-    dummy_app_function_names = [
-        function.name for function in dummy_app_aipolabs_test.functions
-    ]
+    dummy_app_function_names = [function.name for function in dummy_app_aipolabs_test.functions]
     assert all(function.name in dummy_app_function_names for function in functions)
 
 
@@ -343,8 +316,7 @@ def test_search_functions_configured_only_false(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions)
 
@@ -362,8 +334,7 @@ def test_search_functions_no_configured_apps(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == 0
 
@@ -375,8 +346,7 @@ def test_search_functions_no_configured_apps(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == 0
 
@@ -399,16 +369,11 @@ def test_search_functions_with_app_names_and_configured_only(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == len(dummy_app_github.functions)
-    dummy_app_github_function_names = [
-        function.name for function in dummy_app_github.functions
-    ]
-    assert all(
-        function.name in dummy_app_github_function_names for function in functions
-    )
+    dummy_app_github_function_names = [function.name for function in dummy_app_github.functions]
+    assert all(function.name in dummy_app_github_function_names for function in functions)
 
     # Case 2: 1 configured app and a different app_name is provided, should return 0 functions
     response = test_client.get(
@@ -418,7 +383,6 @@ def test_search_functions_with_app_names_and_configured_only(
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
-        FunctionBasic.model_validate(response_function)
-        for response_function in response.json()
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
     assert len(functions) == 0

@@ -37,9 +37,7 @@ def create_project(
 
 def project_exists(db_session: Session, project_id: UUID) -> bool:
     return (
-        db_session.execute(
-            select(Project).filter_by(id=project_id)
-        ).scalar_one_or_none()
+        db_session.execute(select(Project).filter_by(id=project_id)).scalar_one_or_none()
         is not None
     )
 
@@ -76,20 +74,14 @@ def get_project_by_api_key_id(db_session: Session, api_key_id: UUID) -> Project 
 def set_project_visibility_access(
     db_session: Session, project_id: UUID, visibility_access: Visibility
 ) -> None:
-    statement = (
-        update(Project)
-        .filter_by(id=project_id)
-        .values(visibility_access=visibility_access)
-    )
+    statement = update(Project).filter_by(id=project_id).values(visibility_access=visibility_access)
     db_session.execute(statement)
 
 
 # TODO: TBD by business model
 def increase_project_quota_usage(db_session: Session, project: Project) -> None:
     now: datetime = datetime.now(UTC)
-    need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=UTC) + timedelta(
-        days=1
-    )
+    need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=UTC) + timedelta(days=1)
 
     if need_reset:
         # Reset the daily quota
@@ -144,9 +136,7 @@ def create_agent(
     db_session.add(agent)
 
     # Create the API key for the agent
-    api_key = APIKey(
-        key=secrets.token_hex(32), agent_id=agent.id, status=APIKeyStatus.ACTIVE
-    )
+    api_key = APIKey(key=secrets.token_hex(32), agent_id=agent.id, status=APIKeyStatus.ACTIVE)
     db_session.add(api_key)
 
     db_session.flush()
@@ -188,9 +178,7 @@ def delete_agent(db_session: Session, agent: Agent) -> None:
 
 def get_agents_by_project(db_session: Session, project_id: UUID) -> list[Agent]:
     agents: list[Agent] = (
-        db_session.execute(select(Agent).filter_by(project_id=project_id))
-        .scalars()
-        .all()
+        db_session.execute(select(Agent).filter_by(project_id=project_id)).scalars().all()
     )
     return agents
 
@@ -205,9 +193,7 @@ def get_agent_by_id(db_session: Session, agent_id: UUID) -> Agent | None:
 
 def get_agent_by_api_key_id(db_session: Session, api_key_id: UUID) -> Agent | None:
     agent: Agent | None = db_session.execute(
-        select(Agent)
-        .join(APIKey, Agent.id == APIKey.agent_id)
-        .filter(APIKey.id == str(api_key_id))
+        select(Agent).join(APIKey, Agent.id == APIKey.agent_id).filter(APIKey.id == str(api_key_id))
     ).scalar_one_or_none()
 
     return agent

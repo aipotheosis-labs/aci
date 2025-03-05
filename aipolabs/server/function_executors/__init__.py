@@ -1,4 +1,3 @@
-
 from aipolabs.common.enums import Protocol, SecurityScheme
 from aipolabs.common.logging import get_logger
 from aipolabs.server.function_executors.base_executor import FunctionExecutor
@@ -20,9 +19,7 @@ EXECUTOR_MAP: dict[Protocol, dict[SecurityScheme, type[FunctionExecutor]]] = {
 }
 
 
-def get_executor(
-    protocol: Protocol, security_scheme: SecurityScheme
-) -> FunctionExecutor:
+def get_executor(protocol: Protocol, security_scheme: SecurityScheme) -> FunctionExecutor:
     return EXECUTOR_MAP[protocol][security_scheme]()
 
 

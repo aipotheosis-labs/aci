@@ -66,9 +66,7 @@ def update_app_default_security_credentials(
     app.default_security_credentials_by_scheme[security_scheme] = security_credentials
 
 
-def get_app(
-    db_session: Session, app_name: str, public_only: bool, active_only: bool
-) -> App | None:
+def get_app(db_session: Session, app_name: str, public_only: bool, active_only: bool) -> App | None:
     statement = select(App).filter_by(name=app_name)
 
     if active_only:
@@ -155,8 +153,6 @@ def set_app_active_status(db_session: Session, app_name: str, active: bool) -> N
     db_session.execute(statement)
 
 
-def set_app_visibility(
-    db_session: Session, app_name: str, visibility: Visibility
-) -> None:
+def set_app_visibility(db_session: Session, app_name: str, visibility: Visibility) -> None:
     statement = update(App).filter_by(name=app_name).values(visibility=visibility)
     db_session.execute(statement)

@@ -27,12 +27,8 @@ def create_functions(
         app_name = utils.parse_app_name_from_function_name(function_upsert.name)
         app = crud.apps.get_app(db_session, app_name, False, False)
         if not app:
-            logger.error(
-                f"App={app_name} does not exist for function={function_upsert.name}"
-            )
-            raise ValueError(
-                f"App={app_name} does not exist for function={function_upsert.name}"
-            )
+            logger.error(f"App={app_name} does not exist for function={function_upsert.name}")
+            raise ValueError(f"App={app_name} does not exist for function={function_upsert.name}")
         function_data = function_upsert.model_dump(mode="json", exclude_none=True)
         function = Function(
             app_id=app.id,
@@ -60,9 +56,7 @@ def update_functions(
     logger.debug(f"updating functions: {functions_upsert}")
     functions = []
     for i, function_upsert in enumerate(functions_upsert):
-        function = crud.functions.get_function(
-            db_session, function_upsert.name, False, False
-        )
+        function = crud.functions.get_function(db_session, function_upsert.name, False, False)
         if not function:
             logger.error(f"Function={function_upsert.name} does not exist")
             raise ValueError(f"Function={function_upsert.name} does not exist")
@@ -168,9 +162,7 @@ def get_function(
     return function
 
 
-def set_function_active_status(
-    db_session: Session, function_name: str, active: bool
-) -> None:
+def set_function_active_status(db_session: Session, function_name: str, active: bool) -> None:
     statement = update(Function).filter_by(name=function_name).values(active=active)
     db_session.execute(statement)
 
@@ -178,7 +170,5 @@ def set_function_active_status(
 def set_function_visibility(
     db_session: Session, function_name: str, visibility: Visibility
 ) -> None:
-    statement = (
-        update(Function).filter_by(name=function_name).values(visibility=visibility)
-    )
+    statement = update(Function).filter_by(name=function_name).values(visibility=visibility)
     db_session.execute(statement)

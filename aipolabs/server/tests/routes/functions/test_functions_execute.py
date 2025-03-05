@@ -165,24 +165,18 @@ def test_execute_function_with_custom_instructions_success(
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={
-            "x-api-key": dummy_agent_with_github_apple_instructions.api_keys[0].key
-        },
+        headers={"x-api-key": dummy_agent_with_github_apple_instructions.api_keys[0].key},
     )
 
     assert response.status_code == status.HTTP_200_OK
     assert "error" not in response.json()
-    function_execution_response = FunctionExecutionResult.model_validate(
-        response.json()
-    )
+    function_execution_response = FunctionExecutionResult.model_validate(response.json())
     assert function_execution_response.success
     assert function_execution_response.data == mock_response_data
 
     # Verify the GitHub request was made as expected
     assert github_request.called
-    assert (
-        github_request.calls.last.request.url == "https://api.github.com/repositories"
-    )
+    assert github_request.calls.last.request.url == "https://api.github.com/repositories"
     assert (
         github_request.calls.last.request.content
         == b'{"name": "test-repo", "description": "Test repository", "private": true}'
@@ -208,15 +202,11 @@ def test_execute_function_with_custom_instructions_rejected(
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={
-            "x-api-key": dummy_agent_with_github_apple_instructions.api_keys[0].key
-        },
+        headers={"x-api-key": dummy_agent_with_github_apple_instructions.api_keys[0].key},
     )
 
     assert response.status_code == status.HTTP_403_FORBIDDEN
-    apple_custom_instructions = (
-        dummy_agent_with_github_apple_instructions.custom_instructions[
-            dummy_function_github__create_repository.app.name
-        ]
-    )
+    apple_custom_instructions = dummy_agent_with_github_apple_instructions.custom_instructions[
+        dummy_function_github__create_repository.app.name
+    ]
     assert apple_custom_instructions in response.json()["error"]

@@ -46,15 +46,11 @@ class AppUpsert(BaseModel):
             if scheme_type == SecurityScheme.API_KEY and not isinstance(
                 scheme_config, APIKeyScheme
             ):
-                raise ValueError(
-                    f"Invalid configuration for API_KEY scheme: {scheme_config}"
-                )
+                raise ValueError(f"Invalid configuration for API_KEY scheme: {scheme_config}")
             elif scheme_type == SecurityScheme.OAUTH2 and not isinstance(
                 scheme_config, OAuth2Scheme
             ):
-                raise ValueError(
-                    f"Invalid configuration for OAUTH2 scheme: {scheme_config}"
-                )
+                raise ValueError(f"Invalid configuration for OAUTH2 scheme: {scheme_config}")
         return v
 
 
@@ -117,9 +113,7 @@ class AppsList(BaseModel):
     Parameters for listing Apps.
     """
 
-    app_names: list[str] | None = Field(
-        default=None, description="List of app names to filter by."
-    )
+    app_names: list[str] | None = Field(default=None, description="List of app names to filter by.")
     limit: int = Field(
         default=100, ge=1, le=1000, description="Maximum number of Apps per response."
     )

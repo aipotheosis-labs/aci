@@ -18,9 +18,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
     It generates a unique request ID and logs some baseline details.
     """
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         start_time = datetime.now(UTC)
         request_id = str(uuid.uuid4())
         request_id_ctx_var.set(request_id)

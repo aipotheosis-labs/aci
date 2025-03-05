@@ -30,9 +30,7 @@ class AipolabsTest(AppBase):
         )
         return {"message": f"{greeting}, {name}!"}
 
-    def hello_world_nested_args(
-        self, person: Person, greeting: str, location: Location
-    ) -> dict:
+    def hello_world_nested_args(self, person: Person, greeting: str, location: Location) -> dict:
         # Ensure 'person' is a Person instance
         if isinstance(person, dict):
             person = Person(**person)

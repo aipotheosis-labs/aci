@@ -63,9 +63,7 @@ class AppConfigurationUpdate(BaseModel):
 
 
 class AppConfigurationsList(BaseModel):
-    app_names: list[str] | None = Field(
-        default=None, description="Filter by app names."
-    )
+    app_names: list[str] | None = Field(default=None, description="Filter by app names.")
     limit: int = Field(
         default=100,
         ge=1,

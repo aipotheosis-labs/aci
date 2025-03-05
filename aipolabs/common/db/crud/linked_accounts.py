@@ -23,9 +23,7 @@ def get_linked_accounts(
     """Get all linked accounts under a project, with optional filters"""
     statement = select(LinkedAccount).filter_by(project_id=project_id)
     if app_name:
-        statement = statement.join(App, LinkedAccount.app_id == App.id).filter(
-            App.name == app_name
-        )
+        statement = statement.join(App, LinkedAccount.app_id == App.id).filter(App.name == app_name)
     if linked_account_owner_id:
         statement = statement.filter(
             LinkedAccount.linked_account_owner_id == linked_account_owner_id
@@ -47,9 +45,7 @@ def get_linked_account(
             LinkedAccount.linked_account_owner_id == linked_account_owner_id,
         )
     )
-    linked_account: LinkedAccount | None = db_session.execute(
-        statement
-    ).scalar_one_or_none()
+    linked_account: LinkedAccount | None = db_session.execute(statement).scalar_one_or_none()
 
     return linked_account
 
@@ -61,12 +57,8 @@ def get_linked_account_by_id(
     - linked_account_id uniquely identifies a linked account across the platform.
     - project_id is extra precaution useful for access control, the linked account must belong to the project.
     """
-    statement = select(LinkedAccount).filter_by(
-        id=linked_account_id, project_id=project_id
-    )
-    linked_account: LinkedAccount | None = db_session.execute(
-        statement
-    ).scalar_one_or_none()
+    statement = select(LinkedAccount).filter_by(id=linked_account_id, project_id=project_id)
+    linked_account: LinkedAccount | None = db_session.execute(statement).scalar_one_or_none()
     return linked_account
 
 
@@ -81,9 +73,7 @@ def create_linked_account(
     app_name: str,
     linked_account_owner_id: str,
     security_scheme: SecurityScheme,
-    security_credentials: OAuth2SchemeCredentials
-    | APIKeySchemeCredentials
-    | None = None,
+    security_credentials: OAuth2SchemeCredentials | APIKeySchemeCredentials | None = None,
     enabled: bool = True,
 ) -> LinkedAccount:
     """Create a linked account
@@ -116,9 +106,7 @@ def update_linked_account_credentials(
     Removing the security credentials (setting it to empty dict) is not handled here.
     """
     if security_credentials is not None:
-        linked_account.security_credentials = security_credentials.model_dump(
-            mode="json"
-        )
+        linked_account.security_credentials = security_credentials.model_dump(mode="json")
 
     # Technically we don't need to call the flush() and refresh() here, but it's more robust to do so
     # in case there are other dependencies on the linked account object that need to be updated in the future

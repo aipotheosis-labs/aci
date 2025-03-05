@@ -42,13 +42,9 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
         )
         function_input = self._preprocess_function_input(function, function_input)
 
-        return self._execute(
-            function, function_input, security_scheme, security_credentials
-        )
+        return self._execute(function, function_input, security_scheme, security_credentials)
 
-    def _preprocess_function_input(
-        self, function: Function, function_input: dict
-    ) -> dict:
+    def _preprocess_function_input(self, function: Function, function_input: dict) -> dict:
         # validate user input against the "visible" parameters
         try:
             jsonschema.validate(

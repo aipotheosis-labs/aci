@@ -54,9 +54,7 @@ async def _get_oauth2_credentials(
     """
     is_app_default_credentials = False
     is_updated = False
-    oauth2_scheme = OAuth2Scheme.model_validate(
-        app.security_schemes[SecurityScheme.OAUTH2]
-    )
+    oauth2_scheme = OAuth2Scheme.model_validate(app.security_schemes[SecurityScheme.OAUTH2])
 
     if linked_account.security_credentials:
         logger.debug(
@@ -97,9 +95,7 @@ async def _get_oauth2_credentials(
             f"linked_account_owner_id={linked_account.linked_account_owner_id}"
         )
 
-    oauth2_scheme_credentials = OAuth2SchemeCredentials.model_validate(
-        oauth2_credentials
-    )
+    oauth2_scheme_credentials = OAuth2SchemeCredentials.model_validate(oauth2_credentials)
     if _access_token_is_expired(oauth2_scheme_credentials):
         logger.warning(
             "access token expired",
@@ -176,9 +172,7 @@ def _get_api_key_credentials(
     """
     security_credentials = (
         linked_account.security_credentials
-        or app.default_security_credentials_by_scheme.get(
-            linked_account.security_scheme
-        )
+        or app.default_security_credentials_by_scheme.get(linked_account.security_scheme)
     )
 
     # use "not" to cover empty dict case
@@ -198,9 +192,7 @@ def _get_api_key_credentials(
         )
 
     return SecurityCredentialsResponse(
-        scheme=APIKeyScheme.model_validate(
-            app.security_schemes[SecurityScheme.API_KEY]
-        ),
+        scheme=APIKeyScheme.model_validate(app.security_schemes[SecurityScheme.API_KEY]),
         credentials=APIKeySchemeCredentials.model_validate(security_credentials),
         is_app_default_credentials=not bool(linked_account.security_credentials),
         is_updated=False,

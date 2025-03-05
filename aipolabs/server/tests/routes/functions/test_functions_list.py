@@ -87,9 +87,7 @@ def test_list_functions_with_private_functions(
     dummy_api_key_1: str,
 ) -> None:
     # private functions should not be reachable for project with only public access
-    crud.functions.set_function_visibility(
-        db_session, dummy_functions[0].name, Visibility.PRIVATE
-    )
+    crud.functions.set_function_visibility(db_session, dummy_functions[0].name, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -102,9 +100,7 @@ def test_list_functions_with_private_functions(
     assert len(functions) == len(dummy_functions) - 1
 
     # private functions should be reachable for project with private access
-    crud.projects.set_project_visibility_access(
-        db_session, dummy_project_1.id, Visibility.PRIVATE
-    )
+    crud.projects.set_project_visibility_access(db_session, dummy_project_1.id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -126,9 +122,7 @@ def test_list_functions_with_private_apps(
 ) -> None:
     # all functions (public and private) under private apps should not be reachable
     # for project with only public access
-    crud.apps.set_app_visibility(
-        db_session, dummy_functions[0].app.name, Visibility.PRIVATE
-    )
+    crud.apps.set_app_visibility(db_session, dummy_functions[0].app.name, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(
@@ -149,9 +143,7 @@ def test_list_functions_with_private_apps(
 
     # all functions (public and private) under private apps should be reachable
     # for project with private access
-    crud.projects.set_project_visibility_access(
-        db_session, dummy_project_1.id, Visibility.PRIVATE
-    )
+    crud.projects.set_project_visibility_access(db_session, dummy_project_1.id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(

@@ -73,9 +73,7 @@ def validate_http_bearer(
             )
             raise UserNotFound(f"user={user_id} not found")
 
-        logger.info(
-            "http bearer token validation successful", extra={"user_id": user_id}
-        )
+        logger.info("http bearer token validation successful", extra={"user_id": user_id})
         return user
 
     except JoseError as e:
@@ -125,9 +123,7 @@ def validate_project_quota(
         raise ProjectNotFound(f"project not found for api_key_id={api_key_id}")
 
     now: datetime = datetime.now(UTC)
-    need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=UTC) + timedelta(
-        days=1
-    )
+    need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=UTC) + timedelta(days=1)
 
     if not need_reset and project.daily_quota_used >= config.PROJECT_DAILY_QUOTA:
         logger.warning(

@@ -47,9 +47,7 @@ def filter_visible_properties(parameters_schema: dict) -> dict:
     return filter(filtered_parameters_schema)
 
 
-def inject_required_but_invisible_defaults(
-    parameters_schema: dict, input_data: dict
-) -> dict:
+def inject_required_but_invisible_defaults(parameters_schema: dict, input_data: dict) -> dict:
     """
     Recursively injects required but invisible properties with their default values into the input data.
     """

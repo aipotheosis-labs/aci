@@ -144,9 +144,7 @@ async def signup_callback(
     # TODO: probably not necessary to check again here, but just in case
     _validate_signup(db_session, signup_code)
     # TODO: try/except, retry?
-    auth_response = await oauth2.authorize_access_token(
-        OAUTH2_CLIENTS[provider], request
-    )
+    auth_response = await oauth2.authorize_access_token(OAUTH2_CLIENTS[provider], request)
     logger.debug(
         "access token requested successfully",
         extra={"provider": provider.value, "auth_response": auth_response},
@@ -158,9 +156,7 @@ async def signup_callback(
                 "userinfo not found in auth_response",
                 extra={"auth_response": auth_response},
             )
-            raise UnexpectedError(
-                f"userinfo not found in auth_response={auth_response}"
-            )
+            raise UnexpectedError(f"userinfo not found in auth_response={auth_response}")
         user_info = IdentityProviderUserInfo.model_validate(auth_response["userinfo"])
     else:
         # TODO: implement other identity providers if added
@@ -241,9 +237,7 @@ async def login_callback(
         extra={"provider": provider.value},
     )
     # TODO: try/except, retry?
-    auth_response = await oauth2.authorize_access_token(
-        OAUTH2_CLIENTS[provider], request
-    )
+    auth_response = await oauth2.authorize_access_token(OAUTH2_CLIENTS[provider], request)
     logger.debug(
         "access token requested successfully",
         extra={"provider": provider.value, "auth_response": auth_response},
@@ -255,9 +249,7 @@ async def login_callback(
                 "userinfo not found in auth_response",
                 extra={"auth_response": auth_response},
             )
-            raise UnexpectedError(
-                f"userinfo not found in auth_response={auth_response}"
-            )
+            raise UnexpectedError(f"userinfo not found in auth_response={auth_response}")
         user_info = IdentityProviderUserInfo.model_validate(auth_response["userinfo"])
     else:
         # TODO: implement other identity providers if added
@@ -323,9 +315,7 @@ def _onboard_new_user(db_session: Session, user: User) -> None:
         "onboarding new user",
         extra={"user_id": user.id},
     )
-    project = crud.projects.create_project(
-        db_session, owner_id=user.id, name="Default Project"
-    )
+    project = crud.projects.create_project(db_session, owner_id=user.id, name="Default Project")
     logger.info(
         "created default project",
         extra={"project_id": project.id, "user_id": user.id},

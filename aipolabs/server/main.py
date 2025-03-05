@@ -94,18 +94,14 @@ app.add_middleware(
     allow_headers=["Authorization", "X-API-KEY"],
 )
 app.add_middleware(InterceptorMiddleware)
-app.add_middleware(
-    ProxyHeadersMiddleware, trusted_hosts=[config.APPLICATION_LOAD_BALANCER_DNS]
-)
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=[config.APPLICATION_LOAD_BALANCER_DNS])
 
 
 # NOTE: generic exception handler (type Exception) for all exceptions doesn't work
 # https://github.com/fastapi/fastapi/discussions/9478
 # That's why we have another catch-all in the interceptor middleware
 @app.exception_handler(AipolabsException)
-async def global_exception_handler(
-    request: Request, exc: AipolabsException
-) -> JSONResponse:
+async def global_exception_handler(request: Request, exc: AipolabsException) -> JSONResponse:
     return JSONResponse(
         status_code=exc.error_code,
         content={"error": f"{exc.title}, {exc.message}" if exc.message else exc.title},

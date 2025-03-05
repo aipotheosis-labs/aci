@@ -5,9 +5,7 @@ ENVIRONMENT = check_and_get_env_variable("SERVER_ENVIRONMENT")
 # LLM
 OPENAI_API_KEY = check_and_get_env_variable("SERVER_OPENAI_API_KEY")
 OPENAI_EMBEDDING_MODEL = check_and_get_env_variable("SERVER_OPENAI_EMBEDDING_MODEL")
-OPENAI_EMBEDDING_DIMENSION = int(
-    check_and_get_env_variable("SERVER_OPENAI_EMBEDDING_DIMENSION")
-)
+OPENAI_EMBEDDING_DIMENSION = int(check_and_get_env_variable("SERVER_OPENAI_EMBEDDING_DIMENSION"))
 
 # JWT
 SIGNING_KEY = check_and_get_env_variable("SERVER_SIGNING_KEY")
@@ -15,17 +13,13 @@ JWT_ALGORITHM = check_and_get_env_variable("SERVER_JWT_ALGORITHM")
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(
     check_and_get_env_variable("SERVER_JWT_ACCESS_TOKEN_EXPIRE_MINUTES")
 )
-AIPOLABS_REDIRECT_URI_BASE = check_and_get_env_variable(
-    "SERVER_AIPOLABS_REDIRECT_URI_BASE"
-)
+AIPOLABS_REDIRECT_URI_BASE = check_and_get_env_variable("SERVER_AIPOLABS_REDIRECT_URI_BASE")
 AIPOLABS_ROOT_DOMAIN = check_and_get_env_variable("SERVER_AIPOLABS_ROOT_DOMAIN")
 COOKIE_KEY_FOR_AUTH_TOKEN = "accessToken"
 
 # Google Auth
 GOOGLE_AUTH_CLIENT_ID = check_and_get_env_variable("SERVER_GOOGLE_AUTH_CLIENT_ID")
-GOOGLE_AUTH_CLIENT_SECRET = check_and_get_env_variable(
-    "SERVER_GOOGLE_AUTH_CLIENT_SECRET"
-)
+GOOGLE_AUTH_CLIENT_SECRET = check_and_get_env_variable("SERVER_GOOGLE_AUTH_CLIENT_SECRET")
 GOOGLE_AUTH_SERVER_METADATA_URL = check_and_get_env_variable(
     "SERVER_GOOGLE_AUTH_SERVER_METADATA_URL"
 )
@@ -37,26 +31,18 @@ DB_HOST = check_and_get_env_variable("SERVER_DB_HOST")
 DB_PORT = check_and_get_env_variable("SERVER_DB_PORT")
 DB_NAME = check_and_get_env_variable("SERVER_DB_NAME")
 # need to use "+psycopg" to use psycopg3 instead of psycopg2 (default)
-DB_FULL_URL = construct_db_url(
-    DB_SCHEME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME
-)
+DB_FULL_URL = construct_db_url(DB_SCHEME, DB_USER, DB_PASSWORD, DB_HOST, DB_PORT, DB_NAME)
 
 # RATE LIMITS
-RATE_LIMIT_IP_PER_SECOND = int(
-    check_and_get_env_variable("SERVER_RATE_LIMIT_IP_PER_SECOND")
-)
+RATE_LIMIT_IP_PER_SECOND = int(check_and_get_env_variable("SERVER_RATE_LIMIT_IP_PER_SECOND"))
 RATE_LIMIT_IP_PER_DAY = int(check_and_get_env_variable("SERVER_RATE_LIMIT_IP_PER_DAY"))
 AOPOLABS_API_KEY_NAME = "X-API-KEY"
 
 # QUOTA
 PROJECT_DAILY_QUOTA = int(check_and_get_env_variable("SERVER_PROJECT_DAILY_QUOTA"))
 MAX_PROJECTS_PER_USER = int(check_and_get_env_variable("SERVER_MAX_PROJECTS_PER_USER"))
-MAX_AGENTS_PER_PROJECT = int(
-    check_and_get_env_variable("SERVER_MAX_AGENTS_PER_PROJECT")
-)
-APPLICATION_LOAD_BALANCER_DNS = check_and_get_env_variable(
-    "SERVER_APPLICATION_LOAD_BALANCER_DNS"
-)
+MAX_AGENTS_PER_PROJECT = int(check_and_get_env_variable("SERVER_MAX_AGENTS_PER_PROJECT"))
+APPLICATION_LOAD_BALANCER_DNS = check_and_get_env_variable("SERVER_APPLICATION_LOAD_BALANCER_DNS")
 
 # APP
 APP_TITLE = "Aipolabs"

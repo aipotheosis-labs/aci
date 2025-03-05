@@ -32,9 +32,7 @@ def format_to_screaming_snake_case(name: str) -> str:
     e.g., "GitHub/Create Repository" -> "GITHUB_CREATE_REPOSITORY"
     e.g., "github-create-repository" -> "GITHUB_CREATE_REPOSITORY"
     """
-    name = re.sub(
-        r"[\W]+", "_", name
-    )  # Replace non-alphanumeric characters with underscore
+    name = re.sub(r"[\W]+", "_", name)  # Replace non-alphanumeric characters with underscore
     s1 = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
     s2 = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1)
     s3 = s2.replace("-", "_").replace("/", "_").replace(" ", "_")
@@ -45,9 +43,7 @@ def format_to_screaming_snake_case(name: str) -> str:
 
 
 def create_db_session(db_url: str) -> Session:
-    SessionMaker = sessionmaker(
-        autocommit=False, autoflush=False, bind=create_engine(db_url)
-    )
+    SessionMaker = sessionmaker(autocommit=False, autoflush=False, bind=create_engine(db_url))
     return SessionMaker()
 
 

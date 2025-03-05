@@ -46,8 +46,7 @@ def test_link_account_with_default_api_key_credentials(
         == dummy_app_configuration_api_key_aipolabs_test_project_1.project_id
     )
     assert (
-        linked_account.app.name
-        == dummy_app_configuration_api_key_aipolabs_test_project_1.app_name
+        linked_account.app.name == dummy_app_configuration_api_key_aipolabs_test_project_1.app_name
     )
     assert linked_account.linked_account_owner_id == body.linked_account_owner_id
     assert (

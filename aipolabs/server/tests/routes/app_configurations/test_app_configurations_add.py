@@ -21,9 +21,7 @@ def test_create_app_configuration(
 ) -> None:
     # success case
     dummy_app = dummy_apps[0]
-    body = AppConfigurationCreate(
-        app_name=dummy_app.name, security_scheme=SecurityScheme.OAUTH2
-    )
+    body = AppConfigurationCreate(app_name=dummy_app.name, security_scheme=SecurityScheme.OAUTH2)
 
     response = test_client.post(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",

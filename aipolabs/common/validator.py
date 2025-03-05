@@ -1,6 +1,4 @@
-def validate_function_parameters_schema_common(
-    parameters_schema: dict, path: str
-) -> None:
+def validate_function_parameters_schema_common(parameters_schema: dict, path: str) -> None:
     """
     Validate a function parameters schema based on a set of common rules.
     These rules should be true for all types of protocols. (rest, graphql, etc.)
@@ -37,16 +35,12 @@ def validate_function_parameters_schema_common(
     # Check that all required properties actually exist
     for prop in required:
         if prop not in properties:
-            raise ValueError(
-                f"Required property '{prop}' at {path} not found in properties"
-            )
+            raise ValueError(f"Required property '{prop}' at {path} not found in properties")
 
     # Check that all visible properties actually exist
     for prop in visible:
         if prop not in properties:
-            raise ValueError(
-                f"Visible property '{prop}' at {path} not found in properties"
-            )
+            raise ValueError(f"Visible property '{prop}' at {path} not found in properties")
 
     # Check properties in 'required' but not in 'visible' have defaults (except for objects)
     for prop_name, prop_schema in properties.items():
@@ -82,9 +76,7 @@ def validate_function_parameters_schema_rest_protocol(
 
     # type must be "object"
     if parameters_schema.get("type") != "object":
-        raise ValueError(
-            "top level type must be 'object' for REST protocol's parameters schema"
-        )
+        raise ValueError("top level type must be 'object' for REST protocol's parameters schema")
     # properties must be a dict and can only have "path", "query", "header", "cookie", "body" keys
     properties = parameters_schema["properties"]
     if not isinstance(properties, dict):

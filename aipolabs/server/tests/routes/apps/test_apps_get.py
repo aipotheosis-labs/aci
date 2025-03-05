@@ -73,9 +73,7 @@ def test_get_private_app(
     assert response.status_code == status.HTTP_404_NOT_FOUND
 
     # private app should be reachable for project with private access
-    crud.projects.set_project_visibility_access(
-        db_session, dummy_project_1.id, Visibility.PRIVATE
-    )
+    crud.projects.set_project_visibility_access(db_session, dummy_project_1.id, Visibility.PRIVATE)
     db_session.commit()
 
     response = test_client.get(

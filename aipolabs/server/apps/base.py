@@ -89,9 +89,7 @@ class AppFactory:
         module_name, class_name, _ = parse_function_name(function_name)
 
         try:
-            app_class: type[AppBase] = getattr(
-                importlib.import_module(module_name), class_name
-            )
+            app_class: type[AppBase] = getattr(importlib.import_module(module_name), class_name)
             logger.debug(
                 "found app class for function_name",
                 extra={"function_name": function_name, "app_class": app_class},

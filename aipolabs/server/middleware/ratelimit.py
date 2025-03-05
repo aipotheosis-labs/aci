@@ -26,9 +26,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             "ip-per-day": RateLimitItemPerDay(amount=RATE_LIMIT_IP_PER_DAY),
         }
 
-    async def dispatch(
-        self, request: Request, call_next: RequestResponseEndpoint
-    ) -> Response:
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         # Determine the rate limit key based on authentication method
         rate_limit_key = self._get_rate_limit_key(request)
         for rate_limit_name, rate_limit in self.rate_limits.items():
@@ -43,9 +41,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
                 )
                 return Response(
                     status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                    content=json.dumps(
-                        {"error": f"Rate limit exceeded: {rate_limit_name}"}
-                    ),
+                    content=json.dumps({"error": f"Rate limit exceeded: {rate_limit_name}"}),
                     headers=await self._get_rate_limit_headers(rate_limit_key),
                 )
 
@@ -64,9 +60,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if request.client and request.client.host:
             return f"ip:{request.client.host}"
         else:
-            logger.error(
-                "failed to generate rate limit key, request.client.host not set"
-            )
+            logger.error("failed to generate rate limit key, request.client.host not set")
             return "ip:127.0.0.1"
 
     async def _get_rate_limit_headers(self, key: str) -> dict:
@@ -75,10 +69,6 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             window_stats = await self.limiter.get_window_stats(rate_limit, key)
 
             headers[f"X-RateLimit-Limit-{rate_limit_name}"] = str(rate_limit.amount)
-            headers[f"X-RateLimit-Remaining-{rate_limit_name}"] = str(
-                window_stats.remaining
-            )
-            headers[f"X-RateLimit-Reset-{rate_limit_name}"] = str(
-                window_stats.reset_time
-            )
+            headers[f"X-RateLimit-Remaining-{rate_limit_name}"] = str(window_stats.remaining)
+            headers[f"X-RateLimit-Reset-{rate_limit_name}"] = str(window_stats.reset_time)
         return headers
