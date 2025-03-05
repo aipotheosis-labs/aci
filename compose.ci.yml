@@ -1,0 +1,4 @@
+services:
+  runner:
+    command: >
+      /bin/sh -c "alembic upgrade head && poetry run pytest"

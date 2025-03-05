@@ -9,7 +9,7 @@ on:
     - cron: "0 9 * * *"
 
 env:
-  PYTHON_VERSION: '3.12'
+  PYTHON_VERSION: "3.12"
 
 jobs:
   lint:
@@ -42,8 +42,43 @@ jobs:
         run: |
           poetry run ruff format . --diff
 
-
       # TODO: too many errors right now, will fix later
       # - name: Run Mypy Type Checking
       #   run: |
       #     poetry run mypy .
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SERVER_OPENAI_API_KEY: ${{ secrets.SERVER_OPENAI_API_KEY }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Create .env file from .env.example
+        run: |
+          cp .env.example .env
+
+      - name: Set up Docker Compose
+        uses: docker/setup-compose-action@v1
+
+      - name: Run compose test
+        run: |
+          docker-compose -f compose.yml -f compose.ci.yml run runner
+        continue-on-error: true # continue to print the logs even if the test failed to help with debugging
+
+      - name: Get service names
+        id: service_names
+        run: |
+          SERVICE_NAMES=$(docker compose config --services)
+          echo "names<<EOF" >> $GITHUB_OUTPUT
+          echo "$SERVICE_NAMES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Print logs for each service
+        run: |
+          echo "${{ steps.service_names.outputs.names }}" | while read -r service; do
+            echo "Logs for service: $service"
+            docker compose logs "$service"
+          done
