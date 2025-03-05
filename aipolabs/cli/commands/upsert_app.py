@@ -55,7 +55,7 @@ def upsert_app_helper(
     # Load secrets if provided
     secrets = {}
     if secrets_file:
-        with open(secrets_file, "r") as f:
+        with open(secrets_file) as f:
             secrets = json.load(f)
     # Render the template in-memory and load JSON data
     rendered_content = _render_template_to_string(app_file, secrets)

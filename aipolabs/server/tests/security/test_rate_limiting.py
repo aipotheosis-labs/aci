@@ -23,12 +23,10 @@ def get_ratelimit_middleware_instance(fastapi_app: FastAPI) -> RateLimitMiddlewa
             return cast(RateLimitMiddleware, layer)
         layer = getattr(layer, "app", None)
 
-    assert False, f"{RateLimitMiddleware.__name__} instance not found"
+    assert False, f"{RateLimitMiddleware.__name__} instance not found"  # noqa: B011
 
 
-def test_rate_limiting_ip_per_second(
-    test_client: TestClient, dummy_api_key_1: str
-) -> None:
+def test_rate_limiting_ip_per_second(test_client: TestClient, dummy_api_key_1: str) -> None:
     OVERRIDE_RATE_LIMIT_IP_PER_SECOND = 1
 
     rate_limit_middleware_instance = get_ratelimit_middleware_instance(fastapi_app)
@@ -37,11 +35,9 @@ def test_rate_limiting_ip_per_second(
         "ip-per-day": RateLimitItemPerDay(9999),
     }
 
-    with patch.object(
-        rate_limit_middleware_instance, "rate_limits", patched_rate_limits
-    ):
+    with patch.object(rate_limit_middleware_instance, "rate_limits", patched_rate_limits):
         # Test successful requests
-        for counter in range(OVERRIDE_RATE_LIMIT_IP_PER_SECOND):
+        for _ in range(OVERRIDE_RATE_LIMIT_IP_PER_SECOND):
             response = test_client.get(
                 f"{config.ROUTER_PREFIX_APPS}/search",
                 headers={"x-api-key": dummy_api_key_1},
@@ -70,9 +66,7 @@ def test_rate_limiting_ip_per_second(
         assert response.status_code == status.HTTP_200_OK
 
 
-def test_rate_limiting_ip_per_day(
-    test_client: TestClient, dummy_api_key_1: str
-) -> None:
+def test_rate_limiting_ip_per_day(test_client: TestClient, dummy_api_key_1: str) -> None:
     OVERRIDE_RATE_LIMIT_IP_PER_DAY = 1
 
     rate_limit_middleware_instance = get_ratelimit_middleware_instance(fastapi_app)
@@ -81,11 +75,9 @@ def test_rate_limiting_ip_per_day(
         "ip-per-day": RateLimitItemPerDay(OVERRIDE_RATE_LIMIT_IP_PER_DAY),
     }
 
-    with patch.object(
-        rate_limit_middleware_instance, "rate_limits", patched_rate_limits
-    ):
+    with patch.object(rate_limit_middleware_instance, "rate_limits", patched_rate_limits):
         # Test successful requests
-        for counter in range(OVERRIDE_RATE_LIMIT_IP_PER_DAY):
+        for _ in range(OVERRIDE_RATE_LIMIT_IP_PER_DAY):
             response = test_client.get(
                 f"{config.ROUTER_PREFIX_APPS}/search",
                 headers={"x-api-key": dummy_api_key_1},

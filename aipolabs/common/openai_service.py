@@ -1,5 +1,5 @@
 import json
-from typing import Any, Type, TypeVar, cast
+from typing import Any, TypeVar, cast
 
 from openai import OpenAI
 from pydantic import BaseModel
@@ -93,7 +93,7 @@ class OpenAIService:
             raise ValueError("No tool call was generated")
 
     # TODO: note this is a beta feature from OpenAI
-    def get_structured_response(self, response_format: Type[T], **kwargs: Any) -> T:
+    def get_structured_response(self, response_format: type[T], **kwargs: Any) -> T:
         """Returns a structured response from OpenAI API"""
         kwargs["response_format"] = response_format
         response = self.openai_client.beta.chat.completions.parse(**kwargs)

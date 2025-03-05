@@ -125,9 +125,7 @@ def test_update_agent(
     )
     assert response.status_code == status.HTTP_200_OK
     agent_public = AgentPublic.model_validate(response.json())
-    assert agent_public.custom_instructions == {
-        dummy_app_github.name: "Custom GitHub instructions"
-    }
+    assert agent_public.custom_instructions == {dummy_app_github.name: "Custom GitHub instructions"}
 
     # Test updating only name preserves other fields
     previous_state = agent_public.model_dump()
@@ -169,9 +167,7 @@ def test_update_agent_multiple_custom_instructions(
     )
     assert response.status_code == status.HTTP_200_OK
     agent_public = AgentPublic.model_validate(response.json())
-    assert agent_public.custom_instructions == {
-        dummy_app_google.name: "Custom Google instructions"
-    }
+    assert agent_public.custom_instructions == {dummy_app_google.name: "Custom Google instructions"}
 
     # Add second custom instruction for GitHub app while preserving Google app instruction
     body = AgentUpdate(
@@ -259,10 +255,7 @@ def test_update_agent_custom_instructions_restrictions(
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
-    assert (
-        response.json()["custom_instructions"][dummy_app_google.name]
-        == "Valid instructions"
-    )
+    assert response.json()["custom_instructions"][dummy_app_google.name] == "Valid instructions"
 
 
 def test_delete_agent(
@@ -304,7 +297,8 @@ def test_delete_agent_unauthorized(
     dummy_agent_1: Agent,
 ) -> None:
     """
-    user2 with access to dummy_project_2 should not be able to delete dummy_agent_1 (belongs to dummy_project_1)
+    user2 with access to dummy_project_2 should not be able to delete
+    dummy_agent_1 (belongs to dummy_project_1)
     """
     response = test_client.delete(
         f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_2.id}/agents/{dummy_agent_1.id}",

@@ -1,7 +1,8 @@
 import json
 import logging
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator, cast
+from typing import cast
 
 import pytest
 from sqlalchemy import inspect

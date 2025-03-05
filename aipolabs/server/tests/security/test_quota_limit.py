@@ -1,5 +1,5 @@
 import logging
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from unittest.mock import MagicMock, patch
 from uuid import uuid4
 
@@ -20,7 +20,7 @@ def test_validate_project_quota_valid(
     test_client: TestClient, dummy_api_key_1: str
 ) -> None:
     project = MagicMock()
-    project.daily_quota_reset_at = datetime.now(timezone.utc)
+    project.daily_quota_reset_at = datetime.now(UTC)
     project.daily_quota_used = config.PROJECT_DAILY_QUOTA - 1
     project.id = uuid4()
     with (
@@ -44,7 +44,7 @@ def test_validate_project_quota_exceeded(
     test_client: TestClient, dummy_api_key_1: str
 ) -> None:
     project = MagicMock()
-    project.daily_quota_reset_at = datetime.now(timezone.utc)
+    project.daily_quota_reset_at = datetime.now(UTC)
     project.daily_quota_used = config.PROJECT_DAILY_QUOTA
 
     with patch(

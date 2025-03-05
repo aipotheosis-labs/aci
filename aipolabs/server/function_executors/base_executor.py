@@ -62,7 +62,7 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
             )
             raise InvalidFunctionInput(
                 f"invalid function input for function={function.name}, error={e.message}"
-            )
+            ) from e
 
         logger.debug(
             "function_input before injecting defaults",

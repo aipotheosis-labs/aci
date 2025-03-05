@@ -124,7 +124,8 @@ def test_list_functions_with_private_apps(
     dummy_functions: list[Function],
     dummy_api_key_1: str,
 ) -> None:
-    # all functions (public and private) under private apps should not be reachable for project with only public access
+    # all functions (public and private) under private apps should not be reachable
+    # for project with only public access
     crud.apps.set_app_visibility(
         db_session, dummy_functions[0].app.name, Visibility.PRIVATE
     )
@@ -146,7 +147,8 @@ def test_list_functions_with_private_apps(
         "all functions under private apps should not be returned"
     )
 
-    # all functions (public and private) under private apps should be reachable for project with private access
+    # all functions (public and private) under private apps should be reachable
+    # for project with private access
     crud.projects.set_project_visibility_access(
         db_session, dummy_project_1.id, Visibility.PRIVATE
     )

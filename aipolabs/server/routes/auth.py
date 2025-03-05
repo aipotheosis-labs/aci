@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from enum import Enum
 from typing import Annotated
 
@@ -13,9 +13,8 @@ from aipolabs.common.db.sql_models import User
 from aipolabs.common.exceptions import AuthenticationError, UnexpectedError
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.user import IdentityProviderUserInfo, UserCreate
-from aipolabs.server import config
+from aipolabs.server import config, oauth2
 from aipolabs.server import dependencies as deps
-from aipolabs.server import oauth2
 
 logger = get_logger(__name__)
 # Create router instance
@@ -46,7 +45,7 @@ SIGNUP_CALLBACK_PATH_NAME = "auth_signup_callback"
 
 # Function to generate JWT using Authlib
 def create_access_token(user_id: str, expires_delta: timedelta) -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     payload = {
         "sub": user_id,
         "iat": now,

@@ -1,4 +1,3 @@
-from typing import Type
 
 from aipolabs.common.enums import Protocol, SecurityScheme
 from aipolabs.common.logging import get_logger
@@ -13,7 +12,7 @@ from aipolabs.server.function_executors.rest_oauth2_function_executor import (
 logger = get_logger(__name__)
 
 
-EXECUTOR_MAP: dict[Protocol, dict[SecurityScheme, Type[FunctionExecutor]]] = {
+EXECUTOR_MAP: dict[Protocol, dict[SecurityScheme, type[FunctionExecutor]]] = {
     Protocol.REST: {
         SecurityScheme.API_KEY: RestAPIKeyFunctionExecutor,
         SecurityScheme.OAUTH2: RestOAuth2FunctionExecutor,

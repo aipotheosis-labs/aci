@@ -1,4 +1,5 @@
 # import sentry_sdk
+import logfire
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.routing import APIRoute
@@ -25,8 +26,6 @@ from aipolabs.server.routes import (
     linked_accounts,
     projects,
 )
-import logfire
-
 from aipolabs.server.sentry import setup_sentry
 
 

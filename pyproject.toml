@@ -38,7 +38,7 @@ responses = "^0.25.3"
 respx = "^0.21.1"
 
 [tool.ruff]
-line-length = 88
+line-length = 100
 target-version = "py312"
 extend-exclude = [".venv", "venv", "build", "dist", "aipolabs/alembic/versions"]
 
@@ -47,17 +47,16 @@ select = [
     "E",   # pycodestyle errors
     "F",   # pyflakes
     "I",   # isort
-    "N",   # pep8-naming
-    "Q",   # flake8-quotes
-    "RUF", # ruff-specific rules
     "B",   # flake8-bugbear
+    "N",   # pep8-naming
     "UP",  # pyupgrade
+    "RUF", # ruff-specific rules
     "C4",  # flake8-comprehensions
-    "SIM", # flake8-simplify
-    "PTH", # use pathlib
-    "ERA", # eradicate
 ]
-ignore = ["W", "D"]
+
+# N501 is line to long error, we current have 200 comments that are longer than 100
+# characters, need to fix them gradually. Ignoring this error for now.
+ignore = ["W", "D", "ERA001", "N806", "E501", "N805", "RUF012"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -68,9 +67,6 @@ line-ending = "auto"
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.black]
-line-length = 100
 
 [tool.pytest.ini_options]
 log_cli = true

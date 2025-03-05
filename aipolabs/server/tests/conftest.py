@@ -1,7 +1,8 @@
 import logging
 import time
+from collections.abc import Generator
 from datetime import timedelta
-from typing import Generator, cast
+from typing import cast
 from unittest.mock import patch
 
 import pytest

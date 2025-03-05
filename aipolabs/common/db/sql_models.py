@@ -19,9 +19,18 @@ from datetime import datetime
 from uuid import UUID, uuid4
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import JSON, Boolean, DateTime
+from sqlalchemy import (
+    JSON,
+    Boolean,
+    DateTime,
+    ForeignKey,
+    Integer,
+    String,
+    Text,
+    UniqueConstraint,
+    func,
+)
 from sqlalchemy import Enum as SqlEnum
-from sqlalchemy import ForeignKey, Integer, String, Text, UniqueConstraint, func
 
 # Note: need to use postgresqlr ARRAY in order to use overlap operator
 from sqlalchemy.dialects.postgresql import ARRAY
@@ -69,9 +78,7 @@ class Entity(Base):
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
     )
     # Discriminator column
-    type: Mapped[EntityType] = mapped_column(
-        SqlEnum(EntityType), nullable=False, init=False
-    )
+    type: Mapped[EntityType] = mapped_column(SqlEnum(EntityType), nullable=False, init=False)
     name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     email: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     profile_picture: Mapped[str | None] = mapped_column(Text, nullable=True)
@@ -129,13 +136,9 @@ class User(Entity):
         )
 
     # google, github, email, etc
-    identity_provider: Mapped[str] = mapped_column(
-        String(MAX_STRING_LENGTH), nullable=False
-    )
+    identity_provider: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     # google id, github id, email, etc
-    user_id_by_provider: Mapped[str] = mapped_column(
-        String(MAX_STRING_LENGTH), nullable=False
-    )
+    user_id_by_provider: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
 
     memberships: Mapped[list[Membership]] = relationship(
         "Membership", back_populates="user", init=False
@@ -146,9 +149,7 @@ class User(Entity):
     }
 
     __table_args__ = (
-        UniqueConstraint(
-            "identity_provider", "user_id_by_provider", name="uc_auth_provider_user"
-        ),
+        UniqueConstraint("identity_provider", "user_id_by_provider", name="uc_auth_provider_user"),
     )
 
 
@@ -193,9 +194,7 @@ class Membership(Base):
     organization_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("organizations.id"), nullable=False
     )
-    role: Mapped[OrganizationRole] = mapped_column(
-        SqlEnum(OrganizationRole), nullable=False
-    )
+    role: Mapped[OrganizationRole] = mapped_column(SqlEnum(OrganizationRole), nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
@@ -229,12 +228,8 @@ class Subscription(Base):
     entity_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("entities.id"), nullable=False
     )
-    plan: Mapped[SubscriptionPlan] = mapped_column(
-        SqlEnum(SubscriptionPlan), nullable=False
-    )
-    status: Mapped[SubscriptionStatus] = mapped_column(
-        SqlEnum(SubscriptionStatus), nullable=False
-    )
+    plan: Mapped[SubscriptionPlan] = mapped_column(SqlEnum(SubscriptionPlan), nullable=False)
+    status: Mapped[SubscriptionStatus] = mapped_column(SqlEnum(SubscriptionStatus), nullable=False)
 
     expires_at: Mapped[datetime | None] = mapped_column(
         DateTime(timezone=False), default=None, nullable=True
@@ -274,20 +269,14 @@ class Project(Base):
     # if public, the project can only access public apps and functions
     # if private, the project can access all apps and functions, useful for A/B testing and internal testing before releasing
     # newly added apps and functions to public
-    visibility_access: Mapped[Visibility] = mapped_column(
-        SqlEnum(Visibility), nullable=False
-    )
+    visibility_access: Mapped[Visibility] = mapped_column(SqlEnum(Visibility), nullable=False)
 
     """ quota related fields: TODO: TBD how to implement quota system """
-    daily_quota_used: Mapped[int] = mapped_column(
-        Integer, default=0, nullable=False, init=False
-    )
+    daily_quota_used: Mapped[int] = mapped_column(Integer, default=0, nullable=False, init=False)
     daily_quota_reset_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
     )
-    total_quota_used: Mapped[int] = mapped_column(
-        Integer, default=0, nullable=False, init=False
-    )
+    total_quota_used: Mapped[int] = mapped_column(Integer, default=0, nullable=False, init=False)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
@@ -372,9 +361,7 @@ class APIKey(Base):
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
     )
     # "key" is the actual API key string that the user will use to authenticate
-    key: Mapped[str] = mapped_column(
-        String(MAX_STRING_LENGTH), nullable=False, unique=True
-    )
+    key: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False, unique=True)
     agent_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("agents.id"), unique=True, nullable=False
     )
@@ -411,9 +398,7 @@ class Function(Base):
     )
     # Note: the function name is unique across the platform and should have app information, e.g., "GITHUB_CLONE_REPO"
     # ideally this should just be <app name>_<function name> (uppercase)
-    name: Mapped[str] = mapped_column(
-        String(MAX_STRING_LENGTH), nullable=False, unique=True
-    )
+    name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False, unique=True)
     description: Mapped[str] = mapped_column(Text, nullable=False)
     tags: Mapped[list[str]] = mapped_column(ARRAY(String), nullable=False)
     # if private, the function is only visible to privileged Projects (e.g., useful for internal and A/B testing)
@@ -421,19 +406,13 @@ class Function(Base):
     # can be used to control if the app's discoverability
     active: Mapped[bool] = mapped_column(Boolean, nullable=False)
     protocol: Mapped[Protocol] = mapped_column(SqlEnum(Protocol), nullable=False)
-    protocol_data: Mapped[dict] = mapped_column(
-        MutableDict.as_mutable(JSON), nullable=False
-    )
+    protocol_data: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
     # empty dict for function that takes no args
-    parameters: Mapped[dict] = mapped_column(
-        MutableDict.as_mutable(JSON), nullable=False
-    )
+    parameters: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
     # TODO: should response schema be generic (data + execution success of not + optional error) or specific to the function
     response: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
     # TODO: should we provide EMBEDDING_DIMENSION here? which makes it less flexible if we want to change the embedding dimention in the future
-    embedding: Mapped[list[float]] = mapped_column(
-        Vector(EMBEDDING_DIMENSION), nullable=False
-    )
+    embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENSION), nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
@@ -447,9 +426,7 @@ class Function(Base):
     )
 
     # the App that this function belongs to
-    app: Mapped[App] = relationship(
-        "App", lazy="select", back_populates="functions", init=False
-    )
+    app: Mapped[App] = relationship("App", lazy="select", back_populates="functions", init=False)
 
     @property
     def app_name(self) -> str:
@@ -463,9 +440,7 @@ class App(Base):
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
     )
     # Need name to be unique to support globally unique function name.
-    name: Mapped[str] = mapped_column(
-        String(APP_NAME_MAX_LENGTH), nullable=False, unique=True
-    )
+    name: Mapped[str] = mapped_column(String(APP_NAME_MAX_LENGTH), nullable=False, unique=True)
     display_name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     # provider (or company) of the app, e.g., google, github, or aipolabs or user (if allow user to create custom apps)
     provider: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
@@ -482,13 +457,11 @@ class App(Base):
         MutableDict.as_mutable(JSON), nullable=False
     )
     # default security credentials (provided by aipolabs, if any) for the app that can be used by any client
-    default_security_credentials_by_scheme: Mapped[dict[SecurityScheme, dict]] = (
-        mapped_column(MutableDict.as_mutable(JSON), nullable=False)
+    default_security_credentials_by_scheme: Mapped[dict[SecurityScheme, dict]] = mapped_column(
+        MutableDict.as_mutable(JSON), nullable=False
     )
     # embedding vector for similarity search
-    embedding: Mapped[list[float]] = mapped_column(
-        Vector(EMBEDDING_DIMENSION), nullable=False
-    )
+    embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENSION), nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
@@ -539,9 +512,7 @@ class AppConfiguration(Base):
     # implementation, we keep the flexibility for future use to allow user to select different security scheme for different linked accounts.
     # So, ultimately the actual security scheme and credentials should be decided by individual linked accounts
     # stored in linked_accounts table.
-    security_scheme: Mapped[SecurityScheme] = mapped_column(
-        SqlEnum(SecurityScheme), nullable=False
-    )
+    security_scheme: Mapped[SecurityScheme] = mapped_column(SqlEnum(SecurityScheme), nullable=False)
     # can store security scheme override for each app, e.g., store client id and secret for OAuth2 if client
     # want to use their own OAuth2 app for whitelabeling
     # TODO: create a pydantic model for security scheme overrides once we finalize overridable fields
@@ -610,17 +581,11 @@ class LinkedAccount(Base):
     # linked_account_owner_id should be unique per app per project, it should identify the end user, which
     # is the owner of the linked account. One common design is to use the same linked_account_owner_id that
     # identifies an end user for all configured apps in a project.
-    linked_account_owner_id: Mapped[str] = mapped_column(
-        String(MAX_STRING_LENGTH), nullable=False
-    )
-    security_scheme: Mapped[SecurityScheme] = mapped_column(
-        SqlEnum(SecurityScheme), nullable=False
-    )
+    linked_account_owner_id: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
+    security_scheme: Mapped[SecurityScheme] = mapped_column(SqlEnum(SecurityScheme), nullable=False)
     # security credentials are different for each security scheme, e.g., API key, OAuth2 (access token, refresh token, scope, etc) etc
     # it can beempty dict because the linked account could be created to use default credentials provided by Aipolabs
-    security_credentials: Mapped[dict] = mapped_column(
-        MutableDict.as_mutable(JSON), nullable=False
-    )
+    security_credentials: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSON), nullable=False)
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(

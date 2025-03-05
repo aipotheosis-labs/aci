@@ -32,9 +32,8 @@ from aipolabs.common.schemas.security_scheme import (
     OAuth2Scheme,
     OAuth2SchemeCredentials,
 )
-from aipolabs.server import config
+from aipolabs.server import config, oauth2
 from aipolabs.server import dependencies as deps
-from aipolabs.server import oauth2
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -409,10 +408,12 @@ async def linked_accounts_oauth2_callback(
         )
     except Exception as e:
         logger.exception(
-            f"failed to decode state_jwt, {str(e)}",
+            f"failed to decode state_jwt, {e!s}",
             extra={"state_jwt": state_jwt},
         )
-        raise AuthenticationError("invalid state parameter during account linking")
+        raise AuthenticationError(
+            "invalid state parameter during account linking"
+        ) from e
 
     # create oauth2 client
     app = crud.apps.get_app(db_session, state.app_name, False, False)
@@ -452,10 +453,10 @@ async def linked_accounts_oauth2_callback(
             extra={"token_response": token_response},
         )
     except Exception as e:
-        logger.exception(f"failed to retrieve oauth2 token, {str(e)}")
+        logger.exception(f"failed to retrieve oauth2 token, {e!s}")
         raise AuthenticationError(
             "failed to retrieve oauth2 token during account linking"
-        )
+        ) from e
 
     # TODO: we might want to verify scope authorized by end user (token_response["scope"]) is what we asked
     security_credentials = OAuth2SchemeCredentials(

@@ -4,7 +4,7 @@ TODO: function todelete project and all related data (app_configurations, agents
 """
 
 import secrets
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
 from sqlalchemy import select, update
@@ -86,10 +86,10 @@ def set_project_visibility_access(
 
 # TODO: TBD by business model
 def increase_project_quota_usage(db_session: Session, project: Project) -> None:
-    now: datetime = datetime.now(timezone.utc)
-    need_reset = now >= project.daily_quota_reset_at.replace(
-        tzinfo=timezone.utc
-    ) + timedelta(days=1)
+    now: datetime = datetime.now(UTC)
+    need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=UTC) + timedelta(
+        days=1
+    )
 
     if need_reset:
         # Reset the daily quota

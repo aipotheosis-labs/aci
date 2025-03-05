@@ -1,4 +1,5 @@
 import sentry_sdk
+
 from aipolabs.server import config
 
 

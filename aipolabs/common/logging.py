@@ -9,15 +9,16 @@ import logfire
 def setup_logging(
     formatter: logging.Formatter | None = None,
     level: int = logging.INFO,
-    filters: list[logging.Filter] = [],
+    filters: list[logging.Filter] | None = None,
     include_file_handler: bool = False,
     file_path: str | None = None,
     environment: str = "local",
 ) -> None:
+    if filters is None:
+        filters = []
+
     if formatter is None:
-        formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        )
+        formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
     root_logger = logging.getLogger()
     root_logger.setLevel(level)  # Set the root logger level
@@ -32,9 +33,7 @@ def setup_logging(
 
     if include_file_handler:
         if file_path is None:
-            raise ValueError(
-                "file_path must be provided if include_file_handler is True"
-            )
+            raise ValueError("file_path must be provided if include_file_handler is True")
         file_handler = RotatingFileHandler(file_path, maxBytes=10485760, backupCount=10)
         file_handler.setFormatter(formatter)
         file_handler.setLevel(level)

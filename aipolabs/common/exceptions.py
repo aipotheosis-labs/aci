@@ -1,7 +1,7 @@
 from fastapi import status
 
 
-class AipolabsException(Exception):
+class AipolabsException(Exception):  # noqa: N818
     """
     Base class for all Aipolabs exceptions with consistent structure.
 

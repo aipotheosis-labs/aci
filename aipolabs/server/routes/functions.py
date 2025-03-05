@@ -140,7 +140,7 @@ async def search_functions(
 async def get_function_definition(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     function_name: str,
-    inference_provider: InferenceProvider = Query(
+    inference_provider: InferenceProvider = Query(  # noqa: B008 # TODO: need to fix this later
         default=InferenceProvider.OPENAI,
         description="The inference provider, which determines the format of the function definition.",
     ),

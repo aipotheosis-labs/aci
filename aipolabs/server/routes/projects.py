@@ -11,9 +11,8 @@ from aipolabs.common.exceptions import AgentNotFound, ProjectNotFound
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.agent import AgentCreate, AgentPublic, AgentUpdate
 from aipolabs.common.schemas.project import ProjectCreate, ProjectPublic
-from aipolabs.server import acl
+from aipolabs.server import acl, quota_manager
 from aipolabs.server import dependencies as deps
-from aipolabs.server import quota_manager
 
 # Create router instance
 router = APIRouter()
