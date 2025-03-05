@@ -446,5 +446,55 @@
       "visible": ["body"],
       "additionalProperties": false
     }
+  },
+  {
+    "name": "EXA_AI__ANSWER",
+    "description": "Get an LLM answer to a question informed by Exa search results.",
+    "tags": ["awnser", "ai"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/answer",
+      "server_url": "https://api.exa.ai"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "body parameters",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "The query string you want to find search results for. the query in http body"
+            },
+            "stream": {
+              "type": "boolean",
+              "default": false,
+              "description": "If true, the response will be streamed. Default false."
+            },
+            "text": {
+              "type": "boolean",
+              "default": false,
+              "description": "If true, the response includes full text content in the search results"
+            },
+            "model": {
+              "type": "string",
+              "default": "exa",
+              "description": "The model to use for answering the query. Default exa.",
+              "enum": ["exa", "exa-pro"]
+            }
+          },
+          "visible": ["query"],
+          "required": ["query"],
+          "additionalProperties": false
+        }
+      },
+      "visible": ["body"],
+      "required": ["body"],
+      "additionalProperties": false
+    }
   }
 ]

@@ -88,6 +88,7 @@ def fuzzy_test_function_execution_helper(
         f"{config.SERVER_URL}/v1/functions/{function_name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": aipolabs_api_key},
+        timeout=30.0,
     )
 
     if response.status_code != 200:
