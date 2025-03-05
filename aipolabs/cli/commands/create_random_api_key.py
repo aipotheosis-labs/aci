@@ -26,13 +26,18 @@ from aipolabs.common.logging import create_headline
     type=Visibility,
     help="visibility access of the project that the api key belongs to, either 'public' or 'private'",
 )
+@click.option(
+    "--quiet",
+    is_flag=True,
+    help="provide this flag to suppress output",
+)
 @click.command()
-def create_random_api_key(visibility_access: Visibility) -> str:
+def create_random_api_key(visibility_access: Visibility, quiet: bool) -> str:
     """Create a random test api key for local development."""
-    return create_random_api_key_helper(visibility_access)
+    return create_random_api_key_helper(visibility_access, quiet)
 
 
-def create_random_api_key_helper(visibility_access: Visibility) -> str:
+def create_random_api_key_helper(visibility_access: Visibility, quiet: bool) -> str:
     # can not do dry run because of the dependencies
     skip_dry_run = True
 
@@ -45,12 +50,14 @@ def create_random_api_key_helper(visibility_access: Visibility) -> str:
         email=f"test_{random_id}@example.com",
         profile_picture=f"https://example.com/profile_{random_id}.png",
         plan=SubscriptionPlan.FREE,
+        quiet=quiet,
         skip_dry_run=skip_dry_run,
     )
     project_id = create_project.create_project_helper(
         name=f"Test Project {random_id}",
         owner_id=user_id,
         visibility_access=visibility_access,
+        quiet=quiet,
         skip_dry_run=skip_dry_run,
     )
     agent_id = create_agent.create_agent_helper(
@@ -60,6 +67,7 @@ def create_random_api_key_helper(visibility_access: Visibility) -> str:
         excluded_apps=[],
         excluded_functions=[],
         custom_instructions={},
+        quiet=quiet,
         skip_dry_run=skip_dry_run,
     )
 
@@ -68,10 +76,11 @@ def create_random_api_key_helper(visibility_access: Visibility) -> str:
         api_key: APIKey | None = crud.projects.get_api_key_by_agent_id(db_session, agent_id)
         if not api_key:
             raise ValueError(f"API key with agent ID {agent_id} not found")
-        click.echo(create_headline("created test API key"))
-        click.echo(f"User id: {user_id}")
-        click.echo(f"Project id: {project_id}")
-        click.echo(f"Agent id: {agent_id}")
-        click.echo(f"API Key: {api_key.key}")
+        if not quiet:
+            click.echo(create_headline("created test API key"))
+            click.echo(f"User id: {user_id}")
+            click.echo(f"Project id: {project_id}")
+            click.echo(f"Agent id: {agent_id}")
+            click.echo(f"API Key: {api_key.key}")
 
     return str(api_key.key)

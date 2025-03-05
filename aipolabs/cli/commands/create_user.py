@@ -49,6 +49,11 @@ from aipolabs.common.schemas.user import UserCreate
     default=SubscriptionPlan.FREE,
 )
 @click.option(
+    "--quiet",
+    is_flag=True,
+    help="provide this flag to suppress output",
+)
+@click.option(
     "--skip-dry-run",
     is_flag=True,
     help="provide this flag to run the command and apply changes to the database",
@@ -60,11 +65,19 @@ def create_user(
     email: str,
     profile_picture: str | None,
     plan: SubscriptionPlan,
+    quiet: bool,
     skip_dry_run: bool,
 ) -> UUID:
     """Create a user in db."""
     return create_user_helper(
-        identity_provider, user_id_by_provider, name, email, profile_picture, plan, skip_dry_run
+        identity_provider,
+        user_id_by_provider,
+        name,
+        email,
+        profile_picture,
+        plan,
+        quiet,
+        skip_dry_run,
     )
 
 
@@ -75,6 +88,7 @@ def create_user_helper(
     email: str,
     profile_picture: str | None,
     plan: SubscriptionPlan,
+    quiet: bool,
     skip_dry_run: bool,
 ) -> UUID:
     # no need to check if user exists, db will raise an error if user already exists
@@ -96,8 +110,9 @@ def create_user_helper(
             click.echo(create_headline("provide --skip-dry-run to commit changes"))
             db_session.rollback()
         else:
-            click.echo(create_headline(f"committing creation of user {user.name}"))
-            click.echo(user)
+            if not quiet:
+                click.echo(create_headline(f"committing creation of user {user.name}"))
+                click.echo(user)
             db_session.commit()
 
         return user.id  # type: ignore

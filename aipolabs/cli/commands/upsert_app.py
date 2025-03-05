@@ -35,22 +35,27 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
     help="Path to the secrets JSON file",
 )
 @click.option(
+    "--quiet",
+    is_flag=True,
+    help="provide this flag to suppress output",
+)
+@click.option(
     "--skip-dry-run",
     is_flag=True,
     help="Provide this flag to run the command and apply changes to the database",
 )
-def upsert_app(app_file: Path, secrets_file: Path | None, skip_dry_run: bool) -> UUID:
+def upsert_app(app_file: Path, secrets_file: Path | None, quiet: bool, skip_dry_run: bool) -> UUID:
     """
     Insert or update an App in the DB from a JSON file, optionally injecting secrets.
     If an app with the given name already exists, performs an update; otherwise, creates a new app.
     For changing the app name of an existing app, use the <PLACEHOLDER> command.
     """
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
-        return upsert_app_helper(db_session, app_file, secrets_file, skip_dry_run)
+        return upsert_app_helper(db_session, app_file, secrets_file, quiet, skip_dry_run)
 
 
 def upsert_app_helper(
-    db_session: Session, app_file: Path, secrets_file: Path | None, skip_dry_run: bool
+    db_session: Session, app_file: Path, secrets_file: Path | None, quiet: bool, skip_dry_run: bool
 ) -> UUID:
     # Load secrets if provided
     secrets = {}
@@ -61,26 +66,32 @@ def upsert_app_helper(
     rendered_content = _render_template_to_string(app_file, secrets)
     app_upsert = AppUpsert.model_validate(json.loads(rendered_content))
 
-    click.echo(create_headline("Provided App Data"))
-    click.echo(app_upsert.model_dump_json(indent=2))
+    if not quiet:
+        click.echo(create_headline("Provided App Data"))
+        click.echo(app_upsert.model_dump_json(indent=2))
 
     existing_app = crud.apps.get_app(
         db_session, app_upsert.name, public_only=False, active_only=False
     )
     if existing_app is None:
-        click.echo(create_headline(f"New App '{app_upsert.name}' Found, Will Create"))
-        return create_app_helper(db_session, app_upsert, skip_dry_run)
+        if not quiet:
+            click.echo(create_headline(f"New App '{app_upsert.name}' Found, Will Create"))
+        return create_app_helper(db_session, app_upsert, quiet, skip_dry_run)
     else:
-        click.echo(create_headline(f"App'{app_upsert.name}' Exists, Will Update"))
+        if not quiet:
+            click.echo(create_headline(f"App'{app_upsert.name}' Exists, Will Update"))
         return update_app_helper(
             db_session,
             existing_app,
             app_upsert,
+            quiet,
             skip_dry_run,
         )
 
 
-def create_app_helper(db_session: Session, app_upsert: AppUpsert, skip_dry_run: bool) -> UUID:
+def create_app_helper(
+    db_session: Session, app_upsert: AppUpsert, quiet: bool, skip_dry_run: bool
+) -> UUID:
     # Generate app embedding using the fields defined in AppEmbeddingFields
     app_embedding = embeddings.generate_app_embedding(
         AppEmbeddingFields.model_validate(app_upsert.model_dump()),
@@ -98,15 +109,16 @@ def create_app_helper(db_session: Session, app_upsert: AppUpsert, skip_dry_run: 
         click.echo(create_headline("Provide --skip-dry-run to commit changes"))
         db_session.rollback()
     else:
-        click.echo(create_headline(f"Committing creation of app '{app.name}'"))
-        click.echo(app)
+        if not quiet:
+            click.echo(create_headline(f"Committing creation of app '{app.name}'"))
+            click.echo(app)
         db_session.commit()
 
     return app.id  # type: ignore
 
 
 def update_app_helper(
-    db_session: Session, existing_app: App, app_upsert: AppUpsert, skip_dry_run: bool
+    db_session: Session, existing_app: App, app_upsert: AppUpsert, quiet: bool, skip_dry_run: bool
 ) -> UUID:
     """
     Update an existing app in the database.
@@ -115,7 +127,8 @@ def update_app_helper(
     """
     existing_app_upsert = AppUpsert.model_validate(existing_app, from_attributes=True)
     if existing_app_upsert == app_upsert:
-        click.echo(create_headline(f"No changes to app '{existing_app.name}'"))
+        if not quiet:
+            click.echo(create_headline(f"No changes to app '{existing_app.name}'"))
         return existing_app.id  # type: ignore
 
     # Determine if any fields affecting the embedding have changed
@@ -140,7 +153,8 @@ def update_app_helper(
         click.echo(create_headline("Provide --skip-dry-run to commit changes"))
         db_session.rollback()
     else:
-        click.echo(create_headline(f"Committing update of app '{existing_app.name}'"))
+        if not quiet:
+            click.echo(create_headline(f"Committing update of app '{existing_app.name}'"))
         db_session.commit()
 
     return updated_app.id  # type: ignore

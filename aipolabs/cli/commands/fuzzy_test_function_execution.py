@@ -35,6 +35,11 @@ from aipolabs.common.schemas.function import FunctionExecute, InferenceProvider
     help="ID of the linked account owner to use for authentication",
 )
 @click.option(
+    "--quiet",
+    is_flag=True,
+    help="provide this flag to suppress output",
+)
+@click.option(
     "--prompt",
     "prompt",
     type=str,
@@ -44,11 +49,12 @@ def fuzzy_test_function_execution(
     aipolabs_api_key: str,
     function_name: str,
     linked_account_owner_id: UUID,
+    quiet: bool,
     prompt: str | None = None,
 ) -> None:
     """Test function execution with GPT-generated inputs."""
     return fuzzy_test_function_execution_helper(
-        aipolabs_api_key, function_name, linked_account_owner_id, prompt
+        aipolabs_api_key, function_name, linked_account_owner_id, quiet, prompt
     )
 
 
@@ -56,6 +62,7 @@ def fuzzy_test_function_execution_helper(
     aipolabs_api_key: str,
     function_name: str,
     linked_account_owner_id: UUID,
+    quiet: bool,
     prompt: str | None = None,
 ) -> None:
     """Test function execution with GPT-generated inputs."""
@@ -69,16 +76,18 @@ def fuzzy_test_function_execution_helper(
         raise click.ClickException(f"Failed to get function definition: {response.json()}")
 
     function_definition = response.json()
-    click.echo(create_headline("Function definition fetched"))
-    click.echo(f"{json.dumps(function_definition)}")
+    if not quiet:
+        click.echo(create_headline("Function definition fetched"))
+        click.echo(f"{json.dumps(function_definition)}")
 
     # Use OpenAI function calling to generate a random input
     openai_service = OpenAIService(config.OPENAI_API_KEY)
     function_args = openai_service.generate_fuzzy_function_call_arguments(
         function_definition, prompt=prompt
     )
-    click.echo(create_headline("Generated function call arguments"))
-    click.echo(f"{json.dumps(function_args)}")
+    if not quiet:
+        click.echo(create_headline("Generated function call arguments"))
+        click.echo(f"{json.dumps(function_args)}")
 
     # Execute function with generated input
     function_execute = FunctionExecute(
@@ -94,5 +103,6 @@ def fuzzy_test_function_execution_helper(
         raise click.ClickException(f"Function execution failed: {response.json()}")
 
     result = response.json()
-    click.echo(create_headline(f"Execution result for {function_name}"))
-    click.echo(f"{json.dumps(result)}")
+    if not quiet:
+        click.echo(create_headline(f"Execution result for {function_name}"))
+        click.echo(f"{json.dumps(result)}")

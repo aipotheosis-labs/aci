@@ -25,11 +25,16 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
     help="Path to the functions JSON file",
 )
 @click.option(
+    "--quiet",
+    is_flag=True,
+    help="provide this flag to suppress output",
+)
+@click.option(
     "--skip-dry-run",
     is_flag=True,
     help="Provide this flag to run the command and apply changes to the database",
 )
-def upsert_functions(functions_file: Path, skip_dry_run: bool) -> list[UUID]:
+def upsert_functions(functions_file: Path, quiet: bool, skip_dry_run: bool) -> list[UUID]:
     """
     Upsert functions in the DB from a JSON file.
 
@@ -40,10 +45,10 @@ def upsert_functions(functions_file: Path, skip_dry_run: bool) -> list[UUID]:
 
     Batch creation and update operations are performed.
     """
-    return upsert_functions_helper(functions_file, skip_dry_run)
+    return upsert_functions_helper(functions_file, quiet, skip_dry_run)
 
 
-def upsert_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UUID]:
+def upsert_functions_helper(functions_file: Path, quiet: bool, skip_dry_run: bool) -> list[UUID]:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
         with open(functions_file, "r") as f:
             functions_data = json.load(f)
@@ -54,7 +59,8 @@ def upsert_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UU
         ]
         app_name = _validate_all_functions_belong_to_the_app(functions_upsert)
         _validate_app_exists(db_session, app_name)
-        click.echo(create_headline(f"Upserting functions for App={app_name}"))
+        if not quiet:
+            click.echo(create_headline(f"Upserting functions for App={app_name}"))
 
         new_functions: list[FunctionUpsert] = []
         existing_functions: list[FunctionUpsert] = []
@@ -69,15 +75,16 @@ def upsert_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UU
             else:
                 existing_functions.append(function_upsert)
 
-        click.echo(create_headline(f"New Functions to Create: {len(new_functions)}"))
-        for func in new_functions:
-            click.echo(func.name)
-        click.echo(create_headline(f"Existing Functions to Update: {len(existing_functions)}"))
-        for func in existing_functions:
-            click.echo(func.name)
+        if not quiet:
+            click.echo(create_headline(f"New Functions to Create: {len(new_functions)}"))
+            for func in new_functions:
+                click.echo(func.name)
+            click.echo(create_headline(f"Existing Functions to Update: {len(existing_functions)}"))
+            for func in existing_functions:
+                click.echo(func.name)
 
         created_ids = create_functions_helper(db_session, new_functions)
-        updated_ids = update_functions_helper(db_session, existing_functions)
+        updated_ids = update_functions_helper(db_session, existing_functions, quiet)
 
         if not skip_dry_run:
             click.echo(
@@ -87,7 +94,8 @@ def upsert_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UU
             )
             db_session.rollback()
         else:
-            click.echo(create_headline("Committing changes to the database."))
+            if not quiet:
+                click.echo(create_headline("Committing changes to the database."))
             db_session.commit()
 
         return created_ids + updated_ids
@@ -108,14 +116,16 @@ def create_functions_helper(
         embedding_dimension=config.OPENAI_EMBEDDING_DIMENSION,
     )
     created_functions = crud.functions.create_functions(
-        db_session, functions_upsert, functions_embeddings
+        db_session,
+        functions_upsert,
+        functions_embeddings,
     )
 
     return [func.id for func in created_functions]
 
 
 def update_functions_helper(
-    db_session: Session, functions_upsert: list[FunctionUpsert]
+    db_session: Session, functions_upsert: list[FunctionUpsert], quiet: bool
 ) -> list[UUID]:
     """
     Batch updates functions in the database.
@@ -137,11 +147,12 @@ def update_functions_helper(
             existing_function, from_attributes=True
         )
         if existing_function_upsert == function_upsert:
-            click.echo(
-                create_headline(
-                    f"No changes detected for function '{existing_function.name}', skipping."
+            if not quiet:
+                click.echo(
+                    create_headline(
+                        f"No changes detected for function '{existing_function.name}', skipping."
+                    )
                 )
-            )
             continue
         else:
             diff = DeepDiff(
@@ -149,12 +160,13 @@ def update_functions_helper(
                 function_upsert.model_dump(),
                 ignore_order=True,
             )
-            click.echo(
-                create_headline(
-                    f"Will update function '{existing_function.name}' with the following changes:"
+            if not quiet:
+                click.echo(
+                    create_headline(
+                        f"Will update function '{existing_function.name}' with the following changes:"
+                    )
                 )
-            )
-            click.echo(diff.pretty())
+                click.echo(diff.pretty())
 
         if _need_function_embedding_regeneration(existing_function_upsert, function_upsert):
             functions_with_new_embeddings.append(function_upsert)
