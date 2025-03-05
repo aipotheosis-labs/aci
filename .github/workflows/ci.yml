@@ -1,0 +1,49 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "0 9 * * *"
+
+env:
+  PYTHON_VERSION: '3.12'
+
+jobs:
+  lint:
+    name: Format & Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Poetry
+        run: |
+          curl -sSL https://install.python-poetry.org | python3 -
+          echo "${{ runner.tool_cache }}/poetry/bin" >> $GITHUB_PATH
+
+      - name: Install Dependencies with Poetry
+        run: |
+          poetry install --no-interaction --no-ansi
+
+      - name: Run Ruff Linting
+        run: |
+          poetry run ruff check .
+
+      - name: Run Ruff Formatting
+        run: |
+          poetry run ruff format . --diff
+
+
+      # TODO: too many errors right now, will fix later
+      # - name: Run Mypy Type Checking
+      #   run: |
+      #     poetry run mypy .
