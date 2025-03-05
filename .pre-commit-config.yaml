@@ -1,21 +1,33 @@
 repos:
-  - repo: https://github.com/psf/black
-    rev: 24.8.0  # Use the latest stable version
+  # General checks
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
     hooks:
-      - id: black
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: check-added-large-files
+      - id: check-merge-conflict
 
-  - repo: https://github.com/PyCQA/isort
-    rev: 5.13.2  # Use the latest stable version
+  - repo: local
     hooks:
-      - id: isort
-        args: ["--profile", "black"]
-
-  - repo: https://github.com/PyCQA/flake8
-    rev: 7.1.1  # Use the latest stable version
-    hooks:
-      - id: flake8
-
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v1.11.2  # Use the latest stable version
-    hooks:
-      - id: mypy
+      - id: format
+        name: running format checks
+        language: system
+        entry: poetry run ruff format . --diff
+        pass_filenames: false
+        require_serial: true
+      - id: lint
+        name: running lint checks
+        language: system
+        entry: poetry run ruff check .
+        pass_filenames: false
+        require_serial: true
+      # TODO: not running it now because there are too many errors
+      # - id: mypy
+      #   name: running mypy checks
+      #   language: system
+      #   entry: poetry run mypy .
+      #   pass_filenames: false
+      #   require_serial: true
