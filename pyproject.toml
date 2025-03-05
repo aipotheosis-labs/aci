@@ -26,18 +26,44 @@ jinja2 = "^3.1.5"
 deepdiff = "^8.2.0"
 python-json-logger = "^3.2.1"
 logfire = { extras = ["fastapi", "sqlalchemy"], version = "^3.6.4" }
-sentry-sdk = {extras = ["fastapi"], version = "^2.22.0"}
+sentry-sdk = { extras = ["fastapi"], version = "^2.22.0" }
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
 mypy = "^1.11.2"
 alembic = "^1.13.3"
-flake8 = "^7.1.1"
-black = "^24.8.0"
-isort = "^5.13.2"
+ruff = "^0.9.9"
 pre-commit = "^4.0.0"
 responses = "^0.25.3"
 respx = "^0.21.1"
+
+[tool.ruff]
+line-length = 88
+target-version = "py312"
+extend-exclude = [".venv", "venv", "build", "dist"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "Q",   # flake8-quotes
+    "RUF", # ruff-specific rules
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+    "PTH", # use pathlib
+    "ERA", # eradicate
+]
+ignore = ["W", "D"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
 
 [build-system]
 requires = ["poetry-core"]
