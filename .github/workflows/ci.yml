@@ -52,6 +52,9 @@ jobs:
     timeout-minutes: 30
     env:
       SERVER_OPENAI_API_KEY: ${{ secrets.SERVER_OPENAI_API_KEY }}
+      SERVER_GOOGLE_AUTH_CLIENT_ID: ${{ secrets.SERVER_GOOGLE_AUTH_CLIENT_ID }}
+      SERVER_GOOGLE_AUTH_CLIENT_SECRET: ${{ secrets.SERVER_GOOGLE_AUTH_CLIENT_SECRET }}
+      CLI_OPENAI_API_KEY: ${{ secrets.CLI_OPENAI_API_KEY }}
 
     steps:
       - uses: actions/checkout@v4
@@ -61,11 +64,6 @@ jobs:
 
       - name: Run compose test
         id: run_tests
-        env:
-          SERVER_OPENAI_API_KEY: ${{ secrets.SERVER_OPENAI_API_KEY }}
-          SERVER_GOOGLE_AUTH_CLIENT_ID: ${{ secrets.SERVER_GOOGLE_AUTH_CLIENT_ID }}
-          SERVER_GOOGLE_AUTH_CLIENT_SECRET: ${{ secrets.SERVER_GOOGLE_AUTH_CLIENT_SECRET }}
-          CLI_OPENAI_API_KEY: ${{ secrets.CLI_OPENAI_API_KEY }}
         run: |
           docker compose -f compose.yml -f compose.ci.yml run runner
 
