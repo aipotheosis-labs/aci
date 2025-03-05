@@ -79,7 +79,7 @@ def upsert_app_helper(
         return create_app_helper(db_session, app_upsert, quiet, skip_dry_run)
     else:
         if not quiet:
-            click.echo(create_headline(f"App'{app_upsert.name}' Exists, Will Update"))
+            click.echo(create_headline(f"App '{app_upsert.name}' Exists, Will Update"))
         return update_app_helper(
             db_session,
             existing_app,
