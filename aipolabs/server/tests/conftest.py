@@ -18,6 +18,7 @@ with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
     from aipolabs.common.db.sql_models import (
         Agent,
         App,
+        AppConfiguration,
         Base,
         Function,
         LinkedAccount,
@@ -362,7 +363,7 @@ def dummy_app_configuration_oauth2_google_project_1(
     db_session: Session,
     dummy_project_1: Project,
     dummy_app_google: App,
-) -> AppConfigurationPublic:
+) -> AppConfiguration:
     app_configuration_create = AppConfigurationCreate(
         app_name=dummy_app_google.name, security_scheme=SecurityScheme.OAUTH2
     )
@@ -375,7 +376,7 @@ def dummy_app_configuration_oauth2_google_project_1(
     )
     db_session.commit()
 
-    return AppConfigurationPublic.model_validate(dummy_app_configuration_oauth2_google_project_1)
+    return dummy_app_configuration_oauth2_google_project_1
 
 
 @pytest.fixture(scope="function")
@@ -383,7 +384,7 @@ def dummy_app_configuration_oauth2_google_project_2(
     db_session: Session,
     dummy_project_2: Project,
     dummy_app_google: App,
-) -> AppConfigurationPublic:
+) -> AppConfiguration:
     app_configuration_create = AppConfigurationCreate(
         app_name=dummy_app_google.name, security_scheme=SecurityScheme.OAUTH2
     )
@@ -396,7 +397,7 @@ def dummy_app_configuration_oauth2_google_project_2(
         )
     )
     db_session.commit()
-    return AppConfigurationPublic.model_validate(dummy_app_configuration_oauth2_google_project_2)
+    return dummy_app_configuration_oauth2_google_project_2
 
 
 @pytest.fixture(scope="function")
@@ -404,7 +405,7 @@ def dummy_app_configuration_api_key_github_project_1(
     db_session: Session,
     dummy_project_1: Project,
     dummy_app_github: App,
-) -> AppConfigurationPublic:
+) -> AppConfiguration:
     app_configuration_create = AppConfigurationCreate(
         app_name=dummy_app_github.name, security_scheme=SecurityScheme.API_KEY
     )
@@ -416,7 +417,7 @@ def dummy_app_configuration_api_key_github_project_1(
         )
     )
     db_session.commit()
-    return AppConfigurationPublic.model_validate(dummy_app_configuration_api_key_github_project_1)
+    return dummy_app_configuration_api_key_github_project_1
 
 
 @pytest.fixture(scope="function")
@@ -424,7 +425,7 @@ def dummy_app_configuration_api_key_github_project_2(
     db_session: Session,
     dummy_project_2: Project,
     dummy_app_github: App,
-) -> AppConfigurationPublic:
+) -> AppConfiguration:
     app_configuration_create = AppConfigurationCreate(
         app_name=dummy_app_github.name, security_scheme=SecurityScheme.API_KEY
     )
@@ -436,7 +437,7 @@ def dummy_app_configuration_api_key_github_project_2(
         )
     )
     db_session.commit()
-    return AppConfigurationPublic.model_validate(dummy_app_configuration_api_key_github_project_2)
+    return dummy_app_configuration_api_key_github_project_2
 
 
 @pytest.fixture(scope="function")
@@ -444,7 +445,7 @@ def dummy_app_configuration_api_key_aipolabs_test_project_1(
     db_session: Session,
     dummy_project_1: Project,
     dummy_app_aipolabs_test: App,
-) -> AppConfigurationPublic:
+) -> AppConfiguration:
     app_configuration_create = AppConfigurationCreate(
         app_name=dummy_app_aipolabs_test.name, security_scheme=SecurityScheme.API_KEY
     )
@@ -457,9 +458,7 @@ def dummy_app_configuration_api_key_aipolabs_test_project_1(
         )
     )
     db_session.commit()
-    return AppConfigurationPublic.model_validate(
-        dummy_app_configuration_api_key_aipolabs_test_project_1
-    )
+    return dummy_app_configuration_api_key_aipolabs_test_project_1
 
 
 @pytest.fixture(scope="function")
@@ -467,7 +466,7 @@ def dummy_app_configuration_oauth2_aipolabs_test_project_1(
     db_session: Session,
     dummy_project_1: Project,
     dummy_app_aipolabs_test: App,
-) -> AppConfigurationPublic:
+) -> AppConfiguration:
     app_configuration_create = AppConfigurationCreate(
         app_name=dummy_app_aipolabs_test.name, security_scheme=SecurityScheme.OAUTH2
     )
@@ -480,9 +479,7 @@ def dummy_app_configuration_oauth2_aipolabs_test_project_1(
         )
     )
     db_session.commit()
-    return AppConfigurationPublic.model_validate(
-        dummy_app_configuration_oauth2_aipolabs_test_project_1
-    )
+    return dummy_app_configuration_oauth2_aipolabs_test_project_1
 
 
 ################################################################################
