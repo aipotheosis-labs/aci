@@ -36,7 +36,7 @@ ruff = "^0.9.9"
 pre-commit = "^4.0.0"
 responses = "^0.25.3"
 respx = "^0.21.1"
-
+types-jsonschema = "^4.23.0"
 [tool.ruff]
 line-length = 100
 target-version = "py312"
