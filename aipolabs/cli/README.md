@@ -9,7 +9,7 @@ For commands that require database connection and/or locally running server, mak
 And most cases you should execute the commands via the `runner` container.
 e.g.,
 ```bash
-docker compose exec runner python -m aipolabs.cli.aipolabs create-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
+docker compose exec runner python -m aipolabs.cli.aipolabs upsert-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
 ```
 
 <details>
