@@ -129,7 +129,7 @@
         }
     },
     {
-        "name": "GITHUB__GET_SOCIAL_ACCOUNTS_FOR_USER",
+        "name": "GITHUB__GET_USER_SOCIAL_ACCOUNTS",
         "description": "Lists social media accounts for a user",
         "tags": ["user", "social"],
         "visibility": "public",
