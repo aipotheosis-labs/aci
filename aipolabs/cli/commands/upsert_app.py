@@ -71,7 +71,7 @@ def upsert_app_helper(
         click.echo(create_headline(f"New App '{app_upsert.name}' Found, Will Create"))
         return create_app_helper(db_session, app_upsert, skip_dry_run)
     else:
-        click.echo(create_headline(f"App'{app_upsert.name}' Exists, Will Update"))
+        click.echo(create_headline(f"App '{app_upsert.name}' Exists, Will Update"))
         return update_app_helper(
             db_session,
             existing_app,
