@@ -375,7 +375,7 @@ def dummy_app_configuration_oauth2_google_project_1(
     )
     db_session.commit()
 
-    return dummy_app_configuration_oauth2_google_project_1
+    return AppConfigurationPublic.model_validate(dummy_app_configuration_oauth2_google_project_1)
 
 
 @pytest.fixture(scope="function")
@@ -396,7 +396,7 @@ def dummy_app_configuration_oauth2_google_project_2(
         )
     )
     db_session.commit()
-    return dummy_app_configuration_oauth2_google_project_2
+    return AppConfigurationPublic.model_validate(dummy_app_configuration_oauth2_google_project_2)
 
 
 @pytest.fixture(scope="function")
@@ -416,7 +416,7 @@ def dummy_app_configuration_api_key_github_project_1(
         )
     )
     db_session.commit()
-    return dummy_app_configuration_api_key_github_project_1
+    return AppConfigurationPublic.model_validate(dummy_app_configuration_api_key_github_project_1)
 
 
 @pytest.fixture(scope="function")
@@ -436,7 +436,7 @@ def dummy_app_configuration_api_key_github_project_2(
         )
     )
     db_session.commit()
-    return dummy_app_configuration_api_key_github_project_2
+    return AppConfigurationPublic.model_validate(dummy_app_configuration_api_key_github_project_2)
 
 
 @pytest.fixture(scope="function")
@@ -457,7 +457,9 @@ def dummy_app_configuration_api_key_aipolabs_test_project_1(
         )
     )
     db_session.commit()
-    return dummy_app_configuration_api_key_aipolabs_test_project_1
+    return AppConfigurationPublic.model_validate(
+        dummy_app_configuration_api_key_aipolabs_test_project_1
+    )
 
 
 @pytest.fixture(scope="function")
@@ -478,7 +480,9 @@ def dummy_app_configuration_oauth2_aipolabs_test_project_1(
         )
     )
     db_session.commit()
-    return dummy_app_configuration_oauth2_aipolabs_test_project_1
+    return AppConfigurationPublic.model_validate(
+        dummy_app_configuration_oauth2_aipolabs_test_project_1
+    )
 
 
 ################################################################################

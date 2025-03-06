@@ -96,7 +96,10 @@ async def _get_oauth2_credentials(
         )
 
     oauth2_scheme_credentials = OAuth2SchemeCredentials.model_validate(oauth2_credentials)
-    if _access_token_is_expired(oauth2_scheme_credentials):
+    if (
+        _access_token_is_expired(oauth2_scheme_credentials)
+        and oauth2_scheme_credentials.refresh_token
+    ):
         logger.warning(
             "access token expired",
             extra={

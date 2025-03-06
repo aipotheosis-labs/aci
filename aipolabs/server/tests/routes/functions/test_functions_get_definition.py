@@ -5,10 +5,7 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import Function, Project
 from aipolabs.common.enums import Visibility
-from aipolabs.common.schemas.function import (
-    AnthropicFunctionDefinition,
-    OpenAIFunctionDefinition,
-)
+from aipolabs.common.schemas.function import AnthropicFunctionDefinition, OpenAIFunctionDefinition
 from aipolabs.server import config
 
 

@@ -96,8 +96,7 @@ def get_apps(
         statement = statement.offset(offset)
     if limit is not None:
         statement = statement.limit(limit)
-    apps: list[App] = db_session.execute(statement).scalars().all()
-    return apps
+    return list(db_session.execute(statement).scalars().all())
 
 
 def search_apps(

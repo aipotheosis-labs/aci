@@ -106,4 +106,4 @@ def create_user_helper(
             click.echo(user)
             db_session.commit()
 
-        return user.id  # type: ignore
+        return user.id

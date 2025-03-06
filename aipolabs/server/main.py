@@ -1,4 +1,6 @@
 # import sentry_sdk
+from typing import Any
+
 import logfire
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import JSONResponse
@@ -12,10 +14,7 @@ from aipolabs.common.exceptions import AipolabsException
 from aipolabs.common.logging import setup_logging
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
-from aipolabs.server.middleware.interceptor import (
-    InterceptorMiddleware,
-    RequestIDLogFilter,
-)
+from aipolabs.server.middleware.interceptor import InterceptorMiddleware, RequestIDLogFilter
 from aipolabs.server.middleware.ratelimit import RateLimitMiddleware
 from aipolabs.server.routes import (
     app_configurations,
@@ -56,7 +55,7 @@ app = FastAPI(
 )
 
 
-def scrubbing_callback(m: logfire.ScrubMatch):
+def scrubbing_callback(m: logfire.ScrubMatch) -> Any:
     if m.path == ("attributes", "api_key_id"):
         return m.value
 
@@ -94,7 +93,7 @@ app.add_middleware(
     allow_headers=["Authorization", "X-API-KEY"],
 )
 app.add_middleware(InterceptorMiddleware)
-app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=[config.APPLICATION_LOAD_BALANCER_DNS])
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=[config.APPLICATION_LOAD_BALANCER_DNS])  # type: ignore
 
 
 # NOTE: generic exception handler (type Exception) for all exceptions doesn't work

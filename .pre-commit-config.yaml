@@ -25,9 +25,9 @@ repos:
         pass_filenames: false
         require_serial: true
       # TODO: not running it now because there are too many errors
-      # - id: mypy
-      #   name: running mypy checks
-      #   language: system
-      #   entry: poetry run mypy .
-      #   pass_filenames: false
-      #   require_serial: true
+      - id: mypy
+        name: running mypy checks
+        language: system
+        entry: poetry run mypy .
+        pass_filenames: false
+        require_serial: true

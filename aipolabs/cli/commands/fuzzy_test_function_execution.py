@@ -82,7 +82,7 @@ def fuzzy_test_function_execution_helper(
 
     # Execute function with generated input
     function_execute = FunctionExecute(
-        function_input=function_args, linked_account_owner_id=linked_account_owner_id
+        function_input=function_args, linked_account_owner_id=str(linked_account_owner_id)
     )
     response = httpx.post(
         f"{config.SERVER_URL}/v1/functions/{function_name}/execute",

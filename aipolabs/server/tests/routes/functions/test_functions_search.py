@@ -149,7 +149,7 @@ def test_search_functions_with_private_apps(
 def test_search_functions_with_app_names(
     test_client: TestClient, dummy_functions: list[Function], dummy_api_key_1: str
 ) -> None:
-    search_param = {
+    search_param: dict[str, str | list[str] | int] = {
         "app_names": [dummy_functions[0].app.name, dummy_functions[1].app.name],
         "limit": 100,
         "offset": 0,
@@ -184,7 +184,7 @@ def test_search_functions_with_intent(
     dummy_api_key_1: str,
 ) -> None:
     # intent1: create repo
-    search_param = {
+    search_param: dict[str, str | int] = {
         "intent": "i want to create a new code repo for my project",
         "limit": 100,
         "offset": 0,
@@ -223,7 +223,7 @@ def test_search_functions_with_app_names_and_intent(
     dummy_api_key_1: str,
     dummy_app_github: App,
 ) -> None:
-    search_param = {
+    search_param: dict[str, str | list[str] | int] = {
         "app_names": [dummy_app_github.name],
         "intent": "i want to create a new code repo for my project",
         "limit": 100,

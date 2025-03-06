@@ -2,10 +2,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from aipolabs.common.db.sql_models import App
-from aipolabs.common.schemas.app_configurations import (
-    AppConfigurationPublic,
-    AppConfigurationsList,
-)
+from aipolabs.common.schemas.app_configurations import AppConfigurationPublic, AppConfigurationsList
 from aipolabs.server import config
 
 

@@ -164,13 +164,14 @@ class InferenceProvider(str, Enum):
     ANTHROPIC = "anthropic"
 
 
-class OpenAIFunctionDefinition(BaseModel):
-    class OpenAIFunction(BaseModel):
-        name: str
-        strict: bool | None = None
-        description: str
-        parameters: dict
+class OpenAIFunction(BaseModel):
+    name: str
+    strict: bool | None = None
+    description: str
+    parameters: dict
 
+
+class OpenAIFunctionDefinition(BaseModel):
     type: Literal["function"] = "function"
     function: OpenAIFunction
 

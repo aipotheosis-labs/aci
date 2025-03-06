@@ -111,4 +111,4 @@ def create_agent_helper(
             click.echo(agent)
             db_session.commit()
 
-        return agent.id  # type: ignore
+        return agent.id

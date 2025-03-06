@@ -99,8 +99,6 @@ def test_link_oauth2_account_success(
             params=callback_params,
         )
         assert response.status_code == callback_response_code
-        if not after_oauth2_link_redirect_url:
-            linked_account = LinkedAccountPublic.model_validate(response.json())
 
         # check linked account is created with the correct values
         linked_account = crud.linked_accounts.get_linked_account(
@@ -109,10 +107,10 @@ def test_link_oauth2_account_success(
             state.app_name,
             state.linked_account_owner_id,
         )
+        assert linked_account is not None
         oauth2_credentials = OAuth2SchemeCredentials.model_validate(
             linked_account.security_credentials
         )
-        assert linked_account is not None
         assert linked_account.security_scheme == SecurityScheme.OAUTH2
         assert oauth2_credentials.access_token == mock_oauth2_token_response["access_token"]
         assert oauth2_credentials.token_type == mock_oauth2_token_response["token_type"]
@@ -125,6 +123,11 @@ def test_link_oauth2_account_success(
         assert linked_account.app.name == state.app_name
         assert linked_account.project_id == state.project_id
         assert linked_account.linked_account_owner_id == state.linked_account_owner_id
+
+        if not after_oauth2_link_redirect_url:
+            assert LinkedAccountPublic.model_validate(response.json()), (
+                "should return linked account in response if after_oauth2_link_redirect_url is not provided"
+            )
 
 
 def test_link_oauth2_account_non_existent_app_configuration(

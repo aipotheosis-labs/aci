@@ -283,9 +283,7 @@ class LinkedAccountNotFound(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Linked account not found",
-            message=message,
-            error_code=status.HTTP_404_NOT_FOUND,
+            title="Linked account not found", message=message, error_code=status.HTTP_404_NOT_FOUND
         )
 
 

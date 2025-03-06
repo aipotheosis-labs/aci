@@ -50,7 +50,7 @@ def test_create_functions(
     if skip_dry_run:
         command.append("--skip-dry-run")
 
-    result = runner.invoke(upsert_functions, command)
+    result = runner.invoke(upsert_functions, command)  # type: ignore
     assert result.exit_code == 0, result.output
 
     # check the functions are created
@@ -136,7 +136,7 @@ def test_update_functions(
     if skip_dry_run:
         command.append("--skip-dry-run")
 
-    result = runner.invoke(upsert_functions, command)
+    result = runner.invoke(upsert_functions, command)  # type: ignore
     assert result.exit_code == 0, result.output
 
     db_session.expire_all()

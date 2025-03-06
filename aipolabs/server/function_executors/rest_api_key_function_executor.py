@@ -1,13 +1,8 @@
 from aipolabs.common.enums import HttpLocation
 from aipolabs.common.exceptions import NoImplementationFound
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.security_scheme import (
-    APIKeyScheme,
-    APIKeySchemeCredentials,
-)
-from aipolabs.server.function_executors.rest_function_executor import (
-    RestFunctionExecutor,
-)
+from aipolabs.common.schemas.security_scheme import APIKeyScheme, APIKeySchemeCredentials
+from aipolabs.server.function_executors.rest_function_executor import RestFunctionExecutor
 
 logger = get_logger(__name__)
 

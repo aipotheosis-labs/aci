@@ -75,7 +75,7 @@ class OpenAIService:
             messages=messages,
             tools=[function_definition],
             tool_choice="required",  # force the model to generate a tool call
-        )
+        )  # type: ignore
 
         tool_call = (
             response.choices[0].message.tool_calls[0]

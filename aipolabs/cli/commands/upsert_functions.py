@@ -207,5 +207,5 @@ def _need_function_embedding_regeneration(
     Determines if the function embedding should be regenerated based on changes in the
     fields used for embedding (name, description, parameters).
     """
-    fields = FunctionEmbeddingFields.model_fields.keys()
+    fields = set(FunctionEmbeddingFields.model_fields.keys())
     return bool(old_func.model_dump(include=fields) != new_func.model_dump(include=fields))

@@ -1,3 +1,4 @@
+# type: ignore
 from pydantic import BaseModel
 
 from aipolabs.common.logging import get_logger

@@ -53,7 +53,7 @@ def get_project(db_session: Session, project_id: UUID) -> Project | None:
 
 
 def get_projects_by_owner(db_session: Session, owner_id: UUID) -> list[Project]:
-    projects: list[Project] = (
+    projects = list(
         db_session.execute(select(Project).filter_by(owner_id=owner_id)).scalars().all()
     )
     return projects
@@ -177,39 +177,22 @@ def delete_agent(db_session: Session, agent: Agent) -> None:
 
 
 def get_agents_by_project(db_session: Session, project_id: UUID) -> list[Agent]:
-    agents: list[Agent] = (
-        db_session.execute(select(Agent).filter_by(project_id=project_id)).scalars().all()
-    )
-    return agents
+    return list(db_session.execute(select(Agent).filter_by(project_id=project_id)).scalars().all())
 
 
 def get_agent_by_id(db_session: Session, agent_id: UUID) -> Agent | None:
-    agent: Agent | None = db_session.execute(
-        select(Agent).filter_by(id=agent_id)
-    ).scalar_one_or_none()
-
-    return agent
+    return db_session.execute(select(Agent).filter_by(id=agent_id)).scalar_one_or_none()
 
 
 def get_agent_by_api_key_id(db_session: Session, api_key_id: UUID) -> Agent | None:
-    agent: Agent | None = db_session.execute(
+    return db_session.execute(
         select(Agent).join(APIKey, Agent.id == APIKey.agent_id).filter(APIKey.id == str(api_key_id))
     ).scalar_one_or_none()
 
-    return agent
-
 
 def get_api_key_by_agent_id(db_session: Session, agent_id: UUID) -> APIKey | None:
-    api_key: APIKey | None = db_session.execute(
-        select(APIKey).filter_by(agent_id=agent_id)
-    ).scalar_one_or_none()
-
-    return api_key
+    return db_session.execute(select(APIKey).filter_by(agent_id=agent_id)).scalar_one_or_none()
 
 
 def get_api_key(db_session: Session, key: str) -> APIKey | None:
-    api_key: APIKey | None = db_session.execute(
-        select(APIKey).filter_by(key=key)
-    ).scalar_one_or_none()
-
-    return api_key
+    return db_session.execute(select(APIKey).filter_by(key=key)).scalar_one_or_none()

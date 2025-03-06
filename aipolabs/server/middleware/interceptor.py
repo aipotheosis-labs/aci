@@ -67,7 +67,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
             return x_forwarded_for.split(",")[0].strip()
 
         else:
-            return request.client.host
+            return request.client.host if request.client else "unknown"
 
 
 class RequestIDLogFilter(logging.Filter):

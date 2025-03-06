@@ -8,10 +8,7 @@ from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import Function, LinkedAccount
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.schemas.function import FunctionExecute, FunctionExecutionResult
-from aipolabs.common.schemas.security_scheme import (
-    OAuth2Scheme,
-    OAuth2SchemeCredentials,
-)
+from aipolabs.common.schemas.security_scheme import OAuth2Scheme, OAuth2SchemeCredentials
 from aipolabs.server import config
 
 

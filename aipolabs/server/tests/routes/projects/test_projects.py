@@ -81,7 +81,7 @@ def test_get_projects_under_user(
         project_public = ProjectPublic.model_validate(response.json())
 
         for j in range(number_of_agents_per_project):
-            body = AgentCreate(
+            body = AgentCreate(  # type: ignore
                 name=f"project_{i}_agent_{j}",
                 description=f"project_{i}_agent_{j} description",
             )

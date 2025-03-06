@@ -65,4 +65,4 @@ def create_project_helper(
             click.echo(create_headline(f"committing creation of project {project.name}"))
             click.echo(project)
             db_session.commit()
-        return project.id  # type: ignore
+        return project.id

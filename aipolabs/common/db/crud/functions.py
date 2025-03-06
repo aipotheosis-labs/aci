@@ -65,7 +65,7 @@ def update_functions(
         for field, value in function_data.items():
             setattr(function, field, value)
         if functions_embeddings[i] is not None:
-            function.embedding = functions_embeddings[i]
+            function.embedding = functions_embeddings[i]  # type: ignore
         functions.append(function)
 
     db_session.flush()
@@ -105,8 +105,8 @@ def search_functions(
 
     statement = statement.offset(offset).limit(limit)
     logger.debug(f"Executing statement: {statement}")
-    results: list[Function] = db_session.execute(statement).scalars().all()
-    return results
+
+    return list(db_session.execute(statement).scalars().all())
 
 
 def get_functions(
@@ -133,8 +133,8 @@ def get_functions(
         statement = statement.filter(App.active).filter(Function.active)
 
     statement = statement.order_by(Function.name).offset(offset).limit(limit)
-    results: list[Function] = db_session.execute(statement).scalars().all()
-    return results
+
+    return list(db_session.execute(statement).scalars().all())
 
 
 def get_function(
@@ -157,9 +157,7 @@ def get_function(
             Function.visibility == Visibility.PUBLIC
         )
 
-    function: Function | None = db_session.execute(statement).scalar_one_or_none()
-
-    return function
+    return db_session.execute(statement).scalar_one_or_none()
 
 
 def set_function_active_status(db_session: Session, function_name: str, active: bool) -> None:

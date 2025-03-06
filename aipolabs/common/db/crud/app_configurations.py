@@ -93,7 +93,7 @@ def get_app_configurations(
             App.name.in_(app_names)
         )
     statement = statement.offset(offset).limit(limit)
-    app_configurations: list[AppConfiguration] = db_session.execute(statement).scalars().all()
+    app_configurations = list(db_session.execute(statement).scalars().all())
     return app_configurations
 
 

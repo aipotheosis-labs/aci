@@ -6,10 +6,7 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db.sql_models import App, LinkedAccount
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.security_scheme import (
-    APIKeySchemeCredentials,
-    OAuth2SchemeCredentials,
-)
+from aipolabs.common.schemas.security_scheme import APIKeySchemeCredentials, OAuth2SchemeCredentials
 
 logger = get_logger(__name__)
 
@@ -29,8 +26,7 @@ def get_linked_accounts(
             LinkedAccount.linked_account_owner_id == linked_account_owner_id
         )
 
-    linked_accounts: list[LinkedAccount] = db_session.execute(statement).scalars().all()
-    return linked_accounts
+    return list(db_session.execute(statement).scalars().all())
 
 
 def get_linked_account(

@@ -102,7 +102,7 @@ def create_app_helper(db_session: Session, app_upsert: AppUpsert, skip_dry_run: 
         click.echo(app)
         db_session.commit()
 
-    return app.id  # type: ignore
+    return app.id
 
 
 def update_app_helper(
@@ -116,7 +116,7 @@ def update_app_helper(
     existing_app_upsert = AppUpsert.model_validate(existing_app, from_attributes=True)
     if existing_app_upsert == app_upsert:
         click.echo(create_headline(f"No changes to app '{existing_app.name}'"))
-        return existing_app.id  # type: ignore
+        return existing_app.id
 
     # Determine if any fields affecting the embedding have changed
     new_embedding = None
@@ -143,7 +143,7 @@ def update_app_helper(
         click.echo(create_headline(f"Committing update of app '{existing_app.name}'"))
         db_session.commit()
 
-    return updated_app.id  # type: ignore
+    return updated_app.id
 
 
 def _render_template_to_string(template_path: Path, secrets: dict[str, str]) -> str:
@@ -164,5 +164,5 @@ def _render_template_to_string(template_path: Path, secrets: dict[str, str]) -> 
 
 
 def _need_embedding_regeneration(old_app: AppUpsert, new_app: AppUpsert) -> bool:
-    fields = AppEmbeddingFields.model_fields.keys()
+    fields = set(AppEmbeddingFields.model_fields.keys())
     return bool(old_app.model_dump(include=fields) != new_app.model_dump(include=fields))

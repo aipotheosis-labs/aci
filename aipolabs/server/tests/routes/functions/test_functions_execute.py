@@ -4,12 +4,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from aipolabs.common.db.sql_models import (
-    Agent,
-    AppConfiguration,
-    Function,
-    LinkedAccount,
-)
+from aipolabs.common.db.sql_models import Agent, AppConfiguration, Function, LinkedAccount
 from aipolabs.common.schemas.function import FunctionExecute, FunctionExecutionResult
 from aipolabs.server import config
 

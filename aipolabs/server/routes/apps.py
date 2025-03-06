@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Query
 
 from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import App
 from aipolabs.common.enums import Visibility
 from aipolabs.common.exceptions import AppNotFound
 from aipolabs.common.logging import get_logger
@@ -27,7 +28,7 @@ openai_service = OpenAIService(config.OPENAI_API_KEY)
 async def list_apps(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[AppsList, Query()],
-) -> list[AppDetails]:
+) -> list[App]:
     """
     Get a list of Apps and their details. Sorted by App name.
     """
@@ -104,8 +105,7 @@ async def search_apps(
 
     apps: list[AppBasic] = []
     for app, _ in apps_with_scores:
-        app = AppBasic.model_validate(app)
-        apps.append(app)
+        apps.append(AppBasic.model_validate(app))
 
     logger.info("search apps response", extra={"app_names": [app.name for app in apps]})
 

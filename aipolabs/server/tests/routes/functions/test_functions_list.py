@@ -61,7 +61,7 @@ def test_list_functions_with_app_names(
     dummy_functions: list[Function],
     dummy_api_key_1: str,
 ) -> None:
-    query_params = {
+    query_params: dict[str, str | list[str] | int] = {
         "app_names": [dummy_apps[0].name, dummy_apps[1].name],
         "limit": 100,
         "offset": 0,

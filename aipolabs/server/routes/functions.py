@@ -27,6 +27,7 @@ from aipolabs.common.schemas.function import (
     FunctionsList,
     FunctionsSearch,
     InferenceProvider,
+    OpenAIFunction,
     OpenAIFunctionDefinition,
 )
 from aipolabs.server import config
@@ -140,7 +141,7 @@ async def get_function_definition(
         default=InferenceProvider.OPENAI,
         description="The inference provider, which determines the format of the function definition.",
     ),
-) -> Function:
+) -> OpenAIFunctionDefinition | AnthropicFunctionDefinition:
     """
     Return the function definition that can be used directly by LLM.
     The actual content depends on the intended model (inference provider, e.g., OpenAI, Anthropic, etc.) and the function itself.
@@ -176,18 +177,18 @@ async def get_function_definition(
 
     if inference_provider == InferenceProvider.OPENAI:
         function_definition = OpenAIFunctionDefinition(
-            function={
-                "name": function.name,
-                "description": function.description,
-                "parameters": visible_parameters,
-            }
+            function=OpenAIFunction(
+                name=function.name,
+                description=function.description,
+                parameters=visible_parameters,
+            )
         )
     elif inference_provider == InferenceProvider.ANTHROPIC:
         function_definition = AnthropicFunctionDefinition(
             name=function.name,
             description=function.description,
             input_schema=visible_parameters,
-        )
+        )  # type: ignore
 
     logger.info(
         "function definition to return",

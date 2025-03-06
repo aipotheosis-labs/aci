@@ -109,4 +109,4 @@ def update_agent_helper(
             click.echo(updated_agent)
             db_session.commit()
 
-        return updated_agent.id  # type: ignore
+        return updated_agent.id

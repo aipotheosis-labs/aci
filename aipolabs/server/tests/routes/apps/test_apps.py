@@ -1,5 +1,3 @@
-from typing import Any
-
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -20,7 +18,7 @@ def test_search_apps_with_intent(
     dummy_api_key_1: str,
 ) -> None:
     # try with intent to find GITHUB app
-    search_params = {
+    search_params: dict[str, str | list[str] | int] = {
         "intent": "i want to create a new code repo for my project",
         "categories": [],
         "limit": 100,
@@ -69,7 +67,7 @@ def test_search_apps_with_categories(
     dummy_api_key_1: str,
     dummy_app_aipolabs_test: App,
 ) -> None:
-    search_params = {
+    search_params: dict[str, str | list[str] | int | None] = {
         "intent": None,
         "categories": ["testcategory"],
         "limit": 100,
@@ -93,7 +91,7 @@ def test_search_apps_with_categories_and_intent(
     dummy_app_google: App,
     dummy_app_github: App,
 ) -> None:
-    search_params = {
+    search_params: dict[str, str | list[str] | int] = {
         "intent": "i want to create a new code repo for my project",
         "categories": ["testcategory-2"],
         "limit": 100,
@@ -117,7 +115,7 @@ def test_search_apps_pagination(
 ) -> None:
     assert len(dummy_apps) > 2
 
-    search_params: dict[str, Any] = {
+    search_params: dict[str, str | list[str] | int | None] = {
         "intent": None,
         "categories": [],
         "limit": len(dummy_apps) - 1,

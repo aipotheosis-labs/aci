@@ -3,7 +3,7 @@ import sentry_sdk
 from aipolabs.server import config
 
 
-def setup_sentry():
+def setup_sentry() -> None:
     if config.ENVIRONMENT != "local":
         sentry_sdk.init(
             environment=config.ENVIRONMENT,

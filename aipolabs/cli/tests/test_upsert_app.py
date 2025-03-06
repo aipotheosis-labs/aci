@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.cli.commands.upsert_app import upsert_app
 from aipolabs.common.db import crud
+from aipolabs.common.db.sql_models import SecurityScheme
 
 
 @pytest.mark.parametrize("skip_dry_run", [True, False])
@@ -28,7 +29,7 @@ def test_create_app(
     if skip_dry_run:
         command.append("--skip-dry-run")
 
-    result = runner.invoke(upsert_app, command)
+    result = runner.invoke(upsert_app, command)  # type: ignore
     assert result.exit_code == 0, result.output
     # new record is created by a different db session, so we need to
     # expire the injected db_session to see the new record
@@ -41,11 +42,11 @@ def test_create_app(
         assert app is not None
         assert app.name == dummy_app_data["name"]
         assert (
-            app.security_schemes["oauth2"]["client_id"]
+            app.security_schemes[SecurityScheme.OAUTH2]["client_id"]
             == dummy_app_secrets_data["AIPOLABS_GOOGLE_APP_CLIENT_ID"]
         )
         assert (
-            app.security_schemes["oauth2"]["client_secret"]
+            app.security_schemes[SecurityScheme.OAUTH2]["client_secret"]
             == dummy_app_secrets_data["AIPOLABS_GOOGLE_APP_CLIENT_SECRET"]
         )
     else:
@@ -95,7 +96,7 @@ def test_update_app(
     if skip_dry_run:
         command.append("--skip-dry-run")
 
-    result = runner.invoke(upsert_app, command)
+    result = runner.invoke(upsert_app, command)  # type: ignore
     assert result.exit_code == 0, result.output
 
     db_session.expire_all()
@@ -106,14 +107,14 @@ def test_update_app(
     assert app.name == dummy_app_data["name"]
 
     if skip_dry_run:
-        assert app.security_schemes["oauth2"]["scope"] == new_oauth2_scope
-        assert app.security_schemes["oauth2"]["client_id"] == new_oauth2_client_id
-        assert app.security_schemes["api_key"] == new_api_key
+        assert app.security_schemes[SecurityScheme.OAUTH2]["scope"] == new_oauth2_scope
+        assert app.security_schemes[SecurityScheme.OAUTH2]["client_id"] == new_oauth2_client_id
+        assert app.security_schemes[SecurityScheme.API_KEY] == new_api_key
     else:
         # nothing should change for dry run
         assert (
-            app.security_schemes["oauth2"]["scope"]
+            app.security_schemes[SecurityScheme.OAUTH2]["scope"]
             == "openid email profile https://www.googleapis.com/auth/calendar"
         )
-        assert app.security_schemes["oauth2"]["client_id"] == "dummy_client_id"
-        assert "api_key" not in app.security_schemes
+        assert app.security_schemes[SecurityScheme.OAUTH2]["client_id"] == "dummy_client_id"
+        assert SecurityScheme.API_KEY not in app.security_schemes
