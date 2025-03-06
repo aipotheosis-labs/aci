@@ -42,10 +42,9 @@ jobs:
         run: |
           poetry run ruff format . --diff
 
-      # TODO: too many errors right now, will fix later
-      # - name: Run Mypy Type Checking
-      #   run: |
-      #     poetry run mypy .
+      - name: Run Mypy Type Checking
+        run: |
+          poetry run mypy .
 
   test:
     runs-on: ubuntu-latest
