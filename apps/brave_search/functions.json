@@ -235,5 +235,415 @@
             "visible": ["query"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "BRAVE_SEARCH__IMAGE_SEARCH",
+        "description": "Brave Image Search API is a REST API to query Brave Search and get back search results from the web.",
+        "tags": ["search"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/images/search",
+            "server_url": "https://api.search.brave.com/res/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "query parameters",
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "description": "The user’s search query term. Query can not be empty. Maximum of 400 characters and 50 words in the query.",
+                            "maxLength": 400
+                        },
+                        "country": {
+                            "type": "string",
+                            "description": "The search query country (2 character country codes)",
+                            "default": "US",
+                            "enum": [
+                                "ALL", "AR", "AU", "AT", "BE", "BR", "CA", "CL", 
+                                "DK", "FI", "FR", "DE", "HK", "IN", "ID", "IT", 
+                                "JP", "KR", "MY", "MX", "NL", "NZ", "NO", "CN", 
+                                "PL", "PT", "PH", "RU", "SA", "ZA", "ES", "SE", 
+                                "CH", "TW", "TR", "GB", "US"
+                            ]
+                        },
+                        "search_lang": {
+                            "type": "string",
+                            "description": "The search language preference (2+ character language code)",
+                            "default": "en",
+                            "enum": [
+                                "ar", "eu", "bn", "bg", "ca", 
+                                "zh-hans", "zh-hant", "hr", "cs", "da",
+                                "nl", "en", "en-gb", "et", "fi",
+                                "fr", "gl", "de", "gu", "he",
+                                "hi", "hu", "is", "it", "jp",
+                                "kn", "ko", "lv", "lt", "ms",
+                                "ml", "mr", "nb", "pl", "pt-br",
+                                "pt-pt", "pa", "ro", "ru", "sr",
+                                "sk", "sl", "es", "sv", "ta",
+                                "te", "th", "tr", "uk", "vi"
+                            ]
+                        },
+                        "count": {
+                            "type": "integer",
+                            "description": "Number of search results returned in response (max 20) The actual number delivered may be less than requested. Combine this parameter with offset to paginate search results.",
+                            "default": 50,
+                            "maximum": 100,
+                            "minimum": 1
+                        },
+                        "safesearch": {
+                            "type": "string",
+                            "description": "Filters search results for adult content",
+                            "default": "moderate",
+                            "enum": ["off", "strict"]
+                        },
+                        "spellcheck": {
+                            "type": "boolean",
+                            "description": "Whether to spellcheck provided query",
+                            "default": false
+                        }
+                    },
+                    "required": ["q"],
+                    "visible": ["q", "count",  "country", "search_lang", "safesearch"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": ["string"],
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        },
+                        "Accept-Encoding": {
+                            "type": ["string", "null"],
+                            "description": "The supported compression type",
+                            "default": null,
+                            "enum": [null, "gzip"]
+                        },
+                        "Api-Version": {
+                            "type": ["string", "null"],
+                            "description": "The Brave Web Search API version to use. Format: YYYY-MM-DD. Latest version used by default",
+                            "default": null,
+                            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                        },
+                        "Cache-Control": {
+                            "type": ["string", "null"],
+                            "description": "Search will return cached web search results by default. To prevent caching set the Cache-Control header to no-cache",
+                            "default": null,
+                            "enum": [null, "no-cache"]
+                        },
+                        "User-Agent": {
+                            "type": ["string", "null"],
+                            "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings",
+                            "default": null
+                        },
+                        "X-Subscription-Token": {
+                            "type": ["string", "null"],
+                            "description": "The secret token for the subscribed plan to authenticate the request",
+                            "default": null
+                        }
+                    },
+                    "required": ["X-Subscription-Token"],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query", "header"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "BRAVE_SEARCH__VIDEO_SEARCH",
+        "description": "Brave Video Search API is a REST API to query Brave Search and get back search results from the web.",
+        "tags": ["search"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/videos/search",
+            "server_url": "https://api.search.brave.com/res/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "query parameters",
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "description": "The user’s search query term. Query can not be empty. Maximum of 400 characters and 50 words in the query.",
+                            "maxLength": 400
+                        },
+                        "country": {
+                            "type": "string",
+                            "description": "The search query country (2 character country codes)",
+                            "default": "US",
+                            "enum": [
+                                "ALL", "AR", "AU", "AT", "BE", "BR", "CA", "CL", 
+                                "DK", "FI", "FR", "DE", "HK", "IN", "ID", "IT", 
+                                "JP", "KR", "MY", "MX", "NL", "NZ", "NO", "CN", 
+                                "PL", "PT", "PH", "RU", "SA", "ZA", "ES", "SE", 
+                                "CH", "TW", "TR", "GB", "US"
+                            ]
+                        },
+                        "search_lang": {
+                            "type": "string",
+                            "description": "The search language preference (2+ character language code)",
+                            "default": "en",
+                            "enum": [
+                                "ar", "eu", "bn", "bg", "ca", 
+                                "zh-hans", "zh-hant", "hr", "cs", "da",
+                                "nl", "en", "en-gb", "et", "fi",
+                                "fr", "gl", "de", "gu", "he",
+                                "hi", "hu", "is", "it", "jp",
+                                "kn", "ko", "lv", "lt", "ms",
+                                "ml", "mr", "nb", "pl", "pt-br",
+                                "pt-pt", "pa", "ro", "ru", "sr",
+                                "sk", "sl", "es", "sv", "ta",
+                                "te", "th", "tr", "uk", "vi"
+                            ]
+                        },
+                        "ui_lang": {
+                            "type": "string",
+                            "description": "User interface language preferred in response. Usually formatted as '<language_code>-<country_code>' (RFC 9110).",
+                            "default": "en-US"
+                        },
+                        "count": {
+                            "type": "integer",
+                            "description": "Number of search results returned in response (max 50). The actual number delivered may be less than requested. Combine this parameter with offset to paginate search results.",
+                            "default": 20,
+                            "maximum": 50,
+                            "minimum": 1
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "description": "The zero-based offset that indicates the number of search results per page to skip before returning the result. The maximum is 9.",
+                            "default": 0,
+                            "maximum": 9,
+                            "minimum": 0
+                        },
+                        "spellcheck": {
+                            "type": "boolean",
+                            "description": "Whether to spellcheck provided query. If the spellchecker is enabled, the modified query is always used for search.",
+                            "default": true
+                        },
+                        "safesearch": {
+                            "type": "string",
+                            "description": "Filters search results for adult content.",
+                            "default": "moderate",
+                            "enum": ["off", "moderate", "strict"]
+                        },
+                        "freshness": {
+                            "type": "string",
+                            "description": "Filters search results by when they were discovered. Supported values: 'pd' (24 hours), 'pw' (7 days), 'pm' (31 days), 'py' (365 days), or a date range 'YYYY-MM-DDtoYYYY-MM-DD'.",
+                            "default": null
+                        }
+                    },
+                    "required": ["q"],
+                    "visible": ["q", "count", "country", "search_lang", "safesearch", "freshness"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": ["string"],
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        },
+                        "Accept-Encoding": {
+                            "type": ["string", "null"],
+                            "description": "The supported compression type",
+                            "default": "gzip",
+                            "enum": [null, "gzip"]
+                        },
+                        "Api-Version": {
+                            "type": ["string", "null"],
+                            "description": "The Brave Web Search API version to use. Format: YYYY-MM-DD. Latest version used by default",
+                            "default": null,
+                            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                        },
+                        "Cache-Control": {
+                            "type": ["string", "null"],
+                            "description": "Search will return cached web search results by default. To prevent caching set the Cache-Control header to no-cache",
+                            "default": null,
+                            "enum": [null, "no-cache"]
+                        },
+                        "User-Agent": {
+                            "type": ["string", "null"],
+                            "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings",
+                            "default": null
+                        },
+                        "X-Subscription-Token": {
+                            "type": ["string"],
+                            "description": "The secret token for the subscribed plan to authenticate the request",
+                            "default": null
+                        }
+                    },
+                    "required": ["X-Subscription-Token"],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query", "header"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "BRAVE_SEARCH__NEWS_SEARCH",
+        "description": "Brave News Search API is a REST API to query Brave Search and get back search results from the web.",
+        "tags": ["search"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/news/search",
+            "server_url": "https://api.search.brave.com/res/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "query parameters",
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "description": "The user’s search query term. Query can not be empty. Maximum of 400 characters and 50 words in the query.",
+                            "maxLength": 400
+                        },
+                        "country": {
+                            "type": "string",
+                            "description": "The search query country (2 character country codes)",
+                            "default": "US",
+                            "enum": [
+                                "ALL", "AR", "AU", "AT", "BE", "BR", "CA", "CL", 
+                                "DK", "FI", "FR", "DE", "HK", "IN", "ID", "IT", 
+                                "JP", "KR", "MY", "MX", "NL", "NZ", "NO", "CN", 
+                                "PL", "PT", "PH", "RU", "SA", "ZA", "ES", "SE", 
+                                "CH", "TW", "TR", "GB", "US"
+                            ]
+                        },
+                        "search_lang": {
+                            "type": "string",
+                            "description": "The search language preference (2+ character language code)",
+                            "default": "en",
+                            "enum": [
+                                "ar", "eu", "bn", "bg", "ca", 
+                                "zh-hans", "zh-hant", "hr", "cs", "da",
+                                "nl", "en", "en-gb", "et", "fi",
+                                "fr", "gl", "de", "gu", "he",
+                                "hi", "hu", "is", "it", "jp",
+                                "kn", "ko", "lv", "lt", "ms",
+                                "ml", "mr", "nb", "pl", "pt-br",
+                                "pt-pt", "pa", "ro", "ru", "sr",
+                                "sk", "sl", "es", "sv", "ta",
+                                "te", "th", "tr", "uk", "vi"
+                            ]
+                        },
+                        "ui_lang": {
+                            "type": "string",
+                            "description": "User interface language preferred in response. Usually formatted as '<language_code>-<country_code>' (RFC 9110).",
+                            "default": "en-US"
+                        },
+                        "count": {
+                            "type": "integer",
+                            "description": "Number of search results returned in response (max 50). The actual number delivered may be less than requested. Combine this parameter with offset to paginate search results.",
+                            "default": 20,
+                            "maximum": 50,
+                            "minimum": 1
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "description": "The zero-based offset that indicates the number of search results per page to skip before returning the result. The maximum is 9.",
+                            "default": 0,
+                            "maximum": 9,
+                            "minimum": 0
+                        },
+                        "spellcheck": {
+                            "type": "boolean",
+                            "description": "Whether to spellcheck provided query. If the spellchecker is enabled, the modified query is always used for search.",
+                            "default": true
+                        },
+                        "safesearch": {
+                            "type": "string",
+                            "description": "Filters search results for adult content.",
+                            "default": "moderate",
+                            "enum": ["off", "moderate", "strict"]
+                        },
+                        "freshness": {
+                            "type": "string",
+                            "description": "Filters search results by when they were discovered. Supported values: 'pd' (24 hours), 'pw' (7 days), 'pm' (31 days), 'py' (365 days), or a date range 'YYYY-MM-DDtoYYYY-MM-DD'."
+                        },
+                        "extra_snippets": {
+                            "type": "boolean",
+                            "description": "Whether to retrieve up to 5 additional alternative excerpts (snippets) from the result pages.",
+                            "default": false
+                        }
+                    },
+                    "required": ["q"],
+                    "visible": ["q", "count", "country", "search_lang", "safesearch", "freshness"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": ["string"],
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        },
+                        "Accept-Encoding": {
+                            "type": ["string", "null"],
+                            "description": "The supported compression type",
+                            "default": "gzip",
+                            "enum": [null, "gzip"]
+                        },
+                        "Api-Version": {
+                            "type": ["string", "null"],
+                            "description": "The Brave Web Search API version to use. Format: YYYY-MM-DD. Latest version used by default",
+                            "default": null,
+                            "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                        },
+                        "Cache-Control": {
+                            "type": ["string", "null"],
+                            "description": "Search will return cached web search results by default. To prevent caching set the Cache-Control header to no-cache",
+                            "default": null,
+                            "enum": [null, "no-cache"]
+                        },
+                        "User-Agent": {
+                            "type": ["string", "null"],
+                            "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings",
+                            "default": null
+                        },
+                        "X-Subscription-Token": {
+                            "type": ["string"],
+                            "description": "The secret token for the subscribed plan to authenticate the request",
+                            "default": null
+                        }
+                    },
+                    "required": ["X-Subscription-Token"],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query", "header"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
     }
 ]
