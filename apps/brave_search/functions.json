@@ -299,7 +299,7 @@
                         "safesearch": {
                             "type": "string",
                             "description": "Filters search results for adult content",
-                            "default": "moderate",
+                            "default": "strict",
                             "enum": ["off", "strict"]
                         },
                         "spellcheck": {
@@ -309,7 +309,7 @@
                         }
                     },
                     "required": ["q"],
-                    "visible": ["q", "count",  "country", "search_lang", "safesearch"],
+                    "visible": ["q", "count",  "country", "search_lang", "safesearch", "spellcheck"],
                     "additionalProperties": false
                 },
                 "header": {
@@ -450,7 +450,7 @@
                         }
                     },
                     "required": ["q"],
-                    "visible": ["q", "count", "country", "search_lang", "safesearch", "freshness"],
+                    "visible": ["q", "count", "offset", "country", "search_lang", "ui_lang", "spellcheck", "safesearch", "freshness"],
                     "additionalProperties": false
                 },
                 "header": {
@@ -595,7 +595,7 @@
                         }
                     },
                     "required": ["q"],
-                    "visible": ["q", "count", "country", "search_lang", "safesearch", "freshness"],
+                    "visible": ["q", "count", "offset", "country", "search_lang", "ui_lang", "safesearch", "freshness", "spellcheck"],
                     "additionalProperties": false
                 },
                 "header": {
