@@ -1,6 +1,9 @@
 # Ignore all .secrets.json files
 .app.secrets.*
 
+# Ignore local test snippets file
+apps/test.local.md
+
 # CDK asset staging directory
 .cdk.staging
 cdk.out
