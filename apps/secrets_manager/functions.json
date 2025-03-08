@@ -1,0 +1,117 @@
+[
+    {
+        "name": "AIPOLABS_SECRETS_MANAGER__LIST_SECRETS",
+        "description": "List all secrets, returning only the name and metadata of each secret. The actually secret value is retrieved with secret name using the AIPOLABS_SECRETS_MANAGER__GET_SECRET function.",
+        "tags": ["secrets"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "connector",
+        "protocol_data": {},
+        "parameters": {
+            "type": "object",
+            "properties": {}
+        }
+    },
+    {
+        "name": "AIPOLABS_SECRETS_MANAGER__GET_SECRET",
+        "description": "Get a secret",
+        "tags": ["secrets"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "connector",
+        "protocol_data": {},
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": ["name"]
+        }
+    },
+    {
+        "name": "AIPOLABS_SECRETS_MANAGER__CREATE_SECRET",
+        "description": "Create a secret",
+        "tags": ["secrets"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "connector",
+        "protocol_data": {},
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "object",
+                    "properties": {
+                        "username": {
+                            "type": "string"
+                        },
+                        "password": {
+                            "type": "string"
+                        }
+                    },
+                    "required": ["username", "password"]
+                },
+                "metadata": {
+                    "type": "object"
+                }
+            },
+            "required": ["name", "value"]
+        }
+    },
+    {
+        "name": "AIPOLABS_SECRETS_MANAGER__UPDATE_SECRET",
+        "description": "Update a secret",
+        "tags": ["secrets"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "connector",
+        "protocol_data": {},
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "object",
+                    "properties": {
+                        "username": {
+                            "type": "string"
+                        },
+                        "password": {
+                            "type": "string"
+                        }
+                    },
+                    "required": ["username", "password"]
+                },
+                "metadata": {
+                    "type": "object"
+                }
+            },
+            "required": ["name"]
+        }
+    },
+    {
+        "name": "AIPOLABS_SECRETS_MANAGER__DELETE_SECRET",
+        "description": "Delete a secret",
+        "tags": ["secrets"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "connector",
+        "protocol_data": {},
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": ["name"]
+        }
+    }
+]
