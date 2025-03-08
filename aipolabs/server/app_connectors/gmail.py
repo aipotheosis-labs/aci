@@ -1,0 +1,94 @@
+import base64
+from email.mime.text import MIMEText
+from typing import override
+
+from google.oauth2.credentials import Credentials
+from googleapiclient.discovery import build
+
+from aipolabs.common.db.sql_models import LinkedAccount
+from aipolabs.common.logging import get_logger
+from aipolabs.common.schemas.security_scheme import (
+    OAuth2Scheme,
+    OAuth2SchemeCredentials,
+)
+from aipolabs.server.app_connectors.base import AppConnectorBase
+
+logger = get_logger(__name__)
+
+
+# TODO: how should we handle args are passed as flattened? separated by double underscore?
+# e.g. person__name, person__title. maybe need to preprocess the args before passing to the method?
+class Gmail(AppConnectorBase[OAuth2Scheme, OAuth2SchemeCredentials]):
+    """
+    Gmail Connector.
+    """
+
+    def __init__(
+        self,
+        linked_account: LinkedAccount,
+        security_scheme: OAuth2Scheme,
+        security_credentials: OAuth2SchemeCredentials,
+    ):
+        super().__init__(linked_account, security_scheme, security_credentials)
+        self.credentials = Credentials(  # type: ignore
+            token=security_credentials.access_token,
+            refresh_token=security_credentials.refresh_token,
+        )
+
+    @override
+    def _before_execute(self) -> None:
+        # TODO: technicall you can check credential validity here and optionally refresh the token
+        # e.g., if creds.expired and creds.refresh_token:
+        #     creds.refresh(Request())
+        # but this doesn't sit well with our existing credential fetch and update mechanism
+        # (which was built for generic oauht2/api_key rest apis)
+        pass
+
+    # TODO: support HTML type for body
+    def send_email(
+        self,
+        sender: str,
+        recipient: str,
+        body: str,
+        subject: str | None = None,
+        cc: list[str] | None = None,
+        bcc: list[str] | None = None,
+    ) -> dict[str, str]:
+        """
+        Send an email using Gmail API.
+
+        Args:
+            sender: Sender email address
+            recipient: Recipient email address(es), comma-separated for multiple recipients
+            body: Email body content
+            subject: Optional email subject
+            cc: Optional list of carbon copy recipients
+            bcc: Optional list of blind carbon copy recipients
+
+        Returns:
+            dict: Response from the Gmail API
+        """
+        logger.info("executing send_email")
+
+        # Create and encode the email message
+        message = MIMEText(body)
+        message["to"] = recipient
+
+        if subject:
+            message["subject"] = subject
+        if cc:
+            message["cc"] = ", ".join(cc)
+        if bcc:
+            message["bcc"] = ", ".join(bcc)
+
+        # Create the final message body
+        message_body = {"raw": base64.urlsafe_b64encode(message.as_bytes()).decode()}
+
+        service = build("gmail", "v1", credentials=self.credentials)
+
+        sent_message = service.users().messages().send(userId=sender, body=message_body).execute()  # type: ignore
+
+        logger.info(f"Email sent successfully. Message ID: {sent_message.get('id', 'unknown')}")
+
+        # TODO: if later found necessary, return the whole message object instead of just the id
+        return {"message_id": sent_message.get("id", "unknown")}
