@@ -372,7 +372,11 @@ async def execute(
                 f"the reason supplied by the filter is: {filter_result.reason}"
             )
 
-    function_executor = get_executor(function.protocol, linked_account.security_scheme)
+    function_executor = get_executor(function.protocol, linked_account)
+    logger.info(
+        "instantiated function executor",
+        extra={"function_name": function_name, "function_executor": type(function_executor)},
+    )
 
     # TODO: async calls?
     execution_result = function_executor.execute(

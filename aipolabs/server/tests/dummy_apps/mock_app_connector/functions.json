@@ -1,0 +1,53 @@
+[
+    {
+        "name": "MOCK_APP_CONNECTOR__ECHO",
+        "description": "mock connector function that echoes back the input arguments.",
+        "tags": ["mock"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "connector",
+        "protocol_data": {},
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "input_string": {
+                    "type": "string",
+                    "description": "The input string to be echoed back."
+                },
+                "input_int": {
+                    "type": "integer",
+                    "description": "The input integer to be echoed back."
+                },
+                "input_bool": {
+                    "type": "boolean",
+                    "description": "The input boolean to be echoed back."
+                },
+                "input_list": {
+                    "type": "array",
+                    "description": "The input list to be echoed back.",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "input_required_invisible_string": {
+                    "type": "string",
+                    "description": "The required but invisible (to LLM) input string to be echoed back.",
+                    "default": "default_string_value"
+                }
+            },
+            "required": ["input_string", "input_int", "input_bool", "input_list", "input_required_invisible_string"],
+            "visible": ["input_string", "input_int", "input_bool", "input_list"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MOCK_APP_CONNECTOR__FAIL",
+        "description": "mock connector function that always fails.",
+        "tags": ["mock"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "connector",
+        "protocol_data": {},
+        "parameters": {}
+    }
+]

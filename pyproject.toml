@@ -27,6 +27,7 @@ deepdiff = "^8.2.0"
 python-json-logger = "^3.2.1"
 logfire = { extras = ["fastapi", "sqlalchemy"], version = "^3.6.4" }
 sentry-sdk = { extras = ["fastapi"], version = "^2.22.0" }
+google-api-python-client = "^2.163.0"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
@@ -37,6 +38,8 @@ pre-commit = "^4.0.0"
 responses = "^0.25.3"
 respx = "^0.21.1"
 types-jsonschema = "^4.23.0"
+google-api-python-client-stubs = "^1.29.0"
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"

@@ -49,6 +49,7 @@ dummy_apps_and_functions_to_be_inserted_into_db = helper.prepare_dummy_apps_and_
 GOOGLE_APP_NAME = "GOOGLE"
 GITHUB_APP_NAME = "GITHUB"
 AIPOLABS_TEST_APP_NAME = "AIPOLABS_TEST"
+MOCK_APP_CONNECTOR_APP_NAME = "MOCK_APP_CONNECTOR"
 
 
 @pytest.fixture(scope="function")
@@ -284,6 +285,15 @@ def dummy_app_aipolabs_test(dummy_apps: list[App]) -> App:
     return dummy_app_aipolabs_test
 
 
+@pytest.fixture(scope="function")
+def dummy_app_mock_app_connector(dummy_apps: list[App]) -> App:
+    dummy_app_mock_app_connector = next(
+        app for app in dummy_apps if app.name == MOCK_APP_CONNECTOR_APP_NAME
+    )
+    assert dummy_app_mock_app_connector is not None
+    return dummy_app_mock_app_connector
+
+
 ################################################################################
 # Dummy Functions
 ################################################################################
@@ -350,6 +360,28 @@ def dummy_function_aipolabs_test__hello_world_with_args(
     )
     assert dummy_function_aipolabs_test__hello_world_with_args is not None
     return dummy_function_aipolabs_test__hello_world_with_args
+
+
+@pytest.fixture(scope="function")
+def dummy_function_mock_app_connector__echo(
+    dummy_functions: list[Function],
+) -> Function:
+    dummy_function_mock_app_connector__echo = next(
+        func for func in dummy_functions if func.name == "MOCK_APP_CONNECTOR__ECHO"
+    )
+    assert dummy_function_mock_app_connector__echo is not None
+    return dummy_function_mock_app_connector__echo
+
+
+@pytest.fixture(scope="function")
+def dummy_function_mock_app_connector__fail(
+    dummy_functions: list[Function],
+) -> Function:
+    dummy_function_mock_app_connector__fail = next(
+        func for func in dummy_functions if func.name == "MOCK_APP_CONNECTOR__FAIL"
+    )
+    assert dummy_function_mock_app_connector__fail is not None
+    return dummy_function_mock_app_connector__fail
 
 
 ################################################################################
@@ -480,6 +512,26 @@ def dummy_app_configuration_oauth2_aipolabs_test_project_1(
     )
     db_session.commit()
     return dummy_app_configuration_oauth2_aipolabs_test_project_1
+
+
+@pytest.fixture(scope="function")
+def dummy_app_configuration_oauth2_mock_app_connector_project_1(
+    db_session: Session,
+    dummy_project_1: Project,
+    dummy_app_mock_app_connector: App,
+) -> AppConfiguration:
+    app_configuration_create = AppConfigurationCreate(
+        app_name=dummy_app_mock_app_connector.name, security_scheme=SecurityScheme.OAUTH2
+    )
+    dummy_app_configuration_oauth2_mock_app_connector_project_1 = (
+        crud.app_configurations.create_app_configuration(
+            db_session,
+            dummy_project_1.id,
+            app_configuration_create,
+        )
+    )
+    db_session.commit()
+    return dummy_app_configuration_oauth2_mock_app_connector_project_1
 
 
 ################################################################################
@@ -645,3 +697,24 @@ def dummy_linked_account_default_aipolabs_test_project_1(
     )
     db_session.commit()
     yield dummy_linked_account_default_aipolabs_test_project_1
+
+
+@pytest.fixture(scope="function")
+def dummy_linked_account_oauth2_mock_app_connector_project_1(
+    db_session: Session,
+    dummy_app_configuration_oauth2_mock_app_connector_project_1: AppConfigurationPublic,
+    dummy_linked_account_oauth2_credentials: OAuth2SchemeCredentials,
+) -> Generator[LinkedAccount, None, None]:
+    dummy_linked_account_oauth2_mock_app_connector_project_1 = (
+        crud.linked_accounts.create_linked_account(
+            db_session,
+            dummy_app_configuration_oauth2_mock_app_connector_project_1.project_id,
+            dummy_app_configuration_oauth2_mock_app_connector_project_1.app_name,
+            "dummy_linked_account_oauth2_mock_app_connector_project_1",
+            dummy_app_configuration_oauth2_mock_app_connector_project_1.security_scheme,
+            dummy_linked_account_oauth2_credentials,
+            enabled=True,
+        )
+    )
+    db_session.commit()
+    yield dummy_linked_account_oauth2_mock_app_connector_project_1

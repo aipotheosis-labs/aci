@@ -4,7 +4,7 @@ from typing import Any, Literal
 from uuid import UUID
 
 import jsonschema
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, RootModel, field_validator, model_validator
 
 from aipolabs.common.db.sql_models import MAX_STRING_LENGTH
 from aipolabs.common.enums import HttpLocation, HttpMethod, Protocol, Visibility
@@ -20,10 +20,8 @@ class RestMetadata(BaseModel):
     server_url: str
 
 
-class GraphQLMetadata(BaseModel):
-    """placeholder, not used yet"""
-
-    pass
+class ConnectorMetadata(RootModel[dict]):
+    """placeholder, allow any metadata for connector for now"""
 
 
 class FunctionUpsert(BaseModel):
@@ -33,7 +31,12 @@ class FunctionUpsert(BaseModel):
     visibility: Visibility
     active: bool
     protocol: Protocol
-    protocol_data: RestMetadata | GraphQLMetadata = Field(default_factory=dict)
+    # TODO: should get rid of default dict?
+    # TODO: we need to use left_to_right union mode to avoid pydantic validating RestMetadata
+    # input against ConnectorMetadata schema (which allows any dict)
+    protocol_data: RestMetadata | ConnectorMetadata = Field(
+        default_factory=dict, union_mode="left_to_right"
+    )
     parameters: dict = Field(default_factory=dict)
     response: dict = Field(default_factory=dict)
 
@@ -61,7 +64,10 @@ class FunctionUpsert(BaseModel):
     # validate protocol_data against protocol type
     @model_validator(mode="after")
     def validate_metadata_by_protocol(self) -> "FunctionUpsert":
-        protocol_to_class = {Protocol.REST: RestMetadata}
+        protocol_to_class = {
+            Protocol.REST: RestMetadata,
+            Protocol.CONNECTOR: ConnectorMetadata,
+        }
 
         expected_class = protocol_to_class[self.protocol]
         if not isinstance(self.protocol_data, expected_class):

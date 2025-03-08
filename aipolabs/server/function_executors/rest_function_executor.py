@@ -1,6 +1,6 @@
 import json
 from abc import abstractmethod
-from typing import Any, Generic, TypeVar
+from typing import Any, Generic, override
 
 import httpx
 from httpx import HTTPStatusError
@@ -9,16 +9,12 @@ from aipolabs.common.db.sql_models import Function
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.function import FunctionExecutionResult, RestMetadata
 from aipolabs.common.schemas.security_scheme import (
-    APIKeyScheme,
-    APIKeySchemeCredentials,
-    OAuth2Scheme,
-    OAuth2SchemeCredentials,
+    TCred,
+    TScheme,
 )
 from aipolabs.server.function_executors.base_executor import FunctionExecutor
 
 logger = get_logger(__name__)
-TScheme = TypeVar("TScheme", APIKeyScheme, OAuth2Scheme)
-TCred = TypeVar("TCred", APIKeySchemeCredentials, OAuth2SchemeCredentials)
 
 
 class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TCred]):
@@ -38,6 +34,7 @@ class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TC
     ) -> None:
         pass
 
+    @override
     def _execute(
         self,
         function: Function,

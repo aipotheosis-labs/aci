@@ -1,0 +1,23 @@
+{
+    "name": "MOCK_APP_CONNECTOR",
+    "display_name": "Mock App Connector",
+    "logo": "https://example.com/logo.png",
+    "provider": "mock_app_connector",
+    "version": "1.0.0",
+    "description": "Mock App Connector",
+    "security_schemes": {
+        "oauth2": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer",
+            "client_id": "mock_client_id",
+            "client_secret": "mock_client_secret",
+            "scope": "openid email profile https://www.googleapis.com/auth/calendar",
+            "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": ["mock"],
+    "visibility": "public",
+    "active": true
+}

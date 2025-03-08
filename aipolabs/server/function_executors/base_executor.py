@@ -4,7 +4,7 @@ from typing import Generic, TypeVar
 import jsonschema
 
 from aipolabs.common import processor
-from aipolabs.common.db.sql_models import Function
+from aipolabs.common.db.sql_models import Function, LinkedAccount
 from aipolabs.common.exceptions import InvalidFunctionInput
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.function import FunctionExecutionResult
@@ -19,6 +19,9 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
     """
     Base class for function executors.
     """
+
+    def __init__(self, linked_account: LinkedAccount):
+        self.linked_account = linked_account
 
     # TODO: allow local code execution override by using AppBase.execute() e.g.,:
     # app_factory = AppFactory()

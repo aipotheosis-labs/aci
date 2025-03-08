@@ -28,6 +28,7 @@ class Protocol(str, Enum):
     """
 
     REST = "rest"
+    CONNECTOR = "connector"
     # GRAPHQL = "graphql"
     # WEBSOCKET = "websocket"
     # GRPC = "grpc"

@@ -1,3 +1,5 @@
+from typing import TypeVar
+
 from pydantic import BaseModel, Field, model_validator
 
 from aipolabs.common.enums import HttpLocation
@@ -102,3 +104,7 @@ class OAuth2SchemeCredentials(BaseModel):
     token_type: str | None = None
     expires_at: int | None = None
     refresh_token: str | None = None
+
+
+TScheme = TypeVar("TScheme", APIKeyScheme, OAuth2Scheme)
+TCred = TypeVar("TCred", APIKeySchemeCredentials, OAuth2SchemeCredentials)
