@@ -22,6 +22,7 @@ from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.linked_accounts import (
     LinkedAccountAPIKeyCreate,
     LinkedAccountDefaultCreate,
+    LinkedAccountNoAuthCreate,
     LinkedAccountOAuth2Create,
     LinkedAccountOAuth2CreateState,
     LinkedAccountPublic,
@@ -29,6 +30,7 @@ from aipolabs.common.schemas.linked_accounts import (
 )
 from aipolabs.common.schemas.security_scheme import (
     APIKeySchemeCredentials,
+    NoAuthSchemeCredentials,
     OAuth2Scheme,
     OAuth2SchemeCredentials,
 )
@@ -149,6 +151,82 @@ async def link_account_with_aipolabs_default_credentials(
             app_configuration.security_scheme,
             enabled=True,
         )
+    context.db_session.commit()
+
+    return linked_account
+
+
+@router.post("/no-auth", response_model=LinkedAccountPublic)
+async def link_account_with_no_auth(
+    context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
+    body: LinkedAccountNoAuthCreate,
+) -> LinkedAccount:
+    """
+    Create a linked account under an App that requires no authentication.
+    """
+    logger.info(
+        "linking no_auth account",
+        extra={
+            "app_name": body.app_name,
+            "linked_account_owner_id": body.linked_account_owner_id,
+        },
+    )
+    # TODO: duplicate code with other linked account creation routes, refactor later
+    app_configuration = crud.app_configurations.get_app_configuration(
+        context.db_session, context.project.id, body.app_name
+    )
+    if not app_configuration:
+        logger.error(
+            "failed to link no_auth account, app configuration not found",
+            extra={"app_name": body.app_name},
+        )
+        raise AppConfigurationNotFound(
+            f"configuration for app={body.app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{body.app_name}"
+        )
+    if app_configuration.security_scheme != SecurityScheme.NO_AUTH:
+        logger.error(
+            "failed to link no_auth account, app configuration security scheme is not no_auth",
+            extra={"app_name": body.app_name, "security_scheme": app_configuration.security_scheme},
+        )
+        raise NoImplementationFound(
+            f"the security_scheme configured for app={body.app_name} is "
+            f"{app_configuration.security_scheme}, not no_auth"
+        )
+    linked_account = crud.linked_accounts.get_linked_account(
+        context.db_session,
+        context.project.id,
+        body.app_name,
+        body.linked_account_owner_id,
+    )
+    if linked_account:
+        logger.error(
+            "failed to link no_auth account, linked account already exists",
+            extra={
+                "linked_account_owner_id": body.linked_account_owner_id,
+                "app_name": body.app_name,
+            },
+        )
+        raise LinkedAccountAlreadyExists(
+            f"linked account with linked_account_owner_id={body.linked_account_owner_id} already exists for app={body.app_name}"
+        )
+    else:
+        logger.info(
+            "creating no_auth linked account",
+            extra={
+                "linked_account_owner_id": body.linked_account_owner_id,
+                "app_name": body.app_name,
+            },
+        )
+        linked_account = crud.linked_accounts.create_linked_account(
+            context.db_session,
+            context.project.id,
+            body.app_name,
+            body.linked_account_owner_id,
+            SecurityScheme.NO_AUTH,
+            NoAuthSchemeCredentials(),
+            enabled=True,
+        )
+
     context.db_session.commit()
 
     return linked_account

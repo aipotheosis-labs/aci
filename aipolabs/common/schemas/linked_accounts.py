@@ -6,21 +6,25 @@ from pydantic import BaseModel, ConfigDict, Field
 from aipolabs.common.db.sql_models import MAX_STRING_LENGTH, SecurityScheme
 
 
-class LinkedAccountOAuth2Create(BaseModel):
+class LinkedAccountCreateBase(BaseModel):
     app_name: str
     linked_account_owner_id: str
+
+
+class LinkedAccountOAuth2Create(LinkedAccountCreateBase):
     after_oauth2_link_redirect_url: str | None = None
 
 
-class LinkedAccountAPIKeyCreate(BaseModel):
-    app_name: str
-    linked_account_owner_id: str
+class LinkedAccountAPIKeyCreate(LinkedAccountCreateBase):
     api_key: str
 
 
-class LinkedAccountDefaultCreate(BaseModel):
-    app_name: str
-    linked_account_owner_id: str
+class LinkedAccountDefaultCreate(LinkedAccountCreateBase):
+    pass
+
+
+class LinkedAccountNoAuthCreate(LinkedAccountCreateBase):
+    pass
 
 
 class LinkedAccountOAuth2CreateState(BaseModel):
