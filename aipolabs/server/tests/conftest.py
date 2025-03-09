@@ -33,6 +33,7 @@ with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
     )
     from aipolabs.common.schemas.security_scheme import (
         APIKeySchemeCredentials,
+        NoAuthSchemeCredentials,
         OAuth2SchemeCredentials,
     )
     from aipolabs.common.schemas.user import UserCreate
@@ -534,6 +535,26 @@ def dummy_app_configuration_oauth2_mock_app_connector_project_1(
     return dummy_app_configuration_oauth2_mock_app_connector_project_1
 
 
+@pytest.fixture(scope="function")
+def dummy_app_configuration_no_auth_mock_app_connector_project_1(
+    db_session: Session,
+    dummy_project_1: Project,
+    dummy_app_mock_app_connector: App,
+) -> AppConfiguration:
+    app_configuration_create = AppConfigurationCreate(
+        app_name=dummy_app_mock_app_connector.name, security_scheme=SecurityScheme.NO_AUTH
+    )
+    dummy_app_configuration_no_auth_mock_app_connector_project_1 = (
+        crud.app_configurations.create_app_configuration(
+            db_session,
+            dummy_project_1.id,
+            app_configuration_create,
+        )
+    )
+    db_session.commit()
+    return dummy_app_configuration_no_auth_mock_app_connector_project_1
+
+
 ################################################################################
 # Dummy Linked Accounts Security Credentials
 ################################################################################
@@ -718,3 +739,23 @@ def dummy_linked_account_oauth2_mock_app_connector_project_1(
     )
     db_session.commit()
     yield dummy_linked_account_oauth2_mock_app_connector_project_1
+
+
+@pytest.fixture(scope="function")
+def dummy_linked_account_no_auth_mock_app_connector_project_1(
+    db_session: Session,
+    dummy_app_configuration_no_auth_mock_app_connector_project_1: AppConfigurationPublic,
+) -> Generator[LinkedAccount, None, None]:
+    dummy_linked_account_no_auth_mock_app_connector_project_1 = (
+        crud.linked_accounts.create_linked_account(
+            db_session,
+            dummy_app_configuration_no_auth_mock_app_connector_project_1.project_id,
+            dummy_app_configuration_no_auth_mock_app_connector_project_1.app_name,
+            "dummy_linked_account_no_auth_mock_app_connector_project_1",
+            dummy_app_configuration_no_auth_mock_app_connector_project_1.security_scheme,
+            NoAuthSchemeCredentials(),
+            enabled=True,
+        )
+    )
+    db_session.commit()
+    yield dummy_linked_account_no_auth_mock_app_connector_project_1

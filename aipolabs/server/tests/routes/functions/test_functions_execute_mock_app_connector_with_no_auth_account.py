@@ -4,6 +4,7 @@ from fastapi.testclient import TestClient
 
 from aipolabs.common.db.sql_models import Function, LinkedAccount
 from aipolabs.common.schemas.function import FunctionExecute, FunctionExecutionResult
+from aipolabs.common.schemas.security_scheme import NoAuthScheme, NoAuthSchemeCredentials
 from aipolabs.server import config
 
 
@@ -23,6 +24,9 @@ from aipolabs.server import config
                 "input_bool": True,
                 "input_list": ["test_string1", "test_string2"],
                 "input_required_invisible_string": "default_string_value",
+                "security_scheme": "no_auth",
+                "security_scheme_cls": NoAuthScheme.__name__,
+                "security_credentials_cls": NoAuthSchemeCredentials.__name__,
             },
         ),
     ],
@@ -31,12 +35,12 @@ def test_execute_echo(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_mock_app_connector__echo: Function,
-    dummy_linked_account_oauth2_mock_app_connector_project_1: LinkedAccount,
+    dummy_linked_account_no_auth_mock_app_connector_project_1: LinkedAccount,
     function_input: dict,
     expected_response_data: dict,
 ) -> None:
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_oauth2_mock_app_connector_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_no_auth_mock_app_connector_project_1.linked_account_owner_id,
         function_input=function_input,
     )
     response = test_client.post(
@@ -55,10 +59,10 @@ def test_execute_fail(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_function_mock_app_connector__fail: Function,
-    dummy_linked_account_oauth2_mock_app_connector_project_1: LinkedAccount,
+    dummy_linked_account_no_auth_mock_app_connector_project_1: LinkedAccount,
 ) -> None:
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_oauth2_mock_app_connector_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_no_auth_mock_app_connector_project_1.linked_account_owner_id,
         function_input={},
     )
     response = test_client.post(

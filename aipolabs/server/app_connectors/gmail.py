@@ -18,7 +18,7 @@ logger = get_logger(__name__)
 
 # TODO: how should we handle args are passed as flattened? separated by double underscore?
 # e.g. person__name, person__title. maybe need to preprocess the args before passing to the method?
-class Gmail(AppConnectorBase[OAuth2Scheme, OAuth2SchemeCredentials]):
+class Gmail(AppConnectorBase):
     """
     Gmail Connector.
     """

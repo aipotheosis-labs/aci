@@ -1,19 +1,22 @@
 from abc import ABC, abstractmethod
-from typing import Generic
 
 from aipolabs.common.db.sql_models import LinkedAccount
 from aipolabs.common.exceptions import NoImplementationFound
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.function import FunctionExecutionResult
 from aipolabs.common.schemas.security_scheme import (
-    TCred,
-    TScheme,
+    APIKeyScheme,
+    APIKeySchemeCredentials,
+    NoAuthScheme,
+    NoAuthSchemeCredentials,
+    OAuth2Scheme,
+    OAuth2SchemeCredentials,
 )
 
 logger = get_logger(__name__)
 
 
-class AppConnectorBase(ABC, Generic[TScheme, TCred]):
+class AppConnectorBase(ABC):
     """
     Base class for all app connectors.
     """
@@ -22,11 +25,16 @@ class AppConnectorBase(ABC, Generic[TScheme, TCred]):
     # that handles credentials differently per App. It can be useful if inside the connector we still
     # need to construct the raw http request object.
     def __init__(
-        self, linked_account: LinkedAccount, security_scheme: TScheme, security_credentials: TCred
+        self,
+        linked_account: LinkedAccount,
+        security_scheme: OAuth2Scheme | APIKeyScheme | NoAuthScheme,
+        security_credentials: OAuth2SchemeCredentials
+        | APIKeySchemeCredentials
+        | NoAuthSchemeCredentials,
     ):
-        self.linked_account: LinkedAccount = linked_account
-        self.security_scheme: TScheme = security_scheme
-        self.security_credentials: TCred = security_credentials
+        self.linked_account = linked_account
+        self.security_scheme = security_scheme
+        self.security_credentials = security_credentials
 
     @abstractmethod
     def _before_execute(self) -> None:
