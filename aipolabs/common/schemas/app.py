@@ -10,6 +10,8 @@ from aipolabs.common.schemas.function import FunctionBasic
 from aipolabs.common.schemas.security_scheme import (
     APIKeyScheme,
     APIKeySchemeCredentials,
+    NoAuthScheme,
+    NoAuthSchemeCredentials,
     OAuth2Scheme,
     OAuth2SchemeCredentials,
 )
@@ -25,9 +27,10 @@ class AppUpsert(BaseModel):
     categories: list[str]
     visibility: Visibility
     active: bool
-    security_schemes: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]
+    # TODO: consider refactor and use discriminator for security_schemes/default_security_credentials_by_scheme
+    security_schemes: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme | NoAuthScheme]
     default_security_credentials_by_scheme: dict[
-        SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials
+        SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials | NoAuthSchemeCredentials
     ]
 
     @field_validator("name", check_fields=False)
@@ -51,6 +54,10 @@ class AppUpsert(BaseModel):
                 scheme_config, OAuth2Scheme
             ):
                 raise ValueError(f"Invalid configuration for OAUTH2 scheme: {scheme_config}")
+            elif scheme_type == SecurityScheme.NO_AUTH and not isinstance(
+                scheme_config, NoAuthScheme
+            ):
+                raise ValueError(f"Invalid configuration for NO_AUTH scheme: {scheme_config}")
         return v
 
 

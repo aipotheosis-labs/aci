@@ -81,7 +81,14 @@ class OAuth2Scheme(BaseModel):
         return self
 
 
-# TODO: add pydantic model for other security schemes (e.g., HTTP Basic, HTTP Bearer)
+class NoAuthScheme(BaseModel, extra="forbid"):
+    """
+    model for security scheme that has no authentication.
+    For now it only allows an empty dict, this is clearer and less ambiguous than using {} or None directly.
+    We could also add some fields as metadata in the future if needed.
+    """
+
+    pass
 
 
 class APIKeySchemeCredentials(BaseModel):
@@ -106,5 +113,16 @@ class OAuth2SchemeCredentials(BaseModel):
     refresh_token: str | None = None
 
 
-TScheme = TypeVar("TScheme", APIKeyScheme, OAuth2Scheme)
-TCred = TypeVar("TCred", APIKeySchemeCredentials, OAuth2SchemeCredentials)
+class NoAuthSchemeCredentials(BaseModel, extra="forbid"):
+    """
+    Credentials for no auth scheme
+    For now it only allows an empty dict, this is clearer and less ambiguous than using {} or None directly.
+    We could also add some fields as metadata in the future if needed.
+    # TODO: there is some ambiguity with "no auth" and "use app's default credentials", needs a refactor.
+    """
+
+    pass
+
+
+TScheme = TypeVar("TScheme", APIKeyScheme, OAuth2Scheme, NoAuthScheme)
+TCred = TypeVar("TCred", APIKeySchemeCredentials, OAuth2SchemeCredentials, NoAuthSchemeCredentials)

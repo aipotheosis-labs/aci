@@ -3,10 +3,15 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from aipolabs.common import validators
 from aipolabs.common.db.sql_models import App, LinkedAccount
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.logging import get_logger
-from aipolabs.common.schemas.security_scheme import APIKeySchemeCredentials, OAuth2SchemeCredentials
+from aipolabs.common.schemas.security_scheme import (
+    APIKeySchemeCredentials,
+    NoAuthSchemeCredentials,
+    OAuth2SchemeCredentials,
+)
 
 logger = get_logger(__name__)
 
@@ -69,11 +74,15 @@ def create_linked_account(
     app_name: str,
     linked_account_owner_id: str,
     security_scheme: SecurityScheme,
-    security_credentials: OAuth2SchemeCredentials | APIKeySchemeCredentials | None = None,
+    security_credentials: OAuth2SchemeCredentials
+    | APIKeySchemeCredentials
+    | NoAuthSchemeCredentials
+    | None = None,
     enabled: bool = True,
 ) -> LinkedAccount:
     """Create a linked account
     when security_credentials is None, the linked account will be using App's default security credentials if exists
+    # TODO: there is some ambiguity with "no auth" and "use app's default credentials", needs a refactor.
     """
     app_id = db_session.execute(select(App.id).filter_by(name=app_name)).scalar_one()
     linked_account = LinkedAccount(
@@ -95,17 +104,20 @@ def create_linked_account(
 def update_linked_account_credentials(
     db_session: Session,
     linked_account: LinkedAccount,
-    security_credentials: OAuth2SchemeCredentials | APIKeySchemeCredentials,
+    security_credentials: OAuth2SchemeCredentials
+    | APIKeySchemeCredentials
+    | NoAuthSchemeCredentials,
 ) -> LinkedAccount:
     """
     Update the security credentials of a linked account.
     Removing the security credentials (setting it to empty dict) is not handled here.
     """
-    if security_credentials is not None:
-        linked_account.security_credentials = security_credentials.model_dump(mode="json")
+    # TODO: paranoid validation, should be removed if later the validation is done on the schema level
+    validators.security_scheme.validate_scheme_and_credentials_type_match(
+        linked_account.security_scheme, security_credentials
+    )
 
-    # Technically we don't need to call the flush() and refresh() here, but it's more robust to do so
-    # in case there are other dependencies on the linked account object that need to be updated in the future
+    linked_account.security_credentials = security_credentials.model_dump(mode="json")
     db_session.flush()
     db_session.refresh(linked_account)
     return linked_account

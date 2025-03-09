@@ -9,6 +9,8 @@ from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.security_scheme import (
     APIKeyScheme,
     APIKeySchemeCredentials,
+    NoAuthScheme,
+    NoAuthSchemeCredentials,
     OAuth2Scheme,
     OAuth2SchemeCredentials,
 )
@@ -19,8 +21,8 @@ logger = get_logger(__name__)
 
 # TODO: only pass necessary data to the functions
 class SecurityCredentialsResponse(BaseModel):
-    scheme: APIKeyScheme | OAuth2Scheme
-    credentials: APIKeySchemeCredentials | OAuth2SchemeCredentials
+    scheme: APIKeyScheme | OAuth2Scheme | NoAuthScheme
+    credentials: APIKeySchemeCredentials | OAuth2SchemeCredentials | NoAuthSchemeCredentials
     is_app_default_credentials: bool
     is_updated: bool
 
@@ -32,6 +34,8 @@ async def get_security_credentials(
         return _get_api_key_credentials(app, linked_account)
     elif linked_account.security_scheme == SecurityScheme.OAUTH2:
         return await _get_oauth2_credentials(app, linked_account)
+    elif linked_account.security_scheme == SecurityScheme.NO_AUTH:
+        return _get_no_auth_credentials(app, linked_account)
     else:
         logger.error(
             "unsupported security scheme",
@@ -198,6 +202,20 @@ def _get_api_key_credentials(
         scheme=APIKeyScheme.model_validate(app.security_schemes[SecurityScheme.API_KEY]),
         credentials=APIKeySchemeCredentials.model_validate(security_credentials),
         is_app_default_credentials=not bool(linked_account.security_credentials),
+        is_updated=False,
+    )
+
+
+def _get_no_auth_credentials(
+    app: App, linked_account: LinkedAccount
+) -> SecurityCredentialsResponse:
+    """
+    a somewhat no-op function, but we keep it for consistency.
+    """
+    return SecurityCredentialsResponse(
+        scheme=NoAuthScheme.model_validate(app.security_schemes[SecurityScheme.NO_AUTH]),
+        credentials=NoAuthSchemeCredentials.model_validate(linked_account.security_credentials),
+        is_app_default_credentials=False,
         is_updated=False,
     )
 

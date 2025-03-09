@@ -1,7 +1,7 @@
 def validate_function_parameters_schema_common(parameters_schema: dict, path: str) -> None:
     """
     Validate a function parameters schema based on a set of common rules.
-    These rules should be true for all types of protocols. (rest, graphql, etc.)
+    These rules should be true for all types of protocols. (rest, connector, etc.)
     Some of rules we make it more strict than JSON Schema standard to avoid human errors, e.g., 'required' must be specified.
     """
     # if not an object type schema, skip most of the validation but make sure required and visible does NOT exist
