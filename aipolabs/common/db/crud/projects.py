@@ -118,7 +118,6 @@ def create_agent(
     name: str,
     description: str,
     excluded_apps: list[str],
-    excluded_functions: list[str],
     custom_instructions: dict[str, ValidInstruction],
 ) -> Agent:
     """
@@ -130,7 +129,6 @@ def create_agent(
         name=name,
         description=description,
         excluded_apps=excluded_apps,
-        excluded_functions=excluded_functions,
         custom_instructions=custom_instructions,
     )
     db_session.add(agent)
@@ -160,8 +158,6 @@ def update_agent(
         agent.description = update.description
     if update.excluded_apps is not None:
         agent.excluded_apps = update.excluded_apps
-    if update.excluded_functions is not None:
-        agent.excluded_functions = update.excluded_functions
     if update.custom_instructions is not None:
         agent.custom_instructions = update.custom_instructions
 

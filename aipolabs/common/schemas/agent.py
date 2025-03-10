@@ -22,7 +22,6 @@ class AgentCreate(BaseModel):
     name: str
     description: str
     excluded_apps: list[str] = []
-    excluded_functions: list[str] = []
     custom_instructions: dict[str, ValidInstruction] = Field(default_factory=dict)
 
 
@@ -30,7 +29,6 @@ class AgentUpdate(BaseModel):
     name: str | None = None
     description: str | None = None
     excluded_apps: list[str] | None = None
-    excluded_functions: list[str] | None = None
     custom_instructions: dict[str, ValidInstruction] | None = None
 
 
@@ -40,7 +38,6 @@ class AgentPublic(BaseModel):
     name: str
     description: str
     excluded_apps: list[str] = []
-    excluded_functions: list[str] = []
     custom_instructions: dict[str, ValidInstruction] = Field(default_factory=dict)
 
     created_at: datetime

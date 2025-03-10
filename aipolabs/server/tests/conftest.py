@@ -165,7 +165,6 @@ def dummy_api_key_1(db_session: Session, dummy_project_1: Project) -> Generator[
         name="Dummy Agent",
         description="Dummy Agent",
         excluded_apps=[],
-        excluded_functions=[],
         custom_instructions={},
     )
     db_session.commit()
@@ -192,7 +191,6 @@ def dummy_api_key_2(db_session: Session, dummy_project_2: Project) -> Generator[
         name="Dummy Agent 2",
         description="Dummy Agent 2",
         excluded_apps=[],
-        excluded_functions=[],
         custom_instructions={},
     )
     db_session.commit()
@@ -207,7 +205,6 @@ def dummy_agent_1(db_session: Session, dummy_project_1: Project) -> Generator[Ag
         name="Dummy Agent 1",
         description="Dummy Agent 1",
         excluded_apps=[],
-        excluded_functions=[],
         custom_instructions={},
     )
     db_session.commit()
@@ -234,7 +231,6 @@ def dummy_agent_with_github_apple_instructions(
         name=body.name,
         description=body.description,
         excluded_apps=body.excluded_apps,
-        excluded_functions=body.excluded_functions,
         custom_instructions=body.model_dump(mode="json")["custom_instructions"],
     )
     db_session.commit()

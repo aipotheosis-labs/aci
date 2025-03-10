@@ -309,20 +309,17 @@ class Agent(Base):
     )
     name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
-    # agent level control of what apps and functions are not accessible by the agent, apart from the project level control
+    # agent level control of what apps are accessible by the agent, subset of project configured apps
+    # we store a list of app names.
     # TODO: reconsider if this should be in a separate table to enforce data integrity, or use periodic task to clean up
-    excluded_apps: Mapped[list[str]] = mapped_column(
-        ARRAY(String(MAX_STRING_LENGTH)), nullable=False
-    )
-    excluded_functions: Mapped[list[str]] = mapped_column(
+    allowed_apps: Mapped[list[str]] = mapped_column(
         ARRAY(String(MAX_STRING_LENGTH)), nullable=False
     )
     # TODO: should we use JSONB instead? As this will be frequently queried
-    # Custom instructions for the agent to follow for each app
+    # Custom instructions for the agent to follow. The key is the function name, and the value is the instruction.
     custom_instructions: Mapped[dict[str, str]] = mapped_column(
         MutableDict.as_mutable(JSON),  # type: ignore
         nullable=False,
-        default_factory=dict,
     )
 
     created_at: Mapped[datetime] = mapped_column(

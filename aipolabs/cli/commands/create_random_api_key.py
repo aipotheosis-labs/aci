@@ -58,7 +58,6 @@ def create_random_api_key_helper(visibility_access: Visibility) -> str:
         name=f"Test Agent {random_id}",
         description=f"Test Agent {random_id}",
         excluded_apps=[],
-        excluded_functions=[],
         custom_instructions={},
         skip_dry_run=skip_dry_run,
     )

@@ -38,14 +38,6 @@ from aipolabs.common.logging import create_headline
     help="list of app names to exclude from the agent",
 )
 @click.option(
-    "--excluded-functions",
-    "excluded_functions",
-    required=False,
-    default=[],
-    type=list[str],
-    help="list of function names to exclude from the agent",
-)
-@click.option(
     "--custom-instructions",
     "custom_instructions",
     required=False,
@@ -63,7 +55,6 @@ def create_agent(
     name: str,
     description: str,
     excluded_apps: list[str],
-    excluded_functions: list[str],
     custom_instructions: str,
     skip_dry_run: bool,
 ) -> UUID:
@@ -75,7 +66,6 @@ def create_agent(
         name,
         description,
         excluded_apps,
-        excluded_functions,
         json.loads(custom_instructions),
         skip_dry_run,
     )
@@ -86,7 +76,6 @@ def create_agent_helper(
     name: str,
     description: str,
     excluded_apps: list[str],
-    excluded_functions: list[str],
     custom_instructions: dict[str, str],
     skip_dry_run: bool,
 ) -> UUID:
@@ -97,7 +86,6 @@ def create_agent_helper(
             name,
             description,
             excluded_apps,
-            excluded_functions,
             custom_instructions,
         )
 
