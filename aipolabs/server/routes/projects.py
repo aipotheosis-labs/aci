@@ -91,7 +91,6 @@ async def create_agent(
         project_id,
         body.name,
         body.description,
-        body.allow_all_apps,
         body.allowed_apps,
         body.custom_instructions,
     )

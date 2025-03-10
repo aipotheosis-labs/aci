@@ -104,7 +104,6 @@ def test_update_agent(
     response = test_client.patch(
         ENDPOINT,
         json={
-            "allow_all_apps": False,
             "allowed_apps": [dummy_app_google.name],
         },
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},

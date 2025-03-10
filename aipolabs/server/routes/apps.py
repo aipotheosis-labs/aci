@@ -79,24 +79,15 @@ async def search_apps(
         "generated intent embedding",
         extra={"intent": query_params.intent, "intent_embedding": intent_embedding},
     )
-
-    # If configured_only is False, None is passed to the search_apps function and no filtering is done
-    configured_app_names = None
-    if query_params.configured_only:
-        configured_app_names = crud.app_configurations.get_configured_app_names(
-            context.db_session,
-            context.project.id,
-        )
-        # if no apps are configured, return an empty list
-        if not configured_app_names:
-            logger.info("no apps configured, returning empty list")
-            return []
+    # if the search is restricted to allowed apps, we need to filter the apps by the agent's allowed apps
+    # None means no filtering
+    apps_to_filter = context.agent.allowed_apps if query_params.allowed_apps_only else None
 
     apps_with_scores = crud.apps.search_apps(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
         True,
-        configured_app_names,
+        apps_to_filter,
         query_params.categories,
         intent_embedding,
         query_params.limit,

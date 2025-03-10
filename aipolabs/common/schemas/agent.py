@@ -21,40 +21,20 @@ def validate_instruction(v: str) -> str:
 ValidInstruction = Annotated[str, BeforeValidator(validate_instruction)]
 
 
-def _validate_apps_access_consistency(
-    allow_all_apps: bool | None, allowed_apps: list[str] | None
-) -> None:
-    """Validator function to check allow_all_apps and allowed_apps consistency"""
-    if allow_all_apps and allowed_apps:
-        raise ValueError("allow_all_apps and allowed_apps cannot be both True and non-empty")
-
-
 # TODO: validate when creating or updating agent that allowed_apps only contains apps that are configured
 # for the project
 class AgentCreate(BaseModel):
     name: str
     description: str
-    allow_all_apps: bool = True
     allowed_apps: list[str] = []
     custom_instructions: dict[str, ValidInstruction] = Field(default_factory=dict)
-
-    @model_validator(mode="after")
-    def check_allow_all_apps(self) -> "AgentCreate":
-        _validate_apps_access_consistency(self.allow_all_apps, self.allowed_apps)
-        return self
 
 
 class AgentUpdate(BaseModel):
     name: str | None = None
     description: str | None = None
-    allow_all_apps: bool | None = None
     allowed_apps: list[str] | None = None
     custom_instructions: dict[str, ValidInstruction] | None = None
-
-    @model_validator(mode="after")
-    def check_allow_all_apps(self) -> "AgentUpdate":
-        _validate_apps_access_consistency(self.allow_all_apps, self.allowed_apps)
-        return self
 
 
 class AgentPublic(BaseModel):
@@ -62,7 +42,6 @@ class AgentPublic(BaseModel):
     project_id: UUID
     name: str
     description: str
-    allow_all_apps: bool
     allowed_apps: list[str] = []
     custom_instructions: dict[str, ValidInstruction] = Field(default_factory=dict)
 

@@ -30,14 +30,6 @@ from aipolabs.common.logging import create_headline
     help="agent description",
 )
 @click.option(
-    "--allow-all-apps",
-    "allow_all_apps",
-    required=False,
-    default=True,
-    type=bool,
-    help="allow all apps for the agent",
-)
-@click.option(
     "--allowed-apps",
     "allowed_apps",
     required=False,
@@ -61,7 +53,6 @@ def create_agent(
     project_id: UUID,
     name: str,
     description: str,
-    allow_all_apps: bool,
     allowed_apps: list[str],
     custom_instructions: str,
     skip_dry_run: bool,
@@ -73,7 +64,6 @@ def create_agent(
         project_id,
         name,
         description,
-        allow_all_apps,
         allowed_apps,
         json.loads(custom_instructions),
         skip_dry_run,
@@ -84,7 +74,6 @@ def create_agent_helper(
     project_id: UUID,
     name: str,
     description: str,
-    allow_all_apps: bool,
     allowed_apps: list[str],
     custom_instructions: dict[str, str],
     skip_dry_run: bool,
@@ -95,7 +84,6 @@ def create_agent_helper(
             project_id,
             name,
             description,
-            allow_all_apps,
             allowed_apps,
             custom_instructions,
         )

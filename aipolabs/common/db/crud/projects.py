@@ -117,7 +117,6 @@ def create_agent(
     project_id: UUID,
     name: str,
     description: str,
-    allow_all_apps: bool,
     allowed_apps: list[str],
     custom_instructions: dict[str, ValidInstruction],
 ) -> Agent:
@@ -129,7 +128,6 @@ def create_agent(
         project_id=project_id,
         name=name,
         description=description,
-        allow_all_apps=allow_all_apps,
         allowed_apps=allowed_apps,
         custom_instructions=custom_instructions,
     )
@@ -158,8 +156,6 @@ def update_agent(
         agent.name = update.name
     if update.description is not None:
         agent.description = update.description
-    if update.allow_all_apps is not None:
-        agent.allow_all_apps = update.allow_all_apps
     if update.allowed_apps is not None:
         agent.allowed_apps = update.allowed_apps
     if update.custom_instructions is not None:

@@ -27,13 +27,6 @@ from aipolabs.common.schemas.agent import AgentUpdate
     help="new agent description",
 )
 @click.option(
-    "--allow-all-apps",
-    "allow_all_apps",
-    required=False,
-    type=bool,
-    help="allow all apps for the agent",
-)
-@click.option(
     "--allowed-apps",
     "allowed_apps",
     required=False,
@@ -56,7 +49,6 @@ def update_agent(
     agent_id: UUID,
     name: str | None,
     description: str | None,
-    allow_all_apps: bool | None,
     allowed_apps: list[str] | None,
     custom_instructions: str | None,
     skip_dry_run: bool,
@@ -68,7 +60,6 @@ def update_agent(
         agent_id,
         name,
         description,
-        allow_all_apps,
         allowed_apps,
         json.loads(custom_instructions) if custom_instructions else None,
         skip_dry_run,
@@ -79,7 +70,6 @@ def update_agent_helper(
     agent_id: UUID,
     name: str | None,
     description: str | None,
-    allow_all_apps: bool | None,
     allowed_apps: list[str] | None,
     custom_instructions: dict[str, str] | None,
     skip_dry_run: bool,
@@ -92,7 +82,6 @@ def update_agent_helper(
         update = AgentUpdate(
             name=name,
             description=description,
-            allow_all_apps=allow_all_apps,
             allowed_apps=allowed_apps,
             custom_instructions=custom_instructions,
         )
