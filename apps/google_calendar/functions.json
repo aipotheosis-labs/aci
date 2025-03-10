@@ -200,5 +200,152 @@
             "visible": ["body"],
             "additionalProperties": false
         }
-    }
+    },
+    {
+        "name": "GOOGLE_CALENDAR__EVENTS_LIST",
+        "description": "Returns events on the specified calendar",
+        "tags": ["calendar", "events"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/calendars/{calendarId}/events",
+            "server_url": "https://www.googleapis.com/calendar/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "calendarId": {
+                            "type": "string",
+                            "description": "Calendar identifier. Use 'primary' for the primary calendar.",
+                            "default": "primary"
+                        }
+                    },
+                    "required": ["calendarId"],
+                    "visible": ["calendarId"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "eventTypes": {
+                            "type": "string",
+                            "description": "Event types to return. This parameter can be repeated multiple times.",
+                            "enum": [
+                                "birthday",
+                                "default",
+                                "focusTime",
+                                "fromGmail",
+                                "outOfOffice",
+                                "workingLocation"
+                            ]
+                        },
+                        "iCalUID": {
+                            "type": "string",
+                            "description": "Specifies an event ID in iCalendar format.",
+                            "default": null
+                        },
+                        "maxAttendees": {
+                            "type": "integer",
+                            "description": "Maximum number of attendees to include in the response.",
+                            "default": 0
+                        },
+                        "maxResults": {
+                            "type": "integer",
+                            "description": "Maximum number of events returned per page. Default is 250, max is 2500.",
+                            "default": 250
+                        },
+                        "orderBy": {
+                            "type": "string",
+                            "description": "Order of returned events.",
+                            "enum": ["startTime", "updated"]
+                        },
+                        "pageToken": {
+                            "type": "string",
+                            "description": "Token for pagination.",
+                            "default": null
+                        },
+                        "privateExtendedProperty": {
+                            "type": "string",
+                            "description": "Private extended properties filter (propertyName=value).".,
+                            "default": null
+                        },
+                        "q": {
+                            "type": "string",
+                            "description": "Free text search to find matching events."
+                        },
+                        "sharedExtendedProperty": {
+                            "type": "string",
+                            "description": "Shared extended properties filter (propertyName=value).",
+                            "default": null
+                        },
+                        "showDeleted": {
+                            "type": "boolean",
+                            "description": "Include deleted events in results.",
+                            "default": false
+                        },
+                        "showHiddenInvitations": {
+                            "type": "boolean",
+                            "description": "Include hidden invitations in results.",
+                            "default": false
+                        },
+                        "singleEvents": {
+                            "type": "boolean",
+                            "description": "Expand recurring events into instances.",
+                            "default": false
+                        },
+                        "syncToken": {
+                            "type": "string",
+                            "description": "Token for incremental synchronization.",
+                            "default": null
+                        },
+                        "timeMax": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Upper bound for event start time (RFC3339)."
+                        },
+                        "timeMin": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Lower bound for event end time (RFC3339)."
+                        },
+                        "timeZone": {
+                            "type": "string",
+                            "description": "Time zone used in the response."
+                        },
+                        "updatedMin": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Lower bound for last event modification time (RFC3339)."
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "maxResults",
+                        "orderBy",
+                        "pageToken",
+                        "q",
+                        "showDeleted",
+                        "showHiddenInvitations",
+                        "singleEvents",
+                        "syncToken",
+                        "timeMax",
+                        "timeMin",
+                        "timeZone",
+                        "updatedMin"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "query"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    }    
 ]
