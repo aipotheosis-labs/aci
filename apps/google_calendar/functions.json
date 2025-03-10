@@ -273,7 +273,7 @@
                         },
                         "privateExtendedProperty": {
                             "type": "string",
-                            "description": "Private extended properties filter (propertyName=value).".,
+                            "description": "Private extended properties filter (propertyName=value).",
                             "default": null
                         },
                         "q": {
@@ -347,5 +347,568 @@
             "visible": ["path", "query"],
             "additionalProperties": false
         }
-    }    
+    },
+    {
+        "name": "GOOGLE_CALENDAR__EVENTS_GET",
+        "description": "Returns an event based on its Google Calendar ID",
+        "tags": ["calendar", "events"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/calendars/{calendarId}/events/{eventId}",
+            "server_url": "https://www.googleapis.com/calendar/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "calendarId": {
+                            "type": "string",
+                            "description": "Calendar identifier. Use 'primary' for the primary calendar."
+                        },
+                        "eventId": {
+                            "type": "string",
+                            "description": "Event identifier."
+                        }
+                    },
+                    "required": ["calendarId", "eventId"],
+                    "visible": ["calendarId", "eventId"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "maxAttendees": {
+                            "type": "integer",
+                            "description": "Maximum number of attendees to include in the response."
+                        },
+                        "timeZone": {
+                            "type": "string",
+                            "description": "Time zone used in the response. Defaults to the calendar's time zone."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["maxAttendees", "timeZone"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_CALENDAR__EVENTS_INSERT",
+        "description": "Creates an event in the specified calendar",
+        "tags": ["calendar", "events"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/calendars/{calendarId}/events",
+            "server_url": "https://www.googleapis.com/calendar/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "calendarId": {
+                            "type": "string",
+                            "description": "Calendar identifier. Use 'primary' for the primary calendar."
+                        }
+                    },
+                    "required": ["calendarId"],
+                    "visible": ["calendarId"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "conferenceDataVersion": {
+                            "type": "integer",
+                            "description": "Version number of conference data supported by the API client.",
+                            "default": 0,
+                            "minimum": 0,
+                            "maximum": 1
+                        },
+                        "maxAttendees": {
+                            "type": "integer",
+                            "description": "Maximum number of attendees to include in the response."
+                        },
+                        "sendUpdates": {
+                            "type": "string",
+                            "description": "Controls notifications for event creation.",
+                            "enum": ["all", "externalOnly", "none"],
+                            "default": "none"
+                        },
+                        "supportsAttachments": {
+                            "type": "boolean",
+                            "description": "Whether the API client supports event attachments.",
+                            "default": false
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "conferenceDataVersion",
+                        "maxAttendees",
+                        "sendUpdates",
+                        "supportsAttachments"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Event data to be created",
+                    "properties": {
+                        "summary": {
+                            "type": "string",
+                            "description": "Title of the event."
+                        },
+                        "location": {
+                            "type": "string",
+                            "description": "Geographic location of the event."
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Detailed description of the event."
+                        },
+                        "start": {
+                            "type": "object",
+                            "description": "Start date/time of the event.",
+                            "properties": {
+                                "date": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Start time in the format YYYY-MM-DD."
+                                },
+                                "dateTime": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "Start time in RFC3339 format."
+                                },
+                                "timeZone": {
+                                    "type": "string",
+                                    "description": "Time zone for the start time.",
+                                    "default": null
+                                }
+                            },
+                            "required": ["dateTime", "timeZone"],
+                            "visible": ["dateTime", "timeZone"],
+                            "additionalProperties": false
+                        },
+                        "end": {
+                            "type": "object",
+                            "description": "End date/time of the event.",
+                            "properties": {
+                                "date": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "End date in the format YYYY-MM-DD."
+                                },
+                                "dateTime": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "End time in RFC3339 format."
+                                },
+                                "timeZone": {
+                                    "type": "string",
+                                    "description": "Time zone for the end time.",
+                                    "default": null
+                                }
+                            },
+                            "required": ["dateTime", "timeZone"],
+                            "visible": ["dateTime", "timeZone"],
+                            "additionalProperties": false
+                        },
+                        "attendees": {
+                            "type": "array",
+                            "description": "List of attendees for the event.",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "description": "Email of the attendee.",
+                                        "format": "email"
+                                    },
+                                    "displayName": {
+                                        "type": "string",
+                                        "description": "Attendee's name."
+                                    },
+                                    "optional": {
+                                        "type": "boolean",
+                                        "description": "Whether the attendee is optional.",
+                                        "default": false
+                                    },
+                                    "responseStatus": {
+                                        "type": "string",
+                                        "description": "Attendee's response status.",
+                                        "enum": ["needsAction", "declined", "tentative", "accepted"]
+                                    }
+                                }
+                            }
+                        },
+                        "conferenceData": {
+                            "type": "object",
+                            "description": "Conference details such as Google Meet link.",
+                            "properties": {
+                                "createRequest": {
+                                    "type": "object",
+                                    "description": "Request to create a conference link.",
+                                    "properties": {
+                                        "requestId": {
+                                            "type": "string",
+                                            "description": "Unique request ID for creating the conference."
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": [],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "visible": [],
+                            "required": [],
+                            "additionalProperties": false
+                        },
+                        "eventType": {
+                            "type": "string",
+                            "description": "Specific type of event.",
+                            "enum": ["birthday", "default", "focusTime", "fromGmail", "outOfOffice", "workingLocation"],
+                            "default": "default"
+                        },
+                        "visibility": {
+                            "type": "string",
+                            "description": "Visibility of the event.",
+                            "enum": ["default", "public", "private", "confidential"],
+                            "default": "default"
+                        },
+                        "guestsCanInviteOthers": {
+                            "type": "boolean",
+                            "description": "Whether attendees can invite others.",
+                            "default": true
+                        },
+                        "guestsCanModify": {
+                            "type": "boolean",
+                            "description": "Whether attendees can modify the event.",
+                            "default": false
+                        },
+                        "guestsCanSeeOtherGuests": {
+                            "type": "boolean",
+                            "description": "Whether attendees can see other guests.",
+                            "default": true
+                        }
+                    },
+                    "required": ["start", "end"],
+                    "visible": [
+                        "summary",
+                        "location",
+                        "description",
+                        "start",
+                        "end",
+                        "attendees",
+                        "eventType",
+                        "visibility",
+                        "guestsCanInviteOthers",
+                        "guestsCanModify",
+                        "guestsCanSeeOtherGuests"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "query", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+    "name": "GOOGLE_CALENDAR__EVENTS_UPDATE",
+    "description": "Updates an existing event in the specified calendar",
+    "tags": ["calendar", "events"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+        "method": "PUT",
+        "path": "/calendars/{calendarId}/events/{eventId}",
+        "server_url": "https://www.googleapis.com/calendar/v3"
+    },
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "path": {
+                "type": "object",
+                "description": "Path parameters",
+                "properties": {
+                    "calendarId": {
+                        "type": "string",
+                        "description": "Calendar identifier. Use 'primary' for the primary calendar."
+                    },
+                    "eventId": {
+                        "type": "string",
+                        "description": "Event identifier."
+                    }
+                },
+                "required": ["calendarId", "eventId"],
+                "visible": ["calendarId", "eventId"],
+                "additionalProperties": false
+            },
+            "query": {
+                "type": "object",
+                "description": "Query parameters",
+                "properties": {
+                    "conferenceDataVersion": {
+                        "type": "integer",
+                        "description": "Version number of conference data supported by the API client.",
+                        "default": 0,
+                        "minimum": 0,
+                        "maximum": 1
+                    },
+                    "maxAttendees": {
+                        "type": "integer",
+                        "description": "Maximum number of attendees to include in the response."
+                    },
+                    "sendUpdates": {
+                        "type": "string",
+                        "description": "Controls notifications for event updates.",
+                        "enum": ["all", "externalOnly", "none"],
+                        "default": "none"
+                    },
+                    "supportsAttachments": {
+                        "type": "boolean",
+                        "description": "Whether the API client supports event attachments.",
+                        "default": false
+                    }
+                },
+                "required": [],
+                "visible": ["conferenceDataVersion", "maxAttendees", "sendUpdates", "supportsAttachments"],
+                "additionalProperties": false
+            },
+            "body": {
+                "type": "object",
+                "description": "Event data to be updated",
+                "properties": {
+                    "summary": {
+                        "type": "string",
+                        "description": "Title of the event."
+                    },
+                    "location": {
+                        "type": "string",
+                        "description": "Geographic location of the event."
+                    },
+                    "description": {
+                        "type": "string",
+                        "description": "Detailed description of the event."
+                    },
+                    "start": {
+                        "type": "object",
+                        "description": "Start date/time of the event.",
+                        "properties": {
+                            "date": {
+                                "type": "string",
+                                "format": "date",
+                                "description": "Start time in the format YYYY-MM-DD."
+                            },
+                            "dateTime": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "Start time in RFC3339 format."
+                            },
+                            "timeZone": {
+                                "type": "string",
+                                "description": "Time zone for the start time.",
+                                "default": null
+                            }
+                        },
+                        "required": ["dateTime", "timeZone"],
+                        "visible": ["dateTime", "timeZone"],
+                        "additionalProperties": false
+                    },
+                    "end": {
+                        "type": "object",
+                        "description": "End date/time of the event.",
+                        "properties": {
+                            "date": {
+                                "type": "string",
+                                "format": "date",
+                                "description": "End date in the format YYYY-MM-DD."
+                            },
+                            "dateTime": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "End time in RFC3339 format."
+                            },
+                            "timeZone": {
+                                "type": "string",
+                                "description": "Time zone for the end time.",
+                                "default": null
+                            }
+                        },
+                        "required": ["dateTime", "timeZone"],
+                        "visible": ["dateTime", "timeZone"],
+                        "additionalProperties": false
+                    },
+                    "attendees": {
+                        "type": "array",
+                        "description": "List of attendees for the event.",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "description": "Email of the attendee.",
+                                    "format": "email"
+                                },
+                                "displayName": {
+                                    "type": "string",
+                                    "description": "Attendee's name."
+                                },
+                                "optional": {
+                                    "type": "boolean",
+                                    "description": "Whether the attendee is optional.",
+                                    "default": false
+                                },
+                                "responseStatus": {
+                                    "type": "string",
+                                    "description": "Attendee's response status.",
+                                    "enum": ["needsAction", "declined", "tentative", "accepted"]
+                                }
+                            }
+                        }
+                    },
+                    "conferenceData": {
+                        "type": "object",
+                        "description": "Conference details such as Google Meet link.",
+                        "properties": {
+                            "createRequest": {
+                                "type": "object",
+                                "description": "Request to create a conference link.",
+                                "properties": {
+                                    "requestId": {
+                                        "type": "string",
+                                        "description": "Unique request ID for creating the conference."
+                                    }
+                                },
+                                "required": ["requestId"],
+                                "visible": ["requestId"],
+                                "additionalProperties": false
+                            }
+                        },
+                        "visible": ["createRequest"],
+                        "required": ["createRequest"],
+                        "additionalProperties": false
+                    },
+                    "eventType": {
+                        "type": "string",
+                        "description": "Specific type of event.",
+                        "enum": ["birthday", "default", "focusTime", "fromGmail", "outOfOffice", "workingLocation"],
+                        "default": "default"
+                    },
+                    "visibility": {
+                        "type": "string",
+                        "description": "Visibility of the event.",
+                        "enum": ["default", "public", "private", "confidential"],
+                        "default": "default"
+                    },
+                    "guestsCanInviteOthers": {
+                        "type": "boolean",
+                        "description": "Whether attendees can invite others.",
+                        "default": true
+                    },
+                    "guestsCanModify": {
+                        "type": "boolean",
+                        "description": "Whether attendees can modify the event.",
+                        "default": false
+                    },
+                    "guestsCanSeeOtherGuests": {
+                        "type": "boolean",
+                        "description": "Whether attendees can see other guests.",
+                        "default": true
+                    }
+                },
+                "required": ["start", "end"],
+                "visible": [
+                    "summary",
+                    "location", 
+                    "description",
+                    "start",
+                    "end",
+                    "attendees",
+                    "eventType",
+                    "visibility",
+                    "guestsCanInviteOthers",
+                    "guestsCanModify",
+                    "guestsCanSeeOtherGuests"
+                ],
+                "additionalProperties": false
+            }
+        },
+        "required": ["path", "body"],
+        "visible": ["path", "query", "body"],
+        "additionalProperties": false
+    }
+    },
+    {
+        "name": "GOOGLE_CALENDAR__EVENTS_DELETE",
+        "description": "Deletes an event from the specified calendar",
+        "tags": ["calendar", "events"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/calendars/{calendarId}/events/{eventId}",
+            "server_url": "https://www.googleapis.com/calendar/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "calendarId": {
+                            "type": "string",
+                            "description": "Calendar identifier. Use 'primary' for the primary calendar."
+                        },
+                        "eventId": {
+                            "type": "string",
+                            "description": "Event identifier."
+                        }
+                    },
+                    "required": ["calendarId", "eventId"],
+                    "visible": ["calendarId", "eventId"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "sendUpdates": {
+                            "type": "string",
+                            "description": "Controls notifications for event deletion.",
+                            "enum": ["all", "externalOnly", "none"],
+                            "default": "none"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["sendUpdates"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    }      
 ]
