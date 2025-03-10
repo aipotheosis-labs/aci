@@ -799,13 +799,13 @@
                                         "description": "Unique request ID for creating the conference."
                                     }
                                 },
-                                "required": ["requestId"],
-                                "visible": ["requestId"],
+                                "required": [],
+                                "visible": [],
                                 "additionalProperties": false
                             }
                         },
-                        "visible": ["createRequest"],
-                        "required": ["createRequest"],
+                        "visible": [],
+                        "required": [],
                         "additionalProperties": false
                     },
                     "eventType": {
