@@ -100,17 +100,18 @@ def test_update_agent(
     assert agent_public.name == "Updated Agent Name"
     assert agent_public.description == "Updated description"
 
-    # Test updating excluded apps and functions
+    # Test updating allowed apps
     response = test_client.patch(
         ENDPOINT,
         json={
-            "excluded_apps": [dummy_app_google.name],
+            "allow_all_apps": False,
+            "allowed_apps": [dummy_app_google.name],
         },
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
     agent_public = AgentPublic.model_validate(response.json())
-    assert dummy_app_google.name in agent_public.excluded_apps
+    assert dummy_app_google.name in agent_public.allowed_apps
 
     # Test updating custom instructions
     body = AgentUpdate(
@@ -138,7 +139,7 @@ def test_update_agent(
     # Verify name changed but everything else stayed the same
     assert agent_public.name == "Final Name Update"
     assert agent_public.description == previous_state["description"]
-    assert agent_public.excluded_apps == previous_state["excluded_apps"]
+    assert agent_public.allowed_apps == previous_state["allowed_apps"]
     assert agent_public.custom_instructions == previous_state["custom_instructions"]
 
 
