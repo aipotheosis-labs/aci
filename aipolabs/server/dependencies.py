@@ -10,9 +10,10 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common import utils
 from aipolabs.common.db import crud
-from aipolabs.common.db.sql_models import Project, User
+from aipolabs.common.db.sql_models import Agent, Project, User
 from aipolabs.common.enums import APIKeyStatus
 from aipolabs.common.exceptions import (
+    AgentNotFound,
     DailyQuotaExceeded,
     InvalidAPIKey,
     InvalidBearerToken,
@@ -32,10 +33,11 @@ api_key_header = APIKeyHeader(
 
 
 class RequestContext:
-    def __init__(self, db_session: Session, api_key_id: UUID, project: Project):
+    def __init__(self, db_session: Session, api_key_id: UUID, project: Project, agent: Agent):
         self.db_session = db_session
         self.api_key_id = api_key_id
         self.project = project
+        self.agent = agent
 
 
 def yield_db_session() -> Generator[Session, None, None]:
@@ -108,6 +110,17 @@ def validate_api_key(
         return api_key_id
 
 
+def validate_agent(
+    db_session: Annotated[Session, Depends(yield_db_session)],
+    api_key_id: Annotated[UUID, Depends(validate_api_key)],
+) -> Agent:
+    agent = crud.projects.get_agent_by_api_key_id(db_session, api_key_id)
+    if not agent:
+        raise AgentNotFound(f"agent not found for api_key_id={api_key_id}")
+
+    return agent
+
+
 # TODO: use cache (redis)
 # TODO: better way to handle replace(tzinfo=datetime.timezone.utc) ?
 # TODO: context return api key object instead of api_key_id
@@ -150,6 +163,7 @@ def validate_project_quota(
 def get_request_context(
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
+    agent: Annotated[Agent, Depends(validate_agent)],
     project: Annotated[Project, Depends(validate_project_quota)],
 ) -> RequestContext:
     """
@@ -158,10 +172,11 @@ def get_request_context(
     """
     logger.info(
         "populating request context",
-        extra={"api_key_id": api_key_id, "project_id": project.id},
+        extra={"api_key_id": api_key_id, "project_id": project.id, "agent_id": agent.id},
     )
     return RequestContext(
         db_session=db_session,
         api_key_id=api_key_id,
         project=project,
+        agent=agent,
     )
