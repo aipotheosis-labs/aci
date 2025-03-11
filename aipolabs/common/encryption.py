@@ -1,9 +1,13 @@
-import aws_encryption_sdk
-import boto3
-from aws_cryptographic_material_providers.mpl import AwsCryptographicMaterialProviders
-from aws_cryptographic_material_providers.mpl.config import MaterialProvidersConfig
-from aws_cryptographic_material_providers.mpl.models import CreateAwsKmsKeyringInput
-from aws_cryptographic_material_providers.mpl.references import IKeyring
+from typing import cast
+
+import aws_encryption_sdk  # type: ignore
+import boto3  # type: ignore
+from aws_cryptographic_material_providers.mpl import (  # type: ignore
+    AwsCryptographicMaterialProviders,
+)
+from aws_cryptographic_material_providers.mpl.config import MaterialProvidersConfig  # type: ignore
+from aws_cryptographic_material_providers.mpl.models import CreateAwsKmsKeyringInput  # type: ignore
+from aws_cryptographic_material_providers.mpl.references import IKeyring  # type: ignore
 from aws_encryption_sdk import CommitmentPolicy
 
 from aipolabs.server import config
@@ -35,11 +39,11 @@ def encrypt(plain_data: bytes) -> bytes:
     kms_keyring: IKeyring = mat_prov.create_aws_kms_keyring(input=keyring_input)
     # TODO: ignore encryptor_header for now
     my_ciphertext, _ = client.encrypt(source=plain_data, keyring=kms_keyring)
-    return my_ciphertext
+    return cast(bytes, my_ciphertext)
 
 
 def decrypt(cipher_data: bytes) -> bytes:
     kms_keyring: IKeyring = mat_prov.create_aws_kms_keyring(input=keyring_input)
     # TODO: ignore decryptor_header for now
     my_plaintext, _ = client.decrypt(source=cipher_data, keyring=kms_keyring)
-    return my_plaintext
+    return cast(bytes, my_plaintext)
