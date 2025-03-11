@@ -163,5 +163,130 @@
             "visible": ["header", "body"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "NOTION__TRASH_PAGE",
+        "description": "Archives/moves a page to trash. Note: The API does not support permanently deleting pages.",
+        "tags": ["notion", "pages"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/pages/{page_id}",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "page_id": {
+                            "type": "string",
+                            "description": "The ID of the page to archive/trash"
+                        }
+                    },
+                    "required": ["page_id"],
+                    "visible": ["page_id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": ["Notion-Version"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Archive status",
+                    "properties": {
+                        "archived": {
+                            "type": "boolean",
+                            "description": "Set to true to archive the page, false to restore it",
+                            "default": true
+                        }
+                    },
+                    "required": ["archived"],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header", "body"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__RESTORE_PAGE",
+        "description": "Restores a page from trash.",
+        "tags": ["notion", "pages"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/pages/{page_id}",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "page_id": {
+                            "type": "string",
+                            "description": "The ID of the page to restore from trash"
+                        }
+                    },
+                    "required": ["page_id"],
+                    "visible": ["page_id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": ["Notion-Version"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Archive status",
+                    "properties": {
+                        "archived": {
+                            "type": "boolean",
+                            "description": "Set to false to restore the page from trash",
+                            "default": false
+                        }
+                    },
+                    
+                    "required": ["archived"],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header", "body"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
     }
 ]
