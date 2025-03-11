@@ -25,6 +25,7 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 
+# TODO: when creating an app configuration, allow user to specify list of agents that are allowed to access the app
 @router.post("", response_model=AppConfigurationPublic)
 async def create_app_configuration(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],

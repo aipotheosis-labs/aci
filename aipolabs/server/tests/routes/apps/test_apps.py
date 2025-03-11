@@ -20,7 +20,6 @@ def test_search_apps_with_intent(
     # try with intent to find GITHUB app
     search_params: dict[str, str | list[str] | int] = {
         "intent": "i want to create a new code repo for my project",
-        "categories": [],
         "limit": 100,
         "offset": 0,
     }
@@ -117,7 +116,6 @@ def test_search_apps_pagination(
 
     search_params: dict[str, str | list[str] | int | None] = {
         "intent": None,
-        "categories": [],
         "limit": len(dummy_apps) - 1,
         "offset": 0,
     }
@@ -200,15 +198,14 @@ def test_search_apps_with_private_apps(
     assert len(apps) == len(dummy_apps)
 
 
-def test_search_apps_configured_only(
+def test_search_apps_allowed_apps_only(
     test_client: TestClient,
     dummy_app_google: App,
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     dummy_api_key_1: str,
 ) -> None:
-    # Test with configured_only=True
     search_params = {
-        "configured_only": True,
+        "allowed_apps_only": True,
         "limit": 100,
         "offset": 0,
     }
@@ -220,11 +217,13 @@ def test_search_apps_configured_only(
 
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
-    assert len(apps) == 1, "Should only return the one configured app"
-    assert apps[0].name == dummy_app_google.name, "Returned app and configured app are not the same"
+    assert len(apps) == 1, (
+        "Should only return the one allowed app of the agent, identified by the api key used"
+    )
+    assert apps[0].name == dummy_app_google.name, "Returned app and allowed app are not the same"
 
 
-def test_search_apps_configured_only_with_none_configured(
+def test_search_apps_allowed_apps_only_with_no_apps_allowed(
     db_session: Session,
     test_client: TestClient,
     dummy_apps: list[App],
@@ -232,7 +231,7 @@ def test_search_apps_configured_only_with_none_configured(
     dummy_api_key_1: str,
 ) -> None:
     search_params = {
-        "configured_only": True,
+        "allowed_apps_only": True,
         "limit": 100,
         "offset": 0,
     }
@@ -244,28 +243,3 @@ def test_search_apps_configured_only_with_none_configured(
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 0, "Should not return any apps"
-
-
-def test_search_apps_configured_only_exclude_apps_from_other_projects(
-    db_session: Session,
-    test_client: TestClient,
-    dummy_app_google: App,
-    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
-    dummy_app_configuration_api_key_github_project_2: AppConfigurationPublic,
-    dummy_api_key_1: str,
-) -> None:
-    search_params = {
-        "configured_only": True,
-        "limit": 100,
-        "offset": 0,
-    }
-    response = test_client.get(
-        f"{config.ROUTER_PREFIX_APPS}/search",
-        params=search_params,
-        headers={"x-api-key": dummy_api_key_1},
-    )
-
-    assert response.status_code == status.HTTP_200_OK
-    apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
-    assert len(apps) == 1, "Should only return one app"
-    assert apps[0].name == dummy_app_google.name, "Returned app and configured app are not the same"

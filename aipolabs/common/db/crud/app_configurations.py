@@ -1,4 +1,3 @@
-from typing import cast
 from uuid import UUID
 
 from sqlalchemy import select
@@ -107,18 +106,6 @@ def get_app_configuration(
         .filter(AppConfiguration.project_id == project_id, App.name == app_name)
     ).scalar_one_or_none()
     return app_configuration
-
-
-def get_configured_app_names(
-    db_session: Session,
-    project_id: UUID,
-) -> list[str]:
-    statement = (
-        select(App.name)
-        .join(AppConfiguration, AppConfiguration.app_id == App.id)
-        .filter(AppConfiguration.project_id == project_id)
-    )
-    return cast(list[str], db_session.execute(statement).scalars().all())
 
 
 def app_configuration_exists(db_session: Session, project_id: UUID, app_name: str) -> bool:

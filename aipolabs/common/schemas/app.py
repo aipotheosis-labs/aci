@@ -84,9 +84,9 @@ class AppsSearch(BaseModel):
         default=None,
         description="Natural language intent for vector similarity sorting. Results will be sorted by relevance to the intent.",
     )
-    configured_only: bool = Field(
+    allowed_apps_only: bool = Field(
         default=False,
-        description="If true, only return apps that have been configured.",
+        description="If true, only return apps that are allowed by the agent/accessor, identified by the api key.",
     )
     categories: list[str] | None = Field(
         default=None, description="List of categories for filtering."

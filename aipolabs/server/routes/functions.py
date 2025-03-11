@@ -7,9 +7,9 @@ from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import Function
 from aipolabs.common.enums import Visibility
 from aipolabs.common.exceptions import (
-    AgentNotFound,
     AppConfigurationDisabled,
     AppConfigurationNotFound,
+    AppNotAllowedByThisAgent,
     CustomInstructionViolation,
     FunctionNotFound,
     LinkedAccountDisabled,
@@ -89,30 +89,23 @@ async def search_functions(
         extra={"intent": query_params.intent, "intent_embedding": intent_embedding},
     )
 
-    if query_params.configured_only:
-        configured_app_names = crud.app_configurations.get_configured_app_names(
-            context.db_session,
-            context.project.id,
-        )
-        # Filter apps based on configuration status
-        if query_params.app_names:
-            # Intersection of query_params.app_names and configured_app_names
-            query_params.app_names = [
-                app_name for app_name in query_params.app_names if app_name in configured_app_names
-            ]
+    # get the apps to filter (or not) based on the allowed_apps_only and app_names query params
+    if query_params.allowed_apps_only:
+        if query_params.app_names is None:
+            apps_to_filter = context.agent.allowed_apps
         else:
-            query_params.app_names = configured_app_names
-
-        # If no app_names are available after intersection or configured search, return an empty list
-        if not query_params.app_names:
-            logger.info("no apps suitable for configured function search, returning empty list")
-            return []
+            apps_to_filter = list(set(query_params.app_names) & set(context.agent.allowed_apps))
+    else:
+        if query_params.app_names is None:
+            apps_to_filter = None
+        else:
+            apps_to_filter = query_params.app_names
 
     functions = crud.functions.search_functions(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
         True,
-        query_params.app_names,
+        apps_to_filter,
         intent_embedding,
         query_params.limit,
         query_params.offset,
@@ -267,6 +260,20 @@ async def execute(
             f"configuration for app={function.app.name} is disabled, please enable the app first {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
         )
 
+    # check if the function is allowed to be executed by the agent
+    if function.app.name not in context.agent.allowed_apps:
+        logger.error(
+            "failed to execute function, App not allowed to be used by this agent",
+            extra={
+                "function_name": function_name,
+                "app_name": function.app.name,
+                "agent_id": context.agent.id,
+            },
+        )
+        raise AppNotAllowedByThisAgent(
+            f"App={function.app.name} that this function belongs to is not allowed to be used by agent={context.agent.name}"
+        )
+
     # check if the linked account status (configured, enabled, etc.)
     linked_account = crud.linked_accounts.get_linked_account(
         context.db_session,
@@ -341,20 +348,12 @@ async def execute(
             )
         context.db_session.commit()
 
-    agent = crud.projects.get_agent_by_api_key_id(context.db_session, context.api_key_id)
-    if not agent:
-        logger.error(
-            "failed to execute function, agent not found",
-            extra={"api_key_id": context.api_key_id},
-        )
-        raise AgentNotFound(f"agent not found for api_key_id={context.api_key_id}")
-
-    if function.app.name in agent.custom_instructions.keys():
+    if function.app.name in context.agent.custom_instructions.keys():
         filter_result = filter_function_call(
             openai_service,
             function,
             body.function_input,
-            agent.custom_instructions[function.app.name],
+            context.agent.custom_instructions[function.app.name],
         )
         # Filter has failed
         if not filter_result.success:
@@ -368,7 +367,7 @@ async def execute(
             raise CustomInstructionViolation(
                 f"Function execution for function: {function.name} with"
                 f"input: {body.function_input}"
-                f"has been rejected because of rule: {agent.custom_instructions[function.app.name]}"
+                f"has been rejected because of rule: {context.agent.custom_instructions[function.app.name]}"
                 f"the reason supplied by the filter is: {filter_result.reason}"
             )
 

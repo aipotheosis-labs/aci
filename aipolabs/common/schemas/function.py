@@ -102,7 +102,6 @@ class FunctionsList(BaseModel):
     offset: int = Field(default=0, ge=0, description="Pagination offset.")
 
 
-# TODO: add flag (e.g., verbose=true) to include detailed function info? (e.g., dev portal will need this)
 class FunctionsSearch(BaseModel):
     app_names: list[str] | None = Field(
         default=None, description="List of app names for filtering functions."
@@ -111,12 +110,12 @@ class FunctionsSearch(BaseModel):
         default=None,
         description="Natural language intent for vector similarity sorting. Results will be sorted by relevance to the intent.",
     )
-    configured_only: bool = Field(
+    allowed_apps_only: bool = Field(
         default=False,
-        description="If true, only returns functions of apps that are configured.",
+        description="If true, only returns functions of apps that are allowed by the agent/accessor, identified by the api key.",
     )
     limit: int = Field(
-        default=100, ge=1, le=1000, description="Maximum number of Apps per response."
+        default=100, ge=1, le=1000, description="Maximum number of Functions per response."
     )
     offset: int = Field(default=0, ge=0, description="Pagination offset.")
 

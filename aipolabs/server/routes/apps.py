@@ -79,7 +79,7 @@ async def search_apps(
         "generated intent embedding",
         extra={"intent": query_params.intent, "intent_embedding": intent_embedding},
     )
-    # if the search is restricted to allowed apps, we need to filter the apps by the agent's allowed apps
+    # if the search is restricted to allowed apps, we need to filter the apps by the agent's allowed apps.
     # None means no filtering
     apps_to_filter = context.agent.allowed_apps if query_params.allowed_apps_only else None
 

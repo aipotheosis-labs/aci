@@ -121,16 +121,16 @@ def search_apps(
         statement = statement.filter(App.active)
 
     # filter out apps by app_names
-    if app_names:
+    if app_names is not None:
         statement = statement.filter(App.name.in_(app_names))
 
     # filter out apps by categories
     # TODO: Is there any way to get typing for cosine_distance, label, overlap?
-    if categories and len(categories) > 0:
+    if categories is not None:
         statement = statement.filter(App.categories.overlap(categories))
 
     # sort by similarity to intent
-    if intent_embedding:
+    if intent_embedding is not None:
         similarity_score = App.embedding.cosine_distance(intent_embedding)
         statement = statement.add_columns(similarity_score.label("similarity_score"))
         statement = statement.order_by("similarity_score")
@@ -141,7 +141,7 @@ def search_apps(
 
     results = db_session.execute(statement).all()
 
-    if intent_embedding:
+    if intent_embedding is not None:
         return [(app, score) for app, score in results]
     else:
         return [(app, None) for (app,) in results]

@@ -96,10 +96,10 @@ def search_functions(
             Function.visibility == Visibility.PUBLIC
         )
     # filter out functions that are not in the specified apps
-    if app_names:
+    if app_names is not None:
         statement = statement.filter(App.name.in_(app_names))
 
-    if intent_embedding:
+    if intent_embedding is not None:
         similarity_score = Function.embedding.cosine_distance(intent_embedding)
         statement = statement.order_by(similarity_score)
 
@@ -120,7 +120,7 @@ def get_functions(
     """Get a list of functions and their details. Sorted by function name."""
     statement = select(Function).join(App, Function.app_id == App.id)
 
-    if app_names:
+    if app_names is not None:
         statement = statement.filter(App.name.in_(app_names))
 
     # exclude private Apps's functions and private functions if public_only is True
