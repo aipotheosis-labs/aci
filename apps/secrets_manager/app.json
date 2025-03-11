@@ -8,6 +8,7 @@
     "security_schemes": {
         "no_auth": {}
     },
+    "default_security_credentials_by_scheme": {},
     "categories": ["security"],
     "visibility": "public",
     "active": true

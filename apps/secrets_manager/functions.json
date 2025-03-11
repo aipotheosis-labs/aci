@@ -1,7 +1,7 @@
 [
     {
-        "name": "AIPOLABS_SECRETS_MANAGER__LIST_SECRETS",
-        "description": "List all secrets, returning only the name and metadata of each secret. The actually secret value is retrieved with secret name using the AIPOLABS_SECRETS_MANAGER__GET_SECRET function.",
+        "name": "AIPOLABS_SECRETS_MANAGER__LIST_CREDENTIALS",
+        "description": "List all website credential secrets",
         "tags": ["secrets"],
         "visibility": "public",
         "active": true,
@@ -9,12 +9,15 @@
         "protocol_data": {},
         "parameters": {
             "type": "object",
-            "properties": {}
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
         }
     },
     {
-        "name": "AIPOLABS_SECRETS_MANAGER__GET_SECRET",
-        "description": "Get a secret",
+        "name": "AIPOLABS_SECRETS_MANAGER__GET_CREDENTIAL_FOR_DOMAIN",
+        "description": "Get a website credential secret with username and password for a given domain",
         "tags": ["secrets"],
         "visibility": "public",
         "active": true,
@@ -23,16 +26,18 @@
         "parameters": {
             "type": "object",
             "properties": {
-                "name": {
+                "domain": {
                     "type": "string"
                 }
             },
-            "required": ["name"]
+            "required": ["domain"],
+            "visible": ["domain"],
+            "additionalProperties": false
         }
     },
     {
-        "name": "AIPOLABS_SECRETS_MANAGER__CREATE_SECRET",
-        "description": "Create a secret",
+        "name": "AIPOLABS_SECRETS_MANAGER__CREATE_CREDENTIAL_FOR_DOMAIN",
+        "description": "Create a website credential secret with username and password for a given domain",
         "tags": ["secrets"],
         "visibility": "public",
         "active": true,
@@ -41,34 +46,24 @@
         "parameters": {
             "type": "object",
             "properties": {
-                "name": {
+                "domain": {
                     "type": "string"
                 },
-                "value": {
-                    "type": "object",
-                    "properties": {
-                        "username": {
-                            "type": "string"
-                        },
-                        "password": {
-                            "type": "string"
-                        },
-                        "domain": {
-                            "type": "string"
-                        }
-                    },
-                    "required": ["username", "password", "domain"]
+                "username": {
+                    "type": "string"
                 },
-                "metadata": {
-                    "type": "object"
+                "password": {
+                    "type": "string"
                 }
             },
-            "required": ["name", "value"]
+            "required": ["domain", "username", "password"],
+            "visible": ["domain", "username", "password"],
+            "additionalProperties": false
         }
     },
     {
-        "name": "AIPOLABS_SECRETS_MANAGER__UPDATE_SECRET",
-        "description": "Update a secret",
+        "name": "AIPOLABS_SECRETS_MANAGER__UPDATE_CREDENTIAL_FOR_DOMAIN",
+        "description": "Update a website credential secret with username and password for a given domain",
         "tags": ["secrets"],
         "visibility": "public",
         "active": true,
@@ -77,31 +72,24 @@
         "parameters": {
             "type": "object",
             "properties": {
-                "name": {
+                "domain": {
                     "type": "string"
                 },
-                "value": {
-                    "type": "object",
-                    "properties": {
-                        "username": {
-                            "type": "string"
-                        },
-                        "password": {
-                            "type": "string"
-                        }
-                    },
-                    "required": ["username", "password"]
+                "username": {
+                    "type": "string"
                 },
-                "metadata": {
-                    "type": "object"
+                "password": {
+                    "type": "string"
                 }
             },
-            "required": ["name"]
+            "required": ["domain", "username", "password"],
+            "visible": ["domain", "username", "password"],
+            "additionalProperties": false
         }
     },
     {
-        "name": "AIPOLABS_SECRETS_MANAGER__DELETE_SECRET",
-        "description": "Delete a secret",
+        "name": "AIPOLABS_SECRETS_MANAGER__DELETE_CREDENTIAL_FOR_DOMAIN",
+        "description": "Delete a website credential secret with username and password for a given domain",
         "tags": ["secrets"],
         "visibility": "public",
         "active": true,
@@ -110,11 +98,13 @@
         "parameters": {
             "type": "object",
             "properties": {
-                "name": {
+                "domain": {
                     "type": "string"
                 }
             },
-            "required": ["name"]
+            "required": ["domain"],
+            "visible": ["domain"],
+            "additionalProperties": false
         }
     }
 ]
