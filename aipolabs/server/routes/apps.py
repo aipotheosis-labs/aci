@@ -1,13 +1,14 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
+from openai import OpenAI
 
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import App
+from aipolabs.common.embeddings import generate_embedding
 from aipolabs.common.enums import Visibility
 from aipolabs.common.exceptions import AppNotFound
 from aipolabs.common.logging import get_logger
-from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.app import (
     AppBasic,
     AppBasicWithFunctions,
@@ -21,7 +22,8 @@ from aipolabs.server import dependencies as deps
 
 logger = get_logger(__name__)
 router = APIRouter()
-openai_service = OpenAIService(config.OPENAI_API_KEY)
+# TODO: will this be a bottleneck and problem if high concurrent requests from users?
+openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
 
 
 @router.get("", response_model=list[AppDetails])
@@ -67,10 +69,11 @@ async def search_apps(
         },
     )
     intent_embedding = (
-        openai_service.generate_embedding(
-            query_params.intent,
+        generate_embedding(
+            openai_client,
             config.OPENAI_EMBEDDING_MODEL,
             config.OPENAI_EMBEDDING_DIMENSION,
+            query_params.intent,
         )
         if query_params.intent
         else None

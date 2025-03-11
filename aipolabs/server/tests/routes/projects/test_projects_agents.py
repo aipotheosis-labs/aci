@@ -80,7 +80,6 @@ def test_create_agent_reached_max_agents_per_project(
 
 def test_update_agent(
     test_client: TestClient,
-    db_session: Session,
     dummy_project_1: Project,
     dummy_agent_1_with_no_apps_allowed: Agent,
     dummy_app_google: App,
@@ -114,7 +113,7 @@ def test_update_agent(
 
     # Test updating custom instructions
     body = AgentUpdate(
-        custom_instructions={dummy_app_github.name: "Custom GitHub instructions"},
+        custom_instructions={dummy_app_github.functions[0].name: "Custom GitHub instructions"},
     )
     response = test_client.patch(
         ENDPOINT,
@@ -123,7 +122,9 @@ def test_update_agent(
     )
     assert response.status_code == status.HTTP_200_OK
     agent_public = AgentPublic.model_validate(response.json())
-    assert agent_public.custom_instructions == {dummy_app_github.name: "Custom GitHub instructions"}
+    assert agent_public.custom_instructions == {
+        dummy_app_github.functions[0].name: "Custom GitHub instructions"
+    }
 
     # Test updating only name preserves other fields
     previous_state = agent_public.model_dump()
@@ -144,17 +145,12 @@ def test_update_agent(
 
 def test_update_agent_nonexistent_agent(
     test_client: TestClient,
-    db_session: Session,
     dummy_project_1: Project,
-    dummy_app_google: App,
     dummy_user_bearer_token: str,
 ) -> None:
-    """Test that attempting to create custom instructions for a nonexistent agent returns 404"""
-    # Generate a random UUID that doesn't exist in the database
     nonexistent_agent_id = uuid4()
-    body = AgentUpdate(
-        custom_instructions={dummy_app_google.name: "Custom Google instructions"},
-    )
+    body = AgentUpdate(name="new name")
+
     response = test_client.patch(
         f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{nonexistent_agent_id}",
         json=body.model_dump(mode="json"),
@@ -165,16 +161,12 @@ def test_update_agent_nonexistent_agent(
 
 def test_update_agent_unauthorized_user(
     test_client: TestClient,
-    db_session: Session,
     dummy_project_1: Project,
     dummy_agent_1_with_no_apps_allowed: Agent,
-    dummy_app_google: App,
-    dummy_user_2_bearer_token: str,  # Need to add this fixture
+    dummy_user_2_bearer_token: str,
 ) -> None:
-    """Test that unauthorized users cannot update custom instructions"""
-    body = AgentUpdate(
-        custom_instructions={dummy_app_google.name: "Custom Google instructions"},
-    )
+    body = AgentUpdate(name="new name")
+
     response = test_client.patch(
         f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{dummy_agent_1_with_no_apps_allowed.id}",
         json=body.model_dump(mode="json"),

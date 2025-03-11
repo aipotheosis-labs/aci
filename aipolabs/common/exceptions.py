@@ -346,7 +346,7 @@ class CustomInstructionViolation(AipolabsException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Custom instruction failed",
+            title="Custom instruction violation",
             message=message,
             error_code=status.HTTP_403_FORBIDDEN,
         )

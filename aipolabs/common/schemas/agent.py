@@ -9,6 +9,7 @@ from aipolabs.common.schemas.apikey import APIKeyPublic
 MAX_INSTRUCTION_LENGTH = 5000
 
 
+# TODO: add unit tests
 # Custom type with validation
 def validate_instruction(v: str) -> str:
     if not v.strip():

@@ -1,23 +1,22 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
+from openai import OpenAI
 
 from aipolabs.common import processor
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import Function
+from aipolabs.common.embeddings import generate_embedding
 from aipolabs.common.enums import Visibility
 from aipolabs.common.exceptions import (
     AppConfigurationDisabled,
     AppConfigurationNotFound,
     AppNotAllowedForThisAgent,
-    CustomInstructionViolation,
     FunctionNotFound,
     LinkedAccountDisabled,
     LinkedAccountNotFound,
 )
-from aipolabs.common.filter import filter_function_call
 from aipolabs.common.logging import get_logger
-from aipolabs.common.openai_service import OpenAIService
 from aipolabs.common.schemas.function import (
     AnthropicFunctionDefinition,
     FunctionBasic,
@@ -30,7 +29,7 @@ from aipolabs.common.schemas.function import (
     OpenAIFunction,
     OpenAIFunctionDefinition,
 )
-from aipolabs.server import config
+from aipolabs.server import config, custom_instructions
 from aipolabs.server import dependencies as deps
 from aipolabs.server import security_credentials_manager as scm
 from aipolabs.server.function_executors import get_executor
@@ -38,7 +37,9 @@ from aipolabs.server.security_credentials_manager import SecurityCredentialsResp
 
 router = APIRouter()
 logger = get_logger(__name__)
-openai_service = OpenAIService(config.OPENAI_API_KEY)
+# TODO: will this be a bottleneck and problem if high concurrent requests from users?
+# TODO: should probably be a singleton and inject into routes, shared access with Apps route
+openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
 
 
 @router.get("", response_model=list[FunctionDetails])
@@ -76,10 +77,11 @@ async def search_functions(
         extra={"function_search": query_params.model_dump(exclude_none=True)},
     )
     intent_embedding = (
-        openai_service.generate_embedding(
-            query_params.intent,
+        generate_embedding(
+            openai_client,
             config.OPENAI_EMBEDDING_MODEL,
             config.OPENAI_EMBEDDING_DIMENSION,
+            query_params.intent,
         )
         if query_params.intent
         else None
@@ -348,28 +350,12 @@ async def execute(
             )
         context.db_session.commit()
 
-    if function.app.name in context.agent.custom_instructions.keys():
-        filter_result = filter_function_call(
-            openai_service,
-            function,
-            body.function_input,
-            context.agent.custom_instructions[function.app.name],
-        )
-        # Filter has failed
-        if not filter_result.success:
-            logger.error(
-                "custom instruction violation",
-                extra={
-                    "function_name": function_name,
-                    "filter_result": filter_result.model_dump(exclude_none=True),
-                },
-            )
-            raise CustomInstructionViolation(
-                f"Function execution for function: {function.name} with"
-                f"input: {body.function_input}"
-                f"has been rejected because of rule: {context.agent.custom_instructions[function.app.name]}"
-                f"the reason supplied by the filter is: {filter_result.reason}"
-            )
+    custom_instructions.check_for_violation(
+        openai_client,
+        function,
+        body.function_input,
+        context.agent.custom_instructions,
+    )
 
     function_executor = get_executor(function.protocol, linked_account)
     logger.info(

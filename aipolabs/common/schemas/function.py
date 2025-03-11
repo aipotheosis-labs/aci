@@ -192,8 +192,3 @@ class FunctionExecutionResult(BaseModel):
     success: bool
     data: Any | None = None  # adding "| None" just for clarity
     error: str | None = None
-
-
-class FilterResponse(BaseModel):
-    success: bool
-    reason: str | None = None

@@ -42,7 +42,7 @@ from aipolabs.common.logging import create_headline
     required=False,
     default="{}",
     type=str,
-    help="new custom instructions for the agent",
+    help="function level custom instructions for the agent",
 )
 @click.option(
     "--skip-dry-run",
