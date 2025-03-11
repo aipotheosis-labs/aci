@@ -28,6 +28,8 @@ python-json-logger = "^3.2.1"
 logfire = { extras = ["fastapi", "sqlalchemy"], version = "^3.6.4" }
 sentry-sdk = { extras = ["fastapi"], version = "^2.22.0" }
 google-api-python-client = "^2.163.0"
+aws-encryption-sdk = {extras = ["mpl"], version = "^4.0.0"}
+boto3 = "^1.37.9"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"

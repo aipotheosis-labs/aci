@@ -16,6 +16,17 @@ services:
       - "5432:5432"
     restart: no
 
+  aws:
+    image: localstack/localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - DEBUG=1
+      - DATA_DIR=/var/lib/localstack/data
+      - SERVICES=kms
+    volumes:
+      - ./scripts/create-kms-encryption-key.sh:/etc/localstack/init/ready.d/create-kms-encryption-key.sh
+
   server:
     build:
       context: .
@@ -42,6 +53,8 @@ services:
     command: uvicorn aipolabs.server.main:app --proxy-headers --forwarded-allow-ips=* --host 0.0.0.0 --port 8000 --reload
     depends_on:
       db:
+        condition: service_healthy
+      aws:
         condition: service_healthy
     restart: no
 

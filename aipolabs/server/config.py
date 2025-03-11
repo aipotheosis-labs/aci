@@ -69,3 +69,12 @@ MAX_USERS = int(check_and_get_env_variable("SERVER_MAX_USERS"))
 
 # LOGFIRE
 LOGFIRE_WRITE_TOKEN = check_and_get_env_variable("SERVER_LOGFIRE_WRITE_TOKEN")
+
+# AWS
+AWS_REGION = check_and_get_env_variable("SERVER_AWS_REGION")
+AWS_ENDPOINT_URL = check_and_get_env_variable("SERVER_AWS_ENDPOINT_URL")
+AWS_ACCESS_KEY_ID = check_and_get_env_variable("SERVER_AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = check_and_get_env_variable("SERVER_AWS_SECRET_ACCESS_KEY")
+
+# SECRETS MANAGER
+SECRETS_MANAGER_KEK_ARN = check_and_get_env_variable("SERVER_SECRETS_MANAGER_KEK_ARN")
