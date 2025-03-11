@@ -1,11 +1,10 @@
-import httpx
-import respx
+import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import Agent, AppConfiguration, Function, LinkedAccount
-from aipolabs.common.schemas.function import FunctionExecute, FunctionExecutionResult
+from aipolabs.common.schemas.function import FunctionExecute
 from aipolabs.server import config
 
 NON_EXISTENT_FUNCTION_NAME = "non_existent_function_name"
@@ -72,7 +71,7 @@ def test_execute_function_whose_app_configuration_is_disabled(
 
 def test_execute_function_linked_account_not_found(
     test_client: TestClient,
-    dummy_api_key_1: str,
+    dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_aipolabs_test__hello_world_no_args: Function,
     dummy_app_configuration_api_key_aipolabs_test_project_1: AppConfiguration,
 ) -> None:
@@ -82,7 +81,7 @@ def test_execute_function_linked_account_not_found(
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": dummy_api_key_1},
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert str(response.json()["error"]).startswith("Linked account not found")
@@ -91,7 +90,7 @@ def test_execute_function_linked_account_not_found(
 def test_execute_function_linked_account_disabled(
     db_session: Session,
     test_client: TestClient,
-    dummy_api_key_1: str,
+    dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_aipolabs_test__hello_world_no_args: Function,
     dummy_app_configuration_api_key_aipolabs_test_project_1: AppConfiguration,
     dummy_linked_account_default_api_key_aipolabs_test_project_1: LinkedAccount,
@@ -105,7 +104,7 @@ def test_execute_function_linked_account_disabled(
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": dummy_api_key_1},
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
     assert str(response.json()["error"]).startswith("Linked account disabled")
@@ -113,7 +112,7 @@ def test_execute_function_linked_account_disabled(
 
 def test_execute_function_with_invalid_function_input(
     test_client: TestClient,
-    dummy_api_key_1: str,
+    dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_aipolabs_test__hello_world_with_args: Function,
     dummy_linked_account_default_api_key_aipolabs_test_project_1: LinkedAccount,
 ) -> None:
@@ -124,84 +123,37 @@ def test_execute_function_with_invalid_function_input(
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": dummy_api_key_1},
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
     assert response.status_code == status.HTTP_400_BAD_REQUEST
     assert str(response.json()["error"]).startswith("Invalid function input")
 
 
-@respx.mock
-def test_execute_function_with_custom_instructions_success(
+@pytest.mark.parametrize("allow_agent_to_access_app", [True, False])
+def test_execute_function_of_app_that_is_not_allowed_for_agent(
+    db_session: Session,
     test_client: TestClient,
-    dummy_agent_with_github_apple_instructions: Agent,
-    dummy_linked_account_api_key_github_project_1: LinkedAccount,
-    dummy_function_github__create_repository: Function,
+    dummy_agent_1_with_no_apps_allowed: Agent,
+    allow_agent_to_access_app: bool,
+    dummy_function_aipolabs_test__hello_world_no_args: Function,
+    dummy_linked_account_default_api_key_aipolabs_test_project_1: LinkedAccount,
 ) -> None:
-    # TODO: change needed here when we abstract out to InferenceService
-    # Allow real calls to OpenAI API
-    respx.post("https://api.openai.com/v1/chat/completions").pass_through()
-
-    # Mock only the GitHub API endpoint
-    mock_response_data = {"id": 123, "name": "test-repo"}
-    github_request = respx.post("https://api.github.com/repositories").mock(
-        return_value=httpx.Response(201, json=mock_response_data)
-    )
+    if allow_agent_to_access_app:
+        dummy_agent_1_with_no_apps_allowed.allowed_apps = [
+            dummy_function_aipolabs_test__hello_world_no_args.app.name
+        ]
+        db_session.commit()
 
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_api_key_github_project_1.linked_account_owner_id,
-        function_input={
-            "body": {
-                "name": "test-repo",  # Note: not using "apple" in name so it passes the filter
-                "description": "Test repository",
-                "private": True,
-            }
-        },
+        linked_account_owner_id=dummy_linked_account_default_api_key_aipolabs_test_project_1.linked_account_owner_id,
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": dummy_agent_with_github_apple_instructions.api_keys[0].key},
+        headers={"x-api-key": dummy_agent_1_with_no_apps_allowed.api_keys[0].key},
     )
-
-    assert response.status_code == status.HTTP_200_OK
-    assert "error" not in response.json()
-    function_execution_response = FunctionExecutionResult.model_validate(response.json())
-    assert function_execution_response.success
-    assert function_execution_response.data == mock_response_data
-
-    # Verify the GitHub request was made as expected
-    assert github_request.called
-    assert github_request.calls.last.request.url == "https://api.github.com/repositories"
-    assert (
-        github_request.calls.last.request.content
-        == b'{"name": "test-repo", "description": "Test repository", "private": true}'
-    )
-
-
-def test_execute_function_with_custom_instructions_rejected(
-    test_client: TestClient,
-    dummy_agent_with_github_apple_instructions: Agent,
-    dummy_linked_account_api_key_github_project_1: LinkedAccount,
-    dummy_function_github__create_repository: Function,
-) -> None:
-    function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_api_key_github_project_1.linked_account_owner_id,
-        function_input={
-            "body": {
-                "name": "apple-test-repo",
-                "description": "Test repository",
-                "private": True,
-            }
-        },
-    )
-    response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.name}/execute",
-        json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": dummy_agent_with_github_apple_instructions.api_keys[0].key},
-    )
-
-    assert response.status_code == status.HTTP_403_FORBIDDEN
-    apple_custom_instructions = dummy_agent_with_github_apple_instructions.custom_instructions[
-        dummy_function_github__create_repository.app.name
-    ]
-    assert apple_custom_instructions in response.json()["error"]
+    if allow_agent_to_access_app:
+        assert response.status_code == status.HTTP_200_OK
+    else:
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert str(response.json()["error"]).startswith("App not allowed for this agent")

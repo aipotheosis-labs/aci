@@ -2,7 +2,7 @@ import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from aipolabs.common.db.sql_models import Function, LinkedAccount
+from aipolabs.common.db.sql_models import Agent, Function, LinkedAccount
 from aipolabs.common.schemas.function import FunctionExecute, FunctionExecutionResult
 from aipolabs.common.schemas.security_scheme import OAuth2Scheme, OAuth2SchemeCredentials
 from aipolabs.server import config
@@ -33,7 +33,7 @@ from aipolabs.server import config
 )
 def test_execute_echo(
     test_client: TestClient,
-    dummy_api_key_1: str,
+    dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_mock_app_connector__echo: Function,
     dummy_linked_account_oauth2_mock_app_connector_project_1: LinkedAccount,
     function_input: dict,
@@ -46,7 +46,7 @@ def test_execute_echo(
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_mock_app_connector__echo.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": dummy_api_key_1},
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
     assert response.status_code == status.HTTP_200_OK
     function_execution_response = FunctionExecutionResult.model_validate(response.json())
@@ -56,7 +56,7 @@ def test_execute_echo(
 
 def test_execute_fail(
     test_client: TestClient,
-    dummy_api_key_1: str,
+    dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_mock_app_connector__fail: Function,
     dummy_linked_account_oauth2_mock_app_connector_project_1: LinkedAccount,
 ) -> None:
@@ -67,7 +67,7 @@ def test_execute_fail(
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_mock_app_connector__fail.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": dummy_api_key_1},
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
 
     assert response.status_code == status.HTTP_200_OK

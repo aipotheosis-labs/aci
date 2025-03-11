@@ -26,7 +26,6 @@ with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
         User,
     )
     from aipolabs.common.enums import SecurityScheme, Visibility
-    from aipolabs.common.schemas.agent import AgentCreate
     from aipolabs.common.schemas.app_configurations import (
         AppConfigurationCreate,
         AppConfigurationPublic,
@@ -158,17 +157,8 @@ def dummy_project_1(db_session: Session, dummy_user: User) -> Generator[Project,
 
 
 @pytest.fixture(scope="function")
-def dummy_api_key_1(db_session: Session, dummy_project_1: Project) -> Generator[str, None, None]:
-    dummy_agent = crud.projects.create_agent(
-        db_session,
-        project_id=dummy_project_1.id,
-        name="Dummy Agent",
-        description="Dummy Agent",
-        allowed_apps=[],
-        custom_instructions={},
-    )
-    db_session.commit()
-    yield dummy_agent.api_keys[0].key
+def dummy_api_key_1(dummy_agent_1_with_no_apps_allowed: Agent) -> Generator[str, None, None]:
+    yield dummy_agent_1_with_no_apps_allowed.api_keys[0].key
 
 
 @pytest.fixture(scope="function")
@@ -198,8 +188,10 @@ def dummy_api_key_2(db_session: Session, dummy_project_2: Project) -> Generator[
 
 
 @pytest.fixture(scope="function")
-def dummy_agent_1(db_session: Session, dummy_project_1: Project) -> Generator[Agent, None, None]:
-    dummy_agent_1 = crud.projects.create_agent(
+def dummy_agent_1_with_no_apps_allowed(
+    db_session: Session, dummy_project_1: Project
+) -> Generator[Agent, None, None]:
+    dummy_agent_1_with_no_apps_allowed = crud.projects.create_agent(
         db_session,
         project_id=dummy_project_1.id,
         name="Dummy Agent 1",
@@ -208,33 +200,16 @@ def dummy_agent_1(db_session: Session, dummy_project_1: Project) -> Generator[Ag
         custom_instructions={},
     )
     db_session.commit()
-    yield dummy_agent_1
+    yield dummy_agent_1_with_no_apps_allowed
 
 
 @pytest.fixture(scope="function")
-def dummy_agent_with_github_apple_instructions(
-    db_session: Session,
-    dummy_project_1: Project,
-    dummy_app_github: App,
-    dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
+def dummy_agent_1_with_all_apps_allowed(
+    db_session: Session, dummy_agent_1_with_no_apps_allowed: Agent, dummy_apps: list[App]
 ) -> Generator[Agent, None, None]:
-    body = AgentCreate(
-        name="Dummy Agent with GitHub Instructions",
-        description="Agent with custom GitHub instructions",
-        custom_instructions={
-            dummy_app_github.name: "Don't create any repositories with the word apple in the name"
-        },
-    )
-    dummy_agent = crud.projects.create_agent(
-        db_session,
-        project_id=dummy_project_1.id,
-        name=body.name,
-        description=body.description,
-        allowed_apps=body.allowed_apps,
-        custom_instructions=body.model_dump(mode="json")["custom_instructions"],
-    )
+    dummy_agent_1_with_no_apps_allowed.allowed_apps = [app.name for app in dummy_apps]
     db_session.commit()
-    yield dummy_agent
+    yield dummy_agent_1_with_no_apps_allowed
 
 
 ################################################################################

@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
-from aipolabs.common.db.sql_models import App, Project
+from aipolabs.common.db.sql_models import Agent, App, Project
 from aipolabs.common.enums import Visibility
 from aipolabs.common.schemas.app import AppBasic
 from aipolabs.common.schemas.app_configurations import AppConfigurationPublic
@@ -199,36 +199,10 @@ def test_search_apps_with_private_apps(
 
 
 def test_search_apps_allowed_apps_only(
-    test_client: TestClient,
-    dummy_app_google: App,
-    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
-    dummy_api_key_1: str,
-) -> None:
-    search_params = {
-        "allowed_apps_only": True,
-        "limit": 100,
-        "offset": 0,
-    }
-    response = test_client.get(
-        f"{config.ROUTER_PREFIX_APPS}/search",
-        params=search_params,
-        headers={"x-api-key": dummy_api_key_1},
-    )
-
-    assert response.status_code == status.HTTP_200_OK
-    apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
-    assert len(apps) == 1, (
-        "Should only return the one allowed app of the agent, identified by the api key used"
-    )
-    assert apps[0].name == dummy_app_google.name, "Returned app and allowed app are not the same"
-
-
-def test_search_apps_allowed_apps_only_with_no_apps_allowed(
     db_session: Session,
     test_client: TestClient,
-    dummy_apps: list[App],
-    dummy_project_1: Project,
-    dummy_api_key_1: str,
+    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
+    dummy_agent_1_with_no_apps_allowed: Agent,
 ) -> None:
     search_params = {
         "allowed_apps_only": True,
@@ -238,8 +212,27 @@ def test_search_apps_allowed_apps_only_with_no_apps_allowed(
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search",
         params=search_params,
-        headers={"x-api-key": dummy_api_key_1},
+        headers={"x-api-key": dummy_agent_1_with_no_apps_allowed.api_keys[0].key},
     )
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
-    assert len(apps) == 0, "Should not return any apps"
+    assert len(apps) == 0, "Should not return any apps because the agent has no allowed apps"
+
+    # update the agent to allow only the google app
+    dummy_agent_1_with_no_apps_allowed.allowed_apps = [
+        dummy_app_configuration_oauth2_google_project_1.app_name
+    ]
+    db_session.commit()
+
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_APPS}/search",
+        params=search_params,
+        headers={"x-api-key": dummy_agent_1_with_no_apps_allowed.api_keys[0].key},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
+    assert len(apps) == 1, "Should return the one allowed app of the agent"
+    assert apps[0].name == dummy_app_configuration_oauth2_google_project_1.app_name, (
+        "Returned app and allowed app are not the same"
+    )

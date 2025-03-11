@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
-from aipolabs.common.db.sql_models import App, Function, Project
+from aipolabs.common.db.sql_models import Agent, App, Function, Project
 from aipolabs.common.enums import Visibility
 from aipolabs.common.schemas.app_configurations import AppConfigurationPublic
 from aipolabs.common.schemas.function import FunctionBasic
@@ -283,106 +283,113 @@ def test_search_functions_pagination(
     assert len(functions) == 1
 
 
-def test_search_functions_configured_only_true(
+def test_search_functions_allowed_apps_only_true(
+    db_session: Session,
     test_client: TestClient,
     dummy_app_configuration_oauth2_aipolabs_test_project_1: AppConfigurationPublic,
     dummy_app_aipolabs_test: App,
-    dummy_api_key_1: str,
+    dummy_agent_1_with_no_apps_allowed: Agent,
 ) -> None:
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
-        params={"configured_only": True},
-        headers={"x-api-key": dummy_api_key_1},
+        params={"allowed_apps_only": True},
+        headers={"x-api-key": dummy_agent_1_with_no_apps_allowed.api_keys[0].key},
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
-    assert len(functions) == len(dummy_app_aipolabs_test.functions)
+    assert len(functions) == 0, (
+        "no functions should be returned because the agent is not allowed to access any app"
+    )
+
+    # update the agent to allow access to the app
+    dummy_agent_1_with_no_apps_allowed.allowed_apps = [dummy_app_aipolabs_test.name]
+    db_session.commit()
+
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+        params={"allowed_apps_only": True},
+        headers={"x-api-key": dummy_agent_1_with_no_apps_allowed.api_keys[0].key},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    functions = [
+        FunctionBasic.model_validate(response_function) for response_function in response.json()
+    ]
+    assert len(functions) == len(dummy_app_aipolabs_test.functions), (
+        "should return all functions from the allowed app"
+    )
     dummy_app_function_names = [function.name for function in dummy_app_aipolabs_test.functions]
     assert all(function.name in dummy_app_function_names for function in functions)
 
 
-def test_search_functions_configured_only_false(
+def test_search_functions_allowed_apps_only_false(
     test_client: TestClient,
-    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     dummy_functions: list[Function],
-    dummy_api_key_1: str,
+    dummy_agent_1_with_no_apps_allowed: Agent,
 ) -> None:
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
-        params={"configured_only": False},
-        headers={"x-api-key": dummy_api_key_1},
+        params={"allowed_apps_only": False},
+        headers={"x-api-key": dummy_agent_1_with_no_apps_allowed.api_keys[0].key},
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
-    assert len(functions) == len(dummy_functions)
-
-
-def test_search_functions_no_configured_apps(
-    test_client: TestClient,
-    dummy_apps: list[App],
-    dummy_api_key_1: str,
-) -> None:
-    # Case 1: No app configurations and so no functions should be returned
-    response = test_client.get(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
-        params={"configured_only": True},
-        headers={"x-api-key": dummy_api_key_1},
+    assert len(functions) == len(dummy_functions), (
+        "should return all functions because allowed_apps_only is False"
     )
-    assert response.status_code == status.HTTP_200_OK
-    functions = [
-        FunctionBasic.model_validate(response_function) for response_function in response.json()
-    ]
-    assert len(functions) == 0
-
-    # Case 2: No app configurations, app_names are provided but no functions should be returned
-    response = test_client.get(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
-        params={"app_names": [dummy_apps[0].name], "configured_only": True},
-        headers={"x-api-key": dummy_api_key_1},
-    )
-    assert response.status_code == status.HTTP_200_OK
-    functions = [
-        FunctionBasic.model_validate(response_function) for response_function in response.json()
-    ]
-    assert len(functions) == 0
 
 
-def test_search_functions_with_app_names_and_configured_only(
+def test_search_functions_with_app_names_and_allowed_apps_only(
+    db_session: Session,
     test_client: TestClient,
     dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
     dummy_app_github: App,
     dummy_app_google: App,
-    dummy_api_key_1: str,
+    dummy_agent_1_with_no_apps_allowed: Agent,
 ) -> None:
-    # Case 1: 1 configured app and 2 app_names are provided
+    # set the agent to allow access to one of the apps
+    dummy_agent_1_with_no_apps_allowed.allowed_apps = [dummy_app_github.name]
+    db_session.commit()
+
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
         params={
             "app_names": [dummy_app_github.name, dummy_app_google.name],
-            "configured_only": True,
+            "allowed_apps_only": True,
         },
-        headers={"x-api-key": dummy_api_key_1},
+        headers={"x-api-key": dummy_agent_1_with_no_apps_allowed.api_keys[0].key},
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
-    assert len(functions) == len(dummy_app_github.functions)
+    assert len(functions) == len(dummy_app_github.functions), (
+        "should only return functions from the allowed app"
+    )
     dummy_app_github_function_names = [function.name for function in dummy_app_github.functions]
-    assert all(function.name in dummy_app_github_function_names for function in functions)
+    assert all(function.name in dummy_app_github_function_names for function in functions), (
+        "returned functions should be from the allowed app"
+    )
 
-    # Case 2: 1 configured app and a different app_name is provided, should return 0 functions
+    # set the agent to allow access to both apps
+    dummy_agent_1_with_no_apps_allowed.allowed_apps = [dummy_app_github.name, dummy_app_google.name]
+    db_session.commit()
+
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
-        params={"app_names": [dummy_app_google.name], "configured_only": True},
-        headers={"x-api-key": dummy_api_key_1},
+        params={
+            "app_names": [dummy_app_github.name, dummy_app_google.name],
+            "allowed_apps_only": True,
+        },
+        headers={"x-api-key": dummy_agent_1_with_no_apps_allowed.api_keys[0].key},
     )
     assert response.status_code == status.HTTP_200_OK
     functions = [
         FunctionBasic.model_validate(response_function) for response_function in response.json()
     ]
-    assert len(functions) == 0
+    assert len(functions) == len(dummy_app_google.functions) + len(dummy_app_github.functions), (
+        "should return functions from both allowed apps"
+    )

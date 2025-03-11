@@ -9,7 +9,7 @@ from aipolabs.common.enums import Visibility
 from aipolabs.common.exceptions import (
     AppConfigurationDisabled,
     AppConfigurationNotFound,
-    AppNotAllowedByThisAgent,
+    AppNotAllowedForThisAgent,
     CustomInstructionViolation,
     FunctionNotFound,
     LinkedAccountDisabled,
@@ -270,7 +270,7 @@ async def execute(
                 "agent_id": context.agent.id,
             },
         )
-        raise AppNotAllowedByThisAgent(
+        raise AppNotAllowedForThisAgent(
             f"App={function.app.name} that this function belongs to is not allowed to be used by agent={context.agent.name}"
         )
 

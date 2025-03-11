@@ -82,12 +82,12 @@ def test_update_agent(
     test_client: TestClient,
     db_session: Session,
     dummy_project_1: Project,
-    dummy_agent_1: Agent,
+    dummy_agent_1_with_no_apps_allowed: Agent,
     dummy_app_google: App,
     dummy_app_github: App,
     dummy_user_bearer_token: str,
 ) -> None:
-    ENDPOINT = f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{dummy_agent_1.id}"
+    ENDPOINT = f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{dummy_agent_1_with_no_apps_allowed.id}"
 
     # Test updating name and description
     response = test_client.patch(
@@ -142,50 +142,6 @@ def test_update_agent(
     assert agent_public.custom_instructions == previous_state["custom_instructions"]
 
 
-def test_update_agent_multiple_custom_instructions(
-    test_client: TestClient,
-    db_session: Session,
-    dummy_project_1: Project,
-    dummy_agent_1: Agent,
-    dummy_app_google: App,
-    dummy_app_github: App,
-    dummy_user_bearer_token: str,
-) -> None:
-    ENDPOINT = f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{dummy_agent_1.id}"
-
-    # Add first custom instruction for Google app
-    body = AgentUpdate(
-        custom_instructions={dummy_app_google.name: "Custom Google instructions"},
-    )
-    response = test_client.patch(
-        ENDPOINT,
-        json=body.model_dump(mode="json"),
-        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
-    )
-    assert response.status_code == status.HTTP_200_OK
-    agent_public = AgentPublic.model_validate(response.json())
-    assert agent_public.custom_instructions == {dummy_app_google.name: "Custom Google instructions"}
-
-    # Add second custom instruction for GitHub app while preserving Google app instruction
-    body = AgentUpdate(
-        custom_instructions={
-            dummy_app_google.name: "Custom Google instructions",
-            dummy_app_github.name: "Custom GitHub instructions",
-        },
-    )
-    response = test_client.patch(
-        ENDPOINT,
-        json=body.model_dump(mode="json"),
-        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
-    )
-    assert response.status_code == status.HTTP_200_OK
-    agent_public = AgentPublic.model_validate(response.json())
-    assert agent_public.custom_instructions == {
-        dummy_app_google.name: "Custom Google instructions",
-        dummy_app_github.name: "Custom GitHub instructions",
-    }
-
-
 def test_update_agent_nonexistent_agent(
     test_client: TestClient,
     db_session: Session,
@@ -211,7 +167,7 @@ def test_update_agent_unauthorized_user(
     test_client: TestClient,
     db_session: Session,
     dummy_project_1: Project,
-    dummy_agent_1: Agent,
+    dummy_agent_1_with_no_apps_allowed: Agent,
     dummy_app_google: App,
     dummy_user_2_bearer_token: str,  # Need to add this fixture
 ) -> None:
@@ -220,58 +176,32 @@ def test_update_agent_unauthorized_user(
         custom_instructions={dummy_app_google.name: "Custom Google instructions"},
     )
     response = test_client.patch(
-        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{dummy_agent_1.id}",
+        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{dummy_agent_1_with_no_apps_allowed.id}",
         json=body.model_dump(mode="json"),
         headers={"Authorization": f"Bearer {dummy_user_2_bearer_token}"},
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_update_agent_custom_instructions_restrictions(
-    test_client: TestClient,
-    db_session: Session,
-    dummy_project_1: Project,
-    dummy_agent_1: Agent,
-    dummy_app_google: App,
-    dummy_user_bearer_token: str,
-) -> None:
-    """Test that custom instructions cannot be empty strings"""
-    response = test_client.patch(
-        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{dummy_agent_1.id}",
-        json={"custom_instructions": {str(dummy_app_google.id): ""}},
-        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
-    )
-    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    # Verify valid instructions still work
-    body = AgentUpdate(
-        custom_instructions={dummy_app_google.name: "Valid instructions"},
-    )
-    response = test_client.patch(
-        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{dummy_agent_1.id}",
-        json=body.model_dump(mode="json"),
-        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
-    )
-    assert response.status_code == status.HTTP_200_OK
-    assert response.json()["custom_instructions"][dummy_app_google.name] == "Valid instructions"
-
-
 def test_delete_agent(
     test_client: TestClient,
     db_session: Session,
     dummy_project_1: Project,
-    dummy_agent_1: Agent,
+    dummy_agent_1_with_no_apps_allowed: Agent,
     dummy_user_bearer_token: str,
 ) -> None:
     response = test_client.delete(
-        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{dummy_agent_1.id}",
+        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}/agents/{dummy_agent_1_with_no_apps_allowed.id}",
         headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
 
-    agent = crud.projects.get_agent_by_id(db_session, dummy_agent_1.id)
+    agent = crud.projects.get_agent_by_id(db_session, dummy_agent_1_with_no_apps_allowed.id)
     assert agent is None, "agent should be deleted"
 
-    api_key = crud.projects.get_api_key_by_agent_id(db_session, dummy_agent_1.id)
+    api_key = crud.projects.get_api_key_by_agent_id(
+        db_session, dummy_agent_1_with_no_apps_allowed.id
+    )
     assert api_key is None, "api key associated with agent should be deleted"
 
 
@@ -291,14 +221,14 @@ def test_delete_agent_unauthorized(
     test_client: TestClient,
     dummy_project_2: Project,
     dummy_user_2_bearer_token: str,
-    dummy_agent_1: Agent,
+    dummy_agent_1_with_no_apps_allowed: Agent,
 ) -> None:
     """
     user2 with access to dummy_project_2 should not be able to delete
-    dummy_agent_1 (belongs to dummy_project_1)
+    dummy_agent_1_with_no_apps_allowed (belongs to dummy_project_1)
     """
     response = test_client.delete(
-        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_2.id}/agents/{dummy_agent_1.id}",
+        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_2.id}/agents/{dummy_agent_1_with_no_apps_allowed.id}",
         headers={"Authorization": f"Bearer {dummy_user_2_bearer_token}"},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND

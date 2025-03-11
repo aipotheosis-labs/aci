@@ -4,7 +4,7 @@ import respx
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from aipolabs.common.db.sql_models import Function, LinkedAccount
+from aipolabs.common.db.sql_models import Agent, Function, LinkedAccount
 from aipolabs.common.schemas.function import FunctionExecute, FunctionExecutionResult
 from aipolabs.common.schemas.security_scheme import APIKeySchemeCredentials
 from aipolabs.server import config
@@ -13,7 +13,7 @@ from aipolabs.server import config
 @respx.mock
 def test_execute_function_with_linked_account_api_key(
     test_client: TestClient,
-    dummy_api_key_1: str,
+    dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_aipolabs_test__hello_world_no_args: Function,
     dummy_linked_account_api_key_aipolabs_test_project_1: LinkedAccount,
 ) -> None:
@@ -31,7 +31,7 @@ def test_execute_function_with_linked_account_api_key(
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": dummy_api_key_1},
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -101,7 +101,7 @@ def test_execute_function_with_linked_account_api_key(
 )
 def test_execute_function_with_app_default_api_key(
     test_client: TestClient,
-    dummy_api_key_1: str,
+    dummy_agent_1_with_all_apps_allowed: Agent,
     function_fixture: str,
     function_input: dict,
     expected_url: str,
@@ -136,7 +136,7 @@ def test_execute_function_with_app_default_api_key(
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{function.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": dummy_api_key_1},
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
 
     # Verify response

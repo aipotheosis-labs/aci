@@ -5,7 +5,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
-from aipolabs.common.db.sql_models import Function, LinkedAccount
+from aipolabs.common.db.sql_models import Agent, Function, LinkedAccount
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.schemas.function import FunctionExecute, FunctionExecutionResult
 from aipolabs.common.schemas.security_scheme import OAuth2Scheme, OAuth2SchemeCredentials
@@ -15,7 +15,7 @@ from aipolabs.server import config
 @respx.mock
 def test_execute_oauth2_based_function_with_linked_account_credentials(
     test_client: TestClient,
-    dummy_api_key_1: str,
+    dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_aipolabs_test__hello_world_with_args: Function,
     dummy_linked_account_oauth2_aipolabs_test_project_1: LinkedAccount,
 ) -> None:
@@ -44,7 +44,7 @@ def test_execute_oauth2_based_function_with_linked_account_credentials(
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": dummy_api_key_1},
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
 
     # verify response is successful
@@ -79,7 +79,7 @@ def test_execute_oauth2_based_function_with_linked_account_credentials(
 def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
     db_session: Session,
     test_client: TestClient,
-    dummy_api_key_1: str,
+    dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_aipolabs_test__hello_world_with_args: Function,
     dummy_linked_account_oauth2_aipolabs_test_project_1: LinkedAccount,
 ) -> None:
@@ -136,7 +136,7 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": dummy_api_key_1},
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
 
     # verify response is successful
@@ -172,7 +172,7 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
 @respx.mock
 def test_execute_oauth2_based_function_with_app_default_credentials(
     test_client: TestClient,
-    dummy_api_key_1: str,
+    dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_aipolabs_test__hello_world_with_args: Function,
     dummy_linked_account_default_aipolabs_test_project_1: LinkedAccount,
 ) -> None:
@@ -201,7 +201,7 @@ def test_execute_oauth2_based_function_with_app_default_credentials(
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": dummy_api_key_1},
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
 
     # verify response is successful
@@ -233,7 +233,7 @@ def test_execute_oauth2_based_function_with_app_default_credentials(
 def test_execute_oauth2_based_function_with_expired_app_default_access_token(
     db_session: Session,
     test_client: TestClient,
-    dummy_api_key_1: str,
+    dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_aipolabs_test__hello_world_with_args: Function,
     dummy_linked_account_default_aipolabs_test_project_1: LinkedAccount,
 ) -> None:
@@ -292,7 +292,7 @@ def test_execute_oauth2_based_function_with_expired_app_default_access_token(
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": dummy_api_key_1},
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
 
     # verify response is successful
