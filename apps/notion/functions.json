@@ -288,5 +288,281 @@
             "visible": ["path"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "NOTION__LIST_USERS",
+        "description": "Returns a paginated list of Users for the workspace. Does not include guests. Requires user information capabilities.",
+        "tags": ["notion", "users"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "start_cursor": {
+                            "type": "string",
+                            "description": "If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results."
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "description": "The number of items from the full list desired in the response. Maximum: 100",
+                            "default": 100,
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    "required": [],
+                    "visible": ["start_cursor", "page_size"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": ["Notion-Version"],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header"],
+            "visible": ["query", "header"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__GET_USER",
+        "description": "Retrieves a User using the ID specified. Requires user information capabilities.",
+        "tags": ["notion", "users"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users/{user_id}",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "user_id": {
+                            "type": "string",
+                            "description": "Identifier for a Notion user"
+                        }
+                    },
+                    "required": ["user_id"],
+                    "visible": ["user_id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": ["Notion-Version"],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header"],
+            "visible": ["path", "header"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__GET_ME",
+        "description": "Retrieves the bot User associated with the API token provided in the authorization header.",
+        "tags": ["notion", "users"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users/me",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": ["Notion-Version"],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header"],
+            "visible": ["header"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__LIST_USERS",
+        "description": "Returns a paginated list of Users for the workspace. Does not include guests. Requires user information capabilities.",
+        "tags": ["notion", "users"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "start_cursor": {
+                            "type": "string",
+                            "description": "If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results."
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "description": "The number of items from the full list desired in the response. Maximum: 100",
+                            "default": 100,
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    "required": [],
+                    "visible": ["start_cursor", "page_size"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": ["Notion-Version"],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header"],
+            "visible": ["query", "header"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__GET_USER",
+        "description": "Retrieves a User using the ID specified. Requires user information capabilities.",
+        "tags": ["notion", "users"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users/{user_id}",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "user_id": {
+                            "type": "string",
+                            "description": "Identifier for a Notion user"
+                        }
+                    },
+                    "required": ["user_id"],
+                    "visible": ["user_id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": ["Notion-Version"],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header"],
+            "visible": ["path", "header"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__GET_ME",
+        "description": "Retrieves the bot User associated with the API token provided in the authorization header.",
+        "tags": ["notion", "users"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users/me",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": ["Notion-Version"],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header"],
+            "visible": ["header"],
+            "additionalProperties": false
+        }
     }
 ]
