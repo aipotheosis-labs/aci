@@ -155,5 +155,5 @@ def test_execute_function_of_app_that_is_not_allowed_for_agent(
     if allow_agent_to_access_app:
         assert response.status_code == status.HTTP_200_OK
     else:
-        assert response.status_code == status.HTTP_403_FORBIDDEN
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert str(response.json()["error"]).startswith("App not allowed for this agent")

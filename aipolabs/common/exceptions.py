@@ -335,7 +335,7 @@ class AppNotAllowedForThisAgent(AipolabsException):
         super().__init__(
             title="App not allowed for this agent",
             message=message,
-            error_code=status.HTTP_403_FORBIDDEN,
+            error_code=status.HTTP_401_UNAUTHORIZED,
         )
 
 
