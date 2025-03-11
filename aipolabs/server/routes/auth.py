@@ -11,7 +11,7 @@ from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import User
 from aipolabs.common.enums import ClientIdentityProvider
 from aipolabs.common.exceptions import AuthenticationError, UnexpectedError
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.user import IdentityProviderUserInfo, UserCreate
 from aipolabs.server import config, oauth2
 from aipolabs.server import dependencies as deps

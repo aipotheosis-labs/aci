@@ -18,7 +18,7 @@ from aipolabs.common.exceptions import (
     LinkedAccountNotFound,
     NoImplementationFound,
 )
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.linked_accounts import (
     LinkedAccountAPIKeyCreate,
     LinkedAccountDefaultCreate,

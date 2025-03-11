@@ -17,7 +17,7 @@ from aipolabs.common.exceptions import (
     LinkedAccountDisabled,
     LinkedAccountNotFound,
 )
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.function import (
     AnthropicFunctionDefinition,
     BasicFunctionDefinition,

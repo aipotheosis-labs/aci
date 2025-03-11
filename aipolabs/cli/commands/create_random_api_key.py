@@ -18,7 +18,7 @@ from aipolabs.common import utils
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import APIKey
 from aipolabs.common.enums import SubscriptionPlan, Visibility
-from aipolabs.common.logging import create_headline
+from aipolabs.common.logging_setup import create_headline
 
 
 @click.option(

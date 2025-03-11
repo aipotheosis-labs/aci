@@ -6,7 +6,7 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 
 from aipolabs.common.db.sql_models import LinkedAccount
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.security_scheme import (
     OAuth2Scheme,
     OAuth2SchemeCredentials,

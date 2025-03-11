@@ -10,7 +10,7 @@ from aipolabs.cli.commands import (
     upsert_app,
     upsert_functions,
 )
-from aipolabs.common.logging import setup_logging
+from aipolabs.common.logging_setup import setup_logging
 
 
 @click.group(context_settings={"help_option_names": ["-h", "--help"]})

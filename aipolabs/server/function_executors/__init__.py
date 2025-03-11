@@ -1,6 +1,6 @@
 from aipolabs.common.db.sql_models import LinkedAccount
 from aipolabs.common.enums import Protocol, SecurityScheme
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.server.function_executors.base_executor import FunctionExecutor
 from aipolabs.server.function_executors.connector_function_executor import (
     ConnectorFunctionExecutor,

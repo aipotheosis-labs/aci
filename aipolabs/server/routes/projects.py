@@ -8,7 +8,7 @@ from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import Agent, Project, User
 from aipolabs.common.enums import OrganizationRole
 from aipolabs.common.exceptions import AgentNotFound, ProjectNotFound
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.agent import AgentCreate, AgentPublic, AgentUpdate
 from aipolabs.common.schemas.project import ProjectCreate, ProjectPublic
 from aipolabs.server import acl, quota_manager

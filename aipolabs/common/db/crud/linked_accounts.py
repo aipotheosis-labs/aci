@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 from aipolabs.common import validators
 from aipolabs.common.db.sql_models import App, LinkedAccount
 from aipolabs.common.enums import SecurityScheme
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.linked_accounts import LinkedAccountUpdate
 from aipolabs.common.schemas.security_scheme import (
     APIKeySchemeCredentials,

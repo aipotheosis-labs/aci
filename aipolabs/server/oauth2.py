@@ -5,7 +5,7 @@ from fastapi import Request
 from starlette.responses import RedirectResponse
 
 from aipolabs.common.exceptions import LinkedAccountOAuth2Error
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 
 logger = get_logger(__name__)
 

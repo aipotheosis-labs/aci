@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from aipolabs.cli import config
 from aipolabs.common import embeddings, utils
 from aipolabs.common.db import crud
-from aipolabs.common.logging import create_headline
+from aipolabs.common.logging_setup import create_headline
 from aipolabs.common.schemas.function import FunctionEmbeddingFields, FunctionUpsert
 
 openai_client = OpenAI(api_key=config.OPENAI_API_KEY)

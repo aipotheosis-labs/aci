@@ -6,7 +6,7 @@ import httpx
 from httpx import HTTPStatusError
 
 from aipolabs.common.db.sql_models import Function
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.function import FunctionExecutionResult, RestMetadata
 from aipolabs.common.schemas.security_scheme import (
     TCred,

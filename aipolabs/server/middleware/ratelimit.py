@@ -9,7 +9,7 @@ from starlette.requests import Request
 from starlette.responses import Response
 from starlette.types import ASGIApp
 
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.server.config import RATE_LIMIT_IP_PER_DAY, RATE_LIMIT_IP_PER_SECOND
 
 logger = get_logger(__name__)

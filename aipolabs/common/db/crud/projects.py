@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import Agent, APIKey, Project
 from aipolabs.common.enums import APIKeyStatus, Visibility
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.agent import AgentUpdate, ValidInstruction
 
 logger = get_logger(__name__)

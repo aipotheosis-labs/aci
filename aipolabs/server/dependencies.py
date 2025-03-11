@@ -20,7 +20,7 @@ from aipolabs.common.exceptions import (
     ProjectNotFound,
     UserNotFound,
 )
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.server import config
 
 logger = get_logger(__name__)

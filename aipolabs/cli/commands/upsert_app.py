@@ -12,7 +12,7 @@ from aipolabs.cli import config
 from aipolabs.common import embeddings, utils
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import App
-from aipolabs.common.logging import create_headline
+from aipolabs.common.logging_setup import create_headline
 from aipolabs.common.schemas.app import AppEmbeddingFields, AppUpsert
 
 openai_client = OpenAI(api_key=config.OPENAI_API_KEY)

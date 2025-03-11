@@ -10,7 +10,7 @@ from openai import OpenAI
 
 from aipolabs.cli import config
 from aipolabs.common.enums import FunctionDefinitionFormat
-from aipolabs.common.logging import create_headline
+from aipolabs.common.logging_setup import create_headline
 from aipolabs.common.schemas.function import FunctionExecute
 
 

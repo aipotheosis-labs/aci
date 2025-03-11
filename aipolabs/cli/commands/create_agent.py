@@ -6,7 +6,7 @@ import click
 from aipolabs.cli import config
 from aipolabs.common import utils
 from aipolabs.common.db import crud
-from aipolabs.common.logging import create_headline
+from aipolabs.common.logging_setup import create_headline
 
 
 @click.command()

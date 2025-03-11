@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 from aipolabs.common.db.sql_models import LinkedAccount
 from aipolabs.common.exceptions import NoImplementationFound
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.function import FunctionExecutionResult
 from aipolabs.common.schemas.security_scheme import (
     APIKeyScheme,

@@ -9,7 +9,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import Subscription, User
 from aipolabs.common.enums import SubscriptionStatus
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.user import UserCreate
 
 logger = get_logger(__name__)

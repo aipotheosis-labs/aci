@@ -4,7 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import App, AppConfiguration
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
     AppConfigurationUpdate,

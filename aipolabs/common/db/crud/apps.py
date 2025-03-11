@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import App
 from aipolabs.common.enums import SecurityScheme, Visibility
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.app import AppUpsert
 
 logger = get_logger(__name__)

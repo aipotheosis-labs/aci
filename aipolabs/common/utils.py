@@ -5,7 +5,7 @@ from uuid import UUID
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 
 logger = get_logger(__name__)
 

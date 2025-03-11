@@ -11,7 +11,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from aipolabs.common.exceptions import AipolabsException
-from aipolabs.common.logging import setup_logging
+from aipolabs.common.logging_setup import setup_logging
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 from aipolabs.server.middleware.interceptor import InterceptorMiddleware, RequestIDLogFilter

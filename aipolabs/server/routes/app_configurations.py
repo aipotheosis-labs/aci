@@ -11,7 +11,7 @@ from aipolabs.common.exceptions import (
     AppNotFound,
     AppSecuritySchemeNotSupported,
 )
-from aipolabs.common.logging import get_logger
+from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.app_configurations import (
     AppConfigurationCreate,
     AppConfigurationPublic,
