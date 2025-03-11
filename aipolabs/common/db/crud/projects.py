@@ -7,7 +7,7 @@ import secrets
 from datetime import UTC, datetime, timedelta
 from uuid import UUID
 
-from sqlalchemy import select, update
+from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db.sql_models import Agent, APIKey, Project
@@ -170,6 +170,17 @@ def update_agent(
 def delete_agent(db_session: Session, agent: Agent) -> None:
     db_session.delete(agent)
     db_session.flush()
+
+
+def delete_app_from_agents_allowed_apps(
+    db_session: Session, project_id: UUID, app_name: str
+) -> None:
+    statement = (
+        update(Agent)
+        .where(Agent.project_id == project_id)
+        .values(allowed_apps=func.array_remove(Agent.allowed_apps, app_name))
+    )
+    db_session.execute(statement)
 
 
 def get_agents_by_project(db_session: Session, project_id: UUID) -> list[Agent]:
