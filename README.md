@@ -1,5 +1,7 @@
 # Aipolabs Core Components
 
+![CI](https://github.com/aipotheosis-labs/aipolabs/actions/workflows/ci.yml/badge.svg)
+
 ## Project Structure
 
 Currently only contains the server code, common (shared code) and cli,
@@ -33,7 +35,10 @@ Follow all guidelines below for setting up the development environment, running 
       {
           "[python]": {
             "editor.formatOnSave": true,
-            "editor.defaultFormatter": "charliermarsh.ruff"
+            "editor.defaultFormatter": "charliermarsh.ruff",
+            "editor.codeActionsOnSave": {
+              "source.organizeImports.ruff": "always"
+            }
           }
       }
       ```
