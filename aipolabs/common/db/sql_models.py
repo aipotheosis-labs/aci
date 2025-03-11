@@ -32,7 +32,7 @@ from sqlalchemy import (
 from sqlalchemy import Enum as SqlEnum
 
 # Note: need to use postgresqlr ARRAY in order to use overlap operator
-from sqlalchemy.dialects.postgresql import ARRAY, JSONB
+from sqlalchemy.dialects.postgresql import ARRAY, BYTEA, JSONB
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.ext.mutable import MutableDict
@@ -613,6 +613,33 @@ class LinkedAccount(Base):
             name="uc_project_app_linked_account_owner",
         ),
     )
+
+
+class Secret(Base):
+    __tablename__ = "secrets"
+
+    id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
+    )
+    linked_account_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("linked_accounts.id"), nullable=False
+    )
+
+    name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
+    value: Mapped[bytes] = mapped_column(BYTEA, nullable=False)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+        init=False,
+    )
+
+    __table_args__ = (UniqueConstraint("linked_account_id", "name", name="uc_linked_account_name"),)
 
 
 __all__ = [
