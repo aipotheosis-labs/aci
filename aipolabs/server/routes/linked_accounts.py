@@ -27,6 +27,7 @@ from aipolabs.common.schemas.linked_accounts import (
     LinkedAccountOAuth2CreateState,
     LinkedAccountPublic,
     LinkedAccountsList,
+    LinkedAccountUpdate,
 )
 from aipolabs.common.schemas.security_scheme import (
     APIKeySchemeCredentials,
@@ -632,7 +633,7 @@ async def get_linked_account(
         extra={"linked_account_id": linked_account_id},
     )
     # validations
-    linked_account = crud.linked_accounts.get_linked_account_by_id(
+    linked_account = crud.linked_accounts.get_linked_account_by_id_under_project(
         context.db_session, linked_account_id, context.project.id
     )
     if not linked_account:
@@ -657,7 +658,7 @@ async def delete_linked_account(
         "delete linked account",
         extra={"linked_account_id": linked_account_id},
     )
-    linked_account = crud.linked_accounts.get_linked_account_by_id(
+    linked_account = crud.linked_accounts.get_linked_account_by_id_under_project(
         context.db_session, linked_account_id, context.project.id
     )
     if not linked_account:
@@ -672,4 +673,32 @@ async def delete_linked_account(
     context.db_session.commit()
 
 
-# TODO: add a route to update a linked account (e.g., enable/disable, change account name, etc.)
+@router.patch("/{linked_account_id}", response_model=LinkedAccountPublic)
+async def update_linked_account(
+    context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
+    linked_account_id: UUID,
+    body: LinkedAccountUpdate,
+) -> LinkedAccount:
+    """
+    Update a linked account.
+    """
+    logger.info(
+        "update linked account",
+        extra={"linked_account_id": linked_account_id},
+    )
+    linked_account = crud.linked_accounts.get_linked_account_by_id_under_project(
+        context.db_session, linked_account_id, context.project.id
+    )
+    if not linked_account:
+        logger.error(
+            "linked account not found",
+            extra={"linked_account_id": linked_account_id},
+        )
+        raise LinkedAccountNotFound(f"linked account={linked_account_id} not found")
+
+    linked_account = crud.linked_accounts.update_linked_account(
+        context.db_session, linked_account, body
+    )
+    context.db_session.commit()
+
+    return linked_account

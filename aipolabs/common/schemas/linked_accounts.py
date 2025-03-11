@@ -27,6 +27,10 @@ class LinkedAccountNoAuthCreate(LinkedAccountCreateBase):
     pass
 
 
+class LinkedAccountUpdate(BaseModel):
+    enabled: bool | None = None
+
+
 class LinkedAccountOAuth2CreateState(BaseModel):
     project_id: UUID
     app_name: str

@@ -7,6 +7,7 @@ from aipolabs.common import validators
 from aipolabs.common.db.sql_models import App, LinkedAccount
 from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.logging import get_logger
+from aipolabs.common.schemas.linked_accounts import LinkedAccountUpdate
 from aipolabs.common.schemas.security_scheme import (
     APIKeySchemeCredentials,
     NoAuthSchemeCredentials,
@@ -51,7 +52,8 @@ def get_linked_account(
     return linked_account
 
 
-def get_linked_account_by_id(
+# TODO: the access control (project_id check) should probably be done at the route level?
+def get_linked_account_by_id_under_project(
     db_session: Session, linked_account_id: UUID, project_id: UUID
 ) -> LinkedAccount | None:
     """Get a linked account by its id, with optional project filter
@@ -118,6 +120,18 @@ def update_linked_account_credentials(
     )
 
     linked_account.security_credentials = security_credentials.model_dump(mode="json")
+    db_session.flush()
+    db_session.refresh(linked_account)
+    return linked_account
+
+
+def update_linked_account(
+    db_session: Session,
+    linked_account: LinkedAccount,
+    linked_account_update: LinkedAccountUpdate,
+) -> LinkedAccount:
+    if linked_account_update.enabled is not None:
+        linked_account.enabled = linked_account_update.enabled
     db_session.flush()
     db_session.refresh(linked_account)
     return linked_account
