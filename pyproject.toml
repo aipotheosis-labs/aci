@@ -4,6 +4,7 @@ version = "0.0.1-beta.3"
 description = "aipolabs"
 authors = ["Aipolabs <team@aipolabs.xyz>"]
 package-mode = false
+
 [tool.poetry.dependencies]
 python = "^3.12"
 fastapi = { extras = ["standard"], version = "^0.115.0" }
@@ -28,11 +29,12 @@ python-json-logger = "^3.2.1"
 logfire = { extras = ["fastapi", "sqlalchemy"], version = "^3.6.4" }
 sentry-sdk = { extras = ["fastapi"], version = "^2.22.0" }
 google-api-python-client = "^2.163.0"
-aws-encryption-sdk = {extras = ["mpl"], version = "^4.0.0"}
+aws-encryption-sdk = { extras = ["mpl"], version = "^4.0.0" }
 boto3 = "^1.37.9"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
+pytest-subtests = "^0.14.1"
 mypy = "^1.11.2"
 alembic = "^1.13.3"
 ruff = "^0.9.9"

@@ -12,6 +12,10 @@ from aipolabs.server import config
 logger = logging.getLogger(__name__)
 openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
 DUMMY_APPS_DIR = Path(__file__).parent / "dummy_apps"
+REAL_APPS_DIR = Path(__file__).parent.parent.parent.parent / "apps"
+CONNECTOR_APPS = [
+    "aipolabs_secrets_manager",
+]
 
 
 def prepare_dummy_apps_and_functions() -> list[
@@ -26,7 +30,7 @@ def prepare_dummy_apps_and_functions() -> list[
     - list[float]: the app embeddings
     - list[list[float]]: the embeddings for each function
     """
-    for app_dir in DUMMY_APPS_DIR.glob("*"):
+    for app_dir in [*DUMMY_APPS_DIR.glob("*"), *[REAL_APPS_DIR / app for app in CONNECTOR_APPS]]:
         app_file = app_dir / "app.json"
         functions_file = app_dir / "functions.json"
         with open(app_file) as f:
