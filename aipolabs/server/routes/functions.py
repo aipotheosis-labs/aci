@@ -62,7 +62,7 @@ async def list_functions(
     )
 
 
-@router.get("/search")
+@router.get("/search", response_model_exclude_none=True)
 async def search_functions(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[FunctionsSearch, Query()],
