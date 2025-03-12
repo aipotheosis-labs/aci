@@ -1,8 +1,8 @@
-"""Create Secret table
+"""<some message>
 
-Revision ID: 0335865427c3
-Revises: 70dd635d80d4
-Create Date: 2025-03-11 12:32:49.594360+00:00
+Revision ID: d4138695cf75
+Revises: 949afaf258c3
+Create Date: 2025-03-12 20:06:51.809959+00:00
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '0335865427c3'
-down_revision: Union[str, None] = '70dd635d80d4'
+revision: str = 'd4138695cf75'
+down_revision: Union[str, None] = '949afaf258c3'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
