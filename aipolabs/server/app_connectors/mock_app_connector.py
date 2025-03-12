@@ -47,7 +47,7 @@ class MockAppConnector(AppConnectorBase):
             "input_bool": input_bool,
             "input_list": input_list,
             "input_required_invisible_string": input_required_invisible_string,
-            "security_scheme": self.linked_account.security_scheme.value,
+            "security_scheme": self.linked_account.security_scheme,
             "security_scheme_cls": type(self.security_scheme).__name__,
             "security_credentials_cls": type(self.security_credentials).__name__,
         }

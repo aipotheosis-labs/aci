@@ -66,11 +66,11 @@ async def create_app_configuration(
             "app does not support specified security scheme",
             extra={
                 "app_name": body.app_name,
-                "security_scheme": body.security_scheme.value,
+                "security_scheme": body.security_scheme,
             },
         )
         raise AppSecuritySchemeNotSupported(
-            f"app={body.app_name} does not support security_scheme={body.security_scheme.value}"
+            f"app={body.app_name} does not support security_scheme={body.security_scheme}"
         )
     app_configuration = crud.app_configurations.create_app_configuration(
         context.db_session,

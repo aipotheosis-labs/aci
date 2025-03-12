@@ -1,5 +1,5 @@
 from datetime import UTC, datetime, timedelta
-from enum import Enum
+from enum import StrEnum
 from typing import Annotated
 
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
@@ -22,7 +22,7 @@ router = APIRouter()
 oauth = OAuth()
 
 
-class ClientIdentityProvider(str, Enum):
+class ClientIdentityProvider(StrEnum):
     GOOGLE = "google"
     # GITHUB = "github"
 
@@ -65,16 +65,16 @@ def create_access_token(user_id: str, expires_delta: timedelta) -> str:
 # login route for different identity providers
 @router.get("/login/{provider}", include_in_schema=True)
 async def login(request: Request, provider: ClientIdentityProvider) -> RedirectResponse:
-    logger.info("login", extra={"provider": provider.value})
+    logger.info("login", extra={"provider": provider})
 
     oauth2_client = OAUTH2_CLIENTS[provider]
 
-    path = request.url_for(LOGIN_CALLBACK_PATH_NAME, provider=provider.value).path
+    path = request.url_for(LOGIN_CALLBACK_PATH_NAME, provider=provider).path
     redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
 
     logger.info(
         "authorizing login redirect",
-        extra={"provider": provider.value, "redirect_uri": redirect_uri},
+        extra={"provider": provider, "redirect_uri": redirect_uri},
     )
 
     return await oauth2.authorize_redirect(oauth2_client, request, redirect_uri)
@@ -98,19 +98,19 @@ async def signup(
 ) -> RedirectResponse:
     logger.info(
         "signup",
-        extra={"provider": provider.value, "signup_code": signup_code},
+        extra={"provider": provider, "signup_code": signup_code},
     )
     _validate_signup(db_session, signup_code)
     oauth2_client = OAUTH2_CLIENTS[provider]
 
     request.session["signup_code"] = signup_code
 
-    path = request.url_for(SIGNUP_CALLBACK_PATH_NAME, provider=provider.value).path
+    path = request.url_for(SIGNUP_CALLBACK_PATH_NAME, provider=provider).path
     redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
     logger.info(
         "authorizing signup redirect",
         extra={
-            "provider": provider.value,
+            "provider": provider,
             "signup_code": signup_code,
             "redirect_uri": redirect_uri,
         },
@@ -139,7 +139,7 @@ async def signup_callback(
 
     logger.info(
         "signup callback received",
-        extra={"provider": provider.value, "signup_code": signup_code},
+        extra={"provider": provider, "signup_code": signup_code},
     )
     # TODO: probably not necessary to check again here, but just in case
     _validate_signup(db_session, signup_code)
@@ -147,7 +147,7 @@ async def signup_callback(
     auth_response = await oauth2.authorize_access_token(OAUTH2_CLIENTS[provider], request)
     logger.debug(
         "access token requested successfully",
-        extra={"provider": provider.value, "auth_response": auth_response},
+        extra={"provider": provider, "auth_response": auth_response},
     )
 
     if provider == ClientIdentityProvider.GOOGLE:
@@ -191,7 +191,7 @@ async def signup_callback(
             extra={
                 "user_id": user.id,
                 "user_email": user.email,
-                "provider": provider.value,
+                "provider": provider,
                 "signup_code": signup_code,
             },
         )
@@ -234,13 +234,13 @@ async def login_callback(
 ) -> RedirectResponse:
     logger.info(
         "login callback received",
-        extra={"provider": provider.value},
+        extra={"provider": provider},
     )
     # TODO: try/except, retry?
     auth_response = await oauth2.authorize_access_token(OAUTH2_CLIENTS[provider], request)
     logger.debug(
         "access token requested successfully",
-        extra={"provider": provider.value, "auth_response": auth_response},
+        extra={"provider": provider, "auth_response": auth_response},
     )
 
     if provider == ClientIdentityProvider.GOOGLE:
@@ -263,7 +263,7 @@ async def login_callback(
         logger.error(
             "login failed, user not found",
             extra={
-                "provider": provider.value,
+                "provider": provider,
                 "user_info": user_info.model_dump(exclude_none=True),
             },
         )

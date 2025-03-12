@@ -264,16 +264,16 @@ async def link_account_with_api_key(
     if app_configuration.security_scheme != SecurityScheme.API_KEY:
         logger.error(
             f"failed to link api_key account, app configuration security scheme is "
-            f"{app_configuration.security_scheme.value} instead of api_key",
+            f"{app_configuration.security_scheme} instead of api_key",
             extra={
                 "app_name": body.app_name,
-                "security_scheme": app_configuration.security_scheme.value,
+                "security_scheme": app_configuration.security_scheme,
             },
         )
         # TODO: consider choosing a different exception type?
         raise NoImplementationFound(
             f"the security_scheme configured for app={body.app_name} is "
-            f"{app_configuration.security_scheme.value}, not api_key"
+            f"{app_configuration.security_scheme}, not api_key"
         )
     linked_account = crud.linked_accounts.get_linked_account(
         context.db_session,
@@ -359,7 +359,7 @@ async def link_oauth2_account(
             "failed to link OAuth2 account, app configuration security scheme is not OAuth2",
             extra={
                 "app_name": query_params.app_name,
-                "security_scheme": app_configuration.security_scheme.value,
+                "security_scheme": app_configuration.security_scheme,
             },
         )
         raise NoImplementationFound(

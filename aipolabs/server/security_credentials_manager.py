@@ -41,12 +41,12 @@ async def get_security_credentials(
             "unsupported security scheme",
             extra={
                 "linked_account": linked_account.id,
-                "security_scheme": linked_account.security_scheme.value,
+                "security_scheme": linked_account.security_scheme,
                 "app": app.name,
             },
         )
         raise NoImplementationFound(
-            f"unsupported security scheme={linked_account.security_scheme.value}, app={app.name}"
+            f"unsupported security scheme={linked_account.security_scheme}, app={app.name}"
         )
 
 

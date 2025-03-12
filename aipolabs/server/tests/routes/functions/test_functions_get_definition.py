@@ -20,7 +20,7 @@ def test_get_function_definition_openai_by_identifier(
 ) -> None:
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.name}/definition",
-        params={"format": FunctionDefinitionFormat.OPENAI.value},
+        params={"format": FunctionDefinitionFormat.OPENAI},
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_200_OK
@@ -43,7 +43,7 @@ def test_get_function_definition_anthropic_by_identifier(
 ) -> None:
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.name}/definition",
-        params={"format": FunctionDefinitionFormat.ANTHROPIC.value},
+        params={"format": FunctionDefinitionFormat.ANTHROPIC},
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_200_OK

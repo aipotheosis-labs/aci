@@ -145,7 +145,7 @@ async def get_function_definition(
         "get function definition",
         extra={
             "function_name": function_name,
-            "format": format.value,
+            "format": format,
         },
     )
     function: Function | None = crud.functions.get_function(
@@ -188,7 +188,7 @@ async def get_function_definition(
     logger.info(
         "function definition to return",
         extra={
-            "format": format.value,
+            "format": format,
             "function_name": function_name,
             "function_definition": function_definition.model_dump(exclude_none=True),
         },

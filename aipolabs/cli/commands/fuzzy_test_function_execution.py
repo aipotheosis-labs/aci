@@ -73,7 +73,7 @@ def fuzzy_test_function_execution_helper(
     # Get function definition
     response = httpx.get(
         f"{config.SERVER_URL}/v1/functions/{function_name}/definition",
-        params={"format": FunctionDefinitionFormat.OPENAI.value},
+        params={"format": FunctionDefinitionFormat.OPENAI},
         headers={"x-api-key": aipolabs_api_key},
     )
     if response.status_code != 200:

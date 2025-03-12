@@ -1,7 +1,7 @@
-from enum import Enum
+from enum import StrEnum
 
 
-class APIKeyStatus(str, Enum):
+class APIKeyStatus(StrEnum):
     ACTIVE = "active"
     # can only be disabled by aipolabs
     DISABLED = "disabled"
@@ -9,7 +9,7 @@ class APIKeyStatus(str, Enum):
     DELETED = "deleted"
 
 
-class SecurityScheme(str, Enum):
+class SecurityScheme(StrEnum):
     """
     security scheme type for an app (or function if support override)
     """
@@ -21,7 +21,7 @@ class SecurityScheme(str, Enum):
     OAUTH2 = "oauth2"
 
 
-class Protocol(str, Enum):
+class Protocol(StrEnum):
     """
     function protocol type
     ideally all functions under the same app should use the same protocol, but we don't enforce that for maximum flexibility
@@ -34,7 +34,7 @@ class Protocol(str, Enum):
     # GRPC = "grpc"
 
 
-class HttpLocation(str, Enum):
+class HttpLocation(StrEnum):
     PATH = "path"
     QUERY = "query"
     HEADER = "header"
@@ -43,7 +43,7 @@ class HttpLocation(str, Enum):
 
 
 # TODO: use lowercase for consistency?
-class HttpMethod(str, Enum):
+class HttpMethod(StrEnum):
     GET = "GET"
     POST = "POST"
     PUT = "PUT"
@@ -53,20 +53,20 @@ class HttpMethod(str, Enum):
     OPTIONS = "OPTIONS"
 
 
-class EntityType(str, Enum):
+class EntityType(StrEnum):
     ENTITY = "entity"
     USER = "user"
     ORGANIZATION = "organization"
 
 
-class Visibility(str, Enum):
+class Visibility(StrEnum):
     """visibility of an app or function"""
 
     PUBLIC = "public"
     PRIVATE = "private"
 
 
-class SubscriptionPlan(str, Enum):
+class SubscriptionPlan(StrEnum):
     """
     subscription plan for a user or organization.
     """
@@ -77,7 +77,7 @@ class SubscriptionPlan(str, Enum):
     ENTERPRISE = "enterprise"
 
 
-class SubscriptionStatus(str, Enum):
+class SubscriptionStatus(StrEnum):
     """
     subscription status for a user or organization.
     """
@@ -87,7 +87,7 @@ class SubscriptionStatus(str, Enum):
     EXPIRED = "expired"
 
 
-class OrganizationRole(str, Enum):
+class OrganizationRole(StrEnum):
     """
     role for a user in an organization.
     """
