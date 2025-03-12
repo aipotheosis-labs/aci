@@ -263,6 +263,19 @@ class InvalidFunctionInput(AipolabsException):
         )
 
 
+class InvalidFunctionDefinitionFormat(AipolabsException):
+    """
+    Exception raised when an invalid function definition format is provided
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Invalid function definition format",
+            message=message,
+            error_code=status.HTTP_400_BAD_REQUEST,
+        )
+
+
 class LinkedAccountAlreadyExists(AipolabsException):
     """
     Exception raised when a linked account already exists

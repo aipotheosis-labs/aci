@@ -97,6 +97,11 @@ class OrganizationRole(StrEnum):
 
 
 class FunctionDefinitionFormat(StrEnum):
+    """
+    format for a function definition.
+    """
+
+    BASIC = "basic"  # only return name and description
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
 

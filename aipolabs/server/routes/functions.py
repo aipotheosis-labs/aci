@@ -13,12 +13,14 @@ from aipolabs.common.exceptions import (
     AppConfigurationNotFound,
     AppNotAllowedForThisAgent,
     FunctionNotFound,
+    InvalidFunctionDefinitionFormat,
     LinkedAccountDisabled,
     LinkedAccountNotFound,
 )
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.function import (
     AnthropicFunctionDefinition,
+    BasicFunctionDefinition,
     FunctionBasic,
     FunctionDetails,
     FunctionExecute,
@@ -125,7 +127,6 @@ async def search_functions(
 # TODO: "flatten" flag to make sure nested parameters are flattened?
 @router.get(
     "/{function_name}/definition",
-    response_model=OpenAIFunctionDefinition | AnthropicFunctionDefinition,
     response_model_exclude_none=True,  # having this to exclude "strict" field in openai's function definition if not set
 )
 async def get_function_definition(
@@ -133,9 +134,10 @@ async def get_function_definition(
     function_name: str,
     format: FunctionDefinitionFormat = Query(  # noqa: B008 # TODO: need to fix this later
         default=FunctionDefinitionFormat.OPENAI,
-        description="The format to use for the function definition (e.g., openai or anthropic).",
+        description="The format to use for the function definition (e.g., 'openai' or 'anthropic'). "
+        "There is also a 'basic' format that only returns name and description.",
     ),
-) -> OpenAIFunctionDefinition | AnthropicFunctionDefinition:
+) -> OpenAIFunctionDefinition | AnthropicFunctionDefinition | BasicFunctionDefinition:
     """
     Return the function definition that can be used directly by LLM.
     The actual content depends on the FunctionDefinitionFormat and the function itself.
@@ -160,6 +162,7 @@ async def get_function_definition(
         )
         raise FunctionNotFound(f"function={function_name} not found")
 
+    # TODO: test processor
     visible_parameters = processor.filter_visible_properties(function.parameters)
     logger.debug(
         "visible parameters",
@@ -168,21 +171,32 @@ async def get_function_definition(
             "parameters": visible_parameters,
         },
     )
+    function_definition: (
+        BasicFunctionDefinition | OpenAIFunctionDefinition | AnthropicFunctionDefinition
+    )
 
-    if format == FunctionDefinitionFormat.OPENAI:
-        function_definition = OpenAIFunctionDefinition(
-            function=OpenAIFunction(
+    match format:
+        case FunctionDefinitionFormat.BASIC:
+            function_definition = BasicFunctionDefinition(
                 name=function.name,
                 description=function.description,
-                parameters=visible_parameters,
             )
-        )
-    elif format == FunctionDefinitionFormat.ANTHROPIC:
-        function_definition = AnthropicFunctionDefinition(
-            name=function.name,
-            description=function.description,
-            input_schema=visible_parameters,
-        )  # type: ignore
+        case FunctionDefinitionFormat.OPENAI:
+            function_definition = OpenAIFunctionDefinition(
+                function=OpenAIFunction(
+                    name=function.name,
+                    description=function.description,
+                    parameters=visible_parameters,
+                )
+            )
+        case FunctionDefinitionFormat.ANTHROPIC:
+            function_definition = AnthropicFunctionDefinition(
+                name=function.name,
+                description=function.description,
+                input_schema=visible_parameters,
+            )
+        case _:
+            raise InvalidFunctionDefinitionFormat(f"Invalid format: {format}")
 
     logger.info(
         "function definition to return",

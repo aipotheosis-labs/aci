@@ -1,3 +1,4 @@
+import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -7,49 +8,62 @@ from aipolabs.common.db.sql_models import Function, Project
 from aipolabs.common.enums import FunctionDefinitionFormat, Visibility
 from aipolabs.common.schemas.function import (
     AnthropicFunctionDefinition,
+    BasicFunctionDefinition,
     OpenAIFunctionDefinition,
 )
 from aipolabs.server import config
 
 
-def test_get_function_definition_openai_by_identifier(
+@pytest.mark.parametrize(
+    "format",
+    [
+        FunctionDefinitionFormat.BASIC,
+        FunctionDefinitionFormat.OPENAI,
+        FunctionDefinitionFormat.ANTHROPIC,
+    ],
+)
+def test_get_function_definition_by_identifier(
     test_client: TestClient,
     dummy_function_github__create_repository: Function,
     dummy_api_key_1: str,
+    format: FunctionDefinitionFormat,
 ) -> None:
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.name}/definition",
-        params={"format": FunctionDefinitionFormat.OPENAI},
+        params={"format": format},
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_200_OK
     response_json = response.json()
 
-    function_definition = OpenAIFunctionDefinition.model_validate(response_json)
-    assert function_definition.type == "function"
-    assert function_definition.function.name == dummy_function_github__create_repository.name
-    # Sanity check: ensure that the description is the same
-    assert (
-        function_definition.function.description
-        == dummy_function_github__create_repository.description
+    function_definition: (
+        BasicFunctionDefinition | OpenAIFunctionDefinition | AnthropicFunctionDefinition
     )
-
-
-def test_get_function_definition_anthropic_by_identifier(
-    test_client: TestClient,
-    dummy_function_github__create_repository: Function,
-    dummy_api_key_1: str,
-) -> None:
-    response = test_client.get(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.name}/definition",
-        params={"format": FunctionDefinitionFormat.ANTHROPIC},
-        headers={"x-api-key": dummy_api_key_1},
-    )
-    assert response.status_code == status.HTTP_200_OK
-    function_definition = AnthropicFunctionDefinition.model_validate(response.json())
-    assert function_definition.name == dummy_function_github__create_repository.name
-    # sanity check: if description is the same
-    assert function_definition.description == dummy_function_github__create_repository.description
+    match format:
+        case FunctionDefinitionFormat.BASIC:
+            function_definition = BasicFunctionDefinition.model_validate(response_json)
+            assert function_definition.name == dummy_function_github__create_repository.name
+            assert (
+                function_definition.description
+                == dummy_function_github__create_repository.description
+            )
+        case FunctionDefinitionFormat.OPENAI:
+            function_definition = OpenAIFunctionDefinition.model_validate(response_json)
+            assert function_definition.type == "function"
+            assert (
+                function_definition.function.name == dummy_function_github__create_repository.name
+            )
+            assert (
+                function_definition.function.description
+                == dummy_function_github__create_repository.description
+            )
+        case FunctionDefinitionFormat.ANTHROPIC:
+            function_definition = AnthropicFunctionDefinition.model_validate(response_json)
+            assert function_definition.name == dummy_function_github__create_repository.name
+            assert (
+                function_definition.description
+                == dummy_function_github__create_repository.description
+            )
 
 
 def test_get_private_function(

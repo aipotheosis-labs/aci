@@ -182,6 +182,16 @@ class AnthropicFunctionDefinition(BaseModel):
     input_schema: dict
 
 
+class BasicFunctionDefinition(BaseModel):
+    """
+    Our own custom function definition, only returns name and description.
+    useful for the "search" endpoint, to reduce the amount of data returned.
+    """
+
+    name: str
+    description: str
+
+
 class FunctionExecutionResult(BaseModel):
     success: bool
     data: Any | None = None  # adding "| None" just for clarity
