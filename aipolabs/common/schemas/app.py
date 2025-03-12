@@ -6,7 +6,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from aipolabs.common.enums import SecurityScheme, Visibility
-from aipolabs.common.schemas.function import FunctionDetails
+from aipolabs.common.schemas.function import BasicFunctionDefinition, FunctionDetails
 from aipolabs.common.schemas.security_scheme import (
     APIKeyScheme,
     APIKeySchemeCredentials,
@@ -88,6 +88,10 @@ class AppsSearch(BaseModel):
         default=False,
         description="If true, only return apps that are allowed by the agent/accessor, identified by the api key.",
     )
+    include_functions: bool = Field(
+        default=False,
+        description="If true, include functions (name and description) of each app in the response.",
+    )
     categories: list[str] | None = Field(
         default=None, description="List of categories for filtering."
     )
@@ -130,6 +134,7 @@ class AppsList(BaseModel):
 class AppBasic(BaseModel):
     name: str
     description: str
+    functions: list[BasicFunctionDefinition] | None = None
 
     model_config = ConfigDict(from_attributes=True)
 

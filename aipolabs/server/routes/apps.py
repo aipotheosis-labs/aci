@@ -15,7 +15,7 @@ from aipolabs.common.schemas.app import (
     AppsList,
     AppsSearch,
 )
-from aipolabs.common.schemas.function import FunctionDetails
+from aipolabs.common.schemas.function import BasicFunctionDefinition, FunctionDetails
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 
@@ -50,7 +50,7 @@ async def list_apps(
     )
 
 
-@router.get("/search")
+@router.get("/search", response_model_exclude_none=True)
 async def search_apps(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[AppsSearch, Query()],
@@ -97,8 +97,16 @@ async def search_apps(
     )
 
     apps: list[AppBasic] = []
+
     for app, _ in apps_with_scores:
-        apps.append(AppBasic.model_validate(app))
+        if query_params.include_functions:
+            functions = [
+                BasicFunctionDefinition(name=function.name, description=function.description)
+                for function in app.functions
+            ]
+            apps.append(AppBasic(name=app.name, description=app.description, functions=functions))
+        else:
+            apps.append(AppBasic(name=app.name, description=app.description))
 
     logger.info("search apps response", extra={"app_names": [app.name for app in apps]})
 
