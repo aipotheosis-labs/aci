@@ -1,3 +1,4 @@
+import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -5,27 +6,31 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import Agent, App, Project
 from aipolabs.common.enums import Visibility
-from aipolabs.common.schemas.app import AppBasic
+from aipolabs.common.schemas.app import AppBasic, AppsSearch
 from aipolabs.common.schemas.app_configurations import AppConfigurationPublic
 from aipolabs.server import config
 
 
+@pytest.mark.parametrize("include_functions", [True, False])
 def test_search_apps_with_intent(
     test_client: TestClient,
     dummy_apps: list[App],
     dummy_app_github: App,
     dummy_app_google: App,
     dummy_api_key_1: str,
+    include_functions: bool,
 ) -> None:
     # try with intent to find GITHUB app
-    search_params: dict[str, str | list[str] | int] = {
-        "intent": "i want to create a new code repo for my project",
-        "limit": 100,
-        "offset": 0,
-    }
+    apps_search = AppsSearch(
+        intent="i want to create a new code repo for my project",
+        limit=100,
+        offset=0,
+        include_functions=include_functions,
+    )
+
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search",
-        params=search_params,
+        params=apps_search.model_dump(exclude_none=True),
         headers={"x-api-key": dummy_api_key_1},
     )
 
@@ -35,10 +40,10 @@ def test_search_apps_with_intent(
     assert apps[0].name == dummy_app_github.name
 
     # try with intent to find google app
-    search_params["intent"] = "i want to search the web"
+    apps_search.intent = "i want to search the web"
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search",
-        params=search_params,
+        params=apps_search.model_dump(exclude_none=True),
         headers={"x-api-key": dummy_api_key_1},
     )
 
@@ -48,11 +53,19 @@ def test_search_apps_with_intent(
     assert apps[0].name == dummy_app_google.name
 
 
+@pytest.mark.parametrize("include_functions", [True, False])
 def test_search_apps_without_intent(
-    test_client: TestClient, dummy_apps: list[App], dummy_api_key_1: str
+    test_client: TestClient, dummy_apps: list[App], dummy_api_key_1: str, include_functions: bool
 ) -> None:
+    apps_search = AppsSearch(
+        limit=100,
+        offset=0,
+        include_functions=include_functions,
+    )
     response = test_client.get(
-        f"{config.ROUTER_PREFIX_APPS}/search", headers={"x-api-key": dummy_api_key_1}
+        f"{config.ROUTER_PREFIX_APPS}/search",
+        params=apps_search.model_dump(exclude_none=True),
+        headers={"x-api-key": dummy_api_key_1},
     )
 
     assert response.status_code == status.HTTP_200_OK
@@ -61,20 +74,23 @@ def test_search_apps_without_intent(
     assert len(apps) == len(dummy_apps)
 
 
+@pytest.mark.parametrize("include_functions", [True, False])
 def test_search_apps_with_categories(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_app_aipolabs_test: App,
+    include_functions: bool,
 ) -> None:
-    search_params: dict[str, str | list[str] | int | None] = {
-        "intent": None,
-        "categories": ["testcategory"],
-        "limit": 100,
-        "offset": 0,
-    }
+    apps_search = AppsSearch(
+        categories=["testcategory"],
+        limit=100,
+        offset=0,
+        include_functions=include_functions,
+    )
+
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search",
-        params=search_params,
+        params=apps_search.model_dump(exclude_none=True),
         headers={"x-api-key": dummy_api_key_1},
     )
 
@@ -84,21 +100,25 @@ def test_search_apps_with_categories(
     assert apps[0].name == dummy_app_aipolabs_test.name
 
 
+@pytest.mark.parametrize("include_functions", [True, False])
 def test_search_apps_with_categories_and_intent(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_app_google: App,
     dummy_app_github: App,
+    include_functions: bool,
 ) -> None:
-    search_params: dict[str, str | list[str] | int] = {
-        "intent": "i want to create a new code repo for my project",
-        "categories": ["testcategory-2"],
-        "limit": 100,
-        "offset": 0,
-    }
+    apps_search = AppsSearch(
+        intent="i want to create a new code repo for my project",
+        categories=["testcategory-2"],
+        limit=100,
+        offset=0,
+        include_functions=include_functions,
+    )
+
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search",
-        params=search_params,
+        params=apps_search.model_dump(exclude_none=True),
         headers={"x-api-key": dummy_api_key_1},
     )
 
@@ -109,20 +129,25 @@ def test_search_apps_with_categories_and_intent(
     assert apps[1].name == dummy_app_google.name
 
 
+@pytest.mark.parametrize("include_functions", [True, False])
 def test_search_apps_pagination(
-    test_client: TestClient, dummy_apps: list[App], dummy_api_key_1: str
+    test_client: TestClient,
+    dummy_apps: list[App],
+    dummy_api_key_1: str,
+    include_functions: bool,
 ) -> None:
     assert len(dummy_apps) > 2
 
-    search_params: dict[str, str | list[str] | int | None] = {
-        "intent": None,
-        "limit": len(dummy_apps) - 1,
-        "offset": 0,
-    }
+    apps_search = AppsSearch(
+        intent=None,
+        limit=len(dummy_apps) - 1,
+        offset=0,
+        include_functions=include_functions,
+    )
 
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search",
-        params=search_params,
+        params=apps_search.model_dump(exclude_none=True),
         headers={"x-api-key": dummy_api_key_1},
     )
 
@@ -130,10 +155,10 @@ def test_search_apps_pagination(
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == len(dummy_apps) - 1
 
-    search_params["offset"] = len(dummy_apps) - 1
+    apps_search.offset = len(dummy_apps) - 1
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search",
-        params=search_params,
+        params=apps_search.model_dump(exclude_none=True),
         headers={"x-api-key": dummy_api_key_1},
     )
 
@@ -142,19 +167,28 @@ def test_search_apps_pagination(
     assert len(apps) == 1
 
 
+@pytest.mark.parametrize("include_functions", [True, False])
 def test_search_apps_with_inactive_apps(
     db_session: Session,
     test_client: TestClient,
     dummy_apps: list[App],
     dummy_api_key_1: str,
+    include_functions: bool,
 ) -> None:
     crud.apps.set_app_active_status(db_session, dummy_apps[0].name, False)
     db_session.commit()
 
+    apps_search = AppsSearch(
+        intent=None,
+        limit=100,
+        offset=0,
+        include_functions=include_functions,
+    )
+
     # inactive app should not be returned
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search",
-        params={},
+        params=apps_search.model_dump(exclude_none=True),
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_200_OK
@@ -162,20 +196,28 @@ def test_search_apps_with_inactive_apps(
     assert len(apps) == len(dummy_apps) - 1
 
 
+@pytest.mark.parametrize("include_functions", [True, False])
 def test_search_apps_with_private_apps(
     db_session: Session,
     test_client: TestClient,
     dummy_apps: list[App],
     dummy_project_1: Project,
     dummy_api_key_1: str,
+    include_functions: bool,
 ) -> None:
     # private app should not be reachable for project with only public access
     crud.apps.set_app_visibility(db_session, dummy_apps[0].name, Visibility.PRIVATE)
     db_session.commit()
 
+    apps_search = AppsSearch(
+        intent=None,
+        limit=100,
+        offset=0,
+        include_functions=include_functions,
+    )
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search",
-        params={},
+        params=apps_search.model_dump(exclude_none=True),
         headers={"x-api-key": dummy_api_key_1},
     )
 
@@ -189,7 +231,7 @@ def test_search_apps_with_private_apps(
 
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search",
-        params={},
+        params=apps_search.model_dump(exclude_none=True),
         headers={"x-api-key": dummy_api_key_1},
     )
 
@@ -198,20 +240,23 @@ def test_search_apps_with_private_apps(
     assert len(apps) == len(dummy_apps)
 
 
+@pytest.mark.parametrize("include_functions", [True, False])
 def test_search_apps_allowed_apps_only(
     db_session: Session,
     test_client: TestClient,
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     dummy_agent_1_with_no_apps_allowed: Agent,
+    include_functions: bool,
 ) -> None:
-    search_params = {
-        "allowed_apps_only": True,
-        "limit": 100,
-        "offset": 0,
-    }
+    apps_search = AppsSearch(
+        allowed_apps_only=True,
+        limit=100,
+        offset=0,
+        include_functions=include_functions,
+    )
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search",
-        params=search_params,
+        params=apps_search.model_dump(exclude_none=True),
         headers={"x-api-key": dummy_agent_1_with_no_apps_allowed.api_keys[0].key},
     )
     assert response.status_code == status.HTTP_200_OK
@@ -226,7 +271,7 @@ def test_search_apps_allowed_apps_only(
 
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/search",
-        params=search_params,
+        params=apps_search.model_dump(exclude_none=True),
         headers={"x-api-key": dummy_agent_1_with_no_apps_allowed.api_keys[0].key},
     )
 
