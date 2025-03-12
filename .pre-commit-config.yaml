@@ -21,7 +21,7 @@ repos:
       - id: lint
         name: running lint checks
         language: system
-        entry: poetry run ruff check .
+        entry: poetry run ruff check . --fix
         pass_filenames: false
         require_serial: true
       # TODO: not running it now because there are too many errors

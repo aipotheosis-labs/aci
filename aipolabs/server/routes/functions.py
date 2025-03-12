@@ -20,12 +20,12 @@ from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.function import (
     AnthropicFunctionDefinition,
     FunctionBasic,
+    FunctionDefinitionFormat,
     FunctionDetails,
     FunctionExecute,
     FunctionExecutionResult,
     FunctionsList,
     FunctionsSearch,
-    InferenceProvider,
     OpenAIFunction,
     OpenAIFunctionDefinition,
 )
@@ -132,8 +132,8 @@ async def search_functions(
 async def get_function_definition(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     function_name: str,
-    inference_provider: InferenceProvider = Query(  # noqa: B008 # TODO: need to fix this later
-        default=InferenceProvider.OPENAI,
+    format: FunctionDefinitionFormat = Query(  # noqa: B008 # TODO: need to fix this later
+        default=FunctionDefinitionFormat.OPENAI,
         description="The inference provider, which determines the format of the function definition.",
     ),
 ) -> OpenAIFunctionDefinition | AnthropicFunctionDefinition:
@@ -145,7 +145,7 @@ async def get_function_definition(
         "get function definition",
         extra={
             "function_name": function_name,
-            "inference_provider": inference_provider.value,
+            "format": format.value,
         },
     )
     function: Function | None = crud.functions.get_function(
@@ -170,7 +170,7 @@ async def get_function_definition(
         },
     )
 
-    if inference_provider == InferenceProvider.OPENAI:
+    if format == FunctionDefinitionFormat.OPENAI:
         function_definition = OpenAIFunctionDefinition(
             function=OpenAIFunction(
                 name=function.name,
@@ -178,7 +178,7 @@ async def get_function_definition(
                 parameters=visible_parameters,
             )
         )
-    elif inference_provider == InferenceProvider.ANTHROPIC:
+    elif format == FunctionDefinitionFormat.ANTHROPIC:
         function_definition = AnthropicFunctionDefinition(
             name=function.name,
             description=function.description,
@@ -188,7 +188,7 @@ async def get_function_definition(
     logger.info(
         "function definition to return",
         extra={
-            "inference_provider": inference_provider.value,
+            "format": format.value,
             "function_name": function_name,
             "function_definition": function_definition.model_dump(exclude_none=True),
         },

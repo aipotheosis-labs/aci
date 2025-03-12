@@ -5,7 +5,11 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import Function, Project
 from aipolabs.common.enums import Visibility
-from aipolabs.common.schemas.function import AnthropicFunctionDefinition, OpenAIFunctionDefinition
+from aipolabs.common.schemas.function import (
+    AnthropicFunctionDefinition,
+    FunctionDefinitionFormat,
+    OpenAIFunctionDefinition,
+)
 from aipolabs.server import config
 
 
@@ -16,7 +20,7 @@ def test_get_function_definition_openai_by_identifier(
 ) -> None:
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.name}/definition",
-        params={"inference_provider": "openai"},
+        params={"format": FunctionDefinitionFormat.OPENAI.value},
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_200_OK
@@ -39,7 +43,7 @@ def test_get_function_definition_anthropic_by_identifier(
 ) -> None:
     response = test_client.get(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_github__create_repository.name}/definition",
-        params={"inference_provider": "anthropic"},
+        params={"format": FunctionDefinitionFormat.ANTHROPIC.value},
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_200_OK

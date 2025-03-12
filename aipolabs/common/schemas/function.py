@@ -164,7 +164,7 @@ class FunctionDetails(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class InferenceProvider(str, Enum):
+class FunctionDefinitionFormat(str, Enum):
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
 
