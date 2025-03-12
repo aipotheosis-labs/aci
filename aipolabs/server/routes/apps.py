@@ -16,7 +16,7 @@ from aipolabs.common.schemas.app import (
     AppsList,
     AppsSearch,
 )
-from aipolabs.common.schemas.function import FunctionBasic
+from aipolabs.common.schemas.function import BasicFunctionDefinition
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 
@@ -143,7 +143,7 @@ async def get_app_details(
     app_details: AppBasicWithFunctions = AppBasicWithFunctions(
         name=app.name,
         description=app.description,
-        functions=[FunctionBasic.model_validate(function) for function in functions],
+        functions=[BasicFunctionDefinition.model_validate(function) for function in functions],
     )
 
     return app_details

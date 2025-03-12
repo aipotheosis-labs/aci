@@ -6,6 +6,7 @@ from aipolabs.common.logging import get_logger
 logger = get_logger(__name__)
 
 
+# TODO: test processor
 def filter_visible_properties(parameters_schema: dict) -> dict:
     """
     Filter the schema to include only visible properties and remove the 'visible' field itself.

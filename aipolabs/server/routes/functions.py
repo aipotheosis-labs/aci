@@ -21,7 +21,6 @@ from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.function import (
     AnthropicFunctionDefinition,
     BasicFunctionDefinition,
-    FunctionBasic,
     FunctionDetails,
     FunctionExecute,
     FunctionExecutionResult,
@@ -63,11 +62,11 @@ async def list_functions(
     )
 
 
-@router.get("/search", response_model=list[FunctionBasic])
+@router.get("/search")
 async def search_functions(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[FunctionsSearch, Query()],
-) -> list[Function]:
+) -> list[BasicFunctionDefinition | OpenAIFunctionDefinition | AnthropicFunctionDefinition]:
     """
     Returns the basic information of a list of functions.
     """
@@ -117,7 +116,11 @@ async def search_functions(
         "search functions result",
         extra={"function_names": [function.name for function in functions]},
     )
-    return functions
+    function_definitions = [
+        _get_function_definition(function, query_params.format) for function in functions
+    ]
+
+    return function_definitions
 
 
 # TODO: have "structured_outputs" flag ("structured_outputs_if_possible") to support openai's structured outputs function calling?
@@ -162,41 +165,7 @@ async def get_function_definition(
         )
         raise FunctionNotFound(f"function={function_name} not found")
 
-    # TODO: test processor
-    visible_parameters = processor.filter_visible_properties(function.parameters)
-    logger.debug(
-        "visible parameters",
-        extra={
-            "function_name": function_name,
-            "parameters": visible_parameters,
-        },
-    )
-    function_definition: (
-        BasicFunctionDefinition | OpenAIFunctionDefinition | AnthropicFunctionDefinition
-    )
-
-    match format:
-        case FunctionDefinitionFormat.BASIC:
-            function_definition = BasicFunctionDefinition(
-                name=function.name,
-                description=function.description,
-            )
-        case FunctionDefinitionFormat.OPENAI:
-            function_definition = OpenAIFunctionDefinition(
-                function=OpenAIFunction(
-                    name=function.name,
-                    description=function.description,
-                    parameters=visible_parameters,
-                )
-            )
-        case FunctionDefinitionFormat.ANTHROPIC:
-            function_definition = AnthropicFunctionDefinition(
-                name=function.name,
-                description=function.description,
-                input_schema=visible_parameters,
-            )
-        case _:
-            raise InvalidFunctionDefinitionFormat(f"Invalid format: {format}")
+    function_definition = _get_function_definition(function, format)
 
     logger.info(
         "function definition to return",
@@ -392,3 +361,30 @@ async def execute(
             },
         )
     return execution_result
+
+
+def _get_function_definition(
+    function: Function, format: FunctionDefinitionFormat
+) -> BasicFunctionDefinition | OpenAIFunctionDefinition | AnthropicFunctionDefinition:
+    match format:
+        case FunctionDefinitionFormat.BASIC:
+            return BasicFunctionDefinition(
+                name=function.name,
+                description=function.description,
+            )
+        case FunctionDefinitionFormat.OPENAI:
+            return OpenAIFunctionDefinition(
+                function=OpenAIFunction(
+                    name=function.name,
+                    description=function.description,
+                    parameters=processor.filter_visible_properties(function.parameters),
+                )
+            )
+        case FunctionDefinitionFormat.ANTHROPIC:
+            return AnthropicFunctionDefinition(
+                name=function.name,
+                description=function.description,
+                input_schema=processor.filter_visible_properties(function.parameters),
+            )
+        case _:
+            raise InvalidFunctionDefinitionFormat(f"Invalid format: {format}")

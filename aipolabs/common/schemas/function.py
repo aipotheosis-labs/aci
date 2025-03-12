@@ -6,7 +6,13 @@ import jsonschema
 from pydantic import BaseModel, ConfigDict, Field, RootModel, field_validator, model_validator
 
 from aipolabs.common.db.sql_models import MAX_STRING_LENGTH
-from aipolabs.common.enums import HttpLocation, HttpMethod, Protocol, Visibility
+from aipolabs.common.enums import (
+    FunctionDefinitionFormat,
+    HttpLocation,
+    HttpMethod,
+    Protocol,
+    Visibility,
+)
 from aipolabs.common.validator import (
     validate_function_parameters_schema_common,
     validate_function_parameters_schema_rest_protocol,
@@ -103,7 +109,8 @@ class FunctionsList(BaseModel):
 
 class FunctionsSearch(BaseModel):
     app_names: list[str] | None = Field(
-        default=None, description="List of app names for filtering functions."
+        default=None,
+        description="List of app names for filtering functions.",
     )
     intent: str | None = Field(
         default=None,
@@ -112,6 +119,10 @@ class FunctionsSearch(BaseModel):
     allowed_apps_only: bool = Field(
         default=False,
         description="If true, only returns functions of apps that are allowed by the agent/accessor, identified by the api key.",
+    )
+    format: FunctionDefinitionFormat = Field(
+        default=FunctionDefinitionFormat.BASIC,
+        description="The format of the function definition to return. e.g., 'openai', 'anthropic' or 'basic' which only returns name and description.",
     )
     limit: int = Field(
         default=100, ge=1, le=1000, description="Maximum number of Functions per response."
@@ -125,6 +136,13 @@ class FunctionsSearch(BaseModel):
             return None
         return v
 
+    @field_validator("app_names")
+    def validate_app_names(cls, v: list[str] | None) -> list[str] | None:
+        # remove empty strings
+        if v is not None:
+            v = [app_name for app_name in v if app_name.strip()]
+        return v
+
 
 class FunctionExecute(BaseModel):
     function_input: dict = Field(
@@ -135,13 +153,6 @@ class FunctionExecute(BaseModel):
         max_length=MAX_STRING_LENGTH,
         description="The owner id of the linked account. This is the id of the linked account owner in the linked account provider.",
     )
-
-
-class FunctionBasic(BaseModel):
-    name: str
-    description: str
-
-    model_config = ConfigDict(from_attributes=True)
 
 
 class FunctionDetails(BaseModel):
@@ -190,6 +201,8 @@ class BasicFunctionDefinition(BaseModel):
 
     name: str
     description: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class FunctionExecutionResult(BaseModel):
