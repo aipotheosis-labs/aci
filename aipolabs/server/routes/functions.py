@@ -133,12 +133,12 @@ async def get_function_definition(
     function_name: str,
     format: FunctionDefinitionFormat = Query(  # noqa: B008 # TODO: need to fix this later
         default=FunctionDefinitionFormat.OPENAI,
-        description="The inference provider, which determines the format of the function definition.",
+        description="The format to use for the function definition (e.g., openai or anthropic).",
     ),
 ) -> OpenAIFunctionDefinition | AnthropicFunctionDefinition:
     """
     Return the function definition that can be used directly by LLM.
-    The actual content depends on the intended model (inference provider, e.g., OpenAI, Anthropic, etc.) and the function itself.
+    The actual content depends on the FunctionDefinitionFormat and the function itself.
     """
     logger.info(
         "get function definition",
