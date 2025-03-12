@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import App, Project
 from aipolabs.common.enums import Visibility
-from aipolabs.common.schemas.app import AppBasicWithFunctions
+from aipolabs.common.schemas.app import AppDetails
 from aipolabs.server import config
 
 NON_EXISTENT_APP_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
@@ -23,7 +23,7 @@ def test_get_app(
     )
 
     assert response.status_code == status.HTTP_200_OK
-    app = AppBasicWithFunctions.model_validate(response.json())
+    app = AppDetails.model_validate(response.json())
     assert app.name == dummy_app_github.name
     assert len(app.functions) > 0
 
@@ -82,5 +82,5 @@ def test_get_private_app(
     )
 
     assert response.status_code == status.HTTP_200_OK
-    app = AppBasicWithFunctions.model_validate(response.json())
+    app = AppDetails.model_validate(response.json())
     assert app.name == dummy_apps[0].name
