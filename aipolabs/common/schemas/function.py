@@ -1,5 +1,4 @@
 from datetime import datetime
-from enum import StrEnum
 from typing import Any, Literal
 from uuid import UUID
 
@@ -162,11 +161,6 @@ class FunctionDetails(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
-
-
-class FunctionDefinitionFormat(StrEnum):
-    OPENAI = "openai"
-    ANTHROPIC = "anthropic"
 
 
 class OpenAIFunction(BaseModel):

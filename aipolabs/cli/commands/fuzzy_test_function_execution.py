@@ -9,8 +9,9 @@ import httpx
 from openai import OpenAI
 
 from aipolabs.cli import config
+from aipolabs.common.enums import FunctionDefinitionFormat
 from aipolabs.common.logging import create_headline
-from aipolabs.common.schemas.function import FunctionDefinitionFormat, FunctionExecute
+from aipolabs.common.schemas.function import FunctionExecute
 
 
 @click.command()

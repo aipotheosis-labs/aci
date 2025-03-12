@@ -1,5 +1,4 @@
 from datetime import UTC, datetime, timedelta
-from enum import StrEnum
 from typing import Annotated
 
 from authlib.integrations.starlette_client import OAuth, StarletteOAuth2App
@@ -10,6 +9,7 @@ from starlette.responses import RedirectResponse
 
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import User
+from aipolabs.common.enums import ClientIdentityProvider
 from aipolabs.common.exceptions import AuthenticationError, UnexpectedError
 from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.user import IdentityProviderUserInfo, UserCreate
@@ -20,11 +20,6 @@ logger = get_logger(__name__)
 # Create router instance
 router = APIRouter()
 oauth = OAuth()
-
-
-class ClientIdentityProvider(StrEnum):
-    GOOGLE = "google"
-    # GITHUB = "github"
 
 
 # oauth2 clients for our clients to login/signup with our developer portal

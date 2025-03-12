@@ -7,7 +7,7 @@ from aipolabs.common import processor
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import Function
 from aipolabs.common.embeddings import generate_embedding
-from aipolabs.common.enums import Visibility
+from aipolabs.common.enums import FunctionDefinitionFormat, Visibility
 from aipolabs.common.exceptions import (
     AppConfigurationDisabled,
     AppConfigurationNotFound,
@@ -20,7 +20,6 @@ from aipolabs.common.logging import get_logger
 from aipolabs.common.schemas.function import (
     AnthropicFunctionDefinition,
     FunctionBasic,
-    FunctionDefinitionFormat,
     FunctionDetails,
     FunctionExecute,
     FunctionExecutionResult,

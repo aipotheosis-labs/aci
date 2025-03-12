@@ -94,3 +94,13 @@ class OrganizationRole(StrEnum):
 
     ADMIN = "admin"
     MEMBER = "member"
+
+
+class FunctionDefinitionFormat(StrEnum):
+    OPENAI = "openai"
+    ANTHROPIC = "anthropic"
+
+
+class ClientIdentityProvider(StrEnum):
+    GOOGLE = "google"
+    # GITHUB = "github"
