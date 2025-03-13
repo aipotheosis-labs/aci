@@ -30,8 +30,7 @@ from aipolabs.common.schemas.agent import AgentUpdate
     "--allowed-apps",
     "allowed_apps",
     required=False,
-    type=list[str],
-    help="new list of app names to allow the agent to access",
+    help="comma-separated list of app names to allow the agent to access (e.g., 'app1,app2,app3')",
 )
 @click.option(
     "--custom-instructions",
@@ -49,18 +48,22 @@ def update_agent(
     agent_id: UUID,
     name: str | None,
     description: str | None,
-    allowed_apps: list[str] | None,
+    allowed_apps: str | None,
     custom_instructions: str | None,
     skip_dry_run: bool,
 ) -> UUID:
     """
     Update an existing agent in db.
     """
+    list_of_allowed_apps = (
+        [app.strip() for app in allowed_apps.split(",")] if allowed_apps is not None else None
+    )
+
     return update_agent_helper(
         agent_id,
         name,
         description,
-        allowed_apps,
+        list_of_allowed_apps,
         json.loads(custom_instructions) if custom_instructions else None,
         skip_dry_run,
     )

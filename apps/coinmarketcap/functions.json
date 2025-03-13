@@ -2310,7 +2310,6 @@
           }
         },
         "required": [
-          "query",
           "header"
         ],
         "visible": [
@@ -3498,7 +3497,6 @@
           }
         },
         "required": [
-          "query",
           "header"
         ],
         "visible": [
@@ -3924,7 +3922,6 @@
           }
         },
         "required": [
-          "query",
           "header"
         ],
         "visible": [
@@ -3996,7 +3993,6 @@
           }
         },
         "required": [
-          "query",
           "header"
         ],
         "visible": [
@@ -4082,7 +4078,6 @@
           }
         },
         "required": [
-          "query",
           "header"
         ],
         "visible": [
@@ -4208,7 +4203,6 @@
           }
         },
         "required": [
-          "query",
           "header"
         ],
         "visible": [
@@ -4350,7 +4344,6 @@
           }
         },
         "required": [
-          "query",
           "header"
         ],
         "visible": [

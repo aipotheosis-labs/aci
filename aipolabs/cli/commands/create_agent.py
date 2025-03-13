@@ -33,8 +33,8 @@ from aipolabs.common.logging import create_headline
     "--allowed-apps",
     "allowed_apps",
     required=False,
-    default=[],
-    help="list of app names to allow the agent to access",
+    default="",
+    help="comma-separated list of app names to allow the agent to access (e.g., 'app1,app2,app3')",
 )
 @click.option(
     "--custom-instructions",
@@ -53,18 +53,21 @@ def create_agent(
     project_id: UUID,
     name: str,
     description: str,
-    allowed_apps: list[str],
+    allowed_apps: str,
     custom_instructions: str,
     skip_dry_run: bool,
 ) -> UUID:
     """
     Create an agent in db.
     """
+    # Parse comma-separated string into list, handling empty string case
+    list_of_allowed_apps = [app.strip() for app in allowed_apps.split(",")] if allowed_apps else []
+
     return create_agent_helper(
         project_id,
         name,
         description,
-        allowed_apps,
+        list_of_allowed_apps,
         json.loads(custom_instructions),
         skip_dry_run,
     )
