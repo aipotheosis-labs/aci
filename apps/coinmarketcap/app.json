@@ -1,0 +1,21 @@
+{
+    "name": "COINMARKETCAP",
+    "display_name": "CoinMarketCap",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/coinmarketcap.svg",
+    "provider": "CoinMarketCap, Inc.",
+    "version": "1.0.0",
+    "description": "CoinMarketCap API provides cryptocurrency market data including listings, quotes, mapping and global metrics. API accessible is subject to the pricing tier of the user.",
+    "security_schemes": {
+      "api_key": {
+        "location": "header",
+        "name": "X-CMC_PRO_API_KEY"
+      }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+      "cryptocurrency",
+      "market data"
+    ],
+    "visibility": "public",
+    "active": true
+  }

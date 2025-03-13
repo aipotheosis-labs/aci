@@ -76,6 +76,11 @@ def upsert_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UU
         for func in existing_functions:
             click.echo(func.name)
 
+        click.echo(
+            create_headline(
+                f"Preparing Functions for Creation ({len(new_functions)}) and Update ({len(existing_functions)})"
+            )
+        )
         created_ids = create_functions_helper(db_session, new_functions)
         updated_ids = update_functions_helper(db_session, existing_functions)
 
