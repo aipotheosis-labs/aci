@@ -54,12 +54,12 @@
                         }
                     },
                     "required": ["Notion-Version"],
-                    "visible": ["Notion-Version"],
+                    "visible": [],
                     "additionalProperties": false
                 }
             },
             "required": ["path", "header"],
-            "visible": ["path", "query", "header"],
+            "visible": ["path", "query"],
             "additionalProperties": false
         }
     },
@@ -89,7 +89,7 @@
                         }
                     },
                     "required": ["Notion-Version"],
-                    "visible": ["Notion-Version"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "body": {
@@ -160,13 +160,13 @@
                 }
             },
             "required": ["header", "body"],
-            "visible": ["header", "body"],
+            "visible": ["body"],
             "additionalProperties": false
         }
-    },
+    }, 
     {
-        "name": "NOTION__TRASH_PAGE",
-        "description": "Archives/moves a page to trash. Note: The API does not support permanently deleting pages.",
+        "name": "NOTION__TOGGLE_PAGE_ARCHIVE",
+        "description": "Archives or restores a page. Note: Cannot archive workspace-level pages via API, and the API does not support permanently deleting pages.",
         "tags": ["notion", "pages"],
         "visibility": "public",
         "active": true,
@@ -185,7 +185,7 @@
                     "properties": {
                         "page_id": {
                             "type": "string",
-                            "description": "The ID of the page to archive/trash"
+                            "description": "The ID of the page to archive or restore"
                         }
                     },
                     "required": ["page_id"],
@@ -212,17 +212,17 @@
                     "properties": {
                         "archived": {
                             "type": "boolean",
-                            "description": "Set to true to archive the page, false to restore it",
-                            "default": true
+                            "description": "Set to true to archive the page, false to restore it from trash",
+                            "enum": [true, false]
                         }
                     },
                     "required": ["archived"],
-                    "visible": [],
+                    "visible": ["archived"],
                     "additionalProperties": false
                 }
             },
             "required": ["path", "header", "body"],
-            "visible": ["path"],
+            "visible": ["path", "body"],
             "additionalProperties": false
         }
     },
@@ -335,12 +335,12 @@
                         }
                     },
                     "required": ["Notion-Version"],
-                    "visible": ["Notion-Version"],
+                    "visible": [],
                     "additionalProperties": false
                 }
             },
             "required": ["header"],
-            "visible": ["query", "header"],
+            "visible": ["query"],
             "additionalProperties": false
         }
     },
@@ -383,12 +383,12 @@
                         }
                     },
                     "required": ["Notion-Version"],
-                    "visible": ["Notion-Version"],
+                    "visible": [],
                     "additionalProperties": false
                 }
             },
             "required": ["path", "header"],
-            "visible": ["path", "header"],
+            "visible": ["path"],
             "additionalProperties": false
         }
     },
@@ -418,12 +418,12 @@
                         }
                     },
                     "required": ["Notion-Version"],
-                    "visible": ["Notion-Version"],
+                    "visible": [],
                     "additionalProperties": false
                 }
             },
             "required": ["header"],
-            "visible": ["header"],
+            "visible": [],
             "additionalProperties": false
         }
     },
@@ -473,12 +473,12 @@
                         }
                     },
                     "required": ["Notion-Version"],
-                    "visible": ["Notion-Version"],
+                    "visible": [],
                     "additionalProperties": false
                 }
             },
             "required": ["header"],
-            "visible": ["query", "header"],
+            "visible": ["query"],
             "additionalProperties": false
         }
     },
@@ -521,12 +521,12 @@
                         }
                     },
                     "required": ["Notion-Version"],
-                    "visible": ["Notion-Version"],
+                    "visible": [],
                     "additionalProperties": false
                 }
             },
             "required": ["path", "header"],
-            "visible": ["path", "header"],
+            "visible": ["path"],
             "additionalProperties": false
         }
     },
@@ -556,12 +556,12 @@
                         }
                     },
                     "required": ["Notion-Version"],
-                    "visible": ["Notion-Version"],
+                    "visible": [],
                     "additionalProperties": false
                 }
             },
             "required": ["header"],
-            "visible": ["header"],
+            "visible": [],
             "additionalProperties": false
         }
     }
