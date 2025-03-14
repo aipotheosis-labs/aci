@@ -27,7 +27,8 @@
             "type": "object",
             "properties": {
                 "domain": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The domain name of a website to retrieve credentials for (e.g., 'example.com')"
                 }
             },
             "required": ["domain"],
@@ -47,13 +48,16 @@
             "type": "object",
             "properties": {
                 "domain": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The domain name of a website to create credentials for (e.g., 'example.com')"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The username for the website login credential"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The password for the website login credential"
                 }
             },
             "required": ["domain", "username", "password"],
@@ -73,13 +77,16 @@
             "type": "object",
             "properties": {
                 "domain": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The domain name of a website to update credentials for (e.g., 'example.com')"
                 },
                 "username": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The new username for the website login credential"
                 },
                 "password": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The new password for the website login credential"
                 }
             },
             "required": ["domain", "username", "password"],
@@ -99,7 +106,8 @@
             "type": "object",
             "properties": {
                 "domain": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "The domain name of a website to delete credentials for (e.g., 'example.com')"
                 }
             },
             "required": ["domain"],
