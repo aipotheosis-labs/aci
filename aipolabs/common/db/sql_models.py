@@ -639,7 +639,7 @@ class Secret(Base):
         init=False,
     )
 
-    __table_args__ = (UniqueConstraint("linked_account_id", "key", name="uc_linked_account_name"),)
+    __table_args__ = (UniqueConstraint("linked_account_id", "key", name="uc_linked_account_key"),)
 
 
 __all__ = [

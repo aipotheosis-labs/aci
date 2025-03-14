@@ -1,8 +1,8 @@
 """Create Secret table
 
-Revision ID: e3c99ddb0eaa
+Revision ID: 1b82aeb7431f
 Revises: 949afaf258c3
-Create Date: 2025-03-14 14:55:33.999269+00:00
+Create Date: 2025-03-14 20:00:46.127853+00:00
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = 'e3c99ddb0eaa'
+revision: str = '1b82aeb7431f'
 down_revision: Union[str, None] = '949afaf258c3'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -29,7 +29,7 @@ def upgrade() -> None:
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['linked_account_id'], ['linked_accounts.id'], ),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('linked_account_id', 'key', name='uc_linked_account_name')
+    sa.UniqueConstraint('linked_account_id', 'key', name='uc_linked_account_key')
     )
     # ### end Alembic commands ###
 
