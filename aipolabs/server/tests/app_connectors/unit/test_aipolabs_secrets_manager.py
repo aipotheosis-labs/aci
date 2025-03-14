@@ -67,16 +67,17 @@ def test_list_credentials(secrets_manager: AipolabsSecretsManager) -> None:
         )
 
         assert len(result) == 2
-        assert isinstance(result[0], DomainCredential)
-        assert isinstance(result[1], DomainCredential)
 
-        assert result[0].domain == "example.com"
-        assert result[0].username == "user1"
-        assert result[0].password == "pass1"
+        domain_credential1 = DomainCredential.model_validate(result[0])
+        domain_credential2 = DomainCredential.model_validate(result[1])
 
-        assert result[1].domain == "test.com"
-        assert result[1].username == "user2"
-        assert result[1].password == "pass2"
+        assert domain_credential1.domain == "example.com"
+        assert domain_credential1.username == "user1"
+        assert domain_credential1.password == "pass1"
+
+        assert domain_credential2.domain == "test.com"
+        assert domain_credential2.username == "user2"
+        assert domain_credential2.password == "pass2"
 
 
 def test_get_credential_for_domain_success(secrets_manager: AipolabsSecretsManager) -> None:
@@ -110,10 +111,10 @@ def test_get_credential_for_domain_success(secrets_manager: AipolabsSecretsManag
         )
         mock_decrypt.assert_called_once_with(b"encrypted_value")
 
-        assert isinstance(result, DomainCredential)
-        assert result.domain == "example.com"
-        assert result.username == "user1"
-        assert result.password == "pass1"
+        domain_credential = DomainCredential.model_validate(result)
+        assert domain_credential.domain == "example.com"
+        assert domain_credential.username == "user1"
+        assert domain_credential.password == "pass1"
 
 
 def test_get_credential_for_domain_not_found(secrets_manager: AipolabsSecretsManager) -> None:
