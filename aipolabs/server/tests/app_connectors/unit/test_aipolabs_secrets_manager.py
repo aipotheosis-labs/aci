@@ -4,6 +4,8 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from aipolabs.common.db.sql_models import LinkedAccount
+from aipolabs.common.exceptions import AipolabsSecretsManagerError
+from aipolabs.common.schemas.secret import SecretCreate, SecretUpdate
 from aipolabs.common.schemas.security_scheme import NoAuthScheme, NoAuthSchemeCredentials
 from aipolabs.server.app_connectors.aipolabs_secrets_manager import (
     AipolabsSecretsManager,
@@ -68,13 +70,13 @@ def test_list_credentials(secrets_manager: AipolabsSecretsManager) -> None:
         assert isinstance(result[0], DomainCredential)
         assert isinstance(result[1], DomainCredential)
 
-        assert result[0]["domain"] == "example.com"
-        assert result[0]["username"] == "user1"
-        assert result[0]["password"] == "pass1"
+        assert result[0].domain == "example.com"
+        assert result[0].username == "user1"
+        assert result[0].password == "pass1"
 
-        assert result[1]["domain"] == "test.com"
-        assert result[1]["username"] == "user2"
-        assert result[1]["password"] == "pass2"
+        assert result[1].domain == "test.com"
+        assert result[1].username == "user2"
+        assert result[1].password == "pass2"
 
 
 def test_get_credential_for_domain_success(secrets_manager: AipolabsSecretsManager) -> None:
@@ -109,9 +111,9 @@ def test_get_credential_for_domain_success(secrets_manager: AipolabsSecretsManag
         mock_decrypt.assert_called_once_with(b"encrypted_value")
 
         assert isinstance(result, DomainCredential)
-        assert result["domain"] == "example.com"
-        assert result["username"] == "user1"
-        assert result["password"] == "pass1"
+        assert result.domain == "example.com"
+        assert result.username == "user1"
+        assert result.password == "pass1"
 
 
 def test_get_credential_for_domain_not_found(secrets_manager: AipolabsSecretsManager) -> None:
@@ -129,7 +131,9 @@ def test_get_credential_for_domain_not_found(secrets_manager: AipolabsSecretsMan
         ) as mock_get_secret,
     ):
         # When
-        with pytest.raises(KeyError, match="No credentials found for domain 'nonexistent.com'"):
+        with pytest.raises(
+            AipolabsSecretsManagerError, match="No credentials found for domain 'nonexistent.com'"
+        ):
             secrets_manager.get_credential_for_domain("nonexistent.com")
 
         # Then
@@ -143,6 +147,7 @@ def test_create_credential_for_domain_success(secrets_manager: AipolabsSecretsMa
     # Given
     mock_db_session = MagicMock()
     encrypted_value = b"encrypted_value"
+    mock_secret_create = MagicMock(spec=SecretCreate)
 
     with (
         patch(
@@ -160,6 +165,10 @@ def test_create_credential_for_domain_success(secrets_manager: AipolabsSecretsMa
             "aipolabs.server.app_connectors.aipolabs_secrets_manager.encryption.encrypt",
             return_value=encrypted_value,
         ) as mock_encrypt,
+        patch(
+            "aipolabs.server.app_connectors.aipolabs_secrets_manager.SecretCreate",
+            return_value=mock_secret_create,
+        ) as mock_secret_create_class,
     ):
         # When
         secrets_manager.create_credential_for_domain("example.com", "user1", "pass1")
@@ -170,11 +179,14 @@ def test_create_credential_for_domain_success(secrets_manager: AipolabsSecretsMa
             mock_db_session, secrets_manager.linked_account.id, "example.com"
         )
 
-        expected_json = json.dumps({"username": "user1", "password": "pass1"}).encode()
+        expected_json = json.dumps(
+            {"username": "user1", "password": "pass1"}, separators=(",", ":")
+        ).encode()
         mock_encrypt.assert_called_once_with(expected_json)
 
+        mock_secret_create_class.assert_called_once_with(key="example.com", value=encrypted_value)
         mock_create_secret.assert_called_once_with(
-            mock_db_session, secrets_manager.linked_account.id, "example.com", encrypted_value
+            mock_db_session, secrets_manager.linked_account.id, mock_secret_create
         )
         mock_db_session.commit.assert_called_once()
 
@@ -197,7 +209,9 @@ def test_create_credential_for_domain_already_exists(
         ) as mock_get_secret,
     ):
         # When
-        with pytest.raises(ValueError, match="Credential for domain 'example.com' already exists"):
+        with pytest.raises(
+            AipolabsSecretsManagerError, match="Credential for domain 'example.com' already exists"
+        ):
             secrets_manager.create_credential_for_domain("example.com", "user1", "pass1")
 
         # Then
@@ -211,12 +225,18 @@ def test_update_credential_for_domain(secrets_manager: AipolabsSecretsManager) -
     # Given
     mock_db_session = MagicMock()
     encrypted_value = b"encrypted_value"
+    mock_secret = MagicMock()
+    mock_secret_update = MagicMock(spec=SecretUpdate)
 
     with (
         patch(
             "aipolabs.server.app_connectors.aipolabs_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
+        patch(
+            "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            return_value=mock_secret,
+        ) as mock_get_secret,
         patch(
             "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.update_secret",
         ) as mock_update_secret,
@@ -224,33 +244,44 @@ def test_update_credential_for_domain(secrets_manager: AipolabsSecretsManager) -
             "aipolabs.server.app_connectors.aipolabs_secrets_manager.encryption.encrypt",
             return_value=encrypted_value,
         ) as mock_encrypt,
+        patch(
+            "aipolabs.server.app_connectors.aipolabs_secrets_manager.SecretUpdate",
+            return_value=mock_secret_update,
+        ) as mock_secret_update_class,
     ):
         # When
         secrets_manager.update_credential_for_domain("example.com", "user_updated", "pass_updated")
 
         # Then
         mock_create_db_session.assert_called_once()
+        mock_get_secret.assert_called_once_with(
+            mock_db_session, secrets_manager.linked_account.id, "example.com"
+        )
 
         expected_json = json.dumps(
-            {"username": "user_updated", "password": "pass_updated"}
+            {"username": "user_updated", "password": "pass_updated"}, separators=(",", ":")
         ).encode()
         mock_encrypt.assert_called_once_with(expected_json)
 
-        mock_update_secret.assert_called_once_with(
-            mock_db_session, secrets_manager.linked_account.id, "example.com", encrypted_value
-        )
+        mock_secret_update_class.assert_called_once_with(value=encrypted_value)
+        mock_update_secret.assert_called_once_with(mock_db_session, mock_secret, mock_secret_update)
         mock_db_session.commit.assert_called_once()
 
 
 def test_delete_credential_for_domain(secrets_manager: AipolabsSecretsManager) -> None:
     # Given
     mock_db_session = MagicMock()
+    mock_secret = MagicMock()
 
     with (
         patch(
             "aipolabs.server.app_connectors.aipolabs_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
+        patch(
+            "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            return_value=mock_secret,
+        ) as mock_get_secret,
         patch(
             "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.delete_secret",
         ) as mock_delete_secret,
@@ -260,7 +291,8 @@ def test_delete_credential_for_domain(secrets_manager: AipolabsSecretsManager) -
 
         # Then
         mock_create_db_session.assert_called_once()
-        mock_delete_secret.assert_called_once_with(
+        mock_get_secret.assert_called_once_with(
             mock_db_session, secrets_manager.linked_account.id, "example.com"
         )
+        mock_delete_secret.assert_called_once_with(mock_db_session, mock_secret)
         mock_db_session.commit.assert_called_once()

@@ -363,3 +363,16 @@ class CustomInstructionViolation(AipolabsException):
             message=message,
             error_code=status.HTTP_403_FORBIDDEN,
         )
+
+
+class AipolabsSecretsManagerError(AipolabsException):
+    """
+    Exception raised when an error occurs in the Aipolabs Secrets Manager
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Aipolabs Secrets Manager error",
+            message=message,
+            error_code=status.HTTP_400_BAD_REQUEST,
+        )
