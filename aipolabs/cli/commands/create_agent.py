@@ -2,11 +2,13 @@ import json
 from uuid import UUID
 
 import click
+from rich.console import Console
 
 from aipolabs.cli import config
 from aipolabs.common import utils
 from aipolabs.common.db import crud
-from aipolabs.common.logging_setup import create_headline
+
+console = Console()
 
 
 @click.command()
@@ -92,13 +94,12 @@ def create_agent_helper(
         )
 
         if not skip_dry_run:
-            click.echo(create_headline(f"will create new agent {agent.name}"))
-            click.echo(agent)
-            click.echo(create_headline("provide --skip-dry-run to commit changes"))
+            console.rule("[bold green]Provide --skip-dry-run to Create Agent[/bold green]")
             db_session.rollback()
         else:
-            click.echo(create_headline(f"committing creation of agent {agent.name}"))
-            click.echo(agent)
             db_session.commit()
+            console.rule(f"[bold green]Agent created: {agent.name}[/bold green]")
+
+        console.print(agent)
 
         return agent.id

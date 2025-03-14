@@ -1,12 +1,14 @@
 from uuid import UUID
 
 import click
+from rich.console import Console
 
 from aipolabs.cli import config
 from aipolabs.common import utils
 from aipolabs.common.db import crud
 from aipolabs.common.enums import Visibility
-from aipolabs.common.logging_setup import create_headline
+
+console = Console()
 
 
 @click.command()
@@ -57,12 +59,14 @@ def create_project_helper(
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
         project = crud.projects.create_project(db_session, owner_id, name, visibility_access)
         if not skip_dry_run:
-            click.echo(create_headline(f"will create new project {project.name}"))
-            click.echo(project)
-            click.echo(create_headline("provide --skip-dry-run to commit changes"))
+            console.rule(
+                f"[bold green]Provide --skip-dry-run to Create Project: {project.name}[/bold green]"
+            )
             db_session.rollback()
         else:
-            click.echo(create_headline(f"committing creation of project {project.name}"))
-            click.echo(project)
             db_session.commit()
+            console.rule(f"[bold green]Project created: {project.name}[/bold green]")
+
+        console.print(project)
+
         return project.id

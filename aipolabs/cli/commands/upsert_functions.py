@@ -1,17 +1,19 @@
 import json
 from pathlib import Path
-from uuid import UUID
 
 import click
 from deepdiff import DeepDiff
 from openai import OpenAI
+from rich.console import Console
+from rich.table import Table
 from sqlalchemy.orm import Session
 
 from aipolabs.cli import config
 from aipolabs.common import embeddings, utils
 from aipolabs.common.db import crud
-from aipolabs.common.logging_setup import create_headline
 from aipolabs.common.schemas.function import FunctionEmbeddingFields, FunctionUpsert
+
+console = Console()
 
 openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
 
@@ -29,7 +31,7 @@ openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
     is_flag=True,
     help="Provide this flag to run the command and apply changes to the database",
 )
-def upsert_functions(functions_file: Path, skip_dry_run: bool) -> list[UUID]:
+def upsert_functions(functions_file: Path, skip_dry_run: bool) -> list[str]:
     """
     Upsert functions in the DB from a JSON file.
 
@@ -43,7 +45,7 @@ def upsert_functions(functions_file: Path, skip_dry_run: bool) -> list[UUID]:
     return upsert_functions_helper(functions_file, skip_dry_run)
 
 
-def upsert_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UUID]:
+def upsert_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[str]:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
         with open(functions_file) as f:
             functions_data = json.load(f)
@@ -53,8 +55,8 @@ def upsert_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UU
             FunctionUpsert.model_validate(func_data) for func_data in functions_data
         ]
         app_name = _validate_all_functions_belong_to_the_app(functions_upsert)
+        console.rule(f"App={app_name}")
         _validate_app_exists(db_session, app_name)
-        click.echo(create_headline(f"Upserting functions for App={app_name}"))
 
         new_functions: list[FunctionUpsert] = []
         existing_functions: list[FunctionUpsert] = []
@@ -69,42 +71,42 @@ def upsert_functions_helper(functions_file: Path, skip_dry_run: bool) -> list[UU
             else:
                 existing_functions.append(function_upsert)
 
-        click.echo(create_headline(f"New Functions to Create: {len(new_functions)}"))
-        for func in new_functions:
-            click.echo(func.name)
-        click.echo(create_headline(f"Existing Functions to Update: {len(existing_functions)}"))
-        for func in existing_functions:
-            click.echo(func.name)
-
-        click.echo(
-            create_headline(
-                f"Preparing Functions for Creation ({len(new_functions)}) and Update ({len(existing_functions)})"
-            )
-        )
-        created_ids = create_functions_helper(db_session, new_functions)
-        updated_ids = update_functions_helper(db_session, existing_functions)
+        console.rule("Checking functions to create...")
+        functions_created = create_functions_helper(db_session, new_functions)
+        console.rule("Checking functions to update...")
+        functions_updated = update_functions_helper(db_session, existing_functions)
+        # for functions that are in existing_functions but not in functions_updated
+        functions_unchanged = [
+            func.name for func in existing_functions if func.name not in functions_updated
+        ]
 
         if not skip_dry_run:
-            click.echo(
-                create_headline(
-                    "Dry run mode: no changes committed. Use --skip-dry-run to commit changes."
-                )
-            )
+            console.rule("Provide [bold green]--skip-dry-run[/bold green] to upsert functions")
             db_session.rollback()
         else:
-            click.echo(create_headline("Committing changes to the database."))
             db_session.commit()
+            console.rule("[bold green]Upserted functions[/bold green]")
 
-        return created_ids + updated_ids
+        table = Table("Function Name", "Operation")
+        for func in functions_created:
+            table.add_row(func, "Create")
+        for func in functions_updated:
+            table.add_row(func, "Update")
+        for func in functions_unchanged:
+            table.add_row(func, "No changes")
+
+        console.print(table)
+
+        return functions_created + functions_updated
 
 
 def create_functions_helper(
     db_session: Session, functions_upsert: list[FunctionUpsert]
-) -> list[UUID]:
+) -> list[str]:
     """
     Batch creates functions in the database.
     Generates embeddings for each new function and calls the CRUD layer for creation.
-    Returns a list of created function UUIDs.
+    Returns a list of created function names.
     """
     functions_embeddings = embeddings.generate_function_embeddings(
         [FunctionEmbeddingFields.model_validate(func.model_dump()) for func in functions_upsert],
@@ -116,18 +118,18 @@ def create_functions_helper(
         db_session, functions_upsert, functions_embeddings
     )
 
-    return [func.id for func in created_functions]
+    return [func.name for func in created_functions]
 
 
 def update_functions_helper(
     db_session: Session, functions_upsert: list[FunctionUpsert]
-) -> list[UUID]:
+) -> list[str]:
     """
     Batch updates functions in the database.
 
     For each function to update, determines if the embedding needs to be regenerated.
     Regenerates embeddings in batch for those that require it and updates the functions accordingly.
-    Returns a list of updated function UUIDs.
+    Returns a list of updated function names.
     """
     functions_with_new_embeddings: list[FunctionUpsert] = []
     functions_without_new_embeddings: list[FunctionUpsert] = []
@@ -142,11 +144,6 @@ def update_functions_helper(
             existing_function, from_attributes=True
         )
         if existing_function_upsert == function_upsert:
-            click.echo(
-                create_headline(
-                    f"No changes detected for function '{existing_function.name}', skipping."
-                )
-            )
             continue
         else:
             diff = DeepDiff(
@@ -154,12 +151,10 @@ def update_functions_helper(
                 function_upsert.model_dump(),
                 ignore_order=True,
             )
-            click.echo(
-                create_headline(
-                    f"Will update function '{existing_function.name}' with the following changes:"
-                )
+            console.rule(
+                f"Will update function '{existing_function.name}' with the following changes:"
             )
-            click.echo(diff.pretty())
+            console.print(diff.pretty())
 
         if _need_function_embedding_regeneration(existing_function_upsert, function_upsert):
             functions_with_new_embeddings.append(function_upsert)
@@ -184,7 +179,7 @@ def update_functions_helper(
         functions_embeddings + [None] * len(functions_without_new_embeddings),
     )
 
-    return [func.id for func in functions_updated]
+    return [func.name for func in functions_updated]
 
 
 def _validate_app_exists(db_session: Session, app_name: str) -> None:

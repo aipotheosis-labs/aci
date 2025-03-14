@@ -2,13 +2,15 @@ import json
 from uuid import UUID
 
 import click
+from rich.console import Console
 
 from aipolabs.cli import config
 from aipolabs.common import utils
 from aipolabs.common.db import crud
 from aipolabs.common.exceptions import AgentNotFound
-from aipolabs.common.logging_setup import create_headline
 from aipolabs.common.schemas.agent import AgentUpdate
+
+console = Console()
 
 
 # TODO: Make an upsert update agent command so you can use json files to update the agent
@@ -92,13 +94,14 @@ def update_agent_helper(
         updated_agent = crud.projects.update_agent(db_session, agent, update)
 
         if not skip_dry_run:
-            click.echo(create_headline(f"will update agent {updated_agent.name}"))
-            click.echo(updated_agent)
-            click.echo(create_headline("provide --skip-dry-run to commit changes"))
+            console.rule(
+                f"[bold green]Provide --skip-dry-run to Update Agent: {updated_agent.name}[/bold green]"
+            )
             db_session.rollback()
         else:
-            click.echo(create_headline(f"committing update of agent {updated_agent.name}"))
-            click.echo(updated_agent)
             db_session.commit()
+            console.rule(f"[bold green]Updated Agent: {updated_agent.name}[/bold green]")
+
+        console.print(updated_agent)
 
         return updated_agent.id

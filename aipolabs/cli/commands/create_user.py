@@ -1,13 +1,15 @@
 from uuid import UUID
 
 import click
+from rich.console import Console
 
 from aipolabs.cli import config
 from aipolabs.common import utils
 from aipolabs.common.db import crud
 from aipolabs.common.enums import SubscriptionPlan
-from aipolabs.common.logging_setup import create_headline
 from aipolabs.common.schemas.user import UserCreate
+
+console = Console()
 
 
 @click.command()
@@ -97,13 +99,14 @@ def create_user_helper(
         user = crud.users.create_user(db_session, user_create)
 
         if not skip_dry_run:
-            click.echo(create_headline(f"will create new user {user.name}"))
-            click.echo(user)
-            click.echo(create_headline("provide --skip-dry-run to commit changes"))
+            console.rule(
+                f"[bold green]Provide --skip-dry-run to Create User: {user.name}[/bold green]"
+            )
             db_session.rollback()
         else:
-            click.echo(create_headline(f"committing creation of user {user.name}"))
-            click.echo(user)
+            console.rule(f"[bold green]User created: {user.name}[/bold green]")
             db_session.commit()
+
+        console.print(user)
 
         return user.id

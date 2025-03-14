@@ -7,11 +7,13 @@ from uuid import UUID
 import click
 import httpx
 from openai import OpenAI
+from rich.console import Console
 
 from aipolabs.cli import config
 from aipolabs.common.enums import FunctionDefinitionFormat
-from aipolabs.common.logging_setup import create_headline
 from aipolabs.common.schemas.function import FunctionExecute
+
+console = Console()
 
 
 @click.command()
@@ -81,16 +83,16 @@ def fuzzy_test_function_execution_helper(
         raise click.ClickException(f"Failed to get function definition: {response.json()}")
 
     function_definition = response.json()
-    click.echo(create_headline("Function definition fetched"))
-    click.echo(f"{json.dumps(function_definition)}")
+    console.rule("[bold green]Function definition Fetched[/bold green]")
+    console.print(function_definition)
 
     # Use OpenAI function calling to generate a random input
     openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
     function_args = _generate_fuzzy_function_call_arguments(
         openai_client, model, function_definition, prompt=prompt
     )
-    click.echo(create_headline("Generated function call arguments"))
-    click.echo(f"{json.dumps(function_args)}")
+    console.rule("[bold green]Generated Function Call Arguments[/bold green]")
+    console.print(function_args)
 
     # Execute function with generated input
     function_execute = FunctionExecute(
@@ -107,8 +109,8 @@ def fuzzy_test_function_execution_helper(
         raise click.ClickException(f"Function execution failed: {response.json()}")
 
     result = response.json()
-    click.echo(create_headline(f"Execution result for {function_name}"))
-    click.echo(f"{json.dumps(result)}")
+    console.rule(f"[bold green]Execution Result for {function_name}[/bold green]")
+    console.print(result)
 
 
 def _generate_fuzzy_function_call_arguments(
@@ -118,9 +120,8 @@ def _generate_fuzzy_function_call_arguments(
     prompt: str | None = None,
 ) -> Any:
     """
-    Generate fuzzy input arguments for a function using GPT-4.
+    Generate fuzzy input arguments for a function with LLM.
     """
-    click.echo(f"Generating fuzzy input for function: {function_definition['function']['name']}")
     messages = [
         {
             "role": "system",
@@ -152,10 +153,14 @@ def _generate_fuzzy_function_call_arguments(
     )
     if tool_call:
         if tool_call.function.name != function_definition["function"]["name"]:
-            raise ValueError(
-                f"Generated function name {tool_call.function.name} does not match expected function name {function_definition['function']['name']}"
+            console.print(
+                f"[bold red]Generated function name {tool_call.function.name} does not match expected function name {function_definition['function']['name']}[/bold red]"
+            )
+            raise click.ClickException(
+                "Generated function name does not match expected function name"
             )
         else:
             return json.loads(tool_call.function.arguments)
     else:
-        raise ValueError("No tool call was generated")
+        console.print("[bold red]No tool call was generated[/bold red]")
+        raise click.ClickException("No tool call was generated")

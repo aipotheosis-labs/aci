@@ -11,6 +11,7 @@ import uuid
 from pathlib import Path
 
 import click
+from rich.console import Console
 
 from aipolabs.cli import config
 from aipolabs.cli.commands import create_agent, create_project, create_user
@@ -18,7 +19,8 @@ from aipolabs.common import utils
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import APIKey
 from aipolabs.common.enums import SubscriptionPlan, Visibility
-from aipolabs.common.logging_setup import create_headline
+
+console = Console()
 
 
 @click.option(
@@ -76,10 +78,16 @@ def create_random_api_key_helper(visibility_access: Visibility) -> str:
         api_key: APIKey | None = crud.projects.get_api_key_by_agent_id(db_session, agent_id)
         if not api_key:
             raise ValueError(f"API key with agent ID {agent_id} not found")
-        click.echo(create_headline("created test API key"))
-        click.echo(f"User id: {user_id}")
-        click.echo(f"Project id: {project_id}")
-        click.echo(f"Agent id: {agent_id}")
-        click.echo(f"API Key: {api_key.key}")
+
+        console.rule("[bold green]Summary[/bold green]")
+
+        console.print(
+            {
+                "User Id": str(user_id),
+                "Project Id": str(project_id),
+                "Agent Id": str(agent_id),
+                "API Key": str(api_key.key),
+            }
+        )
 
     return str(api_key.key)
