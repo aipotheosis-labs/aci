@@ -16,17 +16,17 @@ logger = get_logger(__name__)
 def create_secret(
     db_session: Session,
     linked_account_id: UUID,
-    name: str,
+    key: str,
     value: bytes,
 ) -> Secret:
     """
     Create a new secret.
     """
-    logger.debug(f"Creating secret: {name} for linked account: {linked_account_id}")
+    logger.debug(f"Creating secret: {key} for linked account: {linked_account_id}")
 
     secret = Secret(
         linked_account_id=linked_account_id,
-        name=name,
+        key=key,
         value=value,
     )
 
@@ -36,14 +36,14 @@ def create_secret(
     return secret
 
 
-def get_secret(db_session: Session, linked_account_id: UUID, name: str) -> Secret | None:
+def get_secret(db_session: Session, linked_account_id: UUID, key: str) -> Secret | None:
     """
-    Get a secret by linked_account_id and name.
+    Get a secret by linked_account_id and key.
     """
 
     stmt = select(Secret).where(
         Secret.linked_account_id == linked_account_id,
-        Secret.name == name,
+        Secret.key == key,
     )
 
     return db_session.execute(stmt).scalar_one_or_none()
@@ -64,17 +64,17 @@ def list_secrets(db_session: Session, linked_account_id: UUID) -> list[Secret]:
 def update_secret(
     db_session: Session,
     linked_account_id: UUID,
-    name: str,
+    key: str,
     value: bytes,
 ) -> Secret:
     """
     Update a secret's value.
     """
-    logger.debug(f"Updating secret: {name} for linked account: {linked_account_id}")
+    logger.debug(f"Updating secret: {key} for linked account: {linked_account_id}")
 
-    secret = get_secret(db_session, linked_account_id, name)
+    secret = get_secret(db_session, linked_account_id, key)
     if not secret:
-        raise KeyError(f"No secret found for name '{name}'")
+        raise KeyError(f"No secret found for key '{key}'")
 
     secret.value = value
 
@@ -83,15 +83,15 @@ def update_secret(
     return secret
 
 
-def delete_secret(db_session: Session, linked_account_id: UUID, name: str) -> None:
+def delete_secret(db_session: Session, linked_account_id: UUID, key: str) -> None:
     """
-    Delete a secret by linked_account_id and name.
+    Delete a secret by linked_account_id and key.
     """
-    logger.debug(f"Deleting secret: {name} for linked account: {linked_account_id}")
+    logger.debug(f"Deleting secret: {key} for linked account: {linked_account_id}")
 
-    secret = get_secret(db_session, linked_account_id, name)
+    secret = get_secret(db_session, linked_account_id, key)
     if not secret:
-        raise KeyError(f"No secret found for name '{name}'")
+        raise KeyError(f"No secret found for key '{key}'")
 
     db_session.delete(secret)
     db_session.flush()

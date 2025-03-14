@@ -53,7 +53,7 @@ class AipolabsSecretsManager(AppConnectorBase):
 
                 result.append(
                     DomainCredential(
-                        domain=secret.name,
+                        domain=secret.key,
                         username=secret_value["username"],
                         password=secret_value["password"],
                     )

@@ -1,8 +1,8 @@
-"""<some message>
+"""Create Secret table
 
-Revision ID: d4138695cf75
+Revision ID: e3c99ddb0eaa
 Revises: 949afaf258c3
-Create Date: 2025-03-12 20:06:51.809959+00:00
+Create Date: 2025-03-14 14:55:33.999269+00:00
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = 'd4138695cf75'
+revision: str = 'e3c99ddb0eaa'
 down_revision: Union[str, None] = '949afaf258c3'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -23,13 +23,13 @@ def upgrade() -> None:
     op.create_table('secrets',
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('linked_account_id', sa.UUID(), nullable=False),
-    sa.Column('name', sa.String(length=255), nullable=False),
+    sa.Column('key', sa.String(length=255), nullable=False),
     sa.Column('value', postgresql.BYTEA(), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['linked_account_id'], ['linked_accounts.id'], ),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('linked_account_id', 'name', name='uc_linked_account_name')
+    sa.UniqueConstraint('linked_account_id', 'key', name='uc_linked_account_name')
     )
     # ### end Alembic commands ###
 

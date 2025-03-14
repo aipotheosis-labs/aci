@@ -625,7 +625,7 @@ class Secret(Base):
         PGUUID(as_uuid=True), ForeignKey("linked_accounts.id"), nullable=False
     )
 
-    name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
+    key: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     value: Mapped[bytes] = mapped_column(BYTEA, nullable=False)
 
     created_at: Mapped[datetime] = mapped_column(
@@ -639,7 +639,7 @@ class Secret(Base):
         init=False,
     )
 
-    __table_args__ = (UniqueConstraint("linked_account_id", "name", name="uc_linked_account_name"),)
+    __table_args__ = (UniqueConstraint("linked_account_id", "key", name="uc_linked_account_name"),)
 
 
 __all__ = [

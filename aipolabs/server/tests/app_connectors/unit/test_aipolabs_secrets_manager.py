@@ -31,11 +31,11 @@ def test_list_credentials(secrets_manager: AipolabsSecretsManager) -> None:
     mock_db_session = MagicMock()
 
     mock_secret1 = MagicMock()
-    mock_secret1.name = "example.com"
+    mock_secret1.key = "example.com"
     mock_secret1.value = b"encrypted_value_1"
 
     mock_secret2 = MagicMock()
-    mock_secret2.name = "test.com"
+    mock_secret2.key = "test.com"
     mock_secret2.value = b"encrypted_value_2"
 
     with (
@@ -81,7 +81,7 @@ def test_get_credential_for_domain_success(secrets_manager: AipolabsSecretsManag
     # Given
     mock_db_session = MagicMock()
     mock_secret = MagicMock()
-    mock_secret.name = "example.com"
+    mock_secret.key = "example.com"
     mock_secret.value = b"encrypted_value"
 
     with (
