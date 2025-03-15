@@ -199,5 +199,67 @@
             "visible": ["path"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "GITHUB__STAR_REPOSITORY",
+        "description": "Stars a repository on behalf of the authenticated user",
+        "tags": ["repository", "stargazer", "user"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/user/starred/{owner}/{repo}",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        },
+                        "content-length": {
+                            "type": "string",
+                            "description": "Content-Length header",
+                            "default": "0"
+                        }
+                    },
+                    "required": ["accept", "user-agent", "content-length"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        }
+                    },
+                    "required": ["owner", "repo"],
+                    "visible": ["owner", "repo"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
     }
 ]
