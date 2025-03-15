@@ -1,7 +1,7 @@
 {
     "name": "AIPOLABS_SECRETS_MANAGER",
     "display_name": "Aipolabs Secrets Manager",
-    "logo": "https://example.com/aipolabs-logo.png",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/aipolabs_secrets_manager.svg",
     "provider": "aipolabs",
     "version": "1.0.0",
     "description": "The Aipolabs Secrets Manager allows you to store and retrieve secrets.",
