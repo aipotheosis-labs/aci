@@ -64,10 +64,18 @@ if [ "$SEED_APPS" = true ]; then
   for app_dir in ./apps/*/; do
     app_file="${app_dir}app.json"
     secrets_file="${app_dir}.app.secrets.json"
-    python -m aipolabs.cli.aipolabs upsert-app \
-      --app-file "$app_file" \
-      --secrets-file "$secrets_file" \
-      --skip-dry-run
+
+    # Check if secrets file exists and construct command accordingly
+    if [ -f "$secrets_file" ]; then
+      python -m aipolabs.cli.aipolabs upsert-app \
+        --app-file "$app_file" \
+        --secrets-file "$secrets_file" \
+        --skip-dry-run
+    else
+      python -m aipolabs.cli.aipolabs upsert-app \
+        --app-file "$app_file" \
+        --skip-dry-run
+    fi
   done
 fi
 
