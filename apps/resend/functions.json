@@ -1,0 +1,150 @@
+[
+    {
+        "name": "RESEND__SEND_EMAIL",
+        "description": "Start sending emails through the Resend Email API.",
+        "tags": [
+            "resend",
+            "email"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/emails",
+            "server_url": "https://api.resend.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Authorization": {
+                            "type": "string",
+                            "description": "Authorization header",
+                            "default": null
+                        },
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Authorization",
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Body parameters for the email request",
+                    "properties": {
+                        "from": {
+                            "type": "string",
+                            "description": "Sender email address"
+                        },
+                        "to": {
+                            "type": "array",
+                            "description": "Recipient email address(es)",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "subject": {
+                            "type": "string",
+                            "description": "Email subject"
+                        },
+                        "bcc": {
+                            "type": "array",
+                            "description": "Bcc recipient email address(es)",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "cc": {
+                            "type": "array",
+                            "description": "Cc recipient email address(es)",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "scheduled_at": {
+                            "type": "string",
+                            "description": "Schedule email to be sent later. The date should be in natural language (e.g.: in 1 min) or ISO 8601 format (e.g: 2024-08-05T11:52:01.858Z)."
+                        },
+                        "reply_to": {
+                            "type": "array",
+                            "description": "Reply-to email address(es)",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "html": {
+                            "type": "string",
+                            "description": "The HTML version of the message"
+                        },
+                        "text": {
+                            "type": "string",
+                            "description": "The plain text version of the message"
+                        },
+                        "tags": {
+                            "type": "array",
+                            "description": "Custom data passed in key/value pairs",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "The name of the email tag"
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "The value of the email tag"
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "value"
+                                ],
+                                "visible": [
+                                    "name",
+                                    "value"
+                                ]
+                            }
+                        }
+                    },
+                    "required": [
+                        "from",
+                        "to",
+                        "subject"
+                    ],
+                    "visible": [
+                        "from",
+                        "to",
+                        "subject",
+                        "bcc",
+                        "cc",
+                        "scheduled_at",
+                        "reply_to",
+                        "html",
+                        "text",
+                        "tags"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    }
+]
