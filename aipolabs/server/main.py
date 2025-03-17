@@ -14,6 +14,7 @@ from aipolabs.common.exceptions import AipolabsException
 from aipolabs.common.logging_setup import setup_logging
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
+from aipolabs.server.dependency_check import check_dependencies
 from aipolabs.server.middleware.interceptor import InterceptorMiddleware, RequestIDLogFilter
 from aipolabs.server.middleware.ratelimit import RateLimitMiddleware
 from aipolabs.server.routes import (
@@ -26,6 +27,8 @@ from aipolabs.server.routes import (
     projects,
 )
 from aipolabs.server.sentry import setup_sentry
+
+check_dependencies()
 
 
 def custom_generate_unique_id(route: APIRoute) -> str:

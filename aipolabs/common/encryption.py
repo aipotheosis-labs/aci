@@ -20,8 +20,6 @@ kms_client = boto3.client(
     "kms",
     region_name=config.AWS_REGION,
     endpoint_url=config.AWS_ENDPOINT_URL,
-    aws_access_key_id=config.AWS_ACCESS_KEY_ID,
-    aws_secret_access_key=config.AWS_SECRET_ACCESS_KEY,
 )
 
 
@@ -34,16 +32,16 @@ keyring_input: CreateAwsKmsKeyringInput = CreateAwsKmsKeyringInput(
     kms_client=kms_client,
 )
 
+kms_keyring: IKeyring = mat_prov.create_aws_kms_keyring(input=keyring_input)
+
 
 def encrypt(plain_data: bytes) -> bytes:
-    kms_keyring: IKeyring = mat_prov.create_aws_kms_keyring(input=keyring_input)
     # TODO: ignore encryptor_header for now
     my_ciphertext, _ = client.encrypt(source=plain_data, keyring=kms_keyring)
     return cast(bytes, my_ciphertext)
 
 
 def decrypt(cipher_data: bytes) -> bytes:
-    kms_keyring: IKeyring = mat_prov.create_aws_kms_keyring(input=keyring_input)
     # TODO: ignore decryptor_header for now
     my_plaintext, _ = client.decrypt(source=cipher_data, keyring=kms_keyring)
     return cast(bytes, my_plaintext)

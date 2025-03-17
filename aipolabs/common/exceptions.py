@@ -376,3 +376,16 @@ class AipolabsSecretsManagerError(AipolabsException):
             message=message,
             error_code=status.HTTP_400_BAD_REQUEST,
         )
+
+
+class DependencyCheckError(AipolabsException):
+    """
+    Exception raised when a dependency check fails
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Dependency check error",
+            message=message,
+            error_code=status.HTTP_400_BAD_REQUEST,
+        )
