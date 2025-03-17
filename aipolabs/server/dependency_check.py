@@ -9,7 +9,10 @@ def check_aws_kms_dependency() -> None:
     decrypted_data = decrypt(encrypted_data)
 
     if check_data != decrypted_data:
-        raise DependencyCheckError("Encryption/decryption using AWS KMS failed")
+        raise DependencyCheckError(
+            f"Encryption/decryption using AWS KMS failed: original data '{check_data!r}'"
+            f"does not match decrypted result '{decrypted_data!r}'"
+        )
 
 
 def check_dependencies() -> None:
