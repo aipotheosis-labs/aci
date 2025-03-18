@@ -22,7 +22,10 @@
                     "description": "Headers for the http request",
                     "properties": {
                         "Authorization": {
-                            "type": "string",
+                            "type": [
+                                "string",
+                                "null"
+                            ],
                             "description": "Authorization header",
                             "default": null
                         },
@@ -77,11 +80,22 @@
                             "description": "Schedule email to be sent later. The date should be in natural language (e.g.: in 1 min) or ISO 8601 format (e.g: 2024-08-05T11:52:01.858Z)."
                         },
                         "reply_to": {
-                            "type": ["array", "string"],
-                            "description": "Reply-to email address(es)",
-                            "items": {
-                                "type": "string"
-                            }
+                            "oneOf": [
+                                {
+                                    "type": "string",
+                                    "description": "Single reply-to email address",
+                                    "format": "email"
+                                },
+                                {
+                                    "type": "array",
+                                    "description": "Multiple reply-to email addresses",
+                                    "items": {
+                                        "type": "string",
+                                        "format": "email"
+                                    }
+                                }
+                            ],
+                            "description": "Reply-to email address(es). Can be a single email or an array of emails."
                         },
                         "html": {
                             "type": "string",
