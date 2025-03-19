@@ -87,7 +87,8 @@
                     "properties": {
                         "sessionId": {
                             "type": "string",
-                            "description": "The session ID cookie"
+                            "description": "The session ID cookie",
+                            "default": "default-session-id"
                         }
                     },
                     "visible": [],
