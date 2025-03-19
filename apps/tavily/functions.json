@@ -70,16 +70,14 @@
               "description": "Include the cleaned and parsed HTML content of each search result. Default is False."
             },
             "include_domains": {
-              "type": ["array", "null"],
-              "default": null,
+              "type": "array",
               "items": {
                 "type": "string"
               },
               "description": "A list of domains to specifically include in the search results. Default is [], which includes all domains."
             },
             "exclude_domains": {
-              "type": ["array", "null"],
-              "default": null,
+              "type": "array",
               "items": {
                 "type": "string"
               },

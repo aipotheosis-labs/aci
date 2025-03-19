@@ -28,10 +28,10 @@
                             "description": "The search query country (2 character country codes)",
                             "default": "US",
                             "enum": [
-                                "ALL", "AR", "AU", "AT", "BE", "BR", "CA", "CL", 
-                                "DK", "FI", "FR", "DE", "HK", "IN", "ID", "IT", 
-                                "JP", "KR", "MY", "MX", "NL", "NZ", "NO", "CN", 
-                                "PL", "PT", "PH", "RU", "SA", "ZA", "ES", "SE", 
+                                "ALL", "AR", "AU", "AT", "BE", "BR", "CA", "CL",
+                                "DK", "FI", "FR", "DE", "HK", "IN", "ID", "IT",
+                                "JP", "KR", "MY", "MX", "NL", "NZ", "NO", "CN",
+                                "PL", "PT", "PH", "RU", "SA", "ZA", "ES", "SE",
                                 "CH", "TW", "TR", "GB", "US"
                             ]
                         },
@@ -40,7 +40,7 @@
                             "description": "The search language preference (2+ character language code)",
                             "default": "en",
                             "enum": [
-                                "ar", "eu", "bn", "bg", "ca", 
+                                "ar", "eu", "bn", "bg", "ca",
                                 "zh-hans", "zh-hant", "hr", "cs", "da",
                                 "nl", "en", "en-gb", "et", "fi",
                                 "fr", "gl", "de", "gu", "he",
@@ -93,11 +93,10 @@
                             "enum": ["off", "moderate", "strict"]
                         },
                         "freshness": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "Filters search results by when they were discovered. Can be a predefined value (pd, pw, pm, py) or a date range in format YYYY-MM-DDtoYYYY-MM-DD",
-                            "default": null,
                             "anyOf": [
-                                { "enum": [null, "pd", "pw", "pm", "py"] },
+                                { "enum": ["pd", "pw", "pm", "py"] },
                                 { "pattern": "^\\d{4}-\\d{2}-\\d{2}to\\d{4}-\\d{2}-\\d{2}$" }
                             ]
                         },
@@ -112,20 +111,17 @@
                             "default": true
                         },
                         "result_filter": {
-                            "type": ["string", "null"],
-                            "description": "Comma delimited string of result types to include. Available result filter values are: discussions, faq, infobox, news, query, summarizer, videos, web, locations",
-                            "default": null
+                            "type": "string",
+                            "description": "Comma delimited string of result types to include. Available result filter values are: discussions, faq, infobox, news, query, summarizer, videos, web, locations"
                         },
                         "goggles_id": {
-                            "type": ["string", "null"],
-                            "description": "Goggles act as a custom re-ranking on top of Brave’s search index",
-                            "default": null
+                            "type": "string",
+                            "description": "Goggles act as a custom re-ranking on top of Brave’s search index"
                         },
                         "units": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The measurement units. If not provided, units are derived from search country.",
-                            "default": null,
-                            "enum": [null, "metric", "imperial"]
+                            "enum": ["metric", "imperial"]
                         },
                         "extra_snippets": {
                             "type": "boolean",
@@ -147,83 +143,70 @@
                     "description": "header parameters",
                     "properties": {
                         "Accept": {
-                            "type": ["string"],
+                            "type": "string",
                             "description": "The supported media type",
                             "default": "application/json"
                         },
                         "Accept-Encoding": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The supported compression type",
-                            "default": null,
-                            "enum": [null, "gzip"]
+                            "enum": ["gzip"]
                         },
                         "Api-Version": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The Brave Web Search API version to use. Format: YYYY-MM-DD. Latest version used by default",
-                            "default": null,
                             "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
                         },
                         "Cache-Control": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "Search will return cached web search results by default. To prevent caching set the Cache-Control header to no-cache",
-                            "default": null,
-                            "enum": [null, "no-cache"]
+                            "enum": ["no-cache"]
                         },
                         "User-Agent": {
-                            "type": ["string", "null"],
-                            "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings",
-                            "default": null
+                            "type": "string",
+                            "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings"
                         },
                         "X-Loc-Lat": {
-                            "type": ["number", "null"],
+                            "type": "number",
                             "description": "The latitude of the client's geographical location in degrees, to provide relevant local results",
-                            "default": null,
                             "minimum": -90.0,
                             "maximum": 90.0
                         },
                         "X-Loc-Long": {
-                            "type": ["number", "null"],
+                            "type": "number",
                             "description": "The longitude of the client's geographical location in degrees, to provide relevant local results",
-                            "default": null,
                             "minimum": -180.0,
                             "maximum": 180.0
                         },
                         "X-Loc-Timezone": {
-                            "type": ["string", "null"],
-                            "description": "The IANA timezone for the client's device (e.g., America/New_York)",
-                            "default": null
+                            "type": "string",
+                            "description": "The IANA timezone for the client's device (e.g., America/New_York)"
                         },
                         "X-Loc-City": {
-                            "type": ["string", "null"],
-                            "description": "The generic name of the client city",
-                            "default": null
+                            "type": "string",
+                            "description": "The generic name of the client city"
                         },
                         "X-Loc-State": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The code representing the client's state/region (up to 3 characters)",
-                            "default": null,
                             "maxLength": 3
                         },
                         "X-Loc-State-Name": {
-                            "type": ["string", "null"],
-                            "description": "The name of the client's state/region. The region is the first-level subdivision (the broadest or least specific) of the ISO 3166-2 code.",
-                            "default": null
+                            "type": "string",
+                            "description": "The name of the client's state/region. The region is the first-level subdivision (the broadest or least specific) of the ISO 3166-2 code."
                         },
                         "X-Loc-Country": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The two letter code for the client's country (ISO 3166-1 alpha-2)",
-                            "default": null,
                             "pattern": "^[A-Z]{2}$"
                         },
                         "X-Loc-Postal-Code": {
-                            "type": ["string", "null"],
-                            "description": "The postal code of the client's location",
-                            "default": null
+                            "type": "string",
+                            "description": "The postal code of the client's location"
                         },
                         "X-Subscription-Token": {
-                            "type": ["string", "null"],
-                            "description": "The secret token for the subscribed plan to authenticate the request",
-                            "default": null
+                            "type": "string",
+                            "description": "The secret token for the subscribed plan to authenticate the request"
                         }
                     },
                     "required": ["X-Subscription-Token"],
@@ -265,10 +248,10 @@
                             "description": "The search query country (2 character country codes)",
                             "default": "US",
                             "enum": [
-                                "ALL", "AR", "AU", "AT", "BE", "BR", "CA", "CL", 
-                                "DK", "FI", "FR", "DE", "HK", "IN", "ID", "IT", 
-                                "JP", "KR", "MY", "MX", "NL", "NZ", "NO", "CN", 
-                                "PL", "PT", "PH", "RU", "SA", "ZA", "ES", "SE", 
+                                "ALL", "AR", "AU", "AT", "BE", "BR", "CA", "CL",
+                                "DK", "FI", "FR", "DE", "HK", "IN", "ID", "IT",
+                                "JP", "KR", "MY", "MX", "NL", "NZ", "NO", "CN",
+                                "PL", "PT", "PH", "RU", "SA", "ZA", "ES", "SE",
                                 "CH", "TW", "TR", "GB", "US"
                             ]
                         },
@@ -277,7 +260,7 @@
                             "description": "The search language preference (2+ character language code)",
                             "default": "en",
                             "enum": [
-                                "ar", "eu", "bn", "bg", "ca", 
+                                "ar", "eu", "bn", "bg", "ca",
                                 "zh-hans", "zh-hant", "hr", "cs", "da",
                                 "nl", "en", "en-gb", "et", "fi",
                                 "fr", "gl", "de", "gu", "he",
@@ -317,37 +300,32 @@
                     "description": "header parameters",
                     "properties": {
                         "Accept": {
-                            "type": ["string"],
+                            "type": "string",
                             "description": "The supported media type",
                             "default": "application/json"
                         },
                         "Accept-Encoding": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The supported compression type",
-                            "default": null,
-                            "enum": [null, "gzip"]
+                            "enum": ["gzip"]
                         },
                         "Api-Version": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The Brave Web Search API version to use. Format: YYYY-MM-DD. Latest version used by default",
-                            "default": null,
                             "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
                         },
                         "Cache-Control": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "Search will return cached web search results by default. To prevent caching set the Cache-Control header to no-cache",
-                            "default": null,
-                            "enum": [null, "no-cache"]
+                            "enum": ["no-cache"]
                         },
                         "User-Agent": {
-                            "type": ["string", "null"],
-                            "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings",
-                            "default": null
+                            "type": "string",
+                            "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings"
                         },
                         "X-Subscription-Token": {
-                            "type": ["string", "null"],
-                            "description": "The secret token for the subscribed plan to authenticate the request",
-                            "default": null
+                            "type": "string",
+                            "description": "The secret token for the subscribed plan to authenticate the request"
                         }
                     },
                     "required": ["X-Subscription-Token"],
@@ -389,10 +367,10 @@
                             "description": "The search query country (2 character country codes)",
                             "default": "US",
                             "enum": [
-                                "ALL", "AR", "AU", "AT", "BE", "BR", "CA", "CL", 
-                                "DK", "FI", "FR", "DE", "HK", "IN", "ID", "IT", 
-                                "JP", "KR", "MY", "MX", "NL", "NZ", "NO", "CN", 
-                                "PL", "PT", "PH", "RU", "SA", "ZA", "ES", "SE", 
+                                "ALL", "AR", "AU", "AT", "BE", "BR", "CA", "CL",
+                                "DK", "FI", "FR", "DE", "HK", "IN", "ID", "IT",
+                                "JP", "KR", "MY", "MX", "NL", "NZ", "NO", "CN",
+                                "PL", "PT", "PH", "RU", "SA", "ZA", "ES", "SE",
                                 "CH", "TW", "TR", "GB", "US"
                             ]
                         },
@@ -401,7 +379,7 @@
                             "description": "The search language preference (2+ character language code)",
                             "default": "en",
                             "enum": [
-                                "ar", "eu", "bn", "bg", "ca", 
+                                "ar", "eu", "bn", "bg", "ca",
                                 "zh-hans", "zh-hant", "hr", "cs", "da",
                                 "nl", "en", "en-gb", "et", "fi",
                                 "fr", "gl", "de", "gu", "he",
@@ -445,8 +423,7 @@
                         },
                         "freshness": {
                             "type": "string",
-                            "description": "Filters search results by when they were discovered. Supported values: 'pd' (24 hours), 'pw' (7 days), 'pm' (31 days), 'py' (365 days), or a date range 'YYYY-MM-DDtoYYYY-MM-DD'.",
-                            "default": null
+                            "description": "Filters search results by when they were discovered. Supported values: 'pd' (24 hours), 'pw' (7 days), 'pm' (31 days), 'py' (365 days), or a date range 'YYYY-MM-DDtoYYYY-MM-DD'."
                         }
                     },
                     "required": ["q"],
@@ -458,37 +435,33 @@
                     "description": "header parameters",
                     "properties": {
                         "Accept": {
-                            "type": ["string"],
+                            "type": "string",
                             "description": "The supported media type",
                             "default": "application/json"
                         },
                         "Accept-Encoding": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The supported compression type",
                             "default": "gzip",
-                            "enum": [null, "gzip"]
+                            "enum": ["gzip"]
                         },
                         "Api-Version": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The Brave Web Search API version to use. Format: YYYY-MM-DD. Latest version used by default",
-                            "default": null,
                             "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
                         },
                         "Cache-Control": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "Search will return cached web search results by default. To prevent caching set the Cache-Control header to no-cache",
-                            "default": null,
-                            "enum": [null, "no-cache"]
+                            "enum": ["no-cache"]
                         },
                         "User-Agent": {
-                            "type": ["string", "null"],
-                            "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings",
-                            "default": null
+                            "type": "string",
+                            "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings"
                         },
                         "X-Subscription-Token": {
-                            "type": ["string"],
-                            "description": "The secret token for the subscribed plan to authenticate the request",
-                            "default": null
+                            "type": "string",
+                            "description": "The secret token for the subscribed plan to authenticate the request"
                         }
                     },
                     "required": ["X-Subscription-Token"],
@@ -530,10 +503,10 @@
                             "description": "The search query country (2 character country codes)",
                             "default": "US",
                             "enum": [
-                                "ALL", "AR", "AU", "AT", "BE", "BR", "CA", "CL", 
-                                "DK", "FI", "FR", "DE", "HK", "IN", "ID", "IT", 
-                                "JP", "KR", "MY", "MX", "NL", "NZ", "NO", "CN", 
-                                "PL", "PT", "PH", "RU", "SA", "ZA", "ES", "SE", 
+                                "ALL", "AR", "AU", "AT", "BE", "BR", "CA", "CL",
+                                "DK", "FI", "FR", "DE", "HK", "IN", "ID", "IT",
+                                "JP", "KR", "MY", "MX", "NL", "NZ", "NO", "CN",
+                                "PL", "PT", "PH", "RU", "SA", "ZA", "ES", "SE",
                                 "CH", "TW", "TR", "GB", "US"
                             ]
                         },
@@ -542,7 +515,7 @@
                             "description": "The search language preference (2+ character language code)",
                             "default": "en",
                             "enum": [
-                                "ar", "eu", "bn", "bg", "ca", 
+                                "ar", "eu", "bn", "bg", "ca",
                                 "zh-hans", "zh-hant", "hr", "cs", "da",
                                 "nl", "en", "en-gb", "et", "fi",
                                 "fr", "gl", "de", "gu", "he",
@@ -603,37 +576,33 @@
                     "description": "header parameters",
                     "properties": {
                         "Accept": {
-                            "type": ["string"],
+                            "type": "string",
                             "description": "The supported media type",
                             "default": "application/json"
                         },
                         "Accept-Encoding": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The supported compression type",
                             "default": "gzip",
-                            "enum": [null, "gzip"]
+                            "enum": ["gzip"]
                         },
                         "Api-Version": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The Brave Web Search API version to use. Format: YYYY-MM-DD. Latest version used by default",
-                            "default": null,
                             "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
                         },
                         "Cache-Control": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "Search will return cached web search results by default. To prevent caching set the Cache-Control header to no-cache",
-                            "default": null,
-                            "enum": [null, "no-cache"]
+                            "enum": ["no-cache"]
                         },
                         "User-Agent": {
-                            "type": ["string", "null"],
-                            "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings",
-                            "default": null
+                            "type": "string",
+                            "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings"
                         },
                         "X-Subscription-Token": {
-                            "type": ["string"],
-                            "description": "The secret token for the subscribed plan to authenticate the request",
-                            "default": null
+                            "type": "string",
+                            "description": "The secret token for the subscribed plan to authenticate the request"
                         }
                     },
                     "required": ["X-Subscription-Token"],

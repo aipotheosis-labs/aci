@@ -20,8 +20,7 @@
                     "properties": {
                         "cursor": {
                             "type": "string",
-                            "description": "Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous request's response_metadata. Default value fetches the first \"page\" of the collection.",
-                            "default": null
+                            "description": "Paginate through collections of data by setting the cursor parameter to a next_cursor attribute returned by a previous request's response_metadata. Default value fetches the first \"page\" of the collection."
                         },
                         "exclude_archived": {
                             "type": "boolean",
@@ -35,8 +34,7 @@
                         },
                         "team_id": {
                             "type": "string",
-                            "description": "encoded team id to list channels in, required if token belongs to org-wide app",
-                            "default": null
+                            "description": "encoded team id to list channels in, required if token belongs to org-wide app"
                         },
                         "types": {
                             "type": "array",
@@ -44,8 +42,7 @@
                             "items": {
                                 "type": "string",
                                 "enum": ["public_channel", "private_channel", "mpim", "im"]
-                            },
-                            "default": null
+                            }
                         }
                     },
                     "required": [],

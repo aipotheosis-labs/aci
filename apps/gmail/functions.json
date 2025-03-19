@@ -25,9 +25,8 @@
                     "description": "The body content of the email, for now only plain text is supported."
                 },
                 "subject": {
-                    "type": ["string", "null"],
-                    "description": "The subject of the email.",
-                    "default": null
+                    "type": "string",
+                    "description": "The subject of the email."
                 },
                 "cc": {
                     "type": ["array"],

@@ -24,17 +24,15 @@
                             "default": 100
                         },
                         "minAccessRole": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The minimum access role for the user in the returned entries. The default is no restriction. 'freeBusyReader': The user can read free/busy information. 'owner': The user can read and modify events and access control lists. 'reader': The user can read events that are not private. 'writer': The user can read and modify events.",
                             "enum": [
-                                null, "freeBusyReader", "owner", "reader", "writer"
-                            ],
-                            "default": null
+                                "freeBusyReader", "owner", "reader", "writer"
+                            ]
                         },
                         "pageToken": {
-                            "type": ["string", "null"],
-                            "description": "Token specifying which result page to return.",
-                            "default": null
+                            "type": "string",
+                            "description": "Token specifying which result page to return."
                         },
                         "showDeleted": {
                             "type": "boolean",
@@ -47,9 +45,8 @@
                             "default": false
                         },
                         "syncToken": {
-                            "type": ["string", "null"],
-                            "description": "Token obtained from the nextSyncToken field returned on the last page of results from the previous list request. It makes the result of this list request contain only entries that have changed since then. If only read-only fields such as calendar properties or ACLs have changed, the entry won't be returned. All entries deleted and hidden since the previous list request will always be in the result set and it is not allowed to set showDeleted neither showHidden to False. To ensure client state consistency minAccessRole query parameter cannot be specified together with nextSyncToken. If the syncToken expires, the server will respond with a 410 GONE response code and the client should clear its storage and perform a full synchronization without any syncToken.",
-                            "default": null
+                            "type": "string",
+                            "description": "Token obtained from the nextSyncToken field returned on the last page of results from the previous list request. It makes the result of this list request contain only entries that have changed since then. If only read-only fields such as calendar properties or ACLs have changed, the entry won't be returned. All entries deleted and hidden since the previous list request will always be in the result set and it is not allowed to set showDeleted neither showHidden to False. To ensure client state consistency minAccessRole query parameter cannot be specified together with nextSyncToken. If the syncToken expires, the server will respond with a 410 GONE response code and the client should clear its storage and perform a full synchronization without any syncToken."
                         }
                     },
                     "required": [],
@@ -248,8 +245,7 @@
                         },
                         "iCalUID": {
                             "type": "string",
-                            "description": "Specifies an event ID in iCalendar format.",
-                            "default": null
+                            "description": "Specifies an event ID in iCalendar format."
                         },
                         "maxAttendees": {
                             "type": "integer",
@@ -268,13 +264,11 @@
                         },
                         "pageToken": {
                             "type": "string",
-                            "description": "Token for pagination.",
-                            "default": null
+                            "description": "Token for pagination."
                         },
                         "privateExtendedProperty": {
                             "type": "string",
-                            "description": "Private extended properties filter (propertyName=value).",
-                            "default": null
+                            "description": "Private extended properties filter (propertyName=value)."
                         },
                         "q": {
                             "type": "string",
@@ -282,8 +276,7 @@
                         },
                         "sharedExtendedProperty": {
                             "type": "string",
-                            "description": "Shared extended properties filter (propertyName=value).",
-                            "default": null
+                            "description": "Shared extended properties filter (propertyName=value)."
                         },
                         "showDeleted": {
                             "type": "boolean",
@@ -302,8 +295,7 @@
                         },
                         "syncToken": {
                             "type": "string",
-                            "description": "Token for incremental synchronization.",
-                            "default": null
+                            "description": "Token for incremental synchronization."
                         },
                         "timeMax": {
                             "type": "string",
@@ -499,8 +491,7 @@
                                 },
                                 "timeZone": {
                                     "type": "string",
-                                    "description": "Time zone for the start time.",
-                                    "default": null
+                                    "description": "Time zone for the start time."
                                 }
                             },
                             "required": ["dateTime", "timeZone"],
@@ -523,8 +514,7 @@
                                 },
                                 "timeZone": {
                                     "type": "string",
-                                    "description": "Time zone for the end time.",
-                                    "default": null
+                                    "description": "Time zone for the end time."
                                 }
                             },
                             "required": ["dateTime", "timeZone"],
@@ -726,8 +716,7 @@
                             },
                             "timeZone": {
                                 "type": "string",
-                                "description": "Time zone for the start time.",
-                                "default": null
+                                "description": "Time zone for the start time."
                             }
                         },
                         "required": ["dateTime", "timeZone"],
@@ -750,8 +739,7 @@
                             },
                             "timeZone": {
                                 "type": "string",
-                                "description": "Time zone for the end time.",
-                                "default": null
+                                "description": "Time zone for the end time."
                             }
                         },
                         "required": ["dateTime", "timeZone"],
@@ -839,7 +827,7 @@
                 "required": ["start", "end"],
                 "visible": [
                     "summary",
-                    "location", 
+                    "location",
                     "description",
                     "start",
                     "end",
@@ -910,5 +898,5 @@
             "visible": ["path", "query"],
             "additionalProperties": false
         }
-    }      
+    }
 ]

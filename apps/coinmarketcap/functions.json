@@ -42,12 +42,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -143,12 +139,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -209,18 +201,15 @@
               },
               "id": {
                 "type": "string",
-                "description": "Filter categories by one or more comma-separated cryptocurrency CoinMarketCap IDs. Example: 1,2",
-                "default": null
+                "description": "Filter categories by one or more comma-separated cryptocurrency CoinMarketCap IDs. Example: 1,2"
               },
               "slug": {
                 "type": "string",
-                "description": "Filter categories by a comma-separated list of cryptocurrency slugs. Example: bitcoin,ethereum",
-                "default": null
+                "description": "Filter categories by a comma-separated list of cryptocurrency slugs. Example: bitcoin,ethereum"
               },
               "symbol": {
                 "type": "string",
-                "description": "Filter categories by one or more comma-separated cryptocurrency symbols. Example: BTC,ETH",
-                "default": null
+                "description": "Filter categories by one or more comma-separated cryptocurrency symbols. Example: BTC,ETH"
               }
             },
             "required": [],
@@ -238,12 +227,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -313,8 +298,7 @@
               },
               "convert_id": {
                 "type": "string",
-                "description": "Optionally calculate market quotes by CoinMarketCap ID instead of symbol. This parameter is identical to 'convert' but uses IDs. For example, 'convert_id=1,2781' would replace 'convert=BTC,USD' in your query. Note: This parameter cannot be used simultaneously with 'convert'.",
-                "default": null
+                "description": "Optionally calculate market quotes by CoinMarketCap ID instead of symbol. This parameter is identical to 'convert' but uses IDs. For example, 'convert_id=1,2781' would replace 'convert=BTC,USD' in your query. Note: This parameter cannot be used simultaneously with 'convert'."
               }
             },
             "required": [
@@ -333,12 +317,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -413,8 +393,7 @@
               },
               "symbol": {
                 "type": "string",
-                "description": "Optionally pass a comma-separated list of cryptocurrency symbols to specifically return CoinMarketCap IDs for. If this option is provided, all other query parameters (listing_status, start, limit, sort, aux) will be ignored.",
-                "default": null
+                "description": "Optionally pass a comma-separated list of cryptocurrency symbols to specifically return CoinMarketCap IDs for. If this option is provided, all other query parameters (listing_status, start, limit, sort, aux) will be ignored."
               },
               "aux": {
                 "type": "string",
@@ -438,12 +417,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -490,32 +465,28 @@
             "description": "Query parameters for retrieving static metadata for one or more cryptocurrencies. At least one identifier is required to specify which cryptocurrencies to retrieve. Use the 'id' for unique CoinMarketCap IDs, 'slug' for URL-friendly names, 'symbol' for ticker symbols (note: this may return multiple entries per symbol), or 'address' for a contract address. The skip_invalid flag relaxes validation errors for invalid identifiers, and the aux parameter controls which supplemental fields are included in the response.",
             "properties": {
               "id": {
-                "type": ["string", "null"],
-                "description": "One or more comma-separated CoinMarketCap cryptocurrency IDs. Example: '1,2'. These IDs uniquely identify cryptocurrencies in the CoinMarketCap database.",
-                "default": null
+                "type": "string",
+                "description": "One or more comma-separated CoinMarketCap cryptocurrency IDs. Example: '1,2'. These IDs uniquely identify cryptocurrencies in the CoinMarketCap database."
               },
               "slug": {
-                "type": ["string", "null"],
-                "description": "A comma-separated list of cryptocurrency slugs. Slugs are web-friendly versions of cryptocurrency names. Example: 'bitcoin,ethereum'.",
-                "default": null
+                "type": "string",
+                "description": "A comma-separated list of cryptocurrency slugs. Slugs are web-friendly versions of cryptocurrency names. Example: 'bitcoin,ethereum'."
               },
               "symbol": {
-                "type": ["string", "null"],
-                "description": "One or more comma-separated cryptocurrency symbols (ticker symbols). Example: 'BTC,ETH'. When requested by symbol, the response will include an array of objects since symbols are not unique.",
-                "default": null
+                "type": "string",
+                "description": "One or more comma-separated cryptocurrency symbols (ticker symbols). Example: 'BTC,ETH'. When requested by symbol, the response will include an array of objects since symbols are not unique."
               },
               "address": {
-                "type": ["string", "null"],
-                "description": "A contract address for a cryptocurrency token. Example: '0xc40af1e4fecfa05ce6bab79dcd8b373d2e436c4e'. Use this parameter when you want to retrieve metadata for a token deployed on a specific blockchain.",
-                "default": null
+                "type": "string",
+                "description": "A contract address for a cryptocurrency token. Example: '0xc40af1e4fecfa05ce6bab79dcd8b373d2e436c4e'. Use this parameter when you want to retrieve metadata for a token deployed on a specific blockchain."
               },
               "skip_invalid": {
-                "type": ["boolean", "null"],
+                "type": "boolean",
                 "description": "Set to true to relax request validation rules. When true, invalid cryptocurrency identifiers will be skipped rather than causing an error, allowing valid records to be returned. Default is false.",
                 "default": false
               },
               "aux": {
-                "type": ["string", "null"],
+                "type": "string",
                 "description": "A comma-separated list of supplemental data fields to include in the response. The default is 'urls,logo,description,tags,platform,date_added,notice'. To include all auxiliary fields, you can pass 'urls,logo,description,tags,platform,date_added,notice,status'.",
                 "default": "urls,logo,description,tags,platform,date_added,notice"
               }
@@ -536,9 +507,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": ["string","null"],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -674,12 +644,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -915,12 +881,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -1010,12 +972,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -1126,12 +1084,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -1222,12 +1176,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -1318,12 +1268,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -1483,12 +1429,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -1607,12 +1549,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -1693,12 +1631,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -1789,12 +1723,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -1905,12 +1835,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -2003,12 +1929,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -2119,12 +2041,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -2194,12 +2112,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -2294,12 +2208,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -2392,8 +2302,7 @@
               },
               "convert_id": {
                 "type": "string",
-                "description": "Optionally calculate market quotes in up to 30 currencies at once by passing a comma-separated list of cryptocurrency or fiat currency IDs. Each additional convert option beyond the first requires an additional call credit. Each conversion is returned in its own 'quote' object.",
-                "default": null
+                "description": "Optionally calculate market quotes in up to 30 currencies at once by passing a comma-separated list of cryptocurrency or fiat currency IDs. Each additional convert option beyond the first requires an additional call credit. Each conversion is returned in its own 'quote' object."
               }
             },
             "required": [],
@@ -2413,12 +2322,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -2539,12 +2444,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -2637,12 +2538,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -2690,18 +2587,15 @@
             "properties": {
               "contract_address": {
                 "type": "string",
-                "description": "One or more comma-separated contract addresses for the spot pairs. Example: '0xabc123,0xdef456'.",
-                "default": null
+                "description": "One or more comma-separated contract addresses for the spot pairs. Example: '0xabc123,0xdef456'."
               },
               "network_id": {
                 "type": "string",
-                "description": "One or more CoinMarketCap cryptocurrency network IDs associated with the spot pairs.",
-                "default": null
+                "description": "One or more CoinMarketCap cryptocurrency network IDs associated with the spot pairs."
               },
               "network_slug": {
                 "type": "string",
-                "description": "Alternatively, specify a network by its URL-friendly slug (all lowercase, spaces replaced with hyphens). You can only choose either network_id or network_slug, not both.",
-                "default": null
+                "description": "Alternatively, specify a network by its URL-friendly slug (all lowercase, spaces replaced with hyphens). You can only choose either network_id or network_slug, not both."
               },
               "aux": {
                 "type": "string",
@@ -2710,8 +2604,7 @@
               },
               "convert_id": {
                 "type": "string",
-                "description": "Optionally calculate market quotes by CoinMarketCap ID instead of symbol. For example, 'convert_id=1,2781' would replace a convert query of 'BTC,USD'. This parameter cannot be used simultaneously with a 'convert' parameter.",
-                "default": null
+                "description": "Optionally calculate market quotes by CoinMarketCap ID instead of symbol. For example, 'convert_id=1,2781' would replace a convert query of 'BTC,USD'. This parameter cannot be used simultaneously with a 'convert' parameter."
               },
               "skip_invalid": {
                 "type": "string",
@@ -2741,12 +2634,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -2794,18 +2683,15 @@
             "properties": {
               "contract_address": {
                 "type": "string",
-                "description": "One or more comma-separated contract addresses for the spot pair. Example: '0xabc123'. This parameter is required to specify the spot pair. Basic tier users are limited to 1 contract_address.",
-                "default": null
+                "description": "One or more comma-separated contract addresses for the spot pair. Example: '0xabc123'. This parameter is required to specify the spot pair. Basic tier users are limited to 1 contract_address."
               },
               "network_id": {
                 "type": "string",
-                "description": "One CoinMarketCap cryptocurrency network ID associated with the spot pair.",
-                "default": null
+                "description": "One CoinMarketCap cryptocurrency network ID associated with the spot pair."
               },
               "network_slug": {
                 "type": "string",
-                "description": "Alternatively, specify the network using a URL-friendly slug (all lowercase, spaces replaced with hyphens). Example: 'ethereum'. You can only choose either network_id or network_slug, not both.",
-                "default": null
+                "description": "Alternatively, specify the network using a URL-friendly slug (all lowercase, spaces replaced with hyphens). Example: 'ethereum'. You can only choose either network_id or network_slug, not both."
               },
               "aux": {
                 "type": "string",
@@ -2814,8 +2700,7 @@
               },
               "convert_id": {
                 "type": "string",
-                "description": "Optionally calculate market quotes in up to 30 currencies by passing a comma-separated list of cryptocurrency or fiat currency IDs. Each additional convert option beyond the first requires an additional call credit. For example: 'convert_id=1,2781'. This parameter cannot be used when a 'convert' parameter is provided.",
-                "default": null
+                "description": "Optionally calculate market quotes in up to 30 currencies by passing a comma-separated list of cryptocurrency or fiat currency IDs. Each additional convert option beyond the first requires an additional call credit. For example: 'convert_id=1,2781'. This parameter cannot be used when a 'convert' parameter is provided."
               },
               "skip_invalid": {
                 "type": "string",
@@ -2847,12 +2732,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -2900,63 +2781,51 @@
             "properties": {
               "network_id": {
                 "type": "string",
-                "description": "One or more comma-separated CoinMarketCap cryptocurrency network IDs to filter results by.",
-                "default": null
+                "description": "One or more comma-separated CoinMarketCap cryptocurrency network IDs to filter results by."
               },
               "network_slug": {
                 "type": "string",
-                "description": "Alternatively, one or more comma-separated network names in URL-friendly slug format (all lowercase, spaces replaced with hyphens). At least one network identifier (id or slug) is required. You can only choose either network_id or network_slug, not both.",
-                "default": null
+                "description": "Alternatively, one or more comma-separated network names in URL-friendly slug format (all lowercase, spaces replaced with hyphens). At least one network identifier (id or slug) is required. You can only choose either network_id or network_slug, not both."
               },
               "dex_id": {
                 "type": "string",
-                "description": "One or more comma-separated CoinMarketCap DEX exchange IDs to filter results by.",
-                "default": null
+                "description": "One or more comma-separated CoinMarketCap DEX exchange IDs to filter results by."
               },
               "dex_slug": {
                 "type": "string",
-                "description": "Alternatively, one or more comma-separated DEX exchange names in URL-friendly slug format (all lowercase, spaces replaced with hyphens). At least one DEX identifier (id or slug) is required.",
-                "default": null
+                "description": "Alternatively, one or more comma-separated DEX exchange names in URL-friendly slug format (all lowercase, spaces replaced with hyphens). At least one DEX identifier (id or slug) is required."
               },
               "base_asset_id": {
                 "type": "string",
-                "description": "One or more comma-separated CoinMarketCap cryptocurrency IDs for the base asset.",
-                "default": null
+                "description": "One or more comma-separated CoinMarketCap cryptocurrency IDs for the base asset."
               },
               "base_asset_symbol": {
                 "type": "string",
-                "description": "Alternatively, one or more comma-separated base asset symbols in URL-friendly slug format (all lowercase, spaces replaced with hyphens). At least one base asset identifier (id or symbol) is required.",
-                "default": null
+                "description": "Alternatively, one or more comma-separated base asset symbols in URL-friendly slug format (all lowercase, spaces replaced with hyphens). At least one base asset identifier (id or symbol) is required."
               },
               "base_asset_contract_address": {
                 "type": "string",
-                "description": "Alternatively, a base asset contract address in URL-friendly slug format (all lowercase, spaces replaced with hyphens). At least one base asset identifier is required.",
-                "default": null
+                "description": "Alternatively, a base asset contract address in URL-friendly slug format (all lowercase, spaces replaced with hyphens). At least one base asset identifier is required."
               },
               "base_asset_ucid": {
                 "type": "string",
-                "description": "One or more comma-separated unique CoinMarketCap cryptocurrency IDs for the base asset.",
-                "default": null
+                "description": "One or more comma-separated unique CoinMarketCap cryptocurrency IDs for the base asset."
               },
               "quote_asset_id": {
                 "type": "string",
-                "description": "One or more comma-separated CoinMarketCap cryptocurrency IDs for the quote asset.",
-                "default": null
+                "description": "One or more comma-separated CoinMarketCap cryptocurrency IDs for the quote asset."
               },
               "quote_asset_symbol": {
                 "type": "string",
-                "description": "Alternatively, one or more comma-separated quote asset symbols in URL-friendly slug format (all lowercase, spaces replaced with hyphens). At least one quote asset identifier (id or symbol) is required.",
-                "default": null
+                "description": "Alternatively, one or more comma-separated quote asset symbols in URL-friendly slug format (all lowercase, spaces replaced with hyphens). At least one quote asset identifier (id or symbol) is required."
               },
               "quote_asset_contract_address": {
                 "type": "string",
-                "description": "Alternatively, a quote asset contract address in URL-friendly slug format (all lowercase, spaces replaced with hyphens). At least one quote asset identifier is required.",
-                "default": null
+                "description": "Alternatively, a quote asset contract address in URL-friendly slug format (all lowercase, spaces replaced with hyphens). At least one quote asset identifier is required."
               },
               "quote_asset_ucid": {
                 "type": "string",
-                "description": "One or more comma-separated unique CoinMarketCap cryptocurrency IDs for the quote asset.",
-                "default": null
+                "description": "One or more comma-separated unique CoinMarketCap cryptocurrency IDs for the quote asset."
               },
               "scroll_id": {
                 "type": "string",
@@ -2970,43 +2839,35 @@
               },
               "liquidity_min": {
                 "type": "string",
-                "description": "Optionally specify a threshold for the minimum liquidity to filter results by.",
-                "default": null
+                "description": "Optionally specify a threshold for the minimum liquidity to filter results by."
               },
               "liquidity_max": {
                 "type": "string",
-                "description": "Optionally specify a threshold for the maximum liquidity to filter results by.",
-                "default": null
+                "description": "Optionally specify a threshold for the maximum liquidity to filter results by."
               },
               "volume_24h_min": {
                 "type": "string",
-                "description": "Optionally specify a threshold for the minimum 24-hour USD volume to filter results by.",
-                "default": null
+                "description": "Optionally specify a threshold for the minimum 24-hour USD volume to filter results by."
               },
               "volume_24h_max": {
                 "type": "string",
-                "description": "Optionally specify a threshold for the maximum 24-hour USD volume to filter results by.",
-                "default": null
+                "description": "Optionally specify a threshold for the maximum 24-hour USD volume to filter results by."
               },
               "no_of_transactions_24h_min": {
                 "type": "string",
-                "description": "Optionally specify a threshold for the minimum number of transactions in the last 24 hours to filter results by.",
-                "default": null
+                "description": "Optionally specify a threshold for the minimum number of transactions in the last 24 hours to filter results by."
               },
               "no_of_transactions_24h_max": {
                 "type": "string",
-                "description": "Optionally specify a threshold for the maximum number of transactions in the last 24 hours to filter results by.",
-                "default": null
+                "description": "Optionally specify a threshold for the maximum number of transactions in the last 24 hours to filter results by."
               },
               "percent_change_24h_min": {
                 "type": "string",
-                "description": "Optionally specify a threshold for the minimum 24-hour percent change to filter results by.",
-                "default": null
+                "description": "Optionally specify a threshold for the minimum 24-hour percent change to filter results by."
               },
               "percent_change_24h_max": {
                 "type": "string",
-                "description": "Optionally specify a threshold for the maximum 24-hour percent change to filter results by.",
-                "default": null
+                "description": "Optionally specify a threshold for the maximum 24-hour percent change to filter results by."
               },
               "sort": {
                 "type": "string",
@@ -3045,8 +2906,7 @@
               },
               "convert_id": {
                 "type": "string",
-                "description": "Optionally calculate market quotes by CoinMarketCap ID instead of symbol. For example, 'convert_id=1,2781' would replace a convert query of 'BTC,USD'. This parameter cannot be used when a 'convert' parameter is provided.",
-                "default": null
+                "description": "Optionally calculate market quotes by CoinMarketCap ID instead of symbol. For example, 'convert_id=1,2781' would replace a convert query of 'BTC,USD'. This parameter cannot be used when a 'convert' parameter is provided."
               }
             },
             "required": [],
@@ -3086,12 +2946,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -3155,12 +3011,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -3208,13 +3060,11 @@
             "properties": {
               "id": {
                 "type": "string",
-                "description": "One or more comma-separated CoinMarketCap cryptocurrency exchange IDs.",
-                "default": null
+                "description": "One or more comma-separated CoinMarketCap cryptocurrency exchange IDs."
               },
               "slug": {
                 "type": "string",
-                "description": "Alternatively, one or more comma-separated exchange slugs in URL-friendly format (all lowercase, spaces replaced with hyphens). Example: 'binance,gdax'. At least one of 'id' or 'slug' is required.",
-                "default": null
+                "description": "Alternatively, one or more comma-separated exchange slugs in URL-friendly format (all lowercase, spaces replaced with hyphens). Example: 'binance,gdax'. At least one of 'id' or 'slug' is required."
               },
               "aux": {
                 "type": "string",
@@ -3235,12 +3085,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -3293,8 +3139,7 @@
               },
               "slug": {
                 "type": "string",
-                "description": "Optionally, provide a comma-separated list of exchange slugs (URL-friendly, all lowercase with spaces replaced by dashes) to filter the results. If specified, all other query options will be ignored.",
-                "default": null
+                "description": "Optionally, provide a comma-separated list of exchange slugs (URL-friendly, all lowercase with spaces replaced by dashes) to filter the results. If specified, all other query options will be ignored."
               },
               "start": {
                 "type": "integer",
@@ -3325,8 +3170,7 @@
               },
               "crypto_id": {
                 "type": "string",
-                "description": "Optionally, pass one fiat or cryptocurrency ID to filter the exchanges. For example, 'crypto_id=1' will return only exchanges that have BTC in their market pairs.",
-                "default": null
+                "description": "Optionally, pass one fiat or cryptocurrency ID to filter the exchanges. For example, 'crypto_id=1' will return only exchanges that have BTC in their market pairs."
               }
             },
             "required": [],
@@ -3346,12 +3190,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -3481,12 +3321,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -3617,12 +3453,8 @@
             "description": "Header parameters.",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -3721,12 +3553,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -3805,12 +3633,8 @@
             "description": "Header parameters.",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -3906,12 +3730,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -3977,12 +3797,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -4029,13 +3845,11 @@
             "properties": {
               "time_start": {
                 "type": "string",
-                "description": "Timestamp (Unix or ISO 8601) to start returning CoinMarketCap 100 Index data for. Optional; if not provided, results are returned in reverse order from time_end.",
-                "default": null
+                "description": "Timestamp (Unix or ISO 8601) to start returning CoinMarketCap 100 Index data for. Optional; if not provided, results are returned in reverse order from time_end."
               },
               "time_end": {
                 "type": "string",
-                "description": "Timestamp (Unix or ISO 8601) to stop returning CoinMarketCap 100 Index data for (inclusive). Optional; if not provided, defaults to the current time. When omitted with time_start, results are returned in reverse order from this time.",
-                "default": null
+                "description": "Timestamp (Unix or ISO 8601) to stop returning CoinMarketCap 100 Index data for (inclusive). Optional; if not provided, defaults to the current time. When omitted with time_start, results are returned in reverse order from this time."
               },
               "count": {
                 "type": "string",
@@ -4044,8 +3858,7 @@
               },
               "interval": {
                 "type": "string",
-                "description": "Optionally adjust the interval of the returned data. Valid values are '5m' for 5 minutes, '15m' for 15 minutes, or 'daily' for daily intervals.",
-                "default": null
+                "description": "Optionally adjust the interval of the returned data. Valid values are '5m' for 5 minutes, '15m' for 15 minutes, or 'daily' for daily intervals."
               }
             },
             "required": [],
@@ -4062,12 +3875,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -4113,12 +3922,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -4187,12 +3992,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -4238,12 +4039,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -4328,12 +4125,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -4380,33 +4173,27 @@
             "properties": {
               "amount": {
                 "type": "number",
-                "description": "The amount of the base currency to convert. Must be between 1e-8 and 1000000000000. Example: 10.43.",
-                "default": null
+                "description": "The amount of the base currency to convert. Must be between 1e-8 and 1000000000000. Example: 10.43."
               },
               "id": {
                 "type": "string",
-                "description": "The CoinMarketCap currency ID of the base cryptocurrency or fiat to convert from. Example: \"1\". (Either 'id' or 'symbol' is required.)",
-                "default": null
+                "description": "The CoinMarketCap currency ID of the base cryptocurrency or fiat to convert from. Example: \"1\". (Either 'id' or 'symbol' is required.)"
               },
               "symbol": {
                 "type": "string",
-                "description": "Alternatively, the currency symbol of the base cryptocurrency or fiat to convert from. Example: \"BTC\". (Either 'id' or 'symbol' is required; note that if requested by symbol, the response may include an array of objects.)",
-                "default": null
+                "description": "Alternatively, the currency symbol of the base cryptocurrency or fiat to convert from. Example: \"BTC\". (Either 'id' or 'symbol' is required; note that if requested by symbol, the response may include an array of objects.)"
               },
               "time": {
                 "type": "string",
-                "description": "Optional timestamp (Unix or ISO 8601) to reference historical pricing during conversion. If not provided, the current time will be used.",
-                "default": null
+                "description": "Optional timestamp (Unix or ISO 8601) to reference historical pricing during conversion. If not provided, the current time will be used."
               },
               "convert": {
                 "type": "string",
-                "description": "Comma-separated list of fiat or cryptocurrency symbols to convert the base amount into. Up to 120 symbols may be provided, but basic tier users are limited to 1 convert symbol. Each conversion is returned in its own 'quote' object.",
-                "default": null
+                "description": "Comma-separated list of fiat or cryptocurrency symbols to convert the base amount into. Up to 120 symbols may be provided, but basic tier users are limited to 1 convert symbol. Each conversion is returned in its own 'quote' object."
               },
               "convert_id": {
                 "type": "string",
-                "description": "Optionally calculate market quotes by CoinMarketCap ID instead of symbol. For example, 'convert_id=1' would replace a convert query of 'BTC'. But basic tier users are limited to 1 convert_id. This parameter cannot be used when 'convert' is provided.",
-                "default": null
+                "description": "Optionally calculate market quotes by CoinMarketCap ID instead of symbol. For example, 'convert_id=1' would replace a convert query of 'BTC'. But basic tier users are limited to 1 convert_id. This parameter cannot be used when 'convert' is provided."
               }
             },
             "required": [
@@ -4427,12 +4214,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -4499,12 +4282,8 @@
             "description": "Header parameters.",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [
@@ -4551,12 +4330,8 @@
             "description": "Header parameters",
             "properties": {
               "X-CMC_PRO_API_KEY": {
-                "type": [
-                  "string",
-                  "null"
-                ],
-                "description": "The API key for CoinMarketCap.",
-                "default": null
+                "type": "string",
+                "description": "The API key for CoinMarketCap."
               }
             },
             "required": [

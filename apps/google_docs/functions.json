@@ -78,19 +78,17 @@
                                                 "type": "object",
                                                 "properties": {
                                                     "index": {
-                                                        "type": "integer", 
+                                                        "type": "integer",
                                                         "description": "The index at which to insert the text. The default is 1, so the text is inserted at the beginning of the document.",
                                                         "default": 1
                                                     },
                                                     "segmentId": {
                                                         "type": "string",
-                                                        "description": "The ID of the header, footer, footnote, or endnote to insert the text into.",
-                                                        "default": null
+                                                        "description": "The ID of the header, footer, footnote, or endnote to insert the text into."
                                                     },
                                                     "tabId": {
                                                         "type": "string",
-                                                        "description": "The ID of the tab to insert the text into.",
-                                                        "default": null
+                                                        "description": "The ID of the tab to insert the text into."
                                                     }
                                                 },
                                                 "required": ["index"]

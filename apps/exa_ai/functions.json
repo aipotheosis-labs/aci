@@ -34,8 +34,7 @@
               "enum": ["keyword", "neural", "auto"]
             },
             "category": {
-              "type": ["string", "null"],
-              "default": null,
+              "type": "string",
               "description": "(beta) A data category to focus on, with higher comprehensivity and data cleanliness. Categories right now include company, research paper, news, linkedin profile, github, tweet, movie, song, personal site, and pdf.",
               "enum": [
                 "company",
@@ -58,44 +57,37 @@
               "maximum": 10
             },
             "includeDomains": {
-              "type": ["array", "null"],
-              "default": null,
+              "type": "array",
               "items": {
                 "type": "string"
               },
               "description": "List of domains to include in the search. If specified, results will only come from these domains."
             },
             "excludeDomains": {
-              "type": ["array", "null"],
-              "default": null,
+              "type": "array",
               "items": {
                 "type": "string"
               },
               "description": "List of domains to exclude in the search. If specified, results will not include any from these domains."
             },
             "startCrawlDate": {
-              "type": ["string", "null"],
-              "default": null,
+              "type": "string",
               "description": "Crawl date refers to the date that Exa discovered a link. Results will include links that were crawled after this date. Must be specified in ISO 8601 format (e.g., '2023-01-01T00:00:00Z')."
             },
             "endCrawlDate": {
-              "type": ["string", "null"],
-              "default": null,
+              "type": "string",
               "description": "Crawl date refers to the date that Exa discovered a link. Results will include links that were crawled before this date. Must be specified in ISO 8601 format (e.g., '2023-01-01T00:00:00Z')."
             },
             "startPublishedDate": {
-              "type": ["string", "null"],
-              "default": null,
+              "type": "string",
               "description": "Only links with a published date after this will be returned. Must be specified in ISO 8601 format (e.g., '2023-01-01T00:00:00Z')."
             },
             "endPublishedDate": {
-              "type": ["string", "null"],
-              "default": null,
+              "type": "string",
               "description": "Only links with a published date before this will be returned. Must be specified in ISO 8601 format (e.g., '2023-01-01T00:00:00Z')."
             },
             "includeText": {
-              "type": ["array", "null"],
-              "default": null,
+              "type": "array",
               "items": {
                 "type": "string"
               },
@@ -103,8 +95,7 @@
               "description": "List of strings that must be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words."
             },
             "excludeText": {
-              "type": ["array", "null"],
-              "default": null,
+              "type": "array",
               "items": {
                 "type": "string"
               },
@@ -119,8 +110,7 @@
                   "description": "Parsed contents of the page.",
                   "properties": {
                     "maxCharacters": {
-                      "type": ["integer", "null"],
-                      "default": null,
+                      "type": "integer",
                       "description": "Max length in characters for the text returned."
                     },
                     "includeHtmlTags": {
@@ -148,8 +138,7 @@
                       "description": "The number of snippets to return per page. Default 1"
                     },
                     "query": {
-                      "type": ["string", "null"],
-                      "default": null
+                      "type": "string"
                     }
                   },
                   "required": ["numSentences", "highlightsPerUrl"],
@@ -161,8 +150,7 @@
                   "description": "Summary of the webpage",
                   "properties": {
                     "query": {
-                      "type": ["string", "null"],
-                      "default": null,
+                      "type": "string",
                       "description": "If specified, tries to answer the query in the summary"
                     }
                   },
@@ -223,8 +211,7 @@
               "description": "Parsed contents of the page.",
               "properties": {
                 "maxCharacters": {
-                  "type": ["integer", "null"],
-                  "default": null,
+                  "type": "integer",
                   "description": "Max length in characters for the text returned."
                 },
                 "includeHtmlTags": {
@@ -252,8 +239,7 @@
                   "description": "The number of snippets to return per page. Default 1"
                 },
                 "query": {
-                  "type": ["string", "null"],
-                  "default": null
+                  "type": "string"
                 }
               },
               "required": ["numSentences", "highlightsPerUrl"],
@@ -265,8 +251,7 @@
               "description": "Summary of the webpage",
               "properties": {
                 "query": {
-                  "type": ["string", "null"],
-                  "default": null,
+                  "type": "string",
                   "description": "If specified, tries to answer the query in the summary"
                 }
               },
@@ -316,44 +301,37 @@
               "maximum": 10
             },
             "includeDomains": {
-              "type": ["array", "null"],
-              "default": null,
+              "type": "array",
               "items": {
                 "type": "string"
               },
               "description": "List of domains to include in the search. If specified, results will only come from these domains."
             },
             "excludeDomains": {
-              "type": ["array", "null"],
-              "default": null,
+              "type": "array",
               "items": {
                 "type": "string"
               },
               "description": "List of domains to exclude in the search. If specified, results will not include any from these domains."
             },
             "startCrawlDate": {
-              "type": ["string", "null"],
-              "default": null,
+              "type": "string",
               "description": "Crawl date refers to the date that Exa discovered a link. Results will include links that were crawled after this date. Must be specified in ISO 8601 format (e.g., '2023-01-01T00:00:00Z')."
             },
             "endCrawlDate": {
-              "type": ["string", "null"],
-              "default": null,
+              "type": "string",
               "description": "Crawl date refers to the date that Exa discovered a link. Results will include links that were crawled before this date. Must be specified in ISO 8601 format (e.g., '2023-01-01T00:00:00Z')."
             },
             "startPublishedDate": {
-              "type": ["string", "null"],
-              "default": null,
+              "type": "string",
               "description": "Only links with a published date after this will be returned. Must be specified in ISO 8601 format (e.g., '2023-01-01T00:00:00Z')."
             },
             "endPublishedDate": {
-              "type": ["string", "null"],
-              "default": null,
+              "type": "string",
               "description": "Only links with a published date before this will be returned. Must be specified in ISO 8601 format (e.g., '2023-01-01T00:00:00Z')."
             },
             "includeText": {
-              "type": ["array", "null"],
-              "default": null,
+              "type": "array",
               "items": {
                 "type": "string"
               },
@@ -361,8 +339,7 @@
               "description": "List of strings that must be present in webpage text of results. Currently, only 1 string is supported, of up to 5 words."
             },
             "excludeText": {
-              "type": ["array", "null"],
-              "default": null,
+              "type": "array",
               "items": {
                 "type": "string"
               },
@@ -377,8 +354,7 @@
                   "description": "Parsed contents of the page.",
                   "properties": {
                     "maxCharacters": {
-                      "type": ["integer", "null"],
-                      "default": null,
+                      "type": "integer",
                       "description": "Max length in characters for the text returned."
                     },
                     "includeHtmlTags": {
@@ -406,8 +382,7 @@
                       "description": "The number of snippets to return per page. Default 1"
                     },
                     "query": {
-                      "type": ["string", "null"],
-                      "default": null
+                      "type": "string"
                     }
                   },
                   "required": ["numSentences", "highlightsPerUrl"],
@@ -419,8 +394,7 @@
                   "description": "Summary of the webpage",
                   "properties": {
                     "query": {
-                      "type": ["string", "null"],
-                      "default": null,
+                      "type": "string",
                       "description": "If specified, tries to answer the query in the summary"
                     }
                   },

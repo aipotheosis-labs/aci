@@ -22,12 +22,8 @@
                     "description": "Headers for the http request",
                     "properties": {
                         "Authorization": {
-                            "type": [
-                                "string",
-                                "null"
-                            ],
-                            "description": "Authorization header",
-                            "default": null
+                            "type": "string",
+                            "description": "Authorization header"
                         },
                         "Content-Type": {
                             "type": "string",
