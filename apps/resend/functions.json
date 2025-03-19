@@ -21,10 +21,6 @@
                     "type": "object",
                     "description": "Headers for the http request",
                     "properties": {
-                        "Authorization": {
-                            "type": "string",
-                            "description": "Authorization header"
-                        },
                         "Content-Type": {
                             "type": "string",
                             "description": "Content-Type header",
@@ -33,7 +29,6 @@
                     },
                     "additionalProperties": false,
                     "required": [
-                        "Authorization",
                         "Content-Type"
                     ],
                     "visible": []

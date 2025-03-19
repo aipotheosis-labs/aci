@@ -203,13 +203,9 @@
                         "X-Loc-Postal-Code": {
                             "type": "string",
                             "description": "The postal code of the client's location"
-                        },
-                        "X-Subscription-Token": {
-                            "type": "string",
-                            "description": "The secret token for the subscribed plan to authenticate the request"
                         }
                     },
-                    "required": ["X-Subscription-Token"],
+                    "required": [],
                     "visible": [],
                     "additionalProperties": false
                 }
@@ -322,13 +318,9 @@
                         "User-Agent": {
                             "type": "string",
                             "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings"
-                        },
-                        "X-Subscription-Token": {
-                            "type": "string",
-                            "description": "The secret token for the subscribed plan to authenticate the request"
                         }
                     },
-                    "required": ["X-Subscription-Token"],
+                    "required": [],
                     "visible": [],
                     "additionalProperties": false
                 }
@@ -458,13 +450,9 @@
                         "User-Agent": {
                             "type": "string",
                             "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings"
-                        },
-                        "X-Subscription-Token": {
-                            "type": "string",
-                            "description": "The secret token for the subscribed plan to authenticate the request"
                         }
                     },
-                    "required": ["X-Subscription-Token"],
+                    "required": [],
                     "visible": [],
                     "additionalProperties": false
                 }
@@ -599,13 +587,9 @@
                         "User-Agent": {
                             "type": "string",
                             "description": "The user agent of the client sending the request. Should follow commonly used browser agent strings"
-                        },
-                        "X-Subscription-Token": {
-                            "type": "string",
-                            "description": "The secret token for the subscribed plan to authenticate the request"
                         }
                     },
-                    "required": ["X-Subscription-Token"],
+                    "required": [],
                     "visible": [],
                     "additionalProperties": false
                 }

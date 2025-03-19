@@ -36,26 +36,10 @@
               "id"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -133,26 +117,10 @@
               "symbol"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -221,26 +189,10 @@
               "symbol"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -311,26 +263,10 @@
               "convert"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -411,26 +347,10 @@
               "aux"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -501,26 +421,10 @@
               "aux"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -638,26 +542,10 @@
               "aux"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -875,26 +763,10 @@
               "aux"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -966,26 +838,10 @@
               "sort_dir"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -1078,26 +934,10 @@
               "sort_dir"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -1170,26 +1010,10 @@
               "convert_id"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -1262,26 +1086,10 @@
               "convert_id"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -1423,26 +1231,10 @@
               "convert_id"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -1543,26 +1335,10 @@
               "skip_invalid"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -1625,26 +1401,10 @@
               "skip_invalid"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -1717,26 +1477,10 @@
               "skip_invalid"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -1829,26 +1573,10 @@
               "skip_invalid"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -1923,26 +1651,10 @@
               "skip_invalid"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -2035,26 +1747,10 @@
               "skip_invalid"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -2106,26 +1802,10 @@
               "aux"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -2202,26 +1882,9 @@
               "aux"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
-        "required": [
-          "header"
-        ],
+        "required": [],
         "visible": [
           "query"
         ],
@@ -2316,26 +1979,10 @@
               "convert_id"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -2438,26 +2085,10 @@
               "reverse_order"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -2532,26 +2163,10 @@
               "reverse_order"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -2628,26 +2243,10 @@
               "reverse_order"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -2726,26 +2325,10 @@
               "reverse_order"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -2940,26 +2523,10 @@
               "convert_id"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -3005,26 +2572,10 @@
               "id"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -3079,26 +2630,10 @@
               "aux"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -3184,26 +2719,10 @@
               "crypto_id"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -3315,26 +2834,9 @@
               "convert_id"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
-        "required": [
-          "header"
-        ],
+        "required": [],
         "visible": [
           "query"
         ],
@@ -3447,26 +2949,10 @@
               "convert_id"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters.",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -3547,26 +3033,10 @@
               "convert_id"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -3627,26 +3097,10 @@
               "aux"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters.",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -3724,26 +3178,9 @@
               "aux"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
-        "required": [
-          "header"
-        ],
+        "required": [],
         "visible": [
           "query"
         ],
@@ -3791,26 +3228,9 @@
               "convert_id"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
-        "required": [
-          "header"
-        ],
+        "required": [],
         "visible": [
           "query"
         ],
@@ -3869,26 +3289,9 @@
               "interval"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
-        "required": [
-          "header"
-        ],
+        "required": [],
         "visible": [
           "query"
         ],
@@ -3914,31 +3317,7 @@
         "path": "/v3/index/cmc100-latest",
         "server_url": "https://pro-api.coinmarketcap.com"
       },
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
-          }
-        },
-        "required": [
-          "header"
-        ],
-        "visible": [],
-        "additionalProperties": false
-      }
+      "parameters": {}
     },
     {
       "name": "COINMARKETCAP__CMC_CRYPTO_FEAR_GREED_HISTORICAL",
@@ -3986,26 +3365,9 @@
               "limit"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
-        "required": [
-          "header"
-        ],
+        "required": [],
         "visible": [
           "query"
         ],
@@ -4031,31 +3393,7 @@
         "path": "/v3/fear-and-greed/latest",
         "server_url": "https://pro-api.coinmarketcap.com"
       },
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
-          }
-        },
-        "required": [
-          "header"
-        ],
-        "visible": [],
-        "additionalProperties": false
-      }
+      "parameters": {}
     },
     {
       "name": "COINMARKETCAP__FIAT_MAP",
@@ -4119,26 +3457,9 @@
               "include_metals"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
-        "required": [
-          "header"
-        ],
+        "required": [],
         "visible": [
           "query"
         ],
@@ -4208,26 +3529,10 @@
               "convert_id"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -4276,26 +3581,10 @@
               "slug"
             ],
             "additionalProperties": false
-          },
-          "header": {
-            "type": "object",
-            "description": "Header parameters.",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
           }
         },
         "required": [
-          "query",
-          "header"
+          "query"
         ],
         "visible": [
           "query"
@@ -4322,30 +3611,6 @@
         "path": "/v1/key/info",
         "server_url": "https://pro-api.coinmarketcap.com"
       },
-      "parameters": {
-        "type": "object",
-        "properties": {
-          "header": {
-            "type": "object",
-            "description": "Header parameters",
-            "properties": {
-              "X-CMC_PRO_API_KEY": {
-                "type": "string",
-                "description": "The API key for CoinMarketCap."
-              }
-            },
-            "required": [
-              "X-CMC_PRO_API_KEY"
-            ],
-            "visible": [],
-            "additionalProperties": false
-          }
-        },
-        "required": [
-          "header"
-        ],
-        "visible": [],
-        "additionalProperties": false
-      }
+      "parameters": {}
     }
   ]
