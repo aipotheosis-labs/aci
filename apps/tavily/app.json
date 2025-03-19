@@ -11,11 +11,7 @@
           "name": "api_key"
         }
     },
-    "default_security_credentials_by_scheme": {
-        "api_key": {
-          "secret_key": "{{ AIPOLABS_PROVIDED_SHARED_API_KEY }}"
-        }
-    },
+    "default_security_credentials_by_scheme": {},
     "categories": [
         "search",
         "scraping"
