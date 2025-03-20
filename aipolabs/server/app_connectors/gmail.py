@@ -191,8 +191,8 @@ class Gmail(AppConnectorBase):
 
         # Update the draft
         updated_draft = (
-            service.users().drafts().update(userId=sender, id=draft_id, body=message_body).execute()
-        )  # type: ignore
+            service.users().drafts().update(userId=sender, id=draft_id, body=message_body).execute()  # type: ignore
+        )
 
         logger.info(f"Draft updated successfully. Draft ID: {updated_draft.get('id', 'unknown')}")
 
