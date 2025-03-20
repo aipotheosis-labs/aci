@@ -95,60 +95,53 @@ class Gmail(AppConnectorBase):
 
     # TODO: support HTML type for body
     def drafts_create(
-            self,
-            sender: str,
-            recipient: str,
-            body: str,
-            subject: str | None = None,
-            cc: list[str] | None = None,
-            bcc: list[str] | None = None,
-        ) -> dict[str, str]:
-            """
-            Create a draft email using Gmail API.
+        self,
+        sender: str,
+        recipient: str,
+        body: str,
+        subject: str | None = None,
+        cc: list[str] | None = None,
+        bcc: list[str] | None = None,
+    ) -> dict[str, str]:
+        """
+        Create a draft email using Gmail API.
 
-            Args:
-                sender: Sender email address
-                recipient: Recipient email address(es), comma-separated for multiple recipients
-                body: Email body content
-                subject: Optional email subject
-                cc: Optional list of carbon copy recipients
-                bcc: Optional list of blind carbon copy recipients
+        Args:
+            sender: Sender email address
+            recipient: Recipient email address(es), comma-separated for multiple recipients
+            body: Email body content
+            subject: Optional email subject
+            cc: Optional list of carbon copy recipients
+            bcc: Optional list of blind carbon copy recipients
 
-            Returns:
-                dict: Response from the Gmail API containing the draft ID
-            """
-            logger.info("executing drafts_create")
+        Returns:
+            dict: Response from the Gmail API containing the draft ID
+        """
+        logger.info("executing drafts_create")
 
-            # Create and encode the email message
-            message = MIMEText(body)
-            message["to"] = recipient
+        # Create and encode the email message
+        message = MIMEText(body)
+        message["to"] = recipient
 
-            if subject:
-                message["subject"] = subject
-            if cc:
-                message["cc"] = ", ".join(cc)
-            if bcc:
-                message["bcc"] = ", ".join(bcc)
+        if subject:
+            message["subject"] = subject
+        if cc:
+            message["cc"] = ", ".join(cc)
+        if bcc:
+            message["bcc"] = ", ".join(bcc)
 
-            # Create the message body
-            message_body = {
-                "message": {
-                    "raw": base64.urlsafe_b64encode(message.as_bytes()).decode()
-                }
-            }
+        # Create the message body
+        message_body = {"message": {"raw": base64.urlsafe_b64encode(message.as_bytes()).decode()}}
 
-            service = build("gmail", "v1", credentials=self.credentials)
+        service = build("gmail", "v1", credentials=self.credentials)
 
-            # Create the draft
-            draft = service.users().drafts().create(
-                userId=sender,
-                body=message_body
-            ).execute()  # type: ignore
+        # Create the draft
+        draft = service.users().drafts().create(userId=sender, body=message_body).execute()  # type: ignore
 
-            logger.info(f"Draft created successfully. Draft ID: {draft.get('id', 'unknown')}")
+        logger.info(f"Draft created successfully. Draft ID: {draft.get('id', 'unknown')}")
 
-            return {"draft_id": draft.get("id", "unknown")}
-    
+        return {"draft_id": draft.get("id", "unknown")}
+
     # TODO: support HTML type for body
     def drafts_update(
         self,
@@ -191,19 +184,15 @@ class Gmail(AppConnectorBase):
         # Create the message body
         message_body = {
             "id": draft_id,
-            "message": {
-                "raw": base64.urlsafe_b64encode(message.as_bytes()).decode()
-            }
+            "message": {"raw": base64.urlsafe_b64encode(message.as_bytes()).decode()},
         }
 
         service = build("gmail", "v1", credentials=self.credentials)
 
         # Update the draft
-        updated_draft = service.users().drafts().update(
-            userId=sender,
-            id=draft_id,
-            body=message_body
-        ).execute()  # type: ignore
+        updated_draft = (
+            service.users().drafts().update(userId=sender, id=draft_id, body=message_body).execute()
+        )  # type: ignore
 
         logger.info(f"Draft updated successfully. Draft ID: {updated_draft.get('id', 'unknown')}")
 
