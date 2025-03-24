@@ -1,0 +1,205 @@
+[
+    {
+        "name": "SENDGRID__SEND_EMAIL",
+        "description": "Send email over SendGrid's v3 Web API",
+        "tags": ["email", "sendgrid"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/mail/send",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Email content and configuration",
+                    "properties": {
+                        "from": {
+                            "type": "object",
+                            "description": "Sender information",
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "description": "Email address of the sender",
+                                    "format": "email"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "description": "Name of the sender"
+                                }
+                            },
+                            "required": ["email"],
+                            "visible": ["email", "name"],
+                            "additionalProperties": false
+                        },
+                        "personalizations": {
+                            "type": "array",
+                            "description": "An array of different recipient groups",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "to": {
+                                        "type": "array",
+                                        "description": "Recipients of the email",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "email": {
+                                                    "type": "string",
+                                                    "description": "Email address of the recipient",
+                                                    "format": "email"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "description": "Name of the recipient"
+                                                }
+                                            },
+                                            "required": ["email"],
+                                            "visible": ["email", "name"],
+                                            "additionalProperties": false
+                                        }
+                                    },
+                                    "cc": {
+                                        "type": "array",
+                                        "description": "Carbon copy recipients",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "email": {
+                                                    "type": "string",
+                                                    "description": "Email address of the CC recipient",
+                                                    "format": "email"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "description": "Name of the CC recipient"
+                                                }
+                                            },
+                                            "required": ["email"],
+                                            "visible": ["email", "name"],
+                                            "additionalProperties": false
+                                        }
+                                    },
+                                    "bcc": {
+                                        "type": "array",
+                                        "description": "Blind carbon copy recipients",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "email": {
+                                                    "type": "string",
+                                                    "description": "Email address of the BCC recipient",
+                                                    "format": "email"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "description": "Name of the BCC recipient"
+                                                }
+                                            },
+                                            "required": ["email"],
+                                            "visible": ["email", "name"],
+                                            "additionalProperties": false
+                                        }
+                                    },
+                                    "subject": {
+                                        "type": "string",
+                                        "description": "Subject line of the email"
+                                    }
+                                },
+                                "required": ["to"],
+                                "visible": ["to", "cc", "bcc"],
+                                "additionalProperties": false
+                            }
+                        },
+                        "content": {
+                            "type": "array",
+                            "description": "Content of the email",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "description": "MIME type of the content (e.g., text/plain, text/html)",
+                                        "default": "text/plain"
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "The actual content of the email"
+                                    }
+                                },
+                                "required": ["type", "value"],
+                                "visible": ["type", "value"],
+                                "additionalProperties": false
+                            }
+                        },
+                        "template_id": {
+                            "type": "string",
+                            "description": "ID of a SendGrid template to use"
+                        },
+                        "attachments": {
+                            "type": "array",
+                            "description": "Files to attach to the email",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "content": {
+                                        "type": "string",
+                                        "description": "Base64 encoded content of the attachment"
+                                    },
+                                    "filename": {
+                                        "type": "string",
+                                        "description": "Filename of the attachment"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "description": "MIME type of the attachment"
+                                    },
+                                    "disposition": {
+                                        "type": "string",
+                                        "description": "How the attachment should be displayed (attachment or inline)",
+                                        "default": "attachment"
+                                    }
+                                },
+                                "required": [],
+                                "visible": [],
+                                "additionalProperties": false
+                            }
+                        },
+                        "send_at": {
+                            "type": "integer",
+                            "description": "Unix timestamp of when to send the email (for scheduling)"
+                        },
+                        "subject": {
+                            "type": "string",
+                            "description": "Subject line of the email"
+                        }
+                    },
+                    "required": ["from", "personalizations", "content", "subject"],
+                    "visible": ["from", "personalizations", "content", "subject"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    }
+]
