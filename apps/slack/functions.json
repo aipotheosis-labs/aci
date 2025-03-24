@@ -2,7 +2,10 @@
     {
         "name": "SLACK__CONVERSATIONS_LIST",
         "description": "Lists all channels in a Slack team",
-        "tags": ["chat", "search"],
+        "tags": [
+            "chat",
+            "search"
+        ],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
@@ -41,17 +44,266 @@
                             "description": "Mix and match channel types by providing a comma-separated list of any combination of public_channel, private_channel, mpim, im",
                             "items": {
                                 "type": "string",
-                                "enum": ["public_channel", "private_channel", "mpim", "im"]
+                                "enum": [
+                                    "public_channel",
+                                    "private_channel",
+                                    "mpim",
+                                    "im"
+                                ]
                             }
                         }
                     },
                     "required": [],
-                    "visible": ["cursor", "exclude_archived", "limit", "team_id", "types"],
+                    "visible": [
+                        "cursor",
+                        "exclude_archived",
+                        "limit",
+                        "team_id",
+                        "types"
+                    ],
                     "additionalProperties": false
                 }
             },
             "required": [],
-            "visible": ["query"],
+            "visible": [
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SLACK__USERS_LIST",
+        "description": "Lists all users in a Slack team",
+        "tags": [
+            "users",
+            "team"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/users.list",
+            "server_url": "https://slack.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type for the request",
+                            "default": "application/x-www-form-urlencoded"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the request",
+                    "properties": {
+                        "cursor": {
+                            "type": "string",
+                            "description": "Pagination cursor for navigating through collections of data"
+                        },
+                        "include_locale": {
+                            "type": "boolean",
+                            "description": "Set to true to receive the locale for users",
+                            "default": false
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "The maximum number of items to return (recommended: no more than 200)",
+                            "default": 0
+                        },
+                        "team_id": {
+                            "type": "string",
+                            "description": "Encoded team ID to list users in, required if org token is used"
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "cursor",
+                        "include_locale",
+                        "limit",
+                        "team_id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "query"
+            ],
+            "visible": [
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SLACK__USERS_INFO",
+        "description": "Gets information about a user",
+        "tags": [
+            "users",
+            "team"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/users.info",
+            "server_url": "https://slack.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type for the request",
+                            "default": "application/x-www-form-urlencoded"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the request",
+                    "properties": {
+                        "user": {
+                            "type": "string",
+                            "description": "User ID to get information on"
+                        }
+                    },
+                    "required": [
+                        "user"
+                    ],
+                    "visible": [
+                        "user"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "query"
+            ],
+            "visible": [
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SLACK__USERS_GET_PRESENCE",
+        "description": "Gets user presence information",
+        "tags": ["users", "presence"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/api/users.getPresence",
+          "server_url": "https://slack.com"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "object",
+              "description": "Headers for the HTTP request",
+              "properties": {
+                "Content-Type": {
+                  "type": "string",
+                  "description": "Content type for the request",
+                  "default": "application/x-www-form-urlencoded"
+                }
+              },
+              "required": ["Content-Type"],
+              "visible": [],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters for the HTTP request",
+              "properties": {
+                "user": {
+                  "type": "string",
+                  "description": "User to get presence info on. Defaults to the authed user."
+                }
+              },
+              "required": ["user"],
+              "visible": ["user"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["header", "query"],
+          "visible": ["query"],
+          "additionalProperties": false
+        }
+    },
+    {
+        "name": "SLACK__USERS_SET_PRESENCE",
+        "description": "Sets user presence information",
+        "tags": ["users", "presence"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/users.setPresence",
+            "server_url": "https://slack.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type for the request",
+                            "default": "application/json; charset=utf-8"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Body parameters for the HTTP request",
+                    "properties": {
+                        "presence": {
+                            "type": "string",
+                            "description": "Either 'auto' or 'away'",
+                            "enum": ["auto", "away"]
+                        }
+                    },
+                    "required": ["presence"],
+                    "visible": ["presence"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
             "additionalProperties": false
         }
     }
