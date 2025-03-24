@@ -48,15 +48,21 @@ class RestAPIKeyFunctionExecutor(RestFunctionExecutor[APIKeyScheme, APIKeyScheme
         }
         """
 
+        security_key = (
+            security_credentials.secret_key
+            if not security_scheme.prefix
+            else f"{security_scheme.prefix} {security_credentials.secret_key}"
+        )
+
         match security_scheme.location:
             case HttpLocation.HEADER:
-                headers[security_scheme.name] = security_credentials.secret_key
+                headers[security_scheme.name] = security_key
             case HttpLocation.QUERY:
-                query[security_scheme.name] = security_credentials.secret_key
+                query[security_scheme.name] = security_key
             case HttpLocation.BODY:
-                body[security_scheme.name] = security_credentials.secret_key
+                body[security_scheme.name] = security_key
             case HttpLocation.COOKIE:
-                cookies[security_scheme.name] = security_credentials.secret_key
+                cookies[security_scheme.name] = security_key
             case _:
                 # should never happen
                 logger.error(

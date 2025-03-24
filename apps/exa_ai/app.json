@@ -8,7 +8,8 @@
     "security_schemes": {
         "api_key": {
           "location": "header",
-          "name": "X-API-KEY"
+          "name": "X-API-KEY",
+          "prefix": null
         }
     },
     "default_security_credentials_by_scheme": {},

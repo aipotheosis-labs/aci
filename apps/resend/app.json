@@ -8,7 +8,8 @@
     "security_schemes": {
         "api_key": {
           "location": "header",
-          "name": "Authorization"
+          "name": "Authorization",
+          "prefix": "Bearer"
         }
     },
     "default_security_credentials_by_scheme": {},
