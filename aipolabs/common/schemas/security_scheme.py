@@ -19,6 +19,7 @@ class APIKeyScheme(BaseModel):
         description="The prefix of the API key in the request, e.g., 'Bearer'. If None, no prefix will be used.",
     )
 
+
 class OAuth2Scheme(BaseModel):
     # TODO: consider providing a default value for in_, name, prefix as they are usually the same for most apps
     location: HttpLocation = Field(
