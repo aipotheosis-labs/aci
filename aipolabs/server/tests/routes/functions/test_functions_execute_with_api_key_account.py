@@ -3,16 +3,25 @@ import pytest
 import respx
 from fastapi import status
 from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
 
-from aipolabs.common.db.sql_models import Agent, Function, LinkedAccount
+from aipolabs.common.db.sql_models import Agent, App, Function, LinkedAccount
+from aipolabs.common.enums import SecurityScheme
 from aipolabs.common.schemas.function import FunctionExecute, FunctionExecutionResult
 from aipolabs.common.schemas.security_scheme import APIKeySchemeCredentials
 from aipolabs.server import config
 
 
 @respx.mock
+@pytest.mark.parametrize(
+    "header_token_prefix",
+    ["Bearer", None],
+)
 def test_execute_function_with_linked_account_api_key(
+    db_session: Session,
     test_client: TestClient,
+    header_token_prefix: str | None,
+    dummy_app_aipolabs_test: App,
     dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_aipolabs_test__hello_world_no_args: Function,
     dummy_linked_account_api_key_aipolabs_test_project_1: LinkedAccount,
@@ -20,6 +29,13 @@ def test_execute_function_with_linked_account_api_key(
     """
     Test that the function is executed with the end-user's linked account API key
     """
+    # Reset the API key scheme prefix to cover both cases: with and without prefix
+    # Note: nested update is not supported (won't trigger the onupdate event) in SQLAlchemy, so we need to do it this way
+    api_key_scheme = dummy_app_aipolabs_test.security_schemes[SecurityScheme.API_KEY].copy()
+    api_key_scheme["prefix"] = header_token_prefix
+    dummy_app_aipolabs_test.security_schemes[SecurityScheme.API_KEY] = api_key_scheme
+    db_session.commit()
+
     response_data = {"message": "Hello, test_mock_execute_function_with_no_args!"}
     mock_request = respx.get("https://api.mock.aipolabs.com/v1/hello_world_no_args").mock(
         return_value=httpx.Response(200, json=response_data)
@@ -40,17 +56,20 @@ def test_execute_function_with_linked_account_api_key(
     assert function_execution_response.success
     assert function_execution_response.data == response_data
     assert mock_request.called, "Request should be made"
-    assert mock_request.calls.last.request.headers["X-Test-API-Key"] != "default-shared-api-key", (
-        "API key used should NOT be the default shared API key"
-    )
 
     linked_account_api_key = APIKeySchemeCredentials.model_validate(
         dummy_linked_account_api_key_aipolabs_test_project_1.security_credentials
     )
-    assert (
-        mock_request.calls.last.request.headers["X-Test-API-Key"]
-        == linked_account_api_key.secret_key
-    )
+    if header_token_prefix:
+        assert (
+            mock_request.calls.last.request.headers["X-Test-API-Key"]
+            == f"{header_token_prefix} {linked_account_api_key.secret_key}"
+        )
+    else:
+        assert (
+            mock_request.calls.last.request.headers["X-Test-API-Key"]
+            == linked_account_api_key.secret_key
+        )
 
 
 @respx.mock
