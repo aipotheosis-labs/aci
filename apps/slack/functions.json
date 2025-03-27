@@ -72,6 +72,63 @@
         }
     },
     {
+      "name": "SLACK__CONVERSATIONS_MEMBERS",
+      "description": "Retrieve members of a conversation",
+      "tags": ["slack", "channels", "conversations", "members"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "GET",
+        "path": "/api/conversations.members",
+        "server_url": "https://slack.com"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the http request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type of the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "query": {
+            "type": "object",
+            "description": "Query parameters for the http request",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "The ID of the conversation to fetch members for"
+              },
+              "cursor": {
+                "type": "string",
+                "description": "Pagination cursor for next page"
+              },
+              "limit": {
+                "type": "integer",
+                "description": "The maximum number of items to return",
+                "default": 100
+              }
+            },
+            "required": ["channel"],
+            "visible": ["channel", "cursor", "limit"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "query"],
+        "visible": ["query"],
+        "additionalProperties": false
+      }
+    },
+    {
         "name": "SLACK__CHAT_POST_MESSAGE",
         "description": "Sends a message to a Slack channel, private group, or direct message",
         "tags": ["messaging", "chat", "slack"],
@@ -120,11 +177,8 @@
                   }
                 },
                 "attachments": {
-                  "type": "array",
-                  "description": "A JSON-based array of structured attachments",
-                  "items": {
-                    "type": "object"
-                  }
+                  "type": "string",
+                  "description": "A JSON-based array of structured attachments"
                 },
                 "markdown_text": {
                   "type": "string",
@@ -175,7 +229,7 @@
                 }
               },
               "required": ["channel"],
-              "visible": ["channel", "text", "blocks", "attachments", "markdown_text", "thread_ts", "reply_broadcast", "mrkdwn", "parse", "unfurl_links", "unfurl_media", "icon_emoji", "icon_url", "link_names"],
+              "visible": ["channel", "text", "blocks", "markdown_text", "thread_ts", "reply_broadcast", "mrkdwn", "parse", "unfurl_links", "unfurl_media", "icon_emoji", "icon_url", "link_names"],
               "additionalProperties": false
             }
           },
@@ -183,6 +237,484 @@
           "visible": ["body"],
           "additionalProperties": false
         }
+    },
+    {
+      "name": "SLACK__CHAT_POST_EPHEMERAL",
+      "description": "Sends an ephemeral message to a user in a channel",
+      "tags": ["chat", "message", "ephemeral"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/api/chat.postEphemeral",
+        "server_url": "https://slack.com"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type of the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Body parameters for the request",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "Channel, private group, or IM channel to send message to. Can be an encoded ID, or a name"
+              },
+              "user": {
+                "type": "string",
+                "description": "ID of the user who will receive the ephemeral message. The user should be in the channel specified by the channel argument"
+              },
+              "text": {
+                "type": "string",
+                "description": "Text of the message to send. When attachments or blocks are included, text will be used as fallback text for notifications only"
+              },
+              "attachments": {
+                "type": "string",
+                "description": "A JSON-based array of structured attachments, presented as a URL-encoded string"
+              },
+              "blocks": {
+                "type": "string",
+                "description": "A JSON-based array of structured blocks, presented as a URL-encoded string"
+              },
+              "as_user": {
+                "type": "boolean",
+                "description": "(Legacy) Pass true to post the message as the authed user. Defaults to true if the chat:write:bot scope is not included. Otherwise, defaults to false"
+              },
+              "icon_emoji": {
+                "type": "string",
+                "description": "Emoji to use as the icon for this message. Overrides icon_url"
+              },
+              "icon_url": {
+                "type": "string",
+                "description": "URL to an image to use as the icon for this message"
+              },
+              "link_names": {
+                "type": "boolean",
+                "description": "Find and link channel names and usernames"
+              },
+              "markdown_text": {
+                "type": "string",
+                "description": "Accepts message text formatted in markdown. This argument should not be used in conjunction with blocks or text. Limit this field to 12,000 characters"
+              },
+              "parse": {
+                "type": "string",
+                "description": "Change how messages are treated. Defaults to none"
+              },
+              "thread_ts": {
+                "type": "string",
+                "description": "Provide another message's ts value to post this message in a thread. Avoid using a reply's ts value; use its parent's value instead. Ephemeral messages in threads are only shown if there is already an active thread"
+              },
+              "username": {
+                "type": "string",
+                "description": "Set your bot's user name"
+              }
+            },
+            "required": ["channel", "user"],
+            "visible": ["channel", "user", "text", "blocks", "as_user", "icon_emoji", "icon_url", "link_names", "markdown_text", "parse", "thread_ts", "username"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CHAT_UPDATE",
+      "description": "Updates a message in a Slack channel",
+      "tags": ["chat", "message", "update"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/api/chat.update",
+        "server_url": "https://slack.com"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type for the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Parameters for updating a message",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "Channel containing the message to be updated. For direct messages, ensure that this value is a DM ID (starts with D) instead of a User ID"
+              },
+              "ts": {
+                "type": "string",
+                "description": "Timestamp of the message to be updated"
+              },
+              "text": {
+                "type": "string",
+                "description": "New text for the message. If not specified and blocks are specified, the message's previous text will be overwritten"
+              },
+              "blocks": {
+                "type": "string",
+                "description": "A JSON-based array of structured blocks, presented as a URL-encoded string"
+              },
+              "attachments": {
+                "type": "string",
+                "description": "A JSON-based array of structured attachments, presented as a URL-encoded string"
+              },
+              "as_user": {
+                "type": "boolean",
+                "description": "Pass true to update the message as the authed user. Bot users in this context are considered authed users",
+                "default": true
+              },
+              "file_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Array of new file ids that will be sent with this message"
+              },
+              "link_names": {
+                "type": "boolean",
+                "description": "Find and link channel names and usernames. Defaults to none"
+              },
+              "markdown_text": {
+                "type": "string",
+                "description": "Accepts message text formatted in markdown. This argument should not be used in conjunction with blocks or text"
+              },
+              "metadata": {
+                "type": "string",
+                "description": "JSON object with event_type and event_payload fields, presented as a URL-encoded string"
+              },
+              "parse": {
+                "type": "string",
+                "description": "Change how messages are treated. Defaults to client, unlike chat.postMessage. Accepts either none or full",
+                "enum": ["none", "full"]
+              },
+              "reply_broadcast": {
+                "type": "boolean",
+                "description": "Broadcast an existing thread reply to make it visible to everyone in the channel or conversation",
+                "default": false
+              }
+            },
+            "required": ["channel", "ts"],
+            "visible": ["channel", "ts", "text", "blocks", "file_ids", "link_names", "markdown_text", "metadata", "parse", "reply_broadcast"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CHAT_DELETE",
+      "description": "Deletes a message from a conversation",
+      "tags": ["chat", "message", "delete"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/api/chat.delete",
+        "server_url": "https://slack.com"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type of the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Body parameters for the request",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "Channel containing the message to be deleted"
+              },
+              "ts": {
+                "type": "string",
+                "description": "Timestamp of the message to be deleted"
+              },
+              "as_user": {
+                "type": "boolean",
+                "description": "Pass true to delete the message as the authed user with chat:write:user scope.",
+                "default": true
+              }
+            },
+            "required": ["channel", "ts"],
+            "visible": ["channel", "ts"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CHAT_SCHEDULE_MESSAGE",
+      "description": "Schedules a message to be sent to a channel at a specified time in the future",
+      "tags": ["chat", "message", "schedule"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/api/chat.scheduleMessage",
+        "server_url": "https://slack.com"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type of the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Parameters for scheduling a message",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "Channel, private group, or DM channel to send message to. Can be an encoded ID, or a name."
+              },
+              "post_at": {
+                "type": "integer",
+                "description": "Unix timestamp representing the future time the message should post to Slack (up to 120 days in the future)."
+              },
+              "text": {
+                "type": "string",
+                "description": "The text content of the message. When attachments or blocks are included, text will be used as fallback text for notifications only."
+              },
+              "blocks": {
+                "type": "string",
+                "description": "A JSON-based array of structured blocks, presented as a URL-encoded string."
+              },
+              "attachments": {
+                "type": "string",
+                "description": "A JSON-based array of structured attachments, presented as a URL-encoded string."
+              },
+              "markdown_text": {
+                "type": "string",
+                "description": "Accepts message text formatted in markdown. This argument should not be used with blocks or text. Limit to 12,000 characters."
+              },
+              "as_user": {
+                "type": "boolean",
+                "description": "Set to true to post the message as the authed user, instead of as a bot. Defaults to false."
+              },
+              "link_names": {
+                "type": "boolean",
+                "description": "Find and link user groups. No longer supports linking individual users."
+              },
+              "metadata": {
+                "type": "string",
+                "description": "JSON object with event_type and event_payload fields, presented as a URL-encoded string."
+              },
+              "parse": {
+                "type": "string",
+                "description": "Change how messages are treated.",
+                "enum": ["none", "full"]
+              },
+              "reply_broadcast": {
+                "type": "boolean",
+                "description": "Used with thread_ts to make reply visible to everyone in the channel. Defaults to false."
+              },
+              "thread_ts": {
+                "type": "string",
+                "description": "Provide another message's ts value to make this message a reply."
+              },
+              "unfurl_links": {
+                "type": "boolean",
+                "description": "Pass true to enable unfurling of primarily text-based content."
+              },
+              "unfurl_media": {
+                "type": "boolean",
+                "description": "Pass false to disable unfurling of media content."
+              }
+            },
+            "required": ["channel", "post_at"],
+            "visible": ["channel", "post_at", "text", "blocks", "markdown_text", "as_user", "link_names", "metadata", "parse", "reply_broadcast", "thread_ts", "unfurl_links", "unfurl_media"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CHAT_SCHEDULED_MESSAGES_LIST",
+      "description": "Returns a list of scheduled messages",
+      "tags": ["chat", "scheduled messages"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/api/chat.scheduledMessages.list",
+        "server_url": "https://slack.com"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type for the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Body parameters for the request",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "The channel of the scheduled messages"
+              },
+              "cursor": {
+                "type": "string",
+                "description": "For pagination purposes, this is the cursor value returned from a previous call indicating where you want to start this call from"
+              },
+              "latest": {
+                "type": "string",
+                "description": "A Unix timestamp of the latest value in the time range"
+              },
+              "limit": {
+                "type": "integer",
+                "description": "Maximum number of original entries to return",
+                "default": 100
+              },
+              "oldest": {
+                "type": "string",
+                "description": "A Unix timestamp of the oldest value in the time range"
+              },
+              "team_id": {
+                "type": "string",
+                "description": "Encoded team id to list channels in, required if org token is used"
+              }
+            },
+            "required": [],
+            "visible": ["channel", "cursor", "latest", "limit", "oldest", "team_id"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CHAT_DELETE_SCHEDULED_MESSAGE",
+      "description": "Deletes a pending scheduled message from the queue.",
+      "tags": ["chat", "message", "scheduled"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/api/chat.deleteScheduledMessage",
+        "server_url": "https://slack.com"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type of the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Body parameters for the request",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "The channel the scheduled_message is posting to"
+              },
+              "scheduled_message_id": {
+                "type": "string",
+                "description": "scheduled_message_id returned from call to chat.scheduleMessage"
+              },
+              "as_user": {
+                "type": "boolean",
+                "description": "Pass true to delete the message as the authed user with chat:write:user scope.",
+                "default": true
+              }
+            },
+            "required": ["channel", "scheduled_message_id"],
+            "visible": ["channel", "scheduled_message_id"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
     },
     {
         "name": "SLACK__USERS_LIST",
