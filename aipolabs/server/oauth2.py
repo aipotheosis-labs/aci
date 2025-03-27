@@ -176,10 +176,7 @@ def parse_oauth2_security_credentials(
     return security_credentials
 
 
-def rewrite_oauth2_authorization_url(
-    app_name: str,
-    authorization_url: str
-) -> str:
+def rewrite_oauth2_authorization_url(app_name: str, authorization_url: str) -> str:
     """
     Rewrite OAuth2 authorization URL for specific apps that need special handling.
     Currently handles Slack's special case where user scopes and scopes need to be replaced.
@@ -202,12 +199,11 @@ def rewrite_oauth2_authorization_url(
             if scope_end == -1:
                 scope_end = len(authorization_url)
             original_scope = authorization_url[scope_start:scope_end]
-            
+
             # Replace the original scope with user_scope and add scope
             new_url = authorization_url.replace(
-                f"scope={original_scope}",
-                f"user_scope={original_scope}&scope="
+                f"scope={original_scope}", f"user_scope={original_scope}&scope="
             )
             return new_url
-    
+
     return authorization_url

@@ -1,4 +1,3 @@
-import time
 from typing import Annotated
 from uuid import UUID
 
@@ -449,7 +448,7 @@ async def link_oauth2_account(
     authorization_url = oauth2.rewrite_oauth2_authorization_url(
         query_params.app_name, authorization_url
     )
-    
+
     logger.info(
         "authorization_url url after replacing the state jwt token",
         extra={"authorization_url": authorization_url},
@@ -538,7 +537,9 @@ async def linked_accounts_oauth2_callback(
 
     # TODO: we might want to verify scope authorized by end user (token_response["scope"]) is what we asked
     # parse the token_response into the security_credentials, handling provider-specific edge cases
-    security_credentials: OAuth2SchemeCredentials = oauth2.parse_oauth2_security_credentials(app.name, token_response)
+    security_credentials: OAuth2SchemeCredentials = oauth2.parse_oauth2_security_credentials(
+        app.name, token_response
+    )
     logger.debug(
         "security_credentials",
         extra={"security_credentials": security_credentials.model_dump(exclude_none=True)},
