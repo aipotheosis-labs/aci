@@ -146,34 +146,34 @@ def parse_oauth2_security_credentials(
     Returns:
         OAuth2SchemeCredentials with appropriate fields set
     """
-    # Special case for Slack
-    # Slack has two types of tokens, user token and bot token
-    # Slack's user token is in the authed_user field
     if app_name.lower() == "slack":
-        expires_in = token_response.get("authed_user", {}).get("expires_in", None)
-        security_credentials = OAuth2SchemeCredentials(
-            access_token=token_response.get("authed_user", {}).get("access_token"),
-            token_type=token_response.get("authed_user", {}).get("token_type", None),
-            refresh_token=token_response.get("authed_user", {}).get("refresh_token", None),
+        authed_user = token_response.get("authed_user", {})
+        if not authed_user or "access_token" not in authed_user:
+            logger.error(f"Invalid Slack OAuth response: {token_response}")
+            raise LinkedAccountOAuth2Error("Invalid Slack OAuth response")
+
+        expires_in = authed_user.get("expires_in")
+        return OAuth2SchemeCredentials(
+            access_token=authed_user["access_token"],
+            token_type=authed_user.get("token_type"),
+            refresh_token=authed_user.get("refresh_token"),
             expires_at=int(time.time()) + expires_in if expires_in else None,
             raw_token_response=token_response,
         )
-        return security_credentials
 
-    # Base case - standard OAuth2 provider
-    security_credentials = OAuth2SchemeCredentials(
+    if "access_token" not in token_response:
+        logger.error(f"Missing access token in OAuth response: {token_response}")
+        raise LinkedAccountOAuth2Error("Missing access token in OAuth response")
+
+    return OAuth2SchemeCredentials(
         access_token=token_response["access_token"],
-        token_type=token_response.get("token_type", None),
-        expires_at=(
-            int(time.time()) + token_response["expires_in"]
-            if "expires_in" in token_response
-            else None
-        ),
-        refresh_token=token_response.get("refresh_token", None),
+        token_type=token_response.get("token_type"),
+        expires_at=int(time.time()) + token_response["expires_in"]
+        if "expires_in" in token_response
+        else None,
+        refresh_token=token_response.get("refresh_token"),
         raw_token_response=token_response,
     )
-
-    return security_credentials
 
 
 def rewrite_oauth2_authorization_url(app_name: str, authorization_url: str) -> str:
