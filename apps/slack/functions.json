@@ -72,6 +72,119 @@
         }
     },
     {
+        "name": "SLACK__CHAT_POST_MESSAGE",
+        "description": "Sends a message to a Slack channel, private group, or direct message",
+        "tags": ["messaging", "chat", "slack"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/api/chat.postMessage",
+          "server_url": "https://slack.com"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "header": {
+              "type": "object",
+              "description": "Headers for the HTTP request",
+              "properties": {
+                "Content-Type": {
+                  "type": "string",
+                  "description": "Content type of the request",
+                  "default": "application/json; charset=utf-8"
+                }
+              },
+              "required": ["Content-Type"],
+              "visible": [],
+              "additionalProperties": false
+            },
+            "body": {
+              "type": "object",
+              "description": "Message content and configuration",
+              "properties": {
+                "channel": {
+                  "type": "string",
+                  "description": "An encoded ID or channel name that represents a channel, private group, or IM channel to send the message to"
+                },
+                "text": {
+                  "type": "string",
+                  "description": "The text of the message. When using blocks or attachments, this is used as fallback text for notifications"
+                },
+                "blocks": {
+                  "type": "array",
+                  "description": "A JSON-based array of structured blocks",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "attachments": {
+                  "type": "array",
+                  "description": "A JSON-based array of structured attachments",
+                  "items": {
+                    "type": "object"
+                  }
+                },
+                "markdown_text": {
+                  "type": "string",
+                  "description": "Message text formatted in markdown. Should not be used with blocks or text. Limit to 12,000 characters"
+                },
+                "thread_ts": {
+                  "type": "string",
+                  "description": "Provide another message's ts value to make this message a reply. Avoid using a reply's ts value; use its parent instead"
+                },
+                "reply_broadcast": {
+                  "type": "boolean",
+                  "description": "Used with thread_ts to make reply visible to everyone in the channel. Defaults to false",
+                  "default": false
+                },
+                "mrkdwn": {
+                  "type": "boolean",
+                  "description": "Disable Slack markup parsing by setting to false. Enabled by default",
+                  "default": true
+                },
+                "parse": {
+                  "type": "string",
+                  "description": "Change how messages are treated. Set to 'none' to remove hyperlinks, 'full' to ignore mrkdwn formatting",
+                  "enum": ["none", "full"]
+                },
+                "unfurl_links": {
+                  "type": "boolean",
+                  "description": "Pass true to enable unfurling of primarily text-based content"
+                },
+                "unfurl_media": {
+                  "type": "boolean",
+                  "description": "Pass false to disable unfurling of media content"
+                },
+                "username": {
+                  "type": "string",
+                  "description": "Set your bot's user name"
+                },
+                "icon_emoji": {
+                  "type": "string",
+                  "description": "Emoji to use as the icon for this message. Overrides icon_url"
+                },
+                "icon_url": {
+                  "type": "string",
+                  "description": "URL to an image to use as the icon for this message"
+                },
+                "link_names": {
+                  "type": "boolean",
+                  "description": "Find and link user groups"
+                }
+              },
+              "required": ["channel"],
+              "visible": ["channel", "text", "blocks", "attachments", "markdown_text", "thread_ts", "reply_broadcast", "mrkdwn", "parse", "unfurl_links", "unfurl_media", "icon_emoji", "icon_url", "link_names"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["header", "body"],
+          "visible": ["body"],
+          "additionalProperties": false
+        }
+    },
+    {
         "name": "SLACK__USERS_LIST",
         "description": "Lists all users in a Slack team",
         "tags": [
