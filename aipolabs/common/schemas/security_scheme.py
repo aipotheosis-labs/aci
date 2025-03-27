@@ -115,6 +115,7 @@ class OAuth2SchemeCredentials(BaseModel):
     token_type: str | None = None
     expires_at: int | None = None
     refresh_token: str | None = None
+    raw_token_response: dict | None = None
 
 
 class NoAuthSchemeCredentials(BaseModel, extra="forbid"):
