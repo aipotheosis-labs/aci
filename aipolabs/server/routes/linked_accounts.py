@@ -443,6 +443,13 @@ async def link_oauth2_account(
     authorization_url = str(authorization_data["url"]).replace(
         authorization_data["state"], new_state_jwt
     )
+
+    # rewrite the authorization url for some apps that need special handling
+    # TODO: this is hacky and need to refactor this in the future
+    authorization_url = oauth2.rewrite_oauth2_authorization_url(
+        query_params.app_name, authorization_url
+    )
+    
     logger.info(
         "authorization_url url after replacing the state jwt token",
         extra={"authorization_url": authorization_url},
@@ -530,16 +537,8 @@ async def linked_accounts_oauth2_callback(
         raise AuthenticationError("failed to retrieve oauth2 token during account linking") from e
 
     # TODO: we might want to verify scope authorized by end user (token_response["scope"]) is what we asked
-    security_credentials = OAuth2SchemeCredentials(
-        access_token=token_response["access_token"],
-        token_type=token_response.get("token_type", None),
-        expires_at=(
-            int(time.time()) + token_response["expires_in"]
-            if "expires_in" in token_response
-            else None
-        ),
-        refresh_token=token_response.get("refresh_token", None),
-    )
+    # parse the token_response into the security_credentials, handling provider-specific edge cases
+    security_credentials: OAuth2SchemeCredentials = oauth2.parse_oauth2_security_credentials(app.name, token_response)
     logger.debug(
         "security_credentials",
         extra={"security_credentials": security_credentials.model_dump(exclude_none=True)},
