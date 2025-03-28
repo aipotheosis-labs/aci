@@ -123,114 +123,830 @@
       }
     },
     {
-        "name": "SLACK__CHAT_POST_MESSAGE",
-        "description": "Sends a message to a Slack channel, private group, or direct message",
-        "tags": ["messaging", "chat", "slack"],
-        "visibility": "public",
-        "active": true,
-        "protocol": "rest",
-        "protocol_data": {
-          "method": "POST",
-          "path": "/chat.postMessage",
-          "server_url": "https://slack.com/api"
-        },
-        "parameters": {
-          "type": "object",
-          "properties": {
-            "header": {
-              "type": "object",
-              "description": "Headers for the HTTP request",
-              "properties": {
-                "Content-Type": {
-                  "type": "string",
-                  "description": "Content type of the request",
-                  "default": "application/json; charset=utf-8"
-                }
-              },
-              "required": ["Content-Type"],
-              "visible": [],
-              "additionalProperties": false
+      "name": "SLACK__CONVERSATIONS_INFO",
+      "description": "Retrieves information about a conversation (channel)",
+      "tags": ["slack", "channels", "conversations"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "GET",
+        "path": "/conversations.info",
+        "server_url": "https://slack.com/api"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the http request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type of the request",
+                "default": "application/x-www-form-urlencoded"
+              }
             },
-            "body": {
-              "type": "object",
-              "description": "Message content and configuration",
-              "properties": {
-                "channel": {
-                  "type": "string",
-                  "description": "An encoded ID or channel name that represents a channel, private group, or IM channel to send the message to"
-                },
-                "text": {
-                  "type": "string",
-                  "description": "The text of the message. When using blocks or attachments, this is used as fallback text for notifications"
-                },
-                "blocks": {
-                  "type": "array",
-                  "description": "A JSON-based array of structured blocks",
-                  "items": {
-                    "type": "object"
-                  }
-                },
-                "attachments": {
-                  "type": "string",
-                  "description": "A JSON-based array of structured attachments"
-                },
-                "markdown_text": {
-                  "type": "string",
-                  "description": "Message text formatted in markdown. Should not be used with blocks or text. Limit to 12,000 characters"
-                },
-                "thread_ts": {
-                  "type": "string",
-                  "description": "Provide another message's ts value to make this message a reply. Avoid using a reply's ts value; use its parent instead"
-                },
-                "reply_broadcast": {
-                  "type": "boolean",
-                  "description": "Used with thread_ts to make reply visible to everyone in the channel. Defaults to false",
-                  "default": false
-                },
-                "mrkdwn": {
-                  "type": "boolean",
-                  "description": "Disable Slack markup parsing by setting to false. Enabled by default",
-                  "default": true
-                },
-                "parse": {
-                  "type": "string",
-                  "description": "Change how messages are treated. Set to 'none' to remove hyperlinks, 'full' to ignore mrkdwn formatting",
-                  "enum": ["none", "full"]
-                },
-                "unfurl_links": {
-                  "type": "boolean",
-                  "description": "Pass true to enable unfurling of primarily text-based content"
-                },
-                "unfurl_media": {
-                  "type": "boolean",
-                  "description": "Pass false to disable unfurling of media content"
-                },
-                "username": {
-                  "type": "string",
-                  "description": "Set your bot's user name"
-                },
-                "icon_emoji": {
-                  "type": "string",
-                  "description": "Emoji to use as the icon for this message. Overrides icon_url"
-                },
-                "icon_url": {
-                  "type": "string",
-                  "description": "URL to an image to use as the icon for this message"
-                },
-                "link_names": {
-                  "type": "boolean",
-                  "description": "Find and link user groups"
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "query": {
+            "type": "object",
+            "description": "Query parameters for the http request",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "Conversation ID of the channel to get information about"
+              },
+              "include_locale": {
+                "type": "boolean",
+                "description": "Set to true to receive the locale for this conversation",
+                "default": true
+              },
+              "include_num_members": {
+                "type": "boolean",
+                "description": "Set to true to include the member count for the specified conversation",
+                "default": false
+              }
+            },
+            "required": ["channel"],
+            "visible": ["channel", "include_locale", "include_num_members"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "query"],
+        "visible": ["query"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__USERS_CONVERSATIONS",
+      "description": "List conversations the calling user may access",
+      "tags": ["conversations", "users"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "GET",
+        "path": "/users.conversations",
+        "server_url": "https://slack.com/api/"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type for the request",
+                "default": "application/x-www-form-urlencoded"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "query": {
+            "type": "object",
+            "description": "Query parameters for the HTTP request",
+            "properties": {
+              "cursor": {
+                "type": "string",
+                "description": "Pagination cursor for navigating through data collections"
+              },
+              "exclude_archived": {
+                "type": "boolean",
+                "description": "Set to true to exclude archived channels from the list",
+                "default": false
+              },
+              "limit": {
+                "type": "integer",
+                "description": "The maximum number of items to return (max value: 999)",
+                "default": 100
+              },
+              "team_id": {
+                "type": "string",
+                "description": "Encoded team ID to list conversations in, required if org token is used"
+              },
+              "types": {
+                "type": "string",
+                "description": "Comma-separated list of channel types (public_channel, private_channel, mpim, im)",
+                "default": "public_channel"
+              },
+              "user": {
+                "type": "string",
+                "description": "Browse conversations by a specific user ID's membership"
+              }
+            },
+            "required": [],
+            "visible": ["cursor", "exclude_archived", "limit",  "types", "user"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header"],
+        "visible": ["query"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CONVERSATIONS_HISTORY",
+      "description": "Fetches a conversation's history of messages and events",
+      "tags": ["slack", "channels", "conversations", "messages"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "GET",
+        "path": "/conversations.history",
+        "server_url": "https://slack.com/api/"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the http request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "The MIME type of the body of the request",
+                "default": "application/x-www-form-urlencoded"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "query": {
+            "type": "object",
+            "description": "Query parameters for the http request",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "Conversation ID to fetch history for"
+              },
+              "cursor": {
+                "type": "string",
+                "description": "Pagination cursor for next page"
+              },
+              "include_all_metadata": {
+                "type": "boolean",
+                "description": "Include all metadata in the response",
+                "default": false
+              },
+              "inclusive": {
+                "type": "boolean",
+                "description": "Include messages with latest or oldest timestamp in results",
+                "default": false
+              },
+              "latest": {
+                "type": "string",
+                "description": "End of time range of messages to include in results",
+                "default": "now"
+              },
+              "limit": {
+                "type": "integer",
+                "description": "The maximum number of items to return",
+                "default": 100
+              },
+              "oldest": {
+                "type": "string",
+                "description": "Start of time range of messages to include in results",
+                "default": "0"
+              }
+            },
+            "required": ["channel"],
+            "visible": ["channel", "cursor", "inclusive", "latest", "limit", "oldest", "include_all_metadata"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "query"],
+        "visible": ["query"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CONVERSATIONS_REPLIES",
+      "description": "Retrieve a thread of messages posted to a conversation",
+      "tags": ["conversations", "messages", "threads"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "GET",
+        "path": "/conversations.replies",
+        "server_url": "https://slack.com/api"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type for the request",
+                "default": "application/x-www-form-urlencoded"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "query": {
+            "type": "object",
+            "description": "Query parameters for the request",
+            "properties": {
+              "token": {
+                "type": "string",
+                "description": "Authentication token bearing required scopes",
+                "default": null
+              },
+              "channel": {
+                "type": "string",
+                "description": "Conversation ID to fetch thread from",
+                "example": "C1234567890"
+              },
+              "ts": {
+                "type": "string",
+                "description": "Unique identifier of either a thread's parent message or a message in the thread",
+                "example": "1234567890.123456"
+              },
+              "cursor": {
+                "type": "string",
+                "description": "Pagination cursor for navigating through collections of data",
+                "example": "dXNlcjpVMDYxTkZUVDI="
+              },
+              "include_all_metadata": {
+                "type": "boolean",
+                "description": "Return all metadata associated with this message",
+                "default": false
+              },
+              "inclusive": {
+                "type": "boolean",
+                "description": "Include messages with oldest or latest timestamps in results",
+                "default": false
+              },
+              "latest": {
+                "type": "string",
+                "description": "Only messages before this Unix timestamp will be included in results",
+                "default": "now"
+              },
+              "limit": {
+                "type": "integer",
+                "description": "The maximum number of items to return",
+                "default": 100
+              },
+              "oldest": {
+                "type": "string",
+                "description": "Only messages after this Unix timestamp will be included in results",
+                "default": "0"
+              }
+            },
+            "required": ["token", "channel", "ts"],
+            "visible": ["channel", "ts", "cursor", "include_all_metadata", "inclusive", "latest", "limit", "oldest"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "query"],
+        "visible": ["query"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CONVERSATIONS_CREATE",
+      "description": "Initiates a public or private channel-based conversation",
+      "tags": ["conversations", "channels"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/conversations.create",
+        "server_url": "https://slack.com/api"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type for the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Body parameters for the request",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Name of the public or private channel to create"
+              },
+              "is_private": {
+                "type": "boolean",
+                "description": "Create a private channel instead of a public one"
+              },
+              "team_id": {
+                "type": "string",
+                "description": "Encoded team id to create the channel in, required if org token is used"
+              }
+            },
+            "required": ["name"],
+            "visible": ["name", "is_private"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CONVERSATIONS_RENAME",
+      "description": "Renames a conversation",
+      "tags": ["conversations", "channels"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/conversations.rename",
+        "server_url": "https://slack.com/api"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type of the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Body parameters for the request",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "ID of conversation to rename",
+                "example": "C1234567890"
+              },
+              "name": {
+                "type": "string",
+                "description": "New name for conversation"
+              }
+            },
+            "required": ["channel", "name"],
+            "visible": ["channel", "name"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CONVERSATIONS_SET_PURPOSE",
+      "description": "Sets the channel description",
+      "tags": ["conversations", "channels"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/conversations.setPurpose",
+        "server_url": "https://slack.com/api"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the http request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type of the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Body parameters for the request",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "Channel to set the description of"
+              },
+              "purpose": {
+                "type": "string",
+                "description": "The description to set for the channel"
+              }
+            },
+            "required": ["channel", "purpose"],
+            "visible": ["channel", "purpose"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CONVERSATIONS_SET_TOPIC",
+      "description": "Sets the topic for a conversation",
+      "tags": ["conversations", "topic"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/conversations.setTopic",
+        "server_url": "https://slack.com/api"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type of the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Body parameters for the request",
+            "properties":{
+              "channel": {
+                "type": "string",
+                "description": "Conversation ID to set the topic of"
+              },
+              "topic": {
+                "type": "string",
+                "description": "The new topic string. Does not support formatting or linkification."
+              }
+            },
+            "required": ["channel", "topic"],
+            "visible": ["channel", "topic"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CONVERSATIONS_ARCHIVE",
+      "description": "Archives a conversation",
+      "tags": ["conversations", "archive"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/conversations.archive",
+        "server_url": "https://slack.com/api"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type of the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Body parameters for the request",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "ID of conversation to archive",
+                "example": "C1234567890"
+              }
+            },
+            "required": ["channel"],
+            "visible": ["channel"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CONVERSATIONS_UNARCHIVE",
+      "description": "Reverses conversation archival",
+      "tags": ["conversations", "archive"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/conversations.unarchive",
+        "server_url": "https://slack.com/api"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type of the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Body parameters for the request",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "ID of conversation to unarchive",
+                "example": "C1234567890"
+              }
+            },
+            "required": ["channel"],
+            "visible": ["channel"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CONVERSATIONS_OPEN",
+      "description": "Opens or resumes a direct message or multi-person direct message",
+      "tags": ["conversations", "direct message"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/conversations.open",
+        "server_url": "https://slack.com/api",
+        "content_type": "application/x-www-form-urlencoded"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type for the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Body parameters for the request",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "Resume a conversation by supplying an 'im' or 'mpim's ID"
+              },
+              "return_im": {
+                "type": "boolean",
+                "description": "Indicates you want the full IM channel definition in the response"
+              },
+              "users": {
+                "type": "string",
+                "description": "Comma separated lists of users. If only one user is included, this creates a 1:1 DM"
+              },
+              "prevent_creation": {
+                "type": "boolean",
+                "description": "Do not create a direct message or multi-person direct message. This is used to see if there is an existing dm or mpdm",
+                "default": true
+              }
+            },
+            "required": ["prevent_creation"],
+            "visible": ["channel", "return_im", "users"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CONVERSATIONS_CLOSE",
+      "description": "Closes a direct message or multi-person direct message",
+      "tags": ["conversations", "messaging"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/conversations.close",
+        "server_url": "https://slack.com/api"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type of the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Body parameters for the request",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "Conversation ID to close"
+              }
+            },
+            "required": ["channel"],
+            "visible": ["channel"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "SLACK__CHAT_POST_MESSAGE",
+      "description": "Sends a message to a Slack channel, private group, or direct message",
+      "tags": ["messaging", "chat", "slack"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/chat.postMessage",
+        "server_url": "https://slack.com/api"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "header": {
+            "type": "object",
+            "description": "Headers for the HTTP request",
+            "properties": {
+              "Content-Type": {
+                "type": "string",
+                "description": "Content type of the request",
+                "default": "application/json; charset=utf-8"
+              }
+            },
+            "required": ["Content-Type"],
+            "visible": [],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "Message content and configuration",
+            "properties": {
+              "channel": {
+                "type": "string",
+                "description": "An encoded ID or channel name that represents a channel, private group, or IM channel to send the message to"
+              },
+              "text": {
+                "type": "string",
+                "description": "The text of the message. When using blocks or attachments, this is used as fallback text for notifications"
+              },
+              "blocks": {
+                "type": "array",
+                "description": "A JSON-based array of structured blocks",
+                "items": {
+                  "type": "object"
                 }
               },
-              "required": ["channel"],
-              "visible": ["channel", "text", "blocks", "markdown_text", "thread_ts", "reply_broadcast", "mrkdwn", "parse", "unfurl_links", "unfurl_media", "icon_emoji", "icon_url", "link_names"],
-              "additionalProperties": false
-            }
-          },
-          "required": ["header", "body"],
-          "visible": ["body"],
-          "additionalProperties": false
-        }
+              "attachments": {
+                "type": "string",
+                "description": "A JSON-based array of structured attachments"
+              },
+              "markdown_text": {
+                "type": "string",
+                "description": "Message text formatted in markdown. Should not be used with blocks or text. Limit to 12,000 characters"
+              },
+              "thread_ts": {
+                "type": "string",
+                "description": "Provide another message's ts value to make this message a reply. Avoid using a reply's ts value; use its parent instead"
+              },
+              "reply_broadcast": {
+                "type": "boolean",
+                "description": "Used with thread_ts to make reply visible to everyone in the channel. Defaults to false",
+                "default": false
+              },
+              "mrkdwn": {
+                "type": "boolean",
+                "description": "Disable Slack markup parsing by setting to false. Enabled by default",
+                "default": true
+              },
+              "parse": {
+                "type": "string",
+                "description": "Change how messages are treated. Set to 'none' to remove hyperlinks, 'full' to ignore mrkdwn formatting",
+                "enum": ["none", "full"]
+              },
+              "unfurl_links": {
+                "type": "boolean",
+                "description": "Pass true to enable unfurling of primarily text-based content"
+              },
+              "unfurl_media": {
+                "type": "boolean",
+                "description": "Pass false to disable unfurling of media content"
+              },
+              "username": {
+                "type": "string",
+                "description": "Set your bot's user name"
+              },
+              "icon_emoji": {
+                "type": "string",
+                "description": "Emoji to use as the icon for this message. Overrides icon_url"
+              },
+              "icon_url": {
+                "type": "string",
+                "description": "URL to an image to use as the icon for this message"
+              },
+              "link_names": {
+                "type": "boolean",
+                "description": "Find and link user groups"
+              }
+            },
+            "required": ["channel"],
+            "visible": ["channel", "text", "blocks", "markdown_text", "thread_ts", "reply_broadcast", "mrkdwn", "parse", "unfurl_links", "unfurl_media", "icon_emoji", "icon_url", "link_names"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["header", "body"],
+        "visible": ["body"],
+        "additionalProperties": false
+      }
     },
     {
       "name": "SLACK__CHAT_POST_EPHEMERAL",
@@ -831,9 +1547,7 @@
                             "description": "User ID to get information on"
                         }
                     },
-                    "required": [
-                        "user"
-                    ],
+                    "required": [],
                     "visible": [
                         "user"
                     ],

@@ -12,7 +12,7 @@
           "prefix": "Bearer",
           "client_id": "{{ AIPOLABS_SLACK_APP_CLIENT_ID }}",
           "client_secret": "{{ AIPOLABS_SLACK_APP_CLIENT_SECRET }}",
-          "scope": "users:read users:write channels:read groups:read im:read im:write mpim:read chat:write",
+          "scope": "users:read users:write channels:read groups:read groups:write im:read im:write mpim:read chat:write channels:history groups:history mpim:history im:history",
           "server_metadata_url": "https://slack.com/.well-known/openid-configuration",
           "token_endpoint_auth_method": "client_secret_post",
           "authorize_url": "https://slack.com/oauth/v2/authorize",
