@@ -140,24 +140,25 @@ def parse_oauth2_security_credentials(
     Parse OAuth2SchemeCredentials from token response with app-specific handling.
 
     Args:
-        app_name: Name of the app/provider (e.g., "slack", "google")
+        app_name: Name of the app/provider (e.g., "SLACK", "GOOGLE")
         token_response: OAuth2 token response from provider
 
     Returns:
         OAuth2SchemeCredentials with appropriate fields set
     """
-    if app_name.lower() == "slack":
+    if app_name == "SLACK":
         authed_user = token_response.get("authed_user", {})
         if not authed_user or "access_token" not in authed_user:
             logger.error(f"Invalid Slack OAuth response: {token_response}")
             raise LinkedAccountOAuth2Error("Invalid Slack OAuth response")
 
-        expires_in = authed_user.get("expires_in")
         return OAuth2SchemeCredentials(
             access_token=authed_user["access_token"],
             token_type=authed_user.get("token_type"),
             refresh_token=authed_user.get("refresh_token"),
-            expires_at=int(time.time()) + expires_in if expires_in else None,
+            expires_at=int(time.time()) + authed_user.get("expires_in")
+            if authed_user.get("expires_in")
+            else None,
             raw_token_response=token_response,
         )
 
@@ -189,7 +190,7 @@ def rewrite_oauth2_authorization_url(app_name: str, authorization_url: str) -> s
     Returns:
         The rewritten authorization URL if needed, otherwise the original URL
     """
-    if app_name.lower() == "slack":
+    if app_name == "SLACK":
         # Slack requires user scopes to be prefixed with 'user_'
         # Replace 'scope=' with 'user_scope=' and add 'scope=' with the null value
         if "scope=" in authorization_url:

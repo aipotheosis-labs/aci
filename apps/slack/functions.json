@@ -44,12 +44,7 @@
                             "description": "Mix and match channel types by providing a comma-separated list of any combination of public_channel, private_channel, mpim, im",
                             "items": {
                                 "type": "string",
-                                "enum": [
-                                    "public_channel",
-                                    "private_channel",
-                                    "mpim",
-                                    "im"
-                                ]
+                                "enum": ["public_channel", "private_channel", "mpim", "im"]
                             }
                         }
                     },
@@ -58,7 +53,6 @@
                         "cursor",
                         "exclude_archived",
                         "limit",
-                        "team_id",
                         "types"
                     ],
                     "additionalProperties": false
@@ -80,8 +74,8 @@
       "protocol": "rest",
       "protocol_data": {
         "method": "GET",
-        "path": "/api/conversations.members",
-        "server_url": "https://slack.com"
+        "path": "/conversations.members",
+        "server_url": "https://slack.com/api"
       },
       "parameters": {
         "type": "object",
@@ -137,8 +131,8 @@
         "protocol": "rest",
         "protocol_data": {
           "method": "POST",
-          "path": "/api/chat.postMessage",
-          "server_url": "https://slack.com"
+          "path": "/chat.postMessage",
+          "server_url": "https://slack.com/api"
         },
         "parameters": {
           "type": "object",
@@ -247,8 +241,8 @@
       "protocol": "rest",
       "protocol_data": {
         "method": "POST",
-        "path": "/api/chat.postEphemeral",
-        "server_url": "https://slack.com"
+        "path": "/chat.postEphemeral",
+        "server_url": "https://slack.com/api"
       },
       "parameters": {
         "type": "object",
@@ -293,7 +287,8 @@
               },
               "as_user": {
                 "type": "boolean",
-                "description": "(Legacy) Pass true to post the message as the authed user. Defaults to true if the chat:write:bot scope is not included. Otherwise, defaults to false"
+                "description": "(Legacy) Pass true to post the message as the authed user. Defaults to true if the chat:write:bot scope is not included. Otherwise, defaults to false",
+                "default": true
               },
               "icon_emoji": {
                 "type": "string",
@@ -324,8 +319,8 @@
                 "description": "Set your bot's user name"
               }
             },
-            "required": ["channel", "user"],
-            "visible": ["channel", "user", "text", "blocks", "as_user", "icon_emoji", "icon_url", "link_names", "markdown_text", "parse", "thread_ts", "username"],
+            "required": ["channel", "user", "as_user"],
+            "visible": ["channel", "user", "text", "blocks", "icon_emoji", "icon_url", "link_names", "markdown_text", "parse", "thread_ts", "username"],
             "additionalProperties": false
           }
         },
@@ -343,8 +338,8 @@
       "protocol": "rest",
       "protocol_data": {
         "method": "POST",
-        "path": "/api/chat.update",
-        "server_url": "https://slack.com"
+        "path": "/chat.update",
+        "server_url": "https://slack.com/api"
       },
       "parameters": {
         "type": "object",
@@ -422,7 +417,7 @@
                 "default": false
               }
             },
-            "required": ["channel", "ts"],
+            "required": ["channel", "ts", "as_user"],
             "visible": ["channel", "ts", "text", "blocks", "file_ids", "link_names", "markdown_text", "metadata", "parse", "reply_broadcast"],
             "additionalProperties": false
           }
@@ -441,8 +436,8 @@
       "protocol": "rest",
       "protocol_data": {
         "method": "POST",
-        "path": "/api/chat.delete",
-        "server_url": "https://slack.com"
+        "path": "/chat.delete",
+        "server_url": "https://slack.com/api"
       },
       "parameters": {
         "type": "object",
@@ -479,7 +474,7 @@
                 "default": true
               }
             },
-            "required": ["channel", "ts"],
+            "required": ["channel", "ts", "as_user"],
             "visible": ["channel", "ts"],
             "additionalProperties": false
           }
@@ -498,8 +493,8 @@
       "protocol": "rest",
       "protocol_data": {
         "method": "POST",
-        "path": "/api/chat.scheduleMessage",
-        "server_url": "https://slack.com"
+        "path": "/chat.scheduleMessage",
+        "server_url": "https://slack.com/api"
       },
       "parameters": {
         "type": "object",
@@ -548,7 +543,8 @@
               },
               "as_user": {
                 "type": "boolean",
-                "description": "Set to true to post the message as the authed user, instead of as a bot. Defaults to false."
+                "description": "Set to true to post the message as the authed user, instead of as a bot. Defaults to false.",
+                "default": true
               },
               "link_names": {
                 "type": "boolean",
@@ -580,8 +576,8 @@
                 "description": "Pass false to disable unfurling of media content."
               }
             },
-            "required": ["channel", "post_at"],
-            "visible": ["channel", "post_at", "text", "blocks", "markdown_text", "as_user", "link_names", "metadata", "parse", "reply_broadcast", "thread_ts", "unfurl_links", "unfurl_media"],
+            "required": ["channel", "post_at", "as_user"],
+            "visible": ["channel", "post_at", "text", "blocks", "markdown_text", "link_names", "metadata", "parse", "reply_broadcast", "thread_ts", "unfurl_links", "unfurl_media"],
             "additionalProperties": false
           }
         },
@@ -599,8 +595,8 @@
       "protocol": "rest",
       "protocol_data": {
         "method": "POST",
-        "path": "/api/chat.scheduledMessages.list",
-        "server_url": "https://slack.com"
+        "path": "/chat.scheduledMessages.list",
+        "server_url": "https://slack.com/api"
       },
       "parameters": {
         "type": "object",
@@ -650,7 +646,7 @@
               }
             },
             "required": [],
-            "visible": ["channel", "cursor", "latest", "limit", "oldest", "team_id"],
+            "visible": ["channel", "cursor", "latest", "limit", "oldest"],
             "additionalProperties": false
           }
         },
@@ -668,8 +664,8 @@
       "protocol": "rest",
       "protocol_data": {
         "method": "POST",
-        "path": "/api/chat.deleteScheduledMessage",
-        "server_url": "https://slack.com"
+        "path": "/chat.deleteScheduledMessage",
+        "server_url": "https://slack.com/api"
       },
       "parameters": {
         "type": "object",
@@ -706,7 +702,7 @@
                 "default": true
               }
             },
-            "required": ["channel", "scheduled_message_id"],
+            "required": ["channel", "scheduled_message_id", "as_user"],
             "visible": ["channel", "scheduled_message_id"],
             "additionalProperties": false
           }
@@ -728,8 +724,8 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/api/users.list",
-            "server_url": "https://slack.com"
+            "path": "/users.list",
+            "server_url": "https://slack.com/api"
         },
         "parameters": {
             "type": "object",
@@ -777,8 +773,7 @@
                     "visible": [
                         "cursor",
                         "include_locale",
-                        "limit",
-                        "team_id"
+                        "limit"
                     ],
                     "additionalProperties": false
                 }
@@ -805,8 +800,8 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/api/users.info",
-            "server_url": "https://slack.com"
+            "path": "/users.info",
+            "server_url": "https://slack.com/api"
         },
         "parameters": {
             "type": "object",
@@ -864,8 +859,8 @@
         "protocol": "rest",
         "protocol_data": {
           "method": "GET",
-          "path": "/api/users.getPresence",
-          "server_url": "https://slack.com"
+          "path": "/users.getPresence",
+          "server_url": "https://slack.com/api"
         },
         "parameters": {
           "type": "object",
@@ -893,12 +888,12 @@
                   "description": "User to get presence info on. Defaults to the authed user."
                 }
               },
-              "required": ["user"],
+              "required": [],
               "visible": ["user"],
               "additionalProperties": false
             }
           },
-          "required": ["header", "query"],
+          "required": ["header"],
           "visible": ["query"],
           "additionalProperties": false
         }
@@ -912,8 +907,8 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "POST",
-            "path": "/api/users.setPresence",
-            "server_url": "https://slack.com"
+            "path": "/users.setPresence",
+            "server_url": "https://slack.com/api"
         },
         "parameters": {
             "type": "object",
