@@ -1547,7 +1547,9 @@
                             "description": "User ID to get information on"
                         }
                     },
-                    "required": [],
+                    "required": [
+                        "user"
+                    ],
                     "visible": [
                         "user"
                     ],
