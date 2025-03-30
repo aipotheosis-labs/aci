@@ -426,6 +426,128 @@
         }
     },
     {
+      "name": "SCRAPYBARA__RUN_FILE_ACTIONS",
+      "description": "Run file operations on a Scrapybara instance",
+      "tags": ["scrape"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "POST",
+        "path": "/instance/{instance_id}/file",
+        "server_url": "https://api.scrapybara.com/v1"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "description": "path parameters",
+            "properties": {
+              "instance_id": {
+                "type": "string",
+                "description": "The ID of the Scrapybara instance to perform file operations on"
+              }
+            },
+            "required": ["instance_id"],
+            "visible": ["instance_id"],
+            "additionalProperties": false
+          },
+          "body": {
+            "type": "object",
+            "description": "body parameters",
+            "properties": {
+              "command": {
+                "type": "string",
+                "description": "The type of file operation to perform (e.g., 'read', 'write', 'copy', 'delete', 'list', 'find')",
+                "enum": ["read", "write", "copy", "delete", "list", "find", "move", "search", "view"]
+              },
+              "path": {
+                "type": "string",
+                "description": "The path of the file or directory to operate on"
+              },
+              "content": {
+                "type": "string",
+                "description": "The content to write to a file when using 'write' command"
+              },
+              "mode": {
+                "type": "string",
+                "description": "File access mode (e.g., 'r', 'w', 'a')"
+              },
+              "encoding": {
+                "type": "string",
+                "description": "Encoding to use for file operations (e.g., 'utf-8', 'base64')"
+              },
+              "view_range": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "description": "Line range for viewing file content [start_line, end_line]"
+              },
+              "recursive": {
+                "type": "boolean",
+                "description": "Whether to perform operations recursively on directories"
+              },
+              "src": {
+                "type": "string",
+                "description": "Source path for copy or move operations"
+              },
+              "dst": {
+                "type": "string",
+                "description": "Destination path for copy or move operations"
+              },
+              "old_str": {
+                "type": "string",
+                "description": "String to replace in search and replace operations"
+              },
+              "new_str": {
+                "type": "string",
+                "description": "Replacement string for search and replace operations"
+              },
+              "line": {
+                "type": "integer",
+                "description": "Line number for operations that work on specific lines"
+              },
+              "text": {
+                "type": "string",
+                "description": "Text content for operations like insertion"
+              },
+              "lines": {
+                "type": "array",
+                "items": {
+                  "type": "integer"
+                },
+                "description": "Specific line numbers to operate on"
+              },
+              "all_occurrences": {
+                "type": "boolean",
+                "description": "Whether to replace all occurrences in search and replace operations"
+              },
+              "pattern": {
+                "type": "string",
+                "description": "Pattern to match in search operations, can be regex"
+              },
+              "case_sensitive": {
+                "type": "boolean",
+                "description": "Whether searches should be case sensitive"
+              },
+              "line_numbers": {
+                "type": "boolean",
+                "description": "Whether to include line numbers in output"
+              }
+            },
+            "required": ["command"],
+            "visible": ["command", "path", "content", "mode", "encoding", "view_range", "recursive", "src", "dst", "old_str", "new_str", "line", "text", "lines", "all_occurrences", "pattern", "case_sensitive", "line_numbers"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["path", "body"],
+        "visible": ["path", "body"],
+        "additionalProperties": false
+      }
+    },
+    {
         "name": "SCRAPYBARA__STOP_INSTANCE",
         "description": "Stop a running Scrapybara instance",
         "tags": ["scrape"],
