@@ -203,3 +203,14 @@ def get_api_key_by_agent_id(db_session: Session, agent_id: UUID) -> APIKey | Non
 
 def get_api_key(db_session: Session, key: str) -> APIKey | None:
     return db_session.execute(select(APIKey).filter_by(key=key)).scalar_one_or_none()
+
+
+def get_all_api_key_ids_for_project(db_session: Session, project_id: UUID) -> list[UUID]:
+    agents = get_agents_by_project(db_session, project_id)
+    project_api_key_ids = []
+    for agent in agents:
+        api_key = get_api_key_by_agent_id(db_session, agent.id)
+        if api_key:
+            project_api_key_ids.append(api_key.id)
+
+    return project_api_key_ids
