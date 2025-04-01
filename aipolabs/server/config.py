@@ -59,7 +59,7 @@ ROUTER_PREFIX_APPS = "/v1/apps"
 ROUTER_PREFIX_FUNCTIONS = "/v1/functions"
 ROUTER_PREFIX_APP_CONFIGURATIONS = "/v1/app-configurations"
 ROUTER_PREFIX_LINKED_ACCOUNTS = "/v1/linked-accounts"
-
+ROUTER_PREFIX_ANALYTICS = "/v1/analytics"
 # DEV PORTAL
 DEV_PORTAL_URL = check_and_get_env_variable("SERVER_DEV_PORTAL_URL")
 
@@ -69,6 +69,7 @@ MAX_USERS = int(check_and_get_env_variable("SERVER_MAX_USERS"))
 
 # LOGFIRE
 LOGFIRE_WRITE_TOKEN = check_and_get_env_variable("SERVER_LOGFIRE_WRITE_TOKEN")
+LOGFIRE_READ_TOKEN = check_and_get_env_variable("SERVER_LOGFIRE_READ_TOKEN")
 
 # AWS
 AWS_REGION = check_and_get_env_variable("SERVER_AWS_REGION")
