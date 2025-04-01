@@ -875,5 +875,549 @@
             ],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "SENDGRID__EMAIL_DNS_RECORDS",
+        "description": "Share DNS records with a colleague to help them enter it into your DNS provider to validate your domain and link branding. The email includes a direct link to the DNS records which expires after some time.",
+        "tags": [
+            "domain",
+            "authentication",
+            "sendgrid",
+            "dns"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/whitelabel/dns/email",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "domain_id": {
+                            "type": "integer",
+                            "description": "The ID of your SendGrid domain record",
+                            "minimum": 0
+                        },
+                        "link_id": {
+                            "type": "integer",
+                            "description": "The ID of the branded link",
+                            "minimum": 0
+                        },
+                        "email": {
+                            "type": "string",
+                            "description": "The email address to send the DNS information to",
+                            "format": "email"
+                        },
+                        "message": {
+                            "type": "string",
+                            "description": "Optional custom text block to include in the email body sent with the records",
+                            "default": "Please set these DNS records in our hosting solution."
+                        }
+                    },
+                    "required": [
+                        "email"
+                    ],
+                    "visible": [
+                        "domain_id",
+                        "link_id",
+                        "email",
+                        "message"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__CREATE_BRANDED_LINK",
+        "description": "Create a new branded link for your SendGrid account. Link branding allows all click-tracked links and images in your emails to be served from your domain rather than sendgrid.net.",
+        "tags": [
+            "link branding",
+            "sendgrid"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/whitelabel/links",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Link branding configuration",
+                    "properties": {
+                        "domain": {
+                            "type": "string",
+                            "description": "The domain to be branded"
+                        },
+                        "subdomain": {
+                            "type": "string",
+                            "description": "The subdomain to use for branding"
+                        },
+                        "default": {
+                            "type": "boolean",
+                            "description": "Whether this should be the default branded link"
+                        }
+                    },
+                    "required": [
+                        "domain"
+                    ],
+                    "visible": [
+                        "domain",
+                        "subdomain",
+                        "default"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__VALIDATE_BRANDED_LINK",
+        "description": "Validate a branded link. Returns validation results for the DNS records.",
+        "tags": [
+            "link branding",
+            "sendgrid"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/whitelabel/links/{id}/validate",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "description": "ID of the branded link to validate"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__GET_DEFAULT_BRANDED_LINK",
+        "description": "Retrieve the default branded link. Returns the default branded link if one exists.",
+        "tags": [
+            "link branding",
+            "sendgrid"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/whitelabel/links/default",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "domain": {
+                            "type": "string",
+                            "description": "The domain to find a default branded link for"
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "domain"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__GET_BRANDED_LINK",
+        "description": "Retrieve a specific branded link by ID.",
+        "tags": [
+            "link branding",
+            "sendgrid"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/whitelabel/links/{id}",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "description": "ID of the branded link to retrieve"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__LIST_BRANDED_LINKS",
+        "description": "Retrieve all branded links.",
+        "tags": [
+            "link branding",
+            "sendgrid"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/whitelabel/links",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "limit": {
+                            "type": "integer",
+                            "description": "Number of links to return",
+                            "minimum": 1
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "description": "Paging offset",
+                            "minimum": 0
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "limit",
+                        "offset"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__UPDATE_BRANDED_LINK",
+        "description": "Update a branded link.",
+        "tags": [
+            "link branding",
+            "sendgrid"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/v3/whitelabel/links/{id}",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "description": "ID of the branded link to update"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Update settings for the branded link",
+                    "properties": {
+                        "default": {
+                            "type": "boolean",
+                            "description": "Whether this should be the default branded link"
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "default"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__DELETE_BRANDED_LINK",
+        "description": "Delete a branded link.",
+        "tags": [
+            "link branding",
+            "sendgrid"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v3/whitelabel/links/{id}",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "description": "ID of the branded link to delete"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
     }
 ]
