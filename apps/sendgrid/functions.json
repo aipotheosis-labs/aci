@@ -1419,5 +1419,623 @@
             ],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "SENDGRID__CREATE_VERIFIED_SENDER",
+        "description": "Create a new verified sender identity for your SendGrid account.",
+        "tags": [
+            "sendgrid",
+            "sender verification"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/verified_senders",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Verified sender details",
+                    "properties": {
+                        "nickname": {
+                            "type": "string",
+                            "description": "A nickname for the sender identity"
+                        },
+                        "from_email": {
+                            "type": "string",
+                            "description": "The email address to be verified",
+                            "format": "email"
+                        },
+                        "from_name": {
+                            "type": "string",
+                            "description": "The name to be associated with the sender"
+                        },
+                        "reply_to": {
+                            "type": "string",
+                            "description": "The reply-to email address",
+                            "format": "email"
+                        },
+                        "reply_to_name": {
+                            "type": "string",
+                            "description": "The name associated with the reply-to address"
+                        },
+                        "address": {
+                            "type": "string",
+                            "description": "The physical address of the sender"
+                        },
+                        "address2": {
+                            "type": "string",
+                            "description": "Additional address information"
+                        },
+                        "city": {
+                            "type": "string",
+                            "description": "The city of the sender"
+                        },
+                        "state": {
+                            "type": "string",
+                            "description": "The state/province of the sender"
+                        },
+                        "zip": {
+                            "type": "string",
+                            "description": "The zip/postal code of the sender"
+                        },
+                        "country": {
+                            "type": "string",
+                            "description": "The country of the sender"
+                        }
+                    },
+                    "required": [
+                        "from_email",
+                        "from_name",
+                        "address",
+                        "city",
+                        "country"
+                    ],
+                    "visible": [
+                        "nickname",
+                        "from_email",
+                        "from_name",
+                        "reply_to",
+                        "reply_to_name",
+                        "address",
+                        "address2",
+                        "city",
+                        "state",
+                        "zip",
+                        "country"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__GET_ALL_VERIFIED_SENDERS",
+        "description": "Retrieve all verified senders for your account.",
+        "tags": [
+            "sendgrid",
+            "sender verification"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/verified_senders",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header"
+            ],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__EDIT_VERIFIED_SENDER",
+        "description": "Update the details of a verified sender.",
+        "tags": [
+            "sendgrid",
+            "sender verification"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/v3/verified_senders/{sender_id}",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "sender_id": {
+                            "type": "integer",
+                            "description": "ID of the sender identity to update"
+                        }
+                    },
+                    "required": [
+                        "sender_id"
+                    ],
+                    "visible": [
+                        "sender_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Updated sender details",
+                    "properties": {
+                        "nickname": {
+                            "type": "string",
+                            "description": "A nickname for the sender identity"
+                        },
+                        "from_name": {
+                            "type": "string",
+                            "description": "The name to be associated with the sender"
+                        },
+                        "reply_to": {
+                            "type": "string",
+                            "description": "The reply-to email address",
+                            "format": "email"
+                        },
+                        "reply_to_name": {
+                            "type": "string",
+                            "description": "The name associated with the reply-to address"
+                        },
+                        "address": {
+                            "type": "string",
+                            "description": "The physical address of the sender"
+                        },
+                        "address2": {
+                            "type": "string",
+                            "description": "Additional address information"
+                        },
+                        "city": {
+                            "type": "string",
+                            "description": "The city of the sender"
+                        },
+                        "state": {
+                            "type": "string",
+                            "description": "The state/province of the sender"
+                        },
+                        "zip": {
+                            "type": "string",
+                            "description": "The zip/postal code of the sender"
+                        },
+                        "country": {
+                            "type": "string",
+                            "description": "The country of the sender"
+                        }
+                    },
+                    "required": [
+                        "from_name",
+                        "address",
+                        "city",
+                        "country"
+                    ],
+                    "visible": [
+                        "nickname",
+                        "from_name",
+                        "reply_to",
+                        "reply_to_name",
+                        "address",
+                        "address2",
+                        "city",
+                        "state",
+                        "zip",
+                        "country"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__DELETE_VERIFIED_SENDER",
+        "description": "Delete a verified sender identity.",
+        "tags": [
+            "sendgrid",
+            "sender verification"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v3/verified_senders/{sender_id}",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "sender_id": {
+                            "type": "integer",
+                            "description": "ID of the sender identity to delete"
+                        }
+                    },
+                    "required": [
+                        "sender_id"
+                    ],
+                    "visible": [
+                        "sender_id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__GET_COMPLETED_STEPS",
+        "description": "Get the completed verification steps for a sender identity.",
+        "tags": [
+            "sendgrid",
+            "sender verification"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/verified_senders/steps_completed",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header"
+            ],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__GET_DOMAIN_WARN_LIST",
+        "description": "Get a list of domains known to implement DMARC.",
+        "tags": [
+            "sendgrid",
+            "sender verification",
+            "dmarc"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/verified_senders/domains",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "domain": {
+                            "type": "string",
+                            "description": "Domain to check against the warn list"
+                        }
+                    },
+                    "required": [
+                        "domain"
+                    ],
+                    "visible": [
+                        "domain"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "query"
+            ],
+            "visible": [
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__GET_ENGAGEMENT_QUALITY_SCORES",
+        "description": "Retrieve SendGrid Engagement Quality (SEQ) scores for a specified date range. SEQ scores indicate the quality of your email program based on factors like engagement recency, open rates, bounce rates, and spam rates. Scores range from 1 to 5, with higher numbers representing better engagement quality. To receive scores, you must have open tracking enabled and send at least 1,000 messages during the previous 30 days.",
+        "tags": [
+            "sendgrid",
+            "analytics",
+            "engagement"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/engagementquality/scores",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        },
+                        "on-behalf-of": {
+                            "type": "string",
+                            "description": "Make API calls on behalf of a Subuser or customer account. For customer accounts use format 'account-id <account-id>', for Subusers use format '<subuser-username>'."
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [
+                        "on-behalf-of"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the request",
+                    "properties": {
+                        "from": {
+                            "type": "string",
+                            "description": "The starting date in YYYY-MM-DD format (UTC) for which you want to retrieve scores",
+                            "format": "date"
+                        },
+                        "to": {
+                            "type": "string",
+                            "description": "The ending date in YYYY-MM-DD format (UTC) for which you want to retrieve scores",
+                            "format": "date"
+                        }
+                    },
+                    "required": [
+                        "from",
+                        "to"
+                    ],
+                    "visible": [
+                        "from",
+                        "to"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "query"
+            ],
+            "visible": [
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENDGRID__GET_SUBUSERS_ENGAGEMENT_QUALITY_SCORES",
+        "description": "Retrieve SendGrid Engagement Quality (SEQ) scores for your Subusers or customer accounts for a specific date. SEQ scores indicate the quality of your email program based on factors like engagement recency, open rates, bounce rates, and spam rates. Scores range from 1 to 5, with higher numbers representing better engagement quality.",
+        "tags": [
+            "sendgrid",
+            "analytics",
+            "engagement",
+            "subuser"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/engagementquality/subusers/scores",
+            "server_url": "https://api.sendgrid.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        },
+                        "on-behalf-of": {
+                            "type": "string",
+                            "description": "Make API calls on behalf of a Subuser or customer account. For customer accounts use format 'account-id <account-id>', for Subusers use format '<subuser-username>'."
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [
+                        "on-behalf-of"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the request",
+                    "properties": {
+                        "date": {
+                            "type": "string",
+                            "description": "The date in YYYY-MM-DD format (UTC) for which you want to retrieve a SendGrid Engagement Quality score",
+                            "format": "date"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Specifies the number of results to be returned by the API. Can be used to limit results or with after_key for pagination.",
+                            "minimum": 0,
+                            "maximum": 1000,
+                            "default": 1000
+                        },
+                        "after_key": {
+                            "type": "string",
+                            "description": "Specifies which items to be returned by the API. Used with limit for pagination. Value should be the after_key from the previous response."
+                        }
+                    },
+                    "required": [
+                        "date"
+                    ],
+                    "visible": [
+                        "date",
+                        "limit",
+                        "after_key"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "query"
+            ],
+            "visible": [
+                "query"
+            ],
+
+            "additionalProperties": false
+        }
     }
 ]
