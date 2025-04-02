@@ -1,0 +1,1128 @@
+[
+    {
+        "name": "FIRECRAWL__SCRAPE",
+        "description": "Extract content from a single webpage in markdown or json format",
+        "tags": [
+            "scraping",
+            "content"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/scrape",
+            "server_url": "https://api.firecrawl.dev"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Scraping configuration",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "description": "The URL of the webpage to scrape"
+                        },
+                        "formats": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "markdown",
+                                    "json"
+                                ]
+                            },
+                            "description": "Output formats of the scraped content"
+                        },
+                        "onlyMainContent": {
+                            "type": "boolean",
+                            "description": "Whether to extract only the main content",
+                            "default": true
+                        },
+                        "blockAds": {
+                            "type": "boolean",
+                            "description": "Whether to block ads during scraping",
+                            "default": true
+                        }
+                    },
+                    "required": [
+                        "url",
+                        "formats"
+                    ],
+                    "visible": [
+                        "url",
+                        "formats",
+                        "onlyMainContent",
+                        "blockAds"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIRECRAWL__BATCH_SCRAPE",
+        "description": "Extract content from multiple webpages in parallel",
+        "tags": [
+            "scraping",
+            "batch",
+            "content"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/batch/scrape",
+            "server_url": "https://api.firecrawl.dev"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Batch scraping configuration",
+                    "properties": {
+                        "urls": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of URLs to scrape"
+                        },
+                        "webhook": {
+                            "type": "object",
+                            "description": "Webhook configuration for receiving scraping results",
+                            "properties": {
+                                "url": {
+                                    "type": "string",
+                                    "description": "The URL to send the webhook to"
+                                },
+                                "headers": {
+                                    "type": "object",
+                                    "description": "Headers to send to the webhook URL",
+                                    "properties": {},
+                                    "required": [],
+                                    "visible": [],
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                },
+                                "metadata": {
+                                    "type": "object",
+                                    "description": "Custom metadata that will be included in all webhook payloads",
+                                    "properties": {},
+                                    "required": [],
+                                    "visible": [],
+                                    "additionalProperties": true
+                                },
+                                "events": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "enum": [
+                                            "completed",
+                                            "page",
+                                            "failed",
+                                            "started"
+                                        ]
+                                    },
+                                    "description": "Type of events that should be sent to the webhook URL"
+                                }
+                            },
+                            "required": [
+                                "url"
+                            ],
+                            "visible": [
+                                "url",
+                                "events"
+                            ],
+                            "additionalProperties": false
+                        },
+                        "ignoreInvalidURLs": {
+                            "type": "boolean",
+                            "description": "If true, invalid URLs will be ignored instead of failing the entire request",
+                            "default": false
+                        },
+                        "formats": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": [
+                                    "markdown",
+                                    "html",
+                                    "rawHtml",
+                                    "links",
+                                    "screenshot",
+                                    "screenshot@fullPage",
+                                    "json"
+                                ]
+                            },
+                            "description": "Output formats of the scraped content"
+                        },
+                        "onlyMainContent": {
+                            "type": "boolean",
+                            "description": "Whether to extract only the main content",
+                            "default": true
+                        },
+                        "blockAds": {
+                            "type": "boolean",
+                            "description": "Whether to block ads during scraping",
+                            "default": true
+                        },
+                        "includeTags": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Tags to include in the output"
+                        },
+                        "excludeTags": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Tags to exclude from the output"
+                        },
+                        "waitFor": {
+                            "type": "integer",
+                            "description": "Specify a delay in milliseconds before fetching the content",
+                            "default": 0
+                        },
+                        "mobile": {
+                            "type": "boolean",
+                            "description": "Set to true if you want to emulate scraping from a mobile device",
+                            "default": false
+                        },
+                        "skipTlsVerification": {
+                            "type": "boolean",
+                            "description": "Skip TLS certificate verification when making requests",
+                            "default": false
+                        },
+                        "timeout": {
+                            "type": "integer",
+                            "description": "Timeout in milliseconds for the request",
+                            "default": 30000
+                        }
+                    },
+                    "required": [
+                        "urls",
+                        "formats"
+                    ],
+                    "visible": [
+                        "urls",
+                        "webhook",
+                        "ignoreInvalidURLs",
+                        "formats",
+                        "onlyMainContent",
+                        "blockAds",
+                        "includeTags",
+                        "excludeTags",
+                        "waitFor",
+                        "mobile",
+                        "skipTlsVerification",
+                        "timeout"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIRECRAWL__GET_BATCH_SCRAPE_STATUS",
+        "description": "Get the status of a batch scrape operation",
+        "tags": [
+            "scraping",
+            "batch",
+            "status"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/batch/scrape/{batch_id}",
+            "server_url": "https://api.firecrawl.dev"
+        },
+        "parameters": {
+            "type": "object",
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "required": [
+                        "batch_id"
+                    ],
+                    "visible": [
+                        "batch_id"
+                    ],
+                    "properties": {
+                        "batch_id": {
+                            "type": "string",
+                            "description": "ID of the batch scrape operation"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIRECRAWL__GET_BATCH_SCRAPE_ERRORS",
+        "description": "Get any errors that occurred during a batch scrape operation",
+        "tags": [
+            "scraping",
+            "batch",
+            "errors"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/batch/scrape/{batch_id}/errors",
+            "server_url": "https://api.firecrawl.dev"
+        },
+        "parameters": {
+            "type": "object",
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "required": [
+                        "batch_id"
+                    ],
+                    "visible": [
+                        "batch_id"
+                    ],
+                    "properties": {
+                        "batch_id": {
+                            "type": "string",
+                            "description": "ID of the batch scrape operation"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIRECRAWL__CRAWL",
+        "description": "Crawl an entire website and extract content and metadata",
+        "tags": [
+            "crawling",
+            "content"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/crawl",
+            "server_url": "https://api.firecrawl.dev"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Crawling configuration",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "description": "The URL to start crawling from"
+                        },
+                        "excludePaths": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Paths to exclude from crawling"
+                        },
+                        "includePaths": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Paths to include in crawling"
+                        },
+                        "maxDepth": {
+                            "type": "integer",
+                            "description": "Maximum depth to crawl",
+                            "default": 10
+                        },
+                        "maxDiscoveryDepth": {
+                            "type": "integer",
+                            "description": "Maximum depth for link discovery"
+                        },
+                        "ignoreSitemap": {
+                            "type": "boolean",
+                            "description": "Whether to ignore sitemap.xml",
+                            "default": false
+                        },
+                        "ignoreQueryParameters": {
+                            "type": "boolean",
+                            "description": "Whether to ignore query parameters in URLs",
+                            "default": false
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Maximum number of pages to crawl",
+                            "default": 10000
+                        },
+                        "allowBackwardLinks": {
+                            "type": "boolean",
+                            "description": "Whether to allow crawling backward links",
+                            "default": false
+                        },
+                        "allowExternalLinks": {
+                            "type": "boolean",
+                            "description": "Whether to allow crawling external links",
+                            "default": false
+                        },
+                        "webhook": {
+                            "type": "object",
+                            "description": "Webhook configuration for receiving crawling results",
+                            "properties": {
+                                "url": {
+                                    "type": "string",
+                                    "description": "The URL to send the webhook to"
+                                },
+                                "headers": {
+                                    "type": "object",
+                                    "description": "Headers to send to the webhook URL",
+                                    "properties": {},
+                                    "required": [],
+                                    "visible": [],
+                                    "additionalProperties": {
+                                        "type": "string"
+                                    }
+                                },
+                                "metadata": {
+                                    "type": "object",
+                                    "description": "Custom metadata that will be included in all webhook payloads",
+                                    "properties": {},
+                                    "required": [],
+                                    "visible": [],
+                                    "additionalProperties": true
+                                },
+                                "events": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "enum": [
+                                            "completed",
+                                            "page",
+                                            "failed",
+                                            "started"
+                                        ]
+                                    },
+                                    "description": "Type of events that should be sent to the webhook URL"
+                                }
+                            },
+                            "required": [
+                                "url"
+                            ],
+                            "visible": [
+                                "url",
+                                "events"
+                            ],
+                            "additionalProperties": false
+                        },
+                        "scrapeOptions": {
+                            "type": "object",
+                            "description": "Options for scraping each page",
+                            "properties": {
+                                "formats": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "enum": [
+                                            "markdown",
+                                            "html",
+                                            "rawHtml",
+                                            "links",
+                                            "screenshot",
+                                            "screenshot@fullPage",
+                                            "json"
+                                        ]
+                                    },
+                                    "description": "Output formats of the scraped content"
+                                },
+                                "onlyMainContent": {
+                                    "type": "boolean",
+                                    "description": "Whether to extract only the main content",
+                                    "default": true
+                                },
+                                "blockAds": {
+                                    "type": "boolean",
+                                    "description": "Whether to block ads during scraping",
+                                    "default": true
+                                }
+                            },
+                            "required": [
+                                "formats"
+                            ],
+                            "visible": [
+                                "formats",
+                                "onlyMainContent",
+                                "blockAds"
+                            ],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": [
+                        "url",
+                        "scrapeOptions"
+                    ],
+                    "visible": [
+                        "url",
+                        "excludePaths",
+                        "includePaths",
+                        "maxDepth",
+                        "maxDiscoveryDepth",
+                        "ignoreSitemap",
+                        "ignoreQueryParameters",
+                        "limit",
+                        "allowBackwardLinks",
+                        "allowExternalLinks",
+                        "webhook",
+                        "scrapeOptions"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIRECRAWL__GET_CRAWL_STATUS",
+        "description": "Get the status of a crawl operation",
+        "tags": [
+            "crawling",
+            "status"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/crawl/{crawl_id}",
+            "server_url": "https://api.firecrawl.dev"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "crawl_id": {
+                            "type": "string",
+                            "description": "ID of the crawl operation"
+                        }
+                    },
+                    "required": [
+                        "crawl_id"
+                    ],
+                    "visible": [
+                        "crawl_id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIRECRAWL__CANCEL_CRAWL",
+        "description": "Cancel an ongoing crawl operation",
+        "tags": [
+            "crawling",
+            "cancel"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/crawl/{crawl_id}",
+            "server_url": "https://api.firecrawl.dev"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "crawl_id": {
+                            "type": "string",
+                            "description": "ID of the crawl operation to cancel"
+                        }
+                    },
+                    "required": [
+                        "crawl_id"
+                    ],
+                    "visible": [
+                        "crawl_id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIRECRAWL__GET_CRAWL_ERRORS",
+        "description": "Get any errors that occurred during a crawl operation",
+        "tags": [
+            "crawling",
+            "errors"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/crawl/{crawl_id}/errors",
+            "server_url": "https://api.firecrawl.dev"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "crawl_id": {
+                            "type": "string",
+                            "description": "ID of the crawl operation"
+                        }
+                    },
+                    "required": [
+                        "crawl_id"
+                    ],
+                    "visible": [
+                        "crawl_id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIRECRAWL__MAP",
+        "description": "Get a complete list of URLs from a website quickly and reliably",
+        "tags": [
+            "mapping",
+            "urls"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/map",
+            "server_url": "https://api.firecrawl.dev"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Mapping configuration",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "description": "The URL to start mapping from"
+                        },
+                        "excludePaths": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Paths to exclude from mapping"
+                        },
+                        "includePaths": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Paths to include in mapping"
+                        },
+                        "maxDepth": {
+                            "type": "integer",
+                            "description": "Maximum depth to map",
+                            "default": 10
+                        },
+                        "ignoreSitemap": {
+                            "type": "boolean",
+                            "description": "Whether to ignore sitemap.xml",
+                            "default": false
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Maximum number of URLs to map",
+                            "default": 10000
+                        }
+                    },
+                    "required": [
+                        "url"
+                    ],
+                    "visible": [
+                        "url",
+                        "excludePaths",
+                        "includePaths",
+                        "maxDepth",
+                        "ignoreSitemap",
+                        "limit"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIRECRAWL__EXTRACT",
+        "description": "Extract structured data from webpages using natural language",
+        "tags": [
+            "extraction",
+            "nlp"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/extract",
+            "server_url": "https://api.firecrawl.dev"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Extraction configuration",
+                    "properties": {
+                        "urls": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "The URLs to extract data from"
+                        },
+                        "prompt": {
+                            "type": "string",
+                            "description": "Natural language prompt describing what data to extract"
+                        },
+                        "schema": {
+                            "type": "object",
+                            "description": "Schema to define the structure of the extracted data",
+                            "properties": {
+                                "property1": {
+                                    "type": "string",
+                                    "description": "Description of property1"
+                                },
+                                "property2": {
+                                    "type": "integer",
+                                    "description": "Description of property2"
+                                }
+                            },
+                            "required": [
+                                "property1",
+                                "property2"
+                            ],
+                            "visible": [
+                                "property1",
+                                "property2"
+                            ],
+                            "additionalProperties": false
+                        },
+                        "enableWebSearch": {
+                            "type": "boolean",
+                            "description": "When true, the extraction will use web search to find additional data",
+                            "default": false
+                        },
+                        "ignoreSitemap": {
+                            "type": "boolean",
+                            "description": "When true, sitemap.xml files will be ignored during website scanning",
+                            "default": false
+                        },
+                        "includeSubdomains": {
+                            "type": "boolean",
+                            "description": "When true, subdomains of the provided URLs will also be scanned",
+                            "default": true
+                        },
+                        "showSources": {
+                            "type": "boolean",
+                            "description": "When true, the sources used to extract the data will be included in the response as sources key",
+                            "default": false
+                        },
+                        "scrapeOptions": {
+                            "type": "object",
+                            "description": "Options for scraping each page",
+                            "properties": {
+                                "formats": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string",
+                                        "enum": [
+                                            "markdown",
+                                            "html",
+                                            "rawHtml",
+                                            "links",
+                                            "screenshot",
+                                            "screenshot@fullPage",
+                                            "json"
+                                        ]
+                                    },
+                                    "description": "Output formats of the scraped content"
+                                },
+                                "onlyMainContent": {
+                                    "type": "boolean",
+                                    "description": "Whether to extract only the main content",
+                                    "default": true
+                                },
+                                "blockAds": {
+                                    "type": "boolean",
+                                    "description": "Whether to block ads during scraping",
+                                    "default": true
+                                }
+                            },
+                            "required": [
+                                "formats"
+                            ],
+                            "visible": [
+                                "formats",
+                                "onlyMainContent",
+                                "blockAds"
+                            ],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": [
+                        "urls",
+                        "prompt",
+                        "scrapeOptions"
+                    ],
+                    "visible": [
+                        "urls",
+                        "prompt",
+                        "scrapeOptions"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIRECRAWL__GET_EXTRACT_STATUS",
+        "description": "Get the status of an extract operation",
+        "tags": [
+            "extraction",
+            "status"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/extract/{extract_id}",
+            "server_url": "https://api.firecrawl.dev"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "extract_id": {
+                            "type": "string",
+                            "description": "ID of the extract operation"
+                        }
+                    },
+                    "required": [
+                        "extract_id"
+                    ],
+                    "visible": [
+                        "extract_id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIRECRAWL__SEARCH",
+        "description": "Search the web and get full page content in any format",
+        "tags": [
+            "search",
+            "content"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/search",
+            "server_url": "https://api.firecrawl.dev"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Search configuration",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "Search query"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Maximum number of search results to return",
+                            "default": 10
+                        }
+                    },
+                    "required": [
+                        "query"
+                    ],
+                    "visible": [
+                        "query",
+                        "limit"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIRECRAWL__GET_CREDIT_USAGE",
+        "description": "Get the current credit usage for your account",
+        "tags": [
+            "account",
+            "credits"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/team/credit-usage",
+            "server_url": "https://api.firecrawl.dev"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                }
+            },
+            "required": [
+                "header"
+            ],
+            "visible": [],
+            "additionalProperties": false
+        }
+    }
+]

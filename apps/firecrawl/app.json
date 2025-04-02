@@ -1,0 +1,23 @@
+{
+    "name": "FIRECRAWL",
+    "display_name": "Firecrawl",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/firecrawl.svg",
+    "provider": "Firecrawl",
+    "version": "1.0.0",
+    "description": "Firecrawl API provides web scraping, crawling, mapping, extraction, and search capabilities. Extract content from any webpage, crawl entire websites, get complete URL lists, extract structured data, and search the web.",
+    "security_schemes": {
+        "api_key": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "web_scraping",
+        "search",
+        "data_extraction"
+    ],
+    "visibility": "public",
+    "active": true
+}

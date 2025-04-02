@@ -1,0 +1,25 @@
+{
+    "name": "SCRAPYBARA",
+    "display_name": "Scrapybara",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/scrapybara.webp",
+    "provider": "Scrapybara",
+    "version": "1.0.0",
+    "description": "Scrapybara is a web scraping API designed for developers. It provides a powerful, fast, and simple interface to scrape any webpage and extract structured content in real time.",
+    "security_schemes": {
+      "api_key": {
+        "location": "header",
+        "name": "x-api-key",
+        "prefix": null
+      }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+      "scrape",
+      "web scraping",
+      "developer",
+      "data"
+    ],
+    "visibility": "public",
+    "active": true
+  }
+  
