@@ -49,7 +49,7 @@ console = Console()
     "model",
     type=str,
     required=False,
-    default="gpt-4o-mini",
+    default="gpt-4o",
     help="LLM model to use for function call arguments generation",
 )
 def fuzzy_test_function_execution(
