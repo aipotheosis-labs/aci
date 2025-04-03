@@ -1,0 +1,15 @@
+[
+  {
+    "name": "DISCORD__GET_CURRENT_USER",
+    "description": "Get a user object for the current user.",
+    "tags": ["user", "info"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/users/@me",
+      "server_url": "https://discord.com/api/v10"
+    }
+  }
+] 
