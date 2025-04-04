@@ -8,6 +8,9 @@ from aipolabs.server.function_executors.connector_function_executor import (
 from aipolabs.server.function_executors.rest_api_key_function_executor import (
     RestAPIKeyFunctionExecutor,
 )
+from aipolabs.server.function_executors.rest_no_auth_function_executor import (
+    RestNoAuthFunctionExecutor,
+)
 from aipolabs.server.function_executors.rest_oauth2_function_executor import (
     RestOAuth2FunctionExecutor,
 )
@@ -21,6 +24,8 @@ def get_executor(protocol: Protocol, linked_account: LinkedAccount) -> FunctionE
             return RestAPIKeyFunctionExecutor(linked_account)
         case Protocol.REST, SecurityScheme.OAUTH2:
             return RestOAuth2FunctionExecutor(linked_account)
+        case Protocol.REST, SecurityScheme.NO_AUTH:
+            return RestNoAuthFunctionExecutor(linked_account)
         case Protocol.CONNECTOR, _:
             return ConnectorFunctionExecutor(linked_account)
         case _:
