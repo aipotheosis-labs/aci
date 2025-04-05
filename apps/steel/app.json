@@ -1,0 +1,26 @@
+{
+    "name": "STEEL",
+    "display_name": "Steel.dev",
+    "logo": "https://github.com/steel-dev/steel-browser/raw/main/images/steel_header_logo.png",
+    "provider": "Steel.dev is an open-source browser API for AI agents & apps.",
+    "version": "1.0.0",
+    "description": "",
+    "security_schemes": {
+      "api_key": {
+        "location": "header",
+        "name": "steel-api-key",
+        "prefix": null
+      }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "browser",
+        "headless browser",
+        "web scraping",
+        "developer",
+        "data"
+    ],
+    "visibility": "public",
+    "active": true
+  }
+  
