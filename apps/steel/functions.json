@@ -371,16 +371,8 @@
     },
     "parameters": {
       "type": "object",
-      "properties": {
-        "body": {
-          "type": "object",
-          "properties": {},
-          "required": [],
-          "visible": [],
-          "additionalProperties": false
-        }
-      },
-      "required": ["body"],
+      "properties": {},
+      "required": [],
       "visible": [],
       "additionalProperties": false
     }
@@ -514,16 +506,9 @@
           "required": ["id"],
           "visible": ["id"],
           "additionalProperties": false
-        },
-        "body": {
-          "type": "object",
-          "properties": {},
-          "required": [],
-          "visible": [],
-          "additionalProperties": false
         }
       },
-      "required": ["path", "body"],
+      "required": ["path"],
       "visible": ["path"],
       "additionalProperties": false
     }
