@@ -4,11 +4,11 @@ import sys
 import anthropic
 
 # Check if the file exists
-if not os.path.exists('pr_content.txt'):
+if not os.path.exists("pr_content.txt"):
     print("ERROR: The PR content file does not exist")
     sys.exit(1)
 # Read the content of the PR
-with open('pr_content.txt') as f:
+with open("pr_content.txt") as f:
     pr_content = f.read()
 
 # Print the content of the PR
@@ -83,9 +83,9 @@ if not api_key:
 try:
     # Create the client
     client = anthropic.Anthropic(api_key=api_key)
-    
+
     # Call the API with streaming for long requests
-    with open('claude_review.md', 'w') as f:
+    with open("claude_review.md", "w") as f:
         # Start the streaming request
         stream = client.messages.create(
             model="claude-3-7-sonnet-20250219",
@@ -93,16 +93,16 @@ try:
             temperature=0.0,
             system="You are an expert code reviewer specialized in API integrations and configurations. Focus on analyzing the diff sections where lines are prefixed with + (additions) or - (deletions).",
             messages=[{"role": "user", "content": prompt}],
-            stream=True
+            stream=True,
         )
-        
+
         # Process the stream using the correct attribute
         for event in stream:
-            if event.type == 'content_block_delta':
+            if event.type == "content_block_delta":
                 f.write(event.delta.text)
-                
+
     print("Integration code review completed successfully")
 
 except Exception as e:
     print(f"ERROR: Failed to call Anthropic API: {e!s}")
-    sys.exit(1) 
+    sys.exit(1)
