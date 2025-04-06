@@ -4050,7 +4050,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/user/webhooks/event/settings",
+            "path": "/user/webhooks/event/settings/{id}",
             "server_url": "https://api.sendgrid.com/v3"
         },
         "parameters": {
@@ -4071,12 +4071,32 @@
                     ],
                     "visible": [],
                     "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "ID of the event webhook to retrieve settings for"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
                 }
             },
             "required": [
-                "header"
+                "header",
+                "path"
             ],
-            "visible": [],
+            "visible": [
+                "path"
+            ],
             "additionalProperties": false
         }
     },
@@ -4093,7 +4113,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "PATCH",
-            "path": "/user/webhooks/event/settings",
+            "path": "/user/webhooks/event/settings/{id}",
             "server_url": "https://api.sendgrid.com/v3"
         },
         "parameters": {
@@ -4113,6 +4133,23 @@
                         "Content-Type"
                     ],
                     "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "ID of the webhook to update"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
                     "additionalProperties": false
                 },
                 "body": {
@@ -4196,9 +4233,11 @@
             },
             "required": [
                 "header",
+                "path",
                 "body"
             ],
             "visible": [
+                "path",
                 "body"
             ],
             "additionalProperties": false
@@ -4217,7 +4256,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "DELETE",
-            "path": "/user/webhooks/event/settings/{webhook_id}",
+            "path": "/user/webhooks/event/settings/{id}",
             "server_url": "https://api.sendgrid.com/v3"
         },
         "parameters": {
@@ -4243,16 +4282,16 @@
                     "type": "object",
                     "description": "Path parameters",
                     "properties": {
-                        "webhook_id": {
+                        "id": {
                             "type": "string",
                             "description": "ID of the webhook to delete"
                         }
                     },
                     "required": [
-                        "webhook_id"
+                        "id"
                     ],
                     "visible": [
-                        "webhook_id"
+                        "id"
                     ],
                     "additionalProperties": false
                 }
@@ -4281,7 +4320,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "PATCH",
-            "path": "/user/webhooks/event/settings/signed",
+            "path": "/user/webhooks/event/settings/signed/{id}",
             "server_url": "https://api.sendgrid.com/v3"
         },
         "parameters": {
@@ -4301,6 +4340,23 @@
                         "Content-Type"
                     ],
                     "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "ID of the webhook to toggle signature verification for"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
                     "additionalProperties": false
                 },
                 "body": {
@@ -4323,9 +4379,11 @@
             },
             "required": [
                 "header",
+                "path",
                 "body"
             ],
             "visible": [
+                "path",
                 "body"
             ],
             "additionalProperties": false
@@ -4345,7 +4403,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/user/webhooks/event/settings/signed",
+            "path": "/user/webhooks/event/settings/signed/{id}",
             "server_url": "https://api.sendgrid.com/v3"
         },
         "parameters": {
@@ -4366,12 +4424,32 @@
                     ],
                     "visible": [],
                     "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "ID of the signed webhook to get public key for"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
                 }
             },
             "required": [
-                "header"
+                "header",
+                "path"
             ],
-            "visible": [],
+            "visible": [
+                "path"
+            ],
             "additionalProperties": false
         }
     },

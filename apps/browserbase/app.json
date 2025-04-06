@@ -1,0 +1,26 @@
+{
+    "name": "BROWSERBASE",
+    "display_name": "Browserbase",
+    "logo": "https://mintlify.s3.us-west-1.amazonaws.com/browserbase/logo/light.svg",
+    "provider": "Browserbase is a platform for running headless browsers.",
+    "version": "1.0.0",
+    "description": "",
+    "security_schemes": {
+      "api_key": {
+        "location": "header",
+        "name": "x-bb-api-key",
+        "prefix": null
+      }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "browser",
+        "headless browser",
+        "web scraping",
+        "developer",
+        "data"
+    ],
+    "visibility": "public",
+    "active": true
+  }
+  

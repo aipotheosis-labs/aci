@@ -53,9 +53,10 @@ Follow all guidelines below for setting up the development environment, running 
 - Use docker compose to run necessary services locally: `docker compose up --build`, which contains:
   - `server`: the backend service
   - `db`: the postgres db
+  - `aws`: a local aws mock with `localstack` (this `aws` service was added because of `Agent Secrets Manager`)
   - `runner`: a staging host for running any commands, e.g., `pytest`, `seed db`, etc.
 - (Optional) Connect to the database using a GUI client like `DBeaver`
-  - Parameters for the db connection can be found in the `.env` file
+  - Parameters for the db connection can be found in the `.env.shared` file
 - (Optional) To seed the db with some data: `docker compose exec runner ./scripts/seed_db.sh`
 - You can access the `Swagger UI` at `http://localhost:8000/v1/notforhuman-docs`
 - To run `pytest`, make sure the db is empty (in case you have seeded the db before), and then: `docker compose exec runner pytest`
@@ -72,7 +73,7 @@ Follow all guidelines below for setting up the development environment, running 
   - import `pgvector` library for `Vector` type
   - create and drop necessary indexes
   - create and drop vector extension
-  - ...  
+  - ...
 - Apply the changes to the **local** database: `docker compose exec runner alembic upgrade head`
 - (If needed) you can undo the last change to the database: `docker compose exec runner alembic downgrade -1`
 
