@@ -34,8 +34,7 @@ This project has integrations in the 'apps/' directory:
 
 ## Workflow
 1. Search relevant documentation for the integration
-2. Accoridng to api documentation and function specification, special rules, check the pull request and provide feedback
-
+2. According to api documentation and function specification, special rules, check the pull request and provide feedback
 ## Function Specification (Function Object)
 - The function specification including the metadata of the API, such as name, description, tags, visibility, active, protocol, protocol_data, parameters.
 - The function didn't include the return value, because the return value is not relevant to the LLM in current design.
