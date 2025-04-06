@@ -104,5 +104,5 @@ try:
     print("Integration code review completed successfully")
 
 except Exception as e:
-    print(f"ERROR: Failed to call Anthropic API: {str(e)}")
+    print(f"ERROR: Failed to call Anthropic API: {e!s}")
     sys.exit(1) 
