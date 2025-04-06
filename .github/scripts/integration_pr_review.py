@@ -53,8 +53,7 @@ Each "function" object should detail a specific API operation or endpoint. This 
     - server_url: the server url of the function, should be a string, could be "https://api.github.com", "https://discord.com/api/v10", etc.
   - parameters: the parameters of the function, should be a object
 - for required field, it should be a list of required parameters, you should fill according to the original markdown documentation.
-- for visible field, you should thinking if we need to show this parameter to LLM or not. usually, we don't need to show the prameter like version.
-
+- for visible field, you should thinking if we need to show this parameter to LLM or not. usually, we don't need to show the parameter like version.
 ## Special Rules
 - The Authorization information like token or api key has been configured in the app.json file and should not be shown in the function specification.
 - the version number and api path should in `server_url` field, not in `path` field in `protocol_data` object.
