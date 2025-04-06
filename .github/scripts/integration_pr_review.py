@@ -40,7 +40,7 @@ This project has integrations in the 'apps/' directory:
 - The function didn't include the return value, because the return value is not relevant to the LLM in current design.
 Each "function" object should detail a specific API operation or endpoint. This includes information such as the operation name, HTTP method, URL path, parameters etc. But also some custom fields like "visible" and "required".
 - for metadata field, follow following rules:
-  - name: the name of the function, should be unique, uppercase, begin with appication name then double underscore then the function name like "GITHUB__GET_USER"
+  - name: the name of the function, should be unique, uppercase, begin with application name then double underscore then the function name like "GITHUB__GET_USER"
   - description: the description of the function, should be a short sentence.
   - tags: the tags of the function, should be a list of string.
   - visibility: the visibility of the function, should be a string, could be "public" or "private", default is "public".
