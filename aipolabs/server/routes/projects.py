@@ -1,12 +1,12 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Header
+from propelauth_fastapi import User
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
-from aipolabs.common.db.sql_models import Agent, Project, User
-from aipolabs.common.enums import OrganizationRole
+from aipolabs.common.db.sql_models import Agent, Project
 from aipolabs.common.exceptions import AgentNotFound, ProjectNotFound
 from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.agent import AgentCreate, AgentPublic, AgentUpdate
@@ -18,52 +18,57 @@ from aipolabs.server import dependencies as deps
 router = APIRouter()
 logger = get_logger(__name__)
 
+auth = acl.setup_propelauth()
+
 
 @router.post("", response_model=ProjectPublic, include_in_schema=True)
 async def create_project(
     body: ProjectCreate,
-    user: Annotated[User, Depends(deps.validate_http_bearer)],
+    user: Annotated[User, Depends(auth.require_user)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Project:
     logger.info(
         "create project",
         extra={
             "project_create": body.model_dump(exclude_none=True),
-            "user_id": user.id,
+            "user_id": user.user_id,
+            "org_id": body.org_id,
         },
     )
-    owner_id = body.organization_id or user.id
-    # if project is to be created under an organization, check if user has admin access to the organization
-    # TODO: add tests for this path
-    if body.organization_id:
-        acl.validate_user_access_to_org(
-            db_session, user.id, body.organization_id, OrganizationRole.ADMIN
-        )
-    quota_manager.enforce_project_creation_quota(db_session, owner_id)
-    project = crud.projects.create_project(db_session, owner_id, body.name)
+
+    acl.validate_user_access_to_org(user, body.org_id, "Owner")
+    quota_manager.enforce_project_creation_quota(db_session, body.org_id)
+
+    project = crud.projects.create_project(db_session, body.org_id, body.name)
     db_session.commit()
+
     logger.info(
         "created project",
-        extra={"project_id": project.id, "user_id": user.id},
+        extra={"project_id": project.id, "user_id": user.user_id, "org_id": body.org_id},
     )
     return project
 
 
 @router.get("", response_model=list[ProjectPublic], include_in_schema=True)
 async def get_projects(
-    user: Annotated[User, Depends(deps.validate_http_bearer)],
+    user: Annotated[User, Depends(auth.require_user)],
+    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> list[Project]:
     """
     Get all projects that the user is the owner of
     """
-    # TODO: for now, we only support getting projects that the user is the owner of,
-    # we will need to support getting projects that the user has access to (a member of an organization)
+    acl.validate_user_access_to_org(user, org_id, "Owner")
+
     logger.info(
         "get projects",
-        extra={"user_id": user.id},
+        extra={
+            "user_id": user.user_id,
+            "org_id": org_id,
+        },
     )
-    projects = crud.projects.get_projects_by_owner(db_session, user.id)
+
+    projects = crud.projects.get_projects_by_org(db_session, org_id)
 
     return projects
 
@@ -72,7 +77,7 @@ async def get_projects(
 async def create_agent(
     project_id: UUID,
     body: AgentCreate,
-    user: Annotated[User, Depends(deps.validate_http_bearer)],
+    user: Annotated[User, Depends(auth.require_user)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Agent:
     logger.info(
@@ -80,10 +85,11 @@ async def create_agent(
         extra={
             "agent_create": body.model_dump(exclude_none=True),
             "project_id": project_id,
-            "user_id": user.id,
+            "user_id": user.user_id,
         },
     )
-    acl.validate_user_access_to_project(db_session, user.id, project_id)
+
+    acl.validate_user_access_to_project(db_session, user, project_id)
     quota_manager.enforce_agent_creation_quota(db_session, project_id)
 
     agent = crud.projects.create_agent(
@@ -111,7 +117,7 @@ async def update_agent(
     project_id: UUID,
     agent_id: UUID,
     body: AgentUpdate,
-    user: Annotated[User, Depends(deps.validate_http_bearer)],
+    user: Annotated[User, Depends(auth.require_user)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Agent:
     logger.info(
@@ -120,9 +126,12 @@ async def update_agent(
             "agent_id": agent_id,
             "project_id": project_id,
             "agent_update": body.model_dump(exclude_none=True),
-            "user_id": user.id,
+            "user_id": user.user_id,
         },
     )
+
+    acl.validate_user_access_to_project(db_session, user, project_id)
+
     agent = crud.projects.get_agent_by_id(db_session, agent_id)
     if not agent:
         logger.error(
@@ -153,8 +162,6 @@ async def update_agent(
         )
         raise AgentNotFound(f"agent={agent_id} not found in project={project_id}")
 
-    acl.validate_user_access_to_project(db_session, user.id, agent.project_id)
-
     crud.projects.update_agent(db_session, agent, body)
     db_session.commit()
 
@@ -165,7 +172,7 @@ async def update_agent(
 async def delete_agent(
     project_id: UUID,
     agent_id: UUID,
-    user: Annotated[User, Depends(deps.validate_http_bearer)],
+    user: Annotated[User, Depends(auth.require_user)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> dict[str, str]:
     """
@@ -176,10 +183,12 @@ async def delete_agent(
         extra={
             "agent_id": agent_id,
             "project_id": project_id,
-            "user_id": user.id,
+            "user_id": user.user_id,
         },
     )
-    acl.validate_user_access_to_project(db_session, user.id, project_id)
+
+    acl.validate_user_access_to_project(db_session, user, project_id)
+
     agent = crud.projects.get_agent_by_id(db_session, agent_id)
     if not agent:
         logger.error(

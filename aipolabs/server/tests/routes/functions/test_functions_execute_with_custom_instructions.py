@@ -8,6 +8,7 @@ from aipolabs.common.db.sql_models import Agent, Function, LinkedAccount
 from aipolabs.common.schemas.agent import AgentUpdate
 from aipolabs.common.schemas.function import FunctionExecute
 from aipolabs.server import config
+from aipolabs.server.tests.conftest import DummyUser
 
 
 @pytest.mark.parametrize(
@@ -23,7 +24,7 @@ from aipolabs.server import config
 @respx.mock
 def test_execute_github_function_with_custom_instructions(
     test_client: TestClient,
-    dummy_user_bearer_token: str,
+    dummy_user: DummyUser,
     dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_github__create_repository: Function,
     dummy_linked_account_api_key_github_project_1: LinkedAccount,
@@ -55,7 +56,7 @@ def test_execute_github_function_with_custom_instructions(
         agent_update_response = test_client.patch(
             f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_agent_1_with_all_apps_allowed.project_id}/agents/{dummy_agent_1_with_all_apps_allowed.id}",
             json=agent_update.model_dump(mode="json"),
-            headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+            headers={"Authorization": f"Bearer {dummy_user.access_token}"},
         )
         assert agent_update_response.status_code == status.HTTP_200_OK
 

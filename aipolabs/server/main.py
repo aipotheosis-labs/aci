@@ -13,6 +13,7 @@ from aipolabs.common.exceptions import AipolabsException
 from aipolabs.common.logging_setup import setup_logging
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
+from aipolabs.server.acl import setup_propelauth
 from aipolabs.server.dependency_check import check_dependencies
 from aipolabs.server.middleware.interceptor import InterceptorMiddleware, RequestIDLogFilter
 from aipolabs.server.middleware.ratelimit import RateLimitMiddleware
@@ -20,20 +21,15 @@ from aipolabs.server.routes import (
     analytics,
     app_configurations,
     apps,
-    auth,
     functions,
     health,
     linked_accounts,
     projects,
+    webhooks,
 )
 from aipolabs.server.sentry import setup_sentry
 
 check_dependencies()
-
-
-def custom_generate_unique_id(route: APIRoute) -> str:
-    return f"{route.tags[0]}-{route.name}"
-
 
 setup_sentry()
 
@@ -47,6 +43,11 @@ setup_logging(
     environment=config.ENVIRONMENT,
 )
 
+
+def custom_generate_unique_id(route: APIRoute) -> str:
+    return f"{route.tags[0]}-{route.name}"
+
+
 # TODO: move to config
 app = FastAPI(
     title=config.APP_TITLE,
@@ -56,6 +57,8 @@ app = FastAPI(
     openapi_url=config.APP_OPENAPI_URL,
     generate_unique_id_function=custom_generate_unique_id,
 )
+
+auth = setup_propelauth()
 
 
 def scrubbing_callback(m: logfire.ScrubMatch) -> Any:
@@ -94,7 +97,7 @@ app.add_middleware(
     allow_origins=[config.DEV_PORTAL_URL, "http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE", "PATCH"],
-    allow_headers=["Authorization", "X-API-KEY"],
+    allow_headers=["Authorization", "X-API-KEY", "X-ACI-ORG-ID"],
 )
 app.add_middleware(InterceptorMiddleware)
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=[config.APPLICATION_LOAD_BALANCER_DNS])  # type: ignore
@@ -117,12 +120,12 @@ app.include_router(
     prefix=config.ROUTER_PREFIX_HEALTH,
     tags=[config.ROUTER_PREFIX_HEALTH.split("/")[-1]],
 )
-app.include_router(auth.router, prefix=config.ROUTER_PREFIX_AUTH, tags=["auth"])
+
 app.include_router(
     projects.router,
     prefix=config.ROUTER_PREFIX_PROJECTS,
     tags=[config.ROUTER_PREFIX_PROJECTS.split("/")[-1]],
-    dependencies=[Depends(deps.validate_http_bearer)],
+    dependencies=[Depends(auth.require_user)],
 )
 # TODO: add validate_project_quota to all routes
 app.include_router(
@@ -155,4 +158,10 @@ app.include_router(
     analytics.router,
     prefix=config.ROUTER_PREFIX_ANALYTICS,
     tags=[config.ROUTER_PREFIX_ANALYTICS.split("/")[-1]],
+)
+
+app.include_router(
+    webhooks.router,
+    prefix=config.ROUTER_PREFIX_WEBHOOKS,
+    tags=[config.ROUTER_PREFIX_WEBHOOKS.split("/")[-1]],
 )
