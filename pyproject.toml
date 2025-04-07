@@ -9,7 +9,7 @@ package-mode = false
 python = "^3.12"
 fastapi = { extras = ["standard"], version = "^0.115.0" }
 uvicorn = { extras = ["standard"], version = "^0.31.0" }
-pydantic = "^2.9.2"
+pydantic = "^2.11.2"
 sqlalchemy = "^2.0.35"
 pgvector = "^0.3.4"
 Authlib = "^1.3.2"
@@ -32,6 +32,8 @@ google-api-python-client = "^2.163.0"
 aws-encryption-sdk = { extras = ["mpl"], version = "^4.0.0" }
 boto3 = "^1.37.9"
 rich = "^13.9.4"
+propelauth-fastapi = "^4.2.5"
+svix = "^1.63.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3.3"
@@ -98,6 +100,14 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "requests"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "propelauth_fastapi"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "propelauth_py.*"
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

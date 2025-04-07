@@ -1,4 +1,4 @@
-from . import app_configurations, apps, functions, linked_accounts, projects, secret, users
+from . import app_configurations, apps, functions, linked_accounts, projects, secret
 
 __all__ = [
     "app_configurations",
@@ -7,5 +7,4 @@ __all__ = [
     "linked_accounts",
     "projects",
     "secret",
-    "users",
 ]
