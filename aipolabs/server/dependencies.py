@@ -3,22 +3,19 @@ from datetime import UTC, datetime, timedelta
 from typing import Annotated
 from uuid import UUID
 
-from authlib.jose import JoseError, jwt
 from fastapi import Depends, Security
-from fastapi.security import APIKeyHeader, HTTPAuthorizationCredentials, HTTPBearer
+from fastapi.security import APIKeyHeader, HTTPBearer
 from sqlalchemy.orm import Session
 
 from aipolabs.common import utils
 from aipolabs.common.db import crud
-from aipolabs.common.db.sql_models import Agent, Project, User
+from aipolabs.common.db.sql_models import Agent, Project
 from aipolabs.common.enums import APIKeyStatus
 from aipolabs.common.exceptions import (
     AgentNotFound,
     DailyQuotaExceeded,
     InvalidAPIKey,
-    InvalidBearerToken,
     ProjectNotFound,
-    UserNotFound,
 )
 from aipolabs.common.logging_setup import get_logger
 from aipolabs.server import config
@@ -46,41 +43,6 @@ def yield_db_session() -> Generator[Session, None, None]:
         yield db_session
     finally:
         db_session.close()
-
-
-# TODO: rate limit and quota check for http bearer token and relevant routes
-def validate_http_bearer(
-    db_session: Annotated[Session, Depends(yield_db_session)],
-    auth_data: Annotated[HTTPAuthorizationCredentials, Security(http_bearer)],
-) -> User:
-    """
-    Validate HTTP Bearer token and return user ID.
-    HTTP Bearer token is generated after a user logs in to dev portal.
-    Used for some routes like /projects that should not be accessed programmatically.
-    """
-    try:
-        decoded_credentials = jwt.decode(auth_data.credentials, config.SIGNING_KEY)
-        logger.debug("decoded credentials", extra={"credentials": decoded_credentials})
-        decoded_credentials.validate()  # This will raise a JoseError if validation fails
-
-        user_id: str = decoded_credentials.get("sub")
-        if not user_id:
-            raise InvalidBearerToken("Token is missing 'sub' claim.")
-
-        user = crud.users.get_user_by_id(db_session, UUID(user_id))
-        if not user:
-            logger.error(
-                "user decoded from http bearer token not found",
-                extra={"user_id": user_id},
-            )
-            raise UserNotFound(f"user={user_id} not found")
-
-        logger.info("http bearer token validation successful", extra={"user_id": user_id})
-        return user
-
-    except JoseError as e:
-        logger.exception("http bearer token validation failed")
-        raise InvalidBearerToken("token validation failed") from e
 
 
 def validate_api_key(
