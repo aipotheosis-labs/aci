@@ -4,7 +4,6 @@ from aipolabs.cli.commands import (
     create_agent,
     create_project,
     create_random_api_key,
-    create_user,
     fuzzy_test_function_execution,
     update_agent,
     upsert_app,
@@ -20,7 +19,6 @@ def cli() -> None:
 
 
 # Add commands to the group
-cli.add_command(create_user.create_user)
 cli.add_command(create_project.create_project)
 cli.add_command(create_agent.create_agent)
 cli.add_command(update_agent.update_agent)

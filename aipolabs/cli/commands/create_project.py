@@ -39,7 +39,7 @@ console = Console()
 )
 def create_project(
     name: str,
-    owner_id: UUID,
+    org_id: UUID,
     visibility_access: Visibility,
     skip_dry_run: bool,
 ) -> UUID:
@@ -47,17 +47,17 @@ def create_project(
     Create a project in db.
     Note this is a privileged command, as it can create projects under any user or organization.
     """
-    return create_project_helper(name, owner_id, visibility_access, skip_dry_run)
+    return create_project_helper(name, org_id, visibility_access, skip_dry_run)
 
 
 def create_project_helper(
     name: str,
-    owner_id: UUID,
+    org_id: UUID,
     visibility_access: Visibility,
     skip_dry_run: bool,
 ) -> UUID:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
-        project = crud.projects.create_project(db_session, owner_id, name, visibility_access)
+        project = crud.projects.create_project(db_session, org_id, name, visibility_access)
         if not skip_dry_run:
             console.rule(
                 f"[bold green]Provide --skip-dry-run to Create Project: {project.name}[/bold green]"

@@ -20,12 +20,12 @@ logger = get_logger(__name__)
 
 def create_project(
     db_session: Session,
-    owner_id: UUID,
+    org_id: UUID,
     name: str,
     visibility_access: Visibility = Visibility.PUBLIC,
 ) -> Project:
     project = Project(
-        owner_id=owner_id,
+        org_id=org_id,
         name=name,
         visibility_access=visibility_access,
     )
@@ -52,10 +52,8 @@ def get_project(db_session: Session, project_id: UUID) -> Project | None:
     return project
 
 
-def get_projects_by_owner(db_session: Session, owner_id: UUID) -> list[Project]:
-    projects = list(
-        db_session.execute(select(Project).filter_by(owner_id=owner_id)).scalars().all()
-    )
+def get_projects_by_org(db_session: Session, org_id: UUID) -> list[Project]:
+    projects = list(db_session.execute(select(Project).filter_by(org_id=org_id)).scalars().all())
     return projects
 
 

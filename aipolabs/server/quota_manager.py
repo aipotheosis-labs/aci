@@ -18,7 +18,7 @@ from aipolabs.server import config
 logger = get_logger(__name__)
 
 
-def enforce_project_creation_quota(db_session: Session, owner_id: UUID) -> None:
+def enforce_project_creation_quota(db_session: Session, org_id: UUID) -> None:
     """
     Check and enforce that the user/organization hasn't exceeded their project creation quota.
 
@@ -30,12 +30,12 @@ def enforce_project_creation_quota(db_session: Session, owner_id: UUID) -> None:
         MaxProjectsReached: If the user has reached their maximum allowed projects
     # TODO: check for organization as well once we have organization support
     """
-    projects = crud.projects.get_projects_by_owner(db_session, owner_id)
+    projects = crud.projects.get_projects_by_org(db_session, org_id)
     if len(projects) >= config.MAX_PROJECTS_PER_USER:
         logger.error(
             "user/organization has reached maximum projects quota",
             extra={
-                "owner_id": owner_id,
+                "owner_id": org_id,
                 "max_projects": config.MAX_PROJECTS_PER_USER,
                 "num_projects": len(projects),
             },

@@ -14,11 +14,11 @@ import click
 from rich.console import Console
 
 from aipolabs.cli import config
-from aipolabs.cli.commands import create_agent, create_project, create_user
+from aipolabs.cli.commands import create_agent, create_project
 from aipolabs.common import utils
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import APIKey
-from aipolabs.common.enums import SubscriptionPlan, Visibility
+from aipolabs.common.enums import Visibility
 
 console = Console()
 
@@ -42,18 +42,9 @@ def create_random_api_key_helper(visibility_access: Visibility) -> str:
 
     random_id = str(uuid.uuid4())[:8]  # Get first 8 chars of UUID
 
-    user_id = create_user.create_user_helper(
-        identity_provider="google",
-        user_id_by_provider=random_id,
-        name=f"Test User {random_id}",
-        email=f"test_{random_id}@example.com",
-        profile_picture=f"https://example.com/profile_{random_id}.png",
-        plan=SubscriptionPlan.FREE,
-        skip_dry_run=skip_dry_run,
-    )
     project_id = create_project.create_project_helper(
         name=f"Test Project {random_id}",
-        owner_id=user_id,
+        org_id=uuid.uuid4(),
         visibility_access=visibility_access,
         skip_dry_run=skip_dry_run,
     )
@@ -83,7 +74,6 @@ def create_random_api_key_helper(visibility_access: Visibility) -> str:
 
         console.print(
             {
-                "User Id": str(user_id),
                 "Project Id": str(project_id),
                 "Agent Id": str(agent_id),
                 "API Key": str(api_key.key),
