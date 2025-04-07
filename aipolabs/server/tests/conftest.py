@@ -1,15 +1,22 @@
 import logging
 import time
+import uuid
 from collections.abc import Generator
-from datetime import timedelta
+from dataclasses import dataclass
 from typing import cast
 from unittest.mock import patch
+from uuid import UUID
 
 import pytest
 from fastapi.testclient import TestClient
+from propelauth_fastapi import User
+from propelauth_py.types.login_method import SocialLoginProvider, SocialSsoLoginMethod
+from propelauth_py.types.user import OrgMemberInfo
 from sqlalchemy import inspect
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import Session
+
+from aipolabs.server import acl
 
 # override the rate limit to a high number for testing before importing aipolabs modules
 with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
@@ -23,7 +30,6 @@ with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
         Function,
         LinkedAccount,
         Project,
-        User,
     )
     from aipolabs.common.enums import SecurityScheme, Visibility
     from aipolabs.common.schemas.app_configurations import (
@@ -35,13 +41,13 @@ with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
         NoAuthSchemeCredentials,
         OAuth2SchemeCredentials,
     )
-    from aipolabs.common.schemas.user import UserCreate
     from aipolabs.server import config
     from aipolabs.server.main import app as fastapi_app
-    from aipolabs.server.routes.auth import create_access_token
     from aipolabs.server.tests import helper
 
 logger = logging.getLogger(__name__)
+
+auth = acl.setup_propelauth()
 
 # call this one time for entire tests because it's slow and costs money (negligible) as it needs
 # to generate embeddings using OpenAI for each app and function
@@ -52,8 +58,58 @@ AIPOLABS_TEST_APP_NAME = "AIPOLABS_TEST"
 MOCK_APP_CONNECTOR_APP_NAME = "MOCK_APP_CONNECTOR"
 
 
+@dataclass
+class DummyUser:
+    propel_auth_user: User
+    access_token: str
+    org_id: UUID
+
+
 @pytest.fixture(scope="function")
-def test_client() -> Generator[TestClient, None, None]:
+def dummy_user(database_setup_and_cleanup: None) -> DummyUser:
+    org_id = uuid.uuid4()
+    return DummyUser(
+        propel_auth_user=User(
+            user_id="dummy_user",
+            org_id_to_org_member_info={
+                org_id: OrgMemberInfo(
+                    org_id=org_id,
+                    org_name="dummy_org",
+                    user_assigned_role="Owner",
+                    org_metadata={},
+                    user_inherited_roles_plus_current_role=[],
+                    user_permissions=[],
+                ),
+            },
+            email="dummy_user@example.com",
+            login_method=SocialSsoLoginMethod(
+                provider=SocialLoginProvider.GOOGLE,
+            ),
+        ),
+        access_token="dummy_access_token",
+        org_id=org_id,
+    )
+
+
+@pytest.fixture(scope="function")
+def dummy_user_2(database_setup_and_cleanup: None) -> DummyUser:
+    return DummyUser(
+        propel_auth_user=User(
+            user_id="dummy_user_2",
+            org_id_to_org_member_info={},
+            email="dummy_user_2@example.com",
+            login_method=SocialSsoLoginMethod(
+                provider=SocialLoginProvider.GOOGLE,
+            ),
+        ),
+        access_token="dummy_access_token_2",
+        org_id=uuid.uuid4(),
+    )
+
+
+@pytest.fixture(scope="function")
+def test_client(dummy_user: DummyUser) -> Generator[TestClient, None, None]:
+    fastapi_app.dependency_overrides[auth.require_user] = lambda: dummy_user.propel_auth_user
     # disable following redirects for testing login
     # NOTE: need to set base_url to http://localhost because we set TrustedHostMiddleware in main.py
     with TestClient(fastapi_app, base_url="http://localhost", follow_redirects=False) as c:
@@ -101,54 +157,10 @@ def database_setup_and_cleanup(db_session: Session) -> Generator[None, None, Non
 
 
 @pytest.fixture(scope="function")
-def dummy_user(
-    db_session: Session, database_setup_and_cleanup: None
-) -> Generator[User, None, None]:
-    dummy_user = crud.users.create_user(
-        db_session,
-        UserCreate(
-            identity_provider="dummy_identity_provider",
-            user_id_by_provider="dummy_user_id_by_provider",
-            name="Dummy User",
-            email="dummy@example.com",
-        ),
-    )
-    db_session.commit()
-    yield dummy_user
-
-
-@pytest.fixture(scope="function")
-def dummy_user_2(
-    db_session: Session, database_setup_and_cleanup: None
-) -> Generator[User, None, None]:
-    dummy_user_2 = crud.users.create_user(
-        db_session,
-        UserCreate(
-            identity_provider="dummy_identity_provider_2",
-            user_id_by_provider="dummy_user_id_by_provider_2",
-            name="Dummy User 2",
-            email="dummy2@example.com",
-        ),
-    )
-    db_session.commit()
-    yield dummy_user_2
-
-
-@pytest.fixture(scope="function")
-def dummy_user_bearer_token(dummy_user: User) -> str:
-    return create_access_token(str(dummy_user.id), timedelta(minutes=15))
-
-
-@pytest.fixture(scope="function")
-def dummy_user_2_bearer_token(dummy_user_2: User) -> str:
-    return create_access_token(str(dummy_user_2.id), timedelta(minutes=15))
-
-
-@pytest.fixture(scope="function")
-def dummy_project_1(db_session: Session, dummy_user: User) -> Generator[Project, None, None]:
+def dummy_project_1(db_session: Session, dummy_user: DummyUser) -> Generator[Project, None, None]:
     dummy_project_1 = crud.projects.create_project(
         db_session,
-        owner_id=dummy_user.id,
+        org_id=dummy_user.org_id,
         name="Dummy Project",
         visibility_access=Visibility.PUBLIC,
     )
@@ -162,10 +174,10 @@ def dummy_api_key_1(dummy_agent_1_with_no_apps_allowed: Agent) -> Generator[str,
 
 
 @pytest.fixture(scope="function")
-def dummy_project_2(db_session: Session, dummy_user_2: User) -> Generator[Project, None, None]:
+def dummy_project_2(db_session: Session, dummy_user: DummyUser) -> Generator[Project, None, None]:
     dummy_project_2 = crud.projects.create_project(
         db_session,
-        owner_id=dummy_user_2.id,
+        org_id=dummy_user.org_id,
         name="Dummy Project 2",
         visibility_access=Visibility.PUBLIC,
     )

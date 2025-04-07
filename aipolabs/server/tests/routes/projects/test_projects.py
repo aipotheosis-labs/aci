@@ -3,29 +3,31 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
-from aipolabs.common.db.sql_models import User
 from aipolabs.common.enums import Visibility
 from aipolabs.common.schemas.agent import AgentCreate, AgentPublic
 from aipolabs.common.schemas.project import ProjectCreate, ProjectPublic
 from aipolabs.server import config
+from aipolabs.server.tests.conftest import DummyUser
 
 
 def test_create_project_under_user(
     test_client: TestClient,
     db_session: Session,
-    dummy_user_bearer_token: str,
-    dummy_user: User,
+    dummy_user: DummyUser,
 ) -> None:
-    body = ProjectCreate(name="project_test_create_project_under_user")
+    body = ProjectCreate(
+        name="project_test_create_project_under_user",
+        org_id=dummy_user.org_id,
+    )
     response = test_client.post(
         f"{config.ROUTER_PREFIX_PROJECTS}",
         json=body.model_dump(mode="json"),
-        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+        headers={"Authorization": f"Bearer {dummy_user.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
     project_public = ProjectPublic.model_validate(response.json())
     assert project_public.name == body.name
-    assert project_public.owner_id == dummy_user.id
+    assert project_public.org_id == dummy_user.org_id
     assert project_public.visibility_access == Visibility.PUBLIC
 
     # Verify the project was actually created in the database and values match returned values
@@ -37,26 +39,26 @@ def test_create_project_under_user(
 
 def test_create_project_reached_max_projects_per_user(
     test_client: TestClient,
-    dummy_user_bearer_token: str,
+    dummy_user: DummyUser,
 ) -> None:
     # create max number of projects under the user
     for i in range(config.MAX_PROJECTS_PER_USER):
-        body = ProjectCreate(name=f"project_{i}")
+        body = ProjectCreate(name=f"project_{i}", org_id=dummy_user.org_id)
         response = test_client.post(
             f"{config.ROUTER_PREFIX_PROJECTS}",
             json=body.model_dump(mode="json"),
-            headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+            headers={"Authorization": f"Bearer {dummy_user.access_token}"},
         )
         assert response.status_code == status.HTTP_200_OK, (
             f"should be able to create {config.MAX_PROJECTS_PER_USER} projects"
         )
 
     # try to create one more project under the user
-    body = ProjectCreate(name=f"project_{config.MAX_PROJECTS_PER_USER}")
+    body = ProjectCreate(name=f"project_{config.MAX_PROJECTS_PER_USER}", org_id=dummy_user.org_id)
     response = test_client.post(
         f"{config.ROUTER_PREFIX_PROJECTS}",
         json=body.model_dump(mode="json"),
-        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+        headers={"Authorization": f"Bearer {dummy_user.access_token}"},
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
@@ -64,18 +66,20 @@ def test_create_project_reached_max_projects_per_user(
 def test_get_projects_under_user(
     test_client: TestClient,
     db_session: Session,
-    dummy_user_bearer_token: str,
-    dummy_user: User,
+    dummy_user: DummyUser,
 ) -> None:
     # create projects and agents under the user
     number_of_projects = 3
     number_of_agents_per_project = 2
     for i in range(number_of_projects):
-        body = ProjectCreate(name=f"project_{i}")
+        body = ProjectCreate(name=f"project_{i}", org_id=dummy_user.org_id)
         response = test_client.post(
             f"{config.ROUTER_PREFIX_PROJECTS}",
             json=body.model_dump(mode="json"),
-            headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+            headers={
+                "Authorization": f"Bearer {dummy_user.access_token}",
+                "X-ACI-ORG-ID": str(dummy_user.org_id),
+            },
         )
         assert response.status_code == status.HTTP_200_OK
         project_public = ProjectPublic.model_validate(response.json())
@@ -88,14 +92,20 @@ def test_get_projects_under_user(
             response = test_client.post(
                 f"{config.ROUTER_PREFIX_PROJECTS}/{project_public.id}/agents",
                 json=body.model_dump(mode="json"),
-                headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+                headers={
+                    "Authorization": f"Bearer {dummy_user.access_token}",
+                    "X-ACI-ORG-ID": str(dummy_user.org_id),
+                },
             )
             assert response.status_code == status.HTTP_200_OK
 
     # get projects under the user
     response = test_client.get(
         f"{config.ROUTER_PREFIX_PROJECTS}",
-        headers={"Authorization": f"Bearer {dummy_user_bearer_token}"},
+        headers={
+            "Authorization": f"Bearer {dummy_user.access_token}",
+            "X-ACI-ORG-ID": str(dummy_user.org_id),
+        },
     )
     assert response.status_code == status.HTTP_200_OK
     projects_public = [ProjectPublic.model_validate(project) for project in response.json()]
