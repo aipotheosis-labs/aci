@@ -100,7 +100,7 @@ app.add_middleware(
     allow_headers=["Authorization", "X-API-KEY", "X-ACI-ORG-ID"],
 )
 app.add_middleware(InterceptorMiddleware)
-app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=[config.APPLICATION_LOAD_BALANCER_DNS])  # type: ignore
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=[config.APPLICATION_LOAD_BALANCER_DNS])
 
 
 # NOTE: generic exception handler (type Exception) for all exceptions doesn't work

@@ -130,7 +130,7 @@ class Agent(Base):
     # TODO: reconsider if this should be in a separate table to enforce data integrity, or use periodic task to clean up
     # Custom instructions for the agent to follow. The key is the function name, and the value is the instruction.
     custom_instructions: Mapped[dict[str, str]] = mapped_column(
-        MutableDict.as_mutable(JSONB),  # type: ignore
+        MutableDict.as_mutable(JSONB),
         nullable=False,
     )
 
@@ -211,11 +211,11 @@ class Function(Base):
     # can be used to control if the app's discoverability
     active: Mapped[bool] = mapped_column(Boolean, nullable=False)
     protocol: Mapped[Protocol] = mapped_column(SqlEnum(Protocol), nullable=False)
-    protocol_data: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSONB), nullable=False)  # type: ignore
+    protocol_data: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSONB), nullable=False)
     # empty dict for function that takes no args
-    parameters: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSONB), nullable=False)  # type: ignore
+    parameters: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSONB), nullable=False)
     # TODO: should response schema be generic (data + execution success of not + optional error) or specific to the function
-    response: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSONB), nullable=False)  # type: ignore
+    response: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSONB), nullable=False)
     # TODO: should we provide EMBEDDING_DIMENSION here? which makes it less flexible if we want to change the embedding dimention in the future
     embedding: Mapped[list[float]] = mapped_column(Vector(EMBEDDING_DIMENSION), nullable=False)
 
@@ -259,12 +259,12 @@ class App(Base):
     active: Mapped[bool] = mapped_column(Boolean, nullable=False)
     # security schemes (including it's config) supported by the app, e.g., API key, OAuth2, etc
     security_schemes: Mapped[dict[SecurityScheme, dict]] = mapped_column(
-        MutableDict.as_mutable(JSONB),  # type: ignore
+        MutableDict.as_mutable(JSONB),
         nullable=False,
     )
     # default security credentials (provided by aipolabs, if any) for the app that can be used by any client
     default_security_credentials_by_scheme: Mapped[dict[SecurityScheme, dict]] = mapped_column(
-        MutableDict.as_mutable(JSONB),  # type: ignore
+        MutableDict.as_mutable(JSONB),
         nullable=False,
     )
     # embedding vector for similarity search
@@ -324,7 +324,7 @@ class AppConfiguration(Base):
     # want to use their own OAuth2 app for whitelabeling
     # TODO: create a pydantic model for security scheme overrides once we finalize overridable fields
     security_scheme_overrides: Mapped[dict] = mapped_column(
-        MutableDict.as_mutable(JSONB),  # type: ignore
+        MutableDict.as_mutable(JSONB),
         nullable=False,
     )
     # controlled by users to enable or disable the app
@@ -394,7 +394,7 @@ class LinkedAccount(Base):
     # security credentials are different for each security scheme, e.g., API key, OAuth2 (access token, refresh token, scope, etc) etc
     # it can beempty dict because the linked account could be created to use default credentials provided by Aipolabs
     security_credentials: Mapped[dict] = mapped_column(
-        MutableDict.as_mutable(JSONB),  # type: ignore
+        MutableDict.as_mutable(JSONB),
         nullable=False,
     )
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)

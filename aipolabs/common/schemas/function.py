@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 from uuid import UUID
 
 import jsonschema
@@ -39,9 +39,9 @@ class FunctionUpsert(BaseModel):
     # TODO: should get rid of default dict?
     # TODO: we need to use left_to_right union mode to avoid pydantic validating RestMetadata
     # input against ConnectorMetadata schema (which allows any dict)
-    protocol_data: RestMetadata | ConnectorMetadata = Field(
-        default_factory=dict, union_mode="left_to_right"
-    )
+    protocol_data: Annotated[
+        RestMetadata | ConnectorMetadata, Field(default_factory=dict, union_mode="left_to_right")
+    ]
     parameters: dict = Field(default_factory=dict)
     response: dict = Field(default_factory=dict)
 

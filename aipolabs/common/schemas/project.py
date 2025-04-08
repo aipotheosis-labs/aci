@@ -12,7 +12,6 @@ class ProjectCreate(BaseModel):
 
     name: str
     org_id: UUID = Field(
-        default=None,
         description="Organization ID if project is to be created under an organization",
     )
 
