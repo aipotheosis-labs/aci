@@ -5,7 +5,6 @@ from collections.abc import Generator
 from dataclasses import dataclass
 from typing import cast
 from unittest.mock import patch
-from uuid import UUID
 
 import pytest
 from fastapi.testclient import TestClient
@@ -62,7 +61,7 @@ MOCK_APP_CONNECTOR_APP_NAME = "MOCK_APP_CONNECTOR"
 class DummyUser:
     propel_auth_user: User
     access_token: str
-    org_id: UUID
+    org_id: uuid.UUID
 
 
 @pytest.fixture(scope="function")
@@ -72,8 +71,9 @@ def dummy_user(database_setup_and_cleanup: None) -> DummyUser:
         propel_auth_user=User(
             user_id="dummy_user",
             org_id_to_org_member_info={
-                org_id: OrgMemberInfo(
-                    org_id=org_id,
+                # NOTE: propelauth uses str for org_id, where as the Project model uses UUID
+                str(org_id): OrgMemberInfo(
+                    org_id=str(org_id),
                     org_name="dummy_org",
                     user_assigned_role="Owner",
                     org_metadata={},

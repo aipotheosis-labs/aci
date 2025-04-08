@@ -20,7 +20,7 @@ def setup_propelauth() -> FastAPIAuth:
 
 
 def validate_user_access_to_org(user: User, org_id: UUID, org_role: str) -> None:
-    org = user.get_org(org_id)
+    org = user.get_org(str(org_id))
     if (org is None) or (org.user_is_role(org_role) is False):
         raise HTTPException(status_code=403, detail="Forbidden")
 

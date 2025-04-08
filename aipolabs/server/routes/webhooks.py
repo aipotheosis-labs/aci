@@ -49,13 +49,24 @@ async def handle_user_signup_webhook(
         )
         return
 
-    # TODO: If user already has a Personal Organization, do nothing
-    # TODO: metadata: personal: true
+    # No-Op if user already has a Personal Organization
+    # This shouldn't happen because each user can only be created once
+    if user.org_id_to_org_info:
+        for user_org in user.org_id_to_org_info.values():
+            if user_org.org_metadata.get("personal") is True:
+                response.status_code = status.HTTP_409_CONFLICT
+                logger.error(
+                    "user already has a personal organization",
+                    extra={"user_id": user.user_id, "org_id": user_org.org_id},
+                )
+                return
+
     org = auth.create_org(
         name=f"Personal {_generate_secure_random_alphanumeric_string()}",
         max_users=10,
     )
-    auth.add_user_to_org(user.user_id, org.org_id, "Owner")
+    auth.update_org_metadata(org_id=org.org_id, metadata={"personal": True})
+    auth.add_user_to_org(user_id=user.user_id, org_id=org.org_id, role="Owner")
 
     quota_manager.enforce_project_creation_quota(db_session, org.org_id)
 
