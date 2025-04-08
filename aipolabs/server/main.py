@@ -18,6 +18,7 @@ from aipolabs.server.dependency_check import check_dependencies
 from aipolabs.server.middleware.interceptor import InterceptorMiddleware, RequestIDLogFilter
 from aipolabs.server.middleware.ratelimit import RateLimitMiddleware
 from aipolabs.server.routes import (
+    agent,
     analytics,
     app_configurations,
     apps,
@@ -152,6 +153,12 @@ app.include_router(
     linked_accounts.router,
     prefix=config.ROUTER_PREFIX_LINKED_ACCOUNTS,
     tags=[config.ROUTER_PREFIX_LINKED_ACCOUNTS.split("/")[-1]],
+)
+
+app.include_router(
+    agent.router,
+    prefix=config.ROUTER_PREFIX_AGENT,
+    tags=[config.ROUTER_PREFIX_AGENT.split("/")[-1]],
 )
 
 app.include_router(

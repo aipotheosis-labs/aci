@@ -65,6 +65,7 @@ ROUTER_PREFIX_APPS = "/v1/apps"
 ROUTER_PREFIX_FUNCTIONS = "/v1/functions"
 ROUTER_PREFIX_APP_CONFIGURATIONS = "/v1/app-configurations"
 ROUTER_PREFIX_LINKED_ACCOUNTS = "/v1/linked-accounts"
+ROUTER_PREFIX_AGENT = "/v1/agent"
 ROUTER_PREFIX_ANALYTICS = "/v1/analytics"
 ROUTER_PREFIX_WEBHOOKS = "/v1/webhooks"
 
