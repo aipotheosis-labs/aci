@@ -64,6 +64,44 @@ Follow all guidelines below for setting up the development environment, running 
 </details>
 
 <details>
+  <summary>Configure Webhooks for Dev Portal Local Development</summary>
+
+If you are developing the dev portal, you would need a real user and org in the
+PropelAuth test environment as well as a default project and agent in your local db.
+
+Follow the steps here to set up the webhooks so that when you sign up on the PropelAuth
+test environment, PropelAuth will notify your local server to create an org in the
+PropelAuth test environment for you as well as creating a default project and agent in
+the local db.
+
+- Follow the guide to install `ngrok` and connect your account:
+  <https://ngrok.com/docs/getting-started/?os=macos>
+- Expose your local server with `ngrok`: `ngrok http http://localhost:8000`
+- Go to the `ngork` endpoints dashboard to copy the public endpoint you just exposed:
+  <https://dashboard.ngrok.com/endpoints>
+- On the [PropelAuth dashboard](https://app.propelauth.com/proj/803d04fe-b3c3-49a2-b2de-eda93f764722/management/users?page=1)
+  **Users** and **Organizations tabs**, delete your previously created user and organization.
+  ![delete org](./images/delete-org.png)
+  ![delete user](./images/delete-user.png)
+- Go to the **Backend Integration** tab and create an API key for the test environment,
+  set it as `SERVER_PROPELAUTH_API_KEY` in `.env`.
+  ![propelauth-api-key](./images/propelauth-api-key.png)
+- Go to the **Integrations** tab on the dashboard, click Webhooks. And click **Set Up
+  Webhooks** for the **TEST ENV**, which will lead you to [Svix endpoints](https://app.svix.com/app_2uuG50X13IEu2cVRRL5fnXOeWWv/endpoints)
+  page.
+  ![webhook-setup](./images/webhook-setup.png)
+- Click `Add Endpoint`, put `<your_gnrok_public_endpoint>/v1/webhooks/user-created` as
+  the endpoint and subscribe to the `user.created` event. Hit Create.
+  ![svix](./images/svix.png)
+- Copy the `Signing Secret` of the endpoint and set it as `SERVER_SVIX_SIGNING_SECRET`
+  in `.env`.
+  ![svix](./images/svix-signing-secret.png)
+- Go to your local dev portal <http://localhost:3000> and sign up on the PropelAuth
+  signup page.
+
+</details>
+
+<details>
   <summary>If any changes are made to the database or it's models</summary>
 
 - You need to generate a new migration, which will generate a new file in `database/alembic/versions/`

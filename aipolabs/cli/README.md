@@ -48,7 +48,6 @@ docker compose exec runner python -m aipolabs.cli.aipolabs upsert-app --app-file
   <summary>Create Project</summary>
 
 - Create a project in the database.
-- You need to create the user first before creating a project for the user.
 
   ```bash
   python -m aipolabs.cli.aipolabs create-project --name "My Project" --org-id "5b3f0b5f-4e79-4a7a-9830-142ecba9f5fd" --visibility-access public
