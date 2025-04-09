@@ -19,11 +19,11 @@ console = Console()
     help="project name",
 )
 @click.option(
-    "--owner-id",
-    "owner_id",
+    "--org-id",
+    "org_id",
     required=True,
     type=UUID,
-    help="owner id, either user id or organization id",
+    help="organization id",
 )
 @click.option(
     "--visibility-access",

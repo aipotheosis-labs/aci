@@ -8,7 +8,7 @@ from svix import Webhook, WebhookVerificationError
 
 from aipolabs.common.db import crud
 from aipolabs.common.logging_setup import get_logger
-from aipolabs.server import config, quota_manager
+from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 from aipolabs.server.acl import setup_propelauth
 
@@ -19,8 +19,8 @@ logger = get_logger(__name__)
 auth = setup_propelauth()
 
 
-@router.post("/user-signup", status_code=status.HTTP_204_NO_CONTENT)
-async def handle_user_signup_webhook(
+@router.post("/user-created", status_code=status.HTTP_204_NO_CONTENT)
+async def handle_user_created_webhook(
     request: Request,
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
     response: Response,
@@ -36,7 +36,13 @@ async def handle_user_signup_webhook(
         response.status_code = status.HTTP_400_BAD_REQUEST
         logger.error(
             "webhook verification error",
-            extra={"error": e},
+            extra={
+                "error": str(e),
+                "error_type": type(e).__name__,
+                "svix_id": headers.get("svix-id"),
+                "svix_timestamp": headers.get("svix-timestamp"),
+                "svix_signature": headers.get("svix-signature"),
+            },
         )
         return
 
@@ -48,6 +54,11 @@ async def handle_user_signup_webhook(
             extra={"user_id": msg["user_id"]},
         )
         return
+
+    logger.info(
+        "a new user has signed up",
+        extra={"user_id": user.user_id},
+    )
 
     # No-Op if user already has a Personal Organization
     # This shouldn't happen because each user can only be created once
@@ -68,10 +79,15 @@ async def handle_user_signup_webhook(
     auth.update_org_metadata(org_id=org.org_id, metadata={"personal": True})
     auth.add_user_to_org(user_id=user.user_id, org_id=org.org_id, role="Owner")
 
-    quota_manager.enforce_project_creation_quota(db_session, org.org_id)
+    logger.info(
+        "created a default personal org for new user",
+        extra={
+            "user_id": user.user_id,
+            "org_id": org.org_id,
+        },
+    )
 
     project = crud.projects.create_project(db_session, org.org_id, "Default Project")
-    db_session.commit()
 
     # Create a default Agent for the project
     crud.projects.create_agent(
@@ -83,6 +99,15 @@ async def handle_user_signup_webhook(
         custom_instructions={},
     )
     db_session.commit()
+
+    logger.info(
+        "created default project for new user",
+        extra={
+            "user_id": user.user_id,
+            "org_id": org.org_id,
+            "project_id": project.id,
+        },
+    )
 
 
 def _generate_secure_random_alphanumeric_string(length: int = 6) -> str:
