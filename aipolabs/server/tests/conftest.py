@@ -46,7 +46,7 @@ with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
 
 logger = logging.getLogger(__name__)
 
-auth = acl.setup_propelauth()
+auth = acl.get_propelauth()
 
 # call this one time for entire tests because it's slow and costs money (negligible) as it needs
 # to generate embeddings using OpenAI for each app and function

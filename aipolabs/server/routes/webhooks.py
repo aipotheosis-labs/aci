@@ -10,13 +10,13 @@ from aipolabs.common.db import crud
 from aipolabs.common.logging_setup import get_logger
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
-from aipolabs.server.acl import setup_propelauth
+from aipolabs.server.acl import get_propelauth
 
 # Create router instance
 router = APIRouter()
 logger = get_logger(__name__)
 
-auth = setup_propelauth()
+auth = get_propelauth()
 
 
 @router.post("/user-created", status_code=status.HTTP_204_NO_CONTENT)

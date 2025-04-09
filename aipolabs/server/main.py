@@ -13,7 +13,7 @@ from aipolabs.common.exceptions import AipolabsException
 from aipolabs.common.logging_setup import setup_logging
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
-from aipolabs.server.acl import setup_propelauth
+from aipolabs.server.acl import get_propelauth
 from aipolabs.server.dependency_check import check_dependencies
 from aipolabs.server.middleware.interceptor import InterceptorMiddleware, RequestIDLogFilter
 from aipolabs.server.middleware.ratelimit import RateLimitMiddleware
@@ -58,7 +58,7 @@ app = FastAPI(
     generate_unique_id_function=custom_generate_unique_id,
 )
 
-auth = setup_propelauth()
+auth = get_propelauth()
 
 
 def scrubbing_callback(m: logfire.ScrubMatch) -> Any:

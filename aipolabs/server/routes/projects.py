@@ -18,7 +18,7 @@ from aipolabs.server import dependencies as deps
 router = APIRouter()
 logger = get_logger(__name__)
 
-auth = acl.setup_propelauth()
+auth = acl.get_propelauth()
 
 
 @router.post("", response_model=ProjectPublic, include_in_schema=True)

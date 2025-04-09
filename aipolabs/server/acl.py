@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 _auth = init_auth(config.PROPELAUTH_AUTH_URL, config.PROPELAUTH_API_KEY)
 
 
-def setup_propelauth() -> FastAPIAuth:
+def get_propelauth() -> FastAPIAuth:
     return _auth
 
 
