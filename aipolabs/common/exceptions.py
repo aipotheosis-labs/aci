@@ -96,6 +96,19 @@ class ProjectAccessDenied(AipolabsException):
         )
 
 
+class OrgAccessDenied(AipolabsException):
+    """
+    Exception raised when an organization is not accessible to a user
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Org access denied",
+            message=message,
+            error_code=status.HTTP_403_FORBIDDEN,
+        )
+
+
 class AppNotFound(AipolabsException):
     """
     Exception raised when an app is not found

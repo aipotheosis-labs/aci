@@ -1,12 +1,11 @@
 import logging
 from uuid import UUID
 
-from fastapi import HTTPException
 from propelauth_fastapi import FastAPIAuth, User, init_auth
 from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
-from aipolabs.common.exceptions import ProjectNotFound
+from aipolabs.common.exceptions import OrgAccessDenied, ProjectNotFound
 from aipolabs.server import config
 
 logger = logging.getLogger(__name__)
@@ -22,7 +21,10 @@ def get_propelauth() -> FastAPIAuth:
 def validate_user_access_to_org(user: User, org_id: UUID, org_role: str) -> None:
     org = user.get_org(str(org_id))
     if (org is None) or (org.user_is_role(org_role) is False):
-        raise HTTPException(status_code=403, detail="Forbidden")
+        raise OrgAccessDenied(
+            f"user={user.user_id} does not have access to org={org_id} or "
+            f"does not have the required role={org_role} in the org"
+        )
 
 
 def validate_user_access_to_project(db_session: Session, user: User, project_id: UUID) -> None:
