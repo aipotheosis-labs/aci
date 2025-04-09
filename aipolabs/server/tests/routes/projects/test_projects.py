@@ -37,12 +37,12 @@ def test_create_project_under_user(
     assert project_public.model_dump() == ProjectPublic.model_validate(project).model_dump()
 
 
-def test_create_project_reached_max_projects_per_user(
+def test_create_project_reached_max_projects_per_org(
     test_client: TestClient,
     dummy_user: DummyUser,
 ) -> None:
     # create max number of projects under the user
-    for i in range(config.MAX_PROJECTS_PER_USER):
+    for i in range(config.MAX_PROJECTS_PER_ORG):
         body = ProjectCreate(name=f"project_{i}", org_id=dummy_user.org_id)
         response = test_client.post(
             f"{config.ROUTER_PREFIX_PROJECTS}",
@@ -50,11 +50,11 @@ def test_create_project_reached_max_projects_per_user(
             headers={"Authorization": f"Bearer {dummy_user.access_token}"},
         )
         assert response.status_code == status.HTTP_200_OK, (
-            f"should be able to create {config.MAX_PROJECTS_PER_USER} projects"
+            f"should be able to create {config.MAX_PROJECTS_PER_ORG} projects"
         )
 
     # try to create one more project under the user
-    body = ProjectCreate(name=f"project_{config.MAX_PROJECTS_PER_USER}", org_id=dummy_user.org_id)
+    body = ProjectCreate(name=f"project_{config.MAX_PROJECTS_PER_ORG}", org_id=dummy_user.org_id)
     response = test_client.post(
         f"{config.ROUTER_PREFIX_PROJECTS}",
         json=body.model_dump(mode="json"),

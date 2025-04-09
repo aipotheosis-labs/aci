@@ -30,12 +30,12 @@ def enforce_project_creation_quota(db_session: Session, org_id: UUID) -> None:
         MaxProjectsReached: If the user has reached their maximum allowed projects
     """
     projects = crud.projects.get_projects_by_org(db_session, org_id)
-    if len(projects) >= config.MAX_PROJECTS_PER_USER:
+    if len(projects) >= config.MAX_PROJECTS_PER_ORG:
         logger.error(
             "user/organization has reached maximum projects quota",
             extra={
                 "org_id": org_id,
-                "max_projects": config.MAX_PROJECTS_PER_USER,
+                "max_projects": config.MAX_PROJECTS_PER_ORG,
                 "num_projects": len(projects),
             },
         )
