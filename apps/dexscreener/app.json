@@ -1,0 +1,16 @@
+{
+  "name": "DEXSCREENER",
+  "display_name": "DexScreener",
+  "logo": "https://dexscreener.com/favicon.png",
+  "provider": "DexScreener",
+  "version": "1.0.0",
+  "description": "DexScreener API integration for accessing token and pair information from decentralized exchanges.",
+  "security_schemes": {
+    "no_auth": {}
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["blockchain", "defi", "crypto"],
+  "visibility": "public",
+  "active": true,
+  "documentation_url": "https://docs.dexscreener.com/api/reference"
+} 
