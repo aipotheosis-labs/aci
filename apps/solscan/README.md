@@ -21,3 +21,7 @@ docker compose exec runner python -m aipolabs.cli.aipolabs fuzzy-test-function-e
 ```
 
 ### Videos 
+<video width="100%" controls>
+  <source src="res/solscan.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
