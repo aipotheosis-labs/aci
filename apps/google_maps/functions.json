@@ -1,0 +1,194 @@
+[
+  {
+    "name": "GOOGLE_MAPS__TEXT_SEARCH",
+    "description": "Returns a list of places based on a text string (e.g. 'pizza in Sydney' or 'shops near Main St').",
+    "tags": [
+      "google-maps",
+      "places",
+      "text-search"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/maps/api/place/textsearch/json",
+      "server_url": "https://maps.googleapis.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "key": {
+              "type": "string",
+              "description": "Your application's API key. This key identifies your application for quota management."
+            },
+            "query": {
+              "type": "string",
+              "description": "The text string to search for (e.g. 'restaurants in Sydney' or 'shops at 123 Main St'). Google recommends using Place Autocomplete instead of text search when possible."
+            },
+            "language": {
+              "type": "string",
+              "description": "The language in which to return results.",
+              "default": "en"
+            },
+            "location": {
+              "type": "string",
+              "description": "The latitude/longitude around which to retrieve place information (e.g. '-33.8670522,151.1957362')."
+            },
+            "maxprice": {
+              "type": "integer",
+              "description": "Restricts results to the specified price level (0=most affordable to 4=most expensive)."
+            },
+            "minprice": {
+              "type": "integer",
+              "description": "Restricts results to the specified price level (0=most affordable to 4=most expensive)."
+            },
+            "opennow": {
+              "type": "boolean",
+              "description": "Returns only those places that are open for business at the time the query is sent."
+            },
+            "pagetoken": {
+              "type": "string",
+              "description": "Token to retrieve the next page of results."
+            },
+            "radius": {
+              "type": "integer",
+              "description": "Defines the distance (in meters) within which to return place results, relative to the specified location. Maximum allowed radius is 50,000 meters."
+            },
+            "region": {
+              "type": "string",
+              "description": "The region code, specified as a ccTLD (country code top-level domain) two-character value."
+            },
+            "type": {
+              "type": "string",
+              "description": "Restricts results to places matching the specified type.",
+              "enum": [
+                "accounting",
+                "airport",
+                "amusement_park",
+                "aquarium",
+                "art_gallery",
+                "atm",
+                "bakery",
+                "bank",
+                "bar",
+                "beauty_salon",
+                "bicycle_store",
+                "book_store",
+                "bowling_alley",
+                "bus_station",
+                "cafe",
+                "campground",
+                "car_dealer",
+                "car_rental",
+                "car_repair",
+                "car_wash",
+                "casino",
+                "cemetery",
+                "church",
+                "city_hall",
+                "clothing_store",
+                "convenience_store",
+                "courthouse",
+                "dentist",
+                "department_store",
+                "doctor",
+                "drugstore",
+                "electrician",
+                "electronics_store",
+                "embassy",
+                "fire_station",
+                "florist",
+                "funeral_home",
+                "furniture_store",
+                "gas_station",
+                "gym",
+                "hair_care",
+                "hardware_store",
+                "hindu_temple",
+                "home_goods_store",
+                "hospital",
+                "insurance_agency",
+                "jewelry_store",
+                "laundry",
+                "lawyer",
+                "library",
+                "light_rail_station",
+                "liquor_store",
+                "local_government_office",
+                "locksmith",
+                "lodging",
+                "meal_delivery",
+                "meal_takeaway",
+                "mosque",
+                "movie_rental",
+                "movie_theater",
+                "moving_company",
+                "museum",
+                "night_club",
+                "painter",
+                "park",
+                "parking",
+                "pet_store",
+                "pharmacy",
+                "physiotherapist",
+                "plumber",
+                "police",
+                "post_office",
+                "primary_school",
+                "real_estate_agency",
+                "restaurant",
+                "roofing_contractor",
+                "rv_park",
+                "school",
+                "secondary_school",
+                "shoe_store",
+                "shopping_mall",
+                "spa",
+                "stadium",
+                "storage",
+                "store",
+                "subway_station",
+                "supermarket",
+                "synagogue",
+                "taxi_stand",
+                "tourist_attraction",
+                "train_station",
+                "transit_station",
+                "travel_agency",
+                "university",
+                "veterinary_care",
+                "zoo"
+              ]
+            }
+          },
+          "required": [
+            "key",
+            "query"
+          ],
+          "visible": [
+            "key",
+            "query",
+            "language",
+            "location",
+            "radius",
+            "type",
+            "opennow"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "visible": [
+        "query"
+      ],
+      "additionalProperties": false
+    }
+  }
+]
