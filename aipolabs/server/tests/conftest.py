@@ -15,6 +15,7 @@ from sqlalchemy import inspect
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import Session
 
+from aipolabs.common.enums import OrganizationRole
 from aipolabs.server import acl
 
 # override the rate limit to a high number for testing before importing aipolabs modules
@@ -75,7 +76,7 @@ def dummy_user(database_setup_and_cleanup: None) -> DummyUser:
                 str(org_id): OrgMemberInfo(
                     org_id=str(org_id),
                     org_name="dummy_org",
-                    user_assigned_role="Owner",
+                    user_assigned_role=OrganizationRole.OWNER,
                     org_metadata={},
                     user_inherited_roles_plus_current_role=[],
                     user_permissions=[],

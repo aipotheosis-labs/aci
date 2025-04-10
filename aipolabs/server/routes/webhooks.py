@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from svix import Webhook, WebhookVerificationError
 
 from aipolabs.common.db import crud
+from aipolabs.common.enums import OrganizationRole
 from aipolabs.common.logging_setup import get_logger
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
@@ -19,7 +20,7 @@ logger = get_logger(__name__)
 auth = get_propelauth()
 
 
-@router.post("/user-created", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/auth/user-created", status_code=status.HTTP_204_NO_CONTENT)
 async def handle_user_created_webhook(
     request: Request,
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
@@ -43,6 +44,14 @@ async def handle_user_created_webhook(
                 "svix_timestamp": headers.get("svix-timestamp"),
                 "svix_signature": headers.get("svix-signature"),
             },
+        )
+        return
+
+    if msg["event_type"] != "user.created":
+        response.status_code = status.HTTP_400_BAD_REQUEST
+        logger.error(
+            "webhook event is not user.created",
+            extra={"event": msg["event"]},
         )
         return
 
@@ -77,7 +86,7 @@ async def handle_user_created_webhook(
         max_users=10,
     )
     auth.update_org_metadata(org_id=org.org_id, metadata={"personal": True})
-    auth.add_user_to_org(user_id=user.user_id, org_id=org.org_id, role="Owner")
+    auth.add_user_to_org(user_id=user.user_id, org_id=org.org_id, role=OrganizationRole.OWNER)
 
     logger.info(
         "created a default personal org for new user",

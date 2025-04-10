@@ -60,6 +60,16 @@ class Visibility(StrEnum):
     PRIVATE = "private"
 
 
+class OrganizationRole(StrEnum):
+    """
+    role for a user in an organization.
+    """
+
+    OWNER = "Owner"
+    ADMIN = "Admin"
+    MEMBER = "Member"
+
+
 class FunctionDefinitionFormat(StrEnum):
     """
     format for a function definition.

@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 
 from aipolabs.common.db import crud
 from aipolabs.common.db.sql_models import Agent, Project
+from aipolabs.common.enums import OrganizationRole
 from aipolabs.common.exceptions import AgentNotFound, ProjectNotFound
 from aipolabs.common.logging_setup import get_logger
 from aipolabs.common.schemas.agent import AgentCreate, AgentPublic, AgentUpdate
@@ -36,7 +37,7 @@ async def create_project(
         },
     )
 
-    acl.validate_user_access_to_org(user, body.org_id, "Owner")
+    acl.validate_user_access_to_org(user, body.org_id, OrganizationRole.OWNER)
     quota_manager.enforce_project_creation_quota(db_session, body.org_id)
 
     project = crud.projects.create_project(db_session, body.org_id, body.name)
@@ -58,7 +59,7 @@ async def get_projects(
     """
     Get all projects that the user is the owner of
     """
-    acl.validate_user_access_to_org(user, org_id, "Owner")
+    acl.validate_user_access_to_org(user, org_id, OrganizationRole.OWNER)
 
     logger.info(
         "get projects",
