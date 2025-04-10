@@ -1,0 +1,18 @@
+{
+  "name": "HACKERNEWS",
+  "display_name": "Hacker News",
+  "logo": "https://news.ycombinator.com/y18.svg",
+  "provider": "Hacker News",
+  "version": "1.0.0",
+  "description": "Hacker News is a social news website focusing on computer science and entrepreneurship, run by Y Combinator. This API allows you to fetch top stories, new stories, ask stories, show stories, and job postings from Hacker News.",
+  "security_schemes": {
+      "no_auth": {}
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+      "news",
+      "tech"
+  ],
+  "visibility": "public",
+  "active": true
+}

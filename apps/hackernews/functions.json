@@ -1,0 +1,158 @@
+[
+  {
+    "name": "HACKERNEWS__TOP_STORIES_GET",
+    "description": "Fetch the top stories from HackerNews.",
+    "tags": ["stories", "top"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/topstories.json",
+      "server_url": "https://hacker-news.firebaseio.com/v0"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HACKERNEWS__ITEM_GET",
+    "description": "Fetch a specific item (story or comment) by ID.",
+    "tags": ["item", "story", "comment"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/item/{id}.json",
+      "server_url": "https://hacker-news.firebaseio.com/v0"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request.",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the item (story or comment) to retrieve."
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HACKERNEWS__USER_GET",
+    "description": "Fetch user information by user ID.",
+    "tags": ["user"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/user/{id}.json",
+      "server_url": "https://hacker-news.firebaseio.com/v0"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request.",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the user to retrieve."
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HACKERNEWS__USER_STORIES_GET",
+    "description": "Fetch stories submitted by a user.",
+    "tags": ["user", "stories"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/user/{id}/submitted.json",
+      "server_url": "https://hacker-news.firebaseio.com/v0"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request.",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the user whose submitted stories to retrieve."
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HACKERNEWS__USER_RECEIVED_GET",
+    "description": "Fetch stories received (comments) by a user.",
+    "tags": ["user", "comments"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/user/{id}/received.json",
+      "server_url": "https://hacker-news.firebaseio.com/v0"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request.",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the user whose received stories/comments to retrieve."
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  }
+]
