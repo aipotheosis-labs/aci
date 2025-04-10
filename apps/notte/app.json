@@ -1,0 +1,23 @@
+{
+    "name": "NOTTE",
+    "display_name": "Notte.cc",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/notte_cc.svg",
+    "provider": "Notte",
+    "version": "1.0.0",
+    "description": "Notte transforms the internet into a space where each website becomes a structured, navigable map for intelligent agents.",
+    "security_schemes": {
+        "api_key": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "search",
+        "scrape",
+        "web"
+    ],
+    "visibility": "public",
+    "active": true
+}
