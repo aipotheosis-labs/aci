@@ -44,7 +44,7 @@ services:
       - SERVER_GOOGLE_AUTH_CLIENT_ID=${SERVER_GOOGLE_AUTH_CLIENT_ID?}
       - SERVER_GOOGLE_AUTH_CLIENT_SECRET=${SERVER_GOOGLE_AUTH_CLIENT_SECRET?}
       - SERVER_PROPELAUTH_API_KEY=${SERVER_PROPELAUTH_API_KEY?}
-      - SERVER_SVIX_SIGNING_SECRET=${SERVER_SVIX_SIGNING_SECRET?}
+      - SERVER_SVIX_SIGNING_SECRET=${SERVER_SVIX_SIGNING_SECRET:-<svix-signing-secret>}
     # useful for development, changes take effect in the container without needing to rebuild the image.
     volumes:
       - ./aipolabs/server:/workdir/aipolabs/server
@@ -73,7 +73,7 @@ services:
       - SERVER_GOOGLE_AUTH_CLIENT_ID=${SERVER_GOOGLE_AUTH_CLIENT_ID?}
       - SERVER_GOOGLE_AUTH_CLIENT_SECRET=${SERVER_GOOGLE_AUTH_CLIENT_SECRET?}
       - SERVER_PROPELAUTH_API_KEY=${SERVER_PROPELAUTH_API_KEY?}
-      - SERVER_SVIX_SIGNING_SECRET=${SERVER_SVIX_SIGNING_SECRET?}
+      - SERVER_SVIX_SIGNING_SECRET=${SERVER_SVIX_SIGNING_SECRET:-<svix-signing-secret>}
       - CLI_OPENAI_API_KEY=${CLI_OPENAI_API_KEY?}
     # Mount the local code into the container so you can run scripts / Alembic
     volumes:
