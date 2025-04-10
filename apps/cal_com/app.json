@@ -1,0 +1,22 @@
+{
+  "name": "CAL_COM",
+  "display_name": "CAL.COM",
+  "logo": "",
+  "provider": "Cal.com, Inc.",
+  "version": "aipolabs_0.0.1",
+  "description": "",
+  "security_schemes": {
+    "api_key": {
+      "location": "body",
+      "name": "apikey",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "scheduling",
+    "meet"
+  ],
+  "visibility": "public",
+  "active": true
+}

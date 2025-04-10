@@ -1,0 +1,47 @@
+[
+  {
+    "name": "CAL_COM__GET_SCHEDULES",
+    "description": "Retrieves a list of schedules from Cal.com",
+    "tags": [
+      "cal.com",
+      "schedules"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/schedules",
+      "server_url": "https://api.cal.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "apiKey": {
+              "type": "string",
+              "description": "The API key for authentication"
+            }
+          },
+          "required": [
+            "apiKey"
+          ],
+          "visible": [
+            "apiKey"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "visible": [
+        "query"
+      ],
+      "additionalProperties": false
+    }
+  }
+]
