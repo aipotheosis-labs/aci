@@ -1,0 +1,309 @@
+[
+    {
+        "name": "SOLSCAN__GET_CHAIN_INFO",
+        "description": "Get chain information from SolScan",
+        "tags": ["chain", "solana", "blockchain"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/chaininfo",
+            "server_url": "https://public-api.solscan.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header"],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SOLSCAN__GET_ACCOUNT_DETAIL",
+        "description": "Get account details from SolScan",
+        "tags": ["account", "solana", "blockchain"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2.0/account/detail",
+            "server_url": "https://pro-api.solscan.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the HTTP request",
+                    "properties": {
+                        "address": {
+                            "type": "string",
+                            "description": "The Solana account address",
+                            "default": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                        }
+                    },
+                    "required": ["address"],
+                    "visible": ["address"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query", "header"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SOLSCAN__GET_ACCOUNT_BALANCE_CHANGE",
+        "description": "Get account balance change from SolScan",
+        "tags": ["account", "solana", "blockchain"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2.0/account/balance_change",
+            "server_url": "https://pro-api.solscan.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the HTTP request",
+                    "properties": {
+                        "address": {
+                            "type": "string",
+                            "description": "The Solana account address",
+                            "default": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                        }
+                    },
+                    "required": ["address"],
+                    "visible": ["address"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query", "header"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SOLSCAN__GET_ACCOUNT_TRANSACTIONS",
+        "description": "Get the list of transactions of an account from SolScan",
+        "tags": ["account", "solana", "blockchain"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2.0/account/transactions",
+            "server_url": "https://pro-api.solscan.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the HTTP request",
+                    "properties": {
+                        "address": {
+                            "type": "string",
+                            "description": "A wallet address on Solana blockchain",
+                            "default": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                        },
+                        "before": {
+                            "type": "string",
+                            "description": "The signature of the latest transaction of previous page"
+                        },
+                        "limit": {
+                            "type": "number",
+                            "description": "The number of transactions should be returned",
+                            "enum": [10, 20, 30, 40]
+                        }
+                    },
+                    "required": ["address"],
+                    "visible": ["address", "before", "limit"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query", "header"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SOLSCAN__GET_ACCOUNT_PORTFOLIO",
+        "description": "Get the portfolio for a given address from SolScan",
+        "tags": ["account", "solana", "blockchain"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2.0/account/portfolio",
+            "server_url": "https://pro-api.solscan.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the HTTP request",
+                    "properties": {
+                        "address": {
+                            "type": "string",
+                            "description": "A wallet address on Solana blockchain",
+                            "default": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                        }
+                    },
+                    "required": ["address"],
+                    "visible": ["address"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query", "header"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SOLSCAN__GET_ACCOUNT_TOKEN_ACCOUNTS",
+        "description": "Get token accounts of an account from SolScan",
+        "tags": ["account", "solana", "blockchain"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2.0/account/token-accounts",
+            "server_url": "https://pro-api.solscan.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the HTTP request",
+                    "properties": {
+                        "address": {
+                            "type": "string",
+                            "description": "A Wallet address on Solana blockchain",
+                            "default": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                        },
+                        "type": {
+                            "type": "string",
+                            "description": "Type of token",
+                            "enum": ["token", "nft"]
+                        },
+                        "page": {
+                            "type": "number",
+                            "description": "Page number for pagination"
+                        },
+                        "page_size": {
+                            "type": "number",
+                            "description": "The number of items per page",
+                            "enum": [10, 20, 30, 40]
+                        },
+                        "hide_zero": {
+                            "type": "boolean",
+                            "description": "Filter tokens that have amount is zero"
+                        }
+                    },
+                    "required": ["address", "type"],
+                    "visible": ["address", "type", "page", "page_size", "hide_zero"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query", "header"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    }
+]
