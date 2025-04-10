@@ -1,7 +1,7 @@
 {
     "name": "STEEL",
     "display_name": "Steel.dev",
-    "logo": "https://github.com/steel-dev/steel-browser/raw/main/images/steel_header_logo.png",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/steel.png",
     "provider": "Steel.dev",
     "version": "1.0.0",
     "description": "API for browser automation, web scraping, screenshot capture, and PDF generation with session management capabilities.",
