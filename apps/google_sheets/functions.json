@@ -1,0 +1,356 @@
+[
+    {
+        "name": "GOOGLE_SHEETS__SPREADSHEET_CREATE",
+        "description": "Creates a new blank spreadsheet with specified title",
+        "tags": ["spreadsheet", "create"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/spreadsheets",
+            "server_url": "https://sheets.googleapis.com/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "properties": {
+                            "type": "object",
+                            "properties": {
+                                "title": {
+                                    "type": "string",
+                                    "description": "Spreadsheet title"
+                                }
+                            },
+                            "required": ["title"],
+                            "visible": ["title"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["properties"],
+                    "visible": ["properties"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_SHEETS__VALUES_GET",
+        "description": "Retrieves data from specified range in a spreadsheet",
+        "tags": ["spreadsheet", "read"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/spreadsheets/{spreadsheetId}/values/{range}",
+            "server_url": "https://sheets.googleapis.com/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "spreadsheetId": {
+                            "type": "string",
+                            "description": "Spreadsheet ID"
+                        },
+                        "range": {
+                            "type": "string",
+                            "description": "Target range (e.g. 'Sheet1!A1:B2')"
+                        }
+                    },
+                    "required": ["spreadsheetId", "range"],
+                    "visible": ["spreadsheetId", "range"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "valueRenderOption": {
+                            "type": "string",
+                            "enum": ["FORMATTED_VALUE", "UNFORMATTED_VALUE", "FORMULA"],
+                            "default": "FORMATTED_VALUE",
+                            "description": "How values should be rendered"
+                        },
+                        "dateTimeRenderOption": {
+                            "type": "string",
+                            "enum": ["SERIAL_NUMBER", "FORMATTED_STRING"],
+                            "default": "SERIAL_NUMBER",
+                            "description": "How dates should be rendered"
+                        }
+                    },
+                    "required": ["valueRenderOption", "dateTimeRenderOption"],
+                    "visible": ["valueRenderOption", "dateTimeRenderOption"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_SHEETS__VALUES_UPDATE",
+        "description": "Updates values in specified range of a spreadsheet",
+        "tags": ["spreadsheet", "write"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/spreadsheets/{spreadsheetId}/values/{range}",
+            "server_url": "https://sheets.googleapis.com/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "spreadsheetId": {
+                            "type": "string",
+                            "description": "Spreadsheet ID"
+                        },
+                        "range": {
+                            "type": "string",
+                            "description": "Target range to update"
+                        }
+                    },
+                    "required": ["spreadsheetId", "range"],
+                    "visible": ["spreadsheetId", "range"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "values": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "description": "Data to write (2D array)"
+                        }
+                    },
+                    "required": ["values"],
+                    "visible": ["values"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "valueInputOption": {
+                            "type": "string",
+                            "enum": ["RAW", "USER_ENTERED"],
+                            "default": "RAW",
+                            "description": "How input data should be interpreted"
+                        }
+                    },
+                    "required": ["valueInputOption"],
+                    "visible": ["valueInputOption"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_SHEETS__BATCH_UPDATE",
+        "description": "Executes multiple spreadsheet operations in a single request",
+        "tags": ["spreadsheet", "batch"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/spreadsheets/{spreadsheetId}:batchUpdate",
+            "server_url": "https://sheets.googleapis.com/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "spreadsheetId": {
+                            "type": "string",
+                            "description": "Spreadsheet ID"
+                        }
+                    },
+                    "required": ["spreadsheetId"],
+                    "visible": ["spreadsheetId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "addSheet": {
+                                        "type": "object",
+                                        "properties": {
+                                            "properties": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "title": {
+                                                        "type": "string",
+                                                        "description": "New sheet title"
+                                                    }
+                                                },
+                                                "required": ["title"],
+                                                "visible": ["title"],
+                                                "additionalProperties": false
+                                            }
+                                        },
+                                        "required": ["properties"],
+                                        "visible": ["properties"],
+                                        "additionalProperties": false
+                                    },
+                                    "updateCells": {
+                                        "type": "object",
+                                        "properties": {
+                                            "range": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "sheetId": {
+                                                        "type": "integer",
+                                                        "description": "Sheet ID"
+                                                    },
+                                                    "startRowIndex": {
+                                                        "type": "integer",
+                                                        "description": "Starting row index"
+                                                    },
+                                                    "startColumnIndex": {
+                                                        "type": "integer",
+                                                        "description": "Starting column index"
+                                                    }
+                                                },
+                                                "required": ["sheetId"],
+                                                "visible": ["sheetId", "startRowIndex", "startColumnIndex"],
+                                                "additionalProperties": false
+                                            },
+                                            "rows": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "values": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "userEnteredValue": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "stringValue": {
+                                                                                "type": "string",
+                                                                                "description": "String value"
+                                                                            }
+                                                                        },
+                                                                        "required": ["stringValue"],
+                                                                        "visible": ["stringValue"],
+                                                                        "additionalProperties": false
+                                                                    }
+                                                                },
+                                                                "required": ["userEnteredValue"],
+                                                                "visible": ["userEnteredValue"],
+                                                                "additionalProperties": false
+                                                            }
+                                                        }
+                                                    },
+                                                    "required": ["values"],
+                                                    "visible": ["values"],
+                                                    "additionalProperties": false
+                                                }
+                                            }
+                                        },
+                                        "required": ["range", "rows"],
+                                        "visible": ["range", "rows"],
+                                        "additionalProperties": false
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "description": "List of operations to execute"
+                        }
+                    },
+                    "required": ["requests"],
+                    "visible": ["requests"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_SHEETS__SPREADSHEET_GET",
+        "description": "Retrieves spreadsheet metadata and properties",
+        "tags": ["spreadsheet", "metadata"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/spreadsheets/{spreadsheetId}",
+            "server_url": "https://sheets.googleapis.com/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "spreadsheetId": {
+                            "type": "string",
+                            "description": "Spreadsheet ID"
+                        }
+                    },
+                    "required": ["spreadsheetId"],
+                    "visible": ["spreadsheetId"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "includeGridData": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Whether to include grid data"
+                        },
+                        "ranges": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "List of ranges to include"
+                        }
+                    },
+                    "required": ["includeGridData", "ranges"],
+                    "visible": ["includeGridData", "ranges"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    }
+]
