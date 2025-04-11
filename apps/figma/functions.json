@@ -1,0 +1,479 @@
+[
+  {
+    "name": "FIGMA__GET_FILE",
+    "description": "Retrieves the document structure of a Figma file based on the given file key. Returns the entire document as JSON including nodes, their names, and types.",
+    "tags": [
+      "figma",
+      "files"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/files/{file_key}",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file to retrieve."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters",
+          "properties": {
+            "version": {
+              "type": "string",
+              "description": "Specific version ID to retrieve. If not provided, the latest version is returned."
+            },
+            "ids": {
+              "type": "string",
+              "description": "Comma-separated list of node IDs to include in the response."
+            },
+            "depth": {
+              "type": "integer",
+              "description": "Depth to traverse the node tree. Default is 1."
+            },
+            "geometry": {
+              "type": "string",
+              "description": "Set to 'paths' to include vector geometry data."
+            },
+            "plugin_data": {
+              "type": "string",
+              "description": "Comma-separated list of plugin IDs to retrieve plugin data for."
+            },
+            "branch_data": {
+              "type": "boolean",
+              "description": "Whether to include metadata about branches. Default is false."
+            }
+          },
+          "required": [],
+          "visible": [
+            "version",
+            "ids",
+            "depth",
+            "geometry",
+            "plugin_data",
+            "branch_data"
+          ],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "Request header parameters",
+          "properties": {
+            "X-Figma-Token": {
+              "type": "string",
+              "description": "Personal access token used to authorize the request."
+            }
+          },
+          "required": [
+            "X-Figma-Token"
+          ],
+          "visible": [
+            "X-Figma-Token"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path",
+        "header"
+      ],
+      "visible": [
+        "path",
+        "query",
+        "header"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_FILE_NODES",
+    "description": "Retrieves the nodes present in a Figma file based on the given file key and node IDs.",
+    "tags": [
+      "figma",
+      "files",
+      "nodes"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/files/{file_key}/nodes",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file containing the nodes."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "ids": {
+              "type": "string",
+              "description": "Comma-separated list of node IDs to retrieve."
+            }
+          },
+          "required": [
+            "ids"
+          ],
+          "visible": [
+            "ids"
+          ],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "Header parameters",
+          "properties": {
+            "X-Figma-Token": {
+              "type": "string",
+              "description": "Personal access token for authenticating the request."
+            }
+          },
+          "required": [
+            "X-Figma-Token"
+          ],
+          "visible": [
+            "X-Figma-Token"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path",
+        "query",
+        "header"
+      ],
+      "visible": [
+        "path",
+        "query",
+        "header"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_IMAGE",
+    "description": "Retrieves images rendered from a Figma file based on the given file key and node IDs.",
+    "tags": [
+      "figma",
+      "images"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/images/{file_key}",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file containing the images."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "ids": {
+              "type": "string",
+              "description": "Comma-separated list of node IDs to render."
+            },
+            "scale": {
+              "type": "number",
+              "description": "Scale factor for the rendered images. Defaults to 1."
+            },
+            "format": {
+              "type": "string",
+              "description": "Image format to return. Options are 'jpg', 'png', 'svg', etc."
+            }
+          },
+          "required": [
+            "ids"
+          ],
+          "visible": [
+            "ids",
+            "scale",
+            "format"
+          ],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "Header parameters",
+          "properties": {
+            "X-Figma-Token": {
+              "type": "string",
+              "description": "Personal access token for authenticating the request."
+            }
+          },
+          "required": [
+            "X-Figma-Token"
+          ],
+          "visible": [
+            "X-Figma-Token"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path",
+        "query",
+        "header"
+      ],
+      "visible": [
+        "path",
+        "query",
+        "header"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_FILE_VERSIONS",
+    "description": "Retrieves the version history of a Figma file based on the given file key.",
+    "tags": [
+      "figma",
+      "files",
+      "versions"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/files/{file_key}/versions",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file whose versions are to be retrieved."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "Header parameters",
+          "properties": {
+            "X-Figma-Token": {
+              "type": "string",
+              "description": "Personal access token for authenticating the request."
+            }
+          },
+          "required": [
+            "X-Figma-Token"
+          ],
+          "visible": [
+            "X-Figma-Token"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path",
+        "header"
+      ],
+      "visible": [
+        "path",
+        "header"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_TEAM_PROJECTS",
+    "description": "Retrieves a list of projects within a team based on the given team ID.",
+    "tags": [
+      "figma",
+      "teams",
+      "projects"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/teams/{team_id}/projects",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "team_id": {
+              "type": "string",
+              "description": "The ID of the team to retrieve projects from."
+            }
+          },
+          "required": [
+            "team_id"
+          ],
+          "visible": [
+            "team_id"
+          ],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "Header parameters",
+          "properties": {
+            "X-Figma-Token": {
+              "type": "string",
+              "description": "Personal access token used to authenticate the request."
+            }
+          },
+          "required": [
+            "X-Figma-Token"
+          ],
+          "visible": [
+            "X-Figma-Token"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path",
+        "header"
+      ],
+      "visible": [
+        "path",
+        "header"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_PROJECT_FILES",
+    "description": "Lists the files in a given project based on the project ID.",
+    "tags": [
+      "figma",
+      "projects",
+      "files"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/projects/{project_id}/files",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "project_id": {
+              "type": "string",
+              "description": "The ID of the project whose files should be listed."
+            }
+          },
+          "required": [
+            "project_id"
+          ],
+          "visible": [
+            "project_id"
+          ],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "Header parameters",
+          "properties": {
+            "X-Figma-Token": {
+              "type": "string",
+              "description": "Personal access token used to authenticate the request."
+            }
+          },
+          "required": [
+            "X-Figma-Token"
+          ],
+          "visible": [
+            "X-Figma-Token"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path",
+        "header"
+      ],
+      "visible": [
+        "path",
+        "header"
+      ],
+      "additionalProperties": false
+    }
+  }
+]
