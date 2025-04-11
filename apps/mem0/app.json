@@ -1,0 +1,23 @@
+{
+    "name": "MEMZ",
+    "display_name": "Mem0",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/mem0.svg",
+    "provider": "Mem0",
+    "version": "1.0.0",
+    "description": "Mem0 AI is an advanced memory and knowledge management platform that helps users organize, store, and retrieve information efficiently. It provides personalized AI-powered memory management with Google and GitHub integration.",
+    "security_schemes": {
+        "api_key": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Token"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "ai_memory",
+        "knowledge_management",
+        "personal_assistant"
+    ],
+    "visibility": "public",
+    "active": true
+}

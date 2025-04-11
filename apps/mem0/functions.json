@@ -1,0 +1,388 @@
+[
+    {
+        "name": "MEMZ__CREATE_ORGANIZATION",
+        "description": "Create a new organization in MEMZ",
+        "tags": [
+            "organization",
+            "mem0"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/orgs/organizations/",
+            "server_url": "https://api.mem0.ai/api/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [
+                        "Content-Type"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Organization creation parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the new organization"
+                        }
+                    },
+                    "required": [
+                        "name"
+                    ],
+                    "visible": [
+                        "name"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEMZ__GET_ORGANIZATIONS",
+        "description": "Get all organizations from MEMZ",
+        "tags": [
+            "organization",
+            "mem0"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/orgs/organizations/",
+            "server_url": "https://api.mem0.ai/api/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [
+                        "Content-Type"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "header"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEMZ__GET_ORGANIZATION",
+        "description": "Get a specific organization from MEMZ",
+        "tags": [
+            "organization",
+            "mem0"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/orgs/organizations/{organization_id}/",
+            "server_url": "https://api.mem0.ai/api/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [
+                        "Content-Type"
+                    ],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "organization_id": {
+                            "type": "string",
+                            "description": "ID of the organization"
+                        }
+                    },
+                    "required": [
+                        "organization_id"
+                    ],
+                    "visible": [
+                        "organization_id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEMZ__GET_MEMBERS",
+        "description": "Get members of an organization from MEMZ",
+        "tags": [
+            "organization",
+            "mem0"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/orgs/organizations/{organization_id}/members/",
+            "server_url": "https://api.mem0.ai/api/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [
+                        "Content-Type"
+                    ],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "organization_id": {
+                            "type": "string",
+                            "description": "ID of the organization"
+                        }
+                    },
+                    "required": [
+                        "organization_id"
+                    ],
+                    "visible": [
+                        "organization_id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEMZ__ADD_MEMBER",
+        "description": "Add a member to an organization in MEMZ",
+        "tags": [
+            "organization",
+            "mem0"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/orgs/organizations/{organization_id}/members/",
+            "server_url": "https://api.mem0.ai/api/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [
+                        "Content-Type"
+                    ],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "organization_id": {
+                            "type": "string",
+                            "description": "ID of the organization"
+                        }
+                    },
+                    "required": [
+                        "organization_id"
+                    ],
+                    "visible": [
+                        "organization_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Member addition parameters",
+                    "properties": {
+                        "email": {
+                            "type": "string",
+                            "description": "Email of the member to add"
+                        }
+                    },
+                    "required": [
+                        "email"
+                    ],
+                    "visible": [
+                        "email"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEMZ__DELETE_ORGANIZATION",
+        "description": "Delete an organization from MEMZ",
+        "tags": [
+            "organization",
+            "mem0"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/orgs/organizations/{organization_id}/",
+            "server_url": "https://api.mem0.ai/api/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [
+                        "Content-Type"
+                    ],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "organization_id": {
+                            "type": "string",
+                            "description": "ID of the organization to delete"
+                        }
+                    },
+                    "required": [
+                        "organization_id"
+                    ],
+                    "visible": [
+                        "organization_id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    }
+]
