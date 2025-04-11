@@ -1,0 +1,412 @@
+[
+    {
+        "name": "ZOHO_DESK__LIST_TICKETS",
+        "description": "List support tickets from Zoho Desk with optional filtering and pagination",
+        "tags": ["tickets", "list", "filter"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/tickets",
+            "server_url": "https://desk.zoho.com",
+            "oauth_scopes": ["Desk.tickets.READ"]
+        },
+        "parameters": {
+            "type": "object",
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false,
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the request",
+                    "required": [],
+                    "visible": ["from", "limit", "status", "departmentId", "assignee", "channel", "include", "sortBy"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "from": {
+                            "type": "integer",
+                            "description": "Starting index for pagination"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Number of records to return per page (max: 100)"
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "Filter tickets by status (e.g., Open, Closed)"
+                        },
+                        "departmentId": {
+                            "type": "string",
+                            "description": "Filter tickets by department ID"
+                        },
+                        "assignee": {
+                            "type": "string",
+                            "description": "Filter tickets by assignee email"
+                        },
+                        "channel": {
+                            "type": "string",
+                            "description": "Filter tickets by channel (Email, Portal, Facebook, Twitter, etc)"
+                        },
+                        "include": {
+                            "type": "string",
+                            "description": "Include additional fields in response (contacts,products,departments,team)"
+                        },
+                        "sortBy": {
+                            "type": "string",
+                            "description": "Field to sort by (e.g., createdTime, dueDate)",
+                            "enum": ["createdTime", "dueDate", "statusType", "priority"]
+                        }
+                    }
+                }
+            }
+        },
+        "response": {}
+    },
+    {
+        "name": "ZOHO_DESK__GET_CONTACT",
+        "description": "Get detailed information about a specific contact from Zoho Desk",
+        "tags": ["contacts", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/contacts/{contactId}",
+            "server_url": "https://desk.zoho.com",
+            "oauth_scopes": ["Desk.contacts.READ"]
+        },
+        "parameters": {
+            "type": "object",
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false,
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "required": ["contactId"],
+                    "visible": ["contactId"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "contactId": {
+                            "type": "string",
+                            "description": "ID of the contact to retrieve"
+                        }
+                    }
+                },
+                "query": {
+                    "type": "object",
+                    "required": [],
+                    "visible": ["include"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "include": {
+                            "type": "string",
+                            "description": "Include additional data (accounts,products)"
+                        }
+                    }
+                }
+            }
+        },
+        "response": {}
+    },
+    {
+        "name": "ZOHO_DESK__LIST_CONTACTS",
+        "description": "List contacts from Zoho Desk with optional filtering and pagination",
+        "tags": ["contacts", "list", "filter"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/contacts",
+            "server_url": "https://desk.zoho.com",
+            "oauth_scopes": ["Desk.contacts.READ"]
+        },
+        "parameters": {
+            "type": "object",
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false,
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "required": [],
+                    "visible": ["from", "limit", "email", "phone", "type", "include", "sortBy"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "from": {
+                            "type": "integer",
+                            "description": "Starting index for pagination"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Number of records to return per page (max: 100)"
+                        },
+                        "email": {
+                            "type": "string",
+                            "description": "Filter contacts by email"
+                        },
+                        "phone": {
+                            "type": "string",
+                            "description": "Filter contacts by phone number"
+                        },
+                        "type": {
+                            "type": "string",
+                            "description": "Filter by contact type"
+                        },
+                        "include": {
+                            "type": "string",
+                            "description": "Include additional fields (accounts,products)"
+                        },
+                        "sortBy": {
+                            "type": "string",
+                            "description": "Field to sort by",
+                            "enum": ["createdTime", "lastModifiedTime", "email", "firstName", "lastName", "phone"]
+                        }
+                    }
+                }
+            }
+        },
+        "response": {}
+    },
+    {
+        "name": "ZOHO_DESK__LIST_DEPARTMENTS",
+        "description": "List departments from Zoho Desk",
+        "tags": ["departments", "list"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/departments",
+            "server_url": "https://desk.zoho.com",
+            "oauth_scopes": ["Desk.departments.READ"]
+        },
+        "parameters": {
+            "type": "object",
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false,
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "required": [],
+                    "visible": ["from", "limit", "isEnabled", "searchStr", "chatStatus"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "from": {
+                            "type": "integer",
+                            "description": "Starting index for pagination (>=0)",
+                            "minimum": 0
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Number of records to return per page (0-200, default: 10)",
+                            "minimum": 0,
+                            "maximum": 200
+                        },
+                        "isEnabled": {
+                            "type": "boolean",
+                            "description": "Filter departments based on their enabled status"
+                        },
+                        "searchStr": {
+                            "type": "string",
+                            "description": "Search for departments by name, help center name, or description (max 100 chars). Supports: string* (starts with), *string* (contains), string (exact match)",
+                            "maxLength": 100
+                        },
+                        "chatStatus": {
+                            "type": "string",
+                            "description": "Filter departments by chat status (AVAILABLE, DISABLED, NOT_CREATED, UNAVAILABLE)",
+                            "enum": ["AVAILABLE", "DISABLED", "NOT_CREATED", "UNAVAILABLE"],
+                            "maxLength": 100
+                        }
+                    }
+                }
+            }
+        },
+        "response": {}
+    },
+    {
+        "name": "ZOHO_DESK__GET_TICKET_DETAILS",
+        "description": "Get detailed information about a specific ticket from Zoho Desk",
+        "tags": ["tickets", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/tickets/{ticketId}",
+            "server_url": "https://desk.zoho.com",
+            "oauth_scopes": ["Desk.tickets.READ"]
+        },
+        "parameters": {
+            "type": "object",
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false,
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "required": ["ticketId"],
+                    "visible": ["ticketId"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "ticketId": {
+                            "type": "string",
+                            "description": "ID of the ticket to retrieve"
+                        }
+                    }
+                },
+                "query": {
+                    "type": "object",
+                    "required": [],
+                    "visible": ["include"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "include": {
+                            "type": "string",
+                            "description": "Include additional data. Allowed values: contacts, assignee, tickets, teams, creator. Multiple values can be specified as a comma-separated string.",
+                            "maxLength": 100,
+                            "enum": ["contacts", "assignee", "tickets", "teams", "creator"]
+                        }
+                    }
+                }
+            }
+        },
+        "response": {}
+    },
+    {
+        "name": "ZOHO_DESK__SEARCH_CONTACTS",
+        "description": "Search contacts in the help desk portal with various filtering options",
+        "tags": ["contacts", "search", "filter"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/contacts/search",
+            "server_url": "https://desk.zoho.com",
+            "oauth_scopes": ["Desk.contacts.READ"]
+        },
+        "parameters": {
+            "type": "object",
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false,
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "required": [],
+                    "visible": ["from", "limit", "id", "fullName", "firstName", "lastName", "email", "phone", "mobile", "accountName", "_all", "customField1", "customField2", "customField3", "customField4", "customField5", "customField6", "customField7", "customField8", "customField9", "customField10", "createdTimeRange", "modifiedTimeRange", "sortBy"],
+                    "additionalProperties": false,
+                    "properties": {
+                        "from": {
+                            "type": "integer",
+                            "description": "Starting index for pagination (0-4999, default: 0)",
+                            "minimum": 0,
+                            "maximum": 4999
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Number of records to return per page (1-100, default: 10)",
+                            "minimum": 1,
+                            "maximum": 100
+                        },
+                        "id": {
+                            "type": "string",
+                            "description": "ID of the contact (exact match)"
+                        },
+                        "fullName": {
+                            "type": "string",
+                            "description": "Full name of the contact (wildcard search)"
+                        },
+                        "firstName": {
+                            "type": "string",
+                            "description": "First name of the contact (wildcard search, empty check, not empty check)"
+                        },
+                        "lastName": {
+                            "type": "string",
+                            "description": "Last name of the contact (wildcard search)"
+                        },
+                        "email": {
+                            "type": "string",
+                            "description": "Email ID of the contact (wildcard search, empty check, not empty check)"
+                        },
+                        "phone": {
+                            "type": "string",
+                            "description": "Phone number of the contact (wildcard search, empty check, not empty check)"
+                        },
+                        "mobile": {
+                            "type": "string",
+                            "description": "Mobile number of the contact (wildcard search, empty check, not empty check)"
+                        },
+                        "accountName": {
+                            "type": "string",
+                            "description": "Name of the account associated with the Contact (wildcard search, empty check, not empty check)"
+                        },
+                        "_all": {
+                            "type": "string",
+                            "description": "Find throughout the contact (wildcard search)"
+                        },
+                        "customField1": {
+                            "type": "string",
+                            "description": "Custom field 1 search (format: FieldApiName:searchValue)"
+                        },
+                        "customField2": {
+                            "type": "string",
+                            "description": "Custom field 2 search (format: FieldApiName:searchValue)"
+                        },
+                        "customField3": {
+                            "type": "string",
+                            "description": "Custom field 3 search (format: FieldApiName:searchValue)"
+                        },
+                        "customField4": {
+                            "type": "string",
+                            "description": "Custom field 4 search (format: FieldApiName:searchValue)"
+                        },
+                        "customField5": {
+                            "type": "string",
+                            "description": "Custom field 5 search (format: FieldApiName:searchValue)"
+                        },
+                        "customField6": {
+                            "type": "string",
+                            "description": "Custom field 6 search (format: FieldApiName:searchValue)"
+                        },
+                        "customField7": {
+                            "type": "string",
+                            "description": "Custom field 7 search (format: FieldApiName:searchValue)"
+                        },
+                        "customField8": {
+                            "type": "string",
+                            "description": "Custom field 8 search (format: FieldApiName:searchValue)"
+                        },
+                        "customField9": {
+                            "type": "string",
+                            "description": "Custom field 9 search (format: FieldApiName:searchValue)"
+                        },
+                        "customField10": {
+                            "type": "string",
+                            "description": "Custom field 10 search (format: FieldApiName:searchValue)"
+                        },
+                        "createdTimeRange": {
+                            "type": "string",
+                            "description": "Filter contacts created in a particular time range (format: yyyy-MM-ddThh:mm:ss.SSSZ,yyyy-MM-ddThh:mm:ss.SSSZ)"
+                        },
+                        "modifiedTimeRange": {
+                            "type": "string",
+                            "description": "Filter contacts modified in a particular time range (format: yyyy-MM-ddThh:mm:ss.SSSZ,yyyy-MM-ddThh:mm:ss.SSSZ)"
+                        },
+                        "sortBy": {
+                            "type": "string",
+                            "description": "Field to sort by (relevance, modifiedTime, createdTime, lastName, firstName). Use -fieldName for descending order",
+                            "enum": ["relevance", "modifiedTime", "createdTime", "lastName", "firstName", "-modifiedTime", "-createdTime", "-lastName", "-firstName"]
+                        }
+                    }
+                }
+            }
+        },
+        "response": {}
+    }
+] 
