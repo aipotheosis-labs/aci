@@ -1,0 +1,19 @@
+{
+    "name": "SENTRY",
+    "display_name": "Sentry",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/sentry.svg",
+    "provider": "Sentry",
+    "version": "1.0",
+    "description": "Sentry API integration for monitoring and error tracking, allowing you to manage issues, events, releases, and more.",
+    "security_schemes": {
+        "api_key": {
+          "location": "header",
+          "name": "Authorization",
+          "prefix": "Bearer"
+      }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": ["monitoring", "error-tracking", "development"],
+    "visibility": "public",
+    "active": true
+}

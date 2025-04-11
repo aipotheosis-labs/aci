@@ -1,0 +1,418 @@
+[
+    {
+        "name": "SENTRY__GET_ISSUES",
+        "description": "Get all issues for the project",
+        "tags": ["issues", "monitoring"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{organization}/{project}/issues/",
+            "server_url": "https://sentry.io/api/0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "organization": {
+                            "type": "string",
+                            "description": "The organization slug"
+                        },
+                        "project": {
+                            "type": "string",
+                            "description": "The project ID"
+                        }
+                    },
+                    "required": ["organization", "project"],
+                    "visible": ["organization", "project"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENTRY__GET_EVENTS",
+        "description": "Get all events for the project",
+        "tags": ["events", "monitoring"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{organization}/{project}/events/",
+            "server_url": "https://sentry.io/api/0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "organization": {
+                            "type": "string",
+                            "description": "The organization slug"
+                        },
+                        "project": {
+                            "type": "string",
+                            "description": "The project ID"
+                        }
+                    },
+                    "required": ["organization", "project"],
+                    "visible": ["organization", "project"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENTRY__GET_RELEASES",
+        "description": "Get all releases for the project",
+        "tags": ["releases", "deployment"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{organization}/{project}/releases/",
+            "server_url": "https://sentry.io/api/0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "organization": {
+                            "type": "string",
+                            "description": "The organization slug"
+                        },
+                        "project": {
+                            "type": "string",
+                            "description": "The project ID"
+                        }
+                    },
+                    "required": ["organization", "project"],
+                    "visible": ["organization", "project"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENTRY__GET_TAGS",
+        "description": "Get all tags for the project",
+        "tags": ["tags", "metadata"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{organization}/{project}/tags/",
+            "server_url": "https://sentry.io/api/0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "organization": {
+                            "type": "string",
+                            "description": "The organization slug"
+                        },
+                        "project": {
+                            "type": "string",
+                            "description": "The project ID"
+                        }
+                    },
+                    "required": ["organization", "project"],
+                    "visible": ["organization", "project"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENTRY__GET_MEMBERS",
+        "description": "Get all members for the project",
+        "tags": ["members", "users"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{organization}/{project}/members/",
+            "server_url": "https://sentry.io/api/0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "organization": {
+                            "type": "string",
+                            "description": "The organization slug"
+                        },
+                        "project": {
+                            "type": "string",
+                            "description": "The project ID"
+                        }
+                    },
+                    "required": ["organization", "project"],
+                    "visible": ["organization", "project"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENTRY__GET_TEAMS",
+        "description": "Get all teams for the project",
+        "tags": ["teams", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{organization}/{project}/teams/",
+            "server_url": "https://sentry.io/api/0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "organization": {
+                            "type": "string",
+                            "description": "The organization slug"
+                        },
+                        "project": {
+                            "type": "string",
+                            "description": "The project ID"
+                        }
+                    },
+                    "required": ["organization", "project"],
+                    "visible": ["organization", "project"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENTRY__GET_KEYS",
+        "description": "Get all keys for the project",
+        "tags": ["keys", "security"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{organization}/{project}/keys/",
+            "server_url": "https://sentry.io/api/0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "organization": {
+                            "type": "string",
+                            "description": "The organization slug"
+                        },
+                        "project": {
+                            "type": "string",
+                            "description": "The project ID"
+                        }
+                    },
+                    "required": ["organization", "project"],
+                    "visible": ["organization", "project"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SENTRY__GET_USERS",
+        "description": "Get all users for the project",
+        "tags": ["users", "members"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{organization}/{project}/users/",
+            "server_url": "https://sentry.io/api/0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "organization": {
+                            "type": "string",
+                            "description": "The organization slug"
+                        },
+                        "project": {
+                            "type": "string",
+                            "description": "The project ID"
+                        }
+                    },
+                    "required": ["organization", "project"],
+                    "visible": ["organization", "project"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    }
+]
