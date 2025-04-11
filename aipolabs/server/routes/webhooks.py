@@ -83,7 +83,7 @@ async def handle_user_created_webhook(
 
     org = auth.create_org(
         name=f"Personal {_generate_secure_random_alphanumeric_string()}",
-        max_users=10,
+        max_users=1,
     )
     auth.update_org_metadata(org_id=org.org_id, metadata={"personal": True})
     auth.add_user_to_org(user_id=user.user_id, org_id=org.org_id, role=OrganizationRole.OWNER)
