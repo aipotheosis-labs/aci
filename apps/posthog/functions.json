@@ -1,0 +1,370 @@
+[
+    {
+        "name": "POSTHOG__ORGANIZATIONS",
+        "description": "List Organizations Project！",
+        "tags": ["organizations"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/organizations/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header"
+            ],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__PROJECTS_LIST",
+        "description": "Get Project Information！",
+        "tags": ["projects"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/organizations/{organization_id}/projects/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": [
+                        "organization_id"
+                    ],
+                    "visible": [
+                        "organization_id"
+                    ],
+                    "properties": {
+                        "organization_id": {
+                            "type": "string",
+                            "description": "ID of the batch scrape operation"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                }
+
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                 "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        
+        "name": "POSTHOG__PROJECTS_CREATE",
+        "description": "Create Project！",
+        "tags": ["projects"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/organizations/{organization_id}/projects/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": [
+                        "organization_id"
+                    ],
+                    "visible": [
+                        "organization_id"
+                    ],
+                    "properties": {
+                        "organization_id": {
+                            "type": "string",
+                            "description": "ID of the batch scrape operation"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                },
+                "body":{
+                    "type": "object",
+                    "description": "Request body",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The display name of the label"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible":  ["path", "body"],
+            "additionalProperties": false
+        }
+    },{
+        "name": "POSTHOG__PROJECTS_UPDATE",
+        "description": "Updata Project！",
+        "tags": ["projects"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/api/organizations/{organization_id}/projects/{id}/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": [
+                        "organization_id",
+                        "id"
+                    ],
+                    "visible": [
+                        "organization_id",
+                        "id"
+                    ],
+                    "properties": {
+                        "organization_id": {
+                            "type": "string",
+                            "description": "ID of the batch scrape operation"
+                        },
+                        "id": {
+                            "type": "string",
+                            "description": "ID of the batch scrape operation"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                },
+                "body":{
+                    "type": "object",
+                    "description": "Request body",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The display name of the label"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible":  ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__PROJECTS_QUERY",
+        "description": "Get Project Information！",
+        "tags": ["projects"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/organizations/{organization_id}/projects/{id}/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": [
+                        "organization_id",
+                        "id"
+                    ],
+                    "visible": [
+                        "organization_id",
+                        "id"
+                    ],
+                    "properties": {
+                        "organization_id": {
+                            "type": "string",
+                            "description": "ID of the batch scrape operation"
+                        },
+                        "id":{
+                            "type": "string",
+                            "description": "Project ID"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                }
+
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                 "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__PROJECTS_DEL",
+        "description": "Delete Project！",
+        "tags": ["projects"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/api/organizations/{organization_id}/projects/{id}/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": [
+                        "organization_id",
+                        "id"
+                    ],
+                    "visible": [
+                        "organization_id",
+                        "id"
+                    ],
+                    "properties": {
+                        "organization_id": {
+                            "type": "string",
+                            "description": "ID of the batch scrape operation"
+                        },
+                        "id":{
+                            "type": "string",
+                            "description": "Project ID"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                }
+
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                 "path"
+            ],
+            "additionalProperties": false
+        }
+    }
+]
