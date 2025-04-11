@@ -1,0 +1,23 @@
+{
+    "name": "ASANA",
+    "display_name": "ASANA",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/asana.svg",
+    "provider": "ASANA, Inc.",
+    "version": "aipolabs_0.0.1",
+    "description": "Integration with ASANA Support API to manage users, tickets, and organizations.",
+    "security_schemes": {
+        "api_key": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "support",
+        "ticketing",
+        "crm"
+    ],
+    "visibility": "public",
+    "active": true
+}

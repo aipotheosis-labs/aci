@@ -1,0 +1,284 @@
+[
+    {
+      "name": "ASANA__GET_USER",
+      "description": "Retrieve details of a specific user in Asana.",
+      "tags": ["asana", "user"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "GET",
+        "path": "/users/{user_gid}",
+        "server_url": "https://app.asana.com/api/1.0"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "description": "Path parameters",
+            "properties": {
+              "user_gid": {
+                "type": "string",
+                "default": "me",
+                "description": "Globally unique identifier for the user."
+              }
+            },
+            "required": ["user_gid"],
+            "visible": ["user_gid"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["path"],
+        "visible": ["path"],
+        "additionalProperties": false
+      }
+    },
+    {
+      "name": "ASANA__LIST_USERS",
+      "description": "List all users in a workspace.",
+      "tags": ["asana", "user"],
+      "visibility": "public",
+      "active": true,
+      "protocol": "rest",
+      "protocol_data": {
+        "method": "GET",
+        "path": "/workspaces/{workspace_gid}/users",
+        "server_url": "https://app.asana.com/api/1.0"
+      },
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "object",
+            "description": "Path parameters",
+            "properties": {
+              "workspace_gid": {
+                "type": "string",
+                "description": "Globally unique identifier for the workspace."
+              }
+            },
+            "required": ["workspace_gid"],
+            "visible": ["workspace_gid"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["path"],
+        "visible": ["path"],
+        "additionalProperties": false
+      }
+    },
+    {
+        "name": "ASANA__GET_USER_TASK_LIST",
+        "description": "Retrieve the task list of a specific user in a specific workspace.",
+        "tags": ["asana", "user", "task"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/users/{user_gid}/user_task_list",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "user_gid": {
+                  "type": "string",
+                  "default": "me",
+                  "description": "Globally unique identifier for the user."
+                }
+              },
+              "required": ["user_gid"],
+              "visible": ["user_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "workspace": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the workspace gid."
+                }
+              },
+              "required": ["workspace"],
+              "visible": ["workspace"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path", "query"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_TASKS_FROM_USER_TASK_LIST",
+        "description": "Retrieve tasks from a specific user task list.",
+        "tags": ["asana", "user", "task"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/user_task_lists/{user_task_list_gid}/tasks",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "user_task_list_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the user task list."
+                }
+              },
+              "required": ["user_task_list_gid"],
+              "visible": ["user_task_list_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "completed_since": {
+                  "type": "string",
+                  "description": "Only return tasks that are incomplete or completed since this time.",
+                  "example": "2023-01-01T00:00:00.000Z"
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response.",
+                  "example": "name,assignee,status"
+                },
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of tasks to return.",
+                  "example": 50
+                }
+              },
+              "required": [],
+              "visible": ["completed_since", "opt_fields", "limit"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__CREATE_TASK",
+        "description": "Create a new task in a specific workspace or project.",
+        "tags": ["asana", "task", "create"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/tasks",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "body": {
+              "type": "object",
+              "description": "Body parameters for creating a task",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Task creation data",
+                  "properties": {
+                    "workspace": {
+                      "type": "string",
+                      "description": "Globally unique identifier for the workspace.",
+                      "example": "1209945202952124"
+                    },
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the task.",
+                      "example": "New Task"
+                    },
+                    "notes": {
+                      "type": "string",
+                      "description": "Additional notes or description for the task.",
+                      "example": "This is a description of the task."
+                    },
+                    "assignee": {
+                      "type": "string",
+                      "description": "The assignee of the task. Can be a user ID or 'me'.",
+                      "example": "me"
+                    },
+                    "projects": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "List of project IDs to associate the task with.",
+                      "example": ["1209945202952112"]
+                    },
+                    "due_date": {
+                      "type": "string",
+                      "description": "The due date of the task in YYYY-MM-DD format.",
+                      "example": "2025-04-15"
+                    }
+                  },
+                  "required": ["workspace", "name"],
+                  "visible": ["workspace", "name", "notes", "assignee", "projects", "due_date"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["body"],
+          "visible": ["body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__DELETE_TASK",
+        "description": "Delete a specific task by its globally unique identifier.",
+        "tags": ["asana", "task", "delete"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "DELETE",
+          "path": "/tasks/{task_gid}",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task to delete.",
+                  "example": "1209945202952112"
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path"],
+          "additionalProperties": false
+        }
+      }
+  ]
