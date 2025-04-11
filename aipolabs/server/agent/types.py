@@ -1,14 +1,9 @@
 from pydantic import BaseModel
 
-
-class ClientAttachment(BaseModel):
-    name: str
-    contentType: str
-    url: str
-
-
 class ToolInvocation(BaseModel):
     toolCallId: str
     toolName: str
-    args: dict
-    result: dict
+    step: int
+    state: str | None = None
+    args: dict | None = None
+    result: dict | None = None

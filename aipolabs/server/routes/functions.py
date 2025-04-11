@@ -28,6 +28,7 @@ from aipolabs.common.schemas.function import (
     FunctionsSearch,
     OpenAIFunction,
     OpenAIFunctionDefinition,
+    OpenAIResponsesFunctionDefinition,
 )
 from aipolabs.server import config, custom_instructions
 from aipolabs.server import dependencies as deps
@@ -117,7 +118,7 @@ async def search_functions(
         extra={"function_names": [function.name for function in functions]},
     )
     function_definitions = [
-        _get_function_definition(function, query_params.format) for function in functions
+        get_function_definition(function, query_params.format) for function in functions
     ]
 
     return function_definitions
@@ -165,7 +166,7 @@ async def get_function_definition(
         )
         raise FunctionNotFound(f"function={function_name} not found")
 
-    function_definition = _get_function_definition(function, format)
+    function_definition = get_function_definition(function, format)
 
     logger.info(
         "function definition to return",
@@ -190,7 +191,7 @@ async def execute(
     function_name: str,
     body: FunctionExecute,
 ) -> FunctionExecutionResult:
-    # Fetch function definition
+    # Log the execution request
     logger.info(
         "execute function",
         extra={
@@ -198,174 +199,23 @@ async def execute(
             "function_execute": body.model_dump(exclude_none=True),
         },
     )
-    function = crud.functions.get_function(
-        context.db_session,
-        function_name,
-        context.project.visibility_access == Visibility.PUBLIC,
-        True,
+    
+    # Use the service method to execute the function
+    result = await execute_function(
+        db_session=context.db_session,
+        project=context.project,
+        agent=context.agent,
+        function_name=function_name,
+        function_input=body.function_input,
+        linked_account_owner_id=body.linked_account_owner_id,
+        openai_client=openai_client,
     )
-    if not function:
-        logger.error(
-            "failed to execute function, function not found",
-            extra={
-                "function_name": function_name,
-                "linked_account_owner_id": body.linked_account_owner_id,
-            },
-        )
-        raise FunctionNotFound(f"function={function_name} not found")
-
-    # check if the App (that this function belongs to) is configured
-    app_configuration = crud.app_configurations.get_app_configuration(
-        context.db_session, context.project.id, function.app.name
-    )
-    if not app_configuration:
-        logger.error(
-            "failed to execute function, app configuration not found",
-            extra={
-                "function_name": function_name,
-                "app_name": function.app.name,
-            },
-        )
-        raise AppConfigurationNotFound(
-            f"configuration for app={function.app.name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{function.app.name}"
-        )
-
-    # check if user has disabled the app configuration
-    if not app_configuration.enabled:
-        logger.error(
-            "failed to execute function, app configuration is disabled",
-            extra={
-                "function_name": function_name,
-                "app_name": function.app.name,
-                "app_configuration_id": app_configuration.id,
-            },
-        )
-        raise AppConfigurationDisabled(
-            f"configuration for app={function.app.name} is disabled, please enable the app first {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
-        )
-
-    # check if the function is allowed to be executed by the agent
-    if function.app.name not in context.agent.allowed_apps:
-        logger.error(
-            "failed to execute function, App not allowed to be used by this agent",
-            extra={
-                "function_name": function_name,
-                "app_name": function.app.name,
-                "agent_id": context.agent.id,
-            },
-        )
-        raise AppNotAllowedForThisAgent(
-            f"App={function.app.name} that this function belongs to is not allowed to be used by agent={context.agent.name}"
-        )
-
-    # check if the linked account status (configured, enabled, etc.)
-    linked_account = crud.linked_accounts.get_linked_account(
-        context.db_session,
-        context.project.id,
-        function.app.name,
-        body.linked_account_owner_id,
-    )
-    if not linked_account:
-        logger.error(
-            "failed to execute function, linked account not found",
-            extra={
-                "function_name": function_name,
-                "app_name": function.app.name,
-                "linked_account_owner_id": body.linked_account_owner_id,
-            },
-        )
-        raise LinkedAccountNotFound(
-            f"linked account with linked_account_owner_id={body.linked_account_owner_id} not found for app={function.app.name},"
-            f"please link the account for this app here: {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
-        )
-
-    if not linked_account.enabled:
-        logger.error(
-            "failed to execute function, linked account is disabled",
-            extra={
-                "function_name": function_name,
-                "app_name": function.app.name,
-                "linked_account_owner_id": body.linked_account_owner_id,
-                "linked_account_id": linked_account.id,
-            },
-        )
-        raise LinkedAccountDisabled(
-            f"linked account with linked_account_owner_id={body.linked_account_owner_id} is disabled for app={function.app.name},"
-            f"please enable the account for this app here: {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
-        )
-
-    security_credentials_response: SecurityCredentialsResponse = await scm.get_security_credentials(
-        function.app, linked_account
-    )
-    # if the security credentials are updated during fetch (e.g, access token refreshed), we need to write back
-    # to the database with the updated credentials, either to linked account or app configuration depending
-    # on if the default or linked account credentials were used
-    # TODO: this is an unnnecessary unification? Technically the update only apply to oauth2 based
-    # credentials. Might need to structure differently to have a less generic solution (but without adding
-    # more complexity to the logic). It almost smells like an indicator to break down to microservices and/or
-    # use a message queue like kafka for async/downstream updates.
-    logger.info(
-        "fetched security credentials for function execution",
-        extra={
-            "function_name": function_name,
-            "app_name": function.app.name,
-            "linked_account_owner_id": body.linked_account_owner_id,
-            "linked_account_id": linked_account.id,
-            "scheme": security_credentials_response.scheme.model_dump(exclude_none=True),
-            "is_app_default_credentials": security_credentials_response.is_app_default_credentials,
-            "is_updated": security_credentials_response.is_updated,
-        },
-    )
-    if security_credentials_response.is_updated:
-        if security_credentials_response.is_app_default_credentials:
-            crud.apps.update_app_default_security_credentials(
-                context.db_session,
-                function.app,
-                linked_account.security_scheme,
-                security_credentials_response.credentials.model_dump(),
-            )
-        else:
-            crud.linked_accounts.update_linked_account_credentials(
-                context.db_session,
-                linked_account,
-                security_credentials=security_credentials_response.credentials,
-            )
-        context.db_session.commit()
-
-    custom_instructions.check_for_violation(
-        openai_client,
-        function,
-        body.function_input,
-        context.agent.custom_instructions,
-    )
-
-    function_executor = get_executor(function.protocol, linked_account)
-    logger.info(
-        "instantiated function executor",
-        extra={"function_name": function_name, "function_executor": type(function_executor)},
-    )
-
-    # TODO: async calls?
-    execution_result = function_executor.execute(
-        function,
-        body.function_input,
-        security_credentials_response.scheme,
-        security_credentials_response.credentials,
-    )
-    if not execution_result.success:
-        logger.error(
-            "function execution result error",
-            extra={
-                "function_name": function_name,
-                "error": execution_result.error,
-            },
-        )
-    return execution_result
+    return result
 
 
-def _get_function_definition(
+def get_function_definition(
     function: Function, format: FunctionDefinitionFormat
-) -> BasicFunctionDefinition | OpenAIFunctionDefinition | AnthropicFunctionDefinition:
+) -> BasicFunctionDefinition | OpenAIFunctionDefinition | OpenAIResponsesFunctionDefinition | AnthropicFunctionDefinition:
     match format:
         case FunctionDefinitionFormat.BASIC:
             return BasicFunctionDefinition(
@@ -380,6 +230,9 @@ def _get_function_definition(
                     parameters=processor.filter_visible_properties(function.parameters),
                 )
             )
+        
+        case FunctionDefinitionFormat.OPENAI_RESPONSES:
+            return OpenAIResponsesFunctionDefinition.from_function(function)
         case FunctionDefinitionFormat.ANTHROPIC:
             return AnthropicFunctionDefinition(
                 name=function.name,
@@ -388,3 +241,200 @@ def _get_function_definition(
             )
         case _:
             raise InvalidFunctionDefinitionFormat(f"Invalid format: {format}")
+
+
+async def execute_function(
+    db_session,
+    project,
+    agent,
+    function_name: str,
+    function_input: dict,
+    linked_account_owner_id: str,
+    openai_client=None,
+) -> FunctionExecutionResult:
+    """
+    Execute a function with the given parameters.
+    
+    Args:
+        db_session: Database session
+        project: Project object
+        agent: Agent object
+        function_name: Name of the function to execute
+        function_input: Input parameters for the function
+        linked_account_owner_id: ID of the linked account owner
+        openai_client: Optional OpenAI client for custom instructions validation
+        
+    Returns:
+        FunctionExecutionResult: Result of the function execution
+        
+    Raises:
+        FunctionNotFound: If the function is not found
+        AppConfigurationNotFound: If the app configuration is not found
+        AppConfigurationDisabled: If the app configuration is disabled
+        AppNotAllowedForThisAgent: If the app is not allowed for the agent
+        LinkedAccountNotFound: If the linked account is not found
+        LinkedAccountDisabled: If the linked account is disabled
+    """
+    # Get the function
+    function = crud.functions.get_function(
+        db_session,
+        function_name,
+        project.visibility_access == Visibility.PUBLIC,
+        True,
+    )
+    if not function:
+        logger.error(
+            "failed to execute function, function not found",
+            extra={
+                "function_name": function_name,
+                "linked_account_owner_id": linked_account_owner_id,
+            },
+        )
+        raise FunctionNotFound(f"function={function_name} not found")
+
+    # Check if the App (that this function belongs to) is configured
+    app_configuration = crud.app_configurations.get_app_configuration(
+        db_session, project.id, function.app.name
+    )
+    if not app_configuration:
+        logger.error(
+            "failed to execute function, app configuration not found",
+            extra={
+                "function_name": function_name,
+                "app_name": function.app.name,
+            },
+        )
+        raise AppConfigurationNotFound(
+            f"configuration for app={function.app.name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{function.app.name}"
+        )
+
+    # Check if user has disabled the app configuration
+    if not app_configuration.enabled:
+        logger.error(
+            "failed to execute function, app configuration is disabled",
+            extra={
+                "function_name": function_name,
+                "app_name": function.app.name,
+                "app_configuration_id": app_configuration.id,
+            },
+        )
+        raise AppConfigurationDisabled(
+            f"configuration for app={function.app.name} is disabled, please enable the app first {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
+        )
+
+    # Check if the function is allowed to be executed by the agent
+    if function.app.name not in agent.allowed_apps:
+        logger.error(
+            "failed to execute function, App not allowed to be used by this agent",
+            extra={
+                "function_name": function_name,
+                "app_name": function.app.name,
+                "agent_id": agent.id,
+            },
+        )
+        raise AppNotAllowedForThisAgent(
+            f"App={function.app.name} that this function belongs to is not allowed to be used by agent={agent.name}"
+        )
+
+    # Check if the linked account status (configured, enabled, etc.)
+    linked_account = crud.linked_accounts.get_linked_account(
+        db_session,
+        project.id,
+        function.app.name,
+        linked_account_owner_id,
+    )
+    if not linked_account:
+        logger.error(
+            "failed to execute function, linked account not found",
+            extra={
+                "function_name": function_name,
+                "app_name": function.app.name,
+                "linked_account_owner_id": linked_account_owner_id,
+            },
+        )
+        raise LinkedAccountNotFound(
+            f"linked account with linked_account_owner_id={linked_account_owner_id} not found for app={function.app.name},"
+            f"please link the account for this app here: {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
+        )
+
+    if not linked_account.enabled:
+        logger.error(
+            "failed to execute function, linked account is disabled",
+            extra={
+                "function_name": function_name,
+                "app_name": function.app.name,
+                "linked_account_owner_id": linked_account_owner_id,
+                "linked_account_id": linked_account.id,
+            },
+        )
+        raise LinkedAccountDisabled(
+            f"linked account with linked_account_owner_id={linked_account_owner_id} is disabled for app={function.app.name},"
+            f"please enable the account for this app here: {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
+        )
+
+    security_credentials_response: SecurityCredentialsResponse = await scm.get_security_credentials(
+        function.app, linked_account
+    )
+    
+    logger.info(
+        "fetched security credentials for function execution",
+        extra={
+            "function_name": function_name,
+            "app_name": function.app.name,
+            "linked_account_owner_id": linked_account_owner_id,
+            "linked_account_id": linked_account.id,
+            "scheme": security_credentials_response.scheme.model_dump(exclude_none=True),
+            "is_app_default_credentials": security_credentials_response.is_app_default_credentials,
+            "is_updated": security_credentials_response.is_updated,
+        },
+    )
+    
+    if security_credentials_response.is_updated:
+        if security_credentials_response.is_app_default_credentials:
+            crud.apps.update_app_default_security_credentials(
+                db_session,
+                function.app,
+                linked_account.security_scheme,
+                security_credentials_response.credentials.model_dump(),
+            )
+        else:
+            crud.linked_accounts.update_linked_account_credentials(
+                db_session,
+                linked_account,
+                security_credentials=security_credentials_response.credentials,
+            )
+        db_session.commit()
+
+    # Check for custom instruction violations if OpenAI client is provided
+    if openai_client:
+        custom_instructions.check_for_violation(
+            openai_client,
+            function,
+            function_input,
+            agent.custom_instructions,
+        )
+
+    function_executor = get_executor(function.protocol, linked_account)
+    logger.info(
+        "instantiated function executor",
+        extra={"function_name": function_name, "function_executor": type(function_executor)},
+    )
+
+    # Execute the function
+    execution_result = function_executor.execute(
+        function,
+        function_input,
+        security_credentials_response.scheme,
+        security_credentials_response.credentials,
+    )
+    
+    if not execution_result.success:
+        logger.error(
+            "function execution result error",
+            extra={
+                "function_name": function_name,
+                "error": execution_result.error,
+            },
+        )
+    
+    return execution_result 

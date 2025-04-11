@@ -78,7 +78,7 @@ class FunctionDefinitionFormat(StrEnum):
     BASIC = "basic"  # only return name and description
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
-
+    OPENAI_RESPONSES = "openai_responses"
 
 class ClientIdentityProvider(StrEnum):
     GOOGLE = "google"
