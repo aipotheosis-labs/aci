@@ -1,0 +1,502 @@
+[
+    {
+        "name": "TRELLO__GET_MEMBER_BOARDS",
+        "description": "Retrieves all boards that a specified member is associated with.",
+        "tags": [
+            "trello",
+            "members",
+            "boards"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/members/{id}/boards",
+            "server_url": "https://api.trello.com/1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID of the member whose boards will be retrieved."
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "filter": {
+                            "type": "string",
+                            "description": "Filter for the type of boards to return. Valid values are 'all', 'closed', 'members', 'open', 'organization', 'pinned'. Default is 'all'."
+                        },
+                        "fields": {
+                            "type": "string",
+                            "description": "A comma-separated list of board fields to return. For example: 'name,desc'."
+                        },
+                        "key": {
+                            "type": "string",
+                            "description": "Your Trello API key"
+                        },
+                        "token": {
+                            "type": "string",
+                            "description": "Your Trello API token"
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "filter",
+                        "fields",
+                        "key",
+                        "token"
+                    ],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "description": "The expected response format. Defaults to 'application/json'.",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path",
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+		{
+			"name": "TRELLO__UPDATE_CARD",
+			"description": "Updates an existing card in Trello.",
+			"tags": [
+				"trello",
+				"cards"
+			],
+			"visibility": "public",
+			"active": true,
+			"protocol": "rest",
+			"protocol_data": {
+				"method": "PUT",
+				"path": "/cards/{id}",
+				"server_url": "https://api.trello.com/1"
+			},
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "object",
+						"description": "Path parameters",
+						"properties": {
+							"id": {
+								"type": "string",
+								"description": "The ID of the card to update."
+							}
+						},
+						"required": [
+							"id"
+						],
+						"visible": [
+							"id"
+						],
+						"additionalProperties": false
+					},
+					"query": {
+						"type": "object",
+						"description": "Query parameters",
+						"properties": {
+							"name": {
+								"type": "string",
+								"description": "The new name for the card."
+							},
+							"desc": {
+								"type": "string",
+								"description": "The new description for the card."
+							},
+							"closed": {
+								"type": "boolean",
+								"description": "Whether the card should be archived (true) or not (false)."
+							},
+							"idMembers": {
+								"type": "array",
+								"description": "Comma-separated list of member IDs to add to the card.",
+								"items": {
+									"type": "string"
+								}
+							},
+							"idLabels": {
+								"type": "array",
+								"description": "Comma-separated list of label IDs to add to the card.",
+								"items": {
+									"type": "string"
+								}
+							},
+							"idList": {
+								"type": "string",
+								"description": "The ID of the list to move the card to."
+							},
+							"due": {
+								"type": "string",
+								"description": "A new due date for the card. Should be in ISO 8601 format."
+							},
+							"dueComplete": {
+								"type": "boolean",
+								"description": "Mark the due date as complete (true) or incomplete (false)."
+							},
+							"pos": {
+								"type": "string",
+								"description": "The position of the card in the list. One of: 'top', 'bottom', or a positive float value."
+							},
+							"subscribed": {
+								"type": "boolean",
+								"description": "Whether the acting user is subscribed to the card (true) or not (false)."
+							},
+							"start": {
+								"type": "string",
+								"description": "The start date of a card. Should be in ISO 8601 format."
+							},
+							"key": {
+								"type": "string",
+								"description": "The API key for authentication."
+							},
+							"token": {
+								"type": "string",
+								"description": "The API token for authentication."
+							}
+						},
+						"required": [
+							"key",
+							"token"
+						],
+						"visible": [
+							"name",
+							"desc",
+							"closed",
+							"idMembers",
+							"idLabels",
+							"idList",
+							"due",
+							"dueComplete",
+							"pos",
+							"subscribed",
+							"start"
+						],
+						"additionalProperties": false
+					},
+					"header": {
+						"type": "object",
+						"description": "Header parameters",
+						"properties": {
+							"Accept": {
+								"type": "string",
+								"description": "The expected response format.",
+								"default": "application/json"
+							}
+						},
+						"required": [],
+						"visible": [],
+						"additionalProperties": false
+					}
+				},
+				"required": [
+					"path",
+					"query"
+				],
+				"visible": [
+					"path",
+					"query"
+				],
+				"additionalProperties": false
+			}
+		},
+		{
+			"name": "TRELLO__GET_CARD_ATTACHMENTS",
+			"description": "Retrieves all attachments associated with a specified card in Trello.",
+			"tags": [
+				"trello",
+				"cards",
+				"attachments"
+			],
+			"visibility": "public",
+			"active": true,
+			"protocol": "rest",
+			"protocol_data": {
+				"method": "GET",
+				"path": "/cards/{id}/attachments",
+				"server_url": "https://api.trello.com/1"
+			},
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "object",
+						"description": "Path parameters",
+						"properties": {
+							"id": {
+								"type": "string",
+								"description": "The ID of the card whose attachments are to be retrieved."
+							}
+						},
+						"required": [
+							"id"
+						],
+						"visible": [
+							"id"
+						],
+						"additionalProperties": false
+					},
+					"query": {
+						"type": "object",
+						"description": "Query parameters",
+						"properties": {
+							"fields": {
+								"type": "string",
+								"description": "A comma-separated list of fields to return for each attachment. For example: 'id,name,url'."
+							},
+							"filter": {
+								"type": "string",
+								"description": "A filter to apply to the attachments returned. Valid values are 'all' or 'cover'. Default is 'all'."
+							}
+						},
+						"required": [],
+						"visible": [
+							"fields",
+							"filter"
+						],
+						"additionalProperties": false
+					},
+					"header": {
+						"type": "object",
+						"description": "Header parameters",
+						"properties": {
+							"Accept": {
+								"type": "string",
+								"description": "The expected response format.",
+								"default": "application/json"
+							}
+						},
+						"required": [],
+						"visible": [],
+						"additionalProperties": false
+					}
+				},
+				"required": [
+					"path"
+				],
+				"visible": [
+					"path",
+					"query"
+				],
+				"additionalProperties": false
+			}
+		},
+		{
+			"name": "TRELLO__GET_CARD_ACTIONS",
+			"description": "Retrieves all actions associated with a specified card in Trello.",
+			"tags": [
+				"trello",
+				"cards",
+				"actions"
+			],
+			"visibility": "public",
+			"active": true,
+			"protocol": "rest",
+			"protocol_data": {
+				"method": "GET",
+				"path": "/cards/{id}/actions",
+				"server_url": "https://api.trello.com/1"
+			},
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"path": {
+						"type": "object",
+						"description": "Path parameters",
+						"properties": {
+							"id": {
+								"type": "string",
+								"description": "The ID of the card whose actions are to be retrieved."
+							}
+						},
+						"required": [
+							"id"
+						],
+						"visible": [
+							"id"
+						],
+						"additionalProperties": false
+					},
+					"query": {
+						"type": "object",
+						"description": "Query parameters",
+						"properties": {
+							"filter": {
+								"type": "string",
+								"description": "A filter to apply to the actions returned. Valid values include 'all', 'commentCard', 'updateCard', etc. Default is 'all'."
+							},
+							"fields": {
+								"type": "string",
+								"description": "A comma-separated list of fields to return for each action. For example: 'type,date'."
+							},
+							"limit": {
+								"type": "integer",
+								"description": "The maximum number of actions to return. Default is 50."
+							},
+							"page": {
+								"type": "integer",
+								"description": "The page of results to retrieve. Used for pagination."
+							},
+							"since": {
+								"type": "string",
+								"description": "Only actions created since the specified ISO 8601 date/time will be returned."
+							},
+							"before": {
+								"type": "string",
+								"description": "Only actions created before the specified ISO 8601 date/time will be returned."
+							}
+						},
+						"required": [],
+						"visible": [
+							"filter",
+							"fields",
+							"limit",
+							"page",
+							"since",
+							"before"
+						],
+						"additionalProperties": false
+					},
+					"header": {
+						"type": "object",
+						"description": "Header parameters",
+						"properties": {
+							"Accept": {
+								"type": "string",
+								"description": "The expected response format.",
+								"default": "application/json"
+							}
+						},
+						"required": [],
+						"visible": [],
+						"additionalProperties": false
+					}
+				},
+				"required": [
+					"path"
+				],
+				"visible": [
+					"path",
+					"query"
+				],
+				"additionalProperties": false
+			}
+		},
+		{
+			"name": "TRELLO__CREATE_CHECKLIST",
+			"description": "Creates a new checklist on a specified card in Trello.",
+			"tags": [
+				"trello",
+				"checklists"
+			],
+			"visibility": "public",
+			"active": true,
+			"protocol": "rest",
+			"protocol_data": {
+				"method": "POST",
+				"path": "/checklists",
+				"server_url": "https://api.trello.com/1"
+			},
+			"parameters": {
+				"type": "object",
+				"properties": {
+					"query": {
+						"type": "object",
+						"description": "Query parameters",
+						"properties": {
+							"idCard": {
+								"type": "string",
+								"description": "The ID of the card to add the checklist to."
+							},
+							"name": {
+								"type": "string",
+								"description": "The name of the checklist."
+							},
+							"pos": {
+								"type": "string",
+								"description": "The position of the checklist on the card. One of: 'top', 'bottom', or a positive float value."
+							},
+							"idChecklistSource": {
+								"type": "string",
+								"description": "The ID of a checklist to copy into the new one."
+							},
+							"key": {
+								"type": "string",
+								"description": "The API key for authentication."
+							},
+							"token": {
+								"type": "string",
+								"description": "The API token for authentication."
+							}
+						},
+						"required": [
+							"idCard",
+							"key",
+							"token"
+						],
+						"visible": [
+							"idCard",
+							"name",
+							"pos",
+							"idChecklistSource"
+						],
+						"additionalProperties": false
+					},
+					"header": {
+						"type": "object",
+						"description": "Header parameters",
+						"properties": {
+							"Accept": {
+								"type": "string",
+								"description": "The expected response format.",
+								"default": "application/json"
+							}
+						},
+						"required": [],
+						"visible": [],
+						"additionalProperties": false
+					}
+				},
+				"required": [
+					"query"
+				],
+				"visible": [
+					"query"
+				],
+				"additionalProperties": false
+			}
+		}
+]

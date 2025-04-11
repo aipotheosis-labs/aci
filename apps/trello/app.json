@@ -1,0 +1,28 @@
+{
+    "name": "TRELLO",
+    "display_name": "Trello",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/trello.svg",
+    "provider": "Atlassian",
+    "version": "1.0.0",
+    "description": "Trello is a web-based, kanban-style list-making application that enables users to create boards, lists, and cards to organize and prioritize tasks and projects. This integration allows managing boards, lists, cards, and other Trello resources.",
+    "security_schemes": {
+        "api_key": {
+            "location": "query",
+            "name": "key",
+            "prefix": null
+        },
+        "http_bearer": {
+            "location": "query",
+            "name": "token",
+            "prefix": null
+        }
+    },
+    "categories": [
+        "productivity",
+        "task-management",
+        "collaboration",
+        "project-management"
+    ],
+    "visibility": "public",
+    "active": true
+}
