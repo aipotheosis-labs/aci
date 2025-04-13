@@ -117,14 +117,10 @@
                             "type": "integer",
                             "description": "Include spelling check results (0 or 1)",
                             "default": 1
-                        },
-                        "api_key": {
-                            "type": "string",
-                            "description": "SerpApi API key"
                         }
                     },
                     "required": ["engine","q"],
-                    "visible": ["engine", "q", "num", "gl", "hl", "safe", "start", "device", "no_cache", "async", "output", "google_domain", "location", "tbm", "tbs", "filter", "api_key"],
+                    "visible": ["engine", "q", "num", "gl", "hl", "safe", "start", "device", "no_cache", "async", "output", "google_domain", "location", "tbm", "tbs", "filter"],
                     "additionalProperties": false
                 }
             },
@@ -285,14 +281,10 @@
                         "imgdims": {
                             "type": "string",
                             "description": "Image dimensions (large, medium, icon)"
-                        },
-                        "api_key": {
-                            "type": "string",
-                            "description": "SerpApi API key"
                         }
                     },
                     "required": ["engine", "q"],
-                    "visible": ["q", "num", "safe", "device", "no_cache", "async", "output", "gl", "hl", "google_domain", "location", "ijn", "start", "imgar", "imgcolor", "imgtype", "imgc", "imgdims", "api_key"],
+                    "visible": ["q", "num", "safe", "device", "no_cache", "async", "output", "gl", "hl", "google_domain", "location", "ijn", "start", "imgar", "imgcolor", "imgtype", "imgc", "imgdims"],
                     "additionalProperties": false
                 }
             },
@@ -422,14 +414,10 @@
                         "publication_token": {
                             "type": "string",
                             "description": "Publication token for specific news publications"
-                        },
-                        "api_key": {
-                            "type": "string",
-                            "description": "SerpApi API key"
                         }
                     },
                     "required": ["engine", "q"],
-                    "visible": ["engine", "q", "tbm", "num", "gl", "hl", "google_domain", "location", "device", "no_cache", "async", "output", "topic_token", "story_token", "section_token", "publication_token", "api_key"],
+                    "visible": ["engine", "q", "tbm", "num", "gl", "hl", "google_domain", "location", "device", "no_cache", "async", "output", "topic_token", "story_token", "section_token", "publication_token"],
                     "additionalProperties": false
                 }
             },
@@ -569,14 +557,10 @@
                         "cites": {
                             "type": "string",
                             "description": "Cited by ID for papers citing a specific paper"
-                        },
-                        "api_key": {
-                            "type": "string",
-                            "description": "SerpApi API key"
                         }
                     },
                     "required": ["engine", "q"],
-                    "visible": ["engine", "q", "as_ylo", "as_yhi", "scisbd", "hl", "as_sdt", "as_vis", "start", "num", "as_qdr", "as_occt", "as_author", "as_publication", "cluster", "cites", "api_key"],
+                    "visible": ["engine", "q", "as_ylo", "as_yhi", "scisbd", "hl", "as_sdt", "as_vis", "start", "num", "as_qdr", "as_occt", "as_author", "as_publication", "cluster", "cites"],
                     "additionalProperties": false
                 }
             },
@@ -671,14 +655,10 @@
                             "type": "boolean",
                             "description": "Include geo-restricted regions in results",
                             "default": false
-                        },
-                        "api_key": {
-                            "type": "string",
-                            "description": "SerpApi API key"
                         }
                     },
                     "required": ["engine", "q"],
-                    "visible": ["engine", "q", "geo", "date", "hl", "tz", "data_type", "category", "property", "include_low_search_volume", "include_geo_restrictions", "api_key"],
+                    "visible": ["engine", "q", "geo", "date", "hl", "tz", "data_type", "category", "property", "include_low_search_volume", "include_geo_restrictions"],
                     "additionalProperties": false
                 }
             },
