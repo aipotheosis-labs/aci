@@ -81,10 +81,32 @@
                     "required": ["Content-Type"],
                     "visible": ["Content-Type"],
                     "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "include_personal_teams": {
+                            "type": "boolean",
+                            "description": "Include personal teams in the response",
+                            "default": false
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Set the number of results returned per page"
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "Specify the page of results to return if there are multiple pages. Defaults to page 1"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["include_personal_teams", "per_page", "page"],
+                    "additionalProperties": false
                 }
             },
             "required": ["header"],
-            "visible": ["header"],
+            "visible": ["query"],
             "additionalProperties": false
         }
     },
@@ -248,10 +270,27 @@
                     "required": ["team_id"],
                     "visible": ["team_id"],
                     "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Set the number of results returned per page"
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "Specify the page of results to return if there are multiple pages. Defaults to page 1"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["per_page", "page"],
+                    "additionalProperties": false
                 }
             },
             "required": ["header", "path"],
-            "visible": ["path"],
+            "visible": ["path", "query"],
             "additionalProperties": false
         }
     }
