@@ -203,7 +203,7 @@
                             "description": "Filter event types by status"
                         }
                     },
-                    "required": ["user"],
+                    "required": [],
                     "visible": ["user", "organization", "group", "page_token", "count", "status"],
                     "additionalProperties": false
                 }
