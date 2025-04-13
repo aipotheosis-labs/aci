@@ -73,33 +73,14 @@
             "branch_data"
           ],
           "additionalProperties": false
-        },
-        "header": {
-          "type": "object",
-          "description": "Request header parameters",
-          "properties": {
-            "X-Figma-Token": {
-              "type": "string",
-              "description": "Personal access token used to authorize the request."
-            }
-          },
-          "required": [
-            "X-Figma-Token"
-          ],
-          "visible": [
-            "X-Figma-Token"
-          ],
-          "additionalProperties": false
         }
       },
       "required": [
-        "path",
-        "header"
+        "path"
       ],
       "visible": [
         "path",
-        "query",
-        "header"
+        "query"
       ],
       "additionalProperties": false
     }
@@ -156,34 +137,15 @@
             "ids"
           ],
           "additionalProperties": false
-        },
-        "header": {
-          "type": "object",
-          "description": "Header parameters",
-          "properties": {
-            "X-Figma-Token": {
-              "type": "string",
-              "description": "Personal access token for authenticating the request."
-            }
-          },
-          "required": [
-            "X-Figma-Token"
-          ],
-          "visible": [
-            "X-Figma-Token"
-          ],
-          "additionalProperties": false
         }
       },
       "required": [
         "path",
-        "query",
-        "header"
+        "query"
       ],
       "visible": [
         "path",
-        "query",
-        "header"
+        "query"
       ],
       "additionalProperties": false
     }
@@ -249,34 +211,15 @@
             "format"
           ],
           "additionalProperties": false
-        },
-        "header": {
-          "type": "object",
-          "description": "Header parameters",
-          "properties": {
-            "X-Figma-Token": {
-              "type": "string",
-              "description": "Personal access token for authenticating the request."
-            }
-          },
-          "required": [
-            "X-Figma-Token"
-          ],
-          "visible": [
-            "X-Figma-Token"
-          ],
-          "additionalProperties": false
         }
       },
       "required": [
         "path",
-        "query",
-        "header"
+        "query"
       ],
       "visible": [
         "path",
-        "query",
-        "header"
+        "query"
       ],
       "additionalProperties": false
     }
@@ -316,32 +259,13 @@
             "file_key"
           ],
           "additionalProperties": false
-        },
-        "header": {
-          "type": "object",
-          "description": "Header parameters",
-          "properties": {
-            "X-Figma-Token": {
-              "type": "string",
-              "description": "Personal access token for authenticating the request."
-            }
-          },
-          "required": [
-            "X-Figma-Token"
-          ],
-          "visible": [
-            "X-Figma-Token"
-          ],
-          "additionalProperties": false
         }
       },
       "required": [
-        "path",
-        "header"
+        "path"
       ],
       "visible": [
-        "path",
-        "header"
+        "path"
       ],
       "additionalProperties": false
     }
@@ -381,32 +305,13 @@
             "team_id"
           ],
           "additionalProperties": false
-        },
-        "header": {
-          "type": "object",
-          "description": "Header parameters",
-          "properties": {
-            "X-Figma-Token": {
-              "type": "string",
-              "description": "Personal access token used to authenticate the request."
-            }
-          },
-          "required": [
-            "X-Figma-Token"
-          ],
-          "visible": [
-            "X-Figma-Token"
-          ],
-          "additionalProperties": false
         }
       },
       "required": [
-        "path",
-        "header"
+        "path"
       ],
       "visible": [
-        "path",
-        "header"
+        "path"
       ],
       "additionalProperties": false
     }
@@ -446,32 +351,13 @@
             "project_id"
           ],
           "additionalProperties": false
-        },
-        "header": {
-          "type": "object",
-          "description": "Header parameters",
-          "properties": {
-            "X-Figma-Token": {
-              "type": "string",
-              "description": "Personal access token used to authenticate the request."
-            }
-          },
-          "required": [
-            "X-Figma-Token"
-          ],
-          "visible": [
-            "X-Figma-Token"
-          ],
-          "additionalProperties": false
         }
       },
       "required": [
-        "path",
-        "header"
+        "path"
       ],
       "visible": [
-        "path",
-        "header"
+        "path"
       ],
       "additionalProperties": false
     }
