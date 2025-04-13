@@ -36,28 +36,9 @@
 						"pageToken"
 					],
 					"additionalProperties": false
-				},
-				"header": {
-					"type": "object",
-					"description": "Header parameters",
-					"properties": {
-						"Authorization": {
-							"type": "string",
-							"description": "Bearer token for authentication. Format: 'Bearer {api_token}'"
-						}
-					},
-					"required": [
-						"Authorization"
-					],
-					"visible": [
-						"Authorization"
-					],
-					"additionalProperties": false
 				}
 			},
-			"required": [
-				"header"
-			],
+			"required": [],
 			"visible": [
 				"query"
 			],
@@ -118,28 +99,10 @@
 						"pageToken"
 					],
 					"additionalProperties": false
-				},
-				"header": {
-					"type": "object",
-					"description": "Header parameters",
-					"properties": {
-						"Authorization": {
-							"type": "string",
-							"description": "Bearer token for authentication. Format: 'Bearer {api_token}'"
-						}
-					},
-					"required": [
-						"Authorization"
-					],
-					"visible": [
-						"Authorization"
-					],
-					"additionalProperties": false
 				}
 			},
 			"required": [
-				"path",
-				"header"
+				"path"
 			],
 			"visible": [
 				"path",
@@ -211,7 +174,9 @@
 								}
 							},
 							"required": [],
-							"visible": ["additionalProp1"],
+							"visible": [
+								"additionalProp1"
+							],
 							"additionalProperties": true
 						}
 					},
@@ -222,28 +187,10 @@
 						"query"
 					],
 					"additionalProperties": false
-				},
-				"header": {
-					"type": "object",
-					"description": "Header parameters",
-					"properties": {
-						"Authorization": {
-							"type": "string",
-							"description": "Bearer token for authentication. Format: 'Bearer {api_token}'"
-						}
-					},
-					"required": [
-						"Authorization"
-					],
-					"visible": [
-						"Authorization"
-					],
-					"additionalProperties": false
 				}
 			},
 			"required": [
-				"path",
-				"header"
+				"path"
 			],
 			"visible": [
 				"path",
@@ -306,7 +253,10 @@
 						"valueFormat": {
 							"type": "string",
 							"description": "The format in which to return cell values. Options are 'user' (default) or 'rich'. 'user' returns plain text values, while 'rich' includes rich text formatting and links.",
-							"enum": ["user", "rich"]
+							"enum": [
+								"user",
+								"rich"
+							]
 						}
 					},
 					"required": [],
@@ -314,28 +264,10 @@
 						"valueFormat"
 					],
 					"additionalProperties": false
-				},
-				"header": {
-					"type": "object",
-					"description": "Header parameters",
-					"properties": {
-						"Authorization": {
-							"type": "string",
-							"description": "Bearer token for authentication. Format: 'Bearer {api_token}'"
-						}
-					},
-					"required": [
-						"Authorization"
-					],
-					"visible": [
-						"Authorization"
-					],
-					"additionalProperties": false
 				}
 			},
 			"required": [
-				"path",
-				"header"
+				"path"
 			],
 			"visible": [
 				"path",
@@ -390,28 +322,10 @@
 						"row_id"
 					],
 					"additionalProperties": false
-				},
-				"header": {
-					"type": "object",
-					"description": "Header parameters",
-					"properties": {
-						"Authorization": {
-							"type": "string",
-							"description": "Bearer token for authentication. Format: 'Bearer {api_token}'"
-						}
-					},
-					"required": [
-						"Authorization"
-					],
-					"visible": [
-						"Authorization"
-					],
-					"additionalProperties": false
 				}
 			},
 			"required": [
-				"path",
-				"header"
+				"path"
 			],
 			"visible": [
 				"path"
