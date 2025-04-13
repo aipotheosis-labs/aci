@@ -85,10 +85,10 @@
 								"email"
 							],
 							"visible": [
-								"email", 
-								"firstName", 
-								"lastName", 
-								"phone", 
+								"email",
+								"firstName",
+								"lastName",
+								"phone",
 								"fieldValues"
 							],
 							"additionalProperties": false
@@ -106,22 +106,14 @@
 					"type": "object",
 					"description": "Header parameters.",
 					"properties": {
-						"Api-Token": {
-							"type": "string",
-							"description": "The API token for authentication."
-						},
 						"Content-Type": {
 							"type": "string",
 							"description": "Content type header.",
 							"default": "application/json"
 						}
 					},
-					"required": [
-						"Api-Token"
-					],
-					"visible": [
-						"Api-Token"
-					],
+					"required": [],
+					"visible": [],
 					"additionalProperties": false
 				}
 			},
@@ -182,22 +174,14 @@
 					"type": "object",
 					"description": "Header parameters",
 					"properties": {
-						"Api-Token": {
-							"type": "string",
-							"description": "The API token for authentication"
-						},
 						"Content-Type": {
 							"type": "string",
 							"description": "Content type header",
 							"default": "application/json"
 						}
 					},
-					"required": [
-						"Api-Token"
-					],
-					"visible": [
-						"Api-Token"
-					],
+					"required": [],
+					"visible": [],
 					"additionalProperties": false
 				}
 			},
@@ -322,22 +306,14 @@
 					"type": "object",
 					"description": "Header parameters.",
 					"properties": {
-						"Api-Token": {
-							"type": "string",
-							"description": "The API token for authentication."
-						},
 						"Content-Type": {
 							"type": "string",
 							"description": "Content type header.",
 							"default": "application/json"
 						}
 					},
-					"required": [
-						"Api-Token"
-					],
-					"visible": [
-						"Api-Token"
-					],
+					"required": [],
+					"visible": [],
 					"additionalProperties": false
 				}
 			},
@@ -480,22 +456,14 @@
 					"type": "object",
 					"description": "Header parameters.",
 					"properties": {
-						"Api-Token": {
-							"type": "string",
-							"description": "The API token for authentication."
-						},
 						"Content-Type": {
 							"type": "string",
 							"description": "Content type header.",
 							"default": "application/json"
 						}
 					},
-					"required": [
-						"Api-Token"
-					],
-					"visible": [
-						"Api-Token"
-					],
+					"required": [],
+					"visible": [],
 					"additionalProperties": false
 				}
 			},
@@ -510,7 +478,7 @@
 			],
 			"additionalProperties": false
 		}
-	},	
+	},
 	{
 		"name": "ACTIVE_CAMPAIGN__UPDATE_CONTACT_LIST_STATUS",
 		"description": "Subscribes or unsubscribes a contact to/from a list in ActiveCampaign. Accepts contact ID, list ID, and status to update the contact's subscription status.",
@@ -593,22 +561,14 @@
 					"type": "object",
 					"description": "Header parameters.",
 					"properties": {
-						"Api-Token": {
-							"type": "string",
-							"description": "The API token for authentication."
-						},
 						"Content-Type": {
 							"type": "string",
 							"description": "Content type header.",
 							"default": "application/json"
 						}
 					},
-					"required": [
-						"Api-Token"
-					],
-					"visible": [
-						"Api-Token"
-					],
+					"required": [],
+					"visible": [],
 					"additionalProperties": false
 				}
 			},
