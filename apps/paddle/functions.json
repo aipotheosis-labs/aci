@@ -1,0 +1,404 @@
+[
+    {
+        "name": "PADDLE__CREATE_CUSTOMER",
+        "description": "Create a new customer in Paddle",
+        "tags": [
+            "customer",
+            "billing"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/customers",
+            "server_url": "https://sandbox-api.paddle.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        },
+                        "Paddle-Version": {
+                            "type": "string",
+                            "description": "API version to use",
+                            "default": "1"
+                        }
+                    },
+                    "required": ["Content-Type", "Paddle-Version"],
+                    "visible": ["Content-Type", "Paddle-Version"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Customer creation parameters",
+                    "properties": {
+                        "email": {
+                            "type": "string",
+                            "description": "Email address for the customer"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Full name for the customer",   
+                            "default": null       
+                        },
+                        "locale": {
+                            "type": "string",
+                            "description": "Locale for the customer, in ISO 639-1 format (e.g., en)",   
+                            "default": "en"
+                        },
+                        "custom_data": {
+                            "type": "object",
+                            "description": "A key-value store for recording customer-related properties",
+                            "properties": {
+                                "example_key": {
+                                    "type": "string",
+                                    "description": "Example custom data field"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["example_key"],
+                            "additionalProperties": true,
+                            "default": null
+                        }
+                    },
+                    "required": ["email"],
+                    "visible": ["email", "name", "locale", "custom_data"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "PADDLE__LIST_CUSTOMERS",
+        "description": "Get a list of all customers",
+        "tags": [
+            "customer",
+            "billing"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/customers",
+            "server_url": "https://sandbox-api.paddle.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        },
+                        "Paddle-Version": {
+                            "type": "string",
+                            "description": "API version to use",
+                            "default": "1"
+                        }
+                    },
+                    "required": ["Content-Type", "Paddle-Version"],
+                    "visible": ["Content-Type", "Paddle-Version"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "after": {
+                            "type": "string",
+                            "description": "Return entities after the specified Paddle ID when working with paginated endpoints"
+                        },
+                        "email": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Return entities that exactly match the specified email address. Use a comma-separated list for multiple emails"
+                        },
+                        "id": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Return only the IDs specified. Use a comma-separated list to get multiple entities"
+                        },
+                        "order_by": {
+                            "type": "string",
+                            "description": "Order returned entities by the specified field and direction ([ASC] or [DESC]). For example, ?order_by=id[ASC]"
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Set how many entities are returned per page (Default: 50, Maximum: 200)",
+                            "default": 50,
+                            "maximum": 200
+                        },
+                        "search": {
+                            "type": "string",
+                            "description": "Return entities that match a search query. Searches id, name, and email fields"
+                        },
+                        "status": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": ["active", "archived"]
+                            },
+                            "description": "Return entities that match the specified status. Valid values: active, archived"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["after", "email", "id", "order_by", "per_page", "search", "status"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "PADDLE__GET_CUSTOMER",
+        "description": "Get details of a specific customer",
+        "tags": [
+            "customer",
+            "billing"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/customers/{customer_id}",
+            "server_url": "https://sandbox-api.paddle.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        },
+                        "Paddle-Version": {
+                            "type": "string",
+                            "description": "API version to use",
+                            "default": "1"
+                        }
+                    },
+                    "required": ["Content-Type", "Paddle-Version"],
+                    "visible": ["Content-Type", "Paddle-Version"],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "customer_id": {
+                            "type": "string",
+                            "description": "ID of the customer to retrieve"
+                        }
+                    },
+                    "required": ["customer_id"],
+                    "visible": ["customer_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "PADDLE__UPDATE_CUSTOMER",
+        "description": "Update an existing customer in Paddle",
+        "tags": [
+            "customer",
+            "billing"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/customers/{customer_id}",
+            "server_url": "https://sandbox-api.paddle.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        },
+                        "Paddle-Version": {
+                            "type": "string",
+                            "description": "API version to use",
+                            "default": "1"
+                        }
+                    },
+                    "required": ["Content-Type", "Paddle-Version"],
+                    "visible": ["Content-Type", "Paddle-Version"],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "customer_id": {
+                            "type": "string",
+                            "description": "ID of the customer to update"
+                        }
+                    },
+                    "required": ["customer_id"],
+                    "visible": ["customer_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Customer update parameters",
+                    "properties": {
+                        "email": {
+                            "type": "string",
+                            "description": "Email address for the customer"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Full name for the customer"
+                        },
+                        "locale": {
+                            "type": "string",
+                            "description": "Locale for the customer, in ISO 639-1 format (e.g., en)"
+                        },
+                        "custom_data": {
+                            "type": "object",
+                            "description": "A key-value store for recording customer-related properties",
+                            "properties": {
+                                "example_key": {
+                                    "type": "string",
+                                    "description": "Example custom data field"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["example_key"],
+                            "additionalProperties": true,
+                            "default": null
+                        }
+                    },
+                    "required": [],
+                    "visible": ["email", "name", "locale", "custom_data"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "PADDLE__CREATE_PRODUCT",
+        "description": "Create a new product in Paddle",
+        "tags": [
+            "product",
+            "catalog"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/products",
+            "server_url": "https://sandbox-api.paddle.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        },
+                        "Paddle-Version": {
+                            "type": "string",
+                            "description": "API version to use",
+                            "default": "1"
+                        }
+                    },
+                    "required": ["Content-Type", "Paddle-Version"],
+                    "visible": ["Content-Type", "Paddle-Version"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Product creation parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the product"
+                        },
+                        "tax_category": {
+                            "type": "string",
+                            "description": "The product's tax category. One of: 'standard', 'reduced', 'zero', 'super-reduced', 'exempt', etc.",
+                            "default": "standard"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description of the product"
+                        },
+                        "image_url": {
+                            "type": "string",
+                            "description": "URL for the product image"
+                        },
+                        "custom_data": {
+                            "type": "object",
+                            "description": "A key-value store for recording product-related properties",
+                            "properties": {
+                                "example_key": {
+                                    "type": "string",
+                                    "description": "Example custom data field"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["example_key"],
+                            "additionalProperties": true,
+                            "default": null
+                        }
+                    },
+                    "required": ["name", "tax_category"],
+                    "visible": ["name", "tax_category", "description", "image_url", "custom_data"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    }
+]
