@@ -1,0 +1,23 @@
+{
+    "name": "SUPABASE",
+    "display_name": "Supabase API",
+    "logo": "https://example.com/supabase-logo.svg",
+    "provider": "Supabase Inc.",
+    "version": "aipolabs_0.0.1",
+    "description": "Supabase is an open-source Firebase alternative providing real-time databases, authentication, and more.",
+    "security_schemes": {
+        "api_key": {
+          "location": "header",
+          "name": "Authorization",
+          "prefix": "Bearer "
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "database",
+        "authentication",
+        "real-time"
+    ],
+    "visibility": "public",
+    "active": true
+}

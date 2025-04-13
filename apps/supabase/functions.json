@@ -1,0 +1,345 @@
+[
+  {
+    "name": "SUPABASE__CREATE_SSO_PROVIDER",
+    "description": "Creates a new SSO provider.",
+    "tags": ["sso", "provider", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/projects/{ref}/config/auth/sso/providers",
+      "server_url": "https://api.supabase.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "description": "Project ref",
+              "minLength": 20,
+              "maxLength": 20
+            }
+          },
+          "required": ["ref"],
+          "visible": ["ref"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "body parameters",
+          "properties": {
+            "type": {
+              "type": "string",
+              "description": "Type of SSO provider",
+              "enum": ["saml"]
+            },
+            "metadata_xml": {
+              "type": "string",
+              "description": "Metadata XML"
+            },
+            "metadata_url": {
+              "type": "string",
+              "description": "Metadata URL"
+            },
+            "domains": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Domains"
+            },
+            "attribute_mapping": {
+              "type": "object",
+              "description": "Attribute mapping",
+              "properties": {
+                "keys": {
+                  "type": "object",
+                  "properties": {},
+                  "required": [],
+                  "visible": [],
+                  "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                      "default": {
+                        "oneOf": [
+                          {"type": "object"},
+                          {"type": "number"},
+                          {"type": "string"},
+                          {"type": "boolean"}
+                        ]
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "names": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "array": {
+                        "type": "boolean"
+                      }
+                    },
+                    "required": ["name"]
+                  }
+                }
+              },
+              "required": ["keys"],
+              "visible": [],
+              "additionalProperties": false
+            }
+          },
+          "required": ["type"],
+          "visible": ["type", "metadata_xml", "metadata_url", "domains"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "SUPABASE__REMOVE_SSO_PROVIDER",
+    "description": "Removes an SSO provider by its UUID.",
+    "tags": ["sso", "provider", "remove"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/v1/projects/{ref}/config/auth/sso/providers/{provider_id}",
+      "server_url": "https://api.supabase.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "description": "Project ref",
+              "minLength": 20,
+              "maxLength": 20
+            },
+            "provider_id": {
+              "type": "string",
+              "description": "Provider ID"
+            }
+          },
+          "required": ["ref", "provider_id"],
+          "visible": ["ref", "provider_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "SUPABASE__GET_SSO_PROVIDER",
+    "description": "Gets an SSO provider by its UUID.",
+    "tags": ["sso", "provider", "get"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/projects/{ref}/config/auth/sso/providers/{provider_id}",
+      "server_url": "https://api.supabase.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "description": "Project ref",
+              "minLength": 20,
+              "maxLength": 20
+            },
+            "provider_id": {
+              "type": "string",
+              "description": "Provider ID"
+            }
+          },
+          "required": ["ref", "provider_id"],
+          "visible": ["ref", "provider_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "SUPABASE__GET_AUTH_CONFIG",
+    "description": "Gets project's auth config.",
+    "tags": ["auth", "config", "get"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/projects/{ref}/config/auth",
+      "server_url": "https://api.supabase.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "description": "Project ref",
+              "minLength": 20,
+              "maxLength": 20
+            }
+          },
+          "required": ["ref"],
+          "visible": ["ref"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "SUPABASE__LIST_SSO_PROVIDERS",
+    "description": "Lists all SSO providers.",
+    "tags": ["sso", "provider", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/projects/{ref}/config/auth/sso/providers",
+      "server_url": "https://api.supabase.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "description": "Project ref",
+              "minLength": 20,
+              "maxLength": 20
+            }
+          },
+          "required": ["ref"],
+          "visible": ["ref"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "SUPABASE__DISABLE_READONLY_MODE",
+    "description": "Disables project's readonly mode for the next 15 minutes.",
+    "tags": ["readonly", "disable", "temporary"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/projects/{ref}/readonly/temporary-disable",
+      "server_url": "https://api.supabase.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "description": "Project ref",
+              "minLength": 20,
+              "maxLength": 20
+            }
+          },
+          "required": ["ref"],
+          "visible": ["ref"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "SUPABASE__GENERATE_TYPESCRIPT_TYPES",
+    "description": "Generates TypeScript types of your schema for use with supabase-js.",
+    "tags": ["typescript", "types", "generate"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/projects/{ref}/types/typescript",
+      "server_url": "https://api.supabase.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "description": "Project ref",
+              "minLength": 20,
+              "maxLength": 20
+            }
+          },
+          "required": ["ref"],
+          "visible": ["ref"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "query parameters",
+          "properties": {
+            "included_schemas": {
+              "type": "string",
+              "description": "Included schemas"
+            }
+          },
+          "required": [],
+          "visible": ["included_schemas"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  }
+]
