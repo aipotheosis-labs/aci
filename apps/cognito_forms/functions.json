@@ -46,28 +46,9 @@
 						"skip"
 					],
 					"additionalProperties": false
-				},
-				"header": {
-					"type": "object",
-					"description": "Header parameters for authentication.",
-					"properties": {
-						"Authorization": {
-							"type": "string",
-							"description": "Authorization token for API authentication."
-						}
-					},
-					"required": [
-						"Authorization"
-					],
-					"visible": [
-						"Authorization"
-					],
-					"additionalProperties": false
 				}
 			},
-			"required": [
-				"header"
-			],
+			"required": [],
 			"visible": [
 				"query"
 			],
@@ -113,22 +94,14 @@
 					"type": "object",
 					"description": "Header parameters for authentication.",
 					"properties": {
-						"Authorization": {
-							"type": "string",
-							"description": "Bearer token for API authentication."
-						},
 						"Content-Type": {
 							"type": "string",
 							"description": "Content type header. Should be 'application/json'.",
 							"default": "application/json"
 						}
 					},
-					"required": [
-						"Authorization"
-					],
-					"visible": [
-						"Authorization"
-					],
+					"required": [],
+					"visible": [],
 					"additionalProperties": false
 				},
 				"body": {
@@ -214,22 +187,14 @@
 					"type": "object",
 					"description": "Header parameters for authentication.",
 					"properties": {
-						"Authorization": {
-							"type": "string",
-							"description": "Bearer token for API authentication."
-						},
 						"Content-Type": {
 							"type": "string",
 							"description": "Content type header. Should be 'application/json'.",
 							"default": "application/json"
 						}
 					},
-					"required": [
-						"Authorization"
-					],
-					"visible": [
-						"Authorization"
-					],
+					"required": [],
+					"visible": [],
 					"additionalProperties": false
 				}
 			},
@@ -288,22 +253,14 @@
 					"type": "object",
 					"description": "Header parameters for authentication.",
 					"properties": {
-						"Authorization": {
-							"type": "string",
-							"description": "Bearer token for API authentication."
-						},
 						"Content-Type": {
 							"type": "string",
 							"description": "Content type header. Should be 'application/json'.",
 							"default": "application/json"
 						}
 					},
-					"required": [
-						"Authorization"
-					],
-					"visible": [
-						"Authorization"
-					],
+					"required": [],
+					"visible": [],
 					"additionalProperties": false
 				}
 			},
@@ -362,22 +319,14 @@
 					"type": "object",
 					"description": "Header parameters for authentication.",
 					"properties": {
-						"Authorization": {
-							"type": "string",
-							"description": "Bearer token for API authentication."
-						},
 						"Content-Type": {
 							"type": "string",
 							"description": "Content type header. Should be 'application/json'.",
 							"default": "application/json"
 						}
 					},
-					"required": [
-						"Authorization"
-					],
-					"visible": [
-						"Authorization"
-					],
+					"required": [],
+					"visible": [],
 					"additionalProperties": false
 				},
 				"body": {
