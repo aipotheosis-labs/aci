@@ -9,8 +9,7 @@
         "protocol_data": {
             "method": "GET",
             "path": "/api/v1/tickets",
-            "server_url": "https://desk.zoho.com",
-            "oauth_scopes": ["Desk.tickets.READ"]
+            "server_url": "https://desk.zoho.com"
         },
         "parameters": {
             "type": "object",
@@ -61,8 +60,7 @@
                     }
                 }
             }
-        },
-        "response": {}
+        }
     },
     {
         "name": "ZOHO_DESK__GET_CONTACT",
@@ -74,8 +72,7 @@
         "protocol_data": {
             "method": "GET",
             "path": "/api/v1/contacts/{contactId}",
-            "server_url": "https://desk.zoho.com",
-            "oauth_scopes": ["Desk.contacts.READ"]
+            "server_url": "https://desk.zoho.com"
         },
         "parameters": {
             "type": "object",
@@ -108,8 +105,7 @@
                     }
                 }
             }
-        },
-        "response": {}
+        }
     },
     {
         "name": "ZOHO_DESK__LIST_CONTACTS",
@@ -121,8 +117,7 @@
         "protocol_data": {
             "method": "GET",
             "path": "/api/v1/contacts",
-            "server_url": "https://desk.zoho.com",
-            "oauth_scopes": ["Desk.contacts.READ"]
+            "server_url": "https://desk.zoho.com"
         },
         "parameters": {
             "type": "object",
@@ -168,8 +163,7 @@
                     }
                 }
             }
-        },
-        "response": {}
+        }
     },
     {
         "name": "ZOHO_DESK__LIST_DEPARTMENTS",
@@ -181,8 +175,7 @@
         "protocol_data": {
             "method": "GET",
             "path": "/api/v1/departments",
-            "server_url": "https://desk.zoho.com",
-            "oauth_scopes": ["Desk.departments.READ"]
+            "server_url": "https://desk.zoho.com"
         },
         "parameters": {
             "type": "object",
@@ -225,8 +218,7 @@
                     }
                 }
             }
-        },
-        "response": {}
+        }
     },
     {
         "name": "ZOHO_DESK__GET_TICKET_DETAILS",
@@ -238,8 +230,7 @@
         "protocol_data": {
             "method": "GET",
             "path": "/api/v1/tickets/{ticketId}",
-            "server_url": "https://desk.zoho.com",
-            "oauth_scopes": ["Desk.tickets.READ"]
+            "server_url": "https://desk.zoho.com"
         },
         "parameters": {
             "type": "object",
@@ -274,8 +265,7 @@
                     }
                 }
             }
-        },
-        "response": {}
+        }
     },
     {
         "name": "ZOHO_DESK__SEARCH_CONTACTS",
@@ -287,8 +277,7 @@
         "protocol_data": {
             "method": "GET",
             "path": "/api/v1/contacts/search",
-            "server_url": "https://desk.zoho.com",
-            "oauth_scopes": ["Desk.contacts.READ"]
+            "server_url": "https://desk.zoho.com"
         },
         "parameters": {
             "type": "object",
@@ -406,7 +395,6 @@
                     }
                 }
             }
-        },
-        "response": {}
+        }
     }
 ] 

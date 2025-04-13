@@ -1,7 +1,7 @@
 {
     "name": "ZOHO_DESK",
     "display_name": "Zoho Desk",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/zoho.svg",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/zoho_desk.svg",
     "provider": "Zoho",
     "version": "1.0",
     "description": "Zoho Desk API integration for customer support and ticket management. Provides access to tickets, contacts, departments, and customer support features.",
