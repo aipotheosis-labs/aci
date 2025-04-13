@@ -1,0 +1,37 @@
+[{
+  "name": "ROSSUM__GET_DOCUMENT",
+  "description": "Retrieve a specific document from Rossum by ID",
+  "tags": ["rossum", "document", "retrieval"],
+  "visibility": "public",
+  "active": true,
+  "protocol": "rest",
+  "protocol_data": {
+    "method": "GET",
+    "path": "/api/v1/documents/{document_id}",
+    "server_url": "https://{domain}.rossum.app"
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "path": {
+        "type": "object",
+        "properties": {
+          "document_id": {
+            "type": "string",
+            "description": "ID of the document to retrieve"
+          },
+          "domain": {
+            "type": "string",
+            "description": "Tenant domain name"
+          }
+        },
+        "required": ["document_id", "domain"],
+        "visible": ["document_id", "domain"],
+        "additionalProperties": false
+      }
+    },
+    "required": ["path"],
+    "visible": ["path"],
+    "additionalProperties": false
+  }
+}]
