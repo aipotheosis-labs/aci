@@ -1,0 +1,258 @@
+[
+    {
+        "name": "TINES__CREATE_TEAM",
+        "description": "Create a new team in Tines",
+        "tags": [
+            "team",
+            "management"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/teams/",
+            "server_url": "https://sparkling-sky-7936.tines.com/api/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": ["Content-Type"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Team creation parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the new team"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TINES__LIST_TEAMS",
+        "description": "Get a list of all teams",
+        "tags": [
+            "team",
+            "management"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/teams",
+            "server_url": "https://sparkling-sky-7936.tines.com/api/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": ["Content-Type"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header"],
+            "visible": ["header"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TINES__GET_TEAM",
+        "description": "Get details of a specific team",
+        "tags": [
+            "team",
+            "management"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/teams/{team_id}",
+            "server_url": "https://sparkling-sky-7936.tines.com/api/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": ["Content-Type"],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "team_id": {
+                            "type": "string",
+                            "description": "ID of the team to retrieve"
+                        }
+                    },
+                    "required": ["team_id"],
+                    "visible": ["team_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TINES__UPDATE_TEAM",
+        "description": "Update an existing team",
+        "tags": [
+            "team",
+            "management"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/teams/{team_id}",
+            "server_url": "https://sparkling-sky-7936.tines.com/api/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": ["Content-Type"],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "team_id": {
+                            "type": "string",
+                            "description": "ID of the team to update"
+                        }
+                    },
+                    "required": ["team_id"],
+                    "visible": ["team_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Team update parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "New name for the team"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TINES__LIST_TEAM_MEMBERS",
+        "description": "List all members of a specific team",
+        "tags": [
+            "team",
+            "management",
+            "members"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/teams/{team_id}/members",
+            "server_url": "https://sparkling-sky-7936.tines.com/api/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": ["Content-Type"],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "team_id": {
+                            "type": "string",
+                            "description": "ID of the team to list members from"
+                        }
+                    },
+                    "required": ["team_id"],
+                    "visible": ["team_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    }
+] 
