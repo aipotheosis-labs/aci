@@ -55,8 +55,7 @@
                     "properties": {
                         "address": {
                             "type": "string",
-                            "description": "The Solana account address",
-                            "default": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                            "description": "The Solana account address"
                         }
                     },
                     "required": ["address"],
@@ -104,8 +103,7 @@
                     "properties": {
                         "address": {
                             "type": "string",
-                            "description": "The Solana account address",
-                            "default": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                            "description": "The Solana account address"
                         }
                     },
                     "required": ["address"],
@@ -153,8 +151,7 @@
                     "properties": {
                         "address": {
                             "type": "string",
-                            "description": "A wallet address on Solana blockchain",
-                            "default": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                            "description": "A wallet address on Solana blockchain"
                         },
                         "before": {
                             "type": "string",
@@ -211,8 +208,7 @@
                     "properties": {
                         "address": {
                             "type": "string",
-                            "description": "A wallet address on Solana blockchain",
-                            "default": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                            "description": "A wallet address on Solana blockchain"
                         }
                     },
                     "required": ["address"],
@@ -260,8 +256,7 @@
                     "properties": {
                         "address": {
                             "type": "string",
-                            "description": "A Wallet address on Solana blockchain",
-                            "default": "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM"
+                            "description": "A Wallet address on Solana blockchain"
                         },
                         "type": {
                             "type": "string",
