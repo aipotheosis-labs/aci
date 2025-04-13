@@ -14,7 +14,6 @@ JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(
     check_and_get_env_variable("SERVER_JWT_ACCESS_TOKEN_EXPIRE_MINUTES")
 )
 AIPOLABS_REDIRECT_URI_BASE = check_and_get_env_variable("SERVER_AIPOLABS_REDIRECT_URI_BASE")
-AIPOLABS_ROOT_DOMAIN = check_and_get_env_variable("SERVER_AIPOLABS_ROOT_DOMAIN")
 COOKIE_KEY_FOR_AUTH_TOKEN = "accessToken"
 
 # Google Auth
@@ -71,10 +70,6 @@ ROUTER_PREFIX_WEBHOOKS = "/v1/webhooks"
 
 # DEV PORTAL
 DEV_PORTAL_URL = check_and_get_env_variable("SERVER_DEV_PORTAL_URL")
-
-# SIGN UP
-PERMITTED_SIGNUP_CODES = check_and_get_env_variable("SERVER_SIGNUP_CODES").split(",")
-MAX_USERS = int(check_and_get_env_variable("SERVER_MAX_USERS"))
 
 # LOGFIRE
 LOGFIRE_WRITE_TOKEN = check_and_get_env_variable("SERVER_LOGFIRE_WRITE_TOKEN")
