@@ -30,10 +30,6 @@
                             "type": "number",
                             "description": "Longitude, decimal (-180; 180)"
                         },
-                        "appid": {
-                            "type": "string",
-                            "description": "Your unique API key (you can always find it on your account page under the 'API key' tab)"
-                        },
                         "units": {
                             "type": "string",
                             "description": "Units of measurement. standard, metric and imperial units are available. If not specified, standard units will be applied by default.",
@@ -104,7 +100,7 @@
                         "lat",
                         "lon",
                         "units",
-                        "lang"  
+                        "lang"
                     ],
                     "additionalProperties": false
                 }
@@ -148,10 +144,6 @@
                         "lon": {
                             "type": "number",
                             "description": "Longitude, decimal (-180; 180)"
-                        },
-                        "appid": {
-                            "type": "string",
-                            "description": "Your unique API key (you can always find it on your account page under the 'API key' tab)"
                         },
                         "units": {
                             "type": "string",
@@ -280,10 +272,6 @@
                             "type": "string",
                             "description": "Parts of weather data to exclude. Multiple values can be separated by commas.",
                             "default": "minutely,hourly,alerts"
-                        },
-                        "appid": {
-                            "type": "string",
-                            "description": "Your unique API key (you can always find it on your account page under the 'API key' tab)"
                         },
                         "units": {
                             "type": "string",
