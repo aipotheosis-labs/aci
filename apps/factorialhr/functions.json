@@ -8,8 +8,8 @@
         "protocol": "rest",
         "protocol_data": {
           "method": "GET",
-          "path": "/api/2025-04-01/resources/api_public/credentials",
-          "server_url": "https://api.factorialhr.com",
+          "path": "/resources/api_public/credentials",
+          "server_url": "https://api.factorialhr.com/api/2025-04-01",
           "headers": {
             "accept": "application/json"
           }
@@ -31,7 +31,7 @@
           "additionalProperties": false
         }
       },
-    {
+      {
         "name": "FACTORIAL_HR__READS_ALL_WEBHOOK_SUBSCRIPTIONS",
         "description": "Get a list of all webhook subscriptions",
         "tags": ["webhooks"],
@@ -39,30 +39,47 @@
         "active": true,
         "protocol": "rest",
         "protocol_data": {
-            "method": "GET",
-            "path": "/api/2025-04-01/resources/api_public/webhook_subscription",
-            "server_url": "https://api.factorialhr.com",
-            "headers": {
-                "accept": "application/json"
-            }
+          "method": "GET",
+          "path": "/resources/api_public/webhook_subscriptions",
+          "server_url": "https://api.factorialhr.com/api/2025-04-01",
+          "headers": {
+            "accept": "application/json"
+          }
         },
         "parameters": {
-            "type": "object",
-            "properties": {
-                "query": {
-                    "type": "object",
-                    "description": "query parameters",
-                    "properties": {},
-                    "required": [],
-                    "visible": [],
-                    "additionalProperties": true
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "object",
+              "description": "Query parameters for filtering webhook subscriptions",
+              "properties": {
+                "id": {
+                  "type": "integer",
+                  "description": "Identifier of the webhook subscription"
+                },
+                "company_id": {
+                  "type": "integer",
+                  "description": "Company identifier of the webhook subscription"
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Type of the webhook subscription"
+                },
+                "enabled": {
+                  "type": "boolean",
+                  "description": "List only enabled webhook subscriptions"
                 }
-            },
-            "required": [],
-            "visible": [],
-            "additionalProperties": false
+              },
+              "required": [],
+              "visible": ["id", "company_id", "type", "enabled"],
+              "additionalProperties": false
+            }
+          },
+          "required": [],
+          "visible": ["query"],
+          "additionalProperties": false
         }
-    },
+      },
     {
         "name": "FACTORIAL_HR__CREATES_A_WEBHOOK_SUBSCRIPTION",
         "description": "Create a new webhook subscription",
@@ -72,8 +89,8 @@
         "protocol": "rest",
         "protocol_data": {
           "method": "POST",
-          "path": "/api/2025-04-01/resources/api_public/webhook_subscriptions",
-          "server_url": "https://api.factorialhr.com",
+          "path": "/resources/api_public/webhook_subscriptions",
+          "server_url": "https://api.factorialhr.com/api/2025-04-01",
           "headers": {
             "accept": "application/json",
             "content-type": "application/json"
