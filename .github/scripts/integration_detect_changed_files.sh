@@ -5,7 +5,7 @@ BASE_SHA="$1"
 HEAD_SHA="$2"
 
 # Get the list of changed files, focusing on integration-related files
-CHANGED_FILES=$(git diff --name-only $BASE_SHA $HEAD_SHA | grep -E '^(app)/' | grep -E '\.py$|\.json$|\.toml$|\.md$' || echo "")
+CHANGED_FILES=$(git diff --name-only $BASE_SHA $HEAD_SHA | grep -E '^(apps)/' | grep -E '\.json$' || echo "")
 
 # Echo debugging information to stderr, not stdout
 # This way it won't be captured in $GITHUB_OUTPUT
