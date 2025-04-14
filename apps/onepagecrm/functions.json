@@ -18,7 +18,7 @@
                     "type": "object",
                     "description": "Headers for the HTTP request",
                     "properties": {
-                        "Content-Type": {
+                        "content-type": {
                             "type": "string",
                             "description": "Content-Type header",
                             "default": "application/json"
@@ -27,12 +27,17 @@
                             "type": "string",
                             "description": "Accept header",
                             "default": "application/json"
+                        },
+                        "authorization": {
+                            "type": "string",
+                            "description": "Authorization header with API key"
                         }
                     },
                     "additionalProperties": false,
                     "required": [
-                        "Content-Type",
-                        "accept"
+                        "content-type",
+                        "accept",
+                        "authorization"
                     ],
                     "visible": []
                 }
@@ -63,7 +68,7 @@
                     "type": "object",
                     "description": "Headers for the HTTP request",
                     "properties": {
-                        "Content-Type": {
+                        "content-type": {
                             "type": "string",
                             "description": "Content-Type header",
                             "default": "application/json"
@@ -72,20 +77,41 @@
                             "type": "string",
                             "description": "Accept header",
                             "default": "application/json"
+                        },
+                        "authorization": {
+                            "type": "string",
+                            "description": "Authorization header with API key"
                         }
                     },
                     "additionalProperties": false,
                     "required": [
-                        "Content-Type",
-                        "accept"
+                        "content-type",
+                        "accept",
+                        "authorization"
                     ],
                     "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Parameters for changing the auth key",
+                    "properties": {
+                        "reason": {
+                            "type": "string",
+                            "description": "Optional reason for changing the auth key"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["reason"],
+                    "additionalProperties": false
                 }
             },
             "required": [
-                "header"
+                "header",
+                "body"
             ],
-            "visible": [],
+            "visible": [
+                "body"
+            ],
             "additionalProperties": false
         }
     },
@@ -108,7 +134,7 @@
                     "type": "object",
                     "description": "Headers for the HTTP request",
                     "properties": {
-                        "Content-Type": {
+                        "content-type": {
                             "type": "string",
                             "description": "Content-Type header",
                             "default": "application/json"
@@ -117,20 +143,46 @@
                             "type": "string",
                             "description": "Accept header",
                             "default": "application/json"
+                        },
+                        "authorization": {
+                            "type": "string",
+                            "description": "Authorization header with API key"
                         }
                     },
                     "additionalProperties": false,
                     "required": [
-                        "Content-Type",
-                        "accept"
+                        "content-type",
+                        "accept",
+                        "authorization"
                     ],
                     "visible": []
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination",
+                            "default": 1
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Number of results per page",
+                            "default": 20
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page", "per_page"],
+                    "additionalProperties": false
                 }
             },
             "required": [
                 "header"
             ],
-            "visible": [],
+            "visible": [
+                "query"
+            ],
             "additionalProperties": false
         }
     },
@@ -153,7 +205,7 @@
                     "type": "object",
                     "description": "Headers for the HTTP request",
                     "properties": {
-                        "Content-Type": {
+                        "content-type": {
                             "type": "string",
                             "description": "Content-Type header",
                             "default": "application/json"
@@ -162,12 +214,17 @@
                             "type": "string",
                             "description": "Accept header",
                             "default": "application/json"
+                        },
+                        "authorization": {
+                            "type": "string",
+                            "description": "Authorization header with API key"
                         }
                     },
                     "additionalProperties": false,
                     "required": [
-                        "Content-Type",
-                        "accept"
+                        "content-type",
+                        "accept",
+                        "authorization"
                     ],
                     "visible": []
                 },
@@ -214,7 +271,7 @@
                     "type": "object",
                     "description": "Headers for the HTTP request",
                     "properties": {
-                        "Content-Type": {
+                        "content-type": {
                             "type": "string",
                             "description": "Content-Type header",
                             "default": "application/json"
@@ -223,12 +280,17 @@
                             "type": "string",
                             "description": "Accept header",
                             "default": "application/json"
+                        },
+                        "authorization": {
+                            "type": "string",
+                            "description": "Authorization header with API key"
                         }
                     },
                     "additionalProperties": false,
                     "required": [
-                        "Content-Type",
-                        "accept"
+                        "content-type",
+                        "accept",
+                        "authorization"
                     ],
                     "visible": []
                 },
@@ -264,10 +326,22 @@
                         "bcc_email": {
                             "type": "string",
                             "description": "Email BCC setting (true/false as string)"
+                        },
+                        "email": {
+                            "type": "string",
+                            "description": "Email address of the user"
+                        },
+                        "phone": {
+                            "type": "string",
+                            "description": "Phone number of the user"
+                        },
+                        "timezone": {
+                            "type": "string",
+                            "description": "Timezone of the user"
                         }
                     },
                     "required": [],
-                    "visible": ["first_name", "last_name", "company_name", "bcc_email"],
+                    "visible": ["first_name", "last_name", "company_name", "bcc_email", "email", "phone", "timezone"],
                     "additionalProperties": false
                 }
             },
