@@ -6,7 +6,7 @@ from typing import List, Optional
 from .types import ToolInvocation
 from openai.types.chat import ChatCompletionMessageParam
 from aipolabs.common.logging_setup import get_logger
-from aipolabs.server.routes.functions import execute_function
+from aipolabs.server.agent.meta_functions import ACI_META_FUNCTIONS_SCHEMA_LIST
 logger = get_logger(__name__)
 
 class ClientMessage(BaseModel):
@@ -60,15 +60,13 @@ def convert_to_openai_messages(messages: List[ClientMessage]) -> List[ChatComple
     return openai_messages
 
 
-async def openai_chat_stream_text(messages: List[ChatCompletionMessageParam], protocol: str = 'data', tools=None):
+async def openai_chat_stream_text(messages: List[ChatCompletionMessageParam], protocol: str = 'data'):
     """
     Stream chat completion responses and handle tool calls asynchronously.
     
     Args:
         messages: List of chat messages
         protocol: Protocol type for streaming response format
-        tools: List of tool definitions to use for function calling
-        linked_account_owner_id: Linked account owner id
     """
     logger.info(
         "Messages",
@@ -80,7 +78,7 @@ async def openai_chat_stream_text(messages: List[ChatCompletionMessageParam], pr
         model="gpt-4o",
         input=messages,
         stream=True,
-        tools=tools
+        tools=ACI_META_FUNCTIONS_SCHEMA_LIST
     )
 
     for event in stream:
