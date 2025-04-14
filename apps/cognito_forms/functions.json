@@ -92,7 +92,7 @@
 				},
 				"header": {
 					"type": "object",
-					"description": "Header parameters for authentication.",
+					"description": "Header parameters.",
 					"properties": {
 						"Content-Type": {
 							"type": "string",
@@ -100,8 +100,12 @@
 							"default": "application/json"
 						}
 					},
-					"required": [],
-					"visible": [],
+					"required": [
+						"Content-Type"
+					],
+					"visible": [
+						"Content-Type"
+					],
 					"additionalProperties": false
 				},
 				"body": {
@@ -185,7 +189,7 @@
 				},
 				"header": {
 					"type": "object",
-					"description": "Header parameters for authentication.",
+					"description": "Header parameters.",
 					"properties": {
 						"Content-Type": {
 							"type": "string",
@@ -193,8 +197,12 @@
 							"default": "application/json"
 						}
 					},
-					"required": [],
-					"visible": [],
+					"required": [
+						"Content-Type"
+					],
+					"visible": [
+						"Content-Type"
+					],
 					"additionalProperties": false
 				}
 			},
@@ -251,7 +259,7 @@
 				},
 				"header": {
 					"type": "object",
-					"description": "Header parameters for authentication.",
+					"description": "Header parameters.",
 					"properties": {
 						"Content-Type": {
 							"type": "string",
@@ -259,8 +267,12 @@
 							"default": "application/json"
 						}
 					},
-					"required": [],
-					"visible": [],
+					"required": [
+						"Content-Type"
+					],
+					"visible": [
+						"Content-Type"
+					],
 					"additionalProperties": false
 				}
 			},
@@ -317,7 +329,7 @@
 				},
 				"header": {
 					"type": "object",
-					"description": "Header parameters for authentication.",
+					"description": "Header parameters.",
 					"properties": {
 						"Content-Type": {
 							"type": "string",
@@ -325,8 +337,12 @@
 							"default": "application/json"
 						}
 					},
-					"required": [],
-					"visible": [],
+					"required": [
+						"Content-Type"
+					],
+					"visible": [
+						"Content-Type"
+					],
 					"additionalProperties": false
 				},
 				"body": {
