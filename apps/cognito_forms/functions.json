@@ -35,6 +35,7 @@
                             "description": "Number of forms to skip before starting to collect the result set."
                         }
                     },
+                    "required": [],
                     "visible": ["filter", "orderby", "top", "skip"],
                     "additionalProperties": false
                 }
@@ -53,7 +54,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "POST",
-            "path": "/forms/1/entries",
+            "path": "/forms/{formId}/entries",
             "server_url": "https://www.cognitoforms.com/api"
         },
         "parameters": {
@@ -82,7 +83,7 @@
                             "default": "application/json"
                         }
                     },
-                    "required": ["Content-Type"],
+                    "required": [],
                     "visible": [],
                     "additionalProperties": false
                 },
@@ -155,7 +156,7 @@
                             "default": "application/json"
                         }
                     },
-                    "required": ["Content-Type"],
+                    "required": [],
                     "visible": [],
                     "additionalProperties": false
                 }
@@ -207,7 +208,7 @@
                             "default": "application/json"
                         }
                     },
-                    "required": ["Content-Type"],
+                    "required": [],
                     "visible": [],
                     "additionalProperties": false
                 }
@@ -259,7 +260,7 @@
                             "default": "application/json"
                         }
                     },
-                    "required": ["Content-Type"],
+                    "required": [],
                     "visible": [],
                     "additionalProperties": false
                 },
