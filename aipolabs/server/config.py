@@ -74,10 +74,3 @@ DEV_PORTAL_URL = check_and_get_env_variable("SERVER_DEV_PORTAL_URL")
 # LOGFIRE
 LOGFIRE_WRITE_TOKEN = check_and_get_env_variable("SERVER_LOGFIRE_WRITE_TOKEN")
 LOGFIRE_READ_TOKEN = check_and_get_env_variable("SERVER_LOGFIRE_READ_TOKEN")
-
-# AWS
-AWS_REGION = check_and_get_env_variable("SERVER_AWS_REGION")
-AWS_ENDPOINT_URL = check_and_get_env_variable("SERVER_AWS_ENDPOINT_URL")
-
-# SECRETS MANAGER
-SECRETS_MANAGER_KEK_ARN = check_and_get_env_variable("SERVER_SECRETS_MANAGER_KEK_ARN")

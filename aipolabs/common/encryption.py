@@ -10,7 +10,7 @@ from aws_cryptographic_material_providers.mpl.models import CreateAwsKmsKeyringI
 from aws_cryptographic_material_providers.mpl.references import IKeyring  # type: ignore
 from aws_encryption_sdk import CommitmentPolicy
 
-from aipolabs.server import config
+from aipolabs.common import config
 
 client = aws_encryption_sdk.EncryptionSDKClient(
     commitment_policy=CommitmentPolicy.REQUIRE_ENCRYPT_REQUIRE_DECRYPT
@@ -28,7 +28,7 @@ mat_prov: AwsCryptographicMaterialProviders = AwsCryptographicMaterialProviders(
 )
 
 keyring_input: CreateAwsKmsKeyringInput = CreateAwsKmsKeyringInput(
-    kms_key_id=config.SECRETS_MANAGER_KEK_ARN,
+    kms_key_id=config.KEY_ENCRYPTION_KEY_ARN,
     kms_client=kms_client,
 )
 
