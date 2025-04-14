@@ -128,8 +128,8 @@
                             "description": "User authentication signature, required when AK is set for SN verification"
                         }
                     },
-                    "required": ["origin", "destination", "timestamp"],
-                    "visible": ["origin", "destination", "waypoints", "coord_type", "tactics", "alternatives", "timestamp", "origin_uid", "destination_uid", "plate_number", "gps_direction", "radius", "speed", "walkinfo", "steps_info", "sn", "cartype", "ret_coordtype", "output"],
+                    "required": ["origin", "destination"],
+                    "visible": ["origin", "destination", "waypoints", "coord_type", "tactics", "alternatives", "timestamp", "origin_uid", "destination_uid", "plate_number", "gps_direction", "radius", "speed", "walkinfo", "steps_info", "cartype", "ret_coordtype", "output"],
                     "additionalProperties": false
                 }
             },
@@ -215,8 +215,8 @@
                             "description": "User authentication signature, required when AK is set for SN verification"
                         }
                     },
-                    "required": ["origin", "destination","timestamp"],
-                    "visible": ["origin", "destination", "coord_type", "riding_type", "timestamp", "origin_uid", "destination_uid", "ret_coordtype", "road_prefer", "output", "sn"],
+                    "required": ["origin", "destination"],
+                    "visible": ["origin", "destination", "coord_type", "riding_type", "timestamp", "origin_uid", "destination_uid", "ret_coordtype", "road_prefer", "output"],
                     "additionalProperties": false
                 }
             },
@@ -293,8 +293,8 @@
                             "description": "User authentication signature, required when AK is set for SN verification"
                         }
                     },
-                    "required": ["origin", "destination", "timestamp"],
-                    "visible": ["origin", "destination", "coord_type", "steps_info", "timestamp", "origin_uid", "destination_uid", "ret_coordtype", "output", "sn"],
+                    "required": ["origin", "destination"],
+                    "visible": ["origin", "destination", "coord_type", "steps_info", "timestamp", "origin_uid", "destination_uid", "ret_coordtype", "output"],
                     "additionalProperties": false
                 }
             },
@@ -411,8 +411,8 @@
                             "description": "User authentication signature, required when AK is set for SN verification"
                         }
                     },
-                    "required": ["origin", "destination", "timestamp"],
-                    "visible": ["origin", "destination", "coord_type", "departure_date", "departure_time", "tactics_incity", "timestamp", "origin_uid", "destination_uid", "ret_coordtype", "tactics_intercity", "trans_type_intercity", "steps_info", "output", "page_size", "page_index", "callback", "sn"],
+                    "required": ["origin", "destination"],
+                    "visible": ["origin", "destination", "coord_type", "departure_date", "departure_time", "tactics_incity", "timestamp", "origin_uid", "destination_uid", "ret_coordtype", "tactics_intercity", "trans_type_intercity", "steps_info", "output", "page_size", "page_index", "callback"],
                     "additionalProperties": false
                 }
             },
@@ -488,7 +488,7 @@
                         }
                     },
                     "required": ["origins", "destinations"],
-                    "visible": ["origins", "destinations", "tactics", "riding_type", "coord_type", "ret_straight_dist", "timestamp", "output", "sn"],
+                    "visible": ["origins", "destinations", "tactics", "riding_type", "coord_type", "ret_straight_dist", "timestamp", "output"],
                     "additionalProperties": false
                 }
             },
