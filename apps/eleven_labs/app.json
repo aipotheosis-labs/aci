@@ -13,12 +13,7 @@
         }
     },
     "default_security_credentials_by_scheme": {},
-    "categories": [
-        "text-to-speech",
-        "voice",
-        "audio",
-        "ai"
-    ],
+    "categories": ["text-to-speech", "voice", "audio", "ai"],
     "visibility": "public",
     "active": true
 }
