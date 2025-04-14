@@ -1,7 +1,7 @@
 {
     "name": "SUPABASE",
     "display_name": "Supabase API",
-    "logo": "https://example.com/supabase-logo.svg",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/supabase.svg",
     "provider": "Supabase Inc.",
     "version": "aipolabs_0.0.1",
     "description": "Supabase is an open-source Firebase alternative providing real-time databases, authentication, and more.",
