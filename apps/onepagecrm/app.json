@@ -1,0 +1,23 @@
+{
+    "name": "ONEPAGECRM",
+    "display_name": "OnePageCRM",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/onepagecrm.svg",
+    "provider": "OnePageCRM",
+    "version": "1.0.0",
+    "description": "OnePageCRM API for managing contacts, sales actions, and customer relationship management.",
+    "security_schemes": {
+        "api_key": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Basic"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "crm",
+        "sales",
+        "contacts"
+    ],
+    "visibility": "public",
+    "active": true
+}

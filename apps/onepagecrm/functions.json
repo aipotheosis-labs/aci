@@ -1,0 +1,286 @@
+[
+    {
+        "name": "ONEPAGECRM__GET_BOOTSTRAP",
+        "description": "Get useful information about the logged API user's account",
+        "tags": ["account", "info", "bootstrap"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/bootstrap",
+            "server_url": "https://app.onepagecrm.com/api/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        },
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type",
+                        "accept"
+                    ],
+                    "visible": []
+                }
+            },
+            "required": [
+                "header"
+            ],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ONEPAGECRM__CHANGE_AUTH_KEY",
+        "description": "Invalidate the current API key and return a new API key",
+        "tags": ["auth", "security", "api_key"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/change_auth_key",
+            "server_url": "https://app.onepagecrm.com/api/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        },
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type",
+                        "accept"
+                    ],
+                    "visible": []
+                }
+            },
+            "required": [
+                "header"
+            ],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ONEPAGECRM__LIST_USERS",
+        "description": "Get the list of users for the logged API user's account",
+        "tags": ["users", "list", "account"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users",
+            "server_url": "https://app.onepagecrm.com/api/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        },
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type",
+                        "accept"
+                    ],
+                    "visible": []
+                }
+            },
+            "required": [
+                "header"
+            ],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ONEPAGECRM__GET_USER",
+        "description": "Get details of a specific user",
+        "tags": ["users", "details", "account"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users/{user_id}",
+            "server_url": "https://app.onepagecrm.com/api/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        },
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type",
+                        "accept"
+                    ],
+                    "visible": []
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "user_id": {
+                            "type": "string",
+                            "description": "ID of the user to retrieve"
+                        }
+                    },
+                    "required": ["user_id"],
+                    "visible": ["user_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ONEPAGECRM__UPDATE_USER",
+        "description": "Update a specific user's information",
+        "tags": ["users", "update", "account"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/users/{user_id}",
+            "server_url": "https://app.onepagecrm.com/api/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        },
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type",
+                        "accept"
+                    ],
+                    "visible": []
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "user_id": {
+                            "type": "string",
+                            "description": "ID of the user to retrieve"
+                        }
+                    },
+                    "required": ["user_id"],
+                    "visible": ["user_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "User update parameters. Only the following fields may be edited through the API",
+                    "properties": {
+                        "first_name": {
+                            "type": "string",
+                            "description": "First name of the user"
+                        },
+                        "last_name": {
+                            "type": "string",
+                            "description": "Last name of the user"
+                        },
+                        "company_name": {
+                            "type": "string",
+                            "description": "Company name associated with the user"
+                        },
+                        "bcc_email": {
+                            "type": "string",
+                            "description": "Email BCC setting (true/false as string)"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["first_name", "last_name", "company_name", "bcc_email"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    }
+]
