@@ -7,8 +7,8 @@
   "description": "Navigate your world faster and easier with Google Maps. Over 220 countries and territories mapped and hundreds of millions of businesses and places on the map. Get real-time GPS navigation, traffic, and transit info, and find what you need by getting the latest information on businesses, including grocery stores, pharmacies and other important places.",
   "security_schemes": {
     "api_key": {
-      "location": "header",
-      "name": "X-Goog-Api-Key",
+      "location": "query",
+      "name": "key",
       "prefix": null
     }
   },

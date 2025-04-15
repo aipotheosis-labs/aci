@@ -22,10 +22,6 @@
           "type": "object",
           "description": "Query parameters",
           "properties": {
-            "key": {
-              "type": "string",
-              "description": "Your application's API key. This key identifies your application for quota management."
-            },
             "query": {
               "type": "string",
               "description": "The text string to search for (e.g. 'restaurants in Sydney' or 'shops at 123 Main St'). Google recommends using Place Autocomplete instead of text search when possible."
@@ -167,11 +163,9 @@
             }
           },
           "required": [
-            "key",
             "query"
           ],
           "visible": [
-            "key",
             "query",
             "language",
             "location",
@@ -190,5 +184,194 @@
       ],
       "additionalProperties": false
     }
+  },
+  {
+  "name": "GOOGLE_MAPS__GET_DIRECTIONS",
+  "description": "Get walking directions between two locations using Google Maps API",
+  "tags": ["google-maps", "directions", "navigation"],
+  "visibility": "public",
+  "active": true,
+  "protocol": "rest",
+  "protocol_data": {
+    "method": "GET",
+    "path": "/maps/api/directions/json",
+    "server_url": "https://maps.googleapis.com"
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "object",
+        "properties": {
+          "origin": {
+            "type": "string",
+            "description": "Starting point address or coordinates",
+            "example": "Tokyo Station"
+          },
+          "destination": {
+            "type": "string",
+            "description": "End point address or coordinates",
+            "example": "Sensoji Temple"
+          },
+          "mode": {
+            "type": "string",
+            "enum": ["walking", "driving", "bicycling", "transit"],
+            "default": "walking",
+            "description": "Travel mode"
+          }
+        },
+        "required": ["origin", "destination"],
+        "visible": ["origin", "destination", "mode"],
+        "additionalProperties": false
+      }
+    },
+    "required": ["query"],
+    "visible": ["query"],
+    "additionalProperties": false
   }
+},
+  {
+  "name": "GOOGLE_MAPS__REVERSE_GEOCODE",
+  "description": "Get address information from latitude/longitude coordinates using Google Maps Geocoding API",
+  "tags": ["google-maps", "geocoding", "coordinates"],
+  "visibility": "public",
+  "active": true,
+  "protocol": "rest",
+  "protocol_data": {
+    "method": "GET",
+    "path": "/maps/api/geocode/json",
+    "server_url": "https://maps.googleapis.com"
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "object",
+        "properties": {
+          "latlng": {
+            "type": "string",
+            "description": "Latitude and longitude coordinates (comma-separated)",
+            "example": "48.8584,2.2945",
+            "pattern": "^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?),[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)$"
+          },
+          "language": {
+            "type": "string",
+            "description": "Language for results (e.g., 'en', 'fr')",
+            "default": "en"
+          },
+          "result_type": {
+            "type": "string",
+            "description": "Filter by address type (e.g., 'street_address', 'postal_code')"
+          }
+        },
+        "required": ["latlng"],
+        "visible": ["latlng", "language"],
+        "additionalProperties": false
+      }
+    },
+    "required": ["query"],
+    "visible": ["query"],
+    "additionalProperties": false
+  }
+},
+  {
+  "name": "GOOGLE_MAPS__GET_STATIC_MAP",
+  "description": "Generate a static map image using Google Maps Static API",
+  "tags": ["google-maps", "static-map", "visualization"],
+  "visibility": "public",
+  "active": true,
+  "protocol": "rest",
+  "protocol_data": {
+    "method": "GET",
+    "path": "/maps/api/staticmap",
+    "server_url": "https://maps.googleapis.com"
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "object",
+        "properties": {
+          "center": {
+            "type": "string",
+            "description": "Center point coordinates (lat,lng)",
+            "example": "40.7128,-74.0060",
+            "pattern": "^[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?),[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)$"
+          },
+          "zoom": {
+            "type": "integer",
+            "description": "Zoom level (0-21)",
+            "minimum": 0,
+            "maximum": 21,
+            "default": 13
+          },
+          "size": {
+            "type": "string",
+            "description": "Image dimensions in pixels (widthxheight)",
+            "example": "600x300",
+            "pattern": "^\\d+x\\d+$"
+          },
+          "markers": {
+            "type": "string",
+            "description": "Marker style and locations",
+            "example": "color:red|40.7128,-74.0060"
+          },
+          "maptype": {
+            "type": "string",
+            "enum": ["roadmap", "satellite", "hybrid", "terrain"],
+            "default": "roadmap",
+            "description": "Map style type"
+          },
+          "scale": {
+            "type": "integer",
+            "enum": [1, 2, 4],
+            "default": 1,
+            "description": "Scale factor for high-DPI devices"
+          }
+        },
+        "required": ["center", "size"],
+        "visible": ["center", "zoom", "size", "markers"],
+        "additionalProperties": false
+      }
+    },
+    "required": ["query"],
+    "visible": ["query"],
+    "additionalProperties": false
+  }
+},
+  {
+  "name": "GOOGLE_MAPS__GET_ELEVATION",
+  "description": "Retrieve elevation data for specific locations using Google Maps Elevation API",
+  "tags": ["google-maps", "elevation", "topography"],
+  "visibility": "public",
+  "active": true,
+  "protocol": "rest",
+  "protocol_data": {
+    "method": "GET",
+    "path": "/maps/api/elevation/json",
+    "server_url": "https://maps.googleapis.com"
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "object",
+        "properties": {
+          "locations": {
+            "type": "string",
+            "description": "Pipe-separated latitude/longitude coordinate pairs",
+            "example": "35.68,139.76|40.71,-74.01",
+            "pattern": "^([-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?),[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?)(\\|[-+]?([1-8]?\\d(\\.\\d+)?|90(\\.0+)?),[-+]?(180(\\.0+)?|((1[0-7]\\d)|([1-9]?\\d))(\\.\\d+)?))*)$"
+          }
+        },
+        "required": ["locations"],
+        "visible": ["locations"],
+        "additionalProperties": false
+      }
+    },
+    "required": ["query"],
+    "visible": ["query"],
+    "additionalProperties": false
+  }
+}
 ]
