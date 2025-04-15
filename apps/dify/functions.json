@@ -36,11 +36,38 @@
                     "properties": {
                         "inputs": {
                             "type": "object",
-                            "description": "Inputs for the chat message",
-                            "properties": {},
+                            "description": "允许传入 App 定义的各变量值。inputs 参数包含了多组键值对（Key/Value pairs），每组的键对应一个特定变量，每组的值则是该变量的具体值。默认 {}",
+                            "properties": {
+                                "user_location": {
+                                    "type": "string",
+                                    "description": "用户的地理位置信息",
+                                    "example": "New York"
+                                },
+                                "device_type": {
+                                    "type": "string",
+                                    "description": "用户使用的设备类型",
+                                    "example": "mobile"
+                                },
+                                "preferred_language": {
+                                    "type": "string",
+                                    "description": "用户偏好的语言",
+                                    "example": "English"
+                                },
+                                "user_preference": {
+                                    "type": "string",
+                                    "description": "用户的偏好设置",
+                                    "example": "detailed specs"
+                                }
+                            },
                             "required": [],
-                            "visible": [],
-                            "additionalProperties": true
+                            "visible": ["user_location", "device_type", "preferred_language", "user_preference"],
+                            "additionalProperties": true,
+                            "example": {
+                                "user_location": "New York",
+                                "device_type": "mobile",
+                                "preferred_language": "English",
+                                "user_preference": "detailed specs"
+                            }
                         },
                         "query": {
                             "type": "string",
@@ -93,7 +120,7 @@
                         }
                     },
                     "required": ["query", "user"],
-                    "visible": ["query", "user", "response_mode", "conversation_id", "files", "auto_generate_name"],
+                    "visible": ["query", "user", "response_mode", "conversation_id", "files", "auto_generate_name", "inputs"],
                     "additionalProperties": false
                 }
             },
@@ -311,7 +338,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "DELETE",
-            "path": "/conversations/{conversation_id}",
+            "path": "/conversations/:{conversation_id}",
             "server_url": "https://api.dify.ai/v1"
         },
         "parameters": {
@@ -430,6 +457,81 @@
             "visible": [
                 "query"
             ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "DIFY__UPDATE_CONVERSATION_NAME",
+        "description": "Update the name of a specific conversation",
+        "tags": ["conversation", "name", "update"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/conversations/{conversation_id}/name",
+            "server_url": "https://api.dify.ai/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "conversation_id": {
+                            "type": "string",
+                            "description": "ID of the conversation to update",
+                            "example": "1b12a04e-a4e9-47a1-869c-eb91da7e545a"
+                        }
+                    },
+                    "required": ["conversation_id"],
+                    "visible": ["conversation_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Parameters for updating the conversation name",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "New name for the conversation",
+                            "example": "test"
+                        },
+                        "auto_generate": {
+                            "type": "boolean",
+                            "description": "Whether to automatically generate the name",
+                            "default": true
+                        },
+                        "user": {
+                            "type": "string",
+                            "description": "Unique identifier for the user",
+                            "example": "abc-123"
+                        }
+                    },
+                    "required": ["user"],
+                    "visible": ["name", "auto_generate", "user"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body", "path"],
+            "visible": ["body", "path"],
             "additionalProperties": false
         }
     }
