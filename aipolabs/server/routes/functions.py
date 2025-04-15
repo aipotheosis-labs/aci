@@ -1,7 +1,8 @@
-from typing import Annotated
+from typing import Annotated, List
 
 from fastapi import APIRouter, Depends, Query
 from openai import OpenAI
+from sqlalchemy.orm import Session
 
 from aipolabs.common import processor
 from aipolabs.common.db import crud
@@ -118,7 +119,7 @@ async def search_functions(
         extra={"function_names": [function.name for function in functions]},
     )
     function_definitions = [
-        get_function_definition(function, query_params.format) for function in functions
+        format_function_definition(function, query_params.format) for function in functions
     ]
 
     return function_definitions
@@ -166,7 +167,7 @@ async def get_function_definition(
         )
         raise FunctionNotFound(f"function={function_name} not found")
 
-    function_definition = get_function_definition(function, format)
+    function_definition = format_function_definition(function, format)
 
     logger.info(
         "function definition to return",
@@ -213,7 +214,8 @@ async def execute(
     return result
 
 
-def get_function_definition(
+# TODO: move to agent/tools.py or a util function
+def format_function_definition(
     function: Function, format: FunctionDefinitionFormat
 ) -> BasicFunctionDefinition | OpenAIFunctionDefinition | OpenAIResponsesFunctionDefinition | AnthropicFunctionDefinition:
     match format:
@@ -230,9 +232,15 @@ def get_function_definition(
                     parameters=processor.filter_visible_properties(function.parameters),
                 )
             )
-        
         case FunctionDefinitionFormat.OPENAI_RESPONSES:
-            return OpenAIResponsesFunctionDefinition.from_function(function)
+            # Create a properly formatted OpenAIResponsesFunctionDefinition
+            # This format is used by the OpenAI chat completions API
+            return OpenAIResponsesFunctionDefinition(
+                type="function",
+                name=function.name,
+                description=function.description,
+                parameters=processor.filter_visible_properties(function.parameters)
+            )
         case FunctionDefinitionFormat.ANTHROPIC:
             return AnthropicFunctionDefinition(
                 name=function.name,
@@ -241,7 +249,6 @@ def get_function_definition(
             )
         case _:
             raise InvalidFunctionDefinitionFormat(f"Invalid format: {format}")
-
 
 async def execute_function(
     db_session,
@@ -437,4 +444,32 @@ async def execute_function(
             },
         )
     
-    return execution_result 
+    return execution_result
+
+
+async def get_functions_definitions(
+    db_session: Session,
+    function_names: List[str],
+    format: FunctionDefinitionFormat = FunctionDefinitionFormat.BASIC,
+) -> List[BasicFunctionDefinition | OpenAIFunctionDefinition | OpenAIResponsesFunctionDefinition | AnthropicFunctionDefinition]:
+    """
+    Get function definitions for a list of function names.
+    
+    Args:
+        db_session: Database session
+        function_names: List of function names to get definitions for
+        format: Format of the function definition to return
+        
+    Returns:
+        List of function definitions in the requested format
+    """
+    # Query functions by name
+    functions = db_session.query(Function).filter(Function.name.in_(function_names)).all()
+    
+    # Get function definitions
+    function_definitions = []
+    for function in functions:
+        function_definition = format_function_definition(function, format)
+        function_definitions.append(function_definition)
+    
+    return function_definitions

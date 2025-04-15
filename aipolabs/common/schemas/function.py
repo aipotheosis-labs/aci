@@ -186,19 +186,11 @@ class OpenAIFunctionDefinition(BaseModel):
     function: OpenAIFunction
 
 
-class OpenAIResponsesFunctionDefinition(OpenAIFunction):
+class OpenAIResponsesFunctionDefinition(BaseModel):
     type: Literal["function"] = "function"
-
-    @classmethod
-    def from_function(cls, function: Any) -> "OpenAIResponsesFunctionDefinition":
-        """Helper method to create instance from a function object"""
-        return cls(
-            name=function.name,
-            description=function.description,
-            parameters=function.parameters,
-            strict=getattr(function, 'strict', None)  # Safely get strict attribute, default to None if missing
-        )
-
+    name: str
+    description: str
+    parameters: dict
 
 class AnthropicFunctionDefinition(BaseModel):
     name: str
