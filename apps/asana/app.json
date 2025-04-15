@@ -1,7 +1,7 @@
 {
     "name": "ASANA",
     "display_name": "ASANA",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/asana.svg",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/asana.png",
     "provider": "ASANA, Inc.",
     "version": "aipolabs_0.0.1",
     "description": "Integration with ASANA Support API to manage users, tickets, and organizations.",
