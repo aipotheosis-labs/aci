@@ -1,0 +1,23 @@
+{
+    "name": "FEISHU",
+    "display_name": "Feishu",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/main/apps/feishu.png",
+    "provider": "ByteDance",
+    "version": "1.0.0",
+    "description": "Feishu (Lark) is a suite of workplace collaboration tools developed by ByteDance. It provides APIs for messaging, document collaboration, and workplace automation.",
+    "security_schemes": {
+        "api_key": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "communication",
+        "collaboration",
+        "messaging"
+    ],
+    "visibility": "public",
+    "active": true
+}
