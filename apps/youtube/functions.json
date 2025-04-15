@@ -1,0 +1,348 @@
+[
+    {
+        "name": "YOUTUBE__SEARCH_VIDEOS",
+        "description": "Search for YouTube videos using various criteria such as keywords, channel ID, or category.",
+        "tags": [
+            "youtube",
+            "video",
+            "search"    
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/search",
+            "server_url": "https://www.googleapis.com/youtube/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the YouTube search request",
+                    "properties": {
+                        "part": {
+                            "type": "string",
+                            "description": "The part parameter specifies a comma-separated list of resource properties that the API response will include.",
+                            "default": "snippet"
+                        },
+                        "q": {
+                            "type": "string",
+                            "description": "The q parameter specifies the search query to search for resources."
+                        },
+                        "maxResults": {
+                            "type": "integer",
+                            "description": "The maxResults parameter specifies the maximum number of items that should be returned in the result set.",
+                            "default": 5,
+                            "minimum": 1,
+                            "maximum": 50
+                        },
+                        "type": {
+                            "type": "string",
+                            "description": "The type parameter restricts a search query to only retrieve a particular type of resource.",
+                            "default": "video",
+                            "enum": [
+                                "video",
+                                "channel",
+                                "playlist"
+                            ]
+                        },
+                        "videoDefinition": {
+                            "type": "string",
+                            "description": "The videoDefinition parameter lets you restrict a search to only include either high definition or standard definition videos.",
+                            "enum": [
+                                "high",
+                                "standard",
+                                "any"
+                            ]
+                        },
+                        "videoCategoryId": {
+                            "type": "string",
+                            "description": "The videoCategoryId parameter filters video search results based on their category."
+                        },
+                        "order": {
+                            "type": "string",
+                            "description": "The order parameter specifies the method that will be used to order resources in the API response.",
+                            "default": "relevance",
+                            "enum": [
+                                "date",
+                                "rating",
+                                "relevance",
+                                "title",
+                                "videoCount",
+                                "viewCount"
+                            ]
+                        },
+                        "channelId": {
+                            "type": "string",
+                            "description": "The channelId parameter indicates that the API response should only contain resources created by the channel."
+                        }
+                    },
+                    "required": [
+                        "part"
+                    ],
+                    "visible": [
+                        "part",
+                        "q",
+                        "maxResults",
+                        "type",
+                        "videoDefinition",
+                        "videoCategoryId",
+                        "order",
+                        "channelId"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "query"
+            ],
+            "visible": [
+                "query"
+            ]
+        }
+    },
+    {
+        "name": "YOUTUBE__GET_VIDEO_DETAILS",
+        "description": "Get detailed information about a specific YouTube video by ID.",
+        "tags": [
+            "youtube",
+            "video",
+            "details"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/videos",
+            "server_url": "https://www.googleapis.com/youtube/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the YouTube video details request",
+                    "properties": {
+                        "part": {
+                            "type": "string",
+                            "description": "The part parameter specifies a comma-separated list of resource properties that the API response will include.",
+                            "default": "snippet,contentDetails,statistics"
+                        },
+                        "id": {
+                            "type": "string",
+                            "description": "The id parameter specifies a comma-separated list of YouTube video IDs."
+                        }
+                    },
+                    "required": [
+                        "part",
+                        "id"
+                    ],
+                    "visible": [
+                        "part",
+                        "id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "query"
+            ],
+            "visible": [
+                "query"
+            ]
+        }
+    },
+    {
+        "name": "YOUTUBE__RATE_VIDEO",
+        "description": "Add a like or dislike rating to a video or remove a rating from a video.",
+        "tags": [
+            "youtube",
+            "video",
+            "rating"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/videos/rate",
+            "server_url": "https://www.googleapis.com/youtube/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the YouTube video rating request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The id parameter specifies the YouTube video ID of the video that is being rated or having its rating removed."
+                        },
+                        "rating": {
+                            "type": "string",
+                            "description": "Specifies the rating to record.",
+                            "enum": [
+                                "like",
+                                "dislike",
+                                "none"
+                            ],
+                            "default": "like"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "rating"
+                    ],
+                    "visible": [
+                        "id",
+                        "rating"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "query"
+            ],
+            "visible": [
+                "query"
+            ]
+        }
+    },
+    {
+        "name": "YOUTUBE__LIST_COMMENTS",
+        "description": "Retrieve comments for a specific YouTube video.",
+        "tags": [
+            "youtube",
+            "video",
+            "comments"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/commentThreads",
+            "server_url": "https://www.googleapis.com/youtube/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the YouTube comments request",
+                    "properties": {
+                        "part": {
+                            "type": "string",
+                            "description": "The part parameter specifies a comma-separated list of resource properties that the API response will include.",
+                            "default": "snippet"
+                        },
+                        "videoId": {
+                            "type": "string",
+                            "description": "The videoId parameter specifies the YouTube video ID of the video for which the comment threads are to be retrieved."
+                        },
+                        "maxResults": {
+                            "type": "integer",
+                            "description": "The maxResults parameter specifies the maximum number of items that should be returned in the result set.",
+                            "default": 20,
+                            "minimum": 1,
+                            "maximum": 100
+                        },
+                        "order": {
+                            "type": "string",
+                            "description": "The order parameter specifies the order in which the API response should list comment threads.",
+                            "default": "relevance",
+                            "enum": [
+                                "time",
+                                "relevance"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "part",
+                        "videoId"
+                    ],
+                    "visible": [
+                        "part",
+                        "videoId",
+                        "maxResults",
+                        "order"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "query"
+            ],
+            "visible": [
+                "query"
+            ]
+        }
+    },
+    {
+        "name": "YOUTUBE__GET_VIDEO_CATEGORIES",
+        "description": "Retrieve a list of video categories that can be associated with YouTube videos.",
+        "tags": [
+            "youtube",
+            "video",
+            "categories"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/videoCategories",
+            "server_url": "https://www.googleapis.com/youtube/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the YouTube video categories request",
+                    "properties": {
+                        "part": {
+                            "type": "string",
+                            "description": "The part parameter specifies a comma-separated list of resource properties that the API response will include.",
+                            "default": "snippet"
+                        },
+                        "regionCode": {
+                            "type": "string",
+                            "description": "The regionCode parameter instructs the API to return the list of video categories available in the specified country.",
+                            "default": "US"
+                        },
+                        "hl": {
+                            "type": "string",
+                            "description": "The hl parameter specifies the language that should be used for text values in the API response.",
+                            "default": "en_US"
+                        }
+                    },
+                    "required": [
+                        "part"
+                    ],
+                    "visible": [
+                        "part",
+                        "regionCode",
+                        "hl"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "query"
+            ],
+            "visible": [
+                "query"
+            ]
+        }
+    }
+]
