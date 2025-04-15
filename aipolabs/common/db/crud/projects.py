@@ -10,6 +10,7 @@ from uuid import UUID
 from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
 
+from aipolabs.common import encryption
 from aipolabs.common.db.sql_models import Agent, APIKey, Project
 from aipolabs.common.enums import APIKeyStatus, Visibility
 from aipolabs.common.logging_setup import get_logger
@@ -131,8 +132,11 @@ def create_agent(
     )
     db_session.add(agent)
 
+    key = secrets.token_hex(32)
+    key_hmac = encryption.hmac_sha256(key)
+
     # Create the API key for the agent
-    api_key = APIKey(key=secrets.token_hex(32), agent_id=agent.id, status=APIKeyStatus.ACTIVE)
+    api_key = APIKey(key=key, key_hmac=key_hmac, agent_id=agent.id, status=APIKeyStatus.ACTIVE)
     db_session.add(api_key)
 
     db_session.flush()
@@ -200,7 +204,8 @@ def get_api_key_by_agent_id(db_session: Session, agent_id: UUID) -> APIKey | Non
 
 
 def get_api_key(db_session: Session, key: str) -> APIKey | None:
-    return db_session.execute(select(APIKey).filter_by(key=key)).scalar_one_or_none()
+    key_hmac = encryption.hmac_sha256(key)
+    return db_session.execute(select(APIKey).filter_by(key_hmac=key_hmac)).scalar_one_or_none()
 
 
 def get_all_api_key_ids_for_project(db_session: Session, project_id: UUID) -> list[UUID]:

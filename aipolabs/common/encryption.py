@@ -1,3 +1,5 @@
+import hashlib
+import hmac
 from typing import cast
 
 import aws_encryption_sdk  # type: ignore
@@ -45,3 +47,9 @@ def decrypt(cipher_data: bytes) -> bytes:
     # TODO: ignore decryptor_header for now
     my_plaintext, _ = client.decrypt(source=cipher_data, keyring=kms_keyring)
     return cast(bytes, my_plaintext)
+
+
+def hmac_sha256(message: str) -> str:
+    return hmac.new(
+        config.API_KEY_HASHING_SECRET.encode("utf-8"), message.encode("utf-8"), hashlib.sha256
+    ).hexdigest()

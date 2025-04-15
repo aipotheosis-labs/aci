@@ -37,6 +37,7 @@ from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column, relationship
 
+from aipolabs.common.db.custom_sql_types import Key
 from aipolabs.common.enums import (
     APIKeyStatus,
     Protocol,
@@ -165,8 +166,9 @@ class APIKey(Base):
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
     )
-    # "key" is the actual API key string that the user will use to authenticate
-    key: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False, unique=True)
+    # "key" is the encrypted actual API key string that the user will use to authenticate
+    key: Mapped[str] = mapped_column(Key(), nullable=False, unique=True)
+    key_hmac: Mapped[str] = mapped_column(String(64), nullable=False)
     agent_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("agents.id"), unique=True, nullable=False
     )
