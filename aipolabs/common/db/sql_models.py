@@ -168,7 +168,7 @@ class APIKey(Base):
     )
     # "key" is the encrypted actual API key string that the user will use to authenticate
     key: Mapped[str] = mapped_column(Key(), nullable=False, unique=True)
-    key_hmac: Mapped[str] = mapped_column(String(64), nullable=False)
+    key_hmac: Mapped[str] = mapped_column(String(64), nullable=False, unique=True)
     agent_id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), ForeignKey("agents.id"), unique=True, nullable=False
     )

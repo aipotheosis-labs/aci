@@ -5,12 +5,6 @@ from aipolabs.common import encryption
 
 
 class Key(TypeDecorator[str]):
-    """
-    Stores a string key as UTF-8 encoded bytes in the database.
-    This is useful for primary keys or indexed columns where direct string comparison
-    might be inefficient depending on the database collation.
-    """
-
     impl = LargeBinary
     cache_ok = True
 
