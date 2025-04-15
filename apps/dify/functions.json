@@ -44,38 +44,41 @@
                         },
                         "query": {
                             "type": "string",
-                            "description": "The query string"
+                            "description": "The query string to send to the chat",
+                            "example": "What is the weather today?"
                         },
                         "response_mode": {
                             "type": "string",
-                            "description": "Response mode",
+                            "description": "Response mode - 'streaming' returns chunks as they're generated, 'blocking' returns complete response",
                             "default": "streaming"
                         },
                         "conversation_id": {
                             "type": "string",
-                            "description": "Conversation ID"
+                            "description": "ID of the conversation to continue",
+                            "example": "conv_123456789"
                         },
                         "user": {
                             "type": "string",
-                            "description": "User ID"
+                            "description": "Unique identifier for the user",
+                            "example": "user_123456789"
                         },
                         "files": {
                             "type": "array",
-                            "description": "Files to be sent",
+                            "description": "Files to be sent with the message",
                             "items": {
                                 "type": "object",
                                 "properties": {
                                     "type": {
                                         "type": "string",
-                                        "description": "Type of the file"
+                                        "description": "Type of the file (e.g., 'image', 'document')"
                                     },
                                     "transfer_method": {
                                         "type": "string",
-                                        "description": "Transfer method"
+                                        "description": "Method used to transfer the file (e.g., 'remote_url', 'local_file')"
                                     },
                                     "url": {
                                         "type": "string",
-                                        "description": "URL of the file"
+                                        "description": "URL of the file if using remote_url transfer method"
                                     }
                                 },
                                 "required": ["type", "transfer_method", "url"],
@@ -130,13 +133,28 @@
                     ],
                     "visible": []
                 },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "task_id": {
+                            "type": "string",
+                            "description": "ID of the task to stop",
+                            "example": "task_123456789"
+                        }
+                    },
+                    "required": ["task_id"],
+                    "visible": ["task_id"],
+                    "additionalProperties": false
+                },
                 "body": {
                     "type": "object",
                     "description": "Parameters to stop the response",
                     "properties": {
                         "user": {
                             "type": "string",
-                            "description": "User ID"
+                            "description": "Unique identifier for the user",
+                            "example": "user_123456789"
                         }
                     },
                     "required": ["user"],
@@ -144,13 +162,8 @@
                     "additionalProperties": false
                 }
             },
-            "required": [
-                "header",
-                "body"
-            ],
-            "visible": [
-                "body"
-            ],
+            "required": ["header", "body", "path"],
+            "visible": ["body", "path"],
             "additionalProperties": false
         }
     },
