@@ -1,13 +1,65 @@
-[{
-  "name": "ROSSUM__GET_DOCUMENT",
-  "description": "Retrieve a specific document from Rossum by ID",
-  "tags": ["rossum", "document", "retrieval"],
+[
+    {
+        "name": "ROSSUM__GET_DOCUMENT",
+        "description": "Retrieve a specific document from Rossum by ID",
+        "tags": [
+            "rossum",
+            "document",
+            "retrieval"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/documents/{document_id}",
+            "server_url": "https://{domain}.rossum.app"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "document_id": {
+                            "type": "string",
+                            "description": "ID of the document to retrieve"
+                        },
+                        "domain": {
+                            "type": "string",
+                            "description": "Tenant domain name"
+                        }
+                    },
+                    "required": [
+                        "document_id",
+                        "domain"
+                    ],
+                    "visible": [
+                        "document_id",
+                        "domain"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+  "name": "ROSSUM__GET_QUEUES",
+  "description": "获取 Rossum 系统中的所有队列列表",
+  "tags": ["rossum", "queues", "retrieval"],
   "visibility": "public",
   "active": true,
   "protocol": "rest",
   "protocol_data": {
     "method": "GET",
-    "path": "/api/v1/documents/{document_id}",
+    "path": "/api/v1/queues",
     "server_url": "https://{domain}.rossum.app"
   },
   "parameters": {
@@ -16,17 +68,13 @@
       "path": {
         "type": "object",
         "properties": {
-          "document_id": {
-            "type": "string",
-            "description": "ID of the document to retrieve"
-          },
           "domain": {
             "type": "string",
             "description": "Tenant domain name"
           }
         },
-        "required": ["document_id", "domain"],
-        "visible": ["document_id", "domain"],
+        "required": ["domain"],
+        "visible": ["domain"],
         "additionalProperties": false
       }
     },
@@ -34,4 +82,57 @@
     "visible": ["path"],
     "additionalProperties": false
   }
-}]
+},
+    {
+  "name": "ROSSUM__LOGIN",
+  "description": "Authenticate with Rossum API using username and password credentials",
+  "tags": ["rossum", "authentication", "login"],
+  "visibility": "public",
+  "active": true,
+  "protocol": "rest",
+  "protocol_data": {
+    "method": "POST",
+    "path": "/api/v1/auth/login",
+    "server_url": "https://{domain}.rossum.app",
+    "content_type": "application/json"
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "path": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "string",
+            "description": "Tenant domain name (e.g. 'example')"
+          }
+        },
+        "required": ["domain"],
+        "visible": ["domain"],
+        "additionalProperties": false
+      },
+      "body": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "description": "Registered username/email for authentication"
+          },
+          "password": {
+            "type": "string",
+            "description": "Account password",
+            "writeOnly": true
+          }
+        },
+        "required": ["username", "password"],
+        "visible": ["username", "password"],
+        "additionalProperties": false
+      }
+    },
+    "required": ["path", "body"],
+    "visible": ["path", "body"],
+    "additionalProperties": false
+  }
+}
+
+]
