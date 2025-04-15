@@ -36,26 +36,26 @@
                     "properties": {
                         "inputs": {
                             "type": "object",
-                            "description": "允许传入 App 定义的各变量值。inputs 参数包含了多组键值对（Key/Value pairs），每组的键对应一个特定变量，每组的值则是该变量的具体值。默认 {}",
+                            "description": "Allows passing various variable values defined by the App. The inputs parameter contains multiple key/value pairs, where each key corresponds to a specific variable and each value is the specific value for that variable. Default {}",
                             "properties": {
                                 "user_location": {
                                     "type": "string",
-                                    "description": "用户的地理位置信息",
+                                    "description": "User's geographical location information",
                                     "example": "New York"
                                 },
                                 "device_type": {
                                     "type": "string",
-                                    "description": "用户使用的设备类型",
+                                    "description": "Type of device the user is using",
                                     "example": "mobile"
                                 },
                                 "preferred_language": {
                                     "type": "string",
-                                    "description": "用户偏好的语言",
+                                    "description": "User's preferred language",
                                     "example": "English"
                                 },
                                 "user_preference": {
                                     "type": "string",
-                                    "description": "用户的偏好设置",
+                                    "description": "User's preference settings",
                                     "example": "detailed specs"
                                 }
                             },
@@ -338,7 +338,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "DELETE",
-            "path": "/conversations/:{conversation_id}",
+            "path": "/conversations/{conversation_id}",
             "server_url": "https://api.dify.ai/v1"
         },
         "parameters": {
