@@ -1,0 +1,241 @@
+[
+    {
+        "name": "COIN_GECKO__GET_COINS_LIST",
+        "description": "Retrieves a list of all supported coins on CoinGecko, including their IDs, names, and symbols. Useful for obtaining coin IDs for use in other endpoints. By default, returns active coins; set 'include_platform' to true to include platform information.",
+        "tags": ["coingecko", "coins", "list"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/coins/list",
+            "server_url": "https://pro-api.coingecko.com/api/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "include_platform": {
+                            "type": "boolean",
+                            "description": "Flag to include platform information in the response. Set to true to include."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["include_platform"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "COIN_GECKO__GET_SIMPLE_PRICE",
+        "description": "Retrieves the current price of one or more cryptocurrencies in specified fiat or other currencies. Optionally includes market cap, 24h volume, 24h change, and last updated time.",
+        "tags": ["coingecko", "price", "simple"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/simple/price",
+            "server_url": "https://pro-api.coingecko.com/api/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "ids": {
+                            "type": "string",
+                            "description": "Comma-separated list of coin IDs (e.g., 'bitcoin,ethereum')."
+                        },
+                        "vs_currencies": {
+                            "type": "string",
+                            "description": "Comma-separated list of target currencies (e.g., 'usd,eur')."
+                        },
+                        "include_market_cap": {
+                            "type": "boolean",
+                            "description": "Include market cap data in the response."
+                        },
+                        "include_24hr_vol": {
+                            "type": "boolean",
+                            "description": "Include 24-hour trading volume data in the response."
+                        },
+                        "include_24hr_change": {
+                            "type": "boolean",
+                            "description": "Include 24-hour price change percentage data in the response."
+                        },
+                        "include_last_updated_at": {
+                            "type": "boolean",
+                            "description": "Include the last updated timestamp in the response."
+                        }
+                    },
+                    "required": ["ids", "vs_currencies"],
+                    "visible": [
+                        "ids",
+                        "vs_currencies",
+                        "include_market_cap",
+                        "include_24hr_vol",
+                        "include_24hr_change",
+                        "include_last_updated_at"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "COIN_GECKO__GET_COIN_MARKET_CHART",
+        "description": "Retrieves historical market data (price, market cap, 24h volume) for a specific coin over a given number of days. Data includes timestamps in UNIX format.",
+        "tags": ["coingecko", "market_chart", "historical_data"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/coins/{id}/market_chart",
+            "server_url": "https://pro-api.coingecko.com/api/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID of the coin (e.g., 'bitcoin')."
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "vs_currency": {
+                            "type": "string",
+                            "description": "The target currency of market data (e.g., 'usd')."
+                        },
+                        "days": {
+                            "type": "string",
+                            "description": "Data up to number of days ago (e.g., '1', '14', '30', 'max')."
+                        },
+                        "interval": {
+                            "type": "string",
+                            "description": "Data interval (e.g., 'daily', 'hourly')."
+                        }
+                    },
+                    "required": ["vs_currency", "days"],
+                    "visible": ["vs_currency", "days", "interval"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "query"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "COIN_GECKO__SEARCH",
+        "description": "Searches for coins, categories, exchanges (markets), and NFTs listed on CoinGecko. You may query by name or symbol.",
+        "tags": ["coingecko", "search", "coins", "categories", "exchanges", "nfts"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/search",
+            "server_url": "https://pro-api.coingecko.com/api/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "Search query string (e.g., 'bitcoin')."
+                        }
+                    },
+                    "required": ["query"],
+                    "visible": ["query"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "COIN_GECKO__GET_COIN_OHLC",
+        "description": "Retrieves the OHLC (Open, High, Low, Close) chart data for a specific coin over a given number of days. Data is returned in candlestick format.",
+        "tags": ["coingecko", "ohlc", "candlestick", "market_data"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/coins/{id}/ohlc",
+            "server_url": "https://pro-api.coingecko.com/api/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID of the coin (e.g., 'bitcoin')."
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "vs_currency": {
+                            "type": "string",
+                            "description": "The target currency of market data (e.g., 'usd')."
+                        },
+                        "days": {
+                            "type": "string",
+                            "description": "Data up to number of days ago (e.g., '1', '14', '30', 'max')."
+                        },
+                        "interval": {
+                            "type": "string",
+                            "description": "Data interval (e.g., 'daily', 'hourly')."
+                        }
+                    },
+                    "required": ["vs_currency", "days"],
+                    "visible": ["vs_currency", "days", "interval"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "query"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    }
+]
