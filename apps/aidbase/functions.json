@@ -195,11 +195,6 @@
             "type": "string",
             "description": "Content type accepted by the client.",
             "default": "application/json"
-        },
-        "Authorization": {
-            "type": "string",
-            "description": "Bearer token for authentication.",
-            "example": "Bearer absk-9U3AXS25JbP3_E00p6hqRra9GnZ1-SZW"
         }
     }
     },
@@ -261,7 +256,7 @@
     },
     {
         "name": "AIDBASE__DELETE_KNOWLEDGE",
-        "description": "Remove a knowledge item from a chatbot.  .",
+        "description": "Remove a knowledge item from a chatbot.",
         "tags": ["chatbot", "knowledge", "delete"],
         "visibility": "public",
         "active": true,
