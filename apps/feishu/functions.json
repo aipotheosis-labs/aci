@@ -343,13 +343,14 @@
                     "properties": {
                         "receive_id_type": {
                             "type": "string",
-                            "description": "Type of the receive_id. Options: open_id, user_id, union_id, email, chat_id",
+                            "description": "Type of the receive_id. Options: open_id, user_id, union_id, email, chat_id, thread_id",
                             "enum": [
                                 "open_id",
                                 "user_id",
                                 "union_id",
                                 "email",
-                                "chat_id"
+                                "chat_id",
+                                "thread_id"
                             ],
                             "default": "open_id",
                             "example": "open_id"
@@ -443,13 +444,14 @@
                     "properties": {
                         "receive_id_type": {
                             "type": "string",
-                            "description": "Type of the receive_id. Options: open_id, user_id, union_id, email, chat_id",
+                            "description": "Type of the receive_id. Options: open_id, user_id, union_id, email, chat_id, thread_id",
                             "enum": [
                                 "open_id",
                                 "user_id",
                                 "union_id",
                                 "email",
-                                "chat_id"
+                                "chat_id",
+                                "thread_id"
                             ],
                             "default": "open_id",
                             "example": "open_id"
