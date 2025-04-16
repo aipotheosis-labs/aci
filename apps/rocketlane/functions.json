@@ -1,0 +1,493 @@
+[
+    {
+        "name": "ROCKETLANE__GET_FIELD",
+        "description": "Get field details by ID from Rocketlane",
+        "tags": [
+            "fields",
+            "get"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/fields/{fieldId}",
+            "server_url": "https://api.rocketlane.com/api/1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+               "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "accept"
+                    ],
+                    "visible": []
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "fieldId": {
+                            "type": "integer",
+                            "format": "int64",
+                            "description": "The field's unique, system-generated identifier, which can be used to identify the field globally",
+                            "minimum": 0,
+                            "default": 1
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "fieldId"
+                    ],
+                    "visible": [
+                        "fieldId"
+                    ]
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "includeFields": {
+                            "type": "array",
+                            "description": "Specify which field properties should be returned in the response body. Use comma separated values. If left blank, default properties are returned.",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "includeAllFields": {
+                            "type": "boolean",
+                            "description": "Specify if all the field properties should be returned in the response body. If left blank, default field properties are returned.",
+                            "default": true
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [],
+                    "visible": [
+                        "includeFields",
+                        "includeAllFields"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path",
+                "query"
+            ]
+        }
+    },
+    {
+        "name": "ROCKETLANE__UPDATE_FIELD",
+        "description": "Update field details by ID in Rocketlane",
+        "tags": [
+            "fields",
+            "update"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/fields/{fieldId}",
+            "server_url": "https://api.rocketlane.com/api/1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        },
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type",
+                        "accept"
+                    ],
+                    "visible": []
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "fieldId": {
+                            "type": "integer",
+                            "format": "int64",
+                            "description": "The field's unique, system-generated identifier, which can be used to identify the field globally",
+                            "minimum": 0,
+                            "default": 1
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "fieldId"
+                    ],
+                    "visible": [
+                        "fieldId"
+                    ]
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "includeFields": {
+                            "type": "array",
+                            "description": "Specify which field properties should be returned in the response body. Use comma separated values. If left blank, default properties are returned.",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "includeAllFields": {
+                            "type": "boolean",
+                            "description": "Specify if all the field properties should be returned in the response body. If left blank, default field properties are returned.",
+                            "default": true
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [],
+                    "visible": [
+                        "includeFields",
+                        "includeAllFields"
+                    ]
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Body parameters for updating the field",
+                    "properties": {
+                        "fieldLabel": {
+                            "type": "string",
+                            "description": "The fieldLabel is the name of the field"
+                        },
+                        "fieldDescription": {
+                            "type": "string",
+                            "description": "The description of the field"
+                        },
+                        "enabled": {
+                            "type": "boolean",
+                            "description": "This depicts if the field is enabled or not. Only those fields which are enabled will reflect in the account.",
+                            "default": false
+                        },
+                        "private": {
+                            "type": "boolean",
+                            "description": "This depicts if the field is private or not.",
+                            "default": false
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "fieldLabel"
+                    ],
+                    "visible": [
+                        "fieldLabel",
+                        "fieldDescription",
+                        "enabled",
+                        "private"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "path",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "query",
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "ROCKETLANE__DELETE_FIELD",
+        "description": "Delete a field by ID from Rocketlane",
+        "tags": [
+            "fields",
+            "delete"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/fields/{fieldId}",
+            "server_url": "https://api.rocketlane.com/api/1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "accept"
+                    ],
+                    "visible": []
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "fieldId": {
+                            "type": "integer",
+                            "format": "int64",
+                            "description": "The field's unique, system-generated identifier, which can be used to identify the field globally",
+                            "minimum": 0,
+                            "default": 1
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "fieldId"
+                    ],
+                    "visible": [
+                        "fieldId"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ]
+        }
+    },
+    {
+        "name": "ROCKETLANE__ADD_FIELD_OPTION",
+        "description": "Add a new option to a field in Rocketlane",
+        "tags": [
+            "fields",
+            "options",
+            "add"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/fields/{fieldId}/add-option",
+            "server_url": "https://api.rocketlane.com/api/1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        },
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type",
+                        "accept"
+                    ],
+                    "visible": []
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "fieldId": {
+                            "type": "integer",
+                            "format": "int64",
+                            "description": "The field's unique, system-generated identifier, which can be used to identify the field globally",
+                            "minimum": 0,
+                            "default": 1
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "fieldId"
+                    ],
+                    "visible": [
+                        "fieldId"
+                    ]
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Body parameters for adding the field option",
+                    "properties": {
+                        "optionColor": {
+                            "type": "string",
+                            "description": "The optionColor reflects the color of the options for the single or multiple choice field",
+                            "enum": ["RED", "BLUE", "GREEN", "YELLOW", "PURPLE", "ORANGE"],
+                            "default": "RED"
+                        },
+                        "optionLabel": {
+                            "type": "string",
+                            "description": "The optionLabel reflects the name of the options for the single or multiple choice field"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "optionColor",
+                        "optionLabel"
+                    ],
+                    "visible": [
+                        "optionColor",
+                        "optionLabel"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "path",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "ROCKETLANE__UPDATE_FIELD_OPTION",
+        "description": "Update a SINGLE_CHOICE or MULTIPLE_CHOICE field's option values using the fieldId and optionValue. This API returns the updated option object. Developers can update field option related information, including the label and color for the provided optionValue.",
+        "tags": [
+            "fields",
+            "options",
+            "update"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/fields/{fieldId}/update-option",
+            "server_url": "https://api.rocketlane.com/api/1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        },
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type",
+                        "accept"
+                    ],
+                    "visible": []
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "fieldId": {
+                            "type": "integer",
+                            "format": "int64",
+                            "description": "The field's unique, system-generated identifier, which can be used to identify the field globally",
+                            "minimum": 0,
+                            "default": 1
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "fieldId"
+                    ],
+                    "visible": [
+                        "fieldId"
+                    ]
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Body parameters for updating the field option",
+                    "properties": {
+                        "optionValue": {
+                            "type": "integer",
+                            "description": "The optionId is the unique identifier for the option"
+                        },
+                        "optionColor": {
+                            "type": "string",
+                            "description": "The optionColor reflects the color of the options for the single or multiple choice field",
+                            "enum": ["RED", "BLUE", "GREEN", "YELLOW", "PURPLE", "ORANGE"],
+                            "default": "RED"
+                        },
+                        "optionLabel": {
+                            "type": "string",
+                            "description": "The optionLabel reflects the name of the options for the single or multiple choice field"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "optionValue",
+                        "optionColor",
+                        "optionLabel"
+                    ],
+                    "visible": [
+                        "optionValue",
+                        "optionColor",
+                        "optionLabel"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "path",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ]
+        }
+    }
+]
