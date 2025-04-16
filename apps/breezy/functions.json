@@ -1,25 +1,26 @@
 [
     {
-        "name": "APITEMPLATE__LIST_TEMPLATES",
-        "description": "List all templates from APITemplate.io",
+        "name": "BREEZY__GET_COMPANY",
+        "description": "Retrieve the company information associated with the specified company ID",
         "tags": [
-            "apitemplate",
-            "templates"
+            "breezy",
+            "company",
+            "information"
         ],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/list-templates",
-            "server_url": "https://rest.apitemplate.io/v2"
+            "path": "/company/{company_id}",
+            "server_url": "https://api.breezy.hr/v3"
         },
         "parameters": {
             "type": "object",
             "properties": {
                 "header": {
                     "type": "object",
-                    "description": "Headers for the http request",
+                    "description": "Headers for the HTTP request",
                     "properties": {
                         "Content-Type": {
                             "type": "string",
@@ -33,88 +34,143 @@
                     ],
                     "visible": []
                 },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the request",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "Unique identifier for the company"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "company_id"
+                    ],
+                    "visible": [
+                        "company_id"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ]
+        }
+    },
+    {
+        "name": "BREEZY__GET_POSITIONS",
+        "description": "Retrieve all positions for given company in given state (status)",
+        "tags": [
+            "breezy",
+            "positions",
+            "list"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/company/{company_id}/positions",
+            "server_url": "https://api.breezy.hr/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the request",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "Unique identifier for the company"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "company_id"
+                    ],
+                    "visible": [
+                        "company_id"
+                    ]
+                },
                 "query": {
                     "type": "object",
-                    "description": "Query parameters",
+                    "description": "Query parameters for the request",
                     "properties": {
-                        "limit": {
+                        "state": {
                             "type": "string",
-                            "description": "Retrieve only the number of records specified. Default to 300",
-                            "default": "300"
-                        },
-                        "offset": {
-                            "type": "string",
-                            "description": "Offset is used to skip the number of records from the results. Default to 0",
-                            "default": "0"
-                        },
-                        "format": {
-                            "type": "string",
-                            "description": "To filter the templates by either 'PDF' or 'JPEG'",
+                            "description": "Specify an optional position state filter. Default is published.",
                             "enum": [
-                                "PDF",
-                                "JPEG"
-                            ]
-                        },
-                        "template_id": {
-                            "type": "string",
-                            "description": "To filter the templates by template id"
-                        },
-                        "group_name": {
-                            "type": "string",
-                            "description": "To filter the templates by the group name"
-                        },
-                        "with_layer_info": {
-                            "type": "string",
-                            "description": "Return along with layer information for image templates, 0=false , 1=true. Default to '0'",
-                            "enum": [
-                                "0",
-                                "1"
+                                "draft",
+                                "archived",
+                                "published",
+                                "closed",
+                                "pending"
                             ],
-                            "default": "0"
+                            "default": "published"
                         }
                     },
-                    "required": [],
                     "additionalProperties": false,
+                    "required": [],
                     "visible": [
-                        "limit",
-                        "offset",
-                        "format",
-                        "template_id",
-                        "group_name",
-                        "with_layer_info"
+                        "state"
                     ]
                 }
             },
             "additionalProperties": false,
             "required": [
-                "header"
+                "header",
+                "path"
             ],
             "visible": [
+                "path",
                 "query"
             ]
         }
     },
     {
-        "name": "APITEMPLATE__GET_TEMPLATE",
-        "description": "Get a specific template details from APITemplate.io",
+        "name": "BREEZY__GET_POSITION_BYID",
+        "description": "Retrieve details for given position id",
         "tags": [
-            "apitemplate",
-            "templates"
+            "breezy",
+            "position",
+            "details"
         ],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/get-template",
-            "server_url": "https://rest.apitemplate.io/v2"
+            "path": "/company/{company_id}/position/{position_id}",
+            "server_url": "https://api.breezy.hr/v3"
         },
         "parameters": {
             "type": "object",
             "properties": {
                 "header": {
                     "type": "object",
-                    "description": "Headers for the http request",
+                    "description": "Headers for the HTTP request",
                     "properties": {
                         "Content-Type": {
                             "type": "string",
@@ -128,99 +184,37 @@
                     ],
                     "visible": []
                 },
-                "query": {
+                "path": {
                     "type": "object",
-                    "description": "Query parameters",
+                    "description": "Path parameters for the request",
                     "properties": {
-                        "template_id": {
+                        "company_id": {
                             "type": "string",
-                            "description": "The ID of the template to retrieve"
-                        }
-                    },
-                    "required": [
-                        "template_id"
-                    ],
-                    "additionalProperties": false,
-                    "visible": [
-                        "template_id"
-                    ]
-                }
-            },
-            "additionalProperties": false,
-            "required": [
-                "header",
-                "query"
-            ],
-            "visible": [
-                "query"
-            ]
-        }
-    },
-    {
-        "name": "APITEMPLATE__UPDATE_TEMPLATE",
-        "description": "Update a specific template in APITemplate.io",
-        "tags": [
-            "apitemplate",
-            "templates"
-        ],
-        "visibility": "public",
-        "active": true,
-        "protocol": "rest",
-        "protocol_data": {
-            "method": "POST",
-            "path": "/update-template",
-            "server_url": "https://rest.apitemplate.io/v2"
-        },
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "header": {
-                    "type": "object",
-                    "description": "Headers for the http request",
-                    "properties": {
-                        "Content-Type": {
-                            "type": "string",
-                            "description": "Content-Type header",
-                            "default": "application/json"
-                        }
-                    },
-                    "additionalProperties": false,
-                    "required": [
-                        "Content-Type"
-                    ],
-                    "visible": []
-                },
-                "body": {
-                    "type": "object",
-                    "description": "Template update parameters",
-                    "properties": {
-                        "template_id": {
-                            "type": "string",
-                            "description": "The ID of the template to update"
+                            "description": "Unique identifier for the company"
                         },
-                        "css": {
+                        "position_id": {
                             "type": "string",
-                            "description": "The new template HTML content"
+                            "description": "Unique identifier for the position"
                         }
                     },
-                    "required": [
-                        "template_id",
-                        "css"
-                    ],
                     "additionalProperties": false,
+                    "required": [
+                        "company_id",
+                        "position_id"
+                    ],
                     "visible": [
-                        "template_id",
-                        "css"
+                        "company_id",
+                        "position_id"
                     ]
                 }
             },
             "additionalProperties": false,
             "required": [
                 "header",
-                "body"
+                "path"
             ],
             "visible": [
-                "body"
+                "path"
             ]
         }
     }
