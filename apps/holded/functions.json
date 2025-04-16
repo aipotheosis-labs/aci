@@ -337,8 +337,12 @@
                         },
                         "fiscalAddress": {
                             "type": "object",
-                            "description": "Fiscal address information (only used when fiscalResidence is false)",
+                            "description": "Fiscal address information. This object is only used when fiscalResidence is set to false.",
                             "properties": {
+                                "idNum": {
+                                    "type": "string",
+                                    "description": "Identification number"
+                                },
                                 "address": {
                                     "type": "string",
                                     "description": "Street address"
@@ -346,6 +350,10 @@
                                 "city": {
                                     "type": "string",
                                     "description": "City"
+                                },
+                                "cityOfBirth": {
+                                    "type": "string",
+                                    "description": "City of birth"
                                 },
                                 "postalCode": {
                                     "type": "string",
@@ -358,10 +366,18 @@
                                 "country": {
                                     "type": "string",
                                     "description": "Country"
+                                },
+                                "countryOfBirth": {
+                                    "type": "string",
+                                    "description": "Country of birth"
+                                },
+                                "endSituationDate": {
+                                    "type": "string",
+                                    "description": "End date of the situation"
                                 }
                             },
                             "required": [],
-                            "visible": ["address", "city", "postalCode", "province", "country"],
+                            "visible": ["idNum", "address", "city", "cityOfBirth", "postalCode", "province", "country", "countryOfBirth", "endSituationDate"],
                             "additionalProperties": false
                         },
                         "workplace": {
