@@ -37,7 +37,11 @@ from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.ext.mutable import MutableDict
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column, relationship
 
-from aipolabs.common.db.custom_sql_types import Key
+from aipolabs.common.db.custom_sql_types import (
+    EncryptedSecurityCredentials,
+    EncryptedSecurityScheme,
+    Key,
+)
 from aipolabs.common.enums import (
     APIKeyStatus,
     Protocol,
@@ -261,12 +265,12 @@ class App(Base):
     active: Mapped[bool] = mapped_column(Boolean, nullable=False)
     # security schemes (including it's config) supported by the app, e.g., API key, OAuth2, etc
     security_schemes: Mapped[dict[SecurityScheme, dict]] = mapped_column(
-        MutableDict.as_mutable(JSONB),
+        MutableDict.as_mutable(EncryptedSecurityScheme),
         nullable=False,
     )
     # default security credentials (provided by aipolabs, if any) for the app that can be used by any client
     default_security_credentials_by_scheme: Mapped[dict[SecurityScheme, dict]] = mapped_column(
-        MutableDict.as_mutable(JSONB),
+        MutableDict.as_mutable(EncryptedSecurityCredentials),
         nullable=False,
     )
     # embedding vector for similarity search
@@ -325,8 +329,8 @@ class AppConfiguration(Base):
     # can store security scheme override for each app, e.g., store client id and secret for OAuth2 if client
     # want to use their own OAuth2 app for whitelabeling
     # TODO: create a pydantic model for security scheme overrides once we finalize overridable fields
-    security_scheme_overrides: Mapped[dict] = mapped_column(
-        MutableDict.as_mutable(JSONB),
+    security_scheme_overrides: Mapped[dict[SecurityScheme, dict]] = mapped_column(
+        MutableDict.as_mutable(EncryptedSecurityScheme),
         nullable=False,
     )
     # controlled by users to enable or disable the app
@@ -396,7 +400,7 @@ class LinkedAccount(Base):
     # security credentials are different for each security scheme, e.g., API key, OAuth2 (access token, refresh token, scope, etc) etc
     # it can beempty dict because the linked account could be created to use default credentials provided by Aipolabs
     security_credentials: Mapped[dict] = mapped_column(
-        MutableDict.as_mutable(JSONB),
+        MutableDict.as_mutable(EncryptedSecurityCredentials),
         nullable=False,
     )
     enabled: Mapped[bool] = mapped_column(Boolean, nullable=False)
