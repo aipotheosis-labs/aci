@@ -1,0 +1,24 @@
+{
+    "name": "BASEROW",
+    "display_name": "Baserow",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/main/apps/baserow.svg",
+    "provider": "Baserow",
+    "version": "2024-03-21",
+    "description": "Baserow is an open source no-code database tool and Airtable alternative. Create your own database without technical experience.",
+    "security_schemes": {
+        "api_key": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Token",
+            "description": "API key for authentication"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "database",
+        "nocode",
+        "productivity"
+    ],
+    "visibility": "public",
+    "active": true
+}
