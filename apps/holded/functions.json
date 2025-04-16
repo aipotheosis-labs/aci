@@ -259,11 +259,21 @@
                         },
                         "gender": {
                             "type": "string",
-                            "description": "Gender of the employee (male or female)"
+                            "description": "Gender of the employee",
+                            "enum": ["male", "female"]
                         },
                         "mainLanguage": {
                             "type": "string",
-                            "description": "Main language of the employee"
+                            "description": "Main language of the employee",
+                            "enum": [
+                                "English", "English(UK)", "English(US)", "English(Canada)",
+                                "Spanish", "Spanish(Spain)", "Spanish(Mexico)", "Spanish(Argentina)", "Spanish(Colombia)",
+                                "Portuguese", "Portuguese(Portugal)", "Portuguese(Brazil)",
+                                "Catalan", "Galician", "Euskera",
+                                "French", "German(Deutsch)", "Italian", "Greek", "Swedish",
+                                "Dutch", "Finnish", "Irish", "Norwegian", "Danish",
+                                "Czech", "Croatian", "Russian", "Polish"
+                            ]
                         },
                         "iban": {
                             "type": "string",
@@ -310,6 +320,58 @@
                             "type": "boolean",
                             "description": "Whether the fiscal residence is the same as the regular address"
                         },
+                        "timeOffPolicyId": {
+                            "type": "string",
+                            "description": "ID of the time off policy for the employee"
+                        },
+                        "timeOffSupervisors": {
+                            "type": "array",
+                            "description": "List of employee IDs who are supervisors for time off",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "reportingTo": {
+                            "type": "string",
+                            "description": "ID of the employee this employee reports to"
+                        },
+                        "fiscalAddress": {
+                            "type": "object",
+                            "description": "Fiscal address information (only used when fiscalResidence is false)",
+                            "properties": {
+                                "address": {
+                                    "type": "string",
+                                    "description": "Street address"
+                                },
+                                "city": {
+                                    "type": "string",
+                                    "description": "City"
+                                },
+                                "postalCode": {
+                                    "type": "string",
+                                    "description": "Postal or ZIP code"
+                                },
+                                "province": {
+                                    "type": "string",
+                                    "description": "Province or state"
+                                },
+                                "country": {
+                                    "type": "string",
+                                    "description": "Country"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["address", "city", "postalCode", "province", "country"],
+                            "additionalProperties": false
+                        },
+                        "workplace": {
+                            "type": "string",
+                            "description": "ID of the workplace"
+                        },
+                        "holdedUserId": {
+                            "type": "string",
+                            "description": "Holded user ID"
+                        },
                         "teams": {
                             "type": "array",
                             "description": "List of team IDs the employee belongs to",
@@ -319,7 +381,7 @@
                         }
                     },
                     "required": [],
-                    "visible": ["name", "lastName", "mainEmail", "email", "nationality", "phone", "mobile", "dateOfBirth", "gender", "mainLanguage", "iban", "code", "socialSecurityNum", "address", "fiscalResidence", "teams"],
+                    "visible": ["name", "lastName", "mainEmail", "email", "nationality", "phone", "mobile", "dateOfBirth", "gender", "mainLanguage", "iban", "code", "socialSecurityNum", "address", "fiscalResidence", "fiscalAddress", "workplace", "teams", "timeOffPolicyId", "timeOffSupervisors", "reportingTo", "holdedUserId"],
                     "additionalProperties": false
                 }
             },
