@@ -1,0 +1,23 @@
+{
+    "name": "AKKIO",
+    "display_name": "Akkio",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/akkio.svg",
+    "provider": "Akkio",
+    "version": "1.0.0",
+    "description": "Akkio is a no-code AI platform that enables businesses to build, deploy, and maintain AI solutions for predictive analytics, forecasting, and classification without requiring data science expertise.",
+    "security_schemes": {
+        "api_key": {
+            "location": "query",
+            "name": "api_key"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "ai",
+        "machine-learning",
+        "business-intelligence",
+        "analytics"
+    ],
+    "visibility": "public",
+    "active": true
+}
