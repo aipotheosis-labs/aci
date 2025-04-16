@@ -1,0 +1,363 @@
+[
+    {
+        "name": "ANCHOR_BROWSER__START_SESSION",
+        "description": "Allocates a new browser session with configurations for ad-blocking, captcha solving, proxy usage, and idle timeout.",
+        "tags": ["browser", "session"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/sessions",
+            "server_url": "https://api.anchorbrowser.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "session": {
+                            "type": "object",
+                            "properties": {
+                                "recording": {
+                                    "type": "object",
+                                    "properties": {
+                                        "active": { "type": "boolean" }
+                                    },
+                                    "required": [],
+                                    "visible": ["active"],
+                                    "additionalProperties": false
+                                },
+                                "proxy": {
+                                    "type": "object",
+                                    "properties": {
+                                        "type": {
+                                            "type": "string",
+                                            "enum": ["anchor_residential"]
+                                        },
+                                        "active": { "type": "boolean" }
+                                    },
+                                    "required": [],
+                                    "visible": ["type", "active"],
+                                    "additionalProperties": false
+                                },
+                                "timeout": {
+                                    "type": "object",
+                                    "properties": {
+                                        "max_duration": { "type": "integer" },
+                                        "idle_timeout": { "type": "integer" }
+                                    },
+                                    "required": [],
+                                    "visible": ["max_duration", "idle_timeout"],
+                                    "additionalProperties": false
+                                },
+                                "live_view": {
+                                    "type": "object",
+                                    "properties": {
+                                        "read_only": { "type": "boolean" }
+                                    },
+                                    "required": [],
+                                    "visible": ["read_only"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": [],
+                            "visible": ["recording", "proxy", "timeout", "live_view"],
+                            "additionalProperties": false
+                        },
+                        "browser": {
+                            "type": "object",
+                            "properties": {
+                                "profile": {
+                                    "type": "object",
+                                    "properties": {
+                                        "name": { "type": "string" },
+                                        "persist": { "type": "boolean" },
+                                        "store_cache": { "type": "boolean" }
+                                    },
+                                    "required": [],
+                                    "visible": ["name", "persist", "store_cache"],
+                                    "additionalProperties": false
+                                },
+                                "adblock": {
+                                    "type": "object",
+                                    "properties": {
+                                        "active": { "type": "boolean" }
+                                    },
+                                    "required": [],
+                                    "visible": ["active"],
+                                    "additionalProperties": false
+                                },
+                                "popup_blocker": {
+                                    "type": "object",
+                                    "properties": {
+                                        "active": { "type": "boolean" }
+                                    },
+                                    "required": [],
+                                    "visible": ["active"],
+                                    "additionalProperties": false
+                                },
+                                "captcha_solver": {
+                                    "type": "object",
+                                    "properties": {
+                                        "active": { "type": "boolean" }
+                                    },
+                                    "required": [],
+                                    "visible": ["active"],
+                                    "additionalProperties": false
+                                },
+                                "headless": {
+                                    "type": "object",
+                                    "properties": {
+                                        "active": { "type": "boolean" }
+                                    },
+                                    "required": [],
+                                    "visible": ["active"],
+                                    "additionalProperties": false
+                                },
+                                "viewport": {
+                                    "type": "object",
+                                    "properties": {
+                                        "width": { "type": "integer" },
+                                        "height": { "type": "integer" }
+                                    },
+                                    "required": [],
+                                    "visible": ["width", "height"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": [],
+                            "visible": [
+                                "profile",
+                                "adblock",
+                                "popup_blocker",
+                                "captcha_solver",
+                                "headless",
+                                "viewport"
+                            ],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["session", "browser"],
+                    "visible": ["session", "browser"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ANCHOR_BROWSER__TAKE_SCREENSHOT",
+        "description": "Captures a screenshot of the current browser session and returns it as a PNG image.",
+        "tags": ["anchorbrowser", "screenshot", "os-level-control"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/sessions/{sessionId}/screenshot",
+            "server_url": "https://api.anchorbrowser.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "sessionId": {
+                            "type": "string",
+                            "description": "The ID of the browser session."
+                        }
+                    },
+                    "required": ["sessionId"],
+                    "visible": ["sessionId"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ANCHOR_BROWSER__GET_WEBPAGE_CONTENT",
+        "description": "Retrieves the content of a webpage specified by its URL. The response contains details like the webpage’s metadata, title, and other HTML content that can be parsed.",
+        "tags": ["anchorbrowser", "webpage", "content"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/tools/fetch-webpage",
+            "server_url": "https://api.anchorbrowser.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "body parameters",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "description": "The URL of the webpage to fetch."
+                        },
+                        "format": {
+                            "type": "string",
+                            "description": "The format of the webpage content to fetch.",
+                            "enum": ["html", "markdown"]
+                        },
+                        "sessionId": {
+                            "type": "string",
+                            "description": "The ID of the browser session."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["url", "format", "sessionId"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ANCHOR_BROWSER__CREATE_PROFILE",
+        "description": "Creates a new browser profile from an active session. A profile stores cookies, local storage, and cache. The profile will be saved once the browser session ends.",
+        "tags": ["anchor", "profiles"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/profiles",
+            "server_url": "https://api.anchorbrowser.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Media type of the request body",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the profile."
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "A description of the profile."
+                        },
+                        "source": {
+                            "type": "string",
+                            "description": "The source of the profile data. Currently, only 'session' is supported.",
+                            "enum": ["session"]
+                        },
+                        "session_id": {
+                            "type": "string",
+                            "description": "The browser session ID. Required if the source is set to 'session'."
+                        },
+                        "store_cache": {
+                            "type": "boolean",
+                            "description": "Indicates whether the browser session cache should be saved when the session ends. Defaults to false.",
+                            "default": false
+                        }
+                    },
+                    "required": ["name", "source", "session_id"],
+                    "visible": ["name", "description", "source", "session_id", "store_cache"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ANCHOR_BROWSER__TYPE_TEXT",
+        "description": "Types the specified text with an optional delay between keystrokes in the specified browser session.",
+        "tags": ["anchor", "os-level-control"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/sessions/{sessionId}/keyboard/type",
+            "server_url": "https://api.anchorbrowser.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "sessionId": {
+                            "type": "string",
+                            "description": "The ID of the browser session."
+                        }
+                    },
+                    "required": ["sessionId"],
+                    "visible": ["sessionId"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Media type of the request body.",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "text": {
+                            "type": "string",
+                            "description": "Text to type.",
+                            "example": "Hello from Session Manager VNC API test!"
+                        },
+                        "delay": {
+                            "type": "integer",
+                            "description": "Delay between keystrokes in milliseconds.",
+                            "default": 0,
+                            "example": 30
+                        }
+                    },
+                    "required": ["text"],
+                    "visible": ["text", "delay"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    }
+]
