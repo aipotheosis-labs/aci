@@ -1,0 +1,445 @@
+[
+    {
+        "name": "FIREFLIES__GET_AI_APPS_OUTPUTS",
+        "description": "Retrieve AI App outputs for meetings that ran successfully",
+        "tags": [
+            "meetings",
+            "transcripts",
+            "ai",
+            "apps"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL query and variables for AI Apps outputs",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL query to get AI Apps outputs",
+                            "default": "query GetAIAppsOutputs($appId: String, $transcriptId: String, $skip: Float, $limit: Float) { apps(app_id: $appId, transcript_id: $transcriptId, skip: $skip, limit: $limit) { outputs { transcript_id user_id app_id created_at title prompt response } } }"
+                        },
+                        "variables": {
+                            "type": "object",
+                            "description": "Variables for the GraphQL query",
+                            "properties": {
+                                "appId": {
+                                    "type": "string",
+                                    "description": "Retrieve all outputs against a specific AI App"
+                                },
+                                "transcriptId": {
+                                    "type": "string",
+                                    "description": "Retrieve all outputs against a specific meeting/transcript"
+                                },
+                                "skip": {
+                                    "type": "number",
+                                    "description": "Number of records to skip over. Helps paginate results when used with limit"
+                                },
+                                "limit": {
+                                    "type": "number",
+                                    "description": "Maximum number of apps outputs to fetch (default: 10, maximum: 10)",
+                                    "default": 10,
+                                    "maximum": 10
+                                }
+                            },
+                            "required": [],
+                            "visible": ["appId", "transcriptId", "skip", "limit"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query"],
+                    "visible": ["variables"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIREFLIES__GET_USER",
+        "description": "Retrieve information about a specific user",
+        "tags": [
+            "user",
+            "profile"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL query and variables for user information",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL query to get user information",
+                            "default": "query GetUser($userId: String) { user(id: $userId) { user_id name email integrations minutes_consumed is_admin recent_transcript recent_meeting num_transcripts } }"
+                        },
+                        "variables": {
+                            "type": "object",
+                            "description": "Variables for the GraphQL query",
+                            "properties": {
+                                "userId": {
+                                    "type": "string",
+                                    "description": "ID of the user to retrieve information for. Optional - if not provided, returns information for the owner of the API key"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["userId"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query"],
+                    "visible": ["variables"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIREFLIES__LIST_USERS",
+        "description": "Retrieve a list of all users within the team",
+        "tags": [
+            "users",
+            "organization",
+            "team"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL query for listing users",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL query to list users",
+                            "default": "{ users { user_id name email integrations } }"
+                        }
+                    },
+                    "required": ["query"],
+                    "visible": ["query"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIREFLIES__GET_TRANSCRIPT",
+        "description": "Retrieve information about a specific meeting transcript",
+        "tags": [
+            "meeting",
+            "transcript",
+            "recording"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL query and variables for transcript information",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL query to get transcript information",
+                            "default": "query Transcript($transcriptId: String!) { transcript(id: $transcriptId) { id title date duration sentences { speaker_id text start_time end_time } summary { keywords action_items outline } } }"
+                        },
+                        "variables": {
+                            "type": "object",
+                            "description": "Variables for the GraphQL query",
+                            "properties": {
+                                "transcriptId": {
+                                    "type": "string",
+                                    "description": "ID of the transcript to retrieve"
+                                }
+                            },
+                            "required": ["transcriptId"],
+                            "visible": ["transcriptId"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query", "variables"],
+                    "visible": ["variables"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIREFLIES__SET_USER_ROLE",
+        "description": "Set or update a user's role within the organization",
+        "tags": [
+            "users",
+            "organization",
+            "admin",
+            "permissions"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL mutation and variables for setting user role",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL mutation to set user role",
+                            "default": "mutation SetUserRole($user_id: String!, $role: Role!) { setUserRole(user_id: $user_id, role: $role) { name is_admin } }"
+                        },
+                        "variables": {
+                            "type": "object",
+                            "description": "Variables for the GraphQL mutation",
+                            "properties": {
+                                "user_id": {
+                                    "type": "string",
+                                    "description": "ID of the user whose role will be updated"
+                                },
+                                "role": {
+                                    "type": "string",
+                                    "description": "Role to assign to the user",
+                                    "enum": ["admin", "user"]
+                                }
+                            },
+                            "required": ["user_id", "role"],
+                            "visible": ["user_id", "role"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query", "variables"],
+                    "visible": ["variables"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIREFLIES__LIST_TRANSCRIPTS",
+        "description": "Retrieve a list of meeting transcripts with filtering options",
+        "tags": [
+            "meetings",
+            "transcripts",
+            "recordings"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL query and variables for listing transcripts",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL query to list transcripts",
+                            "default": "query Transcripts($title: String, $fromDate: DateTime, $toDate: DateTime, $limit: Int, $skip: Int, $host_email: String, $organizer_email: String, $participant_email: String, $user_id: String, $mine: Boolean) { transcripts(title: $title, fromDate: $fromDate, toDate: $toDate, limit: $limit, skip: $skip, host_email: $host_email, organizer_email: $organizer_email, participant_email: $participant_email, user_id: $user_id, mine: $mine) { id title date duration } }"
+                        },
+                        "variables": {
+                            "type": "object",
+                            "description": "Variables for the GraphQL query",
+                            "properties": {
+                                "title": {
+                                    "type": "string",
+                                    "description": "Title of the transcript to filter by (max 256 characters)"
+                                },
+                                "fromDate": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "Return all transcripts created after this date (ISO 8601 format, e.g., 2024-07-08T22:13:46.660Z)"
+                                },
+                                "toDate": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "Return all transcripts created before this date (ISO 8601 format, e.g., 2024-07-08T22:13:46.660Z)"
+                                },
+                                "limit": {
+                                    "type": "integer",
+                                    "description": "Number of transcripts to return (maximum: 50)",
+                                    "default": 10,
+                                    "maximum": 50
+                                },
+                                "skip": {
+                                    "type": "integer",
+                                    "description": "Number of transcripts to skip for pagination"
+                                },
+                                "host_email": {
+                                    "type": "string",
+                                    "description": "Filter all meetings accordingly to meetings that have this email as the host"
+                                },
+                                "organizer_email": {
+                                    "type": "string",
+                                    "description": "Filter all meetings accordingly to meetings that have this email as the organizer"
+                                },
+                                "participant_email": {
+                                    "type": "string",
+                                    "description": "Filter all meetings accordingly to all meetings that contains this email as an attendee"
+                                },
+                                "user_id": {
+                                    "type": "string",
+                                    "description": "Filter all meetings that have this user ID as the organizer or participant"
+                                },
+                                "mine": {
+                                    "type": "boolean",
+                                    "description": "Filter all meetings that have the API key owner as the organizer"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["title", "fromDate", "toDate", "limit", "skip", "host_email", "organizer_email", "participant_email", "user_id", "mine"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query"],
+                    "visible": ["variables"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    }
+]
