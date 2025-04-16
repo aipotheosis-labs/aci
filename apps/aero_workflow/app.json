@@ -1,0 +1,24 @@
+{
+    "name": "AERO_WORKFLOW",
+    "display_name": "Aero workflow",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/aeroworkflow.svg",
+    "provider": "Aero workflow",
+    "version": "1.0.0",
+    "description": "Aero is workflow & practice management built specifically with the modern cloud-based accounting firm in mind.",
+    "security_schemes": {
+        "api_key": {
+          "location": "header",
+          "name": "apikey",
+          "prefix": null
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "workflow",
+        "tasks",
+        "Track",
+        "Advise"
+    ],
+    "visibility": "public",
+    "active": true
+}
