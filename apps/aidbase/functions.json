@@ -47,7 +47,7 @@
                     "properties": {
                         "id": {
                             "type": "string",
-                            "description": "Unique identifier for the chatbot.public_id",
+                            "description": "Unique identifier for the chatbot",
                             "example": "p-8KP033W9GT8xZMEULqa"
                         }
                     },
