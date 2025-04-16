@@ -1,10 +1,10 @@
 [
     {
-        "name": "BREEZY__GET_COMPANY",
-        "description": "Retrieve the company information associated with the specified company ID",
+        "name": "AGENTMAIL__GET_INBOX",
+        "description": "Retrieve information about a specific inbox by its ID (email address)",
         "tags": [
-            "breezy",
-            "company",
+            "agentmail",
+            "inbox",
             "information"
         ],
         "visibility": "public",
@@ -12,8 +12,8 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/company/{company_id}",
-            "server_url": "https://api.breezy.hr/v3"
+            "path": "/inboxes/{inbox_id}",
+            "server_url": "https://api.agentmail.to/v0"
         },
         "parameters": {
             "type": "object",
@@ -38,17 +38,17 @@
                     "type": "object",
                     "description": "Path parameters for the request",
                     "properties": {
-                        "company_id": {
+                        "inbox_id": {
                             "type": "string",
-                            "description": "Unique identifier for the company"
+                            "description": "ID (email address) of the inbox"
                         }
                     },
                     "additionalProperties": false,
                     "required": [
-                        "company_id"
+                        "inbox_id"
                     ],
                     "visible": [
-                        "company_id"
+                        "inbox_id"
                     ]
                 }
             },
@@ -63,20 +63,94 @@
         }
     },
     {
-        "name": "BREEZY__GET_POSITIONS",
-        "description": "Retrieve all positions for given company in given state (status)",
+        "name": "AGENTMAIL__CREATE_INBOX",
+        "description": "Create a new inbox with a specified username and display name",
         "tags": [
-            "breezy",
-            "positions",
-            "list"
+            "agentmail",
+            "inbox",
+            "create"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/inboxes",
+            "server_url": "https://api.agentmail.to/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Body parameters for creating the inbox",
+                    "properties": {
+                        "username": {
+                            "type": "string",
+                            "description": "Username of address. Randomly generated if not specified."
+                        },
+                        "domain": {
+                            "type": "string",
+                            "description": "Domain of address. Must be verified domain. Defaults to agentmail.to"
+                        },
+                        "display_name": {
+                            "type": "string",
+                            "description": "Display name for address: Display Name <username@domain.com>"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "username",
+                        "display_name"
+                    ],
+                    "visible": [
+                        "username",
+                        "domain",
+                        "display_name"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "AGENTMAIL__LIST_THREADS",
+        "description": "List threads from a specific inbox with pagination support",
+        "tags": [
+            "agentmail",
+            "inbox",
+            "threads"
         ],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/company/{company_id}/positions",
-            "server_url": "https://api.breezy.hr/v3"
+            "path": "/inboxes/{inbox_id}/threads",
+            "server_url": "https://api.agentmail.to/v0"
         },
         "parameters": {
             "type": "object",
@@ -101,40 +175,45 @@
                     "type": "object",
                     "description": "Path parameters for the request",
                     "properties": {
-                        "company_id": {
+                        "inbox_id": {
                             "type": "string",
-                            "description": "Unique identifier for the company"
+                            "description": "ID (email address) of the inbox"
                         }
                     },
                     "additionalProperties": false,
                     "required": [
-                        "company_id"
+                        "inbox_id"
                     ],
                     "visible": [
-                        "company_id"
+                        "inbox_id"
                     ]
                 },
                 "query": {
                     "type": "object",
                     "description": "Query parameters for the request",
                     "properties": {
-                        "state": {
+                        "limit": {
+                            "type": "integer",
+                            "description": "Limit of number of items returned"
+                        },
+                        "last_key": {
                             "type": "string",
-                            "description": "Specify an optional position state filter. Default is published.",
-                            "enum": [
-                                "draft",
-                                "archived",
-                                "published",
-                                "closed",
-                                "pending"
-                            ],
-                            "default": "published"
+                            "description": "Key of last item for pagination"
+                        },
+                        "labels": {
+                            "type": "array",
+                            "description": "Labels to filter threads by",
+                            "items": {
+                                "type": "string"
+                            }
                         }
                     },
                     "additionalProperties": false,
                     "required": [],
                     "visible": [
-                        "state"
+                        "limit",
+                        "last_key",
+                        "labels"
                     ]
                 }
             },
@@ -150,20 +229,20 @@
         }
     },
     {
-        "name": "BREEZY__GET_POSITION_BYID",
-        "description": "Retrieve details for given position id",
+        "name": "AGENTMAIL__LIST_MESSAGES",
+        "description": "List messages from a specific inbox",
         "tags": [
-            "breezy",
-            "position",
-            "details"
+            "agentmail",
+            "inbox",
+            "messages"
         ],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/company/{company_id}/position/{position_id}",
-            "server_url": "https://api.breezy.hr/v3"
+            "path": "/inboxes/{inbox_id}/messages",
+            "server_url": "https://api.agentmail.to/v0"
         },
         "parameters": {
             "type": "object",
@@ -188,23 +267,17 @@
                     "type": "object",
                     "description": "Path parameters for the request",
                     "properties": {
-                        "company_id": {
+                        "inbox_id": {
                             "type": "string",
-                            "description": "Unique identifier for the company"
-                        },
-                        "position_id": {
-                            "type": "string",
-                            "description": "Unique identifier for the position"
+                            "description": "ID (email address) of the inbox"
                         }
                     },
                     "additionalProperties": false,
                     "required": [
-                        "company_id",
-                        "position_id"
+                        "inbox_id"
                     ],
                     "visible": [
-                        "company_id",
-                        "position_id"
+                        "inbox_id"
                     ]
                 }
             },
