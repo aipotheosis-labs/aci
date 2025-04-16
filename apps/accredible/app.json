@@ -1,0 +1,23 @@
+{
+    "name": "ACCREDIBLE",
+    "display_name": "Accredible",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/accredible.svg",
+    "provider": "Accredible",
+    "version": "1.0",
+    "description": "Accredible integration for managing digital certificates and badges. Create, search, and generate PDFs for credentials.",
+    "security_schemes": {
+        "api_key": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Token"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "certificate",
+        "badge",
+        "credential"
+    ],
+    "visibility": "public",
+    "active": true
+}
