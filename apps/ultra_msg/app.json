@@ -1,0 +1,19 @@
+{
+    "name": "ULTRA_MSG",
+    "display_name": "Ultra Msg",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/ultra_msg.svg",
+    "provider": "Ultra Msg",
+    "version": "1.0.0",
+    "description": "Ultra Msg is a WhatsApp API service that allows users to send and receive WhatsApp messages, manage contacts and groups, and automate WhatsApp workflows. This integration allows you to programmatically send text, pictures, documents and other media types of messages through WhatsApp.",
+    "security_schemes": {
+        "api_key": {
+            "location": "body",
+            "name": "token",
+            "prefix": null
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": ["messaging", "whatsapp", "communication"],
+    "visibility": "public",
+    "active": true
+}
