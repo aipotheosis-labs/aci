@@ -28,7 +28,7 @@
                         }
                     },
                     "required": ["Content-Type"],
-                    "visible": ["Content-Type"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "query": {
@@ -81,7 +81,7 @@
                         }
                     },
                     "required": ["Content-Type"],
-                    "visible": ["Content-Type"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "path": {
@@ -151,7 +151,7 @@
                         }
                     },
                     "required": ["Content-Type"],
-                    "visible": ["Content-Type"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "path": {
@@ -262,7 +262,7 @@
                         }
                     },
                     "required": ["Content-Type"],
-                    "visible": ["Content-Type"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "path": {
@@ -315,7 +315,7 @@
                         }
                     },
                     "required": ["Content-Type"],
-                    "visible": ["Content-Type"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "path": {
