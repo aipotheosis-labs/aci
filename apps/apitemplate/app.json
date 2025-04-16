@@ -4,7 +4,7 @@
     "description": "APITemplate.io is a template-based document generation service that allows you to create PDFs and other documents from HTML templates.",
     "provider": "APITemplate.io",
     "version": "1.0.0",
-    "logo": "https://apitemplate.io/images/logo.png",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/apitemplate.svg",
     "categories": [
         "documents",
         "templates",
