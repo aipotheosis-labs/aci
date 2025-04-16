@@ -1,0 +1,318 @@
+[
+    {
+        "name": "AIDBASE__LIST_CHATBOTS",
+        "description": "Retrieve a list of all chatbots.",
+        "tags": ["chatbot", "list"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/chatbots",
+            "server_url": "https://api.aidbase.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        },
+        "headers": {
+            "accept": {
+                "type": "string",
+                "description": "Content type accepted by the client.",
+                "default": "application/json"
+            }
+        }
+    },
+    {
+        "name": "AIDBASE__GET_CHATBOT_DETAILS",
+        "description": "Retrieve details of a specific chatbot by ID.",
+        "tags": ["chatbot", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/chatbot/{id}",
+            "server_url": "https://api.aidbase.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters.",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the chatbot.public_id",
+                            "example": "p-8KP033W9GT8xZMEULqa"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        },
+        "headers": {
+            "accept": {
+                "type": "string",
+                "description": "Content type accepted by the client.",
+                "default": "application/json"
+            }
+        }
+    },
+    {
+        "name": "AIDBASE__SEND_REPLY",
+        "description": "Send a reply to a specific chatbot.",
+        "tags": ["chatbot", "reply"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/chatbot/{id}/reply",
+            "server_url": "https://api.aidbase.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters.",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the chatbot.",
+                            "example": "odguL9hXiB413s3g9ZO3z"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Reply payload.",
+                    "properties": {
+                        "message": {
+                            "type": "string",
+                            "description": "The reply message to send.",
+                            "example": "How can I get started with Aidbase API?"
+                        },
+                        "session_id": {
+                            "type": "string",
+                            "description": "Optional session identifier for the chatbot.",
+                            "example": "tAp_XW4qvRzKw"
+                        }
+                    },
+                    "required": ["message"],
+                    "visible": ["message", "session_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        },
+        "headers": {
+            "accept": {
+                "type": "string",
+                "description": "Content type accepted by the client.",
+                "default": "application/json"
+            }
+        }
+    },
+    {
+        "name": "AIDBASE__GET_KNOWLEDGE",
+        "description": "Retrieve the knowledge base of a specific chatbot.",
+        "tags": ["chatbot", "knowledge", "get"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/chatbot/{id}/knowledge",
+            "server_url": "https://api.aidbase.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters.",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the chatbot.",
+                            "example": "odguL9hXiB413s3g9ZO3z"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        },
+        "headers": {
+            "accept": {
+                "type": "string",
+                "description": "Content type accepted by the client.",
+                "default": "application/json"
+            }
+        }
+    },
+    {
+    "name": "AIDBASE__LIST_KNOWLEDGE",
+    "description": "Retrieve the list of all knowledge bases.",
+    "tags": ["knowledge", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+        "method": "GET",
+        "path": "/v1/knowledge",
+        "server_url": "https://api.aidbase.ai"
+    },
+    "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "visible": [],
+        "additionalProperties": false
+    },
+    "headers": {
+        "accept": {
+            "type": "string",
+            "description": "Content type accepted by the client.",
+            "default": "application/json"
+        },
+        "Authorization": {
+            "type": "string",
+            "description": "Bearer token for authentication.",
+            "example": "Bearer absk-9U3AXS25JbP3_E00p6hqRra9GnZ1-SZW"
+        }
+    }
+    },
+    {
+        "name": "AIDBASE__UPDATE_KNOWLEDGE",
+        "description": "Add a new knowledge item to a chatbot.",
+        "tags": ["chatbot", "knowledge", "update"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/v1/chatbot/{id}/knowledge",
+            "server_url": "https://api.aidbase.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters.",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the chatbot.",
+                            "example": "odguL9hXiB413s3g9ZO3z"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Knowledge update payload.",
+                    "properties": {
+                        "knowledge_id": {
+                            "type": "string",
+                            "description": "Unique identifier for the knowledge item to update.",
+                            "example": "cd2faf2c-464b-421f-a7b1-b856860551f8"
+                        }
+                    },
+                    "required": ["knowledge_id"],
+                    "visible": ["knowledge_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        },
+        "headers": {
+            "accept": {
+                "type": "string",
+                "description": "Content type accepted by the client.",
+                "default": "application/json"
+            }
+        }
+    },
+    {
+        "name": "AIDBASE__DELETE_KNOWLEDGE",
+        "description": "Remove a knowledge item from a chatbot.  .",
+        "tags": ["chatbot", "knowledge", "delete"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v1/chatbot/{id}/knowledge",
+            "server_url": "https://api.aidbase.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters.",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the chatbot.",
+                            "example": "odguL9hXiB413s3g9ZO3z"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Knowledge delete payload.",
+                    "properties": {
+                        "knowledge_id": {
+                            "type": "string",
+                            "description": "Unique identifier for the knowledge item to delete.",
+                            "example": "cd2faf2c-464b-421f-a7b1-b856860551f8"
+                        }
+                    },
+                    "required": ["knowledge_id"],
+                    "visible": ["knowledge_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        },
+        "headers": {
+            "accept": {
+                "type": "string",
+                "description": "Content type accepted by the client.",
+                "default": "application/json"
+            }
+        }
+    }
+]
