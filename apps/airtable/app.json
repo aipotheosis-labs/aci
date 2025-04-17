@@ -1,10 +1,10 @@
 {
-    "name": "AIRTABLE",
-    "display_name": "Airtable",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/airtable.svg",
-    "provider": "Airtable",
-    "version": "1.0.0",
-    "description": "Airtable is a cloud-based platform that combines the functionality of a database with the visual interface of a spreadsheet. It allows users to organize and track information, collaborate with team members, and create custom applications.",
+    "name": "AIDBASE",
+    "display_name": "AIDBASE",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/aidbase.svg",
+    "provider": "Aidbase, Inc.",
+    "version": "aipolabs_0.0.1",
+    "description": "Integration with Aidbase API to manage resources and workflows.",
     "security_schemes": {
         "api_key": {
             "location": "header",
@@ -14,9 +14,9 @@
     },
     "default_security_credentials_by_scheme": {},
     "categories": [
-        "database",
-        "productivity",
-        "collaboration"
+        "chat",
+        "integration",
+        "workflow"
     ],
     "visibility": "public",
     "active": true

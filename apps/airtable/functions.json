@@ -1,479 +1,329 @@
 [
     {
-        "name": "AIRTABLE__LIST_BASES",
-        "description": "List all bases in Airtable that the user has access to",
-        "tags": [
-            "base",
-            "meta"
-        ],
+        "name": "AIDBASE__GET_ALL_CHATBOTS",
+        "description": "Get all chatbots associated with the user.",
+        "tags": ["chatbot", "list"],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/meta/bases",
-            "server_url": "https://api.airtable.com/v0"
+            "path": "/v1/chatbots",
+            "server_url": "https://api.aidbase.ai"
         },
         "parameters": {
             "type": "object",
             "properties": {
                 "header": {
                     "type": "object",
-                    "description": "Headers for the HTTP request",
+                    "description": "header parameters",
                     "properties": {
-                        "Content-Type": {
+                        "Accept": {
                             "type": "string",
-                            "description": "Content type of the request",
+                            "description": "The supported media type",
                             "default": "application/json"
-                        }
-                    },
-                    "required": ["Content-Type"],
-                    "visible": ["Content-Type"],
-                    "additionalProperties": false
-                },
-                "query": {
-                    "type": "object",
-                    "description": "Query parameters",
-                    "properties": {
-                        "offset": {
-                            "type": "string",
-                            "description": "Pagination offset. Use the offset returned in the previous response to fetch the next page of records."
                         }
                     },
                     "required": [],
-                    "visible": ["offset"],
-                    "additionalProperties": false
-                }
-            },
-            "required": ["header"],
-            "visible": ["header", "query"],
-            "additionalProperties": false
-        }
-    },
-    {
-        "name": "AIRTABLE__GET_BASE_SCHEMA",
-        "description": "Get the schema of tables in a specific base",
-        "tags": [
-            "base",
-            "table",
-            "schema",
-            "meta"
-        ],
-        "visibility": "public",
-        "active": true,
-        "protocol": "rest",
-        "protocol_data": {
-            "method": "GET",
-            "path": "/meta/bases/{base_id}/tables",
-            "server_url": "https://api.airtable.com/v0"
-        },
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "header": {
-                    "type": "object",
-                    "description": "Headers for the HTTP request",
-                    "properties": {
-                        "Content-Type": {
-                            "type": "string",
-                            "description": "Content type of the request",
-                            "default": "application/json"
-                        }
-                    },
-                    "required": ["Content-Type"],
-                    "visible": ["Content-Type"],
-                    "additionalProperties": false
-                },
-                "path": {
-                    "type": "object",
-                    "description": "Path parameters",
-                    "properties": {
-                        "base_id": {
-                            "type": "string",
-                            "description": "ID of the base to retrieve tables from"
-                        }
-                    },
-                    "required": ["base_id"],
-                    "visible": ["base_id"],
-                    "additionalProperties": false
-                },
-                "query": {
-                    "type": "object",
-                    "description": "Query parameters",
-                    "properties": {
-                        "include": {
-                            "type": "array",
-                            "items": {
-                                "type": "string",
-                                "enum": ["visibleFieldIds"]
-                            },
-                            "description": "If specified, additional fields to include in the views object response; currently, this list only allows a single literal value 'visibleFieldIds' (for views of type grid only)"
-                        }
-                    },
-                    "required": [],
-                    "visible": ["include"],
-                    "additionalProperties": false
-                }
-            },
-            "required": ["header", "path"],
-            "visible": ["path", "query"],
-            "additionalProperties": false
-        }
-    },
-    {
-        "name": "AIRTABLE__CREATE_TABLE",
-        "description": "Create a new table in a specific base",
-        "tags": [
-            "base",
-            "table",
-            "create",
-            "meta"
-        ],
-        "visibility": "public",
-        "active": true,
-        "protocol": "rest",
-        "protocol_data": {
-            "method": "POST",
-            "path": "/meta/bases/{base_id}/tables",
-            "server_url": "https://api.airtable.com/v0"
-        },
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "header": {
-                    "type": "object",
-                    "description": "Headers for the HTTP request",
-                    "properties": {
-                        "Content-Type": {
-                            "type": "string",
-                            "description": "Content type of the request",
-                            "default": "application/json"
-                        }
-                    },
-                    "required": ["Content-Type"],
                     "visible": [],
                     "additionalProperties": false
-                },
-                "path": {
-                    "type": "object",
-                    "description": "Path parameters",
-                    "properties": {
-                        "base_id": {
-                            "type": "string",
-                            "description": "ID of the base to create a table in"
-                        }
-                    },
-                    "required": ["base_id"],
-                    "visible": ["base_id"],
-                    "additionalProperties": false
-                },
-                "body": {
-                    "type": "object",
-                    "description": "Table creation parameters",
-                    "properties": {
-                        "name": {
-                            "type": "string",
-                            "description": "Name of the new table"
-                        },
-                        "description": {
-                            "type": "string",
-                            "description": "Description of the new table"
-                        },
-                        "fields": {
-                            "type": "array",
-                            "description": "Fields to create in the new table. A list of JSON objects representing the fields in the table.",
-                            "items": {
-                                "type": "object",
-                                "description": "Field definition",
-                                "properties": {
-                                    "name": {
-                                        "type": "string",
-                                        "description": "Name of the field"
-                                    },
-                                    "description": {
-                                        "type": "string",
-                                        "description": "Description of the field"
-                                    },
-                                    "type": {
-                                        "type": "string",
-                                        "description": "Type of the field",
-                                        "enum": [
-                                            "autoNumber",
-                                            "barcode",
-                                            "button",
-                                            "checkbox",
-                                            "count",
-                                            "createdBy",
-                                            "createdTime",
-                                            "currency",
-                                            "date",
-                                            "dateTime",
-                                            "duration",
-                                            "email",
-                                            "formula",
-                                            "lastModifiedBy",
-                                            "lastModifiedTime",
-                                            "lookup",
-                                            "multilineText",
-                                            "multipleAttachments",
-                                            "multipleCollaborators",
-                                            "multipleRecordLinks",
-                                            "multipleSelects",
-                                            "number",
-                                            "percent",
-                                            "phoneNumber",
-                                            "rating",
-                                            "richText",
-                                            "rollup",
-                                            "singleCollaborator",
-                                            "singleLineText",
-                                            "singleSelect",
-                                            "url"
-                                        ]
-                                    },
-                                    "options": {
-                                        "type": "object",
-                                        "description": "Additional options for the field based on its type",
-                                        "properties": {
-                                            "precision": {
-                                                "type": "integer",
-                                                "description": "For number fields, the number of digits after the decimal point"
-                                            },
-                                            "symbol": {
-                                                "type": "string",
-                                                "description": "For currency fields, the currency symbol to use (e.g., '$')"
-                                            },
-                                            "choices": {
-                                                "type": "array",
-                                                "description": "For singleSelect and multipleSelects fields, the list of available options",
-                                                "items": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "name": {
-                                                            "type": "string",
-                                                            "description": "Display name for the choice"
-                                                        },
-                                                        "color": {
-                                                            "type": "string",
-                                                            "description": "Color for the choice (e.g., 'blue', 'red')"
-                                                        }
-                                                    },
-                                                    "required": ["name"]
-                                                }
-                                            },
-                                            "dateFormat": {
-                                                "type": "object",
-                                                "description": "For date fields, the format of the date",
-                                                "properties": {
-                                                    "name": {
-                                                        "type": "string",
-                                                        "enum": ["local", "friendly", "iso", "european", "us"],
-                                                        "description": "Format name for the date"
-                                                    }
-                                                }
-                                            },
-                                            "timeFormat": {
-                                                "type": "object",
-                                                "description": "For dateTime fields, the format of the time",
-                                                "properties": {
-                                                    "name": {
-                                                        "type": "string",
-                                                        "enum": ["12hour", "24hour"],
-                                                        "description": "Format name for the time"
-                                                    }
-                                                }
-                                            },
-                                            "timeZone": {
-                                                "type": "string",
-                                                "description": "For dateTime fields, the time zone (e.g., 'America/Los_Angeles', 'UTC')"
-                                            },
-                                            "foreignTableId": {
-                                                "type": "string",
-                                                "description": "For multipleRecordLinks fields, the ID of the linked table"
-                                            },
-                                            "inverseForeignTableId": {
-                                                "type": "string",
-                                                "description": "For lookup fields, the ID of the table to look up from"
-                                            },
-                                            "inverseForeignFieldId": {
-                                                "type": "string",
-                                                "description": "For lookup fields, the ID of the field to look up from"
-                                            },
-                                            "relationship": {
-                                                "type": "string",
-                                                "description": "For multipleRecordLinks fields, the relationship type",
-                                                "enum": ["oneToMany", "manyToOne", "manyToMany"]
-                                            },
-                                            "symmetricColumnId": {
-                                                "type": "string",
-                                                "description": "For multipleRecordLinks fields, the ID of the symmetric field in the linked table"
-                                            },
-                                            "isReversed": {
-                                                "type": "boolean",
-                                                "description": "For multipleRecordLinks fields, whether the relationship is reversed"
-                                            },
-                                            "formula": {
-                                                "type": "string",
-                                                "description": "For formula fields, the formula expression"
-                                            },
-                                            "max": {
-                                                "type": "number",
-                                                "description": "For rating fields, the maximum rating value"
-                                            },
-                                            "icon": {
-                                                "type": "string",
-                                                "description": "Icon identifier for fields like checkbox (e.g., 'check', 'x')"
-                                            },
-                                            "color": {
-                                                "type": "string",
-                                                "description": "Color for field display (e.g., 'greenBright', 'red')"
-                                            }
-                                        }
-                                    }
-                                },
-                                "required": ["name", "type"],
-                                "visible": ["name", "description", "type", "options"],
-                                "additionalProperties": false
-                            }
-                        },
-                        "primaryFieldId": {
-                            "type": "string",
-                            "description": "ID of the field to use as the primary field (optional)"
-                        }
-                    },
-                    "required": ["name", "fields"],
-                    "visible": ["name", "description", "fields"],
-                    "additionalProperties": false
                 }
             },
-            "required": ["header", "path", "body"],
-            "visible": ["path", "body"],
+            "required": [],
+            "visible": [],
             "additionalProperties": false
         }
     },
     {
-        "name": "AIRTABLE__LIST_WEBHOOKS",
-        "description": "List all webhooks for a specific base",
-        "tags": [
-            "base",
-            "webhook"
-        ],
+        "name": "AIDBASE__GET_CHATBOT_BY_ID",
+        "description": "Get a specific chatbot by ID.",
+        "tags": ["chatbot", "details"],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/bases/{base_id}/webhooks",
-            "server_url": "https://api.airtable.com/v0"
+            "path": "/v1/chatbot/{id}",
+            "server_url": "https://api.aidbase.ai"
         },
         "parameters": {
             "type": "object",
             "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters.",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the chatbot",
+                            "example": "p-8KP033W9GT8xZMEULqa"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
                 "header": {
                     "type": "object",
-                    "description": "Headers for the HTTP request",
+                    "description": "header parameters",
                     "properties": {
-                        "Content-Type": {
+                        "Accept": {
                             "type": "string",
-                            "description": "Content type of the request",
+                            "description": "The supported media type",
                             "default": "application/json"
                         }
                     },
-                    "required": ["Content-Type"],
-                    "visible": ["Content-Type"],
-                    "additionalProperties": false
-                },
-                "path": {
-                    "type": "object",
-                    "description": "Path parameters",
-                    "properties": {
-                        "base_id": {
-                            "type": "string",
-                            "description": "ID of the base to retrieve webhooks from"
-                        }
-                    },
-                    "required": ["base_id"],
-                    "visible": ["base_id"],
+                    "required": [],
+                    "visible": [],
                     "additionalProperties": false
                 }
             },
-            "required": ["header", "path"],
+            "required": ["path"],
             "visible": ["path"],
             "additionalProperties": false
         }
     },
     {
-        "name": "AIRTABLE__UPDATE_TABLE",
-        "description": "Update an existing table in a specific base",
-        "tags": [
-            "base",
-            "table",
-            "update",
-            "meta"
-        ],
+        "name": "AIDBASE__POST_CHATBOT_REPLY",
+        "description": "Get an AI reply from a chatbot.",
+        "tags": ["chatbot", "reply"],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
         "protocol_data": {
-            "method": "PATCH",
-            "path": "/meta/bases/{base_id}/tables/{table_id}",
-            "server_url": "https://api.airtable.com/v0"
+            "method": "POST",
+            "path": "/v1/chatbot/{id}/reply",
+            "server_url": "https://api.aidbase.ai"
         },
         "parameters": {
             "type": "object",
             "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters.",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the chatbot.",
+                            "example": "odguL9hXiB413s3g9ZO3z"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
                 "header": {
                     "type": "object",
-                    "description": "Headers for the HTTP request",
+                    "description": "header parameters",
                     "properties": {
-                        "Content-Type": {
+                        "Accept": {
                             "type": "string",
-                            "description": "Content type of the request",
+                            "description": "The supported media type",
                             "default": "application/json"
                         }
                     },
-                    "required": ["Content-Type"],
-                    "visible": ["Content-Type"],
-                    "additionalProperties": false
-                },
-                "path": {
-                    "type": "object",
-                    "description": "Path parameters",
-                    "properties": {
-                        "base_id": {
-                            "type": "string",
-                            "description": "ID of the base containing the table"
-                        },
-                        "table_id": {
-                            "type": "string",
-                            "description": "ID of the table to update"
-                        }
-                    },
-                    "required": ["base_id", "table_id"],
-                    "visible": ["base_id", "table_id"],
+                    "required": [],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "body": {
                     "type": "object",
-                    "description": "Table update parameters",
+                    "description": "Reply payload.",
                     "properties": {
-                        "name": {
+                        "message": {
                             "type": "string",
-                            "description": "New name for the table"
+                            "description": "The reply message to send.",
+                            "example": "How can I get started with Aidbase API?"
                         },
-                        "description": {
+                        "session_id": {
                             "type": "string",
-                            "description": "New description for the table"
+                            "description": "Optional session identifier for the chatbot.",
+                            "example": "tAp_XW4qvRzKw"
                         }
                     },
-                    "required": [],
-                    "visible": ["name", "description"],
+                    "required": ["message"],
+                    "visible": ["message", "session_id"],
                     "additionalProperties": false
                 }
             },
-            "required": ["header", "path", "body"],
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIDBASE__GET_CHATBOT_KNOWLEDGE",
+        "description": "Get all knowledge items associated with a chatbot.",
+        "tags": ["chatbot", "knowledge", "get"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/chatbot/{id}/knowledge",
+            "server_url": "https://api.aidbase.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters.",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the chatbot.",
+                            "example": "odguL9hXiB413s3g9ZO3z"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIDBASE__PUT_CHATBOT_KNOWLEDGE",
+        "description": "Add a new knowledge item to a chatbot.",
+        "tags": ["chatbot", "knowledge", "update"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/v1/chatbot/{id}/knowledge",
+            "server_url": "https://api.aidbase.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters.",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the chatbot.",
+                            "example": "odguL9hXiB413s3g9ZO3z"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Knowledge update payload.",
+                    "properties": {
+                        "knowledge_id": {
+                            "type": "string",
+                            "description": "Unique identifier for the knowledge item to update.",
+                            "example": "cd2faf2c-464b-421f-a7b1-b856860551f8"
+                        }
+                    },
+                    "required": ["knowledge_id"],
+                    "visible": ["knowledge_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIDBASE__REMOVE_CHATBOT_KNOWLEDGE",
+        "description": "Remove a knowledge item from a chatbot.",
+        "tags": ["chatbot", "knowledge", "delete"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v1/chatbot/{id}/knowledge",
+            "server_url": "https://api.aidbase.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters.",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier for the chatbot.",
+                            "example": "odguL9hXiB413s3g9ZO3z"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Knowledge delete payload.",
+                    "properties": {
+                        "knowledge_id": {
+                            "type": "string",
+                            "description": "Unique identifier for the knowledge item to delete.",
+                            "example": "cd2faf2c-464b-421f-a7b1-b856860551f8"
+                        }
+                    },
+                    "required": ["knowledge_id"],
+                    "visible": ["knowledge_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
             "visible": ["path", "body"],
             "additionalProperties": false
         }
     }
-] 
+]
