@@ -6,6 +6,7 @@ The schemas follow OpenAI Responses API function calling schema, ensuring compat
 with OpenAI's function calling capabilities. This allows the LLM to dynamically find
 and use functions based on user requests without needing to know all available functions in advance.
 """
+
 ACI_SEARCH_FUNCTIONS_SCHEMA = {
     "type": "function",
     "name": "ACI_SEARCH_FUNCTIONS",
@@ -33,7 +34,7 @@ ACI_SEARCH_FUNCTIONS_SCHEMA = {
         },
         "required": [],
         "additionalProperties": False,
-    }
+    },
 }
 
 ACI_GET_FUNCTION_DEFINITION_SCHEMA = {
@@ -50,7 +51,7 @@ ACI_GET_FUNCTION_DEFINITION_SCHEMA = {
         },
         "required": ["function_name"],
         "additionalProperties": False,
-    }
+    },
 }
 
 ACI_EXECUTE_FUNCTION_SCHEMA = {
@@ -72,7 +73,7 @@ ACI_EXECUTE_FUNCTION_SCHEMA = {
         },
         "required": ["function_name", "function_arguments"],
         "additionalProperties": False,
-    }
+    },
 }
 
 ACI_META_FUNCTIONS_SCHEMA_LIST = [

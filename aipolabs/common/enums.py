@@ -80,6 +80,7 @@ class FunctionDefinitionFormat(StrEnum):
     ANTHROPIC = "anthropic"
     OPENAI_RESPONSES = "openai_responses"
 
+
 class ClientIdentityProvider(StrEnum):
     GOOGLE = "google"
     # GITHUB = "github"

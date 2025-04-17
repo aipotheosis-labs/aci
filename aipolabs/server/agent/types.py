@@ -1,10 +1,15 @@
-from pydantic import BaseModel
-from typing import List
+from pydantic import BaseModel, Field
+
 
 class ToolInvocation(BaseModel):
-    toolCallId: str
-    toolName: str
+    tool_call_id: str = Field(alias="toolCallId")
+    tool_name: str = Field(alias="toolName")
     step: int
     state: str | None = None
     args: dict | None = None
-    result: dict | List[dict] | None = None
+    result: dict | list[dict] | None = None
+
+class ClientMessage(BaseModel):
+    role: str
+    content: str
+    tool_invocations: list[ToolInvocation] | None = Field(default=None, alias="toolInvocations")

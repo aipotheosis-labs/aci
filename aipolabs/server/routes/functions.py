@@ -1,4 +1,4 @@
-from typing import Annotated, List
+from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Query
 from openai import OpenAI
@@ -68,7 +68,7 @@ async def list_functions(
 async def search_functions(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[FunctionsSearch, Query()],
-) -> list[BasicFunctionDefinition | OpenAIFunctionDefinition | AnthropicFunctionDefinition]:
+) -> list[BasicFunctionDefinition | OpenAIFunctionDefinition | OpenAIResponsesFunctionDefinition | AnthropicFunctionDefinition]:
     """
     Returns the basic information of a list of functions.
     """
@@ -142,7 +142,7 @@ async def get_function_definition(
         description="The format to use for the function definition (e.g., 'openai' or 'anthropic'). "
         "There is also a 'basic' format that only returns name and description.",
     ),
-) -> OpenAIFunctionDefinition | AnthropicFunctionDefinition | BasicFunctionDefinition:
+) -> BasicFunctionDefinition | OpenAIFunctionDefinition | OpenAIResponsesFunctionDefinition | AnthropicFunctionDefinition:
     """
     Return the function definition that can be used directly by LLM.
     The actual content depends on the FunctionDefinitionFormat and the function itself.
@@ -200,7 +200,7 @@ async def execute(
             "function_execute": body.model_dump(exclude_none=True),
         },
     )
-    
+
     # Use the service method to execute the function
     result = await execute_function(
         db_session=context.db_session,
@@ -217,7 +217,12 @@ async def execute(
 # TODO: move to agent/tools.py or a util function
 def format_function_definition(
     function: Function, format: FunctionDefinitionFormat
-) -> BasicFunctionDefinition | OpenAIFunctionDefinition | OpenAIResponsesFunctionDefinition | AnthropicFunctionDefinition:
+) -> (
+    BasicFunctionDefinition
+    | OpenAIFunctionDefinition
+    | OpenAIResponsesFunctionDefinition
+    | AnthropicFunctionDefinition
+):
     match format:
         case FunctionDefinitionFormat.BASIC:
             return BasicFunctionDefinition(
@@ -239,7 +244,7 @@ def format_function_definition(
                 type="function",
                 name=function.name,
                 description=function.description,
-                parameters=processor.filter_visible_properties(function.parameters)
+                parameters=processor.filter_visible_properties(function.parameters),
             )
         case FunctionDefinitionFormat.ANTHROPIC:
             return AnthropicFunctionDefinition(
@@ -250,18 +255,19 @@ def format_function_definition(
         case _:
             raise InvalidFunctionDefinitionFormat(f"Invalid format: {format}")
 
+
 async def execute_function(
-    db_session,
-    project,
-    agent,
+    db_session: Session,
+    project: Any,
+    agent: Any,
     function_name: str,
     function_input: dict,
     linked_account_owner_id: str,
-    openai_client=None,
+    openai_client: OpenAI | None = None,
 ) -> FunctionExecutionResult:
     """
     Execute a function with the given parameters.
-    
+
     Args:
         db_session: Database session
         project: Project object
@@ -270,10 +276,10 @@ async def execute_function(
         function_input: Input parameters for the function
         linked_account_owner_id: ID of the linked account owner
         openai_client: Optional OpenAI client for custom instructions validation
-        
+
     Returns:
         FunctionExecutionResult: Result of the function execution
-        
+
     Raises:
         FunctionNotFound: If the function is not found
         AppConfigurationNotFound: If the app configuration is not found
@@ -382,7 +388,7 @@ async def execute_function(
     security_credentials_response: SecurityCredentialsResponse = await scm.get_security_credentials(
         function.app, linked_account
     )
-    
+
     logger.info(
         "fetched security credentials for function execution",
         extra={
@@ -395,7 +401,7 @@ async def execute_function(
             "is_updated": security_credentials_response.is_updated,
         },
     )
-    
+
     if security_credentials_response.is_updated:
         if security_credentials_response.is_app_default_credentials:
             crud.apps.update_app_default_security_credentials(
@@ -434,7 +440,7 @@ async def execute_function(
         security_credentials_response.scheme,
         security_credentials_response.credentials,
     )
-    
+
     if not execution_result.success:
         logger.error(
             "function execution result error",
@@ -443,33 +449,38 @@ async def execute_function(
                 "error": execution_result.error,
             },
         )
-    
+
     return execution_result
 
 
 async def get_functions_definitions(
     db_session: Session,
-    function_names: List[str],
+    function_names: list[str],
     format: FunctionDefinitionFormat = FunctionDefinitionFormat.BASIC,
-) -> List[BasicFunctionDefinition | OpenAIFunctionDefinition | OpenAIResponsesFunctionDefinition | AnthropicFunctionDefinition]:
+) -> list[
+    BasicFunctionDefinition
+    | OpenAIFunctionDefinition
+    | OpenAIResponsesFunctionDefinition
+    | AnthropicFunctionDefinition
+]:
     """
     Get function definitions for a list of function names.
-    
+
     Args:
         db_session: Database session
         function_names: List of function names to get definitions for
         format: Format of the function definition to return
-        
+
     Returns:
         List of function definitions in the requested format
     """
     # Query functions by name
     functions = db_session.query(Function).filter(Function.name.in_(function_names)).all()
-    
+
     # Get function definitions
     function_definitions = []
     for function in functions:
         function_definition = format_function_definition(function, format)
         function_definitions.append(function_definition)
-    
+
     return function_definitions

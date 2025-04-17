@@ -192,6 +192,7 @@ class OpenAIResponsesFunctionDefinition(BaseModel):
     description: str
     parameters: dict
 
+
 class AnthropicFunctionDefinition(BaseModel):
     name: str
     description: str
