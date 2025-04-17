@@ -10,7 +10,6 @@
             "location": "header",
             "name": "Authorization",
             "prefix": "Token",
-            "description": "API key for authentication"
         }
     },
     "default_security_credentials_by_scheme": {},
