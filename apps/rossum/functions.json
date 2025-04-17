@@ -52,7 +52,7 @@
     },
     {
         "name": "ROSSUM__GET_QUEUES",
-        "description": "获取 Rossum 系统中的所有队列列表",
+        "description": "get Rossum all queues",
         "tags": [
             "rossum",
             "queues",
