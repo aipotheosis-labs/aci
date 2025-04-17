@@ -25,7 +25,7 @@
                         }
                     },
                     "required": ["accept"],
-                    "visible": ["accept"],
+                    "visible": [],
                     "additionalProperties": false
                 }
             },
@@ -65,7 +65,7 @@
                         }
                     },
                     "required": ["accept", "content-type"],
-                    "visible": ["accept", "content-type"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "body": {
@@ -140,7 +140,7 @@
                         }
                     },
                     "required": ["accept", "content-type"],
-                    "visible": ["accept", "content-type"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "body": {
@@ -190,14 +190,10 @@
                             "type": "string",
                             "description": "Content type",
                             "default": "application/json"
-                        },
-                        "api-key": {
-                            "type": "string",
-                            "description": "API key for authentication"
                         }
                     },
-                    "required": ["accept", "content-type", "api-key"],
-                    "visible": ["accept", "content-type", "api-key"],
+                    "required": ["accept", "content-type"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "body": {
@@ -312,7 +308,7 @@
                         }
                     },
                     "required": ["accept"],
-                    "visible": ["accept"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "path": {
