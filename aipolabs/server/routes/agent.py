@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from aipolabs.common.enums import FunctionDefinitionFormat
 from aipolabs.common.logging_setup import get_logger
+from aipolabs.common.schemas.function import OpenAIResponsesFunctionDefinition
 from aipolabs.server import config
 from aipolabs.server import dependencies as deps
 from aipolabs.server.agent.prompt import (
@@ -15,7 +16,6 @@ from aipolabs.server.agent.prompt import (
     openai_chat_stream,
 )
 from aipolabs.server.routes.functions import get_functions_definitions
-from aipolabs.common.schemas.function import OpenAIResponsesFunctionDefinition
 
 router = APIRouter()
 logger = get_logger(__name__)
