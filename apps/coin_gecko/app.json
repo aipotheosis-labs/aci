@@ -9,8 +9,7 @@
         "api_key": {
             "location": "query",
             "name": "x_cg_pro_api_key"
-        },
-        "no_auth": {}
+        }
     },
     "default_security_credentials_by_scheme": {},
     "categories": ["cryptocurrency", "finance", "market_data"],
