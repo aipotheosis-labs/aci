@@ -9,10 +9,7 @@
         "protocol_data": {
           "method": "GET",
           "path": "/resources/api_public/credentials",
-          "server_url": "https://api.factorialhr.com/api/2025-04-01",
-          "headers": {
-            "accept": "application/json"
-          }
+          "server_url": "https://api.factorialhr.com/api/2025-04-01"
         },
         "parameters": {
           "type": "object",
@@ -41,10 +38,7 @@
         "protocol_data": {
           "method": "GET",
           "path": "/resources/api_public/webhook_subscriptions",
-          "server_url": "https://api.factorialhr.com/api/2025-04-01",
-          "headers": {
-            "accept": "application/json"
-          }
+          "server_url": "https://api.factorialhr.com/api/2025-04-01"
         },
         "parameters": {
           "type": "object",
@@ -90,15 +84,25 @@
         "protocol_data": {
           "method": "POST",
           "path": "/resources/api_public/webhook_subscriptions",
-          "server_url": "https://api.factorialhr.com/api/2025-04-01",
-          "headers": {
-            "accept": "application/json",
-            "content-type": "application/json"
-          }
+          "server_url": "https://api.factorialhr.com/api/2025-04-01"
         },
         "parameters": {
           "type": "object",
           "properties": {
+            "header": {
+              "type": "object",
+              "description": "Headers for the HTTP request",
+              "properties": {
+                  "Content-Type": {
+                      "type": "string",
+                      "description": "Content type of the request",
+                      "default": "application/json"
+                  }
+              },
+              "required": ["Content-Type"],
+              "visible": [],
+              "additionalProperties": false
+          },
             "body": {
               "type": "object",
               "description": "Webhook subscription details",
