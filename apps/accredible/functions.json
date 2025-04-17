@@ -32,7 +32,7 @@
                         }
                     },
                     "required": ["accept", "content-type"],
-                    "visible": ["accept", "content-type"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "body": {
@@ -249,7 +249,7 @@
                         }
                     },
                     "required": ["accept", "content-type"],
-                    "visible": ["accept", "content-type"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "body": {
@@ -359,7 +359,7 @@
                         }
                     },
                     "required": ["accept", "content-type"],
-                    "visible": ["accept", "content-type"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "body": {
@@ -525,7 +525,7 @@
                         }
                     },
                     "required": ["accept", "content-type"],
-                    "visible": ["accept", "content-type"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "body": {
@@ -597,7 +597,7 @@
                         }
                     },
                     "required": ["accept", "content-type"],
-                    "visible": ["accept", "content-type"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "body": {
