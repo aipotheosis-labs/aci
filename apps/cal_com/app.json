@@ -1,7 +1,7 @@
 {
   "name": "CAL_COM",
   "display_name": "CAL.COM",
-  "logo": "",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/acl_com.svg",
   "provider": "Cal.com, Inc.",
   "version": "aipolabs_0.0.1",
   "description": "",
