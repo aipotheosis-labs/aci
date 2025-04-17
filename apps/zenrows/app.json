@@ -1,0 +1,23 @@
+{
+    "name": "ZENROWS",
+    "display_name": "ZenRows",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/zenrows.svg",
+    "provider": "ZenRows",
+    "version": "1.0.0",
+    "description": "ZenRows is a powerful web scraping API that simplifies data extraction from any website. It handles rotating proxies, headless browsers, CAPTCHAs, and advanced anti-bot systems, providing a seamless solution for developers and businesses to collect web data efficiently.",
+    "security_schemes": {
+        "api_key": {
+            "location": "query",
+            "name": "apikey",
+            "prefix": null
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "web_scraping",
+        "data_extraction",
+        "automation"
+    ],
+    "visibility": "public",
+    "active": true
+}
