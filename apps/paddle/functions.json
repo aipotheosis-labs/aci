@@ -33,7 +33,7 @@
                         }
                     },
                     "required": ["Content-Type", "Paddle-Version"],
-                    "visible": ["Content-Type", "Paddle-Version"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "body": {
@@ -57,20 +57,15 @@
                         "custom_data": {
                             "type": "object",
                             "description": "A key-value store for recording customer-related properties",
-                            "properties": {
-                                "example_key": {
-                                    "type": "string",
-                                    "description": "Example custom data field"
-                                }
-                            },
+                            "properties": {},
                             "required": [],
-                            "visible": ["example_key"],
+                            "visible": [],
                             "additionalProperties": true,
                             "default": null
                         }
                     },
                     "required": ["email"],
-                    "visible": ["email", "name", "locale", "custom_data"],
+                    "visible": ["email", "name", "locale"],
                     "additionalProperties": false
                 }
             },
@@ -113,7 +108,7 @@
                         }
                     },
                     "required": ["Content-Type", "Paddle-Version"],
-                    "visible": ["Content-Type", "Paddle-Version"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "query": {
@@ -205,7 +200,7 @@
                         }
                     },
                     "required": ["Content-Type", "Paddle-Version"],
-                    "visible": ["Content-Type", "Paddle-Version"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "path": {
@@ -261,7 +256,7 @@
                         }
                     },
                     "required": ["Content-Type", "Paddle-Version"],
-                    "visible": ["Content-Type", "Paddle-Version"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "path": {
@@ -296,20 +291,15 @@
                         "custom_data": {
                             "type": "object",
                             "description": "A key-value store for recording customer-related properties",
-                            "properties": {
-                                "example_key": {
-                                    "type": "string",
-                                    "description": "Example custom data field"
-                                }
-                            },
+                            "properties": {},
                             "required": [],
-                            "visible": ["example_key"],
+                            "visible": [],
                             "additionalProperties": true,
                             "default": null
                         }
                     },
                     "required": [],
-                    "visible": ["email", "name", "locale", "custom_data"],
+                    "visible": ["email", "name", "locale"],
                     "additionalProperties": false
                 }
             },
@@ -352,7 +342,7 @@
                         }
                     },
                     "required": ["Content-Type", "Paddle-Version"],
-                    "visible": ["Content-Type", "Paddle-Version"],
+                    "visible": [],
                     "additionalProperties": false
                 },
                 "body": {
@@ -379,20 +369,15 @@
                         "custom_data": {
                             "type": "object",
                             "description": "A key-value store for recording product-related properties",
-                            "properties": {
-                                "example_key": {
-                                    "type": "string",
-                                    "description": "Example custom data field"
-                                }
-                            },
+                            "properties": {},
                             "required": [],
-                            "visible": ["example_key"],
+                            "visible": [],
                             "additionalProperties": true,
                             "default": null
                         }
                     },
                     "required": ["name", "tax_category"],
-                    "visible": ["name", "tax_category", "description", "image_url", "custom_data"],
+                    "visible": ["name", "tax_category", "description", "image_url"],
                     "additionalProperties": false
                 }
             },
