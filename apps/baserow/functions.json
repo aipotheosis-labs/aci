@@ -1,7 +1,7 @@
 [
     {
         "name": "BASEROW__LIST_TEAMS_FIELDS",
-        "description": "List all fields in the Teams table (ID: 506601)",
+        "description": "List all fields in the Teams table",
         "tags": [
             "teams",
             "fields",
@@ -12,20 +12,34 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/database/fields/table/506601/",
-            "server_url": "https://api.baserow.io/api"
+            "path": "/api/database/fields/table/{table_id}/",
+            "server_url": "https://api.baserow.io"
         },
         "parameters": {
             "type": "object",
-            "properties": {},
-            "required": [],
-            "visible": [],
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "table_id": {
+                            "type": "integer",
+                            "description": "The unique identifier of the table"
+                        }
+                    },
+                    "required": ["table_id"],
+                    "visible": ["table_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
             "additionalProperties": false
         }
     },
     {
         "name": "BASEROW__LIST_TEAMS_ROWS",
-        "description": "List all rows in the Teams table (ID: 506601) with pagination and filtering options",
+        "description": "List all rows in the Teams table with pagination and filtering options",
         "tags": [
             "teams",
             "rows",
@@ -36,12 +50,25 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/database/rows/table/506601/",
-            "server_url": "https://api.baserow.io/api"
+            "path": "/api/database/rows/table/{table_id}/",
+            "server_url": "https://api.baserow.io"
         },
         "parameters": {
             "type": "object",
             "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "table_id": {
+                            "type": "integer",
+                            "description": "The unique identifier of the table"
+                        }
+                    },
+                    "required": ["table_id"],
+                    "visible": ["table_id"],
+                    "additionalProperties": false
+                },
                 "query": {
                     "type": "object",
                     "description": "Query parameters for filtering and pagination",
@@ -123,14 +150,14 @@
                     "additionalProperties": false
                 }
             },
-            "required": [],
-            "visible": ["query"],
+            "required": ["path"],
+            "visible": ["path", "query"],
             "additionalProperties": false
         }
     },
     {
         "name": "BASEROW__GET_TEAMS_ROW",
-        "description": "Get a single row from the Teams table (ID: 506601)",
+        "description": "Get a single row from the Teams table",
         "tags": [
             "teams",
             "rows",
@@ -141,8 +168,8 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/database/rows/table/506601/{row_id}/",
-            "server_url": "https://api.baserow.io/api"
+            "path": "/api/database/rows/table/{table_id}/{row_id}/",
+            "server_url": "https://api.baserow.io"
         },
         "parameters": {
             "type": "object",
@@ -151,13 +178,17 @@
                     "type": "object",
                     "description": "Path parameters",
                     "properties": {
+                        "table_id": {
+                            "type": "integer",
+                            "description": "The unique identifier of the table"
+                        },
                         "row_id": {
                             "type": "integer",
                             "description": "The unique identifier of the row that is requested"
                         }
                     },
-                    "required": ["row_id"],
-                    "visible": ["row_id"],
+                    "required": ["table_id", "row_id"],
+                    "visible": ["table_id", "row_id"],
                     "additionalProperties": false
                 },
                 "query": {
@@ -182,7 +213,7 @@
     },
     {
         "name": "BASEROW__CREATE_TEAMS_ROW",
-        "description": "Create a new row in the Teams table (ID: 506601)",
+        "description": "Create a new row in the Teams table",
         "tags": [
             "teams",
             "rows",
@@ -193,12 +224,25 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "POST",
-            "path": "/database/rows/table/506601/",
-            "server_url": "https://api.baserow.io/api"
+            "path": "/api/database/rows/table/{table_id}/",
+            "server_url": "https://api.baserow.io"
         },
         "parameters": {
             "type": "object",
             "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "table_id": {
+                            "type": "integer",
+                            "description": "The unique identifier of the table"
+                        }
+                    },
+                    "required": ["table_id"],
+                    "visible": ["table_id"],
+                    "additionalProperties": false
+                },
                 "query": {
                     "type": "object",
                     "description": "Query parameters",
@@ -237,14 +281,14 @@
                     "additionalProperties": true
                 }
             },
-            "required": ["body"],
-            "visible": ["query", "body"],
+            "required": ["path", "body"],
+            "visible": ["path", "query", "body"],
             "additionalProperties": false
         }
     },
     {
         "name": "BASEROW__UPDATE_TEAMS_ROW",
-        "description": "Update an existing row in the Teams table (ID: 506601)",
+        "description": "Update an existing row in the Teams table",
         "tags": [
             "teams",
             "rows",
@@ -255,8 +299,8 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "PATCH",
-            "path": "/database/rows/table/506601/{row_id}/",
-            "server_url": "https://api.baserow.io/api"
+            "path": "/api/database/rows/table/{table_id}/{row_id}/",
+            "server_url": "https://api.baserow.io"
         },
         "parameters": {
             "type": "object",
@@ -265,13 +309,17 @@
                     "type": "object",
                     "description": "Path parameters",
                     "properties": {
+                        "table_id": {
+                            "type": "integer",
+                            "description": "The unique identifier of the table"
+                        },
                         "row_id": {
                             "type": "integer",
                             "description": "The unique identifier of the row that needs to be updated"
                         }
                     },
-                    "required": ["row_id"],
-                    "visible": ["row_id"],
+                    "required": ["table_id", "row_id"],
+                    "visible": ["table_id", "row_id"],
                     "additionalProperties": false
                 },
                 "query": {
