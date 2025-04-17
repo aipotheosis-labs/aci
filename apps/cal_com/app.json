@@ -7,8 +7,8 @@
   "description": "",
   "security_schemes": {
     "api_key": {
-      "location": "body",
-      "name": "apikey",
+      "location": "query",
+      "name": "apiKey",
       "prefix": null
     }
   },
