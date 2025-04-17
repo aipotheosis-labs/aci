@@ -68,7 +68,12 @@ async def list_functions(
 async def search_functions(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[FunctionsSearch, Query()],
-) -> list[BasicFunctionDefinition | OpenAIFunctionDefinition | OpenAIResponsesFunctionDefinition | AnthropicFunctionDefinition]:
+) -> list[
+    BasicFunctionDefinition
+    | OpenAIFunctionDefinition
+    | OpenAIResponsesFunctionDefinition
+    | AnthropicFunctionDefinition
+]:
     """
     Returns the basic information of a list of functions.
     """
@@ -142,7 +147,12 @@ async def get_function_definition(
         description="The format to use for the function definition (e.g., 'openai' or 'anthropic'). "
         "There is also a 'basic' format that only returns name and description.",
     ),
-) -> BasicFunctionDefinition | OpenAIFunctionDefinition | OpenAIResponsesFunctionDefinition | AnthropicFunctionDefinition:
+) -> (
+    BasicFunctionDefinition
+    | OpenAIFunctionDefinition
+    | OpenAIResponsesFunctionDefinition
+    | AnthropicFunctionDefinition
+):
     """
     Return the function definition that can be used directly by LLM.
     The actual content depends on the FunctionDefinitionFormat and the function itself.

@@ -9,6 +9,7 @@ class ToolInvocation(BaseModel):
     args: dict | None = None
     result: dict | list[dict] | None = None
 
+
 class ClientMessage(BaseModel):
     role: str
     content: str

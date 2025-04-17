@@ -21,6 +21,7 @@ router = APIRouter()
 logger = get_logger(__name__)
 openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
 
+
 class AgentChat(BaseModel):
     id: str
     linked_account_owner_id: str
@@ -29,7 +30,8 @@ class AgentChat(BaseModel):
     messages: list[ClientMessage]
 
 
-@router.post("/chat", 
+@router.post(
+    "/chat",
     response_class=StreamingResponse,
     summary="Chat with AI agent",
     description="Handle chat requests and stream responses with tool calling capabilities",
@@ -49,19 +51,23 @@ async def handle_chat(
     Returns:
         StreamingResponse: Streamed chat completion responses
     """
-    logger.info(
-        "Processing chat request",
-        extra={"project_id": context.project.id}
-    )
+    logger.info("Processing chat request", extra={"project_id": context.project.id})
 
     openai_messages = convert_to_openai_messages(agent_chat.messages)
     # TODO: support different meta function mode.
-    selected_functions = await get_functions_definitions(context.db_session, agent_chat.selected_functions, FunctionDefinitionFormat.OPENAI_RESPONSES)
-    logger.info("Selected functions", extra={"functions": [func.model_dump() for func in selected_functions]})
+    selected_functions = await get_functions_definitions(
+        context.db_session, agent_chat.selected_functions, FunctionDefinitionFormat.OPENAI_RESPONSES
+    )
+    logger.info(
+        "Selected functions",
+        extra={"functions": [func.model_dump() for func in selected_functions]},
+    )
 
-    tools = [func for func in selected_functions if isinstance(func, OpenAIResponsesFunctionDefinition)]
-    
+    tools = [
+        func for func in selected_functions if isinstance(func, OpenAIResponsesFunctionDefinition)
+    ]
+
     response = StreamingResponse(openai_chat_stream(openai_messages, tools=tools))
-    response.headers['x-vercel-ai-data-stream'] = 'v1'
-    
+    response.headers["x-vercel-ai-data-stream"] = "v1"
+
     return response
