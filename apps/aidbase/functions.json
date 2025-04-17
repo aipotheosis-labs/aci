@@ -1,7 +1,7 @@
 [
     {
-        "name": "AIDBASE__LIST_CHATBOTS",
-        "description": "Retrieve a list of all chatbots.",
+        "name": "AIDBASE__GET_ALL_CHATBOTS",
+        "description": "Get all chatbots associated with the user.",
         "tags": ["chatbot", "list"],
         "visibility": "public",
         "active": true,
@@ -13,22 +13,30 @@
         },
         "parameters": {
             "type": "object",
-            "properties": {},
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
             "required": [],
             "visible": [],
             "additionalProperties": false
-        },
-        "headers": {
-            "accept": {
-                "type": "string",
-                "description": "Content type accepted by the client.",
-                "default": "application/json"
-            }
         }
     },
     {
-        "name": "AIDBASE__GET_CHATBOT_DETAILS",
-        "description": "Retrieve details of a specific chatbot by ID.",
+        "name": "AIDBASE__GET_CHATBOT_BY_ID",
+        "description": "Get a specific chatbot by ID.",
         "tags": ["chatbot", "details"],
         "visibility": "public",
         "active": true,
@@ -54,23 +62,30 @@
                     "required": ["id"],
                     "visible": ["id"],
                     "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
                 }
             },
             "required": ["path"],
             "visible": ["path"],
             "additionalProperties": false
-        },
-        "headers": {
-            "accept": {
-                "type": "string",
-                "description": "Content type accepted by the client.",
-                "default": "application/json"
-            }
         }
     },
     {
-        "name": "AIDBASE__SEND_REPLY",
-        "description": "Send a reply to a specific chatbot.",
+        "name": "AIDBASE__POST_CHATBOT_REPLY",
+        "description": "Get an AI reply from a chatbot.",
         "tags": ["chatbot", "reply"],
         "visibility": "public",
         "active": true,
@@ -97,6 +112,20 @@
                     "visible": ["id"],
                     "additionalProperties": false
                 },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                },
                 "body": {
                     "type": "object",
                     "description": "Reply payload.",
@@ -120,18 +149,11 @@
             "required": ["path", "body"],
             "visible": ["path", "body"],
             "additionalProperties": false
-        },
-        "headers": {
-            "accept": {
-                "type": "string",
-                "description": "Content type accepted by the client.",
-                "default": "application/json"
-            }
         }
     },
     {
-        "name": "AIDBASE__GET_KNOWLEDGE",
-        "description": "Retrieve the knowledge base of a specific chatbot.",
+        "name": "AIDBASE__GET_CHATBOT_KNOWLEDGE",
+        "description": "Get all knowledge items associated with a chatbot.",
         "tags": ["chatbot", "knowledge", "get"],
         "visibility": "public",
         "active": true,
@@ -157,49 +179,29 @@
                     "required": ["id"],
                     "visible": ["id"],
                     "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
                 }
             },
             "required": ["path"],
             "visible": ["path"],
             "additionalProperties": false
-        },
-        "headers": {
-            "accept": {
-                "type": "string",
-                "description": "Content type accepted by the client.",
-                "default": "application/json"
-            }
         }
     },
     {
-    "name": "AIDBASE__LIST_KNOWLEDGE",
-    "description": "Retrieve the list of all knowledge bases.",
-    "tags": ["knowledge", "list"],
-    "visibility": "public",
-    "active": true,
-    "protocol": "rest",
-    "protocol_data": {
-        "method": "GET",
-        "path": "/v1/knowledge",
-        "server_url": "https://api.aidbase.ai"
-    },
-    "parameters": {
-        "type": "object",
-        "properties": {},
-        "required": [],
-        "visible": [],
-        "additionalProperties": false
-    },
-    "headers": {
-        "accept": {
-            "type": "string",
-            "description": "Content type accepted by the client.",
-            "default": "application/json"
-        }
-    }
-    },
-    {
-        "name": "AIDBASE__UPDATE_KNOWLEDGE",
+        "name": "AIDBASE__PUT_CHATBOT_KNOWLEDGE",
         "description": "Add a new knowledge item to a chatbot.",
         "tags": ["chatbot", "knowledge", "update"],
         "visibility": "public",
@@ -227,6 +229,20 @@
                     "visible": ["id"],
                     "additionalProperties": false
                 },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                },
                 "body": {
                     "type": "object",
                     "description": "Knowledge update payload.",
@@ -245,17 +261,10 @@
             "required": ["path", "body"],
             "visible": ["path", "body"],
             "additionalProperties": false
-        },
-        "headers": {
-            "accept": {
-                "type": "string",
-                "description": "Content type accepted by the client.",
-                "default": "application/json"
-            }
         }
     },
     {
-        "name": "AIDBASE__DELETE_KNOWLEDGE",
+        "name": "AIDBASE__REMOVE_CHATBOT_KNOWLEDGE",
         "description": "Remove a knowledge item from a chatbot.",
         "tags": ["chatbot", "knowledge", "delete"],
         "visibility": "public",
@@ -283,6 +292,20 @@
                     "visible": ["id"],
                     "additionalProperties": false
                 },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                },
                 "body": {
                     "type": "object",
                     "description": "Knowledge delete payload.",
@@ -301,13 +324,6 @@
             "required": ["path", "body"],
             "visible": ["path", "body"],
             "additionalProperties": false
-        },
-        "headers": {
-            "accept": {
-                "type": "string",
-                "description": "Content type accepted by the client.",
-                "default": "application/json"
-            }
         }
     }
 ]
