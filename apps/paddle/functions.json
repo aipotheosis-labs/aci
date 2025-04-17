@@ -65,7 +65,7 @@
                         }
                     },
                     "required": ["email"],
-                    "visible": ["email", "name", "locale"],
+                    "visible": ["email", "name", "locale","custom_data"],
                     "additionalProperties": false
                 }
             },
@@ -299,7 +299,7 @@
                         }
                     },
                     "required": [],
-                    "visible": ["email", "name", "locale"],
+                    "visible": ["email", "name", "locale","custom_data"],
                     "additionalProperties": false
                 }
             },
@@ -377,7 +377,7 @@
                         }
                     },
                     "required": ["name", "tax_category"],
-                    "visible": ["name", "tax_category", "description", "image_url"],
+                    "visible": ["name", "tax_category", "description", "image_url","custom_data"],
                     "additionalProperties": false
                 }
             },
