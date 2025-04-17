@@ -13,6 +13,10 @@ from aipolabs.common.enums import SecurityScheme
 def _encrypt_value(value: str) -> str:
     """Encrypt a string value and return base64-encoded result."""
     encrypted_bytes = encryption.encrypt(value.encode("utf-8"))
+    # The bytes returned by the encryption.encrypt method can be any bytes,
+    # which is not always valid for utf-8 decoding, so we need to encode it
+    # using base64 first to ensure it's a valid bytes for utf-8. Then, we
+    # decode it back to a string using utf-8.
     return base64.b64encode(encrypted_bytes).decode("utf-8")
 
 
@@ -83,7 +87,7 @@ class EncryptedSecurityCredentials(TypeDecorator[dict]):
 
     def process_bind_param(self, value: dict | None, dialect: Dialect) -> dict | None:
         if value is not None:
-            encrypted_value = value.copy()  # Avoid modifying the original dict
+            encrypted_value = copy.deepcopy(value)  # Avoid modifying the original dict
 
             # TODO: if we add a new field or rename a field in the future,
             # we need to update the process_result_value method to handle the new field
@@ -116,7 +120,7 @@ class EncryptedSecurityCredentials(TypeDecorator[dict]):
 
     def process_result_value(self, value: dict | None, dialect: Dialect) -> dict | None:
         if value is not None:
-            decrypted_value = value.copy()  # Avoid modifying the original dict
+            decrypted_value = copy.deepcopy(value)  # Avoid modifying the original dict
 
             # APIKeySchemeCredentials
             if "secret_key" in decrypted_value:
@@ -133,15 +137,11 @@ class EncryptedSecurityCredentials(TypeDecorator[dict]):
                 refresh_token_b64 = decrypted_value.get("refresh_token")
                 if isinstance(refresh_token_b64, str):
                     decrypted_value["refresh_token"] = _decrypt_value(refresh_token_b64)
-                elif refresh_token_b64 is None:
-                    decrypted_value["refresh_token"] = None  # Ensure None remains None
 
                 raw_token_response_b64 = decrypted_value.get("raw_token_response")
                 if isinstance(raw_token_response_b64, str):
                     decrypted_str = _decrypt_value(raw_token_response_b64)
                     decrypted_value["raw_token_response"] = json.loads(decrypted_str)
-                elif raw_token_response_b64 is None:
-                    decrypted_value["raw_token_response"] = None  # Ensure None remains None
 
             # NoAuthSchemeCredentials (empty dict) - do nothing
 
