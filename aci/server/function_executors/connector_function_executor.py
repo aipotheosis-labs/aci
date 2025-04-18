@@ -18,10 +18,10 @@ logger = get_logger(__name__)
 def parse_function_name(function_name: str) -> tuple[str, str, str]:
     """
     Parse function name to get module name, class name and method name.
-    e.g. "BRAVE_SEARCH__WEB_SEARCH" -> "aipolabs.server.app_connectors.brave_search", "BraveSearch", "web_search"
+    e.g. "BRAVE_SEARCH__WEB_SEARCH" -> "aci.server.app_connectors.brave_search", "BraveSearch", "web_search"
     """
     app_name, method_name = function_name.split("__", 1)
-    module_name = f"aipolabs.server.app_connectors.{app_name.lower()}"
+    module_name = f"aci.server.app_connectors.{app_name.lower()}"
     class_name = "".join(word.capitalize() for word in app_name.split("_"))
     method_name = method_name.lower()
 
