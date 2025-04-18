@@ -17,12 +17,12 @@ Follow all guidelines below for setting up the development environment, running 
 - Git clone the repo
 - Python ^3.12
 - Install `docker`
-- Install `poetry`
-- Activate virtual env: `poetry shell`
+- Install `uv`
+- Install dependencies: `uv sync`
+- Activate virtual env: `source .venv/bin/activate`
   - We use docker and docker compose to run components in a container, so using a virtual env is more for development purposes. (IDE, pytest, dev dependencies, etc.)
-- Install dependencies: `poetry install`
 - Coding style
-  - all the following tools are part of `pyproject.toml` dev dependencies, and are automatically installed when running `poetry install`
+  - all the following tools are part of `pyproject.toml` dev dependencies, and are automatically installed when running `uv sync`
   - use `ruff` to format and lint the code
   - use `mypy` to type check the code
   - use `pre-commit` to run the above tools as pre-commit hooks
@@ -120,5 +120,3 @@ the local db.
 ## CLI
 
 Follow the [CLI instructions](aci/cli/README.md) for the cli module.
-
-

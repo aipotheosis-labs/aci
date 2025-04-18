@@ -8,9 +8,6 @@ on:
   schedule:
     - cron: "0 9 * * *"
 
-env:
-  PYTHON_VERSION: "3.12"
-
 jobs:
   lint:
     name: Format & Lint
@@ -20,31 +17,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
         with:
-          python-version: ${{ env.PYTHON_VERSION }}
+          python-version-file: ".python-version"
 
-      - name: Install Poetry
+      - name: Install Dependencies with uv
         run: |
-          curl -sSL https://install.python-poetry.org | python3 -
-          echo "${{ runner.tool_cache }}/poetry/bin" >> $GITHUB_PATH
-
-      - name: Install Dependencies with Poetry
-        run: |
-          poetry install --no-interaction --no-ansi
+          uv sync --all-extras --dev
 
       - name: Run Ruff Linting
         run: |
-          poetry run ruff check .
+          uv run ruff check .
 
       - name: Run Ruff Formatting
         run: |
-          poetry run ruff format . --diff
+          uv run ruff format . --diff
 
       - name: Run Mypy Type Checking
         run: |
-          poetry run mypy .
+          uv run mypy .
 
   test:
     runs-on: ubuntu-latest

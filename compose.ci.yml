@@ -1,4 +1,4 @@
 services:
   runner:
     command: >
-      /bin/sh -c "alembic upgrade head && poetry run pytest"
+      /bin/sh -c "alembic upgrade head && uv run pytest"

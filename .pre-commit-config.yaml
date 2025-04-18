@@ -15,19 +15,19 @@ repos:
       - id: format
         name: running format checks
         language: system
-        entry: poetry run ruff format .
+        entry: uv run ruff format .
         pass_filenames: false
         require_serial: true
       - id: lint
         name: running lint checks
         language: system
-        entry: poetry run ruff check . --fix
+        entry: uv run ruff check . --fix
         pass_filenames: false
         require_serial: true
       # TODO: not running it now because there are too many errors
       - id: mypy
         name: running mypy checks
         language: system
-        entry: poetry run mypy .
+        entry: uv run mypy .
         pass_filenames: false
         require_serial: true
