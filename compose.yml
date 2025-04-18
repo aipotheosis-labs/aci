@@ -25,11 +25,11 @@ services:
       - DATA_DIR=/var/lib/localstack/data
       - SERVICES=kms
     volumes:
-      - ./scripts/create-kms-encryption-key.sh:/etc/localstack/init/ready.d/create-kms-encryption-key.sh
+      - ./backend/scripts/create-kms-encryption-key.sh:/etc/localstack/init/ready.d/create-kms-encryption-key.sh
 
   server:
     build:
-      context: .
+      context: backend
       dockerfile: Dockerfile.server
     healthcheck:
       test: ["CMD-SHELL", "curl localhost:8000/v1/health"]
@@ -47,8 +47,8 @@ services:
       - SERVER_SVIX_SIGNING_SECRET=${SERVER_SVIX_SIGNING_SECRET:-<svix-signing-secret>}
     # useful for development, changes take effect in the container without needing to rebuild the image.
     volumes:
-      - ./aci/server:/workdir/aci/server
-      - ./aci/common:/workdir/aci/common
+      - ./backend/aci/server:/workdir/aci/server
+      - ./backend/aci/common:/workdir/aci/common
     ports:
       - "8000:8000"
     # this overrides the default CMD specified in the Dockerfile, use this for local development
@@ -64,7 +64,7 @@ services:
   # e.g., run pytest, seed db etc.
   runner:
     build:
-      context: .
+      context: backend
       dockerfile: Dockerfile.runner
     env_file:
       - .env.shared
@@ -77,10 +77,10 @@ services:
       - CLI_OPENAI_API_KEY=${CLI_OPENAI_API_KEY?}
     # Mount the local code into the container so you can run scripts / Alembic
     volumes:
-      - ./aci:/workdir/aci
+      - ./backend/aci:/workdir/aci
       - ./apps:/workdir/apps
-      - ./scripts:/workdir/scripts
-      - ./alembic.ini:/workdir/alembic.ini
+      - ./backend/scripts:/workdir/scripts
+      - ./backend/alembic.ini:/workdir/alembic.ini
     command: >
       /bin/sh -c "alembic upgrade head && tail -f /dev/null"
     depends_on:
