@@ -78,7 +78,7 @@ services:
     # Mount the local code into the container so you can run scripts / Alembic
     volumes:
       - ./backend/aci:/workdir/aci
-      - ./apps:/workdir/apps
+      - ./backend/apps:/workdir/apps
       - ./backend/scripts:/workdir/scripts
       - ./backend/alembic.ini:/workdir/alembic.ini
     command: >
