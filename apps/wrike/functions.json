@@ -1,0 +1,431 @@
+[
+    {
+        "name": "WRIKE__QUERY_TASKS",
+        "description": "Retrieves a list of tasks from Wrike. Supports querying all tasks, tasks within a specific folder or space, or specific tasks by ID. Allows filtering by various parameters such as status, importance, and custom fields.",
+        "tags": ["wrike", "tasks"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/tasks",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering tasks",
+                    "properties": {
+                        "folderId": {
+                            "type": "string",
+                            "description": "ID of the folder to retrieve tasks from"
+                        },
+                        "spaceId": {
+                            "type": "string",
+                            "description": "ID of the space to retrieve tasks from"
+                        },
+                        "taskIds": {
+                            "type": "array",
+                            "description": "List of task IDs to retrieve (up to 100)",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "Filter tasks by status,Active, Completed, Deferred, Cancelled"
+                        },
+                        "importance": {
+                            "type": "string",
+                            "description": "Filter tasks by importance"
+                        },
+                        "customFields": {
+                            "type": "array",
+                            "description": "Filter tasks by custom field values",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "description": "Custom field ID"
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "Custom field value"
+                                    }
+                                },
+                                "required": [],
+                                "visible": ["id", "value"]
+                            }
+                        },
+                        "pageSize": {
+                            "type": "integer",
+                            "description": "Number of tasks to return per page (max 1000)"
+                        },
+                        "nextPageToken": {
+                            "type": "string",
+                            "description": "Token for retrieving the next page of results"
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "folderId",
+                        "spaceId",
+                        "taskIds",
+                        "status",
+                        "importance",
+                        "customFields",
+                        "pageSize",
+                        "nextPageToken"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "WRIKE__CREATE_TASK",
+        "description": "Creates a new task in a specified folder or project in Wrike. Allows setting attributes such as title, description, status, importance, and custom fields.",
+        "tags": ["wrike", "tasks"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/folders/{folderId}/tasks",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "folderId": {
+                            "type": "string",
+                            "description": "ID of the folder or project where the task will be created"
+                        }
+                    },
+                    "required": ["folderId"],
+                    "visible": ["folderId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "description": "Title of the new task"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Detailed description of the task"
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "Initial status of the task,Active, Completed, Deferred, Cancelled"
+                        },
+                        "importance": {
+                            "type": "string",
+                            "description": "Importance level of the task"
+                        },
+                        "responsibles": {
+                            "type": "array",
+                            "description": "List of user IDs assigned to the task",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "dates": {
+                            "type": "object",
+                            "description": "Task scheduling information",
+                            "properties": {
+                                "start": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Start date of the task"
+                                },
+                                "due": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Due date of the task"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["start", "due"],
+                            "additionalProperties": false
+                        },
+                        "customFields": {
+                            "type": "array",
+                            "description": "List of custom field values",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "description": "Custom field ID"
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "Value for the custom field"
+                                    }
+                                },
+                                "required": ["id", "value"],
+                                "visible": ["id", "value"]
+                            }
+                        }
+                    },
+                    "required": ["title"],
+                    "visible": [
+                        "title",
+                        "description",
+                        "status",
+                        "importance",
+                        "responsibles",
+                        "dates",
+                        "customFields"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "WRIKE__MODIFY_TASKS",
+        "description": "Modifies one or multiple tasks in Wrike. Allows updating attributes such as title, description, status, importance, dates, and custom fields.",
+        "tags": ["wrike", "tasks"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/tasks/{taskId}",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "taskId": {
+                            "type": "string",
+                            "description": "ID of the task to modify"
+                        }
+                    },
+                    "required": ["taskId"],
+                    "visible": ["taskId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "description": "New title of the task"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "New detailed description of the task"
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "New status of the task, Active, Completed, Deferred, Cancelled"
+                        },
+                        "importance": {
+                            "type": "string",
+                            "description": "New importance level of the task"
+                        },
+                        "dates": {
+                            "type": "object",
+                            "description": "Updated scheduling information for the task",
+                            "properties": {
+                                "start": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "New start date of the task"
+                                },
+                                "due": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "New due date of the task"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["start", "due"],
+                            "additionalProperties": false
+                        },
+                        "customFields": {
+                            "type": "array",
+                            "description": "List of custom field values to update",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "description": "Custom field ID"
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "New value for the custom field"
+                                    }
+                                },
+                                "required": ["id", "value"],
+                                "visible": ["id", "value"]
+                            }
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "title",
+                        "description",
+                        "status",
+                        "importance",
+                        "dates",
+                        "customFields"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "WRIKE__GET_FOLDER_TREE",
+        "description": "Retrieves a list of folders and projects from Wrike. Supports querying all folders, folders within a specific folder, or folders within a specific space.",
+        "tags": ["wrike", "folders", "projects"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/folders",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "folderId": {
+                            "type": "string",
+                            "description": "ID of the parent folder to retrieve child folders from"
+                        },
+                        "spaceId": {
+                            "type": "string",
+                            "description": "ID of the space to retrieve folders from"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["folderId", "spaceId"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering folders",
+                    "properties": {
+                        "fields": {
+                            "type": "array",
+                            "description": "List of fields to include in the response",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "WRIKE__CREATE_FOLDER",
+        "description": "Creates a new folder within a specified parent folder in Wrike. Allows setting attributes such as title, description, and custom fields.",
+        "tags": ["wrike", "folders"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/folders/{folderId}/folders",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "folderId": {
+                            "type": "string",
+                            "description": "ID of the parent folder where the new folder will be created"
+                        }
+                    },
+                    "required": ["folderId"],
+                    "visible": ["folderId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "description": "Title of the new folder"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Detailed description of the folder"
+                        },
+                        "customFields": {
+                            "type": "array",
+                            "description": "List of custom field values",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "description": "Custom field ID"
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "Value for the custom field"
+                                    }
+                                },
+                                "required": ["id", "value"],
+                                "visible": ["id", "value"]
+                            }
+                        }
+                    },
+                    "required": ["title"],
+                    "visible": ["title", "description", "customFields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    }
+]
