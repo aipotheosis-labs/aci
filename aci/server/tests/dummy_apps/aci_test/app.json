@@ -1,7 +1,7 @@
 {
     "name": "ACI_TEST",
     "display_name": "ACI Test",
-    "logo": "https://example.com/aipolabs-logo.png",
+    "logo": "https://example.com/aci-logo.png",
     "provider": "aci",
     "version": "1.0.0",
     "description": "ACI Test is a hypothetical application used to demonstrate how API schemas can be structured. It offers basic functionalities for testing purposes such as creating resources, retrieving data, and simulating user interactions.",
@@ -33,10 +33,7 @@
             "refresh_token": "dummy_app_default_oauth2_refresh_token"
         }
     },
-    "categories": [
-        "testcategory",
-        "utility"
-    ],
+    "categories": ["testcategory", "utility"],
     "visibility": "public",
     "active": true
 }
