@@ -23,21 +23,25 @@ jobs:
       - name: "Set up Python"
         uses: actions/setup-python@v5
         with:
-          python-version-file: ".python-version"
+          python-version-file: "backend/.python-version"
 
       - name: Install Dependencies with uv
+        working-directory: backend
         run: |
           uv sync --all-extras --dev
 
       - name: Run Ruff Linting
+        working-directory: backend
         run: |
           uv run ruff check .
 
       - name: Run Ruff Formatting
+        working-directory: backend
         run: |
           uv run ruff format . --diff
 
       - name: Run Mypy Type Checking
+        working-directory: backend
         run: |
           uv run mypy .
 
