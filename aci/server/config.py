@@ -51,7 +51,7 @@ MAX_AGENTS_PER_PROJECT = int(check_and_get_env_variable("SERVER_MAX_AGENTS_PER_P
 APPLICATION_LOAD_BALANCER_DNS = check_and_get_env_variable("SERVER_APPLICATION_LOAD_BALANCER_DNS")
 
 # APP
-APP_TITLE = "Aipolabs"
+APP_TITLE = "ACI"
 APP_VERSION = "0.0.1-beta.4"
 APP_DOCS_URL = "/v1/notforhuman-docs"
 APP_REDOC_URL = "/v1/notforhuman-redoc"
