@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "aipolabs"
+name = "aci"
 version = "0.0.1-beta.3"
-description = "aipolabs"
+description = "agent computer interface by aipolabs"
 authors = ["Aipolabs <team@aipolabs.xyz>"]
 package-mode = false
 
@@ -50,7 +50,7 @@ google-api-python-client-stubs = "^1.29.0"
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-extend-exclude = [".venv", "venv", "build", "dist", "aipolabs/alembic/versions"]
+extend-exclude = [".venv", "venv", "build", "dist", "aci/alembic/versions"]
 
 [tool.ruff.lint]
 select = [
