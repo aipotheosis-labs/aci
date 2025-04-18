@@ -9,7 +9,7 @@ from starlette.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
-from aci.common.exceptions import AipolabsException
+from aci.common.exceptions import ACIException
 from aci.common.logging_setup import setup_logging
 from aci.server import config
 from aci.server import dependencies as deps
@@ -107,8 +107,8 @@ app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=[config.APPLICATION_LOA
 # NOTE: generic exception handler (type Exception) for all exceptions doesn't work
 # https://github.com/fastapi/fastapi/discussions/9478
 # That's why we have another catch-all in the interceptor middleware
-@app.exception_handler(AipolabsException)
-async def global_exception_handler(request: Request, exc: AipolabsException) -> JSONResponse:
+@app.exception_handler(ACIException)
+async def global_exception_handler(request: Request, exc: ACIException) -> JSONResponse:
     return JSONResponse(
         status_code=exc.error_code,
         content={"error": f"{exc.title}, {exc.message}" if exc.message else exc.title},

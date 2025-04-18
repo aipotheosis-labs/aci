@@ -1,9 +1,9 @@
 from fastapi import status
 
 
-class AipolabsException(Exception):  # noqa: N818
+class ACIException(Exception):  # noqa: N818
     """
-    Base class for all Aipolabs exceptions with consistent structure.
+    Base class for all ACI exceptions with consistent structure.
 
     Attributes:
         title (str): error title.
@@ -31,7 +31,7 @@ class AipolabsException(Exception):  # noqa: N818
         return self.title
 
 
-class UnexpectedError(AipolabsException):
+class UnexpectedError(ACIException):
     """
     Exception raised when an unexpected error occurs
     """
@@ -44,7 +44,7 @@ class UnexpectedError(AipolabsException):
         )
 
 
-class AuthenticationError(AipolabsException):
+class AuthenticationError(ACIException):
     """
     Exception raised when an authentication error occurs
     """
@@ -57,7 +57,7 @@ class AuthenticationError(AipolabsException):
         )
 
 
-class NoImplementationFound(AipolabsException):
+class NoImplementationFound(ACIException):
     """
     Exception raised when a feature or function is not implemented
     """
@@ -70,7 +70,7 @@ class NoImplementationFound(AipolabsException):
         )
 
 
-class ProjectNotFound(AipolabsException):
+class ProjectNotFound(ACIException):
     """
     Exception raised when a project is not found
     """
@@ -83,7 +83,7 @@ class ProjectNotFound(AipolabsException):
         )
 
 
-class ProjectAccessDenied(AipolabsException):
+class ProjectAccessDenied(ACIException):
     """
     Exception raised when a project is not accessible to a user
     """
@@ -96,7 +96,7 @@ class ProjectAccessDenied(AipolabsException):
         )
 
 
-class OrgAccessDenied(AipolabsException):
+class OrgAccessDenied(ACIException):
     """
     Exception raised when an organization is not accessible to a user
     """
@@ -109,7 +109,7 @@ class OrgAccessDenied(AipolabsException):
         )
 
 
-class AppNotFound(AipolabsException):
+class AppNotFound(ACIException):
     """
     Exception raised when an app is not found
     """
@@ -120,7 +120,7 @@ class AppNotFound(AipolabsException):
         )
 
 
-class AppConfigurationNotFound(AipolabsException):
+class AppConfigurationNotFound(ACIException):
     """
     Exception raised when an app configuration is not found
     """
@@ -133,7 +133,7 @@ class AppConfigurationNotFound(AipolabsException):
         )
 
 
-class AppConfigurationDisabled(AipolabsException):
+class AppConfigurationDisabled(ACIException):
     """
     Exception raised when an app configuration is disabled
     """
@@ -146,7 +146,7 @@ class AppConfigurationDisabled(AipolabsException):
         )
 
 
-class AppConfigurationAlreadyExists(AipolabsException):
+class AppConfigurationAlreadyExists(ACIException):
     """
     Exception raised when an app configuration already exists
     """
@@ -159,7 +159,7 @@ class AppConfigurationAlreadyExists(AipolabsException):
         )
 
 
-class AppSecuritySchemeNotSupported(AipolabsException):
+class AppSecuritySchemeNotSupported(ACIException):
     """
     Exception raised when a security scheme is not supported by an app
     """
@@ -172,7 +172,7 @@ class AppSecuritySchemeNotSupported(AipolabsException):
         )
 
 
-class InvalidBearerToken(AipolabsException):
+class InvalidBearerToken(ACIException):
     """
     Exception raised when a http bearer token is invalid
     """
@@ -185,7 +185,7 @@ class InvalidBearerToken(AipolabsException):
         )
 
 
-class InvalidAPIKey(AipolabsException):
+class InvalidAPIKey(ACIException):
     """
     Exception raised when an API key is invalid
     """
@@ -198,7 +198,7 @@ class InvalidAPIKey(AipolabsException):
         )
 
 
-class DailyQuotaExceeded(AipolabsException):
+class DailyQuotaExceeded(ACIException):
     """
     Exception raised when a daily quota is exceeded
     """
@@ -211,7 +211,7 @@ class DailyQuotaExceeded(AipolabsException):
         )
 
 
-class MaxProjectsReached(AipolabsException):
+class MaxProjectsReached(ACIException):
     """
     Exception raised when a user/organization has reached the maximum number of projects
     """
@@ -224,7 +224,7 @@ class MaxProjectsReached(AipolabsException):
         )
 
 
-class MaxAgentsReached(AipolabsException):
+class MaxAgentsReached(ACIException):
     """
     Exception raised when a project has reached the maximum number of agents
     """
@@ -237,7 +237,7 @@ class MaxAgentsReached(AipolabsException):
         )
 
 
-class UserNotFound(AipolabsException):
+class UserNotFound(ACIException):
     """
     Exception raised when a user is not found
     """
@@ -250,7 +250,7 @@ class UserNotFound(AipolabsException):
         )
 
 
-class FunctionNotFound(AipolabsException):
+class FunctionNotFound(ACIException):
     """
     Exception raised when a function is not found
     """
@@ -263,7 +263,7 @@ class FunctionNotFound(AipolabsException):
         )
 
 
-class InvalidFunctionInput(AipolabsException):
+class InvalidFunctionInput(ACIException):
     """
     Exception raised when a function input is invalid
     """
@@ -276,7 +276,7 @@ class InvalidFunctionInput(AipolabsException):
         )
 
 
-class InvalidFunctionDefinitionFormat(AipolabsException):
+class InvalidFunctionDefinitionFormat(ACIException):
     """
     Exception raised when an invalid function definition format is provided
     """
@@ -289,7 +289,7 @@ class InvalidFunctionDefinitionFormat(AipolabsException):
         )
 
 
-class LinkedAccountAlreadyExists(AipolabsException):
+class LinkedAccountAlreadyExists(ACIException):
     """
     Exception raised when a linked account already exists
     """
@@ -302,7 +302,7 @@ class LinkedAccountAlreadyExists(AipolabsException):
         )
 
 
-class LinkedAccountNotFound(AipolabsException):
+class LinkedAccountNotFound(ACIException):
     """
     Exception raised when a linked account is not found
     """
@@ -313,7 +313,7 @@ class LinkedAccountNotFound(AipolabsException):
         )
 
 
-class LinkedAccountDisabled(AipolabsException):
+class LinkedAccountDisabled(ACIException):
     """
     Exception raised when a linked account is disabled
     """
@@ -326,7 +326,7 @@ class LinkedAccountDisabled(AipolabsException):
         )
 
 
-class LinkedAccountOAuth2Error(AipolabsException):
+class LinkedAccountOAuth2Error(ACIException):
     """
     Exception raised when an OAuth2 error occurs
     """
@@ -339,7 +339,7 @@ class LinkedAccountOAuth2Error(AipolabsException):
         )
 
 
-class AgentNotFound(AipolabsException):
+class AgentNotFound(ACIException):
     """
     Exception raised when an agent is not found
     """
@@ -352,7 +352,7 @@ class AgentNotFound(AipolabsException):
         )
 
 
-class AppNotAllowedForThisAgent(AipolabsException):
+class AppNotAllowedForThisAgent(ACIException):
     """
     Exception raised when an app is not allowed to be used by an agent
     """
@@ -365,7 +365,7 @@ class AppNotAllowedForThisAgent(AipolabsException):
         )
 
 
-class CustomInstructionViolation(AipolabsException):
+class CustomInstructionViolation(ACIException):
     """
     Exception raised when a function execution is reject due to a custom instruction
     """
@@ -378,7 +378,7 @@ class CustomInstructionViolation(AipolabsException):
         )
 
 
-class AipolabsSecretsManagerError(AipolabsException):
+class AipolabsSecretsManagerError(ACIException):
     """
     Exception raised when an error occurs in the Aipolabs Secrets Manager
     """
@@ -391,7 +391,7 @@ class AipolabsSecretsManagerError(AipolabsException):
         )
 
 
-class DependencyCheckError(AipolabsException):
+class DependencyCheckError(ACIException):
     """
     Exception raised when a dependency check fails
     """
