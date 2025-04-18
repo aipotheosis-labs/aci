@@ -21,31 +21,31 @@ def test_execute_function_with_linked_account_api_key(
     db_session: Session,
     test_client: TestClient,
     header_token_prefix: str | None,
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
     dummy_agent_1_with_all_apps_allowed: Agent,
-    dummy_function_aipolabs_test__hello_world_no_args: Function,
-    dummy_linked_account_api_key_aipolabs_test_project_1: LinkedAccount,
+    dummy_function_aci_test__hello_world_no_args: Function,
+    dummy_linked_account_api_key_aci_test_project_1: LinkedAccount,
 ) -> None:
     """
     Test that the function is executed with the end-user's linked account API key
     """
     # Reset the API key scheme prefix to cover both cases: with and without prefix
     # Note: nested update is not supported (won't trigger the onupdate event) in SQLAlchemy, so we need to do it this way
-    api_key_scheme = dummy_app_aipolabs_test.security_schemes[SecurityScheme.API_KEY].copy()
+    api_key_scheme = dummy_app_aci_test.security_schemes[SecurityScheme.API_KEY].copy()
     api_key_scheme["prefix"] = header_token_prefix
-    dummy_app_aipolabs_test.security_schemes[SecurityScheme.API_KEY] = api_key_scheme
+    dummy_app_aci_test.security_schemes[SecurityScheme.API_KEY] = api_key_scheme
     db_session.commit()
 
     response_data = {"message": "Hello, test_mock_execute_function_with_no_args!"}
-    mock_request = respx.get("https://api.mock.aipolabs.com/v1/hello_world_no_args").mock(
+    mock_request = respx.get("https://api.mock.aci.com/v1/hello_world_no_args").mock(
         return_value=httpx.Response(200, json=response_data)
     )
 
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_api_key_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_api_key_aci_test_project_1.linked_account_owner_id,
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
@@ -58,7 +58,7 @@ def test_execute_function_with_linked_account_api_key(
     assert mock_request.called, "Request should be made"
 
     linked_account_api_key = APIKeySchemeCredentials.model_validate(
-        dummy_linked_account_api_key_aipolabs_test_project_1.security_credentials
+        dummy_linked_account_api_key_aci_test_project_1.security_credentials
     )
     if header_token_prefix:
         assert (
@@ -78,15 +78,15 @@ def test_execute_function_with_linked_account_api_key(
     [
         # No args test case
         (
-            "dummy_function_aipolabs_test__hello_world_no_args",
+            "dummy_function_aci_test__hello_world_no_args",
             None,
-            "https://api.mock.aipolabs.com/v1/hello_world_no_args",
+            "https://api.mock.aci.com/v1/hello_world_no_args",
             None,
             {"message": "Hello, test_mock_execute_function_with_no_args!"},
         ),
         # With args test case
         (
-            "dummy_function_aipolabs_test__hello_world_with_args",
+            "dummy_function_aci_test__hello_world_with_args",
             {
                 "path": {"userId": "John"},
                 "query": {"lang": "en"},
@@ -94,13 +94,13 @@ def test_execute_function_with_linked_account_api_key(
                 "header": {"X-CUSTOM-HEADER": "header123"},
                 # "cookie" property is not visible in our test schema so no input here
             },
-            "https://api.mock.aipolabs.com/v1/greet/John?lang=en",
+            "https://api.mock.aci.com/v1/greet/John?lang=en",
             b'{"name": "John", "greeting": "default-greeting"}',
             {"message": "Hello, test_execute_api_key_based_function_with_args!"},
         ),
         # Nested args test case
         (
-            "dummy_function_aipolabs_test__hello_world_nested_args",
+            "dummy_function_aci_test__hello_world_nested_args",
             {
                 "path": {"userId": "John"},
                 # "query": {"lang": "en"}, query is not visible so no input here
@@ -110,7 +110,7 @@ def test_execute_function_with_linked_account_api_key(
                     "location": {"city": "New York", "country": "USA"},
                 },
             },
-            "https://api.mock.aipolabs.com/v1/greet/John?lang=en",
+            "https://api.mock.aci.com/v1/greet/John?lang=en",
             b'{"person": {"name": "John", "title": "default-title"}, '
             b'"location": {"city": "New York", "country": "USA"}, '
             b'"greeting": "default-greeting"}',
@@ -126,7 +126,7 @@ def test_execute_function_with_app_default_api_key(
     expected_url: str,
     expected_content: bytes,
     expected_response_data: dict,
-    dummy_linked_account_default_api_key_aipolabs_test_project_1: LinkedAccount,
+    dummy_linked_account_default_api_key_aci_test_project_1: LinkedAccount,
     request: pytest.FixtureRequest,
 ) -> None:
     # Get the actual function fixture
@@ -146,7 +146,7 @@ def test_execute_function_with_app_default_api_key(
 
     # Prepare function execution request
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_default_api_key_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_default_api_key_aci_test_project_1.linked_account_owner_id,
     )
     if function_input:
         function_execute.function_input = function_input

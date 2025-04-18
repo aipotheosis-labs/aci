@@ -1,10 +1,10 @@
 {
-    "name": "AIPOLABS_TEST",
-    "display_name": "Aipolabs Test",
+    "name": "ACI_TEST",
+    "display_name": "ACI Test",
     "logo": "https://example.com/aipolabs-logo.png",
-    "provider": "aipolabs",
+    "provider": "aci",
     "version": "1.0.0",
-    "description": "Aipolabs Test is a hypothetical application used to demonstrate how API schemas can be structured. It offers basic functionalities for testing purposes such as creating resources, retrieving data, and simulating user interactions.",
+    "description": "ACI Test is a hypothetical application used to demonstrate how API schemas can be structured. It offers basic functionalities for testing purposes such as creating resources, retrieving data, and simulating user interactions.",
     "security_schemes": {
         "api_key": {
             "location": "header",
@@ -17,9 +17,9 @@
             "client_id": "mock_client_id",
             "client_secret": "mock_client_secret",
             "scope": "openid email profile",
-            "authorize_url": "https://api.mock.aipolabs.com/v1/oauth2/authorize",
-            "access_token_url": "https://api.mock.aipolabs.com/v1/oauth2/token",
-            "refresh_token_url": "https://api.mock.aipolabs.com/v1/oauth2/refresh"
+            "authorize_url": "https://api.mock.aci.com/v1/oauth2/authorize",
+            "access_token_url": "https://api.mock.aci.com/v1/oauth2/token",
+            "refresh_token_url": "https://api.mock.aci.com/v1/oauth2/refresh"
         }
     },
     "default_security_credentials_by_scheme": {

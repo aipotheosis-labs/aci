@@ -78,7 +78,7 @@ def test_search_apps_without_intent(
 def test_search_apps_with_categories(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
     include_functions: bool,
 ) -> None:
     apps_search = AppsSearch(
@@ -97,7 +97,7 @@ def test_search_apps_with_categories(
     assert response.status_code == status.HTTP_200_OK
     apps = [AppBasic.model_validate(response_app) for response_app in response.json()]
     assert len(apps) == 1
-    assert apps[0].name == dummy_app_aipolabs_test.name
+    assert apps[0].name == dummy_app_aci_test.name
 
 
 @pytest.mark.parametrize("include_functions", [True, False])

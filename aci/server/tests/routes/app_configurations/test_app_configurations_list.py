@@ -45,11 +45,11 @@ def test_list_app_configuration_with_app_id(
 def test_list_non_existent_app_configuration(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
     dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
     dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
 ) -> None:
-    query_params = AppConfigurationsList(app_names=[dummy_app_aipolabs_test.name])
+    query_params = AppConfigurationsList(app_names=[dummy_app_aci_test.name])
 
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",

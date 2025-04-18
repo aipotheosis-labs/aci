@@ -23,10 +23,10 @@ def test_validate_project_quota_valid(test_client: TestClient, dummy_api_key_1: 
     project.id = uuid4()
     with (
         patch(
-            "aipolabs.server.dependencies.crud.projects.get_project_by_api_key_id",
+            "aci.server.dependencies.crud.projects.get_project_by_api_key_id",
             return_value=project,
         ),
-        patch("aipolabs.server.dependencies.crud.projects.increase_project_quota_usage"),
+        patch("aci.server.dependencies.crud.projects.increase_project_quota_usage"),
     ):
         response = test_client.get(
             f"{config.ROUTER_PREFIX_APPS}/search",
@@ -42,7 +42,7 @@ def test_validate_project_quota_exceeded(test_client: TestClient, dummy_api_key_
     project.daily_quota_used = config.PROJECT_DAILY_QUOTA
 
     with patch(
-        "aipolabs.server.dependencies.crud.projects.get_project_by_api_key_id",
+        "aci.server.dependencies.crud.projects.get_project_by_api_key_id",
         return_value=project,
     ):
         response = test_client.get(

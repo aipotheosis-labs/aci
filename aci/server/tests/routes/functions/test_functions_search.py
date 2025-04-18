@@ -404,8 +404,8 @@ def test_search_functions_pagination(
 def test_search_functions_allowed_apps_only_true(
     db_session: Session,
     test_client: TestClient,
-    dummy_app_configuration_oauth2_aipolabs_test_project_1: AppConfigurationPublic,
-    dummy_app_aipolabs_test: App,
+    dummy_app_configuration_oauth2_aci_test_project_1: AppConfigurationPublic,
+    dummy_app_aci_test: App,
     dummy_agent_1_with_no_apps_allowed: Agent,
     format: FunctionDefinitionFormat,
 ) -> None:
@@ -428,7 +428,7 @@ def test_search_functions_allowed_apps_only_true(
     )
 
     # update the agent to allow access to the app
-    dummy_agent_1_with_no_apps_allowed.allowed_apps = [dummy_app_aipolabs_test.name]
+    dummy_agent_1_with_no_apps_allowed.allowed_apps = [dummy_app_aci_test.name]
     db_session.commit()
 
     response = test_client.get(
@@ -441,10 +441,10 @@ def test_search_functions_allowed_apps_only_true(
         _validate_function_definition(response_function, format)
         for response_function in response.json()
     ]
-    assert len(functions) == len(dummy_app_aipolabs_test.functions), (
+    assert len(functions) == len(dummy_app_aci_test.functions), (
         "should return all functions from the allowed app"
     )
-    dummy_app_function_names = [function.name for function in dummy_app_aipolabs_test.functions]
+    dummy_app_function_names = [function.name for function in dummy_app_aci_test.functions]
     for function in functions:
         function_name = _get_function_name_from_definition(function)
         assert function_name in dummy_app_function_names

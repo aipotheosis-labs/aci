@@ -83,7 +83,7 @@ def test_link_oauth2_account_success(
     mock_oauth2_token_retrieval_time = int(time.time())
     with (
         patch(
-            "aipolabs.server.oauth2.authorize_access_token_without_browser_session",
+            "aci.server.oauth2.authorize_access_token_without_browser_session",
             return_value=mock_oauth2_token_response,
         ),
         patch("time.time", return_value=mock_oauth2_token_retrieval_time),
@@ -133,10 +133,10 @@ def test_link_oauth2_account_success(
 def test_link_oauth2_account_non_existent_app_configuration(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
 ) -> None:
     body = LinkedAccountOAuth2Create(
-        app_name=dummy_app_aipolabs_test.name,
+        app_name=dummy_app_aci_test.name,
         linked_account_owner_id="test_link_oauth2_account_non_existent_app_configuration",
     )
     response = test_client.get(

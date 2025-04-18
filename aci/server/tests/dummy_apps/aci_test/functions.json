@@ -1,6 +1,6 @@
 [
     {
-        "name": "AIPOLABS_TEST__HELLO_WORLD_NO_ARGS",
+        "name": "ACI_TEST__HELLO_WORLD_NO_ARGS",
         "description": "Say hello to the world with no args",
         "tags": ["test", "hello_world"],
         "visibility": "public",
@@ -9,12 +9,12 @@
         "protocol_data": {
             "method": "GET",
             "path": "/hello_world_no_args",
-            "server_url": "https://api.mock.aipolabs.com/v1"
+            "server_url": "https://api.mock.aci.com/v1"
         },
         "response": {}
     },
     {
-        "name": "AIPOLABS_TEST__HELLO_WORLD_WITH_ARGS",
+        "name": "ACI_TEST__HELLO_WORLD_WITH_ARGS",
         "description": "Say hello to the world",
         "tags": ["test", "hello_world"],
         "visibility": "public",
@@ -23,7 +23,7 @@
         "protocol_data": {
             "method": "POST",
             "path": "/greet/{userId}",
-            "server_url": "https://api.mock.aipolabs.com/v1"
+            "server_url": "https://api.mock.aci.com/v1"
         },
         "parameters": {
             "type": "object",
@@ -103,7 +103,7 @@
         "response": {}
     },
     {
-        "name": "AIPOLABS_TEST__HELLO_WORLD_NESTED_ARGS",
+        "name": "ACI_TEST__HELLO_WORLD_NESTED_ARGS",
         "description": "Say hello to the world with nested args including path and query parameters",
         "tags": ["test", "hello_world"],
         "visibility": "public",
@@ -112,7 +112,7 @@
         "protocol_data": {
             "method": "POST",
             "path": "/greet/{userId}",
-            "server_url": "https://api.mock.aipolabs.com/v1"
+            "server_url": "https://api.mock.aci.com/v1"
         },
         "parameters": {
             "type": "object",

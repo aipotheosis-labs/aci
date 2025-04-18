@@ -14,10 +14,10 @@ NON_EXISTENT_LINKED_ACCOUNT_OWNER_ID = "dummy_linked_account_owner_id"
 def test_execute_non_existent_function(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_linked_account_default_api_key_aipolabs_test_project_1: LinkedAccount,
+    dummy_linked_account_default_api_key_aci_test_project_1: LinkedAccount,
 ) -> None:
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_default_api_key_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_default_api_key_aci_test_project_1.linked_account_owner_id,
     )
     response = test_client.post(
         f"{config.ROUTER_PREFIX_FUNCTIONS}/{NON_EXISTENT_FUNCTION_NAME}/execute",
@@ -33,13 +33,13 @@ def test_execute_non_existent_function(
 def test_execute_function_whose_app_is_not_configured(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_function_aipolabs_test__hello_world_no_args: Function,
+    dummy_function_aci_test__hello_world_no_args: Function,
 ) -> None:
     function_execute = FunctionExecute(
         linked_account_owner_id=NON_EXISTENT_LINKED_ACCOUNT_OWNER_ID,
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -51,17 +51,17 @@ def test_execute_function_whose_app_configuration_is_disabled(
     db_session: Session,
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_function_aipolabs_test__hello_world_no_args: Function,
-    dummy_app_configuration_api_key_aipolabs_test_project_1: AppConfiguration,
+    dummy_function_aci_test__hello_world_no_args: Function,
+    dummy_app_configuration_api_key_aci_test_project_1: AppConfiguration,
 ) -> None:
-    dummy_app_configuration_api_key_aipolabs_test_project_1.enabled = False
+    dummy_app_configuration_api_key_aci_test_project_1.enabled = False
     db_session.commit()
 
     function_execute = FunctionExecute(
         linked_account_owner_id=NON_EXISTENT_LINKED_ACCOUNT_OWNER_ID,
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_api_key_1},
     )
@@ -72,14 +72,14 @@ def test_execute_function_whose_app_configuration_is_disabled(
 def test_execute_function_linked_account_not_found(
     test_client: TestClient,
     dummy_agent_1_with_all_apps_allowed: Agent,
-    dummy_function_aipolabs_test__hello_world_no_args: Function,
-    dummy_app_configuration_api_key_aipolabs_test_project_1: AppConfiguration,
+    dummy_function_aci_test__hello_world_no_args: Function,
+    dummy_app_configuration_api_key_aci_test_project_1: AppConfiguration,
 ) -> None:
     function_execute = FunctionExecute(
         linked_account_owner_id=NON_EXISTENT_LINKED_ACCOUNT_OWNER_ID,
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
@@ -91,18 +91,18 @@ def test_execute_function_linked_account_disabled(
     db_session: Session,
     test_client: TestClient,
     dummy_agent_1_with_all_apps_allowed: Agent,
-    dummy_function_aipolabs_test__hello_world_no_args: Function,
-    dummy_app_configuration_api_key_aipolabs_test_project_1: AppConfiguration,
-    dummy_linked_account_default_api_key_aipolabs_test_project_1: LinkedAccount,
+    dummy_function_aci_test__hello_world_no_args: Function,
+    dummy_app_configuration_api_key_aci_test_project_1: AppConfiguration,
+    dummy_linked_account_default_api_key_aci_test_project_1: LinkedAccount,
 ) -> None:
-    dummy_linked_account_default_api_key_aipolabs_test_project_1.enabled = False
+    dummy_linked_account_default_api_key_aci_test_project_1.enabled = False
     db_session.commit()
 
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_default_api_key_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_default_api_key_aci_test_project_1.linked_account_owner_id,
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
@@ -113,15 +113,15 @@ def test_execute_function_linked_account_disabled(
 def test_execute_function_with_invalid_function_input(
     test_client: TestClient,
     dummy_agent_1_with_all_apps_allowed: Agent,
-    dummy_function_aipolabs_test__hello_world_with_args: Function,
-    dummy_linked_account_default_api_key_aipolabs_test_project_1: LinkedAccount,
+    dummy_function_aci_test__hello_world_with_args: Function,
+    dummy_linked_account_default_api_key_aci_test_project_1: LinkedAccount,
 ) -> None:
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_default_api_key_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_default_api_key_aci_test_project_1.linked_account_owner_id,
         function_input={"path": {"random_key": "random_value"}},
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
@@ -135,20 +135,20 @@ def test_execute_function_of_app_that_is_not_allowed_for_agent(
     test_client: TestClient,
     dummy_agent_1_with_no_apps_allowed: Agent,
     allow_agent_to_access_app: bool,
-    dummy_function_aipolabs_test__hello_world_no_args: Function,
-    dummy_linked_account_default_api_key_aipolabs_test_project_1: LinkedAccount,
+    dummy_function_aci_test__hello_world_no_args: Function,
+    dummy_linked_account_default_api_key_aci_test_project_1: LinkedAccount,
 ) -> None:
     if allow_agent_to_access_app:
         dummy_agent_1_with_no_apps_allowed.allowed_apps = [
-            dummy_function_aipolabs_test__hello_world_no_args.app.name
+            dummy_function_aci_test__hello_world_no_args.app.name
         ]
         db_session.commit()
 
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_default_api_key_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_default_api_key_aci_test_project_1.linked_account_owner_id,
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_no_args.name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_no_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_1_with_no_apps_allowed.api_keys[0].key},
     )

@@ -99,12 +99,12 @@ def test_list_linked_accounts_filter_by_app_name_and_account_owner_id(
 def test_list_linked_accounts_filter_by_non_existent_app_configuration(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
 ) -> None:
     response = test_client.get(
         f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}",
         headers={"x-api-key": dummy_api_key_1},
-        params={"app_name": dummy_app_aipolabs_test.name},
+        params={"app_name": dummy_app_aci_test.name},
     )
     assert response.status_code == status.HTTP_200_OK, response.json()
     assert len(response.json()) == 0

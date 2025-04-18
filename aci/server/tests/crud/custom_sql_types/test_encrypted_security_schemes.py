@@ -74,7 +74,7 @@ def test_app_table_security_schemes_column_encryption(db_session: Session) -> No
 
 
 def test_app_configuration_table_security_scheme_overrides_column_encryption(
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
     dummy_project_1: Project,
     db_session: Session,
 ) -> None:
@@ -96,7 +96,7 @@ def test_app_configuration_table_security_scheme_overrides_column_encryption(
     # Given - Create and save AppConfiguration with security_scheme_overrides
     app_config = AppConfiguration(
         project_id=dummy_project_1.id,
-        app_id=dummy_app_aipolabs_test.id,
+        app_id=dummy_app_aci_test.id,
         security_scheme=SecurityScheme.OAUTH2,
         security_scheme_overrides=expected_security_scheme_overrides,
         enabled=True,
@@ -193,7 +193,7 @@ def test_app_table_security_schemes_column_mutable_dict_detection(db_session: Se
 
 
 def test_app_configuration_table_security_scheme_overrides_column_mutable_dict_detection(
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
     dummy_project_1: Project,
     db_session: Session,
 ) -> None:
@@ -216,7 +216,7 @@ def test_app_configuration_table_security_scheme_overrides_column_mutable_dict_d
     }
     app_config = AppConfiguration(
         project_id=dummy_project_1.id,
-        app_id=dummy_app_aipolabs_test.id,
+        app_id=dummy_app_aci_test.id,
         security_scheme=SecurityScheme.OAUTH2,
         security_scheme_overrides=security_scheme_overrides,
         enabled=True,

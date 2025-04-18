@@ -58,9 +58,9 @@ def test_update_app_configuration_with_invalid_payload(
 def test_update_non_existent_app_configuration(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
 ) -> None:
-    ENDPOINT = f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{dummy_app_aipolabs_test.name}"
+    ENDPOINT = f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{dummy_app_aci_test.name}"
 
     response = test_client.patch(
         ENDPOINT,

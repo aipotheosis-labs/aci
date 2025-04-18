@@ -11,7 +11,7 @@ from aci.common.schemas.security_scheme import APIKeySchemeCredentials, OAuth2Sc
 
 
 def test_linked_account_table_security_credentials_column_api_key_encryption(
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
     dummy_project_1: Project,
     db_session: Session,
 ) -> None:
@@ -27,7 +27,7 @@ def test_linked_account_table_security_credentials_column_api_key_encryption(
     # Given - Create and save LinkedAccount with security_credentials
     linked_account = LinkedAccount(
         project_id=dummy_project_1.id,
-        app_id=dummy_app_aipolabs_test.id,
+        app_id=dummy_app_aci_test.id,
         linked_account_owner_id="test_owner",
         security_scheme=SecurityScheme.API_KEY,
         security_credentials=expected_default_security_credential,
@@ -67,7 +67,7 @@ def test_linked_account_table_security_credentials_column_api_key_encryption(
 
 
 def test_linked_account_table_security_credentials_column_oauth2_encryption(
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
     dummy_project_1: Project,
     db_session: Session,
 ) -> None:
@@ -89,7 +89,7 @@ def test_linked_account_table_security_credentials_column_oauth2_encryption(
     # Given - Create and save LinkedAccount with security_credentials
     linked_account = LinkedAccount(
         project_id=dummy_project_1.id,
-        app_id=dummy_app_aipolabs_test.id,
+        app_id=dummy_app_aci_test.id,
         linked_account_owner_id="test_owner",
         security_scheme=SecurityScheme.OAUTH2,
         security_credentials=expected_default_security_credential,
@@ -152,7 +152,7 @@ def test_linked_account_table_security_credentials_column_oauth2_encryption(
 
 def test_linked_account_table_security_credentials_column_mutable_dict_detection(
     db_session: Session,
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
     dummy_project_1: Project,
 ) -> None:
     """Test that LinkedAccount.security_credentials is correctly detected as a mutable dict, meaning
@@ -172,7 +172,7 @@ def test_linked_account_table_security_credentials_column_mutable_dict_detection
     # Given - Create and save LinkedAccount with security_credentials
     linked_account = LinkedAccount(
         project_id=dummy_project_1.id,
-        app_id=dummy_app_aipolabs_test.id,
+        app_id=dummy_app_aci_test.id,
         linked_account_owner_id="test_owner",
         security_scheme=SecurityScheme.OAUTH2,
         security_credentials=expected_default_security_credential,

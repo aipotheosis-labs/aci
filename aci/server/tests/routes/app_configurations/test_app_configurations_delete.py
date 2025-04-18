@@ -66,10 +66,10 @@ def test_delete_app_configuration(
 def test_delete_non_existent_app_configuration(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
 ) -> None:
     response = test_client.delete(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{dummy_app_aipolabs_test.name}",
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}/{dummy_app_aci_test.name}",
         headers={"x-api-key": dummy_api_key_1},
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND

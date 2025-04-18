@@ -18,7 +18,7 @@ from sqlalchemy.orm import Session
 from aci.common.enums import OrganizationRole
 from aci.server import acl
 
-# override the rate limit to a high number for testing before importing aipolabs modules
+# override the rate limit to a high number for testing before importing aci modules
 with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
     from aci.common import utils
     from aci.common.db import crud
@@ -54,7 +54,7 @@ auth = acl.get_propelauth()
 dummy_apps_and_functions_to_be_inserted_into_db = helper.prepare_dummy_apps_and_functions()
 GOOGLE_APP_NAME = "GOOGLE"
 GITHUB_APP_NAME = "GITHUB"
-AIPOLABS_TEST_APP_NAME = "AIPOLABS_TEST"
+ACI_TEST_APP_NAME = "ACI_TEST"
 MOCK_APP_CONNECTOR_APP_NAME = "MOCK_APP_CONNECTOR"
 
 
@@ -264,10 +264,10 @@ def dummy_app_github(dummy_apps: list[App]) -> App:
 
 
 @pytest.fixture(scope="function")
-def dummy_app_aipolabs_test(dummy_apps: list[App]) -> App:
-    dummy_app_aipolabs_test = next(app for app in dummy_apps if app.name == AIPOLABS_TEST_APP_NAME)
-    assert dummy_app_aipolabs_test is not None
-    return dummy_app_aipolabs_test
+def dummy_app_aci_test(dummy_apps: list[App]) -> App:
+    dummy_app_aci_test = next(app for app in dummy_apps if app.name == ACI_TEST_APP_NAME)
+    assert dummy_app_aci_test is not None
+    return dummy_app_aci_test
 
 
 @pytest.fixture(scope="function")
@@ -315,36 +315,36 @@ def dummy_function_google__calendar_create_event(
 
 
 @pytest.fixture(scope="function")
-def dummy_function_aipolabs_test__hello_world_nested_args(
+def dummy_function_aci_test__hello_world_nested_args(
     dummy_functions: list[Function],
 ) -> Function:
-    dummy_function_aipolabs_test__hello_world_nested_args = next(
-        func for func in dummy_functions if func.name == "AIPOLABS_TEST__HELLO_WORLD_NESTED_ARGS"
+    dummy_function_aci_test__hello_world_nested_args = next(
+        func for func in dummy_functions if func.name == "ACI_TEST__HELLO_WORLD_NESTED_ARGS"
     )
-    assert dummy_function_aipolabs_test__hello_world_nested_args is not None
-    return dummy_function_aipolabs_test__hello_world_nested_args
+    assert dummy_function_aci_test__hello_world_nested_args is not None
+    return dummy_function_aci_test__hello_world_nested_args
 
 
 @pytest.fixture(scope="function")
-def dummy_function_aipolabs_test__hello_world_no_args(
+def dummy_function_aci_test__hello_world_no_args(
     dummy_functions: list[Function],
 ) -> Function:
-    dummy_function_aipolabs_test__hello_world_no_args = next(
-        func for func in dummy_functions if func.name == "AIPOLABS_TEST__HELLO_WORLD_NO_ARGS"
+    dummy_function_aci_test__hello_world_no_args = next(
+        func for func in dummy_functions if func.name == "ACI_TEST__HELLO_WORLD_NO_ARGS"
     )
-    assert dummy_function_aipolabs_test__hello_world_no_args is not None
-    return dummy_function_aipolabs_test__hello_world_no_args
+    assert dummy_function_aci_test__hello_world_no_args is not None
+    return dummy_function_aci_test__hello_world_no_args
 
 
 @pytest.fixture(scope="function")
-def dummy_function_aipolabs_test__hello_world_with_args(
+def dummy_function_aci_test__hello_world_with_args(
     dummy_functions: list[Function],
 ) -> Function:
-    dummy_function_aipolabs_test__hello_world_with_args = next(
-        func for func in dummy_functions if func.name == "AIPOLABS_TEST__HELLO_WORLD_WITH_ARGS"
+    dummy_function_aci_test__hello_world_with_args = next(
+        func for func in dummy_functions if func.name == "ACI_TEST__HELLO_WORLD_WITH_ARGS"
     )
-    assert dummy_function_aipolabs_test__hello_world_with_args is not None
-    return dummy_function_aipolabs_test__hello_world_with_args
+    assert dummy_function_aci_test__hello_world_with_args is not None
+    return dummy_function_aci_test__hello_world_with_args
 
 
 @pytest.fixture(scope="function")
@@ -458,16 +458,16 @@ def dummy_app_configuration_api_key_github_project_2(
 
 
 @pytest.fixture(scope="function")
-def dummy_app_configuration_api_key_aipolabs_test_project_1(
+def dummy_app_configuration_api_key_aci_test_project_1(
     db_session: Session,
     dummy_project_1: Project,
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
 ) -> AppConfiguration:
     app_configuration_create = AppConfigurationCreate(
-        app_name=dummy_app_aipolabs_test.name, security_scheme=SecurityScheme.API_KEY
+        app_name=dummy_app_aci_test.name, security_scheme=SecurityScheme.API_KEY
     )
 
-    dummy_app_configuration_api_key_aipolabs_test_project_1 = (
+    dummy_app_configuration_api_key_aci_test_project_1 = (
         crud.app_configurations.create_app_configuration(
             db_session,
             dummy_project_1.id,
@@ -475,20 +475,20 @@ def dummy_app_configuration_api_key_aipolabs_test_project_1(
         )
     )
     db_session.commit()
-    return dummy_app_configuration_api_key_aipolabs_test_project_1
+    return dummy_app_configuration_api_key_aci_test_project_1
 
 
 @pytest.fixture(scope="function")
-def dummy_app_configuration_oauth2_aipolabs_test_project_1(
+def dummy_app_configuration_oauth2_aci_test_project_1(
     db_session: Session,
     dummy_project_1: Project,
-    dummy_app_aipolabs_test: App,
+    dummy_app_aci_test: App,
 ) -> AppConfiguration:
     app_configuration_create = AppConfigurationCreate(
-        app_name=dummy_app_aipolabs_test.name, security_scheme=SecurityScheme.OAUTH2
+        app_name=dummy_app_aci_test.name, security_scheme=SecurityScheme.OAUTH2
     )
 
-    dummy_app_configuration_oauth2_aipolabs_test_project_1 = (
+    dummy_app_configuration_oauth2_aci_test_project_1 = (
         crud.app_configurations.create_app_configuration(
             db_session,
             dummy_project_1.id,
@@ -496,7 +496,7 @@ def dummy_app_configuration_oauth2_aipolabs_test_project_1(
         )
     )
     db_session.commit()
-    return dummy_app_configuration_oauth2_aipolabs_test_project_1
+    return dummy_app_configuration_oauth2_aci_test_project_1
 
 
 @pytest.fixture(scope="function")
@@ -623,85 +623,85 @@ def dummy_linked_account_oauth2_google_project_2(
 
 
 @pytest.fixture(scope="function")
-def dummy_linked_account_api_key_aipolabs_test_project_1(
+def dummy_linked_account_api_key_aci_test_project_1(
     db_session: Session,
-    dummy_app_configuration_api_key_aipolabs_test_project_1: AppConfigurationPublic,
+    dummy_app_configuration_api_key_aci_test_project_1: AppConfigurationPublic,
     dummy_linked_account_api_key_credentials: APIKeySchemeCredentials,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_api_key_aipolabs_test_project_1 = (
+    dummy_linked_account_api_key_aci_test_project_1 = (
         crud.linked_accounts.create_linked_account(
             db_session,
-            dummy_app_configuration_api_key_aipolabs_test_project_1.project_id,
-            dummy_app_configuration_api_key_aipolabs_test_project_1.app_name,
-            "dummy_linked_account_api_key_aipolabs_test_project_1",
-            dummy_app_configuration_api_key_aipolabs_test_project_1.security_scheme,
+            dummy_app_configuration_api_key_aci_test_project_1.project_id,
+            dummy_app_configuration_api_key_aci_test_project_1.app_name,
+            "dummy_linked_account_api_key_aci_test_project_1",
+            dummy_app_configuration_api_key_aci_test_project_1.security_scheme,
             dummy_linked_account_api_key_credentials,
             enabled=True,
         )
     )
     db_session.commit()
-    yield dummy_linked_account_api_key_aipolabs_test_project_1
+    yield dummy_linked_account_api_key_aci_test_project_1
 
 
 @pytest.fixture(scope="function")
-def dummy_linked_account_default_api_key_aipolabs_test_project_1(
+def dummy_linked_account_default_api_key_aci_test_project_1(
     db_session: Session,
-    dummy_app_configuration_api_key_aipolabs_test_project_1: AppConfigurationPublic,
+    dummy_app_configuration_api_key_aci_test_project_1: AppConfigurationPublic,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_default_api_key_aipolabs_test_project_1 = (
+    dummy_linked_account_default_api_key_aci_test_project_1 = (
         crud.linked_accounts.create_linked_account(
             db_session,
-            dummy_app_configuration_api_key_aipolabs_test_project_1.project_id,
-            dummy_app_configuration_api_key_aipolabs_test_project_1.app_name,
-            "dummy_linked_account_default_api_key_aipolabs_test_project_1",
-            dummy_app_configuration_api_key_aipolabs_test_project_1.security_scheme,
+            dummy_app_configuration_api_key_aci_test_project_1.project_id,
+            dummy_app_configuration_api_key_aci_test_project_1.app_name,
+            "dummy_linked_account_default_api_key_aci_test_project_1",
+            dummy_app_configuration_api_key_aci_test_project_1.security_scheme,
             security_credentials=None,  # assign None to use the app's default security credentials
             enabled=True,
         )
     )
     db_session.commit()
-    yield dummy_linked_account_default_api_key_aipolabs_test_project_1
+    yield dummy_linked_account_default_api_key_aci_test_project_1
 
 
 @pytest.fixture(scope="function")
-def dummy_linked_account_oauth2_aipolabs_test_project_1(
+def dummy_linked_account_oauth2_aci_test_project_1(
     db_session: Session,
-    dummy_app_configuration_oauth2_aipolabs_test_project_1: AppConfigurationPublic,
+    dummy_app_configuration_oauth2_aci_test_project_1: AppConfigurationPublic,
     dummy_linked_account_oauth2_credentials: OAuth2SchemeCredentials,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_oauth2_aipolabs_test_project_1 = (
+    dummy_linked_account_oauth2_aci_test_project_1 = (
         crud.linked_accounts.create_linked_account(
             db_session,
-            dummy_app_configuration_oauth2_aipolabs_test_project_1.project_id,
-            dummy_app_configuration_oauth2_aipolabs_test_project_1.app_name,
-            "dummy_linked_account_oauth2_aipolabs_test_project_1",
-            dummy_app_configuration_oauth2_aipolabs_test_project_1.security_scheme,
+            dummy_app_configuration_oauth2_aci_test_project_1.project_id,
+            dummy_app_configuration_oauth2_aci_test_project_1.app_name,
+            "dummy_linked_account_oauth2_aci_test_project_1",
+            dummy_app_configuration_oauth2_aci_test_project_1.security_scheme,
             dummy_linked_account_oauth2_credentials,
             enabled=True,
         )
     )
     db_session.commit()
-    yield dummy_linked_account_oauth2_aipolabs_test_project_1
+    yield dummy_linked_account_oauth2_aci_test_project_1
 
 
 @pytest.fixture(scope="function")
-def dummy_linked_account_default_aipolabs_test_project_1(
+def dummy_linked_account_default_aci_test_project_1(
     db_session: Session,
-    dummy_app_configuration_oauth2_aipolabs_test_project_1: AppConfigurationPublic,
+    dummy_app_configuration_oauth2_aci_test_project_1: AppConfigurationPublic,
     dummy_linked_account_oauth2_credentials: OAuth2SchemeCredentials,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_default_aipolabs_test_project_1 = (
+    dummy_linked_account_default_aci_test_project_1 = (
         crud.linked_accounts.create_linked_account(
             db_session,
-            dummy_app_configuration_oauth2_aipolabs_test_project_1.project_id,
-            dummy_app_configuration_oauth2_aipolabs_test_project_1.app_name,
-            "dummy_linked_account_default_aipolabs_test_project_1",
-            dummy_app_configuration_oauth2_aipolabs_test_project_1.security_scheme,
+            dummy_app_configuration_oauth2_aci_test_project_1.project_id,
+            dummy_app_configuration_oauth2_aci_test_project_1.app_name,
+            "dummy_linked_account_default_aci_test_project_1",
+            dummy_app_configuration_oauth2_aci_test_project_1.security_scheme,
             enabled=True,
         )
     )
     db_session.commit()
-    yield dummy_linked_account_default_aipolabs_test_project_1
+    yield dummy_linked_account_default_aci_test_project_1
 
 
 @pytest.fixture(scope="function")

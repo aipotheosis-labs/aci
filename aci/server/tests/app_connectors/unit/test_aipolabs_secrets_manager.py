@@ -42,15 +42,15 @@ def test_list_credentials(secrets_manager: AipolabsSecretsManager) -> None:
 
     with (
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.list_secrets",
+            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.list_secrets",
             return_value=[mock_secret1, mock_secret2],
         ) as mock_list_secrets,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.encryption.decrypt",
+            "aci.server.app_connectors.aipolabs_secrets_manager.encryption.decrypt",
             side_effect=[
                 b'{"username": "user1", "password": "pass1"}',
                 b'{"username": "user2", "password": "pass2"}',
@@ -89,15 +89,15 @@ def test_get_credential_for_domain_success(secrets_manager: AipolabsSecretsManag
 
     with (
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
             return_value=mock_secret,
         ) as mock_get_secret,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.encryption.decrypt",
+            "aci.server.app_connectors.aipolabs_secrets_manager.encryption.decrypt",
             return_value=b'{"username": "user1", "password": "pass1"}',
         ) as mock_decrypt,
     ):
@@ -123,11 +123,11 @@ def test_get_credential_for_domain_not_found(secrets_manager: AipolabsSecretsMan
 
     with (
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
             return_value=None,
         ) as mock_get_secret,
     ):
@@ -152,22 +152,22 @@ def test_create_credential_for_domain_success(secrets_manager: AipolabsSecretsMa
 
     with (
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
             return_value=None,
         ) as mock_get_secret,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.create_secret",
+            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.create_secret",
         ) as mock_create_secret,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.encryption.encrypt",
+            "aci.server.app_connectors.aipolabs_secrets_manager.encryption.encrypt",
             return_value=encrypted_value,
         ) as mock_encrypt,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.SecretCreate",
+            "aci.server.app_connectors.aipolabs_secrets_manager.SecretCreate",
             return_value=mock_secret_create,
         ) as mock_secret_create_class,
     ):
@@ -201,11 +201,11 @@ def test_create_credential_for_domain_already_exists(
 
     with (
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
             return_value=mock_secret,
         ) as mock_get_secret,
     ):
@@ -231,22 +231,22 @@ def test_update_credential_for_domain(secrets_manager: AipolabsSecretsManager) -
 
     with (
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
             return_value=mock_secret,
         ) as mock_get_secret,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.update_secret",
+            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.update_secret",
         ) as mock_update_secret,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.encryption.encrypt",
+            "aci.server.app_connectors.aipolabs_secrets_manager.encryption.encrypt",
             return_value=encrypted_value,
         ) as mock_encrypt,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.SecretUpdate",
+            "aci.server.app_connectors.aipolabs_secrets_manager.SecretUpdate",
             return_value=mock_secret_update,
         ) as mock_secret_update_class,
     ):
@@ -276,15 +276,15 @@ def test_delete_credential_for_domain(secrets_manager: AipolabsSecretsManager) -
 
     with (
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
             return_value=mock_secret,
         ) as mock_get_secret,
         patch(
-            "aipolabs.server.app_connectors.aipolabs_secrets_manager.crud.secret.delete_secret",
+            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.delete_secret",
         ) as mock_delete_secret,
     ):
         # When

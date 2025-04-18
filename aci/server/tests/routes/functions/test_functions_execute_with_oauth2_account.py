@@ -16,14 +16,14 @@ from aci.server import config
 def test_execute_oauth2_based_function_with_linked_account_credentials(
     test_client: TestClient,
     dummy_agent_1_with_all_apps_allowed: Agent,
-    dummy_function_aipolabs_test__hello_world_with_args: Function,
-    dummy_linked_account_oauth2_aipolabs_test_project_1: LinkedAccount,
+    dummy_function_aci_test__hello_world_with_args: Function,
+    dummy_linked_account_oauth2_aci_test_project_1: LinkedAccount,
 ) -> None:
     # Mock the HTTP endpoint and response
     mock_response_data = {
         "message": "Hello, test_execute_oauth2_based_function_with_linked_account_credentials!"
     }
-    request = respx.post("https://api.mock.aipolabs.com/v1/greet/John").mock(
+    request = respx.post("https://api.mock.aci.com/v1/greet/John").mock(
         return_value=httpx.Response(
             200,
             json=mock_response_data,
@@ -32,7 +32,7 @@ def test_execute_oauth2_based_function_with_linked_account_credentials(
 
     # execute the function
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_oauth2_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_oauth2_aci_test_project_1.linked_account_owner_id,
         function_input={
             "path": {"userId": "John"},
             "query": {"lang": "en"},
@@ -42,7 +42,7 @@ def test_execute_oauth2_based_function_with_linked_account_credentials(
         },
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
@@ -56,7 +56,7 @@ def test_execute_oauth2_based_function_with_linked_account_credentials(
 
     # Verify the request was made with correct inputs
     assert request.called
-    assert request.calls.last.request.url == "https://api.mock.aipolabs.com/v1/greet/John?lang=en"
+    assert request.calls.last.request.url == "https://api.mock.aci.com/v1/greet/John?lang=en"
     assert request.calls.last.request.headers["X-CUSTOM-HEADER"] == "header123"
     assert request.calls.last.request.content == b'{"name": "John", "greeting": "default-greeting"}'
 
@@ -64,10 +64,10 @@ def test_execute_oauth2_based_function_with_linked_account_credentials(
     # TODO: adding tests for scenarios where the access_token is placed in other location
     # (e.g., header, query, cookie). Might need to refactor the test cases and fixtures first to have a
     # more flexible and generic way of injecting different apps, functions, app_configurations, etc.
-    app = dummy_function_aipolabs_test__hello_world_with_args.app
+    app = dummy_function_aci_test__hello_world_with_args.app
     oauth2_scheme = OAuth2Scheme.model_validate(app.security_schemes[SecurityScheme.OAUTH2])
     linked_account_oauth2_credentials = OAuth2SchemeCredentials.model_validate(
-        dummy_linked_account_oauth2_aipolabs_test_project_1.security_credentials
+        dummy_linked_account_oauth2_aci_test_project_1.security_credentials
     )
     assert (
         request.calls.last.request.headers["Authorization"]
@@ -80,14 +80,14 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
     db_session: Session,
     test_client: TestClient,
     dummy_agent_1_with_all_apps_allowed: Agent,
-    dummy_function_aipolabs_test__hello_world_with_args: Function,
-    dummy_linked_account_oauth2_aipolabs_test_project_1: LinkedAccount,
+    dummy_function_aci_test__hello_world_with_args: Function,
+    dummy_linked_account_oauth2_aci_test_project_1: LinkedAccount,
 ) -> None:
     # Mock the function's HTTP endpoint and response
     mock_response_data = {
         "message": "Hello, test_execute_oauth2_based_function_with_expired_linked_account_access_token!"
     }
-    request = respx.post("https://api.mock.aipolabs.com/v1/greet/John").mock(
+    request = respx.post("https://api.mock.aci.com/v1/greet/John").mock(
         return_value=httpx.Response(
             200,
             json=mock_response_data,
@@ -102,7 +102,7 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
         "access_token": "dummy_new_access_token",
         "expires_in": 3600,
     }
-    respx.post("https://api.mock.aipolabs.com/v1/oauth2/token").mock(
+    respx.post("https://api.mock.aci.com/v1/oauth2/token").mock(
         return_value=httpx.Response(
             200,
             json=mock_refresh_token_response,
@@ -111,20 +111,20 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
 
     # set the linked account's access token to expired
     linked_account_oauth2_credentials = OAuth2SchemeCredentials.model_validate(
-        dummy_linked_account_oauth2_aipolabs_test_project_1.security_credentials
+        dummy_linked_account_oauth2_aci_test_project_1.security_credentials
     )
     old_access_token = linked_account_oauth2_credentials.access_token
     linked_account_oauth2_credentials.expires_at = 0
     crud.linked_accounts.update_linked_account_credentials(
         db_session,
-        dummy_linked_account_oauth2_aipolabs_test_project_1,
+        dummy_linked_account_oauth2_aci_test_project_1,
         security_credentials=linked_account_oauth2_credentials,
     )
     db_session.commit()
 
     # execute the function
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_oauth2_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_oauth2_aci_test_project_1.linked_account_owner_id,
         function_input={
             "path": {"userId": "John"},
             "query": {"lang": "en"},
@@ -134,7 +134,7 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
         },
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
@@ -148,12 +148,12 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
 
     # Verify the request was made with correct inputs
     assert request.called
-    assert request.calls.last.request.url == "https://api.mock.aipolabs.com/v1/greet/John?lang=en"
+    assert request.calls.last.request.url == "https://api.mock.aci.com/v1/greet/John?lang=en"
     assert request.calls.last.request.headers["X-CUSTOM-HEADER"] == "header123"
     assert request.calls.last.request.content == b'{"name": "John", "greeting": "default-greeting"}'
 
     # verify request was made with the new access token
-    app = dummy_function_aipolabs_test__hello_world_with_args.app
+    app = dummy_function_aci_test__hello_world_with_args.app
     oauth2_scheme = OAuth2Scheme.model_validate(app.security_schemes[SecurityScheme.OAUTH2])
     assert (
         request.calls.last.request.headers["Authorization"]
@@ -162,9 +162,9 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
     assert old_access_token != mock_refresh_token_response["access_token"]
 
     # verify the linked account's access token was updated
-    db_session.refresh(dummy_linked_account_oauth2_aipolabs_test_project_1)
+    db_session.refresh(dummy_linked_account_oauth2_aci_test_project_1)
     assert (
-        dummy_linked_account_oauth2_aipolabs_test_project_1.security_credentials["access_token"]
+        dummy_linked_account_oauth2_aci_test_project_1.security_credentials["access_token"]
         == mock_refresh_token_response["access_token"]
     )
 
@@ -173,14 +173,14 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
 def test_execute_oauth2_based_function_with_app_default_credentials(
     test_client: TestClient,
     dummy_agent_1_with_all_apps_allowed: Agent,
-    dummy_function_aipolabs_test__hello_world_with_args: Function,
-    dummy_linked_account_default_aipolabs_test_project_1: LinkedAccount,
+    dummy_function_aci_test__hello_world_with_args: Function,
+    dummy_linked_account_default_aci_test_project_1: LinkedAccount,
 ) -> None:
     # Mock the HTTP endpoint and response
     mock_response_data = {
         "message": "Hello, test_execute_oauth2_based_function_with_app_default_credentials!"
     }
-    request = respx.post("https://api.mock.aipolabs.com/v1/greet/John").mock(
+    request = respx.post("https://api.mock.aci.com/v1/greet/John").mock(
         return_value=httpx.Response(
             200,
             json=mock_response_data,
@@ -189,7 +189,7 @@ def test_execute_oauth2_based_function_with_app_default_credentials(
 
     # execute the function
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_default_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_default_aci_test_project_1.linked_account_owner_id,
         function_input={
             "path": {"userId": "John"},
             "query": {"lang": "en"},
@@ -199,7 +199,7 @@ def test_execute_oauth2_based_function_with_app_default_credentials(
         },
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
@@ -213,12 +213,12 @@ def test_execute_oauth2_based_function_with_app_default_credentials(
 
     # Verify the request was made with correct inputs
     assert request.called
-    assert request.calls.last.request.url == "https://api.mock.aipolabs.com/v1/greet/John?lang=en"
+    assert request.calls.last.request.url == "https://api.mock.aci.com/v1/greet/John?lang=en"
     assert request.calls.last.request.headers["X-CUSTOM-HEADER"] == "header123"
     assert request.calls.last.request.content == b'{"name": "John", "greeting": "default-greeting"}'
 
     # verify request was made with the correct credentials
-    app = dummy_function_aipolabs_test__hello_world_with_args.app
+    app = dummy_function_aci_test__hello_world_with_args.app
     oauth2_scheme = OAuth2Scheme.model_validate(app.security_schemes[SecurityScheme.OAUTH2])
     app_default_oauth2_credentials = OAuth2SchemeCredentials.model_validate(
         app.default_security_credentials_by_scheme[SecurityScheme.OAUTH2]
@@ -234,8 +234,8 @@ def test_execute_oauth2_based_function_with_expired_app_default_access_token(
     db_session: Session,
     test_client: TestClient,
     dummy_agent_1_with_all_apps_allowed: Agent,
-    dummy_function_aipolabs_test__hello_world_with_args: Function,
-    dummy_linked_account_default_aipolabs_test_project_1: LinkedAccount,
+    dummy_function_aci_test__hello_world_with_args: Function,
+    dummy_linked_account_default_aci_test_project_1: LinkedAccount,
 ) -> None:
     # Mock the HTTP endpoint and response
     mock_response_data = {
@@ -243,7 +243,7 @@ def test_execute_oauth2_based_function_with_expired_app_default_access_token(
             "Hello, test_execute_oauth2_based_function_with_expired_app_default_access_token!"
         )
     }
-    request = respx.post("https://api.mock.aipolabs.com/v1/greet/John").mock(
+    request = respx.post("https://api.mock.aci.com/v1/greet/John").mock(
         return_value=httpx.Response(
             200,
             json=mock_response_data,
@@ -255,7 +255,7 @@ def test_execute_oauth2_based_function_with_expired_app_default_access_token(
         "access_token": "new_dummy_app_default_oauth2_access_token",
         "expires_in": 3600,
     }
-    respx.post("https://api.mock.aipolabs.com/v1/oauth2/token").mock(
+    respx.post("https://api.mock.aci.com/v1/oauth2/token").mock(
         return_value=httpx.Response(
             200,
             json=mock_refresh_token_response,
@@ -263,7 +263,7 @@ def test_execute_oauth2_based_function_with_expired_app_default_access_token(
     )
 
     # set the app's default credentials to expired
-    app = dummy_function_aipolabs_test__hello_world_with_args.app
+    app = dummy_function_aci_test__hello_world_with_args.app
     oauth2_scheme = OAuth2Scheme.model_validate(app.security_schemes[SecurityScheme.OAUTH2])
     app_default_oauth2_credentials = OAuth2SchemeCredentials.model_validate(
         app.default_security_credentials_by_scheme[SecurityScheme.OAUTH2]
@@ -280,7 +280,7 @@ def test_execute_oauth2_based_function_with_expired_app_default_access_token(
 
     # execute the function
     function_execute = FunctionExecute(
-        linked_account_owner_id=dummy_linked_account_default_aipolabs_test_project_1.linked_account_owner_id,
+        linked_account_owner_id=dummy_linked_account_default_aci_test_project_1.linked_account_owner_id,
         function_input={
             "path": {"userId": "John"},
             "query": {"lang": "en"},
@@ -290,7 +290,7 @@ def test_execute_oauth2_based_function_with_expired_app_default_access_token(
         },
     )
     response = test_client.post(
-        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_test__hello_world_with_args.name}/execute",
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_with_args.name}/execute",
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
@@ -304,7 +304,7 @@ def test_execute_oauth2_based_function_with_expired_app_default_access_token(
 
     # Verify the request was made with correct inputs
     assert request.called
-    assert request.calls.last.request.url == "https://api.mock.aipolabs.com/v1/greet/John?lang=en"
+    assert request.calls.last.request.url == "https://api.mock.aci.com/v1/greet/John?lang=en"
     assert request.calls.last.request.headers["X-CUSTOM-HEADER"] == "header123"
     assert request.calls.last.request.content == b'{"name": "John", "greeting": "default-greeting"}'
 

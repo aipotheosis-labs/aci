@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from aci.server import config
 
 
-@patch("aipolabs.server.routes.analytics.AsyncLogfireQueryClient")
+@patch("aci.server.routes.analytics.AsyncLogfireQueryClient")
 def test_get_app_usage_distribution(
     mock_logfire_client: MagicMock,
     test_client: TestClient,
@@ -42,7 +42,7 @@ def test_get_app_usage_distribution(
     ]
 
 
-@patch("aipolabs.server.routes.analytics.AsyncLogfireQueryClient")
+@patch("aci.server.routes.analytics.AsyncLogfireQueryClient")
 def test_get_function_usage_distribution(
     mock_logfire_client: MagicMock,
     test_client: TestClient,
@@ -79,7 +79,7 @@ def test_get_function_usage_distribution(
     ]
 
 
-@patch("aipolabs.server.routes.analytics.AsyncLogfireQueryClient")
+@patch("aci.server.routes.analytics.AsyncLogfireQueryClient")
 def test_get_app_usage_timeseries(
     mock_logfire_client: MagicMock,
     test_client: TestClient,
@@ -149,7 +149,7 @@ def test_get_app_usage_timeseries(
     ]
 
 
-@patch("aipolabs.server.routes.analytics.AsyncLogfireQueryClient")
+@patch("aci.server.routes.analytics.AsyncLogfireQueryClient")
 def test_get_function_usage_timeseries(
     mock_logfire_client: MagicMock,
     test_client: TestClient,
