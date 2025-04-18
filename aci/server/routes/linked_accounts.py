@@ -73,12 +73,12 @@ async def link_account_with_aipolabs_default_credentials(
 ) -> LinkedAccount:
     """
     Create a linked account under an App using default credentials (e.g., API key, OAuth2, etc.)
-    provided by Aipolabs.
-    If there is no default credentials provided by Aipolabs for the specific App, the linked account will not be created,
+    provided by ACI.
+    If there is no default credentials provided by ACI for the specific App, the linked account will not be created,
     and an error will be returned.
     """
     logger.info(
-        "Linking account with Aipolabs default credentials",
+        "Linking account with ACI default credentials",
         extra={
             "app_name": body.app_name,
             "linked_account_owner_id": body.linked_account_owner_id,
@@ -90,20 +90,20 @@ async def link_account_with_aipolabs_default_credentials(
     )
     if not app_configuration:
         logger.error(
-            "failed to link account with Aipolabs default credentials, app configuration not found",
+            "failed to link account with ACI default credentials, app configuration not found",
             extra={"app_name": body.app_name},
         )
         raise AppConfigurationNotFound(
             f"configuration for app={body.app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{body.app_name}"
         )
 
-    # need to make sure the App actully has default credentials provided by Aipolabs
+    # need to make sure the App actully has default credentials provided by ACI
     app_default_credentials = app_configuration.app.default_security_credentials_by_scheme.get(
         app_configuration.security_scheme
     )
     if not app_default_credentials:
         logger.error(
-            "failed to link account with Aipolabs default credentials, no default credentials provided by Aipolabs",
+            "failed to link account with ACI default credentials, no default credentials provided by ACI",
             extra={
                 "app_name": body.app_name,
                 "security_scheme": app_configuration.security_scheme,
@@ -111,7 +111,7 @@ async def link_account_with_aipolabs_default_credentials(
         )
         # TODO: consider choosing a different exception type?
         raise NoImplementationFound(
-            f"no default credentials provided by Aipolabs for app={body.app_name}, "
+            f"no default credentials provided by ACI for app={body.app_name}, "
             f"security_scheme={app_configuration.security_scheme}"
         )
 
@@ -124,9 +124,9 @@ async def link_account_with_aipolabs_default_credentials(
     # TODO: same as OAuth2 linked account creation, we might want to separate the logic for updating and creating a linked account
     # or give warning to clients if the linked account already exists to avoid accidental overwriting the account
     if linked_account:
-        # TODO: support updating any type of linked account to use Aipolabs default credentials
+        # TODO: support updating any type of linked account to use ACI default credentials
         logger.error(
-            "failed to link account with Aipolabs default credentials, linked account already exists",
+            "failed to link account with ACI default credentials, linked account already exists",
             extra={
                 "linked_account_owner_id": body.linked_account_owner_id,
                 "app_name": body.app_name,
@@ -137,7 +137,7 @@ async def link_account_with_aipolabs_default_credentials(
         )
     else:
         logger.info(
-            "creating linked account with Aipolabs default credentials",
+            "creating linked account with ACI default credentials",
             extra={
                 "linked_account_owner_id": body.linked_account_owner_id,
                 "app_name": body.app_name,

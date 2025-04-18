@@ -253,7 +253,7 @@ class App(Base):
     # Need name to be unique to support globally unique function name.
     name: Mapped[str] = mapped_column(String(APP_NAME_MAX_LENGTH), nullable=False, unique=True)
     display_name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
-    # provider (or company) of the app, e.g., google, github, or aipolabs or user (if allow user to create custom apps)
+    # provider (or company) of the app, e.g., google, github, or ACI or user (if allow user to create custom apps)
     provider: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     version: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
@@ -268,7 +268,7 @@ class App(Base):
         MutableDict.as_mutable(EncryptedSecurityScheme),
         nullable=False,
     )
-    # default security credentials (provided by aipolabs, if any) for the app that can be used by any client
+    # default security credentials (provided by ACI, if any) for the app that can be used by any client
     default_security_credentials_by_scheme: Mapped[dict[SecurityScheme, dict]] = mapped_column(
         MutableDict.as_mutable(EncryptedSecurityCredentials),
         nullable=False,
@@ -398,7 +398,7 @@ class LinkedAccount(Base):
     linked_account_owner_id: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
     security_scheme: Mapped[SecurityScheme] = mapped_column(SqlEnum(SecurityScheme), nullable=False)
     # security credentials are different for each security scheme, e.g., API key, OAuth2 (access token, refresh token, scope, etc) etc
-    # it can beempty dict because the linked account could be created to use default credentials provided by Aipolabs
+    # it can beempty dict because the linked account could be created to use default credentials provided by ACI
     security_credentials: Mapped[dict] = mapped_column(
         MutableDict.as_mutable(EncryptedSecurityCredentials),
         nullable=False,

@@ -89,7 +89,7 @@ app.add_middleware(SessionMiddleware, secret_key=config.SIGNING_KEY)
 #     allowed_hosts=[
 #         "localhost",
 #         "127.0.0.1",
-#         config.AIPOLABS_DNS,
+#         config.ACI_DNS,
 #     ],
 # )
 app.add_middleware(

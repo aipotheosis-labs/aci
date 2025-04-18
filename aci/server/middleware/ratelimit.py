@@ -31,7 +31,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         rate_limit_key = self._get_rate_limit_key(request)
         for rate_limit_name, rate_limit in self.rate_limits.items():
             if not await self.limiter.hit(rate_limit, rate_limit_key):
-                # NOTE: raising a custom AipolabsException here doesn't work as expected
+                # NOTE: raising a custom ACIException here doesn't work as expected
                 logger.warning(
                     "rate limit exceeded",
                     extra={
