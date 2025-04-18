@@ -139,7 +139,7 @@
               "default": null
             }
           },
-          "required": ["url"],
+          "required": [""],
           "visible": ["session_id", "url", "keep_alive", "session_timeout", "screenshot"],
           "additionalProperties": false
         }
