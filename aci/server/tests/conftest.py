@@ -628,16 +628,14 @@ def dummy_linked_account_api_key_aci_test_project_1(
     dummy_app_configuration_api_key_aci_test_project_1: AppConfigurationPublic,
     dummy_linked_account_api_key_credentials: APIKeySchemeCredentials,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_api_key_aci_test_project_1 = (
-        crud.linked_accounts.create_linked_account(
-            db_session,
-            dummy_app_configuration_api_key_aci_test_project_1.project_id,
-            dummy_app_configuration_api_key_aci_test_project_1.app_name,
-            "dummy_linked_account_api_key_aci_test_project_1",
-            dummy_app_configuration_api_key_aci_test_project_1.security_scheme,
-            dummy_linked_account_api_key_credentials,
-            enabled=True,
-        )
+    dummy_linked_account_api_key_aci_test_project_1 = crud.linked_accounts.create_linked_account(
+        db_session,
+        dummy_app_configuration_api_key_aci_test_project_1.project_id,
+        dummy_app_configuration_api_key_aci_test_project_1.app_name,
+        "dummy_linked_account_api_key_aci_test_project_1",
+        dummy_app_configuration_api_key_aci_test_project_1.security_scheme,
+        dummy_linked_account_api_key_credentials,
+        enabled=True,
     )
     db_session.commit()
     yield dummy_linked_account_api_key_aci_test_project_1
@@ -669,16 +667,14 @@ def dummy_linked_account_oauth2_aci_test_project_1(
     dummy_app_configuration_oauth2_aci_test_project_1: AppConfigurationPublic,
     dummy_linked_account_oauth2_credentials: OAuth2SchemeCredentials,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_oauth2_aci_test_project_1 = (
-        crud.linked_accounts.create_linked_account(
-            db_session,
-            dummy_app_configuration_oauth2_aci_test_project_1.project_id,
-            dummy_app_configuration_oauth2_aci_test_project_1.app_name,
-            "dummy_linked_account_oauth2_aci_test_project_1",
-            dummy_app_configuration_oauth2_aci_test_project_1.security_scheme,
-            dummy_linked_account_oauth2_credentials,
-            enabled=True,
-        )
+    dummy_linked_account_oauth2_aci_test_project_1 = crud.linked_accounts.create_linked_account(
+        db_session,
+        dummy_app_configuration_oauth2_aci_test_project_1.project_id,
+        dummy_app_configuration_oauth2_aci_test_project_1.app_name,
+        "dummy_linked_account_oauth2_aci_test_project_1",
+        dummy_app_configuration_oauth2_aci_test_project_1.security_scheme,
+        dummy_linked_account_oauth2_credentials,
+        enabled=True,
     )
     db_session.commit()
     yield dummy_linked_account_oauth2_aci_test_project_1
@@ -690,15 +686,13 @@ def dummy_linked_account_default_aci_test_project_1(
     dummy_app_configuration_oauth2_aci_test_project_1: AppConfigurationPublic,
     dummy_linked_account_oauth2_credentials: OAuth2SchemeCredentials,
 ) -> Generator[LinkedAccount, None, None]:
-    dummy_linked_account_default_aci_test_project_1 = (
-        crud.linked_accounts.create_linked_account(
-            db_session,
-            dummy_app_configuration_oauth2_aci_test_project_1.project_id,
-            dummy_app_configuration_oauth2_aci_test_project_1.app_name,
-            "dummy_linked_account_default_aci_test_project_1",
-            dummy_app_configuration_oauth2_aci_test_project_1.security_scheme,
-            enabled=True,
-        )
+    dummy_linked_account_default_aci_test_project_1 = crud.linked_accounts.create_linked_account(
+        db_session,
+        dummy_app_configuration_oauth2_aci_test_project_1.project_id,
+        dummy_app_configuration_oauth2_aci_test_project_1.app_name,
+        "dummy_linked_account_default_aci_test_project_1",
+        dummy_app_configuration_oauth2_aci_test_project_1.security_scheme,
+        enabled=True,
     )
     db_session.commit()
     yield dummy_linked_account_default_aci_test_project_1

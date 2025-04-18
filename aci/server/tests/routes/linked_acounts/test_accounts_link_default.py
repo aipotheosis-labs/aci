@@ -42,12 +42,9 @@ def test_link_account_with_default_api_key_credentials(
     )
     assert linked_account is not None
     assert (
-        linked_account.project_id
-        == dummy_app_configuration_api_key_aci_test_project_1.project_id
+        linked_account.project_id == dummy_app_configuration_api_key_aci_test_project_1.project_id
     )
-    assert (
-        linked_account.app.name == dummy_app_configuration_api_key_aci_test_project_1.app_name
-    )
+    assert linked_account.app.name == dummy_app_configuration_api_key_aci_test_project_1.app_name
     assert linked_account.linked_account_owner_id == body.linked_account_owner_id
     assert (
         linked_account.security_scheme
