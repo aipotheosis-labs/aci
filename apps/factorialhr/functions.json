@@ -141,7 +141,7 @@
               "additionalProperties": false
             }
           },
-          "required": ["body"],
+          "required": ["header","body"],
           "visible": ["body"],
           "additionalProperties": false
         }
