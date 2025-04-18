@@ -1,0 +1,621 @@
+[
+  {
+    "name": "NEON__LIST_API_KEYS",
+    "description": "List all API keys for the authenticated user.",
+    "tags": ["api-keys", "authentication"],
+    "visibility": "public", 
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v2/api_keys",
+      "server_url": "https://console.neon.tech"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "NEON__CREATE_API_KEY",
+    "description": "Create a new API key for the authenticated user.",
+    "tags": ["api-keys", "authentication", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/v2/api_keys",
+      "server_url": "https://console.neon.tech"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "body parameters",
+          "properties": {
+            "key_name": {
+              "type": "string",
+              "description": "A user-specified API key name. This value is required when creating an API key.",
+              "maxLength": 64
+            }
+          },
+          "required": ["key_name"],
+          "visible": ["key_name"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "NEON__REVOKE_API_KEY",
+    "description": "Revokes the specified API key. This action cannot be reversed.",
+    "tags": ["api-keys", "authentication", "revoke"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/api/v2/api_keys/{key_id}",
+      "server_url": "https://console.neon.tech"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "key_id": {
+              "type": "integer",
+              "format": "int64",
+              "description": "The API key ID"
+            }
+          },
+          "required": ["key_id"],
+          "visible": ["key_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "NEON__RETRIEVE_OPERATION_DETAILS",
+    "description": "Retrieves details for the specified operation. An operation is an action performed on a Neon project resource.",
+    "tags": ["operations", "projects"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v2/projects/{project_id}/operations/{operation_id}",
+      "server_url": "https://console.neon.tech"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "project_id": {
+              "type": "string",
+              "description": "The Neon project ID"
+            },
+            "operation_id": {
+              "type": "string",
+              "format": "uuid",
+              "description": "The operation ID"
+            }
+          },
+          "required": ["project_id", "operation_id"],
+          "visible": ["project_id", "operation_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "NEON__LIST_OPERATIONS",
+    "description": "Retrieves a list of operations for the specified Neon project. Operations older than 6 months may be deleted.",
+    "tags": ["operations", "projects", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v2/projects/{project_id}/operations",
+      "server_url": "https://console.neon.tech"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "project_id": {
+              "type": "string",
+              "description": "The Neon project ID"
+            }
+          },
+          "required": ["project_id"],
+          "visible": ["project_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "query parameters",
+          "properties": {
+            "cursor": {
+              "type": "string",
+              "description": "Specify the cursor value from the previous response to get the next batch of operations"
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Specify a value from 1 to 1000 to limit number of operations in the response",
+              "minimum": 1,
+              "maximum": 1000
+            }
+          },
+          "required": [],
+          "visible": ["cursor", "limit"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "NEON__LIST_PROJECTS",
+    "description": "Retrieves a list of projects for the Neon account. A project is the top-level object in the Neon object hierarchy.",
+    "tags": ["projects", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v2/projects",
+      "server_url": "https://console.neon.tech"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "query parameters",
+          "properties": {
+            "cursor": {
+              "type": "string",
+              "description": "Specify the cursor value from the previous response to retrieve the next batch of projects"
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Specify a value from 1 to 400 to limit number of projects in the response",
+              "minimum": 1,
+              "maximum": 400,
+              "default": 10
+            },
+            "search": {
+              "type": "string",
+              "description": "Search by project name or id. You can specify partial name or id values to filter results"
+            },
+            "org_id": {
+              "type": "string",
+              "description": "Search for projects by org_id"
+            },
+            "timeout": {
+              "type": "integer",
+              "description": "Specify an explicit timeout in milliseconds to limit response delay",
+              "minimum": 100,
+              "maximum": 30000
+            }
+          },
+          "required": [],
+          "visible": ["cursor", "limit", "search", "org_id", "timeout"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "NEON__CREATE_PROJECT",
+    "description": "Creates a Neon project. A project is the top-level object in the Neon object hierarchy. Plan limits define how many projects you can create.",
+    "tags": ["projects", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/v2/projects",
+      "server_url": "https://console.neon.tech"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "body parameters",
+          "properties": {
+            "project": {
+              "type": "object",
+              "description": "Project configuration object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The project name. If not specified, the name will be identical to the generated project ID",
+                  "minLength": 1,
+                  "maxLength": 256
+                },
+                "settings": {
+                  "type": "object",
+                  "description": "Project settings",
+                  "properties": {
+                    "quota": {
+                      "type": "object",
+                      "description": "Per-project consumption quotas",
+                      "properties": {
+                        "active_time_seconds": {
+                          "type": "integer",
+                          "description": "The total amount of wall-clock time allowed to be spent by the project's compute endpoints",
+                          "minimum": 0
+                        },
+                        "compute_time_seconds": {
+                          "type": "integer",
+                          "description": "The total amount of CPU seconds allowed to be spent by the project's compute endpoints",
+                          "minimum": 0
+                        },
+                        "written_data_bytes": {
+                          "type": "integer",
+                          "description": "Total amount of data written to all of a project's branches",
+                          "minimum": 0
+                        },
+                        "data_transfer_bytes": {
+                          "type": "integer",
+                          "description": "Total amount of data transferred from all of a project's branches using the proxy",
+                          "minimum": 0
+                        },
+                        "logical_size_bytes": {
+                          "type": "integer",
+                          "description": "Limit on the logical size of every project's branch",
+                          "minimum": 0
+                        }
+                      },
+                      "required": [],
+                      "visible": ["active_time_seconds", "compute_time_seconds", "written_data_bytes", "data_transfer_bytes", "logical_size_bytes"],
+                      "additionalProperties": false
+                    },
+                    "allowed_ips": {
+                      "type": "object",
+                      "description": "A list of IP addresses that are allowed to connect to the compute endpoint",
+                      "properties": {
+                        "ips": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "description": "A list of IP addresses that are allowed to connect to the endpoint"
+                        },
+                        "protected_branches_only": {
+                          "type": "boolean",
+                          "description": "If true, the list will be applied only to protected branches"
+                        }
+                      },
+                      "required": [],
+                      "visible": ["ips", "protected_branches_only"],
+                      "additionalProperties": false
+                    },
+                    "enable_logical_replication": {
+                      "type": "boolean",
+                      "description": "Sets wal_level=logical for all compute endpoints in this project"
+                    },
+                    "maintenance_window": {
+                      "type": "object",
+                      "description": "A maintenance window is a time period during which Neon may perform maintenance",
+                      "properties": {
+                        "weekdays": {
+                          "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 7
+                          },
+                          "description": "A list of weekdays when the maintenance window is active (1=Monday, 7=Sunday)"
+                        },
+                        "start_time": {
+                          "type": "string",
+                          "description": "Start time of the maintenance window, in the format of HH:MM (UTC)"
+                        },
+                        "end_time": {
+                          "type": "string",
+                          "description": "End time of the maintenance window, in the format of HH:MM (UTC)"
+                        }
+                      },
+                      "required": ["weekdays", "start_time", "end_time"],
+                      "visible": ["weekdays", "start_time", "end_time"],
+                      "additionalProperties": false
+                    },
+                    "block_public_connections": {
+                      "type": "boolean",
+                      "description": "When set, connections from the public internet are disallowed"
+                    },
+                    "block_vpc_connections": {
+                      "type": "boolean",
+                      "description": "When set, connections using VPC endpoints are disallowed"
+                    },
+                    "audit_log_level": {
+                      "type": "string"
+                    },
+                    "hipaa": {
+                      "type": "boolean"
+                    },
+                    "preload_libraries": {
+                      "type": "object",
+                      "description": "The shared libraries to preload into the project's compute instances",
+                      "properties": {
+                        "use_defaults": {
+                          "type": "boolean"
+                        },
+                        "enabled_libraries": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        }
+                      },
+                      "required": [],
+                      "visible": ["use_defaults", "enabled_libraries"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [],
+                  "visible": ["quota", "allowed_ips", "enable_logical_replication", "maintenance_window", "block_public_connections", "block_vpc_connections", "audit_log_level", "hipaa", "preload_libraries"],
+                  "additionalProperties": false
+                },
+                "branch": {
+                  "type": "object",
+                  "description": "Branch configuration",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The default branch name. If not specified, the default branch name, main, will be used",
+                      "maxLength": 256
+                    },
+                    "role_name": {
+                      "type": "string",
+                      "description": "The role name. If not specified, the default role name, {database_name}_owner, will be used"
+                    },
+                    "database_name": {
+                      "type": "string",
+                      "description": "The database name. If not specified, the default database name, neondb, will be used"
+                    },
+                    "provisioner": {
+                      "type": "string",
+                      "description": "The Neon compute provisioner",
+                      "enum": ["k8s-pod", "k8s-neonvm"]
+                    }
+                  },
+                  "required": [],
+                  "visible": ["name", "role_name", "database_name", "provisioner"],
+                  "additionalProperties": false
+                },
+                "region_id": {
+                  "type": "string",
+                  "description": "The region identifier (e.g., aws-us-east-1)"
+                },
+                "default_endpoint_settings": {
+                  "type": "object",
+                  "description": "A collection of settings for a Neon endpoint",
+                  "properties": {
+                    "pg_settings": {
+                      "type": "object",
+                      "description": "A raw representation of Postgres settings",
+                      "properties": {},
+                      "required": [],
+                      "visible": [],
+                      "additionalProperties": false
+                    },
+                    "pgbouncer_settings": {
+                      "type": "object",
+                      "description": "A raw representation of PgBouncer settings",
+                      "properties": {},
+                      "required": [],
+                      "visible": [],
+                      "additionalProperties": false
+                    },
+                    "autoscaling_limit_min_cu": {
+                      "type": "number",
+                      "description": "The minimum number of Compute Units",
+                      "minimum": 0.25
+                    },
+                    "autoscaling_limit_max_cu": {
+                      "type": "number",
+                      "description": "The maximum number of Compute Units",
+                      "minimum": 0.25
+                    },
+                    "suspend_timeout_seconds": {
+                      "type": "integer",
+                      "description": "Duration of inactivity in seconds after which the compute endpoint is automatically suspended",
+                      "minimum": -1,
+                      "maximum": 604800
+                    }
+                  },
+                  "required": [],
+                  "visible": ["autoscaling_limit_min_cu", "autoscaling_limit_max_cu", "suspend_timeout_seconds"],
+                  "additionalProperties": false
+                },
+                "pg_version": {
+                  "type": "integer",
+                  "description": "The major Postgres version number",
+                  "minimum": 14,
+                  "maximum": 17,
+                  "default": 17
+                },
+                "store_passwords": {
+                  "type": "boolean",
+                  "description": "Whether or not passwords are stored for roles in the Neon project"
+                },
+                "history_retention_seconds": {
+                  "type": "integer",
+                  "description": "The number of seconds to retain the shared history for all branches in this project",
+                  "minimum": 0,
+                  "maximum": 2592000
+                },
+                "org_id": {
+                  "type": "string",
+                  "description": "Organization id in case the project created belongs to an organization"
+                }
+              },
+              "required": [],
+              "visible": ["name", "settings", "branch", "region_id", "pg_version", "store_passwords", "history_retention_seconds", "org_id"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["project"],
+          "visible": ["project"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "NEON__LIST_SHARED_PROJECTS",
+    "description": "Retrieves a list of shared projects for the Neon account. A project is the top-level object in the Neon object hierarchy.",
+    "tags": ["projects", "list", "shared"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v2/projects/shared",
+      "server_url": "https://console.neon.tech"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "query parameters",
+          "properties": {
+            "cursor": {
+              "type": "string",
+              "description": "Specify the cursor value from the previous response to get the next batch of projects"
+            },
+            "limit": {
+              "type": "integer",
+              "description": "Specify a value from 1 to 400 to limit number of projects in the response",
+              "minimum": 1,
+              "maximum": 400,
+              "default": 10
+            },
+            "search": {
+              "type": "string",
+              "description": "Search query by name or id"
+            },
+            "timeout": {
+              "type": "integer",
+              "description": "Specify an explicit timeout in milliseconds to limit response delay. After timing out, the incomplete list of project data fetched so far will be returned. Projects still being fetched when the timeout occurred are listed in the 'unavailable' attribute of the response.",
+              "minimum": 100,
+              "maximum": 30000
+            }
+          },
+          "required": [],
+          "visible": ["cursor", "limit", "search", "timeout"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "NEON__GET_PROJECT",
+    "description": "Retrieves information about the specified project. A project is the top-level object in the Neon object hierarchy. You can obtain a project_id by listing the projects for your Neon account.",
+    "tags": ["projects", "get"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v2/projects/{project_id}",
+      "server_url": "https://console.neon.tech"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "project_id": {
+              "type": "string",
+              "description": "The Neon project ID"
+            }
+          },
+          "required": ["project_id"],
+          "visible": ["project_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "NEON__DELETE_PROJECT",
+    "description": "Deletes the specified project. You can obtain a project_id by listing the projects for your Neon account. Deleting a project is a permanent action. Deleting a project also deletes endpoints, branches, databases, and users that belong to the project.",
+    "tags": ["projects", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/api/v2/projects/{project_id}",
+      "server_url": "https://console.neon.tech"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "project_id": {
+              "type": "string",
+              "description": "The Neon project ID"
+            }
+          },
+          "required": ["project_id"],
+          "visible": ["project_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  }
+]
