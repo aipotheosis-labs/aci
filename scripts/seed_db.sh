@@ -67,12 +67,12 @@ if [ "$SEED_APPS" = true ]; then
 
     # Check if secrets file exists and construct command accordingly
     if [ -f "$secrets_file" ]; then
-      python -m aipolabs.cli.aipolabs upsert-app \
+      python -m aci.cli.aci upsert-app \
         --app-file "$app_file" \
         --secrets-file "$secrets_file" \
         --skip-dry-run
     else
-      python -m aipolabs.cli.aipolabs upsert-app \
+      python -m aci.cli.aci upsert-app \
         --app-file "$app_file" \
         --skip-dry-run
     fi
@@ -82,7 +82,7 @@ fi
 # Seed the database with Functions
 if [ "$SEED_FUNCTIONS" = true ]; then
   for functions_file in ./apps/*/functions.json; do
-    python -m aipolabs.cli.aipolabs upsert-functions \
+    python -m aci.cli.aci upsert-functions \
       --functions-file "$functions_file" \
       --skip-dry-run
   done
@@ -90,5 +90,5 @@ fi
 
 # Seed the database with a user resource
 if [ "$SEED_USER" = true ]; then
-  python -m aipolabs.cli.aipolabs create-random-api-key --visibility-access public
+  python -m aci.cli.aci create-random-api-key --visibility-access public
 fi
