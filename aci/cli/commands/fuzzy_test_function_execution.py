@@ -25,11 +25,11 @@ console = Console()
     help="Name of the function to test",
 )
 @click.option(
-    "--aipolabs-api-key",
-    "aipolabs_api_key",
+    "--aci-api-key",
+    "aci_api_key",
     required=True,
     type=str,
-    help="Aipolabs API key to use for authentication",
+    help="ACI API key to use for authentication",
 )
 @click.option(
     "--linked-account-owner-id",
@@ -53,7 +53,7 @@ console = Console()
     help="LLM model to use for function call arguments generation",
 )
 def fuzzy_test_function_execution(
-    aipolabs_api_key: str,
+    aci_api_key: str,
     function_name: str,
     model: str,
     linked_account_owner_id: UUID,
@@ -61,12 +61,12 @@ def fuzzy_test_function_execution(
 ) -> None:
     """Test function execution with GPT-generated inputs."""
     return fuzzy_test_function_execution_helper(
-        aipolabs_api_key, function_name, model, linked_account_owner_id, prompt
+        aci_api_key, function_name, model, linked_account_owner_id, prompt
     )
 
 
 def fuzzy_test_function_execution_helper(
-    aipolabs_api_key: str,
+    aci_api_key: str,
     function_name: str,
     model: str,
     linked_account_owner_id: UUID,
@@ -77,7 +77,7 @@ def fuzzy_test_function_execution_helper(
     response = httpx.get(
         f"{config.SERVER_URL}/v1/functions/{function_name}/definition",
         params={"format": FunctionDefinitionFormat.OPENAI},
-        headers={"x-api-key": aipolabs_api_key},
+        headers={"x-api-key": aci_api_key},
     )
     if response.status_code != 200:
         raise click.ClickException(f"Failed to get function definition: {response.json()}")
@@ -101,7 +101,7 @@ def fuzzy_test_function_execution_helper(
     response = httpx.post(
         f"{config.SERVER_URL}/v1/functions/{function_name}/execute",
         json=function_execute.model_dump(mode="json"),
-        headers={"x-api-key": aipolabs_api_key},
+        headers={"x-api-key": aci_api_key},
         timeout=30.0,
     )
 
