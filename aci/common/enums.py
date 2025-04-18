@@ -3,7 +3,7 @@ from enum import StrEnum
 
 class APIKeyStatus(StrEnum):
     ACTIVE = "active"
-    # can only be disabled by aipolabs
+    # can only be disabled by ACI
     DISABLED = "disabled"
     # TODO: this is soft delete (requested by user), in the future might consider hard delete and keep audit logs somewhere else
     DELETED = "deleted"

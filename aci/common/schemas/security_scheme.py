@@ -36,15 +36,15 @@ class OAuth2Scheme(BaseModel):
     )
     client_id: str = Field(
         ...,
-        description="The client ID of the OAuth2 client (provided by Aipolabs) used for the app",
+        description="The client ID of the OAuth2 client (provided by ACI) used for the app",
     )
     client_secret: str = Field(
         ...,
-        description="The client secret of the OAuth2 client (provided by Aipolabs) used for the app",
+        description="The client secret of the OAuth2 client (provided by ACI) used for the app",
     )
     scope: str = Field(
         ...,
-        description="Space separated scopes of the OAuth2 client (provided by Aipolabs) used for the app, "
+        description="Space separated scopes of the OAuth2 client (provided by ACI) used for the app, "
         "e.g., 'openid email profile https://www.googleapis.com/auth/calendar'",
     )
     token_endpoint_auth_method: str | None = Field(

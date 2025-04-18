@@ -50,7 +50,7 @@ def create_db_session(db_url: str) -> Session:
 def parse_app_name_from_function_name(function_name: str) -> str:
     """
     Parse the app name from a function name.
-    e.g., "AIPOLABS_TEST__HELLO_WORLD" -> "AIPOLABS_TEST"
+    e.g., "ACI_TEST__HELLO_WORLD" -> "ACI_TEST"
     """
     return function_name.split("__")[0]
 
