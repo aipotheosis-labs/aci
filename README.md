@@ -1,6 +1,6 @@
-# Aipolabs Core Components
+# ACI Core Components
 
-![CI](https://github.com/aipotheosis-labs/aipolabs/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/aipotheosis-labs/aci/actions/workflows/ci.yml/badge.svg)
 
 ## Project Structure
 
@@ -119,6 +119,6 @@ the local db.
 
 ## CLI
 
-Follow the [CLI instructions](aipolabs/cli/README.md) for the cli module.
+Follow the [CLI instructions](aci/cli/README.md) for the cli module.
 
 

@@ -1,6 +1,6 @@
-# Aipolabs CLI
+# ACI CLI
 
-Internal admin CLI tool for Aipolabs to manage apps, functions, users, etc.
+Internal admin CLI tool for ACI to manage apps, functions, users, etc.
 
 ## Setup
 
@@ -13,7 +13,7 @@ And most cases you should execute the commands via the `runner` container.
 e.g.,
 
 ```bash
-docker compose exec runner python -m aipolabs.cli.aipolabs upsert-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
+docker compose exec runner python -m aci.cli.aci upsert-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
 ```
 
 <details>
@@ -25,7 +25,7 @@ docker compose exec runner python -m aipolabs.cli.aipolabs upsert-app --app-file
 - Example files: [`google_calendar`](../../apps/google_calendar/app.json).
 
   ```bash
-  python -m aipolabs.cli.aipolabs upsert-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
+  python -m aci.cli.aci upsert-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
   ```
 
 </details>
@@ -39,7 +39,7 @@ docker compose exec runner python -m aipolabs.cli.aipolabs upsert-app --app-file
 - Example files: [`google_calendar`](../../apps/google_calendar/functions.json).
 
   ```bash
-  python -m aipolabs.cli.aipolabs upsert-functions --functions-file ./apps/google_calendar/functions.json
+  python -m aci.cli.aci upsert-functions --functions-file ./apps/google_calendar/functions.json
   ```
 
 </details>
@@ -50,7 +50,7 @@ docker compose exec runner python -m aipolabs.cli.aipolabs upsert-app --app-file
 - Create a project in the database.
 
   ```bash
-  python -m aipolabs.cli.aipolabs create-project --name "My Project" --org-id "5b3f0b5f-4e79-4a7a-9830-142ecba9f5fd" --visibility-access public
+  python -m aci.cli.aci create-project --name "My Project" --org-id "5b3f0b5f-4e79-4a7a-9830-142ecba9f5fd" --visibility-access public
   ```
 
 </details>
@@ -62,7 +62,7 @@ docker compose exec runner python -m aipolabs.cli.aipolabs upsert-app --app-file
 - You need to create the project first before creating an agent for the project.
 
   ```bash
-  python -m aipolabs.cli.aipolabs create-agent --name "My Agent" --description "My Agent Description" --project-id "0347ae5f-60c2-43c1-8a29-8b657c97693e"
+  python -m aci.cli.aci create-agent --name "My Agent" --description "My Agent Description" --project-id "0347ae5f-60c2-43c1-8a29-8b657c97693e"
   ```
 
 </details>
@@ -74,7 +74,7 @@ docker compose exec runner python -m aipolabs.cli.aipolabs upsert-app --app-file
 - You need to create the project and an agent first before updating the agent.
 
   ```bash
-  python -m aipolabs.cli.aipolabs update-agent --agent-id "0347ae5f-60c2-43c1-8a29-8b657c97693e" --name "My Updated Agent Name" --description "My Updated Agent Description" --custom-instructions '{"BRAVE_SEARCH": "My custom instructions"}'
+  python -m aci.cli.aci update-agent --agent-id "0347ae5f-60c2-43c1-8a29-8b657c97693e" --name "My Updated Agent Name" --description "My Updated Agent Description" --custom-instructions '{"BRAVE_SEARCH": "My custom instructions"}'
   ```
 
 </details>
@@ -86,7 +86,7 @@ docker compose exec runner python -m aipolabs.cli.aipolabs upsert-app --app-file
   Set the --visibility-access to private if you want to test with private apps and functions.
 
   ```bash
-  python -m aipolabs.cli.aipolabs create-random-api-key --visibility-access public
+  python -m aci.cli.aci create-random-api-key --visibility-access public
   ```
 
 </details>
@@ -99,7 +99,7 @@ docker compose exec runner python -m aipolabs.cli.aipolabs upsert-app --app-file
 - Make sure you have a server running (locally or on the cloud). And set the `CLI_SERVER_URL` in `.env` file.
 
   ```bash
-  python -m aipolabs.cli.aipolabs fuzzy-test-function-execution --function-name "function_name" --linked-account-owner-id "linked_account_owner_id" --aipolabs-api-key "your_api_key_here" --prompt "prompt for LLM to help generate function call arguments"
+  python -m aci.cli.aci fuzzy-test-function-execution --function-name "function_name" --linked-account-owner-id "linked_account_owner_id" --aci-api-key "your_api_key_here" --prompt "prompt for LLM to help generate function call arguments"
   ```
 
 </details>
