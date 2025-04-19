@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Backend Checks
 
 on:
   push:
@@ -46,6 +46,7 @@ jobs:
           uv run mypy .
 
   test:
+    name: Compose Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
