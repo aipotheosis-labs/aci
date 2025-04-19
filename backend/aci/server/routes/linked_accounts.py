@@ -494,15 +494,33 @@ async def linked_accounts_oauth2_callback(
         )
         raise AuthenticationError("invalid state parameter during account linking") from e
 
-    # create oauth2 client
+    # check if the app exists
     app = crud.apps.get_app(db_session, state.app_name, False, False)
     if not app:
         logger.error(
-            "unable to create oauth2 client, app not found",
+            "unable to continue with account linking, app not found",
             extra={"app_name": state.app_name},
         )
         raise AppNotFound(f"app={state.app_name} not found")
 
+    # check if app configuration exists and configuration is OAuth2
+    app_configuration = crud.app_configurations.get_app_configuration(
+        db_session, state.project_id, state.app_name
+    )
+    if not app_configuration:
+        logger.error(
+            "unable to continue with account linking, app configuration not found",
+            extra={"app_name": state.app_name},
+        )
+        raise AppConfigurationNotFound(f"app configuration for app={state.app_name} not found")
+    if app_configuration.security_scheme != SecurityScheme.OAUTH2:
+        logger.error(
+            "unable to continue with account linking, app configuration is not OAuth2",
+            extra={"app_name": state.app_name},
+        )
+        raise NoImplementationFound(f"app configuration for app={state.app_name} is not OAuth2")
+
+    # create oauth2 client
     app_default_oauth2_config = OAuth2Scheme.model_validate(
         app.security_schemes[SecurityScheme.OAUTH2]
     )
