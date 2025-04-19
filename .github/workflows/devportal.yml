@@ -22,18 +22,23 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
+        working-directory: frontend
         run: npm ci --legacy-peer-deps
 
       - name: Check formatting
+        working-directory: frontend
         run: npm run format:check
 
       - name: Run linter
+        working-directory: frontend
         run: npm run lint
 
       - name: Run tests
+        working-directory: frontend
         run: npm run test
 
       - name: Build
+        working-directory: frontend
         env:
           NEXT_PUBLIC_AUTH_URL: https://217353629.propelauthtest.com
         run: npm run build
