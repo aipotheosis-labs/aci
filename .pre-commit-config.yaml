@@ -10,23 +10,46 @@ repos:
       - id: check-added-large-files
       - id: check-merge-conflict
 
+  # Dev Portal checks
+  - repo: local
+    hooks:
+      - id: format check
+        name: running dev portal format check
+        language: system
+        entry: cd frontend && npm run format
+        pass_filenames: false
+        require_serial: true
+      - id: lint check
+        name: running dev portal lint check
+        language: system
+        entry: cd frontend && npm run lint
+        pass_filenames: false
+        require_serial: true
+      - id: test check
+        name: running dev portal test check
+        language: system
+        entry: cd frontend && npm run test:run
+        pass_filenames: false
+        require_serial: true
+
+  # Backend checks
   - repo: local
     hooks:
       - id: format
-        name: running format checks
+        name: running backend format checks
         language: system
         entry: cd backend && uv run ruff format .
         pass_filenames: false
         require_serial: true
       - id: lint
-        name: running lint checks
+        name: running backend lint checks
         language: system
         entry: cd backend && uv run ruff check . --fix
         pass_filenames: false
         require_serial: true
       # TODO: not running it now because there are too many errors
       - id: mypy
-        name: running mypy checks
+        name: running backend mypy checks
         language: system
         entry: cd backend && uv run mypy .
         pass_filenames: false
