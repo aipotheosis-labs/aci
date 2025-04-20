@@ -16,7 +16,7 @@ from aci.common.logging_setup import setup_logging
 @click.group(context_settings={"help_option_names": ["-h", "--help"]})
 def cli() -> None:
     """AIPO CLI Tool"""
-    pass
+    setup_logging()
 
 
 # Add commands to the group
@@ -28,6 +28,6 @@ cli.add_command(get_app.get_app)
 cli.add_command(upsert_functions.upsert_functions)
 cli.add_command(create_random_api_key.create_random_api_key)
 cli.add_command(fuzzy_test_function_execution.fuzzy_test_function_execution)
+
 if __name__ == "__main__":
-    setup_logging()
     cli()
