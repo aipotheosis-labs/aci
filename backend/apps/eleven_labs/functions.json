@@ -1,6 +1,6 @@
 [
     {
-        "name": "ELEVENLABS__CREATE_SPEECH",
+        "name": "ELEVEN_LABS__CREATE_SPEECH",
         "description": "Converts text into speech using a specified voice and returns the audio.",
         "tags": ["elevenlabs", "text-to-speech"],
         "visibility": "public",
@@ -128,7 +128,7 @@
         }
     },
     {
-        "name": "ELEVENLABS__LIST_VOICES",
+        "name": "ELEVEN_LABS__LIST_VOICES",
         "description": "Retrieves a list of all available voices for a user with search, filtering, and pagination capabilities.",
         "tags": ["elevenlabs", "voices"],
         "visibility": "public",
@@ -205,7 +205,7 @@
         }
     },
     {
-        "name": "ELEVENLABS__GET_VOICE_SETTINGS",
+        "name": "ELEVEN_LABS__GET_VOICE_SETTINGS",
         "description": "Retrieves the settings for a specific voice, including stability, similarity boost, style, speaker boost, and speed parameters.",
         "tags": ["elevenlabs", "voice", "settings"],
         "visibility": "public",
@@ -239,7 +239,7 @@
         }
     },
     {
-        "name": "ELEVENLABS__EDIT_VOICE_SETTINGS",
+        "name": "ELEVEN_LABS__EDIT_VOICE_SETTINGS",
         "description": "Edits the settings for a specific voice, including parameters such as stability, similarity boost, style, speaker boost, and speed.",
         "tags": ["elevenlabs", "voice", "settings"],
         "visibility": "public",
@@ -331,7 +331,7 @@
         }
     },
     {
-        "name": "ELEVENLABS__STREAM_TEXT_TO_SPEECH",
+        "name": "ELEVEN_LABS__STREAM_TEXT_TO_SPEECH",
         "description": "Converts text into speech using a selected voice and returns the result as a streamed audio response.",
         "tags": ["elevenlabs", "text-to-speech", "stream"],
         "visibility": "public",
@@ -531,7 +531,7 @@
         }
     },
     {
-        "name": "ELEVENLABS__SPEECH_TO_SPEECH_CONVERT",
+        "name": "ELEVEN_LABS__SPEECH_TO_SPEECH_CONVERT",
         "description": "Transforms audio from one voice to another while maintaining full control over emotion, timing, and delivery.",
         "tags": ["elevenlabs", "speech-to-speech", "voice conversion"],
         "visibility": "public",
