@@ -1,19 +1,22 @@
 {
-    "name": "ANCHOR_BROWSER",
-    "display_name": "Anchor Browser",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/anchor_browser.svg",
-    "provider": "Anchor Browser Inc.",
-    "version": "1.0.0",
-    "description": "Anchor Browser is a powerful web browser application that provides secure browsing, tabbed navigation, and built-in privacy features. It enables users to browse websites, manage bookmarks, and synchronize browsing data across multiple devices while maintaining privacy and security.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "anchor-api-key",
-            "prefix": null
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": ["browser", "web", "privacy", "productivity", "internet"],
-    "visibility": "public",
-    "active": true
+  "name": "ANCHOR_BROWSER",
+  "display_name": "Anchor Browser",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/anchor_browser.svg",
+  "provider": "Anchor Browser Inc.",
+  "version": "1.0.0",
+  "description": "Anchor Browser is a powerful web browser application that provides secure browsing, tabbed navigation, and built-in privacy features. It enables users to browse websites, manage bookmarks, and synchronize browsing data across multiple devices while maintaining privacy and security.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "anchor-api-key",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Browser",
+    "Productivity"
+  ],
+  "visibility": "public",
+  "active": true
 }

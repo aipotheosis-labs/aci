@@ -1,19 +1,17 @@
 {
-    "name": "ARXIV",
-    "display_name": "arXiv",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/arxiv.svg",
-    "provider": "Cornell University",
-    "version": "1.0.0",
-    "description": "arXiv is an open-access repository of electronic preprints and postprints approved for posting after moderation, but not peer review. It consists of scientific papers in the fields of mathematics, physics, astronomy, electrical engineering, computer science, quantitative biology, statistics, mathematical finance and economics.",
-    "security_schemes": {
-        "no_auth": {}
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "research",
-        "academic",
-        "science"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "ARXIV",
+  "display_name": "arXiv",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/arxiv.svg",
+  "provider": "Cornell University",
+  "version": "1.0.0",
+  "description": "arXiv is an open-access repository of electronic preprints and postprints approved for posting after moderation, but not peer review. It consists of scientific papers in the fields of mathematics, physics, astronomy, electrical engineering, computer science, quantitative biology, statistics, mathematical finance and economics.",
+  "security_schemes": {
+    "no_auth": {}
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Research"
+  ],
+  "visibility": "public",
+  "active": true
 }

@@ -1,24 +1,22 @@
 {
-    "name": "HOLDED",
-    "display_name": "Holded",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/holded.svg",
-    "provider": "Holded",
-    "version": "1.0.0",
-    "description": "Holded API for managing team, employees, payroll, treasury, invoicing and other business operations.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "Authorization",
-            "prefix": null
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "business",
-        "hr",
-        "accounting",
-        "invoicing"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "HOLDED",
+  "display_name": "Holded",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/holded.svg",
+  "provider": "Holded",
+  "version": "1.0.0",
+  "description": "Holded API for managing team, employees, payroll, treasury, invoicing and other business operations.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Finance",
+    "HR & Workforce"
+  ],
+  "visibility": "public",
+  "active": true
 }

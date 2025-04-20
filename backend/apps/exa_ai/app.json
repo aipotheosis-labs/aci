@@ -1,22 +1,21 @@
 {
-    "name": "EXA_AI",
-    "display_name": "Exa AI",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/exa_ai.svg",
-    "provider": "Exa Labs, Inc.",
-    "version": "aipolabs_0.0.1",
-    "description": "Exa is a search engine made for AIs. Exa finds the exact content you are looking for on the web, with three core functionalities: search, contents, find similar.",
-    "security_schemes": {
-        "api_key": {
-          "location": "header",
-          "name": "X-API-KEY",
-          "prefix": null
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "search",
-        "scrape"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "EXA_AI",
+  "display_name": "Exa AI",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/exa_ai.svg",
+  "provider": "Exa Labs, Inc.",
+  "version": "aipolabs_0.0.1",
+  "description": "Exa is a search engine made for AIs. Exa finds the exact content you are looking for on the web, with three core functionalities: search, contents, find similar.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "X-API-KEY",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Search & Scraping"
+  ],
+  "visibility": "public",
+  "active": true
 }

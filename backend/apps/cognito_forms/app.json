@@ -1,24 +1,22 @@
 {
-    "name": "COGNITO_FORMS",
-    "display_name": "Cognito Forms",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/cognito_forms.svg",
-    "provider": "Cognito LLC",
-    "version": "1.0.0",
-    "description": "Cognito Forms is a powerful online form builder that allows users to create custom forms, collect data, and automatically process payments. The tool supports complex field types, conditional logic, calculated fields, file uploads, and multiple integration options.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "Authorization",
-            "prefix": "Bearer"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "forms",
-        "data-collection",
-        "workflow",
-        "productivity"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "COGNITO_FORMS",
+  "display_name": "Cognito Forms",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/cognito_forms.svg",
+  "provider": "Cognito LLC",
+  "version": "1.0.0",
+  "description": "Cognito Forms is a powerful online form builder that allows users to create custom forms, collect data, and automatically process payments. The tool supports complex field types, conditional logic, calculated fields, file uploads, and multiple integration options.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Productivity",
+    "Data & Analytics"
+  ],
+  "visibility": "public",
+  "active": true
 }

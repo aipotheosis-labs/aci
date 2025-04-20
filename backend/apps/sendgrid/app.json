@@ -1,23 +1,21 @@
 {
-    "name": "SENDGRID",
-    "display_name": "SendGrid",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/sendgrid.svg",
-    "provider": "SendGrid",
-    "version": "3.0.0",
-    "description": "SendGrid is a cloud-based email service that delivers transactional and marketing emails. It provides a robust API for sending emails, managing email templates, and tracking email delivery status.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "Authorization",
-            "prefix": "Bearer"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "email",
-        "communication",
-        "developer"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "SENDGRID",
+  "display_name": "SendGrid",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/sendgrid.svg",
+  "provider": "SendGrid",
+  "version": "3.0.0",
+  "description": "SendGrid is a cloud-based email service that delivers transactional and marketing emails. It provides a robust API for sending emails, managing email templates, and tracking email delivery status.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Communication"
+  ],
+  "visibility": "public",
+  "active": true
 }

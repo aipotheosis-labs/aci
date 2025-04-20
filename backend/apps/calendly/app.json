@@ -1,30 +1,27 @@
 {
-    "name": "CALENDLY",
-    "display_name": "Calendly",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/calendly.svg",
-    "provider": "Calendly",
-    "version": "1.0",
-    "description": "Calendly integration for scheduling and managing meetings. This app allows you to automate your scheduling process, embed Calendly on your website, and manage your availability.",
-    "security_schemes": {
-        "oauth2": {
-            "location": "header",
-            "name": "Authorization",
-            "prefix": "Bearer",
-            "client_id": "{{ AIPOLABS_CALENDLY_CLIENT_ID }}",
-            "client_secret": "{{ AIPOLABS_CALENDLY_CLIENT_SECRET }}",
-            "scope": "default",
-            "authorize_url": "https://auth.calendly.com/oauth/authorize",
-            "access_token_url": "https://auth.calendly.com/oauth/token",
-            "refresh_token_url": "https://auth.calendly.com/oauth/token"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "calendar",
-        "scheduling",
-        "productivity",
-        "automation"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "CALENDLY",
+  "display_name": "Calendly",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/calendly.svg",
+  "provider": "Calendly",
+  "version": "1.0",
+  "description": "Calendly integration for scheduling and managing meetings. This app allows you to automate your scheduling process, embed Calendly on your website, and manage your availability.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_CALENDLY_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_CALENDLY_CLIENT_SECRET }}",
+      "scope": "default",
+      "authorize_url": "https://auth.calendly.com/oauth/authorize",
+      "access_token_url": "https://auth.calendly.com/oauth/token",
+      "refresh_token_url": "https://auth.calendly.com/oauth/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Productivity"
+  ],
+  "visibility": "public",
+  "active": true
 }

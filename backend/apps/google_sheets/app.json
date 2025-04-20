@@ -6,20 +6,20 @@
   "version": "4.0.0",
   "description": "The Google Sheets API is a RESTful API that allows programmatic access to spreadsheet data and formatting. It supports CRUD operations, formulas, charts, and collaboration features.",
   "security_schemes": {
-      "oauth2": {
-          "location": "header",
-          "name": "Authorization",
-          "prefix": "Bearer",
-          "client_id": "{{ AIPOLABS_GOOGLE_APP_CLIENT_ID }}",
-          "client_secret": "{{ AIPOLABS_GOOGLE_APP_CLIENT_SECRET }}",
-          "scope": "https://www.googleapis.com/auth/spreadsheets",
-          "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
-      }
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_GOOGLE_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_GOOGLE_APP_CLIENT_SECRET }}",
+      "scope": "https://www.googleapis.com/auth/spreadsheets",
+      "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
+    }
   },
   "default_security_credentials_by_scheme": {},
   "categories": [
-      "spreadsheet",
-      "data-processing"
+    "Data & Analytics",
+    "Productivity"
   ],
   "visibility": "public",
   "active": true

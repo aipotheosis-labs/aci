@@ -1,22 +1,22 @@
 {
-    "name": "ROSSUM",
-    "display_name": "Rossum",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/rossum.svg",
-    "provider": "Resend",
-    "version": "1.0.0",
-    "description": "Automate complex transactional workflows with Rossum's AI document processing solution. Reduce manual tasks, increase accuracy, drive efficiency.",
-    "security_schemes": {
-        "api_key": {
-        "location": "header",
-        "name": "Authorization",
-        "prefix": "Bearer"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "ai",
-        "Document Intelligence"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "ROSSUM",
+  "display_name": "Rossum",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/rossum.svg",
+  "provider": "Resend",
+  "version": "1.0.0",
+  "description": "Automate complex transactional workflows with Rossum's AI document processing solution. Reduce manual tasks, increase accuracy, drive efficiency.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Document Management",
+    "Automation"
+  ],
+  "visibility": "public",
+  "active": true
 }

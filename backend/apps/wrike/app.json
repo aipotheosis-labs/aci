@@ -1,25 +1,22 @@
 {
-    "name": "WRIKE",
-    "display_name": "Wrike",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/wrike.svg",
-    "provider": "Wrike, Inc.",
-    "version": "1.0.0",
-    "description": "Wrike is an intelligent work management platform that provides project management, task tracking, collaboration and workflow automation capabilities. It enables teams to centrally manage projects, automate repetitive tasks, customize workspaces, and gain key insights through real-time reports and dashboards.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "Authorization",
-            "prefix": "bearer"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "project-management",
-        "task-management",
-        "collaboration",
-        "productivity",
-        "workflow-automation"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "WRIKE",
+  "display_name": "Wrike",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/wrike.svg",
+  "provider": "Wrike, Inc.",
+  "version": "1.0.0",
+  "description": "Wrike is an intelligent work management platform that provides project management, task tracking, collaboration and workflow automation capabilities. It enables teams to centrally manage projects, automate repetitive tasks, customize workspaces, and gain key insights through real-time reports and dashboards.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Productivity",
+    "Automation"
+  ],
+  "visibility": "public",
+  "active": true
 }

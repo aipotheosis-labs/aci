@@ -1,32 +1,28 @@
 {
-    "name": "YOUTUBE",
-    "display_name": "YouTube",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/youtube.svg",
-    "provider": "Google LLC",
-    "version": "1.0.0",
-    "description": "YouTube API provides access to Google's streaming video repository, allowing you to search for videos, retrieve standard feeds, and manage YouTube subscriptions and playlists.",
-    "primary_color": "#FF0000",
-    "secondary_color": "#282828",
-    "security_schemes": {
-        "oauth2": {
-            "location": "header",
-            "name": "Authorization",
-            "prefix": "Bearer",
-            "client_id": "{{ AIPOLABS_YOUTUBE_CLIENT_ID }}",
-            "client_secret": "{{ AIPOLABS_YOUTUBE_CLIENT_SECRET }}",
-            "scope": "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.force-ssl",
-            "authorize_url": "https://accounts.google.com/o/oauth2/auth",
-            "access_token_url": "https://oauth2.googleapis.com/token",
-            "refresh_token_url": "https://oauth2.googleapis.com/token"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "video",
-        "social",
-        "entertainment"
-    ],
-    "visibility": "public",
-    "active": true,
-    "actions": []
+  "name": "YOUTUBE",
+  "display_name": "YouTube",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/youtube.svg",
+  "provider": "Google LLC",
+  "version": "1.0.0",
+  "description": "YouTube API provides access to Google's streaming video repository, allowing you to search for videos, retrieve standard feeds, and manage YouTube subscriptions and playlists.",
+  "primary_color": "#FF0000",
+  "secondary_color": "#282828",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_GOOGLE_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_GOOGLE_APP_CLIENT_SECRET }}",
+      "scope": "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.channel-memberships.creator https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtubepartner-channel-audit",
+      "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Media"
+  ],
+  "visibility": "public",
+  "active": true,
+  "actions": []
 }

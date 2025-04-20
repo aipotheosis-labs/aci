@@ -1,23 +1,22 @@
 {
-    "name": "CODA",
-    "display_name": "Coda",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/coda.svg",
-    "provider": "Coda, Inc.",
-    "version": "1.0.0",
-    "description": "Coda is a document editor that brings together documents, spreadsheets, and applications into a single flexible platform. It allows teams to collaborate in real-time, create interactive documents, and build custom workflows without coding.",
-    "security_schemes": {
-        "api_key": {
-          "location": "header",
-          "name": "Authorization",
-          "prefix": "Bearer"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "productivity",
-        "collaboration",
-        "document"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "CODA",
+  "display_name": "Coda",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/coda.svg",
+  "provider": "Coda, Inc.",
+  "version": "1.0.0",
+  "description": "Coda is a document editor that brings together documents, spreadsheets, and applications into a single flexible platform. It allows teams to collaborate in real-time, create interactive documents, and build custom workflows without coding.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Document Management",
+    "Productivity"
+  ],
+  "visibility": "public",
+  "active": true
 }

@@ -1,15 +1,18 @@
 {
-    "name": "AIPOLABS_SECRETS_MANAGER",
-    "display_name": "Aipolabs Secrets Manager",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/aipolabs_secrets_manager.svg",
-    "provider": "aipolabs",
-    "version": "1.0.0",
-    "description": "The Aipolabs Secrets Manager allows you to store and retrieve secrets.",
-    "security_schemes": {
-        "no_auth": {}
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": ["security"],
-    "visibility": "public",
-    "active": true
+  "name": "AIPOLABS_SECRETS_MANAGER",
+  "display_name": "Aipolabs Secrets Manager",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/aipolabs_secrets_manager.svg",
+  "provider": "aipolabs",
+  "version": "1.0.0",
+  "description": "The Aipolabs Secrets Manager allows you to store and retrieve secrets.",
+  "security_schemes": {
+    "no_auth": {}
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Security",
+    "Dev Tools"
+  ],
+  "visibility": "public",
+  "active": true
 }

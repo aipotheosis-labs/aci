@@ -1,22 +1,21 @@
 {
-    "name": "TAVILY",
-    "display_name": "Tavily",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/tavily.svg",
-    "provider": "Tavily, Inc.",
-    "version": "aipolabs_0.0.1",
-    "description": "Tavily is a search tool that focuses on optimizing search for AI developers and autonomous AI agents. We take care of all the burden of searching, scraping, filtering and extracting.",
-    "security_schemes": {
-        "api_key": {
-          "location": "body",
-          "name": "api_key",
-          "prefix": null
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "search",
-        "scraping"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "TAVILY",
+  "display_name": "Tavily",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/tavily.svg",
+  "provider": "Tavily, Inc.",
+  "version": "aipolabs_0.0.1",
+  "description": "Tavily is a search tool that focuses on optimizing search for AI developers and autonomous AI agents. We take care of all the burden of searching, scraping, filtering and extracting.",
+  "security_schemes": {
+    "api_key": {
+      "location": "body",
+      "name": "api_key",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Search & Scraping"
+  ],
+  "visibility": "public",
+  "active": true
 }

@@ -1,29 +1,27 @@
 {
-    "name": "GITHUB",
-    "display_name": "GitHub",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/github.svg",
-    "provider": "GitHub",
-    "version": "2022-11-28",
-    "description": "The GitHub API allows you to interact with GitHub programmatically, including repository management, pull requests, issues, commits, and more.",
-    "security_schemes": {
-        "oauth2": {
-            "location": "header",
-            "name": "Authorization",
-            "prefix": "Bearer",
-            "client_id": "{{ AIPOLABS_GITHUB_APP_CLIENT_ID }}",
-            "client_secret": "{{ AIPOLABS_GITHUB_APP_CLIENT_SECRET }}",
-            "scope": "public_repo gist user workflow",
-            "authorize_url": "https://github.com/login/oauth/authorize",
-            "access_token_url": "https://github.com/login/oauth/access_token",
-            "refresh_token_url": ""
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "code",
-        "repository",
-        "development"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "GITHUB",
+  "display_name": "GitHub",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/github.svg",
+  "provider": "GitHub",
+  "version": "2022-11-28",
+  "description": "The GitHub API allows you to interact with GitHub programmatically, including repository management, pull requests, issues, commits, and more.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_GITHUB_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_GITHUB_APP_CLIENT_SECRET }}",
+      "scope": "public_repo gist user workflow",
+      "authorize_url": "https://github.com/login/oauth/authorize",
+      "access_token_url": "https://github.com/login/oauth/access_token",
+      "refresh_token_url": ""
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Dev Tools"
+  ],
+  "visibility": "public",
+  "active": true
 }

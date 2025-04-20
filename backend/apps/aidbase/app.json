@@ -1,23 +1,22 @@
 {
-    "name": "AIDBASE",
-    "display_name": "AIDBASE",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/aidbase.svg",
-    "provider": "Aidbase, Inc.",
-    "version": "aipolabs_0.0.1",
-    "description": "Integration with Aidbase API to manage resources and workflows.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "Authorization",
-            "prefix": "Bearer"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "chat",
-        "integration",
-        "workflow"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "AIDBASE",
+  "display_name": "AIDBASE",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/aidbase.svg",
+  "provider": "Aidbase, Inc.",
+  "version": "aipolabs_0.0.1",
+  "description": "Integration with Aidbase API to manage resources and workflows.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Integration",
+    "Automation"
+  ],
+  "visibility": "public",
+  "active": true
 }

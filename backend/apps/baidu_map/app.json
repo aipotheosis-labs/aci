@@ -1,24 +1,21 @@
 {
-    "name": "BAIDU_MAP",
-    "display_name": "Baidu Map",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/baidu_map.svg",
-    "provider": "Baidu",
-    "version": "1.0.0",
-    "description": "Baidu Map API is a set of map-based application interfaces for developers, providing services such as location search, geocoding, route planning, and real-time traffic conditions.",
-    "security_schemes": {
-        "api_key": {
-          "location": "query",
-          "name": "ak",
-          "prefix": null
-        }
-    },
-    "default_security_credentials_by_scheme": {
-    },
-    "categories": [
-        "maps",
-        "location",
-        "navigation"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "BAIDU_MAP",
+  "display_name": "Baidu Map",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/baidu_map.svg",
+  "provider": "Baidu",
+  "version": "1.0.0",
+  "description": "Baidu Map API is a set of map-based application interfaces for developers, providing services such as location search, geocoding, route planning, and real-time traffic conditions.",
+  "security_schemes": {
+    "api_key": {
+      "location": "query",
+      "name": "ak",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Location"
+  ],
+  "visibility": "public",
+  "active": true
 }

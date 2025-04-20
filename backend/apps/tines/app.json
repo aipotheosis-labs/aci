@@ -1,23 +1,22 @@
 {
-    "name": "TINES",
-    "display_name": "Tines",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/tines.svg",
-    "provider": "Tines",
-    "version": "1.0.0",
-    "description": "Tines is a no-code automation platform that allows security and operations teams to automate any manual workflow with a drag-and-drop interface. It provides powerful API capabilities for team management and workflow automation.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "Authorization",
-            "prefix": "Bearer"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "automation",
-        "security",
-        "workflow"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "TINES",
+  "display_name": "Tines",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/tines.svg",
+  "provider": "Tines",
+  "version": "1.0.0",
+  "description": "Tines is a no-code automation platform that allows security and operations teams to automate any manual workflow with a drag-and-drop interface. It provides powerful API capabilities for team management and workflow automation.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Automation",
+    "Integration"
+  ],
+  "visibility": "public",
+  "active": true
 }

@@ -1,19 +1,22 @@
 {
-    "name": "ONE_SIGNAL",
-    "display_name": "OneSignal",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/one_signal.svg",
-    "provider": "OneSignal Inc.",
-    "version": "1.0.0",
-    "description": "OneSignal is a comprehensive customer engagement solution that provides push notifications, in-app messaging, email, and SMS services. This integration enables managing and sending cross-platform notifications, tracking user engagement, and accessing notification analytics.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "Authorization",
-            "prefix": "Key"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": ["messaging", "notifications", "customer-engagement", "marketing"],
-    "visibility": "public",
-    "active": true
+  "name": "ONE_SIGNAL",
+  "display_name": "OneSignal",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/one_signal.svg",
+  "provider": "OneSignal Inc.",
+  "version": "1.0.0",
+  "description": "OneSignal is a comprehensive customer engagement solution that provides push notifications, in-app messaging, email, and SMS services. This integration enables managing and sending cross-platform notifications, tracking user engagement, and accessing notification analytics.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Key"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Communication",
+    "Marketing"
+  ],
+  "visibility": "public",
+  "active": true
 }

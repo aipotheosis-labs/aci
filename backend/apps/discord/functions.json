@@ -10,6 +10,12 @@
       "method": "GET",
       "path": "/users/@me",
       "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "additionalProperties": false
     }
   }
 ]

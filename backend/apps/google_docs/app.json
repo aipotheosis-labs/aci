@@ -1,25 +1,25 @@
 {
-    "name": "GOOGLE_DOCS",
-    "display_name": "Google Docs",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/google_docs.svg",
-    "provider": "Google",
-    "version": "1.0.0",
-    "description": "The Google Docs API allows developers to create, read, and update Google Docs documents programmatically. It provides access to Google Docs through RESTful HTTP calls, including create, read and update the Google Docs document.",
-    "security_schemes": {
-        "oauth2": {
-          "location": "header",
-          "name": "Authorization",
-          "prefix": "Bearer",
-          "client_id": "{{ AIPOLABS_GOOGLE_APP_CLIENT_ID }}",
-          "client_secret": "{{ AIPOLABS_GOOGLE_APP_CLIENT_SECRET }}",
-          "scope": "https://www.googleapis.com/auth/documents",
-          "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "document"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "GOOGLE_DOCS",
+  "display_name": "Google Docs",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/google_docs.svg",
+  "provider": "Google",
+  "version": "1.0.0",
+  "description": "The Google Docs API allows developers to create, read, and update Google Docs documents programmatically. It provides access to Google Docs through RESTful HTTP calls, including create, read and update the Google Docs document.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_GOOGLE_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_GOOGLE_APP_CLIENT_SECRET }}",
+      "scope": "https://www.googleapis.com/auth/documents",
+      "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Document Management"
+  ],
+  "visibility": "public",
+  "active": true
 }

@@ -1,25 +1,25 @@
 {
-    "name": "GOOGLE_CALENDAR",
-    "display_name": "Google Calendar",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/google_calendar.svg",
-    "provider": "Google",
-    "version": "3.0.0",
-    "description": "The Google Calendar API is a RESTful API that can be accessed through explicit HTTP calls. The API exposes most of the features available in the Google Calendar Web interface.",
-    "security_schemes": {
-        "oauth2": {
-          "location": "header",
-          "name": "Authorization",
-          "prefix": "Bearer",
-          "client_id": "{{ AIPOLABS_GOOGLE_APP_CLIENT_ID }}",
-          "client_secret": "{{ AIPOLABS_GOOGLE_APP_CLIENT_SECRET }}",
-          "scope": "openid email profile https://www.googleapis.com/auth/calendar",
-          "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "calendar"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "GOOGLE_CALENDAR",
+  "display_name": "Google Calendar",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/google_calendar.svg",
+  "provider": "Google",
+  "version": "3.0.0",
+  "description": "The Google Calendar API is a RESTful API that can be accessed through explicit HTTP calls. The API exposes most of the features available in the Google Calendar Web interface.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_GOOGLE_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_GOOGLE_APP_CLIENT_SECRET }}",
+      "scope": "openid email profile https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events",
+      "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Productivity"
+  ],
+  "visibility": "public",
+  "active": true
 }

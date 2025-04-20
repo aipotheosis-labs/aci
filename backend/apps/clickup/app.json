@@ -1,28 +1,27 @@
 {
-    "name": "CLICKUP",
-    "display_name": "ClickUp",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/clickup.svg",
-    "provider": "ClickUp",
-    "version": "4.0.0",
-    "description": "The ClickUp API allows you to interact with ClickUp programmatically, including workspace management, tasks, lists, folders, and more.",
-    "security_schemes": {
-        "oauth2": {
-            "location": "header",
-            "name": "Authorization",
-            "prefix": "Bearer",
-            "client_id": "{{ AIPOLABS_CLICKUP_APP_CLIENT_ID }}",
-            "client_secret": "{{ AIPOLABS_CLICKUP_APP_CLIENT_SECRET }}",
-            "scope": "",
-            "authorize_url": "https://app.clickup.com/api",
-            "access_token_url": "https://api.clickup.com/api/v2/oauth/token",
-            "refresh_token_url": "https://api.clickup.com/api/v2/oauth/token"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "productivity",
-        "project_management"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "CLICKUP",
+  "display_name": "ClickUp",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/clickup.svg",
+  "provider": "ClickUp",
+  "version": "4.0.0",
+  "description": "The ClickUp API allows you to interact with ClickUp programmatically, including workspace management, tasks, lists, folders, and more.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_CLICKUP_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_CLICKUP_APP_CLIENT_SECRET }}",
+      "scope": "",
+      "authorize_url": "https://app.clickup.com/api",
+      "access_token_url": "https://api.clickup.com/api/v2/oauth/token",
+      "refresh_token_url": "https://api.clickup.com/api/v2/oauth/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Productivity"
+  ],
+  "visibility": "public",
+  "active": true
 }

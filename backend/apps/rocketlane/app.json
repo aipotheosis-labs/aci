@@ -1,24 +1,22 @@
 {
-    "name": "ROCKETLANE",
-    "display_name": "Rocketlane",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/rocketlane.svg",
-    "provider": "Rocketlane",
-    "version": "1.0.0",
-    "description": "Rocketlane API for managing customer onboarding, project management, and client collaboration.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "api-key",
-            "prefix": null
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "project-management",
-        "customer-onboarding",
-        "collaboration",
-        "client-portal"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "ROCKETLANE",
+  "display_name": "Rocketlane",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/rocketlane.svg",
+  "provider": "Rocketlane",
+  "version": "1.0.0",
+  "description": "Rocketlane API for managing customer onboarding, project management, and client collaboration.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "api-key",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Productivity",
+    "CRM & Support"
+  ],
+  "visibility": "public",
+  "active": true
 }

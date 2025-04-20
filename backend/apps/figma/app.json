@@ -1,21 +1,21 @@
 {
-    "name": "FIGMA",
-    "display_name": "Figma",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/figma.svg",
-    "provider": "Figma",
-    "version": "1.0.0",
-    "description": "Figma is a browser-based collaborative interface design tool. This integration allows access to and processing of Figma design files and resources.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "X-Figma-Token",
-            "prefix": null
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "design"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "FIGMA",
+  "display_name": "Figma",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/figma.svg",
+  "provider": "Figma",
+  "version": "1.0.0",
+  "description": "Figma is a browser-based collaborative interface design tool. This integration allows access to and processing of Figma design files and resources.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "X-Figma-Token",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Media & Design"
+  ],
+  "visibility": "public",
+  "active": true
 }

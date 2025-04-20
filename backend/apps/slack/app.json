@@ -1,29 +1,29 @@
 {
-    "name": "SLACK",
-    "display_name": "Slack",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/slack.svg",
-    "provider": "Slack Technologies, LLC, a Salesforce company.",
-    "version": "2.33.0",
-    "description": "Slack is a team communication and collaboration tool. This API allows you to interact with Slack in two ways: as a bot for automated tasks and workflows, or as a user to perform actions on behalf of a real Slack user. Whether you're building chatbots, automating workflows, or integrating Slack with other tools, this API provides the flexibility to suit your needs.",
-    "security_schemes": {
-        "oauth2": {
-          "location": "header",
-          "name": "Authorization",
-          "prefix": "Bearer",
-          "client_id": "{{ AIPOLABS_SLACK_APP_CLIENT_ID }}",
-          "client_secret": "{{ AIPOLABS_SLACK_APP_CLIENT_SECRET }}",
-          "scope": "users:read users:write channels:read groups:read groups:write im:read im:write mpim:read chat:write channels:history groups:history mpim:history im:history bookmarks:write bookmarks:read pins:write pins:read reactions:read reactions:write reminders:write reminders:read emoji:read search:read",
-          "server_metadata_url": "https://slack.com/.well-known/openid-configuration",
-          "token_endpoint_auth_method": "client_secret_post",
-          "authorize_url": "https://slack.com/oauth/v2/authorize",
-          "access_token_url": "https://slack.com/api/oauth.v2.access",
-          "refresh_token_url": "https://slack.com/api/oauth.v2.access"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "chat"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "SLACK",
+  "display_name": "Slack",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/slack.svg",
+  "provider": "Slack Technologies, LLC, a Salesforce company.",
+  "version": "2.33.0",
+  "description": "Slack is a team communication and collaboration tool. This API allows you to interact with Slack in two ways: as a bot for automated tasks and workflows, or as a user to perform actions on behalf of a real Slack user. Whether you're building chatbots, automating workflows, or integrating Slack with other tools, this API provides the flexibility to suit your needs.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_SLACK_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_SLACK_APP_CLIENT_SECRET }}",
+      "scope": "users:read users:write channels:read groups:read groups:write im:read im:write mpim:read chat:write channels:history groups:history mpim:history im:history bookmarks:write bookmarks:read pins:write pins:read reactions:read reactions:write reminders:write reminders:read emoji:read search:read team:read",
+      "server_metadata_url": "https://slack.com/.well-known/openid-configuration",
+      "token_endpoint_auth_method": "client_secret_post",
+      "authorize_url": "https://slack.com/oauth/v2/authorize",
+      "access_token_url": "https://slack.com/api/oauth.v2.access",
+      "refresh_token_url": "https://slack.com/api/oauth.v2.access"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Communication"
+  ],
+  "visibility": "public",
+  "active": true
 }

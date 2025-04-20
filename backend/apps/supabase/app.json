@@ -1,23 +1,22 @@
 {
-    "name": "SUPABASE",
-    "display_name": "Supabase API",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/supabase.svg",
-    "provider": "Supabase Inc.",
-    "version": "aipolabs_0.0.1",
-    "description": "Supabase is an open-source Firebase alternative providing real-time databases, authentication, and more.",
-    "security_schemes": {
-        "api_key": {
-          "location": "header",
-          "name": "Authorization",
-          "prefix": "Bearer "
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "database",
-        "authentication",
-        "real-time"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "SUPABASE",
+  "display_name": "Supabase API",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/supabase.svg",
+  "provider": "Supabase Inc.",
+  "version": "aipolabs_0.0.1",
+  "description": "Supabase is an open-source Firebase alternative providing real-time databases, authentication, and more.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer "
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Data & Analytics",
+    "Dev Tools"
+  ],
+  "visibility": "public",
+  "active": true
 }

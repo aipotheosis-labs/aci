@@ -9,7 +9,10 @@
     "no_auth": {}
   },
   "default_security_credentials_by_scheme": {},
-  "categories": ["blockchain", "defi", "crypto"],
+  "categories": [
+    "Finance",
+    "Blockchain"
+  ],
   "visibility": "public",
   "active": true
 }

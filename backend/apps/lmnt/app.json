@@ -1,22 +1,21 @@
 {
-    "name": "LMNT",
-    "display_name": "LMNT API",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/lmnt.png",
-    "provider": "LMNT Inc.",
-    "version": "aipolabs_0.0.1",
-    "description": "LMNT is an API for text-to-speech and voice cloning.",
-    "security_schemes": {
-        "api_key": {
-          "location": "header",
-          "name": "X-API-Key",
-          "prefix": null
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "text-to-speech",
-        "voice cloning"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "LMNT",
+  "display_name": "LMNT API",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/lmnt.png",
+  "provider": "LMNT Inc.",
+  "version": "aipolabs_0.0.1",
+  "description": "LMNT is an API for text-to-speech and voice cloning.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "X-API-Key",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Media"
+  ],
+  "visibility": "public",
+  "active": true
 }

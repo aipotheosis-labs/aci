@@ -1,29 +1,27 @@
 {
-    "name": "ZOHO_DESK",
-    "display_name": "Zoho Desk",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/zoho_desk.svg",
-    "provider": "Zoho",
-    "version": "1.0",
-    "description": "Zoho Desk API integration for customer support and ticket management. Provides access to tickets, contacts, departments, and customer support features.",
-    "security_schemes": {
-        "oauth2": {
-            "location": "header",
-            "name": "Authorization",
-            "prefix": "Zoho-oauthtoken",
-            "client_id": "{{ AIPOLABS_ZOHO_APP_CLIENT_ID }}",
-            "client_secret": "{{ AIPOLABS_ZOHO_APP_CLIENT_SECRET }}",
-            "scope": "Desk.tickets.READ,Desk.tickets.CREATE,Desk.contacts.READ,Desk.basic.READ,Desk.search.READ",
-            "authorize_url": "https://accounts.zoho.com/oauth/v2/auth",
-            "access_token_url": "https://accounts.zoho.com/oauth/v2/token",
-            "refresh_token_url": "https://accounts.zoho.com/oauth/v2/token"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "customer-support",
-        "ticketing",
-        "crm"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "ZOHO_DESK",
+  "display_name": "Zoho Desk",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/zoho_desk.svg",
+  "provider": "Zoho",
+  "version": "1.0",
+  "description": "Zoho Desk API integration for customer support and ticket management. Provides access to tickets, contacts, departments, and customer support features.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Zoho-oauthtoken",
+      "client_id": "{{ AIPOLABS_ZOHO_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_ZOHO_APP_CLIENT_SECRET }}",
+      "scope": "Desk.tickets.ALL,Desk.tickets.READ,Desk.tickets.WRITE,Desk.tickets.UPDATE,Desk.tickets.CREATE,Desk.tickets.DELETE,Desk.contacts.READ,Desk.contacts.WRITE,Desk.contacts.UPDATE,Desk.contacts.CREATE,Desk.tasks.ALL,Desk.tasks.WRITE,Desk.tasks.READ,Desk.tasks.CREATE,Desk.tasks.UPDATE,Desk.tasks.DELETE,Desk.basic.READ,Desk.basic.CREATE,Desk.settings.ALL,Desk.settings.WRITE,Desk.settings.READ,Desk.settings.CREATE,Desk.settings.UPDATE,Desk.settings.DELETE,Desk.search.READ,Desk.events.ALL,Desk.events.READ,Desk.events.WRITE,Desk.events.CREATE,Desk.events.UPDATE,Desk.events.DELETE,Desk.articles.READ,Desk.articles.CREATE,Desk.articles.UPDATE,Desk.articles.DELETE",
+      "authorize_url": "https://accounts.zoho.com/oauth/v2/auth",
+      "access_token_url": "https://accounts.zoho.com/oauth/v2/token",
+      "refresh_token_url": "https://accounts.zoho.com/oauth/v2/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "CRM & Support"
+  ],
+  "visibility": "public",
+  "active": true
 }

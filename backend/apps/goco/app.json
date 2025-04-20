@@ -1,23 +1,22 @@
 {
-    "name": "GOCO",
-    "display_name": "GoCo",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/goco.svg",
-    "provider": "GoCo",
-    "version": "1.0.0",
-    "description": "GoCo API for managing HR, benefits, and payroll operations.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "Authorization",
-            "prefix": "Bearer"
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "hr",
-        "benefits",
-        "payroll"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "GOCO",
+  "display_name": "GoCo",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/goco.svg",
+  "provider": "GoCo",
+  "version": "1.0.0",
+  "description": "GoCo API for managing HR, benefits, and payroll operations.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "HR & Workforce",
+    "Finance"
+  ],
+  "visibility": "public",
+  "active": true
 }

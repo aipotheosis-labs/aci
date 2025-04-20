@@ -1,19 +1,22 @@
 {
-    "name": "SOLSCAN",
-    "display_name": "SolScan",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/solscan.svg",
-    "provider": "SolScan",
-    "version": "1.0.0",
-    "description": "SolScan integration for Solana blockchain data, providing access to transactions, accounts, and smart contracts.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "token",
-            "prefix": null
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": ["blockchain", "data", "analytics"],
-    "visibility": "public",
-    "active": true
+  "name": "SOLSCAN",
+  "display_name": "SolScan",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/solscan.svg",
+  "provider": "SolScan",
+  "version": "1.0.0",
+  "description": "SolScan integration for Solana blockchain data, providing access to transactions, accounts, and smart contracts.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "token",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Blockchain",
+    "Data & Analytics"
+  ],
+  "visibility": "public",
+  "active": true
 }

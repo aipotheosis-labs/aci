@@ -1,26 +1,23 @@
 {
-    "name": "ACTIVE_CAMPAIGN",
-    "display_name": "ActiveCampaign",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/active_campaign.svg",
-    "provider": "ActiveCampaign, LLC",
-    "version": "3.0.0",
-    "description": "ActiveCampaign is a customer experience automation (CXA) platform that combines email marketing, marketing automation, sales automation and CRM capabilities to help businesses build better relationships with customers.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "Api-Token",
-            "prefix": null
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "crm",
-        "marketing",
-        "sales",
-        "automation",
-        "email",
-        "campaigns"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "ACTIVE_CAMPAIGN",
+  "display_name": "ActiveCampaign",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/active_campaign.svg",
+  "provider": "ActiveCampaign, LLC",
+  "version": "3.0.0",
+  "description": "ActiveCampaign is a customer experience automation (CXA) platform that combines email marketing, marketing automation, sales automation and CRM capabilities to help businesses build better relationships with customers.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Api-Token",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Marketing",
+    "CRM & Support",
+    "Automation"
+  ],
+  "visibility": "public",
+  "active": true
 }

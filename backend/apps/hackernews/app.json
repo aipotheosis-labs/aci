@@ -6,12 +6,11 @@
   "version": "1.0.0",
   "description": "Hacker News is a social news website focusing on computer science and entrepreneurship, run by Y Combinator. This API allows you to fetch top stories, new stories, ask stories, show stories, and job postings from Hacker News.",
   "security_schemes": {
-      "no_auth": {}
+    "no_auth": {}
   },
   "default_security_credentials_by_scheme": {},
   "categories": [
-      "news",
-      "tech"
+    "News"
   ],
   "visibility": "public",
   "active": true

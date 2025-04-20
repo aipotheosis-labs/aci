@@ -1,25 +1,21 @@
 {
-    "name": "ALL_IMAGES",
-    "display_name": "All-Images",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/all_images.svg",
-    "provider": "All-Images.ai",
-    "version": "1.0",
-    "description": "All-Images.ai API integration for image search and AI image generation. Provides capabilities for searching stock images and generating custom images using AI.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "api-key",
-            "prefix": null
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "image",
-        "ai",
-        "content",
-        "generation",
-        "search"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "ALL_IMAGES",
+  "display_name": "All-Images",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/all_images.svg",
+  "provider": "All-Images.ai",
+  "version": "1.0",
+  "description": "All-Images.ai API integration for image search and AI image generation. Provides capabilities for searching stock images and generating custom images using AI.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "api-key",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Media"
+  ],
+  "visibility": "public",
+  "active": true
 }

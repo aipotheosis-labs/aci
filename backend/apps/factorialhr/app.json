@@ -1,23 +1,21 @@
 {
-    "name": "FACTORIAL_HR",
-    "display_name": "Factorial HR",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/factorialhr.svg",
-    "provider": "Factorial",
-    "version": "2025-04-01",
-    "description": "Factorial HR API provides comprehensive HR management capabilities including employee management, task tracking, webhooks, job catalog, and finance management.",
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "x-api-key",
-            "prefix": null
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "categories": [
-        "hr",
-        "employee_management",
-        "finance"
-    ],
-    "visibility": "public",
-    "active": true
+  "name": "FACTORIAL_HR",
+  "display_name": "Factorial HR",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/factorialhr.svg",
+  "provider": "Factorial",
+  "version": "2025-04-01",
+  "description": "Factorial HR API provides comprehensive HR management capabilities including employee management, task tracking, webhooks, job catalog, and finance management.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "x-api-key",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "HR & Workforce"
+  ],
+  "visibility": "public",
+  "active": true
 }

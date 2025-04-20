@@ -1,23 +1,21 @@
 {
-    "name": "APITEMPLATE",
-    "display_name": "APITemplate.io",
-    "description": "APITemplate.io is a template-based document generation service that allows you to create PDFs and other documents from HTML templates.",
-    "provider": "APITemplate.io",
-    "version": "1.0.0",
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/apitemplate.svg",
-    "categories": [
-        "documents",
-        "templates",
-        "pdf"
-    ],
-    "security_schemes": {
-        "api_key": {
-            "location": "header",
-            "name": "X-API-KEY",
-            "prefix": null
-        }
-    },
-    "default_security_credentials_by_scheme": {},
-    "visibility": "public",
-    "active": true
+  "name": "APITEMPLATE",
+  "display_name": "APITemplate.io",
+  "description": "APITemplate.io is a template-based document generation service that allows you to create PDFs and other documents from HTML templates.",
+  "provider": "APITemplate.io",
+  "version": "1.0.0",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/apitemplate.svg",
+  "categories": [
+    "Document Management"
+  ],
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "X-API-KEY",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "visibility": "public",
+  "active": true
 }
