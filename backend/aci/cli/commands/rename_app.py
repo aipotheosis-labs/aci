@@ -39,6 +39,16 @@ def rename_app(
     This command changes the app name and updates all functions that begin with the app name prefix.
     It also updates any references to the app in other tables like AppConfigurations and Agents.
     """
+    # if skip dry run, warn user
+    if skip_dry_run:
+        console.print(
+            "[bold red]WARNING: This operation will change the name of the app and all data "
+            "associated with the app including functions, linked accounts, app configurations, "
+            "and agents's allowed_apps and custom_instructions.[/bold red]"
+        )
+        if not click.confirm("Are you sure you want to continue?", default=False):
+            raise click.Abort()
+
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
         # Check if old app exists
         app = crud.apps.get_app(

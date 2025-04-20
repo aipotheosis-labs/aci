@@ -52,6 +52,12 @@ def get_linked_account(
     return linked_account
 
 
+def get_linked_accounts_by_app_id(db_session: Session, app_id: UUID) -> list[LinkedAccount]:
+    statement = select(LinkedAccount).filter_by(app_id=app_id)
+    linked_accounts: list[LinkedAccount] = list(db_session.execute(statement).scalars().all())
+    return linked_accounts
+
+
 # TODO: the access control (project_id check) should probably be done at the route level?
 def get_linked_account_by_id_under_project(
     db_session: Session, linked_account_id: UUID, project_id: UUID
