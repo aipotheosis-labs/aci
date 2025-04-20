@@ -1,7 +1,7 @@
 {
   "name": "COIN_GECKO",
   "display_name": "CoinGecko",
-  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/coin_gecko.svg",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/coingecko.svg",
   "provider": "CoinGecko",
   "version": "1.0.0",
   "description": "CoinGecko provides a comprehensive cryptocurrency API that allows users to track price, volume, market cap, and other market data for thousands of cryptocurrencies. It offers real-time market data, historical price information, and various market metrics for digital assets.",
