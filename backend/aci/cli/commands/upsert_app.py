@@ -60,9 +60,13 @@ def upsert_app_helper(
         with open(secrets_file) as f:
             secrets = json.load(f)
     # Render the template in-memory and load JSON data
-    rendered_content = _render_template_to_string(app_file, secrets)
-    app_upsert = AppUpsert.model_validate(json.loads(rendered_content))
+    try:
+        rendered_content = _render_template_to_string(app_file, secrets)
+    except Exception as e:
+        console.print(f"[bold red]Error rendering template, failed to upsert app: {e}[/bold red]")
+        return None
 
+    app_upsert = AppUpsert.model_validate(json.loads(rendered_content))
     existing_app = crud.apps.get_app(
         db_session, app_upsert.name, public_only=False, active_only=False
     )
