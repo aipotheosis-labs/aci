@@ -59,6 +59,7 @@
                             "description": "A key-value store for recording customer-related properties",
                             "properties": {},
                             "required": [],
+                            "visible": [],
                             "additionalProperties": true,
                             "default": null
                         }

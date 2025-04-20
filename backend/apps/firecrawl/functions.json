@@ -146,9 +146,7 @@
                                     "properties": {},
                                     "required": [],
                                     "visible": [],
-                                    "additionalProperties": {
-                                        "type": "string"
-                                    }
+                                    "additionalProperties": true
                                 },
                                 "metadata": {
                                     "type": "object",
@@ -177,6 +175,8 @@
                             ],
                             "visible": [
                                 "url",
+                                "headers",
+                                "metadata",
                                 "events"
                             ],
                             "additionalProperties": false
@@ -505,6 +505,8 @@
                             ],
                             "visible": [
                                 "url",
+                                "headers",
+                                "metadata",
                                 "events"
                             ],
                             "additionalProperties": false

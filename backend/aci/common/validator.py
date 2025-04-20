@@ -57,8 +57,13 @@ def validate_function_parameters_schema_common(parameters_schema: dict, path: st
         # Check if each property should be visible based on children's visibility
         if prop_schema.get("type") == "object":
             child_visible = prop_schema.get("visible", [])
-            # if all properties of this object are not visible, then this object itself should not be visible
-            if not child_visible and prop_name in visible:
+            # if all properties of this object are not visible, then this object itself should not be visible.
+            # Unless additionalProperties of this object is true
+            if (
+                not child_visible
+                and prop_name in visible
+                and not prop_schema.get("additionalProperties", False)
+            ):
                 raise ValueError(
                     f"Property '{prop_name}' at {path} cannot be visible when all its children are non-visible"
                 )

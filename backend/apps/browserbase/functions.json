@@ -162,7 +162,7 @@
                         }
                     },
                     "required": ["projectId"],
-                    "visible": ["projectId", "extensionId", "browserSettings", "timeout", "keepAlive", "proxies", "region"],
+                    "visible": ["projectId", "extensionId", "browserSettings", "timeout", "keepAlive", "proxies", "region", "userMetadata"],
                     "additionalProperties": false
                 }
             },

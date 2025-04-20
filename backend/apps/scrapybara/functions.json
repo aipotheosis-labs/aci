@@ -1216,7 +1216,7 @@
                 }
               },
               "required": ["type", "content"],
-              "visible": ["type", "content"],
+              "visible": ["type", "content", "metadata"],
               "additionalProperties": false
             }
           },

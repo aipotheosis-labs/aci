@@ -299,7 +299,7 @@
                 }
               },
               "required": [],
-              "visible": ["cookies"],
+              "visible": ["cookies", "localStorage"],
               "additionalProperties": false
             },
             "timeout": {
