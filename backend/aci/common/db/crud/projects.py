@@ -199,6 +199,11 @@ def get_agent_by_api_key_id(db_session: Session, api_key_id: UUID) -> Agent | No
     ).scalar_one_or_none()
 
 
+def get_agents_whose_allowed_apps_contains(db_session: Session, app_name: str) -> list[Agent]:
+    statement = select(Agent).where(Agent.allowed_apps.contains([app_name]))
+    return list(db_session.execute(statement).scalars().all())
+
+
 def get_api_key_by_agent_id(db_session: Session, agent_id: UUID) -> APIKey | None:
     return db_session.execute(select(APIKey).filter_by(agent_id=agent_id)).scalar_one_or_none()
 

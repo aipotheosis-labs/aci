@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
@@ -133,6 +135,12 @@ def get_functions(
         statement = statement.filter(App.active).filter(Function.active)
 
     statement = statement.order_by(Function.name).offset(offset).limit(limit)
+
+    return list(db_session.execute(statement).scalars().all())
+
+
+def get_functions_by_app_id(db_session: Session, app_id: UUID) -> list[Function]:
+    statement = select(Function).filter(Function.app_id == app_id)
 
     return list(db_session.execute(statement).scalars().all())
 

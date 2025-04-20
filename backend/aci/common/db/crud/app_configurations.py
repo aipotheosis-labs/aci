@@ -108,6 +108,11 @@ def get_app_configuration(
     return app_configuration
 
 
+def get_app_configurations_by_app_id(db_session: Session, app_id: UUID) -> list[AppConfiguration]:
+    statement = select(AppConfiguration).filter(AppConfiguration.app_id == app_id)
+    return list(db_session.execute(statement).scalars().all())
+
+
 def app_configuration_exists(db_session: Session, project_id: UUID, app_name: str) -> bool:
     stmt = (
         select(AppConfiguration)
