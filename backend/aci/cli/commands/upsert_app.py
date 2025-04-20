@@ -64,7 +64,7 @@ def upsert_app_helper(
         rendered_content = _render_template_to_string(app_file, secrets)
     except Exception as e:
         console.print(f"[bold red]Error rendering template, failed to upsert app: {e}[/bold red]")
-        return None
+        raise e
 
     app_upsert = AppUpsert.model_validate(json.loads(rendered_content))
     existing_app = crud.apps.get_app(

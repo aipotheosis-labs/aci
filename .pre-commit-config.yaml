@@ -47,7 +47,6 @@ repos:
         entry: cd backend && uv run ruff check . --fix
         pass_filenames: false
         require_serial: true
-      # TODO: not running it now because there are too many errors
       - id: mypy
         name: running backend mypy checks
         language: system

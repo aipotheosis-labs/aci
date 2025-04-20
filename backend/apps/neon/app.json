@@ -1,7 +1,7 @@
 {
   "name": "NEON",
-  "display_name": "Neon API",
-  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/neon.svg",
+  "display_name": "Neon",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/neon.png",
   "provider": "Neon Tech, Inc.",
   "version": "aipolabs_0.0.1",
   "description": "Neon is a serverless Postgres database service with a generous free tier, providing instant autoscaling and automated storage optimization.",
