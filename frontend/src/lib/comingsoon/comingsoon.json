@@ -1,15 +1,5 @@
 [
   {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/b33d45a8617a1fb2d46a96f36271ace0c58920fe/apps/google_sheets.svg",
-    "title": "Google Sheets",
-    "description": "Google Sheets is a web-based spreadsheet program that is part of the\n    Google Drive office suite."
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/b33d45a8617a1fb2d46a96f36271ace0c58920fe/apps/discord.svg",
-    "title": "Discord",
-    "description": "An instant messaging and VoIP social platform."
-  },
-  {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/b33d45a8617a1fb2d46a96f36271ace0c58920fe/apps/google_drive.svg",
     "title": "Google Drive",
     "description": "Connect to Google Drive!"
@@ -19,21 +9,10 @@
     "title": "Apaleo",
     "description": "Apaleo is a cloud-based property management platform handling reservations, billing, and daily operations for hospitality businesses"
   },
-
   {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/cal.png",
     "title": "Cal",
     "description": "Cal simplifies meeting coordination by providing shareable booking pages, calendar syncing, and availability management to streamline the scheduling process"
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/b33d45a8617a1fb2d46a96f36271ace0c58920fe/apps/calendly.svg",
-    "title": "Calendly",
-    "description": "Calendly is an appointment scheduling tool that automates meeting invitations, availability checks, and reminders, helping individuals and teams avoid email back-and-forth"
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/b33d45a8617a1fb2d46a96f36271ace0c58920fe/apps/sentry.svg",
-    "title": "Sentry",
-    "description": "Integrate Sentry to manage your error tracking and monitoring."
   },
   {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/b33d45a8617a1fb2d46a96f36271ace0c58920fe/apps/bitbucket.svg",
@@ -41,24 +20,9 @@
     "description": "Bitbucket is a Git-based code hosting and collaboration platform supporting private and public repositories, enabling teams to manage and review code through pull requests and integrations"
   },
   {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/supabase.jpg",
-    "title": "Supabase",
-    "description": "Supabase is an open-source backend-as-a-service providing a Postgres database, authentication, storage, and real-time subscription APIs for building modern applications"
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/zenrows.jpg",
-    "title": "Zenrows",
-    "description": "Connect to ZenRows to effortlessly scrape and extract web data, process it, and manage it using the powerful ZenRows API."
-  },
-  {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/pagerduty.png",
     "title": "Pagerduty",
     "description": "Integrate PagerDuty to manage incidents, schedules, and alerts directly from your application."
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/neon.png",
-    "title": "Neon",
-    "description": "Postgres, on a serverless platform designed to help you build reliable and scalable applications faster"
   },
   {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/b33d45a8617a1fb2d46a96f36271ace0c58920fe/apps/recallai.svg",
@@ -116,19 +80,9 @@
     "description": "Using the AccuLynx API, data can be seamlessly exchanged between AccuLynx and other applications for greater efficiency and productivity."
   },
   {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/hubspot.svg",
-    "title": "Hubspot",
-    "description": "HubSpot is an inbound marketing, sales, and customer service platform integrating CRM, email automation, and analytics to facilitate lead nurturing and seamless customer experiences"
-  },
-  {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/salesforce.svg",
     "title": "Salesforce",
     "description": "Salesforce is a leading CRM platform integrating sales, service, marketing, and analytics to build customer relationships and drive business growth"
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/zoho.png",
-    "title": "Zoho",
-    "description": "Zoho actions to interact with zoho CRM"
   },
   {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/zendesk.svg",
@@ -149,11 +103,6 @@
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/canva.jpg",
     "title": "Canva",
     "description": "Canva offers a drag-and-drop design suite for creating social media graphics, presentations, and marketing materials with prebuilt templates and a vast element library"
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/figma.svg",
-    "title": "Figma",
-    "description": "A collaborative interface design tool."
   },
   {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/klaviyo.png",
@@ -181,11 +130,6 @@
     "description": "CrustData is an AI-powered data intelligence platform that provides real-time company and people data via APIs and webhooks, empowering B2B sales teams, AI SDRs, and investors to act on live signals"
   },
   {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/sendgrid.png",
-    "title": "Sendgrid",
-    "description": "SendGrid is a cloud-based email delivery platform providing transactional and marketing email services, with APIs for integration, analytics, and scalability"
-  },
-  {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/brevo.jpg",
     "title": "Brevo",
     "description": "Brevo (formerly Sendinblue) delivers email marketing, SMS campaigns, and marketing automation solutions, empowering businesses to nurture leads, engage audiences, and drive conversions"
@@ -194,11 +138,6 @@
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/twitter_media.png",
     "title": "Twitter media",
     "description": "Twitter Media focuses on multimedia tools and features within Twitter, allowing brands to leverage rich content for marketing campaigns"
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/reddit.svg",
-    "title": "Reddit",
-    "description": "Connect to Reddit to post and comment."
   },
   {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/junglescout.jpg",
@@ -216,11 +155,6 @@
     "description": "Semantic Scholar is an AI-powered academic search engine that helps researchers discover and understand scientific literature"
   },
   {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/lmnt.jpg",
-    "title": "Lmnt",
-    "description": "LMNT is an API for text-to-speech and voice cloning"
-  },
-  {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/perplexityai.jpg",
     "title": "Perplexityai",
     "description": "The Perplexity tool interfaces with Perplexity AI's search service, offering advanced natural language processing for sophisticated searches. The PerplexityAISearch action allows for:\n\n    - Query execution with AI models tailored to various search tasks.\n    - Search customization through parameters affecting content generation.\n    - Domain filtering to enhance search precision.\n    - Real-time response streaming for dynamic applications.\n\n    This action is highly configurable for a tailored search experience, suitable for a wide range of AI-driven applications."
@@ -236,34 +170,9 @@
     "description": "Mem0 assists with AI-driven note-taking, knowledge recall, and productivity tools, allowing users to organize, search, and generate content from stored information"
   },
   {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/typefully.png",
-    "title": "Typefully",
-    "description": "Integrate Typefully to streamline and manage your AI-powered content creation."
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/google_tasks.png",
-    "title": "Googletasks",
-    "description": "Google Tasks provides a simple to-do list and task management system integrated into Gmail and Google Calendar for quick and easy tracking"
-  },
-  {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/linear.png",
     "title": "Linear",
     "description": "Connect to Linear to create and manage issues, list projects, teams, and more"
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/rocketlane.png",
-    "title": "Rocketlane",
-    "description": "Rocketlane specializes in customer onboarding and project delivery, providing shared workspaces, milestones, and status tracking to streamline implementations"
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/google_docs.svg",
-    "title": "Google Docs",
-    "description": "Connect to Google Docs to perform various document-related actions."
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/coda.png",
-    "title": "Coda",
-    "description": "Collaborative workspace platform that transforms documents into powerful tools for team productivity and project management"
   },
   {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/shortcut.svg",
@@ -274,21 +183,6 @@
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/monday.png",
     "title": "Monday",
     "description": "Monday is a cloud-based work operating system where teams create\n    workflow apps in minutes to run their processes, projects, and\n    everyday work."
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/onepage.svg",
-    "title": "Onepage",
-    "description": "API for enriching user and company data, providing endpoints for token validation and generic search."
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/clickup.png",
-    "title": "Clickup",
-    "description": "ClickUp unifies tasks, docs, goals, and chat in a single platform, allowing teams to plan, organize, and collaborate across projects with customizable workflows"
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/airtable.svg",
-    "title": "Airtable",
-    "description": "Airtable is a low‒code platform to build next‒gen apps. Move beyond\n    rigid tools, operationalize your critical data, and reimagine\n    workflows with AI"
   },
   {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/wrike.png",
@@ -306,19 +200,9 @@
     "description": "The Canvas API provides programmatic access to various learning\n    management features of the Canvas platform, including courses, users,\n    enrollments, grades, and more. It supports OAuth2 for secure\n    authentication and authorization."
   },
   {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/slack.svg",
-    "title": "Slackbot",
-    "description": "Slackbot automates responses and reminders within Slack, assisting with tasks like onboarding, FAQs, and notifications to streamline team productivity"
-  },
-  {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/microsoft_teams.jpg",
     "title": "Microsoft teams",
     "description": "Connect to Microsoft Teams to manage channels."
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/discord.svg",
-    "title": "Discordbot",
-    "description": "Discordbot refers to automated programs on Discord servers, performing tasks like moderation, music playback, and user engagement to enhance community interactions"
   },
   {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/share_point.svg",
@@ -351,26 +235,6 @@
     "description": "Zoom is a video conferencing and online meeting platform featuring breakout rooms, screen sharing, and integrations with various enterprise tools"
   },
   {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/google_maps.jpg",
-    "title": "Google maps",
-    "description": "Google Maps is a web mapping platform and consumer application offering satellite imagery,\n    aerial photography, street maps, 360° interactive panoramic views of streets, real-time\n    traffic conditions, and route planning for traveling by foot, car, bike, air and public\n    transportation."
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/weathermap.png",
-    "title": "Weathermap",
-    "description": "WeatherMap provides visual weather data, forecasts, and mappings, helping users understand climate patterns or track severe weather conditions"
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/hackernews.png",
-    "title": "Hackernews",
-    "description": "Hacker News is a tech-focused news aggregator by Y Combinator, featuring user-submitted stories and discussions on startups, programming, and emerging trends"
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/browserbase_tool.jpg",
-    "title": "Browserbase tool",
-    "description": "A browsing app that gets a URL, reads its contents, and returns it."
-  },
-  {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/foursquare.png",
     "title": "Foursquare",
     "description": "Search for places and place recommendations from the Foursquare Places database"
@@ -396,24 +260,9 @@
     "description": "Microsoft Clarity is a free, easy-to-use tool that captures how real\n    people actually use your site."
   },
   {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/posthog.svg",
-    "title": "Posthog",
-    "description": "PostHog is an open-source product analytics platform tracking user interactions and behaviors to help teams refine features, improve funnels, and reduce churn"
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/serpapi.png",
-    "title": "Serpapi",
-    "description": "SerpApi provides a real-time API for structured search engine results, allowing developers to scrape, parse, and analyze SERP data for SEO and research"
-  },
-  {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/servicenow.png",
     "title": "Servicenow",
     "description": "Servicenow provides IT Service Management Transform service management to boost productivity and maximize ROI"
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/fireflies.jpg",
-    "title": "Fireflies",
-    "description": "Fireflies.ai helps your team transcribe, summarize, search, and analyze voice conversations."
   },
   {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/peopledatalabs.png",
@@ -466,11 +315,6 @@
     "description": "OneDrive is Microsoft's cloud storage solution enabling users to store, sync, and share files across devices, offering offline access, real-time collaboration, and enterprise-grade security"
   },
   {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/asana.png",
-    "title": "Asana",
-    "description": "Tool to help teams organize, track, and manage their work."
-  },
-  {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/trello.svg",
     "title": "Trello",
     "description": "A web-based, kanban-style, list-making application."
@@ -484,10 +328,5 @@
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/jira.svg",
     "title": "Jira",
     "description": "A tool for bug tracking, issue tracking, and agile project management."
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/youtube.svg",
-    "title": "Youtube",
-    "description": "Youtube actions to interact with youtube app"
   }
 ]
