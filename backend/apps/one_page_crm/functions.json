@@ -1,6 +1,6 @@
 [
     {
-        "name": "ONEPAGECRM__GET_BOOTSTRAP",
+        "name": "ONE_PAGE_CRM__GET_BOOTSTRAP",
         "description": "Get useful information about the logged API user's account",
         "tags": ["account", "info", "bootstrap"],
         "visibility": "public",
@@ -45,7 +45,7 @@
         }
     },
     {
-        "name": "ONEPAGECRM__CHANGE_AUTH_KEY",
+        "name": "ONE_PAGE_CRM__CHANGE_AUTH_KEY",
         "description": "Invalidate the current API key and return a new API key",
         "tags": ["auth", "security", "api_key"],
         "visibility": "public",
@@ -90,7 +90,7 @@
         }
     },
     {
-        "name": "ONEPAGECRM__LIST_USERS",
+        "name": "ONE_PAGE_CRM__LIST_USERS",
         "description": "Get the list of users for the logged API user's account",
         "tags": ["users", "list", "account"],
         "visibility": "public",
@@ -135,7 +135,7 @@
         }
     },
     {
-        "name": "ONEPAGECRM__GET_USER",
+        "name": "ONE_PAGE_CRM__GET_USER",
         "description": "Get details of a specific user",
         "tags": ["users", "details", "account"],
         "visibility": "public",
@@ -196,7 +196,7 @@
         }
     },
     {
-        "name": "ONEPAGECRM__UPDATE_USER",
+        "name": "ONE_PAGE_CRM__UPDATE_USER",
         "description": "Update a specific user's information",
         "tags": ["users", "update", "account"],
         "visibility": "public",

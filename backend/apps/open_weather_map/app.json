@@ -1,7 +1,7 @@
 {
-  "name": "WEATHERMAP",
-  "display_name": "OpenWeatherMap",
-  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/weathermap.svg",
+  "name": "OPEN_WEATHER_MAP",
+  "display_name": "Open Weather Map",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/open_weather_map.svg",
   "provider": "OpenWeather Ltd.",
   "version": "aipolabs_0.0.1",
   "description": "OpenWeatherMap provides comprehensive weather data including current conditions and 5-day/3-hour forecasts. The API delivers accurate weather information based on the proprietary OpenWeather Model. This integration uses the free API endpoints (Current Weather Data and 5-day/3-hour Forecast) which are available on the free plan with a limit of 1,000 calls per day.",

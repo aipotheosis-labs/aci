@@ -1,7 +1,7 @@
 {
   "name": "BASEROW",
   "display_name": "Baserow",
-  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/main/apps/baserow.svg",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/baserow.svg",
   "provider": "Baserow",
   "version": "2024-03-21",
   "description": "Baserow is an open source no-code database tool and Airtable alternative. Create your own database without technical experience.",

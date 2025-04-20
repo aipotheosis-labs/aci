@@ -15,6 +15,7 @@
       "type": "object",
       "properties": {},
       "required": [],
+      "visible": [],
       "additionalProperties": false
     }
   }

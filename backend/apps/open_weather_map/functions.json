@@ -1,6 +1,6 @@
 [
     {
-        "name": "WEATHERMAP__CURRENT_WEATHER",
+        "name": "OPEN_WEATHER_MAP__CURRENT_WEATHER",
         "description": "Get current weather data for a specific location by latitude and longitude.",
         "tags": [
             "openweathermap",
@@ -115,7 +115,7 @@
         }
     },
     {
-        "name": "WEATHERMAP__FORECAST",
+        "name": "OPEN_WEATHER_MAP__FORECAST",
         "description": "Get 5-day/3-hour forecast data for a specific location by latitude and longitude.",
         "tags": [
             "openweathermap",
@@ -237,7 +237,7 @@
         }
     },
     {
-        "name": "WEATHERMAP__CURRENT_AND_FORECAST",
+        "name": "OPEN_WEATHER_MAP__CURRENT_AND_FORECAST",
         "description": "Get current weather data for a location. The function extracts location information from your prompt and returns detailed weather data including temperature, humidity, wind, and more.",
         "tags": [
             "openweathermap",

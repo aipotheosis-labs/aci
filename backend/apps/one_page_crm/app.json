@@ -1,7 +1,7 @@
 {
-  "name": "ONEPAGECRM",
+  "name": "ONE_PAGE_CRM",
   "display_name": "OnePageCRM",
-  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/onepagecrm.svg",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/one_page_crm.svg",
   "provider": "OnePageCRM",
   "version": "1.0.0",
   "description": "OnePageCRM API for managing contacts, sales actions, and customer relationship management.",
