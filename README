@@ -1,0 +1,25 @@
+# ACI.dev: The Open Source Tool-Use Infrastructure for AI Agents
+
+ACI.dev connects your AI agents to 600+ tool integrations with multi-tenant authentication, granular permissions, and dynamic tool discovery, accessible through either direct tool/function-calling or a unified MCP server.
+
+Build production-ready agents without the infrastructure headaches.
+
+![ACI.dev Logo](frontend/public/aci-dev-full-logo.svg)
+
+## Key Features
+
+- **600+ Pre-built Integrations**: Connect to popular services and apps in minutes.
+- **Flexible Access Methods**: Use our lightweight SDK for direct function calling or our unified MCP server.
+- **Multi-tenant Authentication**: Built-in OAuth flows and secrets management for both developers and end-users.
+- **Enhanced Agent Reliability**: Natural language permission boundaries and dynamic tool discovery.
+- **Framework & Model Agnostic**: Works with any LLM framework and agent architecture.
+- **100% Open Source**: Everything released under Apache 2.0 (backend, dev portal, integrations).
+
+## Why Use ACI.dev?
+
+ACI.dev solves your critical infrastructure challenges for production deployment:
+
+- **Authentication at Scale**: Connect multiple users to multiple services securely.
+- **Discovery Without Overload**: Find and use the right tools without overwhelming context windows.
+- **Natural Language Permissions**: Control agent capabilities with human-readable boundaries.
+- **Build Once, Run Anywhere**: No vendor lock-in with our open source, framework-agnostic approach.
