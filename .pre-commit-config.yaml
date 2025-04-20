@@ -16,19 +16,19 @@ repos:
       - id: format check
         name: running dev portal format check
         language: system
-        entry: cd frontend && npm run format
+        entry: sh -c "cd frontend && npm run format"
         pass_filenames: false
         require_serial: true
       - id: lint check
         name: running dev portal lint check
         language: system
-        entry: cd frontend && npm run lint
+        entry: sh -c "cd frontend && npm run lint"
         pass_filenames: false
         require_serial: true
       - id: test check
         name: running dev portal test check
         language: system
-        entry: cd frontend && npm run test:run
+        entry: sh -c "cd frontend && npm run test:run"
         pass_filenames: false
         require_serial: true
 
@@ -38,18 +38,18 @@ repos:
       - id: format
         name: running backend format checks
         language: system
-        entry: cd backend && uv run ruff format .
+        entry: sh -c "cd backend && uv run ruff format ."
         pass_filenames: false
         require_serial: true
       - id: lint
         name: running backend lint checks
         language: system
-        entry: cd backend && uv run ruff check . --fix
+        entry: sh -c "cd backend && uv run ruff check . --fix"
         pass_filenames: false
         require_serial: true
       - id: mypy
         name: running backend mypy checks
         language: system
-        entry: cd backend && uv run mypy .
+        entry: sh -c "cd backend && uv run mypy ."
         pass_filenames: false
         require_serial: true
