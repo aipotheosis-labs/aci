@@ -28,7 +28,7 @@ Build production-ready AI agents without the infrastructure headaches.
 ## Quick Links
 
 -   **Managed Service:** [aci.dev](https://www.aci.dev/)
--   **Documentation:** [docs.aci.dev](https://www.aci.dev/docs)
+-   **Documentation:** [aci.dev/docs](https://www.aci.dev/docs)
 -   **Available Tools List:** [aci.dev/tools](https://www.aci.dev/tools)
 -   **Python SDK:** [github.com/aipotheosis-labs/aci-python-sdk](https://github.com/aipotheosis-labs/aci-python-sdk)
 -   **Unified MCP Server:** [github.com/aipotheosis-labs/aci-mcp](https://github.com/aipotheosis-labs/aci-mcp)
