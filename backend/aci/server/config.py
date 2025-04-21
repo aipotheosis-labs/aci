@@ -13,7 +13,7 @@ JWT_ALGORITHM = check_and_get_env_variable("SERVER_JWT_ALGORITHM")
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(
     check_and_get_env_variable("SERVER_JWT_ACCESS_TOKEN_EXPIRE_MINUTES")
 )
-AIPOLABS_REDIRECT_URI_BASE = check_and_get_env_variable("SERVER_AIPOLABS_REDIRECT_URI_BASE")
+REDIRECT_URI_BASE = check_and_get_env_variable("SERVER_REDIRECT_URI_BASE")
 COOKIE_KEY_FOR_AUTH_TOKEN = "accessToken"
 
 # Google Auth

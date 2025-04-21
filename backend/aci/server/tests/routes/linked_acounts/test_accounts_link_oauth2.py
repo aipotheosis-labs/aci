@@ -65,7 +65,7 @@ def test_link_oauth2_account_success(
     assert state.linked_account_owner_id == "test_link_oauth2_account_success"
     assert state.after_oauth2_link_redirect_url == after_oauth2_link_redirect_url
     assert state.redirect_uri == (
-        f"{config.AIPOLABS_REDIRECT_URI_BASE}{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback"
+        f"{config.REDIRECT_URI_BASE}{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback"
     )
     assert state.nonce is not None, (
         "nonce should be present for google oauth2 if openid is requested"

@@ -385,7 +385,7 @@ async def link_oauth2_account(
         server_metadata_url=app_default_oauth2_config.server_metadata_url,
     )
     path = request.url_for(LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
-    redirect_uri = f"{config.AIPOLABS_REDIRECT_URI_BASE}{path}"
+    redirect_uri = f"{config.REDIRECT_URI_BASE}{path}"
     # NOTE: normally we should generate "state"/"state_jwt" first, and then
     # call authorize_redirect(request, redirect_uri, state=state_jwt), within which calls create_authorization_url() and save_authorize_data().
     # But as we mentioned at the beginning of this file, we need to be a bit hacky to avoid any browser session related implementation.
