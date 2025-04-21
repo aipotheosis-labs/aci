@@ -5,7 +5,8 @@
 # ACI: Open Source Tool-Use Infrastructure for AI Agents
 
 <p align="center">
-  <a href="https://github.com/aipotheosis-labs/aci/actions/workflows/ci.yml"><img src="https://github.com/aipotheosis-labs/aci/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/aipotheosis-labs/aci/actions/workflows/devportal.yml"><img src="https://github.com/aipotheosis-labs/aci/actions/workflows/devportal.yml/badge.svg" alt="Dev Portal CI"></a>
+  <a href="https://github.com/aipotheosis-labs/aci/actions/workflows/backend.yml"><img src="https://github.com/aipotheosis-labs/aci/actions/workflows/backend.yml/badge.svg" alt="Backend CI"></a>
   <a href="https://opensource.org/licenses/Apache-2.0"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" alt="License"></a>
   <a href="https://discord.com/invite/UU2XAnfHJh"><img src="https://img.shields.io/badge/Discord-Join_Chat-7289DA.svg?logo=discord" alt="Discord"></a>
   <a href="https://x.com/AipoLabs"><img src="https://img.shields.io/twitter/follow/AipoLabs?style=social" alt="Twitter Follow"></a>
@@ -31,13 +32,13 @@ Build production-ready AI agents without the infrastructure headaches.
 
 ## Quick Links
 
--   **Managed Service:** [aci.dev](https://www.aci.dev/)
--   **Documentation:** [aci.dev/docs](https://www.aci.dev/docs)
--   **Available Tools List:** [aci.dev/tools](https://www.aci.dev/tools)
--   **Python SDK:** [github.com/aipotheosis-labs/aci-python-sdk](https://github.com/aipotheosis-labs/aci-python-sdk)
--   **Unified MCP Server:** [github.com/aipotheosis-labs/aci-mcp](https://github.com/aipotheosis-labs/aci-mcp)
--   **Blog:** [aci.dev/blog](https://www.aci.dev/blog)
--   **Community:** [Discord](https://discord.com/invite/UU2XAnfHJh) | [Twitter/X](https://x.com/AipoLabs) | [LinkedIn](https://www.linkedin.com/company/aipotheosis-labs-aipolabs/posts/?feedView=all)
+- **Managed Service:** [aci.dev](https://www.aci.dev/)
+- **Documentation:** [aci.dev/docs](https://www.aci.dev/docs)
+- **Available Tools List:** [aci.dev/tools](https://www.aci.dev/tools)
+- **Python SDK:** [github.com/aipotheosis-labs/aci-python-sdk](https://github.com/aipotheosis-labs/aci-python-sdk)
+- **Unified MCP Server:** [github.com/aipotheosis-labs/aci-mcp](https://github.com/aipotheosis-labs/aci-mcp)
+- **Blog:** [aci.dev/blog](https://www.aci.dev/blog)
+- **Community:** [Discord](https://discord.com/invite/UU2XAnfHJh) | [Twitter/X](https://x.com/AipoLabs) | [LinkedIn](https://www.linkedin.com/company/aipotheosis-labs-aipolabs/posts/?feedView=all)
 
 ## Why Use ACI.dev?
 
@@ -50,10 +51,10 @@ ACI.dev solves your critical infrastructure challenges for production-ready AI a
 
 ## Common Use Cases
 
-*   **Personal Assistant Chatbots:** Build chatbots that can search the web, manage calendars, send emails, interact with SaaS tools, etc.
-*   **Research Agent:** Conducts research on specific topics and syncs results to other apps (e.g., Notion, Google Sheets).
-*   **Outbound Sales Agent:** Automates lead generation, email outreach, and CRM updates.
-*   **Customer Support Agent:** Provides answers, manages tickets, and performs actions based on customer queries.
+- **Personal Assistant Chatbots:** Build chatbots that can search the web, manage calendars, send emails, interact with SaaS tools, etc.
+- **Research Agent:** Conducts research on specific topics and syncs results to other apps (e.g., Notion, Google Sheets).
+- **Outbound Sales Agent:** Automates lead generation, email outreach, and CRM updates.
+- **Customer Support Agent:** Provides answers, manages tickets, and performs actions based on customer queries.
 
 ---
 
@@ -61,8 +62,8 @@ ACI.dev solves your critical infrastructure challenges for production-ready AI a
 
 This is a monorepo that contains the core components of ACI.dev:
 
--   **`/backend`**: Contains the main ACI platform server, including the APIs, core logic, database models, and the entire integration library (over 600+ tools). It relies on Python, FastAPI, PostgreSQL (with pgvector), and Docker.
--   **`/frontend`**: Contains the Next.js application for the ACI.dev Developer Portal. This is the web interface for managing projects, integrations, authentication, and testing agents. It uses React, TypeScript, Tailwind CSS, and interacts with the backend API.
+- **`/backend`**: Contains the main ACI platform server, including the APIs, core logic, database models, and the entire integration library (over 600+ tools). It relies on Python, FastAPI, PostgreSQL (with pgvector), and Docker.
+- **`/frontend`**: Contains the Next.js application for the ACI.dev Developer Portal. This is the web interface for managing projects, integrations, authentication, and testing agents. It uses React, TypeScript, Tailwind CSS, and interacts with the backend API.
 
 ---
 
@@ -72,93 +73,107 @@ To run the full ACI.dev platform (backend server and frontend portal) locally, f
 
 ### Prerequisites
 
--   **Git:** To clone the repository.
--   **Docker & Docker Compose:** To run the backend services (server, database, localstack).
--   **Python:** Version 3.12 or higher (primarily for development tooling like linters, if not using Docker exclusively).
--   **uv:** Python package manager (`pip install uv`). Used for managing backend Python dependencies.
--   **Node.js & npm:** To run the frontend developer portal (check `frontend/package.json` for specific version requirements, likely latest LTS).
--   **(Optional) ngrok:** If you need to test PropelAuth webhooks for user signups locally.
+- **Git:** To clone the repository.
+- **Docker & Docker Compose:** To run the backend services (server, database, localstack).
+- **Python:** Version 3.12 or higher (primarily for development tooling like linters, if not using Docker exclusively).
+- **uv:** Python package manager (`pip install uv`). Used for managing backend Python dependencies.
+- **Node.js & npm:** To run the frontend developer portal (check `frontend/package.json` for specific version requirements, likely latest LTS).
+- **(Optional) ngrok:** If you need to test PropelAuth webhooks for user signups locally.
 
 ### 1. Backend Setup
 
-1.  **Navigate to the backend directory:**
+1. **Navigate to the backend directory:**
+
     ```bash
     cd backend
     ```
-2.  **Install Python dependencies (optional, recommended for IDE integration):**
+
+2. **Install Python dependencies (optional, recommended for IDE integration):**
+
     ```bash
     uv sync
     # Activate virtual environment (optional)
     source .venv/bin/activate
     ```
-3.  **Set up environment variables:**
+
+3. **Set up environment variables:**
     Copy `.env.example` to `.env`. Most necessary variables are pre-filled in `.env.shared`, but you might need to add specific secrets like `SERVER_PROPELAUTH_API_KEY` or `SERVER_SVIX_SIGNING_SECRET` if testing webhooks (see `backend/README.md` for details).
-4.  **Start backend services:**
+4. **Start backend services:**
+
     ```bash
     docker compose up --build
     ```
+
     This will start the ACI server (port 8000), PostgreSQL database, and a LocalStack container (for mocking AWS services).
 
-    *   The API documentation (Swagger UI) will be available at `http://localhost:8000/v1/notforhuman-docs`.
-    *   See `backend/README.md` for optional steps like seeding the database or running tests.
+    - The API documentation (Swagger UI) will be available at `http://localhost:8000/v1/notforhuman-docs`.
+    - See `backend/README.md` for optional steps like seeding the database or running tests.
 
 ### 2. Frontend Setup
 
-1.  **Navigate to the frontend directory:**
+1. **Navigate to the frontend directory:**
+
     ```bash
     cd ../frontend # Or from the root: cd frontend
     ```
-2.  **Install Node.js dependencies:**
+
+2. **Install Node.js dependencies:**
+
     ```bash
     npm install --legacy-peer-deps
     ```
+
     *(Note: The `--legacy-peer-deps` flag might be needed due to ongoing React 19 adoption by libraries, as mentioned in `frontend/README.md`).*
-3.  **Set up environment variables:**
+3. **Set up environment variables:**
     Create a `.env` file in the `frontend` directory with the following content:
+
     ```env
     NEXT_PUBLIC_API_URL=http://localhost:8000
     NEXT_PUBLIC_DEV_PORTAL_URL=http://localhost:3000
     NEXT_PUBLIC_ENVIRONMENT=local
     NEXT_PUBLIC_AUTH_URL=https://217353629.propelauthtest.com
     ```
+
     *(Adjust `NEXT_PUBLIC_API_URL` if your backend runs on a different port).*
-4.  **Start the frontend development server:**
+4. **Start the frontend development server:**
+
     ```bash
     npm run dev
     ```
+
     The Developer Portal should now be accessible at `http://localhost:3000`.
 
 ### 3. Further Details
 
 For more in-depth information, including advanced configuration (like webhook setup), coding standards, testing, database migrations, and deployment details, please refer to the specific README files:
 
--   **Backend:** `backend/README.md`
--   **Frontend:** `frontend/README.md`
+- **Backend:** `backend/README.md`
+- **Frontend:** `frontend/README.md`
 
 ---
 
 ## Tech Stack
 
--   **Backend:**
-    -   **Language:** Python 3.12+
-    -   **Framework:** FastAPI
-    -   **Database:** PostgreSQL with the `pgvector` extension (for vector similarity search)
-    -   **ORM:** SQLAlchemy with Alembic for migrations
-    -   **Dependency Management:** uv
-    -   **Testing:** Pytest
-    -   **Linting/Formatting:** Ruff, MyPy
--   **Frontend:**
-    -   **Framework:** Next.js (using App Router)
-    -   **Language:** TypeScript
-    -   **UI Library:** React 19
-    -   **Styling:** Tailwind CSS
-    -   **Component Library:** shadcn/ui
-    -   **Package Manager:** npm
-    -   **Testing:** Vitest
-    -   **Linting/Formatting:** ESLint, Prettier
--   **Authentication:** PropelAuth (Handles user login, sign-up, and organization management)
--   **Infrastructure:**
-    -   **Containerization:** Docker & Docker Compose
-    -   **Local AWS Mocking:** LocalStack (for services like Secrets Manager)
+- **Backend:**
+  - **Language:** Python 3.12+
+  - **Framework:** FastAPI
+  - **Database:** PostgreSQL with the `pgvector` extension (for vector similarity search)
+  - **ORM:** SQLAlchemy with Alembic for migrations
+  - **Dependency Management:** uv
+  - **Testing:** Pytest
+  - **Linting/Formatting:** Ruff, MyPy
+- **Frontend:**
+  - **Framework:** Next.js (using App Router)
+  - **Language:** TypeScript
+  - **UI Library:** React 19
+  - **Styling:** Tailwind CSS
+  - **Component Library:** shadcn/ui
+  - **Package Manager:** npm
+  - **Testing:** Vitest
+  - **Linting/Formatting:** ESLint, Prettier
+- **Authentication:** PropelAuth (Handles user login, sign-up, and organization management)
+- **Infrastructure:**
+  - **Containerization:** Docker & Docker Compose
+  - **Local AWS Mocking:** LocalStack (for services like Secrets Manager)
 
 ---
