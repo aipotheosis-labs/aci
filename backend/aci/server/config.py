@@ -17,9 +17,6 @@ AIPOLABS_REDIRECT_URI_BASE = check_and_get_env_variable("SERVER_AIPOLABS_REDIREC
 COOKIE_KEY_FOR_AUTH_TOKEN = "accessToken"
 
 # Google Auth
-GOOGLE_AUTH_SERVER_METADATA_URL = check_and_get_env_variable(
-    "SERVER_GOOGLE_AUTH_SERVER_METADATA_URL"
-)
 GOOGLE_AUTH_CLIENT_SCOPE = "openid email profile"
 DB_SCHEME = check_and_get_env_variable("SERVER_DB_SCHEME")
 DB_USER = check_and_get_env_variable("SERVER_DB_USER")
