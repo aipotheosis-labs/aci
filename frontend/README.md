@@ -1,6 +1,6 @@
 # Aipolabs Developer Portal
 
-![CI](https://github.com/aipotheosis-labs/aipolabs-dev-portal/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/aipotheosis-labs/aci/actions/workflows/devportal.yml/badge.svg)
 
 The developer portal for Aipolabs, a platform for developers to manage and configure the apps and functions used by their agents.
 
@@ -24,18 +24,13 @@ The Dev Portal enables developers to create and manage their projects efficientl
 - **Home Page**
 - **App Store Page**
 - **App Configurations Page**
+- **Linked Accounts Page**
+- **Agent Playground Page**
 - **Account Settings**
 
 ## Development Setup
 
-1. **Clone the repository:**
-
-   ```bash
-   git clone https://github.com/aipotheosis-labs/aipolabs-dev-portal
-   cd aipolabs-dev-portal
-   ```
-
-2. **Install dependencies:**
+1. **Install dependencies:**
    If you're using npm:
 
    ```bash
@@ -47,11 +42,13 @@ The Dev Portal enables developers to create and manage their projects efficientl
    Some libraries are stilling upgrading to React 19, so we need to use the
    `--legacy-peer-deps` flag in the mean time.)
 
-3. **Configure Environment Variables:**
+1. **Configure Environment Variables:**
    Create a `.env` file with the following variables in it:
 
    - NEXT_PUBLIC_API_URL: The URL of the Aipolabs backend API server
    - NEXT_PUBLIC_DEV_PORTAL_URL: The URL of the Dev Portal
+   - NEXT_PUBLIC_ENVIRONMENT: The environment
+   - NEXT_PUBLIC_AUTH_URL: PropelAuth test org auth URL
 
    You can just set it to the following in local development:
 
@@ -59,10 +56,10 @@ The Dev Portal enables developers to create and manage their projects efficientl
    NEXT_PUBLIC_API_URL=http://localhost:8000
    NEXT_PUBLIC_DEV_PORTAL_URL=http://localhost:3000
    NEXT_PUBLIC_ENVIRONMENT=local
-   NEXT_PUBLIC_AUTH_URL=https://217353629.propelauthtest.com
+   NEXT_PUBLIC_AUTH_URL=https://8367878.propelauthtest.com
    ```
 
-4. **Start the application:**
+1. **Start the application:**
 
    ```bash
    npm run dev
