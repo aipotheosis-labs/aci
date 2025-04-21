@@ -63,11 +63,13 @@ jobs:
 
       - name: Run compose test
         id: run_tests
+        working-directory: backend
         run: |
           docker compose -f compose.yml -f compose.ci.yml run runner
 
       - name: Get service names
         id: service_names
+        working-directory: backend
         if: always()
         run: |
           SERVICE_NAMES=$(docker compose config --services)
@@ -77,6 +79,7 @@ jobs:
 
       - name: Print logs for each service
         if: always()
+        working-directory: backend
         run: |
           echo "${{ steps.service_names.outputs.names }}" | while read -r service; do
             echo "Logs for service: $service"
