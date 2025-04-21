@@ -14,7 +14,7 @@ openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
 DUMMY_APPS_DIR = Path(__file__).parent / "dummy_apps"
 REAL_APPS_DIR = Path(__file__).parent.parent.parent.parent / "apps"
 CONNECTOR_APPS = [
-    "aipolabs_secrets_manager",
+    "agent_secrets_manager",
 ]
 
 

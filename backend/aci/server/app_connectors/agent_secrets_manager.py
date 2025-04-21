@@ -3,8 +3,8 @@ from typing import override
 from aci.common import encryption
 from aci.common.db import crud
 from aci.common.db.sql_models import LinkedAccount
-from aci.common.exceptions import AipolabsSecretsManagerError
-from aci.common.schemas.app_connectors.aipolabs_secrets_manager import (
+from aci.common.exceptions import AgentSecretsManagerError
+from aci.common.schemas.app_connectors.agent_secrets_manager import (
     DomainCredential,
     SecretValue,
 )
@@ -15,9 +15,9 @@ from aci.server import config
 from aci.server.app_connectors.base import AppConnectorBase
 
 
-class AipolabsSecretsManager(AppConnectorBase):
+class AgentSecretsManager(AppConnectorBase):
     """
-    Aipolabs Secrets Manager Connector that manages user credentials (username/password) for
+    Agent Secrets Manager Connector that manages user credentials (username/password) for
     different domains.
     """
 
@@ -37,7 +37,7 @@ class AipolabsSecretsManager(AppConnectorBase):
         """
         Returns a list of all website credential secrets.
 
-        Function name: AIPOLABS_SECRETS_MANAGER__LIST_CREDENTIALS
+        Function name: AGENT_SECRETS_MANAGER__LIST_CREDENTIALS
 
         Returns:
             list[DomainCredential]: List of domain credentials.
@@ -58,7 +58,7 @@ class AipolabsSecretsManager(AppConnectorBase):
         """
         Retrieves the credential for a specific domain.
 
-        Function name: AIPOLABS_SECRETS_MANAGER__GET_CREDENTIAL_FOR_DOMAIN
+        Function name: AGENT_SECRETS_MANAGER__GET_CREDENTIAL_FOR_DOMAIN
 
         Args:
             domain (str): Domain to retrieve credentials for.
@@ -72,7 +72,7 @@ class AipolabsSecretsManager(AppConnectorBase):
         with create_db_session(config.DB_FULL_URL) as db_session:
             secret = crud.secret.get_secret(db_session, self.linked_account.id, domain)
             if not secret:
-                raise AipolabsSecretsManagerError(
+                raise AgentSecretsManagerError(
                     message=f"No credentials found for domain '{domain}'"
                 )
 
@@ -88,7 +88,7 @@ class AipolabsSecretsManager(AppConnectorBase):
         """
         Creates a new credential for a specific domain.
 
-        Function name: AIPOLABS_SECRETS_MANAGER__CREATE_CREDENTIAL_FOR_DOMAIN
+        Function name: AGENT_SECRETS_MANAGER__CREATE_CREDENTIAL_FOR_DOMAIN
 
         Args:
             domain (str): Domain for the credential.
@@ -101,7 +101,7 @@ class AipolabsSecretsManager(AppConnectorBase):
         with create_db_session(config.DB_FULL_URL) as db_session:
             existing = crud.secret.get_secret(db_session, self.linked_account.id, domain)
             if existing:
-                raise AipolabsSecretsManagerError(
+                raise AgentSecretsManagerError(
                     message=f"Credential for domain '{domain}' already exists"
                 )
 
@@ -119,7 +119,7 @@ class AipolabsSecretsManager(AppConnectorBase):
         """
         Updates an existing credential for a specific domain.
 
-        Function name: AIPOLABS_SECRETS_MANAGER__UPDATE_CREDENTIAL_FOR_DOMAIN
+        Function name: AGENT_SECRETS_MANAGER__UPDATE_CREDENTIAL_FOR_DOMAIN
 
         Args:
             domain (str): Domain for the credential to update.
@@ -132,7 +132,7 @@ class AipolabsSecretsManager(AppConnectorBase):
         with create_db_session(config.DB_FULL_URL) as db_session:
             secret = crud.secret.get_secret(db_session, self.linked_account.id, domain)
             if not secret:
-                raise AipolabsSecretsManagerError(
+                raise AgentSecretsManagerError(
                     message=f"No credentials found for domain '{domain}'"
                 )
 
@@ -149,7 +149,7 @@ class AipolabsSecretsManager(AppConnectorBase):
         """
         Deletes a credential for a specific domain.
 
-        Function name: AIPOLABS_SECRETS_MANAGER__DELETE_CREDENTIAL_FOR_DOMAIN
+        Function name: AGENT_SECRETS_MANAGER__DELETE_CREDENTIAL_FOR_DOMAIN
 
         Args:
             domain (str): Domain for the credential to delete.
@@ -160,7 +160,7 @@ class AipolabsSecretsManager(AppConnectorBase):
         with create_db_session(config.DB_FULL_URL) as db_session:
             secret = crud.secret.get_secret(db_session, self.linked_account.id, domain)
             if not secret:
-                raise AipolabsSecretsManagerError(
+                raise AgentSecretsManagerError(
                     message=f"No credentials found for domain '{domain}'"
                 )
             crud.secret.delete_secret(db_session, secret)

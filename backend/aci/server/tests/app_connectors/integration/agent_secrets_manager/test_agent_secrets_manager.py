@@ -9,22 +9,22 @@ from aci.server import config
 
 def test_credentials_workflow(
     test_client: TestClient,
-    dummy_linked_account_no_auth_aipolabs_secrets_manager_project_1: LinkedAccount,
+    dummy_linked_account_no_auth_agent_secrets_manager_project_1: LinkedAccount,
     dummy_agent_1_with_all_apps_allowed: Agent,
-    dummy_function_aipolabs_secrets_manager__list_credentials: Function,
-    dummy_function_aipolabs_secrets_manager__create_credential_for_domain: Function,
-    dummy_function_aipolabs_secrets_manager__get_credential_for_domain: Function,
-    dummy_function_aipolabs_secrets_manager__update_credential_for_domain: Function,
-    dummy_function_aipolabs_secrets_manager__delete_credential_for_domain: Function,
+    dummy_function_agent_secrets_manager__list_credentials: Function,
+    dummy_function_agent_secrets_manager__create_credential_for_domain: Function,
+    dummy_function_agent_secrets_manager__get_credential_for_domain: Function,
+    dummy_function_agent_secrets_manager__update_credential_for_domain: Function,
+    dummy_function_agent_secrets_manager__delete_credential_for_domain: Function,
     subtests: SubTests,
 ) -> None:
     with subtests.test("list credentials - no credentials initially"):
         function_execute = FunctionExecute(
-            linked_account_owner_id=dummy_linked_account_no_auth_aipolabs_secrets_manager_project_1.linked_account_owner_id,
+            linked_account_owner_id=dummy_linked_account_no_auth_agent_secrets_manager_project_1.linked_account_owner_id,
             function_input={},
         )
         response = test_client.post(
-            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_secrets_manager__list_credentials.name}/execute",
+            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_agent_secrets_manager__list_credentials.name}/execute",
             json=function_execute.model_dump(mode="json"),
             headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
         )
@@ -42,11 +42,11 @@ def test_credentials_workflow(
         }
 
         function_execute = FunctionExecute(
-            linked_account_owner_id=dummy_linked_account_no_auth_aipolabs_secrets_manager_project_1.linked_account_owner_id,
+            linked_account_owner_id=dummy_linked_account_no_auth_agent_secrets_manager_project_1.linked_account_owner_id,
             function_input=user_domain_credential,
         )
         response = test_client.post(
-            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_secrets_manager__create_credential_for_domain.name}/execute",
+            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_agent_secrets_manager__create_credential_for_domain.name}/execute",
             json=function_execute.model_dump(mode="json"),
             headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
         )
@@ -58,11 +58,11 @@ def test_credentials_workflow(
 
     with subtests.test("list credentials - one credential"):
         function_execute = FunctionExecute(
-            linked_account_owner_id=dummy_linked_account_no_auth_aipolabs_secrets_manager_project_1.linked_account_owner_id,
+            linked_account_owner_id=dummy_linked_account_no_auth_agent_secrets_manager_project_1.linked_account_owner_id,
             function_input={},
         )
         response = test_client.post(
-            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_secrets_manager__list_credentials.name}/execute",
+            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_agent_secrets_manager__list_credentials.name}/execute",
             json=function_execute.model_dump(mode="json"),
             headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
         )
@@ -74,11 +74,11 @@ def test_credentials_workflow(
 
     with subtests.test("get credential for domain"):
         function_execute = FunctionExecute(
-            linked_account_owner_id=dummy_linked_account_no_auth_aipolabs_secrets_manager_project_1.linked_account_owner_id,
+            linked_account_owner_id=dummy_linked_account_no_auth_agent_secrets_manager_project_1.linked_account_owner_id,
             function_input={"domain": user_domain_credential["domain"]},
         )
         response = test_client.post(
-            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_secrets_manager__get_credential_for_domain.name}/execute",
+            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_agent_secrets_manager__get_credential_for_domain.name}/execute",
             json=function_execute.model_dump(mode="json"),
             headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
         )
@@ -96,11 +96,11 @@ def test_credentials_workflow(
         }
 
         function_execute = FunctionExecute(
-            linked_account_owner_id=dummy_linked_account_no_auth_aipolabs_secrets_manager_project_1.linked_account_owner_id,
+            linked_account_owner_id=dummy_linked_account_no_auth_agent_secrets_manager_project_1.linked_account_owner_id,
             function_input=updated_user_domain_credential,
         )
         response = test_client.post(
-            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_secrets_manager__update_credential_for_domain.name}/execute",
+            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_agent_secrets_manager__update_credential_for_domain.name}/execute",
             json=function_execute.model_dump(mode="json"),
             headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
         )
@@ -112,11 +112,11 @@ def test_credentials_workflow(
 
     with subtests.test("delete credential for domain"):
         function_execute = FunctionExecute(
-            linked_account_owner_id=dummy_linked_account_no_auth_aipolabs_secrets_manager_project_1.linked_account_owner_id,
+            linked_account_owner_id=dummy_linked_account_no_auth_agent_secrets_manager_project_1.linked_account_owner_id,
             function_input={"domain": user_domain_credential["domain"]},
         )
         response = test_client.post(
-            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_secrets_manager__delete_credential_for_domain.name}/execute",
+            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_agent_secrets_manager__delete_credential_for_domain.name}/execute",
             json=function_execute.model_dump(mode="json"),
             headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
         )
@@ -128,11 +128,11 @@ def test_credentials_workflow(
 
     with subtests.test("list credentials - no credentials after deletion"):
         function_execute = FunctionExecute(
-            linked_account_owner_id=dummy_linked_account_no_auth_aipolabs_secrets_manager_project_1.linked_account_owner_id,
+            linked_account_owner_id=dummy_linked_account_no_auth_agent_secrets_manager_project_1.linked_account_owner_id,
             function_input={},
         )
         response = test_client.post(
-            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aipolabs_secrets_manager__list_credentials.name}/execute",
+            f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_agent_secrets_manager__list_credentials.name}/execute",
             json=function_execute.model_dump(mode="json"),
             headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
         )

@@ -1,6 +1,6 @@
 [
     {
-        "name": "AIPOLABS_SECRETS_MANAGER__LIST_CREDENTIALS",
+        "name": "AGENT_SECRETS_MANAGER__LIST_CREDENTIALS",
         "description": "List all website credential secrets",
         "tags": ["secrets"],
         "visibility": "public",
@@ -16,7 +16,7 @@
         }
     },
     {
-        "name": "AIPOLABS_SECRETS_MANAGER__GET_CREDENTIAL_FOR_DOMAIN",
+        "name": "AGENT_SECRETS_MANAGER__GET_CREDENTIAL_FOR_DOMAIN",
         "description": "Get a website credential secret with username and password for a given domain",
         "tags": ["secrets"],
         "visibility": "public",
@@ -37,7 +37,7 @@
         }
     },
     {
-        "name": "AIPOLABS_SECRETS_MANAGER__CREATE_CREDENTIAL_FOR_DOMAIN",
+        "name": "AGENT_SECRETS_MANAGER__CREATE_CREDENTIAL_FOR_DOMAIN",
         "description": "Create a website credential secret with username and password for a given domain",
         "tags": ["secrets"],
         "visibility": "public",
@@ -66,7 +66,7 @@
         }
     },
     {
-        "name": "AIPOLABS_SECRETS_MANAGER__UPDATE_CREDENTIAL_FOR_DOMAIN",
+        "name": "AGENT_SECRETS_MANAGER__UPDATE_CREDENTIAL_FOR_DOMAIN",
         "description": "Update a website credential secret with username and password for a given domain",
         "tags": ["secrets"],
         "visibility": "public",
@@ -95,7 +95,7 @@
         }
     },
     {
-        "name": "AIPOLABS_SECRETS_MANAGER__DELETE_CREDENTIAL_FOR_DOMAIN",
+        "name": "AGENT_SECRETS_MANAGER__DELETE_CREDENTIAL_FOR_DOMAIN",
         "description": "Delete a website credential secret with username and password for a given domain",
         "tags": ["secrets"],
         "visibility": "public",

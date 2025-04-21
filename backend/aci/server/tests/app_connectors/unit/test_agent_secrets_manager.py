@@ -4,31 +4,31 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from aci.common.db.sql_models import LinkedAccount
-from aci.common.exceptions import AipolabsSecretsManagerError
+from aci.common.exceptions import AgentSecretsManagerError
 from aci.common.schemas.secret import SecretCreate, SecretUpdate
 from aci.common.schemas.security_scheme import NoAuthScheme, NoAuthSchemeCredentials
-from aci.server.app_connectors.aipolabs_secrets_manager import (
-    AipolabsSecretsManager,
+from aci.server.app_connectors.agent_secrets_manager import (
+    AgentSecretsManager,
     DomainCredential,
 )
 
 
 @pytest.fixture
-def secrets_manager() -> AipolabsSecretsManager:
+def secrets_manager() -> AgentSecretsManager:
     linked_account = MagicMock(spec=LinkedAccount)
     linked_account.id = "test_linked_account_id"
 
     security_scheme = MagicMock(spec=NoAuthScheme)
     security_credentials = MagicMock(spec=NoAuthSchemeCredentials)
 
-    return AipolabsSecretsManager(
+    return AgentSecretsManager(
         linked_account=linked_account,
         security_scheme=security_scheme,
         security_credentials=security_credentials,
     )
 
 
-def test_list_credentials(secrets_manager: AipolabsSecretsManager) -> None:
+def test_list_credentials(secrets_manager: AgentSecretsManager) -> None:
     # Given
     mock_db_session = MagicMock()
 
@@ -42,15 +42,15 @@ def test_list_credentials(secrets_manager: AipolabsSecretsManager) -> None:
 
     with (
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.agent_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.list_secrets",
+            "aci.server.app_connectors.agent_secrets_manager.crud.secret.list_secrets",
             return_value=[mock_secret1, mock_secret2],
         ) as mock_list_secrets,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.encryption.decrypt",
+            "aci.server.app_connectors.agent_secrets_manager.encryption.decrypt",
             side_effect=[
                 b'{"username": "user1", "password": "pass1"}',
                 b'{"username": "user2", "password": "pass2"}',
@@ -80,7 +80,7 @@ def test_list_credentials(secrets_manager: AipolabsSecretsManager) -> None:
         assert domain_credential2.password == "pass2"
 
 
-def test_get_credential_for_domain_success(secrets_manager: AipolabsSecretsManager) -> None:
+def test_get_credential_for_domain_success(secrets_manager: AgentSecretsManager) -> None:
     # Given
     mock_db_session = MagicMock()
     mock_secret = MagicMock()
@@ -89,15 +89,15 @@ def test_get_credential_for_domain_success(secrets_manager: AipolabsSecretsManag
 
     with (
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.agent_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            "aci.server.app_connectors.agent_secrets_manager.crud.secret.get_secret",
             return_value=mock_secret,
         ) as mock_get_secret,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.encryption.decrypt",
+            "aci.server.app_connectors.agent_secrets_manager.encryption.decrypt",
             return_value=b'{"username": "user1", "password": "pass1"}',
         ) as mock_decrypt,
     ):
@@ -117,23 +117,23 @@ def test_get_credential_for_domain_success(secrets_manager: AipolabsSecretsManag
         assert domain_credential.password == "pass1"
 
 
-def test_get_credential_for_domain_not_found(secrets_manager: AipolabsSecretsManager) -> None:
+def test_get_credential_for_domain_not_found(secrets_manager: AgentSecretsManager) -> None:
     # Given
     mock_db_session = MagicMock()
 
     with (
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.agent_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            "aci.server.app_connectors.agent_secrets_manager.crud.secret.get_secret",
             return_value=None,
         ) as mock_get_secret,
     ):
         # When
         with pytest.raises(
-            AipolabsSecretsManagerError, match="No credentials found for domain 'nonexistent.com'"
+            AgentSecretsManagerError, match="No credentials found for domain 'nonexistent.com'"
         ):
             secrets_manager.get_credential_for_domain("nonexistent.com")
 
@@ -144,7 +144,7 @@ def test_get_credential_for_domain_not_found(secrets_manager: AipolabsSecretsMan
         )
 
 
-def test_create_credential_for_domain_success(secrets_manager: AipolabsSecretsManager) -> None:
+def test_create_credential_for_domain_success(secrets_manager: AgentSecretsManager) -> None:
     # Given
     mock_db_session = MagicMock()
     encrypted_value = b"encrypted_value"
@@ -152,22 +152,22 @@ def test_create_credential_for_domain_success(secrets_manager: AipolabsSecretsMa
 
     with (
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.agent_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            "aci.server.app_connectors.agent_secrets_manager.crud.secret.get_secret",
             return_value=None,
         ) as mock_get_secret,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.create_secret",
+            "aci.server.app_connectors.agent_secrets_manager.crud.secret.create_secret",
         ) as mock_create_secret,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.encryption.encrypt",
+            "aci.server.app_connectors.agent_secrets_manager.encryption.encrypt",
             return_value=encrypted_value,
         ) as mock_encrypt,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.SecretCreate",
+            "aci.server.app_connectors.agent_secrets_manager.SecretCreate",
             return_value=mock_secret_create,
         ) as mock_secret_create_class,
     ):
@@ -193,7 +193,7 @@ def test_create_credential_for_domain_success(secrets_manager: AipolabsSecretsMa
 
 
 def test_create_credential_for_domain_already_exists(
-    secrets_manager: AipolabsSecretsManager,
+    secrets_manager: AgentSecretsManager,
 ) -> None:
     # Given
     mock_db_session = MagicMock()
@@ -201,17 +201,17 @@ def test_create_credential_for_domain_already_exists(
 
     with (
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.agent_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            "aci.server.app_connectors.agent_secrets_manager.crud.secret.get_secret",
             return_value=mock_secret,
         ) as mock_get_secret,
     ):
         # When
         with pytest.raises(
-            AipolabsSecretsManagerError, match="Credential for domain 'example.com' already exists"
+            AgentSecretsManagerError, match="Credential for domain 'example.com' already exists"
         ):
             secrets_manager.create_credential_for_domain("example.com", "user1", "pass1")
 
@@ -222,7 +222,7 @@ def test_create_credential_for_domain_already_exists(
         )
 
 
-def test_update_credential_for_domain(secrets_manager: AipolabsSecretsManager) -> None:
+def test_update_credential_for_domain(secrets_manager: AgentSecretsManager) -> None:
     # Given
     mock_db_session = MagicMock()
     encrypted_value = b"encrypted_value"
@@ -231,22 +231,22 @@ def test_update_credential_for_domain(secrets_manager: AipolabsSecretsManager) -
 
     with (
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.agent_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            "aci.server.app_connectors.agent_secrets_manager.crud.secret.get_secret",
             return_value=mock_secret,
         ) as mock_get_secret,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.update_secret",
+            "aci.server.app_connectors.agent_secrets_manager.crud.secret.update_secret",
         ) as mock_update_secret,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.encryption.encrypt",
+            "aci.server.app_connectors.agent_secrets_manager.encryption.encrypt",
             return_value=encrypted_value,
         ) as mock_encrypt,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.SecretUpdate",
+            "aci.server.app_connectors.agent_secrets_manager.SecretUpdate",
             return_value=mock_secret_update,
         ) as mock_secret_update_class,
     ):
@@ -269,22 +269,22 @@ def test_update_credential_for_domain(secrets_manager: AipolabsSecretsManager) -
         mock_db_session.commit.assert_called_once()
 
 
-def test_delete_credential_for_domain(secrets_manager: AipolabsSecretsManager) -> None:
+def test_delete_credential_for_domain(secrets_manager: AgentSecretsManager) -> None:
     # Given
     mock_db_session = MagicMock()
     mock_secret = MagicMock()
 
     with (
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.create_db_session",
+            "aci.server.app_connectors.agent_secrets_manager.create_db_session",
             return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
         ) as mock_create_db_session,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.get_secret",
+            "aci.server.app_connectors.agent_secrets_manager.crud.secret.get_secret",
             return_value=mock_secret,
         ) as mock_get_secret,
         patch(
-            "aci.server.app_connectors.aipolabs_secrets_manager.crud.secret.delete_secret",
+            "aci.server.app_connectors.agent_secrets_manager.crud.secret.delete_secret",
         ) as mock_delete_secret,
     ):
         # When
