@@ -1,122 +1,214 @@
-# ACI Core Components
+# ACI.dev Backend
 
-![CI](https://github.com/aipotheosis-labs/aci/actions/workflows/ci.yml/badge.svg)
+[![Backend CI](https://github.com/aipotheosis-labs/aci/actions/workflows/backend.yml/badge.svg)](https://github.com/aipotheosis-labs/aci/actions/workflows/backend.yml)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-## Project Structure
+## Overview
 
-Currently only contains the server code, common (shared code) and cli,
-but can be extended to include more services (e.g., separate admin server, sdk, etc.) as a monorepo if needed.
+The backend component of ACI.dev provides the server infrastructure, API endpoints, database models, and integration libraries that enable over 600+ tool integrations with multi-tenant authentication and granular permissions.
 
-## Server
+- [Code Structure](#code-structure)
+- [Development Setup](#development-setup)
+- [Database Management](#database-management)
+- [Webhooks (for local end-to-end development with frontend)](#webhooks-for-local-end-to-end-development-with-frontend)
+- [Admin CLI](#admin-cli)
+- [Contributing](#contributing)
+- [License](#license)
 
-Follow all guidelines below for setting up the development environment, running services and testing locally for the server.
+## Code Structure
 
-<details>
-  <summary>Setup</summary>
+The backend consists of several main components:
 
-- Git clone the repo
-- Python ^3.12
-- Install `docker`
-- Install `uv`
-- Install dependencies: `uv sync`
-- Activate virtual env: `source .venv/bin/activate`
-  - We use docker and docker compose to run components in a container, so using a virtual env is more for development purposes. (IDE, pytest, dev dependencies, etc.)
-- Coding style
-  - all the following tools are part of `pyproject.toml` dev dependencies, and are automatically installed when running `uv sync`
-  - use `ruff` to format and lint the code
-  - use `mypy` to type check the code
-  - use `pre-commit` to run the above tools as pre-commit hooks
-- Install `pre-commit` hooks: `pre-commit install`
-- Setup you preferred editor to use `Ruff` formatter
-  - e.g., you might need to install `Ruff` formatter extension in VS Code, and configure the setting as below
+- **Server**: FastAPI application handling API requests, authentication, and tool executions
+- **Database**: PostgreSQL with pgvector for vector similarity search
+- **CLI**: Command-line interface for local testing and development
+- **Common**: Shared code and utilities used across components
 
-      ```json
+## Development Setup
 
-      {
-          "[python]": {
-            "editor.formatOnSave": true,
-            "editor.defaultFormatter": "charliermarsh.ruff",
-            "editor.codeActionsOnSave": {
-              "source.organizeImports.ruff": "always"
-            }
-          }
+### Prerequisites
+
+- Python 3.12+
+- Docker and Docker Compose
+- `uv` package manager
+
+### Code Style
+
+We follow strict code quality standards:
+
+- **Formatting & Linting**: We use `ruff` for code formatting and linting
+- **Type Checking**: We use `mypy` for static type checking
+- **Pre-commit Hooks**: Install with `pre-commit install`
+
+### IDE Configuration
+
+For VS Code users, configure Ruff formatter:
+
+```json
+{
+    "[python]": {
+      "editor.formatOnSave": true,
+      "editor.defaultFormatter": "charliermarsh.ruff",
+      "editor.codeActionsOnSave": {
+        "source.organizeImports.ruff": "always"
       }
-      ```
+    }
+}
+```
 
-</details>
+### Getting Started
 
-<details>
-  <summary>Local Development</summary>
+1. Clone the repository:
 
-- Set up `.env` file according to `.env.example`
-  - Note that most of the variables needed are already set in the `.env.shared` file, that's why you don't need to set them in the `.env` file
-- Use docker compose to run necessary services locally: `docker compose up --build`, which contains:
-  - `server`: the backend service
-  - `db`: the postgres db
-  - `aws`: a local aws mock with `localstack` (this `aws` service was added because of `Agent Secrets Manager`)
-  - `runner`: a staging host for running any commands, e.g., `pytest`, `seed db`, etc.
-- (Optional) Connect to the database using a GUI client like `DBeaver`
-  - Parameters for the db connection can be found in the `.env.shared` file
-- (Optional) To seed the db with some data: `docker compose exec runner ./scripts/seed_db.sh`
-- You can access the `Swagger UI` at `http://localhost:8000/v1/notforhuman-docs`
-- To run `pytest`, make sure the db is empty (in case you have seeded the db before), and then: `docker compose exec runner pytest`
+   ```bash
+   git clone https://github.com/aipotheosis-labs/aci.git
+   cd aci/backend
+   ```
 
-</details>
+2. Install dependencies and activate virtual environment:
 
-<details>
-  <summary>Configure Webhooks for Dev Portal Local Development</summary>
+   ```bash
+   uv sync
+   source .venv/bin/activate
+   ```
 
-If you are developing the dev portal, you would need a real user and org in the
-PropelAuth test environment as well as a default project and agent in your local db.
+3. Install `pre-commit` hooks:
+
+   ```bash
+   pre-commit install
+   ```
+
+4. Set up environment variables:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+   Note: Most necessary variables are already defined in `.env.shared`
+
+5. Start services with Docker Compose:
+
+   ```bash
+   docker compose up --build
+   ```
+
+   This will start:
+   - `server`: Backend API service
+   - `db`: PostgreSQL database
+   - `aws`: LocalStack for mocking AWS services
+   - `runner`: Container for running commands like tests or database seeds
+
+6. (Optional) Seed the database with sample data:
+
+   ```bash
+   docker compose exec runner ./scripts/seed_db.sh
+   ```
+
+7. (Optional) Connect to the database using a GUI client (e.g., `DBeaver`)
+
+   - Parameters for the db connection can be found in the `.env.shared` file
+
+8. Create a random API key for local development (step 6 also creates a random API key when you run the seed db script):
+
+   ```bash
+   docker compose exec runner python -m aci.cli create-random-api-key --visibility-access public
+   ```
+
+9. Access the API documentation at:
+
+   ```bash
+   http://localhost:8000/v1/notforhuman-docs
+   ```
+
+### Running Tests
+
+Ensure the `db` service is running and the database is empty (in case you have seeded the db in the previous steps) before running tests:
+
+```bash
+docker compose exec runner pytest
+```
+
+## Database Management
+
+### Working with Migrations
+
+When making changes to database models:
+
+1. Check for detected changes:
+
+   ```bash
+   docker compose exec runner alembic check
+   ```
+
+2. Generate a migration:
+
+   ```bash
+   docker compose exec runner alembic revision --autogenerate -m "description of changes"
+   ```
+
+3. Manually review and edit the generated file in `database/alembic/versions/` if needed to add custom changes, e.g.,:
+   - pgvector library imports
+   - Index creation/deletion
+   - Vector extension setup
+   - Other database-specific operations
+
+4. Apply the migration (to the local db):
+
+   ```bash
+   docker compose exec runner alembic upgrade head
+   ```
+
+5. To revert the latest migration:
+
+   ```bash
+   docker compose exec runner alembic downgrade -1
+   ```
+
+## Webhooks (for local end-to-end development with frontend)
+
+If you are developing the dev portal, you would need a real `user` and `org` in the
+PropelAuth test environment as well as a default `project` and `agent` in your local db.
 
 Follow the steps here to set up the webhooks so that when you sign up on the PropelAuth
 test environment, PropelAuth will notify your local server to create an org in the
 PropelAuth test environment for you as well as creating a default project and agent in
 the local db.
 
-- Follow the guide to install `ngrok` and connect your account:
-  <https://ngrok.com/docs/getting-started/?os=macos>
-- Expose your local server with `ngrok`: `ngrok http http://localhost:8000`
-- Go to the `ngork` endpoints dashboard to copy the public endpoint you just exposed:
-  <https://dashboard.ngrok.com/endpoints>
-- On the [PropelAuth dashboard](https://app.propelauth.com/proj/803d04fe-b3c3-49a2-b2de-eda93f764722/management/users?page=1)
-  **Users** and **Organizations tabs**, delete your previously created user and organization.
-  ![delete org](./images/delete-org.png)
-  ![delete user](./images/delete-user.png)
-- Go to the **Backend Integration** tab and create an API key for the test environment,
-  set it as `SERVER_PROPELAUTH_API_KEY` in `.env`.
-  ![propelauth-api-key](./images/propelauth-api-key.png)
-- Go to the **Integrations** tab on the dashboard, click Webhooks. And click **Set Up
-  Webhooks** for the **TEST ENV**, which will lead you to [Svix endpoints](https://app.svix.com/app_2uuG50X13IEu2cVRRL5fnXOeWWv/endpoints)
-  page.
-  ![webhook-setup](./images/webhook-setup.png)
-- Click `Add Endpoint`, put `<your_gnrok_public_endpoint>/v1/webhooks/auth/user-created` as
-  the endpoint and subscribe to the `user.created` event. Hit Create.
-  ![svix](./images/svix.png)
-- Copy the `Signing Secret` of the endpoint and set it as `SERVER_SVIX_SIGNING_SECRET`
-  in `.env`.
-  ![svix](./images/svix-signing-secret.png)
-- Go to your local dev portal <http://localhost:3000> and sign up on the PropelAuth
-  signup page.
+1. Install and set up ngrok:
+   - Follow [ngrok's getting started guide](https://ngrok.com/docs/getting-started/?os=macos)
+   - Expose your local server: `ngrok http http://localhost:8000`
+   - Copy your public endpoint you just exposed from previous step and create a new endpoint in the [ngrok dashboard](https://dashboard.ngrok.com/endpoints)
 
-</details>
+2. Configure PropelAuth:
+   - Go to the **Users** and **Organizations** tabs, delete your previously created user and organization. (Note: only delete your own user and org)
+     ![delete org](./images/delete-org.png)
+     ![delete user](./images/delete-user.png)
+   - Go to the **Backend Integration** tab and create an API key for the test environment,
+     set it as `SERVER_PROPELAUTH_API_KEY` in `.env`.
+    ![propelauth-api-key](./images/propelauth-api-key.png)
+   - Go to the **Integrations** tab on the dashboard, click Webhooks. And click **Set Up Webhooks** for the **TEST ENV**, which will lead you to [Svix endpoints](https://app.svix.com/app_2uuG50X13IEu2cVRRL5fnXOeWWv/endpoints)
+    page.
+    ![webhook-setup](./images/webhook-setup.png)
+   - Click `Add Endpoint`, put `<your_gnrok_public_endpoint>/v1/webhooks/auth/user-created` as the endpoint and subscribe to the `user.created` event. Hit Create.
+    ![svix](./images/svix.png)
+   - Copy the `Signing Secret` of the endpoint and set it as `SERVER_SVIX_SIGNING_SECRET`
+    in `.env`.
+    ![svix](./images/svix-signing-secret.png)
+   - Go to your local dev portal <http://localhost:3000> and sign up on the PropelAuth signup page.
 
-<details>
-  <summary>If any changes are made to the database or it's models</summary>
+## Admin CLI
 
-- You need to generate a new migration, which will generate a new file in `database/alembic/versions/`
-- First check if new upgrade operations detected: `docker compose exec runner alembic check`
-- If so, generate a new migration file: `docker compose exec runner alembic revision --autogenerate -m "<some message>"`
-- (If needed) Change the generated file in `database/alembic/versions/` to add the necessary changes (that are not auto-generated), e.g.,:
-  - import `pgvector` library for `Vector` type
-  - create and drop necessary indexes
-  - create and drop vector extension
-  - ...
-- Apply the changes to the **local** database: `docker compose exec runner alembic upgrade head`
-- (If needed) you can undo the last change to the database: `docker compose exec runner alembic downgrade -1`
+The CLI module is an internal admin tool for ACI to manage apps, functions, users, etc.
+For local development, the commands can be executed via the `runner` container.
 
-</details>
+```bash
+docker compose exec runner python -m aci.cli upsert-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
+```
 
-## CLI
+## Contributing
 
-Follow the [CLI instructions](aci/cli/README.md) for the cli module.
+Please refer to the [Contributing Guide](../CONTRIBUTING.md) for details on making contributions to this project.
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](../LICENSE) file for details.
