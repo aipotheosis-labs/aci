@@ -14,7 +14,6 @@ The developer portal for Aipolabs, a platform for developers to manage and confi
   - [Directory Structure](#directory-structure)
   - [Conventions](#conventions)
   - [Deployment](#deployment)
-  - [Additional Links](#additional-links)
 
 ## Description
 
@@ -151,7 +150,3 @@ NEXT_PUBLIC_DEV_PORTAL_URL=https://platform.aci.dev
 NEXT_PUBLIC_ENVIRONMENT=production
 NEXT_PUBLIC_AUTH_URL=<actual_production_propelauth_endpoint>
 ```
-
-## Additional Links
-
-- [Aipolabs Server Repo](https://github.com/aipotheosis-labs/aipolabs)
