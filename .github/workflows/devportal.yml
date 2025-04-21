@@ -42,5 +42,5 @@ jobs:
       - name: Build
         working-directory: frontend
         env:
-          NEXT_PUBLIC_AUTH_URL: https://217353629.propelauthtest.com
+          NEXT_PUBLIC_AUTH_URL: https://8367878.propelauthtest.com
         run: npm run build

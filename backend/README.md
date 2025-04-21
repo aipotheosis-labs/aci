@@ -7,13 +7,21 @@
 
 The backend component of ACI.dev provides the server infrastructure, API endpoints, database models, and integration libraries that enable over 600+ tool integrations with multi-tenant authentication and granular permissions.
 
-- [Code Structure](#code-structure)
-- [Development Setup](#development-setup)
-- [Database Management](#database-management)
-- [Webhooks (for local end-to-end development with frontend)](#webhooks-for-local-end-to-end-development-with-frontend)
-- [Admin CLI](#admin-cli)
-- [Contributing](#contributing)
-- [License](#license)
+- [ACI.dev Backend](#acidev-backend)
+  - [Overview](#overview)
+  - [Code Structure](#code-structure)
+  - [Development Setup](#development-setup)
+    - [Prerequisites](#prerequisites)
+    - [Code Style](#code-style)
+    - [IDE Configuration](#ide-configuration)
+    - [Getting Started](#getting-started)
+    - [Running Tests](#running-tests)
+  - [Database Management](#database-management)
+    - [Working with Migrations](#working-with-migrations)
+  - [Webhooks (for local end-to-end development with frontend)](#webhooks-for-local-end-to-end-development-with-frontend)
+  - [Admin CLI](#admin-cli)
+  - [Contributing](#contributing)
+  - [License](#license)
 
 ## Code Structure
 
@@ -84,7 +92,18 @@ For VS Code users, configure Ruff formatter:
    cp .env.example .env
    ```
 
-   Note: Most necessary variables are already defined in `.env.shared`
+   There are 4 env vars you need to set in `.env`:
+
+   - `SERVER_OPENAI_API_KEY`: create an API key yourself
+   - `CLI_OPENAI_API_KEY`: create an API key yourself
+   - `SERVER_PROPELAUTH_API_KEY`: we'll give you an API key if you are one of our approved
+     contributors. You can also create a PropelAuth Org yourself. See the [Webhooks](#webhooks-for-local-end-to-end-development-with-frontend)
+     section for how to get an API key once you have access to a PropelAuth Org.
+   - `SERVER_SVIX_SIGNING_SECRET`: you don't need it if you aren't developing the dev
+     portal. But if you are, complete the [Webhooks](#webhooks-for-local-end-to-end-development-with-frontend)
+     section before moving on.
+
+   Note: Most insensitive variables are already defined in `.env.shared`
 
 5. Start services with Docker Compose:
 
@@ -119,6 +138,8 @@ For VS Code users, configure Ruff formatter:
    ```bash
    http://localhost:8000/v1/notforhuman-docs
    ```
+
+10. (Optional) If you are developing the dev portal, follow the instructions on [frontend README](../frontend/README.md) to start the dev portal.
 
 ### Running Tests
 
@@ -177,14 +198,17 @@ the local db.
 1. Install and set up ngrok:
    - Follow [ngrok's getting started guide](https://ngrok.com/docs/getting-started/?os=macos)
    - Expose your local server: `ngrok http http://localhost:8000`
-   - Copy your public endpoint you just exposed from previous step and create a new endpoint in the [ngrok dashboard](https://dashboard.ngrok.com/endpoints)
+   - Copy your public endpoint you just exposed from previous step and create a new endpoint in the [ngrok dashboard](https://dashboard.ngrok.com/endpoints) (e.g. <https://7c4c-2a06-5904-1e06-6a00-ddc6-68ce-ffae-8783.ngrok-free.app>)
 
 2. Configure PropelAuth:
+   - Go to the `aipolabs local` PropelAuth Org [dashboard](https://app.propelauth.com/proj/1b327933-ffbf-4a36-bd05-76cd896b0d56) if you have access, or create your own local dev
+   organization yourself if you don't.
    - Go to the **Users** and **Organizations** tabs, delete your previously created user and organization. (Note: only delete your own user and org)
-     ![delete org](./images/delete-org.png)
      ![delete user](./images/delete-user.png)
-   - Go to the **Backend Integration** tab and create an API key for the test environment,
-     set it as `SERVER_PROPELAUTH_API_KEY` in `.env`.
+     ![delete org](./images/delete-org.png)
+   - If you don't have a PropelAuth API key already, go to the **Backend Integration** tab and
+     create an API key for the test environment, set it as `SERVER_PROPELAUTH_API_KEY`
+     in `.env`.
     ![propelauth-api-key](./images/propelauth-api-key.png)
    - Go to the **Integrations** tab on the dashboard, click Webhooks. And click **Set Up Webhooks** for the **TEST ENV**, which will lead you to [Svix endpoints](https://app.svix.com/app_2uuG50X13IEu2cVRRL5fnXOeWWv/endpoints)
     page.
@@ -194,7 +218,8 @@ the local db.
    - Copy the `Signing Secret` of the endpoint and set it as `SERVER_SVIX_SIGNING_SECRET`
     in `.env`.
     ![svix](./images/svix-signing-secret.png)
-   - Go to your local dev portal <http://localhost:3000> and sign up on the PropelAuth signup page.
+   - Go back to the [Getting Started](#getting-started) section step 5 to bring up
+     docker compose
 
 ## Admin CLI
 

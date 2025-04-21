@@ -30,6 +30,12 @@ The Dev Portal enables developers to create and manage their projects efficientl
 
 ## Development Setup
 
+1. **Bring up backend in docker compose:**
+   Refer to the [backend README](../backend/README.md) to set it up. Make sure you
+   complete the [Webhooks](../backend/README.md#webhooks-for-local-end-to-end-development-with-frontend) section of the setup.
+
+1. Make sure you are in the **frontend** directory
+
 1. **Install dependencies:**
    If you're using npm:
 
@@ -56,7 +62,7 @@ The Dev Portal enables developers to create and manage their projects efficientl
    NEXT_PUBLIC_API_URL=http://localhost:8000
    NEXT_PUBLIC_DEV_PORTAL_URL=http://localhost:3000
    NEXT_PUBLIC_ENVIRONMENT=local
-   NEXT_PUBLIC_AUTH_URL=https://8367878.propelauthtest.com
+   NEXT_PUBLIC_AUTH_URL=https://8367878.propelauthtest.com # or your own auth url if you created your own PropelAuth org
    ```
 
 1. **Start the application:**
@@ -64,6 +70,11 @@ The Dev Portal enables developers to create and manage their projects efficientl
    ```bash
    npm run dev
    ```
+
+1. **Sign up on the local dev portal:**
+   After signup, a new user will be created in the PropelAuth local dev org's test
+   environment. PropelAuth will also call the user-created webhook, which will create a
+   test project and agent in your local DB for you to use.
 
 ## Linting & Testing
 
