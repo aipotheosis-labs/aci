@@ -66,7 +66,7 @@ There are a few tricky parts:
 """
 
 
-@router.post("/default", response_model=LinkedAccountPublic)
+@router.post("/default", response_model=LinkedAccountPublic, include_in_schema=False)
 async def link_account_with_aci_default_credentials(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     body: Annotated[LinkedAccountDefaultCreate, Body()],
