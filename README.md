@@ -56,14 +56,12 @@ ACI.dev solves your critical infrastructure challenges for production-ready AI a
 - **Outbound Sales Agent:** Automates lead generation, email outreach, and CRM updates.
 - **Customer Support Agent:** Provides answers, manages tickets, and performs actions based on customer queries.
 
-
 ## Repository Structure
 
 This is a monorepo that contains the core components of ACI.dev:
 
-- **`/backend`**: Contains the main ACI platform server, including the APIs, core logic, database models, and the entire integration library (over 600+ tools). It relies on Python, FastAPI, PostgreSQL (with pgvector), and Docker.
-- **`/frontend`**: Contains the Next.js application for the ACI.dev Developer Portal. This is the web interface for managing projects, integrations, authentication, and testing agents. It uses React, TypeScript, Tailwind CSS, and interacts with the backend API.
-
+- **`/backend`**: Contains the main ACI platform server, including the APIs, core logic, database models, and the entire integration library (over 600+ tools).
+- **`/frontend`**: Contains the Next.js application for the ACI.dev Developer Portal. This is the web interface for managing projects, integrations, authentication, and testing agents.
 
 ## Getting Started: Local Development
 
@@ -94,3 +92,7 @@ To run the full ACI.dev platform (backend server and frontend portal) locally, f
   - **Testing:** Vitest
   - **Linting/Formatting:** ESLint, Prettier
 - **Authentication:** PropelAuth
+
+## Contributing
+
+We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
