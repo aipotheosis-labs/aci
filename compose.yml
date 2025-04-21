@@ -41,8 +41,6 @@ services:
       - .env.shared
     environment:
       - SERVER_OPENAI_API_KEY=${SERVER_OPENAI_API_KEY?}
-      - SERVER_GOOGLE_AUTH_CLIENT_ID=${SERVER_GOOGLE_AUTH_CLIENT_ID?}
-      - SERVER_GOOGLE_AUTH_CLIENT_SECRET=${SERVER_GOOGLE_AUTH_CLIENT_SECRET?}
       - SERVER_PROPELAUTH_API_KEY=${SERVER_PROPELAUTH_API_KEY?}
       - SERVER_SVIX_SIGNING_SECRET=${SERVER_SVIX_SIGNING_SECRET:-<svix-signing-secret>}
     # useful for development, changes take effect in the container without needing to rebuild the image.
@@ -70,8 +68,6 @@ services:
       - .env.shared
     environment:
       - SERVER_OPENAI_API_KEY=${SERVER_OPENAI_API_KEY?}
-      - SERVER_GOOGLE_AUTH_CLIENT_ID=${SERVER_GOOGLE_AUTH_CLIENT_ID?}
-      - SERVER_GOOGLE_AUTH_CLIENT_SECRET=${SERVER_GOOGLE_AUTH_CLIENT_SECRET?}
       - SERVER_PROPELAUTH_API_KEY=${SERVER_PROPELAUTH_API_KEY?}
       - SERVER_SVIX_SIGNING_SECRET=${SERVER_SVIX_SIGNING_SECRET:-<svix-signing-secret>}
       - CLI_OPENAI_API_KEY=${CLI_OPENAI_API_KEY?}
