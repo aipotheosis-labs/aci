@@ -119,7 +119,7 @@ export function AppMultiSelector() {
         </div>
         <TooltipContent>
           <p>
-            Select from the agent&apos;s enabled apps, check manage account
+            Select from the agent&apos;s enabled apps, check manage project
             panel.
           </p>
         </TooltipContent>

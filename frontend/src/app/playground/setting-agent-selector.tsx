@@ -49,8 +49,8 @@ export function AgentSelector({ agents, setMessages }: AgentSelectorProps) {
         </div>
         <TooltipContent>
           <p>
-            Select the agent you want to test, can create new ones in manage
-            account.
+            Select the agent you want to test, create new ones in manage
+            project.
           </p>
         </TooltipContent>
       </Tooltip>
