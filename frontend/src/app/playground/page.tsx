@@ -1,7 +1,6 @@
 "use client";
 
 import { useMetaInfo } from "@/components/context/metainfo";
-import { getApiKey } from "@/lib/api/util";
 import { useChat } from "@ai-sdk/react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -25,9 +24,10 @@ const Page = () => {
     setLinkedAccountOwnerId,
     setSelectedAgent,
     setAllowedApps,
+    getApiKey,
   } = useAgentStore();
 
-  const apiKey = activeProject ? getApiKey(activeProject) : "";
+  const apiKey = getApiKey(activeProject);
 
   const {
     messages,

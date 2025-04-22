@@ -28,7 +28,11 @@ export function SettingsSidebar({
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <AgentSelector agents={agents} setMessages={setMessages} />
+          <AgentSelector
+            agents={agents}
+            status={status}
+            setMessages={setMessages}
+          />
           <LinkAccountOwnerIdSelector
             linkedAccounts={linkedAccounts}
             status={status}

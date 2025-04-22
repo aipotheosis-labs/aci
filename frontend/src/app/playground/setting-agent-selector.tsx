@@ -18,10 +18,15 @@ import {
 import { BsQuestionCircle } from "react-icons/bs";
 interface AgentSelectorProps {
   agents: Agent[];
+  status: string;
   setMessages: (messages: Message[]) => void;
 }
 
-export function AgentSelector({ agents, setMessages }: AgentSelectorProps) {
+export function AgentSelector({
+  agents,
+  status,
+  setMessages,
+}: AgentSelectorProps) {
   const { selectedAgent, setSelectedAgent, setAllowedApps } = useAgentStore();
   const hasAgents = agents && agents.length > 0;
 
@@ -63,7 +68,7 @@ export function AgentSelector({ agents, setMessages }: AgentSelectorProps) {
         <Select
           value={selectedAgent}
           onValueChange={handleAgentChange}
-          disabled={true}
+          disabled={status !== "ready"}
         >
           <SelectTrigger className="w-full" aria-label="Select an agent">
             <SelectValue placeholder="Select an Agent" />

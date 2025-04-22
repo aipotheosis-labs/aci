@@ -39,9 +39,15 @@ export function AppMultiSelector() {
   const [apps, setApps] = useState<App[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { activeProject } = useMetaInfo();
-  const { selectedApps, setSelectedApps, allowedApps, linkedAccountOwnerId } =
-    useAgentStore();
+  const {
+    selectedApps,
+    setSelectedApps,
+    allowedApps,
+    linkedAccountOwnerId,
+    selectedAgent,
+  } = useAgentStore();
   const previousLinkedAccountOwnerIdRef = useRef<string | null>(null);
+  const previousSelectedAgentRef = useRef<string | null>(null);
 
   useEffect(() => {
     const fetchApps = async () => {
@@ -77,8 +83,12 @@ export function AppMultiSelector() {
     if (linkedAccountOwnerId !== previousLinkedAccountOwnerIdRef.current) {
       setSelectedApps([]);
     }
+    if (selectedAgent !== previousSelectedAgentRef.current) {
+      setSelectedApps([]);
+    }
     previousLinkedAccountOwnerIdRef.current = linkedAccountOwnerId;
-  }, [linkedAccountOwnerId, setSelectedApps]);
+    previousSelectedAgentRef.current = selectedAgent;
+  }, [linkedAccountOwnerId, selectedAgent, setSelectedApps]);
 
   const appList = apps.map((app) => ({
     id: app.name,
