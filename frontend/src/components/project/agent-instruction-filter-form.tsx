@@ -131,7 +131,7 @@ export function AgentInstructionFilterForm({
     functionName: string,
     value: string,
   ) => {
-    const key = `${appName}:${functionName}`;
+    const key = `${functionName}`;
     setInstructions((prev) => ({
       ...prev,
       [key]: value,
@@ -140,7 +140,7 @@ export function AgentInstructionFilterForm({
 
   // Get instruction for specific App function
   const getInstruction = (appName: string, functionName: string) => {
-    const key = `${appName}:${functionName}`;
+    const key = `${functionName}`;
     return instructions[key] || "";
   };
 
@@ -151,7 +151,7 @@ export function AgentInstructionFilterForm({
       const currentInstructions = { ...instructions };
 
       // Get instruction key
-      const key = `${appName}:${functionName}`;
+      const key = `${functionName}`;
 
       // If instruction is empty, remove it from instructions set
       if (!currentInstructions[key] || currentInstructions[key].trim() === "") {
@@ -189,7 +189,7 @@ export function AgentInstructionFilterForm({
       const currentInstructions = { ...instructions };
 
       // Get instruction key
-      const key = `${appName}:${functionName}`;
+      const key = `${functionName}`;
 
       // Remove the instruction
       delete currentInstructions[key];
