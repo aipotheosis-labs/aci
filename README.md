@@ -70,7 +70,6 @@ To run the full ACI.dev platform (backend server and frontend portal) locally, f
 - **Backend:** [backend/README.md](backend/README.md)
 - **Frontend:** [frontend/README.md](frontend/README.md)
 
-
 ## Tech Stack (local)
 
 - **Backend:**
@@ -96,3 +95,7 @@ To run the full ACI.dev platform (backend server and frontend portal) locally, f
 ## Contributing
 
 We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=aipotheosis-labs/aci&type=Date)](https://www.star-history.com/#aipotheosis-labs/aci&Date)
