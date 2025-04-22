@@ -20,6 +20,7 @@ import { AppConfig } from "@/lib/types/appconfig";
 import { getApiKey } from "@/lib/api/util";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { IdDisplay } from "../apps/id-display";
 interface AppEditFormProps {
   children: React.ReactNode;
   reload: () => Promise<void>;
@@ -132,7 +133,14 @@ export function AppEditForm({
             Change what apps agents have access to.
           </p>
           <Separator />
-          <h3 className="text-sm font-medium">Select enabled app(s)</h3>
+          <h3 className="text-sm font-medium">
+            Select enabled app(s)
+            {selectedApps.length > 0 && (
+              <div className="max-w-[300px] truncate">
+                <IdDisplay id={selectedApps.join(",")} />
+              </div>
+            )}
+          </h3>
 
           {selectedApps.length > 0 && (
             <div className="flex flex-wrap gap-2 p-2 rounded-md overflow-y-auto max-h-16 border">

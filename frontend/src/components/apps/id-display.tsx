@@ -64,7 +64,7 @@ export function IdDisplay({ id, dim = true }: IdDisplayProps) {
             </button>
           </TooltipTrigger>
           <TooltipContent>
-            <p>Copy ID to clipboard</p>
+            <p>Copy to clipboard</p>
           </TooltipContent>
         </Tooltip>
       </div>
