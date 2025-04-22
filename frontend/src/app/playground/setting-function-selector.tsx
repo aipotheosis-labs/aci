@@ -91,12 +91,12 @@ export function FunctionMultiSelector() {
   return (
     <div className="space-y-2">
       <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-medium">Functions</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-medium">Functions</h3>
+          <TooltipTrigger asChild>
             <BsQuestionCircle className="h-4 w-4 text-muted-foreground" />
-          </div>
-        </TooltipTrigger>
+          </TooltipTrigger>
+        </div>
         <TooltipContent>
           <p>Select functions from selected apps.</p>
         </TooltipContent>

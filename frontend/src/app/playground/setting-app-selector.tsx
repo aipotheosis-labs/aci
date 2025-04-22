@@ -111,12 +111,12 @@ export function AppMultiSelector() {
   return (
     <div className="space-y-2">
       <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-medium">Apps</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-medium">Apps</h3>
+          <TooltipTrigger asChild>
             <BsQuestionCircle className="h-4 w-4 text-muted-foreground" />
-          </div>
-        </TooltipTrigger>
+          </TooltipTrigger>
+        </div>
         <TooltipContent>
           <p>
             Select from the agent&apos;s enabled apps, check manage account
