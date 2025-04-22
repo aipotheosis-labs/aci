@@ -130,11 +130,11 @@ export function AppEditForm({
             <DialogTitle>Edit Allowed Apps</DialogTitle>
           </div>
           <p className="text-sm text-gray-500 mt-2">
-            Change what apps agents have access to.
+            Select what apps are enabled for this agent.
           </p>
           <Separator />
           <h3 className="text-sm font-medium">
-            Select enabled app(s)
+            Select Apps to Enable
             {selectedApps.length > 0 && (
               <div className="max-w-[300px] truncate">
                 <IdDisplay id={selectedApps.join(",")} />
