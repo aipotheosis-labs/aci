@@ -9,7 +9,12 @@ import {
 } from "@/components/ui/select";
 import { useAgentStore } from "@/lib/store/agent";
 import { Message } from "ai";
-
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { BsQuestionCircle } from "react-icons/bs";
 interface LinkAccountOwnerIdSelectorProps {
   linkedAccounts: { linked_account_owner_id: string }[];
   status: string;
@@ -30,7 +35,17 @@ export function LinkAccountOwnerIdSelector({
 
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-medium">Linked Account Owner ID</h3>
+      <Tooltip>
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-medium">Linked Account Owner ID</h3>
+          <TooltipTrigger asChild>
+            <BsQuestionCircle className="h-4 w-4 text-muted-foreground" />
+          </TooltipTrigger>
+        </div>
+        <TooltipContent>
+          <p>Select which user you want to test the agent as.</p>
+        </TooltipContent>
+      </Tooltip>
       <Select
         value={linkedAccountOwnerId}
         onValueChange={resetLinkedAccountOwnerId}

@@ -24,7 +24,12 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-
+import {
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
+import { BsQuestionCircle } from "react-icons/bs";
 export function FunctionMultiSelector() {
   const [open, setOpen] = useState(false);
   const [functions, setFunctions] = useState<AppFunction[]>([]);
@@ -85,7 +90,17 @@ export function FunctionMultiSelector() {
 
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-medium">Functions</h3>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-medium">Functions</h3>
+            <BsQuestionCircle className="h-4 w-4 text-muted-foreground" />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Select functions from selected apps.</p>
+        </TooltipContent>
+      </Tooltip>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
