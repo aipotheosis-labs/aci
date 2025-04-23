@@ -97,8 +97,15 @@ app.add_middleware(
     # TODO: remove localhost:3000 after FE contractor is done with his work
     allow_origins=[config.DEV_PORTAL_URL, "http://localhost:3000"],
     allow_credentials=True,
-    allow_methods=["GET", "POST", "DELETE", "PATCH"],
-    allow_headers=["Authorization", "X-API-KEY", "X-ACI-ORG-ID"],
+    allow_methods=["GET", "POST", "DELETE", "PATCH", "OPTIONS", "HEAD", "PUT"],
+    allow_headers=[
+        "Authorization",
+        "X-API-KEY",
+        "X-ACI-ORG-ID",
+        "Content-Type",
+        "Accept",
+        "Origin",
+    ],
 )
 app.add_middleware(InterceptorMiddleware)
 app.add_middleware(ProxyHeadersMiddleware, trusted_hosts=[config.APPLICATION_LOAD_BALANCER_DNS])
