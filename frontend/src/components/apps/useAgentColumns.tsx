@@ -9,39 +9,33 @@ import { Checkbox } from "@/components/ui/checkbox";
 const columnHelper = createColumnHelper<Agent>();
 
 export const useAgentColumns = (
-  selectedAgentIds?: Record<string, boolean>,
-  toggleSelection?: (agentId: string) => void,
+  selectedAgentIds: Record<string, boolean>,
+  toggleSelection: (agentId: string) => void,
 ): ColumnDef<Agent>[] => {
   return useMemo(() => {
     const columns = [
-      ...(selectedAgentIds && toggleSelection
-        ? [
-            columnHelper.display({
-              id: "select",
-              header: "",
-              cell: ({ row }) => {
-                const agent = row.original;
-                const isSelected = agent.id
-                  ? !!selectedAgentIds[agent.id]
-                  : false;
+      columnHelper.display({
+        id: "select",
+        header: "",
+        cell: ({ row }) => {
+          const agent = row.original;
+          const isSelected = agent.id ? !!selectedAgentIds[agent.id] : false;
 
-                return (
-                  <div className="flex items-center justify-center">
-                    <Checkbox
-                      checked={isSelected}
-                      onCheckedChange={() => {
-                        if (agent.id) {
-                          toggleSelection(agent.id);
-                        }
-                      }}
-                    />
-                  </div>
-                );
-              },
-              size: 30,
-            }),
-          ]
-        : []),
+          return (
+            <div className="flex items-center justify-center">
+              <Checkbox
+                checked={isSelected}
+                onCheckedChange={() => {
+                  if (agent.id) {
+                    toggleSelection(agent.id);
+                  }
+                }}
+              />
+            </div>
+          );
+        },
+        size: 30,
+      }),
 
       columnHelper.accessor("name", {
         header: "Agent Name",
