@@ -200,7 +200,7 @@ export function AppEditForm({
                       checked={selectedApps.includes(app)}
                       className={
                         selectedApps.includes(app)
-                          ? "border-[#1CD1AF] bg-[#1CD1AF] text-white"
+                          ? "border-[#1CD1AF] bg-[#1CD1AF] text-white data-[state=checked]:bg-[#1CD1AF]"
                           : "border-gray-300"
                       }
                     />
