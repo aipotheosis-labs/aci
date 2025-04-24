@@ -107,26 +107,25 @@ export function ConfigureAppPopup({
     try {
       await configureApp(values.security_scheme);
 
-      for (const agent of currentAgents) {
-        if (agent.id && selectedAgentIds[agent.id]) {
+      const updatePromises = currentAgents
+        .filter((agent) => agent.id && selectedAgentIds[agent.id])
+        .map((agent) => {
           const allowedApps = new Set(agent.allowed_apps || []);
           allowedApps.add(name);
-          try {
-            await updateAgent(
-              activeProject!.id,
-              agent.id,
-              accessToken,
-              undefined,
-              undefined,
-              Array.from(allowedApps),
-            );
-          } catch (err) {
+          return updateAgent(
+            activeProject!.id,
+            agent.id!,
+            accessToken,
+            undefined,
+            undefined,
+            Array.from(allowedApps),
+          ).catch((err) => {
             console.error(`Failed to update agent ${agent.name}:`, err);
             toast.error(`Failed to update agent ${agent.name}`);
-          }
-        }
-      }
+          });
+        });
 
+      await Promise.all(updatePromises);
       setOpen(false);
     } catch (error) {
       console.error("Error submitting form:", error);
