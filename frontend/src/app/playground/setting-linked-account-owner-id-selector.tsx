@@ -38,6 +38,7 @@ export function LinkAccountOwnerIdSelector({
       setSelectedLinkedAccountOwnerId: state.setSelectedLinkedAccountOwnerId,
       setSelectedApps: state.setSelectedApps,
       setSelectedFunctions: state.setSelectedFunctions,
+      linkedAccounts: state.linkedAccounts,
     })),
   );
 
@@ -47,6 +48,7 @@ export function LinkAccountOwnerIdSelector({
     setSelectedApps([]);
     setSelectedFunctions([]);
   };
+  const linkedAccounts = getUniqueLinkedAccounts();
 
   return (
     <div className="space-y-2">
@@ -70,7 +72,7 @@ export function LinkAccountOwnerIdSelector({
           <SelectValue placeholder="Select a Linked Account Owner" />
         </SelectTrigger>
         <SelectContent>
-          {getUniqueLinkedAccounts().map((account) => (
+          {linkedAccounts.map((account) => (
             <SelectItem
               key={account.linked_account_owner_id}
               value={account.linked_account_owner_id}
