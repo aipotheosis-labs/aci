@@ -2,6 +2,7 @@ import {
   AppFunction,
   FunctionExecute,
   FunctionExecutionResult,
+  FunctionsSearchParams,
 } from "@/lib/types/appfunction";
 
 export async function getFunctionsForApp(
@@ -58,15 +59,6 @@ export async function executeFunction(
 
   const result = await response.json();
   return result;
-}
-
-export interface FunctionsSearchParams {
-  app_names?: string[];
-  intent?: string;
-  allowed_apps_only?: boolean;
-  format?: "basic" | "openai" | "anthropic";
-  limit?: number;
-  offset?: number;
 }
 
 export async function searchFunctions(

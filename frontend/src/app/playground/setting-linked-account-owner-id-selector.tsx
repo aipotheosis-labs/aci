@@ -16,21 +16,27 @@ import {
 } from "@/components/ui/tooltip";
 import { BsQuestionCircle } from "react-icons/bs";
 interface LinkAccountOwnerIdSelectorProps {
-  linkedAccounts: { linked_account_owner_id: string }[];
   status: string;
   setMessages: (messages: Message[]) => void;
 }
 
 export function LinkAccountOwnerIdSelector({
-  linkedAccounts,
   status,
   setMessages,
 }: LinkAccountOwnerIdSelectorProps) {
-  const { linkedAccountOwnerId, setLinkedAccountOwnerId } = useAgentStore();
+  const {
+    getUniqueLinkedAccounts,
+    selectedLinkedAccountOwnerId,
+    setSelectedLinkedAccountOwnerId,
+    setSelectedApps,
+    setSelectedFunctions,
+  } = useAgentStore();
 
-  const resetLinkedAccountOwnerId = (value: string) => {
-    setLinkedAccountOwnerId(value);
+  const resetSelectedLinkedAccountOwnerId = (value: string) => {
+    setSelectedLinkedAccountOwnerId(value);
     setMessages([]);
+    setSelectedApps([]);
+    setSelectedFunctions([]);
   };
 
   return (
@@ -47,15 +53,15 @@ export function LinkAccountOwnerIdSelector({
         </TooltipContent>
       </Tooltip>
       <Select
-        value={linkedAccountOwnerId}
-        onValueChange={resetLinkedAccountOwnerId}
+        value={selectedLinkedAccountOwnerId}
+        onValueChange={resetSelectedLinkedAccountOwnerId}
         disabled={status !== "ready"}
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select a Linked Account Owner" />
         </SelectTrigger>
         <SelectContent>
-          {linkedAccounts.map((account) => (
+          {getUniqueLinkedAccounts().map((account) => (
             <SelectItem
               key={account.linked_account_owner_id}
               value={account.linked_account_owner_id}

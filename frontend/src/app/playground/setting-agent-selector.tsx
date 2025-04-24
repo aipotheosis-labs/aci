@@ -8,7 +8,6 @@ import {
   SelectItem,
 } from "@/components/ui/select";
 import { useAgentStore } from "@/lib/store/agent";
-import { Agent } from "@/lib/types/project";
 import { Message } from "ai";
 import {
   Tooltip,
@@ -16,28 +15,37 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { BsQuestionCircle } from "react-icons/bs";
+import { useMetaInfo } from "@/components/context/metainfo";
 interface AgentSelectorProps {
-  agents: Agent[];
   status: string;
   setMessages: (messages: Message[]) => void;
 }
 
-export function AgentSelector({
-  agents,
-  status,
-  setMessages,
-}: AgentSelectorProps) {
-  const { selectedAgent, setSelectedAgent, setAllowedApps } = useAgentStore();
+export function AgentSelector({ status, setMessages }: AgentSelectorProps) {
+  const { activeProject } = useMetaInfo();
+  const {
+    selectedAgent,
+    setSelectedAgent,
+    setAllowedApps,
+    fetchAppFunctions,
+    getApiKey,
+    setSelectedApps,
+    setSelectedFunctions,
+  } = useAgentStore();
+  const { agents } = useAgentStore();
   const hasAgents = agents && agents.length > 0;
 
   const handleAgentChange = (value: string) => {
     setSelectedAgent(value);
     setMessages([]);
+    setSelectedApps([]);
+    setSelectedFunctions([]);
 
     // Find the selected agent and update allowedApps
     const selectedAgentData = agents.find((agent) => agent.id === value);
     if (selectedAgentData) {
       setAllowedApps(selectedAgentData.allowed_apps || []);
+      fetchAppFunctions(getApiKey(activeProject));
     } else {
       setAllowedApps([]);
     }
