@@ -7,17 +7,28 @@ import { executeFunction, searchFunctions } from "@/lib/api/appfunction";
 import { SettingsSidebar } from "./playground-settings";
 import { ChatInput } from "./chat-input";
 import { Messages } from "./messages";
+import { useShallow } from "zustand/react/shallow";
 
 const Page = () => {
   const { activeProject } = useMetaInfo();
+
+  // Use selective state with useShallow to prevent unnecessary re-renders
   const {
     selectedApps,
     selectedFunctions,
     selectedLinkedAccountOwnerId,
     getApiKey,
-  } = useAgentStore();
+  } = useAgentStore(
+    useShallow((state) => ({
+      selectedApps: state.selectedApps,
+      selectedFunctions: state.selectedFunctions,
+      selectedLinkedAccountOwnerId: state.selectedLinkedAccountOwnerId,
+      getApiKey: state.getApiKey,
+    })),
+  );
 
-  const apiKey = getApiKey(activeProject);
+  // Only compute this when activeProject changes
+  const apiKey = activeProject ? getApiKey(activeProject) : "";
 
   const {
     messages,

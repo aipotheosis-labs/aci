@@ -10,6 +10,7 @@ import { useEffect } from "react";
 import { useAgentStore } from "@/lib/store/agent";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { useShallow } from "zustand/react/shallow";
 interface SettingsSidebarProps {
   status: string;
   setMessages: (messages: Message[]) => void;
@@ -22,7 +23,15 @@ export function SettingsSidebar({ status, setMessages }: SettingsSidebarProps) {
     fetchApps,
     fetchAppFunctions,
     getApiKey,
-  } = useAgentStore();
+  } = useAgentStore(
+    useShallow((state) => ({
+      initializeFromProject: state.initializeFromProject,
+      fetchLinkedAccounts: state.fetchLinkedAccounts,
+      fetchApps: state.fetchApps,
+      fetchAppFunctions: state.fetchAppFunctions,
+      getApiKey: state.getApiKey,
+    })),
+  );
   const { activeProject } = useMetaInfo();
 
   useEffect(() => {
@@ -36,10 +45,6 @@ export function SettingsSidebar({ status, setMessages }: SettingsSidebarProps) {
         await fetchLinkedAccounts(apiKey);
         await fetchApps(apiKey);
         await fetchAppFunctions(apiKey);
-      } catch (error) {
-        // handle error
-      }
-    }
       } catch (error) {
         console.error("Error initializing data:", error);
         toast.error("Failed to initialize data");

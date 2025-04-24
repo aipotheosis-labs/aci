@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import { BsQuestionCircle } from "react-icons/bs";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { useShallow } from "zustand/react/shallow";
 interface AgentSelectorProps {
   status: string;
   setMessages: (messages: Message[]) => void;
@@ -31,7 +32,17 @@ export function AgentSelector({ status, setMessages }: AgentSelectorProps) {
     getApiKey,
     setSelectedApps,
     setSelectedFunctions,
-  } = useAgentStore();
+  } = useAgentStore(
+    useShallow((state) => ({
+      selectedAgent: state.selectedAgent,
+      setSelectedAgent: state.setSelectedAgent,
+      setAllowedApps: state.setAllowedApps,
+      fetchAppFunctions: state.fetchAppFunctions,
+      getApiKey: state.getApiKey,
+      setSelectedApps: state.setSelectedApps,
+      setSelectedFunctions: state.setSelectedFunctions,
+    })),
+  );
   const { agents } = useAgentStore();
   const hasAgents = agents && agents.length > 0;
 

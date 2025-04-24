@@ -27,13 +27,20 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { BsQuestionCircle } from "react-icons/bs";
+import { useShallow } from "zustand/react/shallow";
 // Maximum number of apps that can be selected
 const MAX_APPS = 6;
 
 export function AppMultiSelector() {
   const [open, setOpen] = useState(false);
 
-  const { selectedApps, setSelectedApps, getAvailableApps } = useAgentStore();
+  const { selectedApps, setSelectedApps, getAvailableApps } = useAgentStore(
+    useShallow((state) => ({
+      selectedApps: state.selectedApps,
+      setSelectedApps: state.setSelectedApps,
+      getAvailableApps: state.getAvailableApps,
+    })),
+  );
 
   const appList = getAvailableApps().map((app) => ({
     id: app.name,

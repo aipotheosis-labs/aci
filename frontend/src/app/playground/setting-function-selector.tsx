@@ -25,6 +25,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { BsQuestionCircle } from "react-icons/bs";
+import { useShallow } from "zustand/react/shallow";
 export function FunctionMultiSelector() {
   const [open, setOpen] = useState(false);
 
@@ -33,8 +34,14 @@ export function FunctionMultiSelector() {
     setSelectedFunctions,
     getAvailableAppFunctions,
     loadingFunctions,
-  } = useAgentStore();
-
+  } = useAgentStore(
+    useShallow((state) => ({
+      selectedFunctions: state.selectedFunctions,
+      setSelectedFunctions: state.setSelectedFunctions,
+      getAvailableAppFunctions: state.getAvailableAppFunctions,
+      loadingFunctions: state.loadingFunctions,
+    })),
+  );
   const appFunctions = getAvailableAppFunctions();
 
   const handleFunctionChange = (functionName: string) => {

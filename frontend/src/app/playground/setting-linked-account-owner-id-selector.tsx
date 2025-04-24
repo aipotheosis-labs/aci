@@ -15,6 +15,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { BsQuestionCircle } from "react-icons/bs";
+import { useShallow } from "zustand/react/shallow";
 interface LinkAccountOwnerIdSelectorProps {
   status: string;
   setMessages: (messages: Message[]) => void;
@@ -30,7 +31,15 @@ export function LinkAccountOwnerIdSelector({
     setSelectedLinkedAccountOwnerId,
     setSelectedApps,
     setSelectedFunctions,
-  } = useAgentStore();
+  } = useAgentStore(
+    useShallow((state) => ({
+      getUniqueLinkedAccounts: state.getUniqueLinkedAccounts,
+      selectedLinkedAccountOwnerId: state.selectedLinkedAccountOwnerId,
+      setSelectedLinkedAccountOwnerId: state.setSelectedLinkedAccountOwnerId,
+      setSelectedApps: state.setSelectedApps,
+      setSelectedFunctions: state.setSelectedFunctions,
+    })),
+  );
 
   const resetSelectedLinkedAccountOwnerId = (value: string) => {
     setSelectedLinkedAccountOwnerId(value);
