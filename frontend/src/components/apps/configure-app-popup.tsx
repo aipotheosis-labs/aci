@@ -108,7 +108,12 @@ export function ConfigureAppPopup({
         );
       }
 
-      await reloadActiveProject();
+      try {
+        await reloadActiveProject();
+      } catch (error) {
+        console.error("Failed to reload project data:", error);
+        toast.error("Changes saved, but failed to refresh data");
+      }
       setOpen(false);
     } catch (error) {
       console.error("Error submitting form:", error);
