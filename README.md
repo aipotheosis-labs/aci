@@ -27,6 +27,12 @@ Build production-ready AI agents without the infrastructure headaches.
 
 ![ACI.dev Architecture](frontend/public/aci-architecture-intro.svg)
 
+## Demo Video
+
+*ACI.dev Unified MCP Server Demo*
+
+[![ACI.dev Unified MCP Server Demo](https://img.youtube.com/vi/8zOYLp9Dn0U/0.jpg)](https://youtu.be/8zOYLp9Dn0U)
+
 ## Key Features
 
 - **600+ Pre-built Integrations**: Connect to popular services and apps in minutes.
@@ -55,12 +61,6 @@ ACI.dev solves your critical infrastructure challenges for production-ready AI a
 - **Discovery Without Overload**: Find and use the right tools without overwhelming LLM context windows.
 - **Natural Language Permissions**: Control agent capabilities with human-readable boundaries.
 - **Build Once, Run Anywhere**: No vendor lock-in with our open source, framework-agnostic approach.
-
-## Demo Videos
-
-*ACI.dev Unified MCP Server Demo*
-
-[![ACI.dev Unified MCP Server Demo](https://img.youtube.com/vi/XKO8lE0CLZA/0.jpg)](https://youtu.be/XKO8lE0CLZA)
 
 ## Common Use Cases
 
