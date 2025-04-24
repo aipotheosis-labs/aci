@@ -28,7 +28,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Agent } from "@/lib/types/project";
 import { useAgentColumns } from "@/components/apps/useAgentColumns";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
@@ -55,13 +54,12 @@ export function ConfigureAppPopup({
   name,
   security_schemes,
 }: ConfigureAppPopupProps) {
+  const { activeProject, reloadActiveProject, accessToken } = useMetaInfo();
+
   const [open, setOpen] = useState(false);
-  const [loadingAgents, setLoadingAgents] = useState(false);
   const [selectedAgentIds, setSelectedAgentIds] = useState<
     Record<string, boolean>
   >({});
-  const [currentAgents, setCurrentAgents] = useState<Agent[]>([]);
-  const { activeProject, reloadActiveProject, accessToken } = useMetaInfo();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -72,27 +70,13 @@ export function ConfigureAppPopup({
 
   useEffect(() => {
     if (!open) {
-      setCurrentAgents([]);
       setSelectedAgentIds({});
       form.reset();
     }
   }, [open, form]);
 
   useEffect(() => {
-    if (!open) return;
-    setLoadingAgents(true);
-    reloadActiveProject()
-      .catch((err) => {
-        console.error("reloadActiveProject error:", err);
-        toast.error("Failed to load agent data. Please try again.");
-      })
-      .finally(() => setLoadingAgents(false));
-  }, [open, reloadActiveProject]);
-
-  useEffect(() => {
     if (open && activeProject?.agents) {
-      setCurrentAgents(activeProject.agents);
-
       const initialSelection: Record<string, boolean> = {};
       activeProject.agents.forEach((agent: Agent) => {
         if (agent.id) {
@@ -107,28 +91,28 @@ export function ConfigureAppPopup({
     try {
       await configureApp(values.security_scheme);
 
-      const updatePromises = currentAgents
-        .filter((agent) => agent.id && selectedAgentIds[agent.id])
-        .map((agent) => {
-          const allowedApps = new Set(agent.allowed_apps || []);
-          allowedApps.add(name);
-          return updateAgent(
-            activeProject!.id,
-            agent.id!,
-            accessToken,
-            undefined,
-            undefined,
-            Array.from(allowedApps),
-          ).catch((err) => {
-            console.error(`Failed to update agent ${agent.name}:`, err);
-            toast.error(`Failed to update agent ${agent.name}`);
-          });
-        });
+      const agentsToUpdate = activeProject.agents.filter(
+        (agent) => agent.id && selectedAgentIds[agent.id],
+      );
 
-      await Promise.all(updatePromises);
+      for (const agent of agentsToUpdate) {
+        const allowedApps = new Set(agent.allowed_apps);
+        allowedApps.add(name);
+        await updateAgent(
+          activeProject.id,
+          agent.id,
+          accessToken,
+          undefined,
+          undefined,
+          Array.from(allowedApps),
+        );
+      }
+
+      await reloadActiveProject();
       setOpen(false);
     } catch (error) {
       console.error("Error submitting form:", error);
+      toast.error("Error configuring app");
     }
   };
 
@@ -190,22 +174,18 @@ export function ConfigureAppPopup({
               )}
             />
 
-            {loadingAgents ? (
-              <div className="flex justify-center py-10">
-                <Skeleton className="h-[200px] w-full rounded-xl" />
-              </div>
-            ) : currentAgents.length > 0 ? (
+            {activeProject.agents.length > 0 && (
               <div>
                 <h3 className="text-sm font-medium mb-2">
                   Select Agents to enable this app
                 </h3>
                 <EnhancedDataTable
                   columns={agentColumns}
-                  data={currentAgents}
+                  data={activeProject.agents}
                   searchBarProps={{ placeholder: "Search Agent..." }}
                 />
               </div>
-            ) : null}
+            )}
 
             <DialogFooter>
               <Button type="submit">Save</Button>
