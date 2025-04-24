@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Agent } from "@/lib/types/project";
-import { useAgentColumns } from "@/components/apps/useAgentColums";
+import { useAgentColumns } from "@/components/apps/useAgentColumns";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { updateAgent } from "@/lib/api/agent";
 import { toast } from "sonner";
