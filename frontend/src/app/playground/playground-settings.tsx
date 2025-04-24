@@ -30,12 +30,16 @@ export function SettingsSidebar({ status, setMessages }: SettingsSidebarProps) {
 
     const initializeData = async () => {
       try {
+        initializeFromProject(activeProject);
         const apiKey = getApiKey(activeProject);
         // Initialize settings data (agents, linked accounts, apps, app functions)
-        initializeFromProject(activeProject);
         await fetchLinkedAccounts(apiKey);
         await fetchApps(apiKey);
         await fetchAppFunctions(apiKey);
+      } catch (error) {
+        // handle error
+      }
+    }
       } catch (error) {
         console.error("Error initializing data:", error);
         toast.error("Failed to initialize data");
