@@ -9,8 +9,6 @@ interface SelectionCheckboxProps<TData> {
   row?: Row<TData>;
 }
 
-const PRIMARY_COLOR = "#1CD1AF";
-
 export function SelectionCheckbox<TData>({
   type,
   table,
@@ -26,9 +24,9 @@ export function SelectionCheckbox<TData>({
           checked={isAllSelected}
           className={
             isAllSelected
-              ? `border-[${PRIMARY_COLOR}] bg-[${PRIMARY_COLOR}] text-white data-[state=checked]:bg-[${PRIMARY_COLOR}]`
+              ? `border-[#1CD1AF] bg-[#1CD1AF] text-white data-[state=checked]:bg-[#1CD1AF]`
               : isSomeSelected
-                ? `border-[${PRIMARY_COLOR}] bg-[${PRIMARY_COLOR}] text-white data-[state=indeterminate]:bg-[${PRIMARY_COLOR}]`
+                ? `border-[#1CD1AF] bg-[#1CD1AF] text-white data-[state=indeterminate]:bg-[#1CD1AF]`
                 : "border-gray-300"
           }
           data-state={
@@ -58,7 +56,7 @@ export function SelectionCheckbox<TData>({
           }}
           className={
             isSelected
-              ? `border-[${PRIMARY_COLOR}] bg-[${PRIMARY_COLOR}] text-white data-[state=checked]:bg-[${PRIMARY_COLOR}]`
+              ? `border-[#1CD1AF] bg-[#1CD1AF] text-white data-[state=checked]:bg-[#1CD1AF]`
               : "border-gray-300"
           }
         />
