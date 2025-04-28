@@ -17,3 +17,12 @@ export interface FunctionExecutionResult {
   data: object;
   error?: string;
 }
+
+export interface FunctionsSearchParams {
+  app_names?: string[];
+  intent?: string;
+  allowed_apps_only?: boolean;
+  format?: "basic" | "openai" | "anthropic";
+  limit?: number;
+  offset?: number;
+}

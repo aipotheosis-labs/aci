@@ -15,23 +15,40 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { BsQuestionCircle } from "react-icons/bs";
+import { useShallow } from "zustand/react/shallow";
 interface LinkAccountOwnerIdSelectorProps {
-  linkedAccounts: { linked_account_owner_id: string }[];
   status: string;
   setMessages: (messages: Message[]) => void;
 }
 
 export function LinkAccountOwnerIdSelector({
-  linkedAccounts,
   status,
   setMessages,
 }: LinkAccountOwnerIdSelectorProps) {
-  const { linkedAccountOwnerId, setLinkedAccountOwnerId } = useAgentStore();
+  const {
+    getUniqueLinkedAccounts,
+    selectedLinkedAccountOwnerId,
+    setSelectedLinkedAccountOwnerId,
+    setSelectedApps,
+    setSelectedFunctions,
+  } = useAgentStore(
+    useShallow((state) => ({
+      getUniqueLinkedAccounts: state.getUniqueLinkedAccounts,
+      selectedLinkedAccountOwnerId: state.selectedLinkedAccountOwnerId,
+      setSelectedLinkedAccountOwnerId: state.setSelectedLinkedAccountOwnerId,
+      setSelectedApps: state.setSelectedApps,
+      setSelectedFunctions: state.setSelectedFunctions,
+      linkedAccounts: state.linkedAccounts,
+    })),
+  );
 
-  const resetLinkedAccountOwnerId = (value: string) => {
-    setLinkedAccountOwnerId(value);
+  const resetSelectedLinkedAccountOwnerId = (value: string) => {
+    setSelectedLinkedAccountOwnerId(value);
     setMessages([]);
+    setSelectedApps([]);
+    setSelectedFunctions([]);
   };
+  const linkedAccounts = getUniqueLinkedAccounts();
 
   return (
     <div className="space-y-2">
@@ -47,8 +64,8 @@ export function LinkAccountOwnerIdSelector({
         </TooltipContent>
       </Tooltip>
       <Select
-        value={linkedAccountOwnerId}
-        onValueChange={resetLinkedAccountOwnerId}
+        value={selectedLinkedAccountOwnerId}
+        onValueChange={resetSelectedLinkedAccountOwnerId}
         disabled={status !== "ready"}
       >
         <SelectTrigger className="w-full">

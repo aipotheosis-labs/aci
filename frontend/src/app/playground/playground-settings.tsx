@@ -5,22 +5,61 @@ import { FunctionMultiSelector } from "./setting-function-selector";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LinkAccountOwnerIdSelector } from "./setting-linked-account-owner-id-selector";
 import { AgentSelector } from "./setting-agent-selector";
-import { Agent } from "@/lib/types/project";
 import { Message } from "ai";
-
+import { useEffect } from "react";
+import { useAgentStore } from "@/lib/store/agent";
+import { toast } from "sonner";
+import { useMetaInfo } from "@/components/context/metainfo";
+import { useShallow } from "zustand/react/shallow";
 interface SettingsSidebarProps {
-  linkedAccounts: { linked_account_owner_id: string }[];
-  agents: Agent[];
   status: string;
   setMessages: (messages: Message[]) => void;
 }
 
-export function SettingsSidebar({
-  linkedAccounts,
-  agents,
-  status,
-  setMessages,
-}: SettingsSidebarProps) {
+export function SettingsSidebar({ status, setMessages }: SettingsSidebarProps) {
+  const {
+    initializeFromProject,
+    fetchLinkedAccounts,
+    fetchApps,
+    fetchAppFunctions,
+    getApiKey,
+  } = useAgentStore(
+    useShallow((state) => ({
+      initializeFromProject: state.initializeFromProject,
+      fetchLinkedAccounts: state.fetchLinkedAccounts,
+      fetchApps: state.fetchApps,
+      fetchAppFunctions: state.fetchAppFunctions,
+      getApiKey: state.getApiKey,
+    })),
+  );
+  const { activeProject } = useMetaInfo();
+
+  useEffect(() => {
+    if (!activeProject) return;
+
+    const initializeData = async () => {
+      try {
+        initializeFromProject(activeProject);
+        const apiKey = getApiKey(activeProject);
+        // Initialize settings data (agents, linked accounts, apps, app functions)
+        await fetchLinkedAccounts(apiKey);
+        await fetchApps(apiKey);
+        await fetchAppFunctions(apiKey);
+      } catch (error) {
+        console.error("Error initializing data:", error);
+        toast.error("Failed to initialize data");
+      }
+    };
+
+    initializeData();
+  }, [
+    activeProject,
+    initializeFromProject,
+    fetchLinkedAccounts,
+    fetchApps,
+    fetchAppFunctions,
+    getApiKey,
+  ]);
   return (
     <Card className="w-full border-none shadow-none h-full">
       <CardHeader>
@@ -28,13 +67,8 @@ export function SettingsSidebar({
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <AgentSelector
-            agents={agents}
-            status={status}
-            setMessages={setMessages}
-          />
+          <AgentSelector status={status} setMessages={setMessages} />
           <LinkAccountOwnerIdSelector
-            linkedAccounts={linkedAccounts}
             status={status}
             setMessages={setMessages}
           />

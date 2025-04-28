@@ -2,32 +2,33 @@
 
 import { useMetaInfo } from "@/components/context/metainfo";
 import { useChat } from "@ai-sdk/react";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
 import { useAgentStore } from "@/lib/store/agent";
 import { executeFunction, searchFunctions } from "@/lib/api/appfunction";
-import { getAllLinkedAccounts } from "@/lib/api/linkedaccount";
-import type { LinkedAccount } from "@/lib/types/linkedaccount";
 import { SettingsSidebar } from "./playground-settings";
-import { Agent } from "@/lib/types/project";
 import { ChatInput } from "./chat-input";
 import { Messages } from "./messages";
+import { useShallow } from "zustand/react/shallow";
 
 const Page = () => {
   const { activeProject } = useMetaInfo();
-  const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
-  const [agents, setAgents] = useState<Agent[]>([]);
+
+  // Use selective state with useShallow to prevent unnecessary re-renders
   const {
     selectedApps,
     selectedFunctions,
-    linkedAccountOwnerId,
-    setLinkedAccountOwnerId,
-    setSelectedAgent,
-    setAllowedApps,
+    selectedLinkedAccountOwnerId,
     getApiKey,
-  } = useAgentStore();
+  } = useAgentStore(
+    useShallow((state) => ({
+      selectedApps: state.selectedApps,
+      selectedFunctions: state.selectedFunctions,
+      selectedLinkedAccountOwnerId: state.selectedLinkedAccountOwnerId,
+      getApiKey: state.getApiKey,
+    })),
+  );
 
-  const apiKey = getApiKey(activeProject);
+  // Only compute this when activeProject changes
+  const apiKey = activeProject ? getApiKey(activeProject) : "";
 
   const {
     messages,
@@ -44,7 +45,7 @@ const Page = () => {
       "x-api-key": apiKey,
     },
     body: {
-      linked_account_owner_id: linkedAccountOwnerId,
+      linked_account_owner_id: selectedLinkedAccountOwnerId,
       selected_apps: selectedApps,
       selected_functions: selectedFunctions,
     },
@@ -73,7 +74,7 @@ const Page = () => {
           toolCall.toolName,
           {
             function_input: toolCall.args as Record<string, unknown>,
-            linked_account_owner_id: linkedAccountOwnerId,
+            linked_account_owner_id: selectedLinkedAccountOwnerId,
           },
           apiKey,
         );
@@ -86,7 +87,7 @@ const Page = () => {
           toolCall.toolName,
           {
             function_input: toolCall.args as Record<string, unknown>,
-            linked_account_owner_id: linkedAccountOwnerId,
+            linked_account_owner_id: selectedLinkedAccountOwnerId,
           },
           apiKey,
         );
@@ -97,41 +98,6 @@ const Page = () => {
       }
     },
   });
-
-  useEffect(() => {
-    const fetchLinkedAccounts = async () => {
-      if (!activeProject) return;
-      try {
-        const accounts = await getAllLinkedAccounts(apiKey);
-        const uniqueAccounts = Array.from(
-          new Map(
-            accounts.map((account) => [
-              account.linked_account_owner_id,
-              account,
-            ]),
-          ).values(),
-        );
-        setLinkedAccounts(uniqueAccounts);
-        if (uniqueAccounts.length > 0 && !linkedAccountOwnerId) {
-          setLinkedAccountOwnerId(uniqueAccounts[0].linked_account_owner_id);
-        }
-      } catch (error) {
-        console.error("Failed to fetch linked accounts:", error);
-        toast.error("Failed to fetch linked accounts");
-      }
-    };
-
-    fetchLinkedAccounts();
-  }, [activeProject, apiKey, linkedAccountOwnerId, setLinkedAccountOwnerId]);
-
-  useEffect(() => {
-    if (activeProject?.agents) {
-      setAgents(activeProject.agents);
-      // TODO: set the first agent as the selected agent, might need to change this
-      setSelectedAgent(activeProject.agents[0].id);
-      setAllowedApps(activeProject.agents[0].allowed_apps || []);
-    }
-  }, [activeProject, setSelectedAgent, setAllowedApps]);
 
   if (!activeProject) {
     console.warn("No active project");
@@ -148,18 +114,13 @@ const Page = () => {
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           status={status}
-          linkedAccountOwnerId={linkedAccountOwnerId}
+          linkedAccountOwnerId={selectedLinkedAccountOwnerId}
         />
       </div>
 
       {/* Right part - Settings sidebar */}
       <div className="w-80 border-l">
-        <SettingsSidebar
-          linkedAccounts={linkedAccounts}
-          agents={agents}
-          status={status}
-          setMessages={setMessages}
-        />
+        <SettingsSidebar status={status} setMessages={setMessages} />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { Wrench, Check, Loader2, ChevronsUpDown } from "lucide-react";
+import { useState } from "react";
+import { Wrench, Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,10 +15,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import Image from "next/image";
-import { useMetaInfo } from "@/components/context/metainfo";
-import { getApiKey } from "@/lib/api/util";
-import { getApps } from "@/lib/api/app";
-import { App } from "@/lib/types/app";
 import { useAgentStore } from "@/lib/store/agent";
 import {
   Popover,
@@ -31,66 +27,22 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { BsQuestionCircle } from "react-icons/bs";
+import { useShallow } from "zustand/react/shallow";
 // Maximum number of apps that can be selected
 const MAX_APPS = 6;
 
 export function AppMultiSelector() {
   const [open, setOpen] = useState(false);
-  const [apps, setApps] = useState<App[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const { activeProject } = useMetaInfo();
-  const {
-    selectedApps,
-    setSelectedApps,
-    allowedApps,
-    linkedAccountOwnerId,
-    selectedAgent,
-  } = useAgentStore();
-  const previousLinkedAccountOwnerIdRef = useRef<string | null>(null);
-  const previousSelectedAgentRef = useRef<string | null>(null);
 
-  useEffect(() => {
-    const fetchApps = async () => {
-      if (!activeProject) {
-        console.warn("No active project");
-        setIsLoading(false);
-        return;
-      }
+  const { selectedApps, setSelectedApps, getAvailableApps } = useAgentStore(
+    useShallow((state) => ({
+      selectedApps: state.selectedApps,
+      setSelectedApps: state.setSelectedApps,
+      getAvailableApps: state.getAvailableApps,
+    })),
+  );
 
-      try {
-        const apiKey = getApiKey(activeProject);
-        const appsData = await getApps([], apiKey);
-        const filteredApps = appsData.filter((app) =>
-          allowedApps.includes(app.name),
-        );
-        setApps(filteredApps);
-      } catch (error) {
-        console.error("Failed to fetch apps:", error);
-        toast.error("Failed to load apps");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchApps();
-  }, [activeProject, allowedApps]);
-
-  useEffect(() => {
-    console.log("linkedAccountOwnerId", linkedAccountOwnerId);
-    if (!linkedAccountOwnerId) {
-      setSelectedApps([]);
-    }
-    if (linkedAccountOwnerId !== previousLinkedAccountOwnerIdRef.current) {
-      setSelectedApps([]);
-    }
-    if (selectedAgent !== previousSelectedAgentRef.current) {
-      setSelectedApps([]);
-    }
-    previousLinkedAccountOwnerIdRef.current = linkedAccountOwnerId;
-    previousSelectedAgentRef.current = selectedAgent;
-  }, [linkedAccountOwnerId, selectedAgent, setSelectedApps]);
-
-  const appList = apps.map((app) => ({
+  const appList = getAvailableApps().map((app) => ({
     id: app.name,
     name: app.display_name || app.name,
     icon: (
@@ -147,23 +99,17 @@ export function AppMultiSelector() {
               <span className="text-sm font-medium">Apps</span>
             </div>
             <div className="ml-auto">
-              {isLoading ? (
-                <Loader2 className="size-4 animate-spin" />
+              {selectedApps.length > 0 ? (
+                <Badge className="size-4 px-1.5 flex items-center justify-center text-xs font-medium bg-primary text-primary-foreground">
+                  {selectedApps.length}
+                </Badge>
               ) : (
-                <>
-                  {selectedApps.length > 0 ? (
-                    <Badge className="size-4 px-1.5 flex items-center justify-center text-xs font-medium bg-primary text-primary-foreground">
-                      {selectedApps.length}
-                    </Badge>
-                  ) : (
-                    <Badge
-                      variant="outline"
-                      className="py-0.5 px-2 flex items-center justify-center text-xs font-medium"
-                    >
-                      None
-                    </Badge>
-                  )}
-                </>
+                <Badge
+                  variant="outline"
+                  className="py-0.5 px-2 flex items-center justify-center text-xs font-medium"
+                >
+                  None
+                </Badge>
               )}
             </div>
             <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
@@ -175,36 +121,27 @@ export function AppMultiSelector() {
             <CommandList>
               <CommandEmpty>No apps found.</CommandEmpty>
               <CommandGroup>
-                {isLoading ? (
-                  <div className="text-sm text-muted-foreground p-2">
-                    Loading apps...
-                  </div>
-                ) : (
-                  <>
-                    <div className="h-px bg-border my-1" />
-                    {appList.map((app) => (
-                      <CommandItem
-                        key={app.id}
-                        value={app.id}
-                        onSelect={() => handleAppChange(app.id)}
-                        className="flex items-center justify-between"
-                      >
-                        <div className="flex items-center gap-2 flex-1">
-                          {app.icon}
-                          <span>{app.name}</span>
-                        </div>
-                        <Check
-                          className={cn(
-                            "h-4 w-4",
-                            selectedApps.includes(app.id)
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                      </CommandItem>
-                    ))}
-                  </>
-                )}
+                {appList.map((app) => (
+                  <CommandItem
+                    key={app.id}
+                    value={app.id}
+                    onSelect={() => handleAppChange(app.id)}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2 flex-1">
+                      {app.icon}
+                      <span>{app.name}</span>
+                    </div>
+                    <Check
+                      className={cn(
+                        "h-4 w-4",
+                        selectedApps.includes(app.id)
+                          ? "opacity-100"
+                          : "opacity-0",
+                      )}
+                    />
+                  </CommandItem>
+                ))}
               </CommandGroup>
             </CommandList>
           </Command>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Code, Check, Loader2, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,12 +13,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Badge } from "@/components/ui/badge";
-import { toast } from "sonner";
-import { useMetaInfo } from "@/components/context/metainfo";
-import { getApiKey } from "@/lib/api/util";
 import { useAgentStore } from "@/lib/store/agent";
-import { searchFunctions } from "@/lib/api/appfunction";
-import { AppFunction } from "@/lib/types/appfunction";
 import {
   Popover,
   PopoverContent,
@@ -30,53 +25,24 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { BsQuestionCircle } from "react-icons/bs";
+import { useShallow } from "zustand/react/shallow";
 export function FunctionMultiSelector() {
   const [open, setOpen] = useState(false);
-  const [functions, setFunctions] = useState<AppFunction[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const { activeProject } = useMetaInfo();
-  const { selectedFunctions, setSelectedFunctions, selectedApps } =
-    useAgentStore();
 
-  useEffect(() => {
-    const fetchFunctions = async () => {
-      if (selectedApps.length === 0) {
-        setSelectedFunctions([]);
-        return;
-      }
-      if (!activeProject) {
-        console.warn("No active project");
-        setIsLoading(false);
-        return;
-      }
-
-      try {
-        const apiKey = getApiKey(activeProject);
-        let functionsData = await searchFunctions(
-          {
-            allowed_apps_only: true,
-          },
-          apiKey,
-        );
-        functionsData = functionsData
-          .filter((func) =>
-            selectedApps.some((appName) =>
-              func.name.startsWith(`${appName.toUpperCase()}__`),
-            ),
-          )
-          .sort((a, b) => a.name.localeCompare(b.name));
-        setFunctions(functionsData);
-      } catch (error) {
-        console.error("Failed to fetch functions:", error);
-        toast.error("Failed to load functions");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    console.log("selectedApps has changed", selectedApps);
-
-    fetchFunctions();
-  }, [activeProject, selectedApps, setSelectedFunctions]);
+  const {
+    selectedFunctions,
+    setSelectedFunctions,
+    getAvailableAppFunctions,
+    loadingFunctions,
+  } = useAgentStore(
+    useShallow((state) => ({
+      selectedFunctions: state.selectedFunctions,
+      setSelectedFunctions: state.setSelectedFunctions,
+      getAvailableAppFunctions: state.getAvailableAppFunctions,
+      loadingFunctions: state.loadingFunctions,
+    })),
+  );
+  const appFunctions = getAvailableAppFunctions();
 
   const handleFunctionChange = (functionName: string) => {
     if (selectedFunctions.includes(functionName)) {
@@ -114,7 +80,7 @@ export function FunctionMultiSelector() {
               <span className="text-sm font-medium">Functions</span>
             </div>
             <div className="ml-auto">
-              {isLoading ? (
+              {loadingFunctions ? (
                 <Loader2 className="size-4 animate-spin" />
               ) : (
                 <>
@@ -142,14 +108,14 @@ export function FunctionMultiSelector() {
             <CommandList>
               <CommandEmpty>No functions found.</CommandEmpty>
               <CommandGroup>
-                {isLoading ? (
+                {loadingFunctions ? (
                   <div className="text-sm text-muted-foreground p-2">
                     Loading functions...
                   </div>
                 ) : (
                   <>
                     <div className="h-px bg-border my-1" />
-                    {functions.map((func) => (
+                    {appFunctions.map((func) => (
                       <CommandItem
                         key={`function-${func.name}`}
                         value={func.name}
