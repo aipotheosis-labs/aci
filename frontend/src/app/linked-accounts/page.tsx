@@ -55,28 +55,24 @@ export default function LinkedAccountsPage() {
   const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
   const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedOwnerId, setSelectedOwnerId] = useState<string>("all");
   const [appsMap, setAppsMap] = useState<Record<string, App>>({});
-
-  const categories = useMemo(
+  const ownerIds = useMemo(
     () => [
-      ...new Set(Object.values(appsMap).flatMap((app) => app.categories || [])),
+      "all",
+      ...new Set(linkedAccounts.map((a) => a.linked_account_owner_id)),
     ],
-    [appsMap],
+    [linkedAccounts],
   );
 
-  const filteredLinkedAccounts = useMemo(
-    () =>
-      linkedAccounts.filter((account) => {
-        const app = appsMap[account.app_name];
-        return (
-          app &&
-          (selectedCategory === "all" ||
-            app.categories?.includes(selectedCategory))
-        );
-      }),
-    [linkedAccounts, appsMap, selectedCategory],
-  );
+  const filteredLinkedAccounts = useMemo(() => {
+    if (selectedOwnerId === "all") {
+      return linkedAccounts;
+    }
+    return linkedAccounts.filter(
+      (account) => account.linked_account_owner_id === selectedOwnerId,
+    );
+  }, [linkedAccounts, selectedOwnerId]);
 
   const loadAppMaps = useCallback(async () => {
     if (linkedAccounts.length === 0) {
@@ -212,16 +208,16 @@ export default function LinkedAccountsPage() {
           <TabsContent value="linked">
             <div className="flex items-center space-x-4 mb-6">
               <Select
-                value={selectedCategory}
-                onValueChange={setSelectedCategory}
+                value={selectedOwnerId}
+                onValueChange={setSelectedOwnerId}
               >
                 <SelectTrigger className="w-[120px]">
                   <SelectValue placeholder="ALL" />
                 </SelectTrigger>
                 <SelectContent>
-                  {["all", ...categories].map((category) => (
-                    <SelectItem key={category} value={category}>
-                      {category}
+                  {ownerIds.map((id) => (
+                    <SelectItem key={id} value={id}>
+                      {id}
                     </SelectItem>
                   ))}
                 </SelectContent>
