@@ -1,7 +1,7 @@
 name: 💡 Feature Request
 description: Request a new feature or enhancement in the ACI backend API, dev portal, or SDK.
-title: "[FEATURE] "
-labels: [enhancement]
+title: "[Your Feature Request Title Here]"
+type: feature
 body:
   - type: markdown
     attributes:
