@@ -1,7 +1,7 @@
 name: 🐛 Bug Report
 description: Report a bug or issue in the ACI backend API, dev portal, or SDK.
-title: "[BUG] "
-labels: [bug]
+title: "[Your Bug Report Title Here]"
+type: bug
 body:
   - type: markdown
     attributes:
