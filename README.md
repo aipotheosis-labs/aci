@@ -26,6 +26,15 @@ Build production-ready AI agents without the infrastructure headaches.
 
 ![ACI.dev Architecture](frontend/public/aci-architecture-intro.svg)
 
+<p align="center">
+  Join us on <a href="https://discord.com/invite/UU2XAnfHJh">Discord</a> to help shape the future of Open Source AI Infrastructure.<br/><br/>
+  🌟 <strong>Star ACI.dev to stay updated on new releases!</strong><br/><br/>
+  <a href="https://github.com/aipotheosis-labs/aci/stargazers">
+    <img src="https://img.shields.io/github/stars/aipotheosis-labs/aci?style=social" alt="GitHub Stars">
+  </a>
+</p>
+
+
 ## Demo Video
 
 [ACI.dev **Unified MCP Server** Demo](https://youtu.be/GSR9P53-_7E?feature=shared)
@@ -68,12 +77,6 @@ ACI.dev solves your critical infrastructure challenges for production-ready AI a
 - **Blog:** [aci.dev/blog](https://www.aci.dev/blog)
 - **Community:** [Discord](https://discord.com/invite/UU2XAnfHJh) | [Twitter/X](https://x.com/AipoLabs) | [LinkedIn](https://www.linkedin.com/company/aipotheosis-labs-aipolabs/posts/?feedView=all)
 
-## Repository Structure
-
-This is a monorepo that contains the core components of ACI.dev:
-
-- **`/backend`**: Contains the main ACI platform server, including the APIs, core logic, database models, and the entire integration library (over 600+ tools).
-- **`/frontend`**: Contains the Next.js application for the ACI.dev Developer Portal. This is the web interface for managing projects, integrations, authentication, and testing agents.
 
 ## Getting Started: Local Development
 
@@ -85,3 +88,7 @@ To run the full ACI.dev platform (backend server and frontend portal) locally, f
 ## Contributing
 
 We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
+
+## Integration Requests
+
+Missing any integrations (apps or functions) you need? Please see our [Integration Request Template](.github/ISSUE_TEMPLATE/integration_request.yml) and submit an integration request! Or, if you're feeling adventurous, you can submit a PR to add the integration yourself!

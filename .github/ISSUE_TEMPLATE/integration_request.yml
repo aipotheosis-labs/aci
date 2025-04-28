@@ -1,0 +1,53 @@
+name: 🌟 Integration Request
+description: Request a new App/Funtion integration.
+title: "[Your Integration Request Title Here]"
+labels: ["integration request"]
+body:
+  - type: checkboxes
+    id: pre-requisites
+    attributes:
+      label: "Required Pre-requisites"
+      description: "Please make sure you've completed the following steps before submitting. Thank you!"
+      options:
+        - label: "I have read the [Documentation](https://www.aci.dev/docs)"
+          required: true
+        - label: "I have searched the [Issue Tracker](https://github.com/aipotheosis-labs/aci/issues)"
+          required: true
+        - label: "I have searched the [apps directory](https://github.com/aipotheosis-labs/aci/tree/main/backend/apps) to see if this integration already exists"
+          required: true
+
+  - type: input
+    id: app_name
+    attributes:
+      label: App Name
+      description: What external service do you want to integrate with? (e.g., Gmail, Slack)
+      placeholder: e.g., Gmail
+    validations:
+      required: true
+
+  - type: input
+    id: function_name
+    attributes:
+      label: Function Name
+      description: What function do you want to integrate with for this app? (e.g., send_email, read_messages)
+      placeholder: e.g., send_email
+    validations:
+      required: true
+
+  - type: input
+    id: api_docs_link
+    attributes:
+      label: API Docs Link
+      description: What is the link to the API docs for this app/function? (be specific to the function if applicable)
+      placeholder: e.g., https://developers.google.com/workspace/gmail/api/guides/sending
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Any additional info that can help explain your request.
+      placeholder: e.g., use case
+    validations:
+      required: true
