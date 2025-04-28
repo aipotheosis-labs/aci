@@ -88,3 +88,7 @@ To run the full ACI.dev platform (backend server and frontend portal) locally, f
 ## Contributing
 
 We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
+
+## Integration Requests
+
+Missing any integrations (apps or functions) you need? Please see our [Integration Request Template](.github/ISSUE_TEMPLATE/integration_request.yml) and submit an integration request! Or, if you're feeling adventurous, you can submit a PR to add the integration yourself!
