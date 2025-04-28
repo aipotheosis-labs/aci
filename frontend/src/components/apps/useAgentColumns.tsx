@@ -4,39 +4,12 @@ import { useMemo } from "react";
 import { IdDisplay } from "@/components/apps/id-display";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { Agent } from "@/lib/types/project";
-import { Checkbox } from "@/components/ui/checkbox";
 
 const columnHelper = createColumnHelper<Agent>();
 
-export const useAgentColumns = (
-  selectedAgentIds: Record<string, boolean>,
-  toggleSelection: (agentId: string) => void,
-): ColumnDef<Agent>[] => {
+export const useAgentColumns = (): ColumnDef<Agent>[] => {
   return useMemo(() => {
     const columns = [
-      columnHelper.display({
-        id: "select",
-        header: "",
-        cell: ({ row }) => {
-          const agent = row.original;
-          const isSelected = agent.id ? !!selectedAgentIds[agent.id] : false;
-
-          return (
-            <div className="flex items-center justify-center">
-              <Checkbox
-                checked={isSelected}
-                onCheckedChange={() => {
-                  if (agent.id) {
-                    toggleSelection(agent.id);
-                  }
-                }}
-              />
-            </div>
-          );
-        },
-        size: 30,
-      }),
-
       columnHelper.accessor("name", {
         header: "Agent Name",
         cell: (info) => <IdDisplay id={info.getValue()} dim={false} />,
@@ -57,5 +30,5 @@ export const useAgentColumns = (
     ];
 
     return columns as ColumnDef<Agent>[];
-  }, [selectedAgentIds, toggleSelection]);
+  }, []);
 };

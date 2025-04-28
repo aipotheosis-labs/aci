@@ -34,6 +34,7 @@ import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-tabl
 import { updateAgent } from "@/lib/api/agent";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { RowSelectionState } from "@tanstack/react-table";
 
 const formSchema = z.object({
   security_scheme: z.string().min(1, "Security Scheme is required"),
@@ -57,9 +58,10 @@ export function ConfigureAppPopup({
   const { activeProject, reloadActiveProject, accessToken } = useMetaInfo();
 
   const [open, setOpen] = useState(false);
-  const [selectedAgentIds, setSelectedAgentIds] = useState<
-    Record<string, boolean>
-  >({});
+  const [selectedAgentIds, setSelectedAgentIds] = useState<RowSelectionState>(
+    {},
+  );
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -77,7 +79,7 @@ export function ConfigureAppPopup({
 
   useEffect(() => {
     if (open && activeProject?.agents) {
-      const initialSelection: Record<string, boolean> = {};
+      const initialSelection: RowSelectionState = {};
       activeProject.agents.forEach((agent: Agent) => {
         if (agent.id) {
           initialSelection[agent.id] = true;
@@ -89,6 +91,7 @@ export function ConfigureAppPopup({
 
   const handleSubmit: SubmitHandler<FormValues> = async (values) => {
     try {
+      setSubmitLoading(true);
       await configureApp(values.security_scheme);
 
       const agentsToUpdate = activeProject.agents.filter(
@@ -118,18 +121,11 @@ export function ConfigureAppPopup({
     } catch (error) {
       console.error("Error submitting form:", error);
       toast.error("Error configuring app");
+    } finally {
+      setSubmitLoading(false);
     }
   };
-
-  const toggleAgentSelection = (agentId: string) => {
-    setSelectedAgentIds((prev) => ({
-      ...prev,
-      [agentId]: !prev[agentId],
-    }));
-  };
-
-  const agentColumns = useAgentColumns(selectedAgentIds, toggleAgentSelection);
-
+  const columns = useAgentColumns();
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
@@ -185,15 +181,23 @@ export function ConfigureAppPopup({
                   Select Agents to enable this app
                 </h3>
                 <EnhancedDataTable
-                  columns={agentColumns}
+                  columns={columns}
                   data={activeProject.agents}
                   searchBarProps={{ placeholder: "Search Agent..." }}
+                  state={{
+                    rowSelection: selectedAgentIds,
+                  }}
+                  renderSelectionColumn={true}
+                  onRowSelectionChange={setSelectedAgentIds}
+                  getRowId={(row) => row.id}
                 />
               </div>
             )}
 
             <DialogFooter>
-              <Button type="submit">Save</Button>
+              <Button type="submit" disabled={submitLoading}>
+                {submitLoading ? "Saving..." : "Save"}
+              </Button>
             </DialogFooter>
           </form>
         </Form>
