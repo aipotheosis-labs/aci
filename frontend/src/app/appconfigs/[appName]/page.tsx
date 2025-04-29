@@ -47,6 +47,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhanced-switch";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { formatToLocalTime } from "@/lib/time";
 
 export default function AppConfigDetailPage() {
   const { appName } = useParams<{ appName: string }>();
@@ -166,6 +167,7 @@ export default function AppConfigDetailPage() {
                 <TableRow>
                   <TableHead>LINKED ACCOUNT OWNER ID</TableHead>
                   <TableHead>CREATED AT</TableHead>
+                  <TableHead>LAST USED</TableHead>
                   <TableHead>ENABLED</TableHead>
                   <TableHead>DETAILS</TableHead>
                   <TableHead></TableHead>
@@ -180,10 +182,12 @@ export default function AppConfigDetailPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      {new Date(account.created_at)
-                        .toISOString()
-                        .replace(/\.\d{3}Z$/, "")
-                        .replace("T", " ")}
+                      {formatToLocalTime(account.created_at)}
+                    </TableCell>
+                    <TableCell>
+                      {account.last_used_at
+                        ? formatToLocalTime(account.last_used_at)
+                        : "Never"}
                     </TableCell>
                     <TableCell>
                       <EnhancedSwitch

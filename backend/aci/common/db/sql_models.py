@@ -415,6 +415,9 @@ class LinkedAccount(Base):
         nullable=False,
         init=False,
     )
+    last_used_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False), nullable=True, init=False
+    )
 
     app: Mapped[App] = relationship("App", lazy="select", init=False)
 

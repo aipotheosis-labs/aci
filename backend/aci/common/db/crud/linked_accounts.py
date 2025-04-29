@@ -1,6 +1,6 @@
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from aci.common import validators
@@ -138,6 +138,16 @@ def update_linked_account(
 ) -> LinkedAccount:
     if linked_account_update.enabled is not None:
         linked_account.enabled = linked_account_update.enabled
+    db_session.flush()
+    db_session.refresh(linked_account)
+    return linked_account
+
+
+def update_linked_account_last_used_at(
+    db_session: Session,
+    linked_account: LinkedAccount,
+) -> LinkedAccount:
+    linked_account.last_used_at = func.now()
     db_session.flush()
     db_session.refresh(linked_account)
     return linked_account

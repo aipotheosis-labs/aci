@@ -49,6 +49,7 @@ import { App } from "@/lib/types/app";
 import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhanced-switch";
 import Image from "next/image";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { formatToLocalTime } from "@/lib/time";
 
 export default function LinkedAccountsPage() {
   const { activeProject } = useMetaInfo();
@@ -238,6 +239,7 @@ export default function LinkedAccountsPage() {
                       <TableHead>APP NAME</TableHead>
                       <TableHead>LINKED ACCOUNT OWNER ID</TableHead>
                       <TableHead>CREATED AT</TableHead>
+                      <TableHead>LAST USED</TableHead>
                       <TableHead>ENABLED</TableHead>
                       <TableHead>DETAILS</TableHead>
                       <TableHead></TableHead>
@@ -270,10 +272,12 @@ export default function LinkedAccountsPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          {new Date(account.created_at)
-                            .toISOString()
-                            .replace(/\.\d{3}Z$/, "")
-                            .replace("T", " ")}
+                          {formatToLocalTime(account.created_at)}
+                        </TableCell>
+                        <TableCell>
+                          {account.last_used_at
+                            ? formatToLocalTime(account.last_used_at)
+                            : "Never"}
                         </TableCell>
                         <TableCell>
                           <EnhancedSwitch
