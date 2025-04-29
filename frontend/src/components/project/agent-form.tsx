@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 // import { MultiSelect } from "@/components/ui/multi-select"; // Import MultiSelect component
 import {
   Form,
@@ -26,7 +27,6 @@ import {
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { AppConfig } from "@/lib/types/appconfig";
-import { Separator } from "@/components/ui/separator";
 import { useAllowAppsColumns } from "@/components/project/useAllowAppsColumns";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { RowSelectionState } from "@tanstack/react-table";
@@ -169,14 +169,21 @@ export function AgentForm({
             />
 
             <div className="space-y-2">
-              <h3 className="text-sm font-medium">Allowed Apps</h3>
-              <Separator />
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-sm font-medium">Allowed Apps</h3>
+                <Badge
+                  variant="secondary"
+                  className="flex items-center gap-1 px-2 py-1 text-xs"
+                >
+                  {Object.keys(selectedApps).length} selected
+                </Badge>
+              </div>
               {appConfigs.length === 0 ? (
                 <div className="h-32 flex items-center justify-center">
                   <p>No available app configs</p>
                 </div>
               ) : (
-                <div className=" p-4 overflow-auto border rounded-md max-h-[40vh] overflow-y-auto">
+                <div className=" p-4 pt-0 overflow-auto border rounded-md h-[40vh] overflow-y-auto">
                   <EnhancedDataTable
                     columns={columns}
                     data={appConfigs}
