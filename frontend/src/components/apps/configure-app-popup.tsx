@@ -193,12 +193,11 @@ export function ConfigureAppPopup({
                   columns={columns}
                   data={activeProject.agents}
                   searchBarProps={{ placeholder: "Search Agent..." }}
-                  state={{
+                  rowSelectionProps={{
                     rowSelection: selectedAgentIds,
+                    onRowSelectionChange: setSelectedAgentIds,
+                    getRowId: (row) => row.id,
                   }}
-                  renderSelectionColumn={true}
-                  onRowSelectionChange={setSelectedAgentIds}
-                  getRowId={(row) => row.id}
                 />
               </div>
             )}
