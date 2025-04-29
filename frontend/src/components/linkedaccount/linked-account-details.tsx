@@ -20,7 +20,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhanced-switch";
-import { formatToLocalTime } from "@/lib/time";
+import { formatToLocalTime } from "@/utils/time";
 interface LinkedAccountDetailsProps {
   account: LinkedAccount;
   toggleAccountStatus?: (

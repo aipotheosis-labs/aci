@@ -49,7 +49,7 @@ import { App } from "@/lib/types/app";
 import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhanced-switch";
 import Image from "next/image";
 import { useMetaInfo } from "@/components/context/metainfo";
-import { formatToLocalTime } from "@/lib/time";
+import { formatToLocalTime } from "@/utils/time";
 
 export default function LinkedAccountsPage() {
   const { activeProject } = useMetaInfo();
