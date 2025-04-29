@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
-import { SelectionCheckbox } from "@/components/ui-extensions/enhanced-data-table/selection-checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export function useSelectionColumn<TData>({
   renderSelectionColumn = false,
@@ -17,9 +17,29 @@ export function useSelectionColumn<TData>({
       columnHelper.display({
         id: "select",
         header: ({ table }) => (
-          <SelectionCheckbox type="header" table={table} />
+          <div className="flex items-center justify-center">
+            <Checkbox
+              checked={
+                table.getIsAllPageRowsSelected() ||
+                (table.getIsSomePageRowsSelected() && "indeterminate")
+              }
+              onCheckedChange={(value) => {
+                table.toggleAllRowsSelected(Boolean(value));
+              }}
+              aria-label="Select all"
+            />
+          </div>
         ),
-        cell: ({ row }) => <SelectionCheckbox type="cell" row={row} />,
+        cell: ({ row }) => (
+          <div className="flex items-center justify-center">
+            <Checkbox
+              checked={row.getIsSelected()}
+              onCheckedChange={(value) => {
+                row.toggleSelected(Boolean(value));
+              }}
+            />
+          </div>
+        ),
       }),
     ];
   }, [renderSelectionColumn]);
