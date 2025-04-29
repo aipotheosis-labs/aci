@@ -25,7 +25,11 @@ import {
 } from "@/components/ui/form";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-
+import { AppConfig } from "@/lib/types/appconfig";
+import { Separator } from "@/components/ui/separator";
+import { useAllowAppsColumns } from "@/components/project/useAllowAppsColumns";
+import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
+import { RowSelectionState } from "@tanstack/react-table";
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
@@ -52,6 +56,7 @@ interface AgentFormProps {
   initialValues?: Partial<FormValues>;
   title: string;
   validAppNames: string[];
+  appConfigs?: AppConfig[];
 }
 
 export function AgentForm({
@@ -60,8 +65,11 @@ export function AgentForm({
   initialValues,
   title,
   validAppNames,
+  appConfigs = [],
 }: AgentFormProps) {
   const [open, setOpen] = useState(false);
+  const [selectedApps, setSelectedApps] = useState<RowSelectionState>({});
+  const columns = useAllowAppsColumns();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -87,7 +95,10 @@ export function AgentForm({
         });
         return;
       }
-
+      const appNames: string[] = Object.keys(selectedApps).filter(
+        (app_name) => selectedApps[app_name],
+      );
+      values.allowed_apps = appNames;
       await onSubmit(values);
       setOpen(false);
       toast.success("Agent created successfully");
@@ -107,7 +118,14 @@ export function AgentForm({
         custom_instructions: initialValues?.custom_instructions ?? {},
       });
     }
-  }, [open, initialValues, form]);
+    if (!open || appConfigs.length === 0) return;
+    const allSelected: RowSelectionState = {};
+    appConfigs.forEach((cfg) => {
+      allSelected[cfg.app_name] = true;
+    });
+    setSelectedApps(allSelected);
+    form.setValue("allowed_apps", Object.keys(allSelected));
+  }, [open, initialValues, form, appConfigs]);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -149,6 +167,30 @@ export function AgentForm({
                 </FormItem>
               )}
             />
+
+            <div className="space-y-2">
+              <h3 className="text-sm font-medium">Allowed Apps</h3>
+              <Separator />
+              {appConfigs.length === 0 ? (
+                <div className="h-32 flex items-center justify-center">
+                  <p>No available app configs</p>
+                </div>
+              ) : (
+                <div className=" p-4 overflow-auto border rounded-md max-h-[40vh] overflow-y-auto">
+                  <EnhancedDataTable
+                    columns={columns}
+                    data={appConfigs}
+                    defaultSorting={[{ id: "app_name", desc: true }]}
+                    searchBarProps={{ placeholder: "Search apps..." }}
+                    state={{ rowSelection: selectedApps }}
+                    onRowSelectionChange={setSelectedApps}
+                    renderSelectionColumn={true}
+                    getRowId={(row) => row.app_name}
+                  />
+                </div>
+              )}
+            </div>
+
             <DialogFooter>
               <Button type="submit">Save</Button>
             </DialogFooter>
