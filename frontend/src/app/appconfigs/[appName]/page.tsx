@@ -47,7 +47,7 @@ import { toast } from "sonner";
 import Link from "next/link";
 import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhanced-switch";
 import { useMetaInfo } from "@/components/context/metainfo";
-
+import { formatToLocalTime } from "@/utils/time";
 export default function AppConfigDetailPage() {
   const { appName } = useParams<{ appName: string }>();
   const { activeProject } = useMetaInfo();
