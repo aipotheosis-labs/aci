@@ -427,6 +427,7 @@ async def execute_function(
                 linked_account,
                 security_credentials=security_credentials_response.credentials,
             )
+
         db_session.commit()
 
     # Check for custom instruction violations if OpenAI client is provided
@@ -443,6 +444,13 @@ async def execute_function(
         "instantiated function executor",
         extra={"function_name": function_name, "function_executor": type(function_executor)},
     )
+
+    # Update the last used at timestamp
+    crud.linked_accounts.update_linked_account_last_used_at(
+        db_session,
+        linked_account,
+    )
+    db_session.commit()
 
     # Execute the function
     execution_result = function_executor.execute(

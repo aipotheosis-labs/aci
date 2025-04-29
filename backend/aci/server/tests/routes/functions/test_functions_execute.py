@@ -129,6 +129,36 @@ def test_execute_function_with_invalid_function_input(
     assert str(response.json()["error"]).startswith("Invalid function input")
 
 
+def test_execute_function_success_updates_last_used_at(
+    db_session: Session,
+    test_client: TestClient,
+    dummy_agent_1_with_all_apps_allowed: Agent,
+    dummy_function_aci_test__hello_world_no_args: Function,
+    dummy_linked_account_default_api_key_aci_test_project_1: LinkedAccount,
+) -> None:
+    initial_last_used_at = dummy_linked_account_default_api_key_aci_test_project_1.last_used_at
+
+    function_execute = FunctionExecute(
+        linked_account_owner_id=dummy_linked_account_default_api_key_aci_test_project_1.linked_account_owner_id,
+    )
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_no_args.name}/execute",
+        json=function_execute.model_dump(mode="json"),
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    db_session.refresh(dummy_linked_account_default_api_key_aci_test_project_1)
+
+    # Verify the timestamp was updated
+    assert dummy_linked_account_default_api_key_aci_test_project_1.last_used_at is not None
+    if initial_last_used_at is not None:
+        assert (
+            dummy_linked_account_default_api_key_aci_test_project_1.last_used_at
+            > initial_last_used_at
+        )
+
+
 @pytest.mark.parametrize("allow_agent_to_access_app", [True, False])
 def test_execute_function_of_app_that_is_not_allowed_for_agent(
     db_session: Session,
