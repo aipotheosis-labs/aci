@@ -24,12 +24,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { toast } from "sonner";
 import { AppConfig } from "@/lib/types/appconfig";
-import { useAllowAppsColumns } from "@/components/project/useAllowAppsColumns";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { RowSelectionState } from "@tanstack/react-table";
+import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
+import { IdDisplay } from "@/components/apps/id-display";
+
+const columnHelper = createColumnHelper<AppConfig>();
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
@@ -71,7 +75,33 @@ export function AgentForm({
 }: AgentFormProps) {
   const [open, setOpen] = useState(false);
   const [selectedApps, setSelectedApps] = useState<RowSelectionState>({});
-  const columns = useAllowAppsColumns();
+
+  const columns: ColumnDef<AppConfig>[] = useMemo(() => {
+    return [
+      columnHelper.accessor("app_name", {
+        header: ({ column }) => (
+          <div className="text-left">
+            <Button
+              variant="ghost"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                column.toggleSorting(column.getIsSorted() === "asc");
+              }}
+              className="justify-start px-0"
+              type="button"
+            >
+              App Name
+              <ArrowUpDown className="h-4 w-4" />
+            </Button>
+          </div>
+        ),
+        cell: ({ row }) => <IdDisplay id={row.original.app_name} />,
+        enableGlobalFilter: true,
+        id: "app_name",
+      }),
+    ] as ColumnDef<AppConfig>[];
+  }, []);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -190,7 +220,7 @@ export function AgentForm({
                   <p>No available app configs</p>
                 </div>
               ) : (
-                <div className=" p-4 pt-0 overflow-auto border rounded-md h-[40vh] overflow-y-auto">
+                <div className="max-h-[40vh] overflow-y-auto">
                   <EnhancedDataTable
                     columns={columns}
                     data={appConfigs}
