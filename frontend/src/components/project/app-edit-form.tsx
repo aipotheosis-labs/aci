@@ -9,7 +9,7 @@ import {
   DialogFooter,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Separator } from "@/components/ui/separator";
 import { getAllAppConfigs } from "@/lib/api/appconfig";
 import { updateAgent } from "@/lib/api/agent";
@@ -21,6 +21,7 @@ import { Badge } from "@/components/ui/badge";
 import { useAllowAppsColumns } from "@/components/project/useAllowAppsColumns";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { RowSelectionState } from "@tanstack/react-table";
+import { IdDisplay } from "@/components/apps/id-display";
 
 interface AppEditFormProps {
   children: React.ReactNode;
@@ -74,14 +75,15 @@ export function AppEditForm({
     fetchAppConfigs();
   }, [activeProject, open, allowedApps]);
 
+  const selectedAppNames = useMemo(
+    () => Object.keys(selectedApps).filter((app) => selectedApps[app]),
+    [selectedApps],
+  );
+
   const handleSubmit = async () => {
     try {
       setSubmitLoading(true);
       if (projectId && agentId) {
-        const selectedAppNames = Object.keys(selectedApps).filter(
-          (app_name) => selectedApps[app_name],
-        );
-
         await updateAgent(
           projectId,
           agentId,
@@ -116,6 +118,14 @@ export function AppEditForm({
             Select what apps are enabled for this agent.
           </p>
           <Separator />
+          <h3 className="text-sm font-medium">
+            Select Apps to Enable
+            {selectedAppNames.length > 0 && (
+              <div className="max-w-[300px] truncate">
+                <IdDisplay id={selectedAppNames.join(",")} />
+              </div>
+            )}
+          </h3>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -145,10 +155,11 @@ export function AppEditForm({
                   data={appConfigs}
                   defaultSorting={[{ id: "app_name", desc: false }]}
                   searchBarProps={{ placeholder: "Search apps..." }}
-                  state={{ rowSelection: selectedApps }}
-                  onRowSelectionChange={setSelectedApps}
-                  renderSelectionColumn={true}
-                  getRowId={(row) => row.app_name}
+                  rowSelectionProps={{
+                    rowSelection: selectedApps,
+                    onRowSelectionChange: setSelectedApps,
+                    getRowId: (row) => row.app_name,
+                  }}
                 />
               </div>
             )}
