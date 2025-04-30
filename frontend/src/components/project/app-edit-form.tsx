@@ -18,10 +18,11 @@ import { getApiKey } from "@/lib/api/util";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { Badge } from "@/components/ui/badge";
-import { useAllowAppsColumns } from "@/components/project/useAllowAppsColumns";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { RowSelectionState } from "@tanstack/react-table";
 import { IdDisplay } from "@/components/apps/id-display";
+import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { ArrowUpDown } from "lucide-react";
 
 interface AppEditFormProps {
   children: React.ReactNode;
@@ -44,7 +45,33 @@ export function AppEditForm({
   const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
   const [loading, setLoading] = useState(false);
   const { activeProject } = useMetaInfo();
-  const columns = useAllowAppsColumns();
+  const columns: ColumnDef<AppConfig>[] = useMemo(() => {
+    const columnHelper = createColumnHelper<AppConfig>();
+    return [
+      columnHelper.accessor("app_name", {
+        header: ({ column }) => (
+          <div className="text-left">
+            <Button
+              variant="ghost"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                column.toggleSorting(column.getIsSorted() === "asc");
+              }}
+              className="justify-start px-0"
+              type="button"
+            >
+              App Name
+              <ArrowUpDown className="h-4 w-4" />
+            </Button>
+          </div>
+        ),
+        cell: ({ row }) => <IdDisplay id={row.original.app_name} />,
+        enableGlobalFilter: true,
+        id: "app_name",
+      }),
+    ] as ColumnDef<AppConfig>[];
+  }, []);
   const [submitLoading, setSubmitLoading] = useState(false);
 
   useEffect(() => {
