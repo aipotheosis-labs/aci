@@ -145,14 +145,6 @@ export function AppEditForm({
             Select what apps are enabled for this agent.
           </p>
           <Separator />
-          <h3 className="text-sm font-medium">
-            Select Apps to Enable
-            {selectedAppNames.length > 0 && (
-              <div className="max-w-[300px] truncate">
-                <IdDisplay id={selectedAppNames.join(",")} />
-              </div>
-            )}
-          </h3>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -166,6 +158,11 @@ export function AppEditForm({
                 {Object.values(selectedApps).filter(Boolean).length} Selected
               </Badge>
             </div>
+            {selectedAppNames.length > 0 && (
+              <div className="max-w-[300px] truncate">
+                <IdDisplay id={selectedAppNames.join(",")} />
+              </div>
+            )}
 
             {loading ? (
               <div className="flex h-40  justify-center py-4 ">
@@ -176,19 +173,17 @@ export function AppEditForm({
                 <p>No app configurations available</p>
               </div>
             ) : (
-              <div className="p-4 pt-0 overflow-auto border rounded-md h-[40vh] overflow-y-auto">
-                <EnhancedDataTable
-                  columns={columns}
-                  data={appConfigs}
-                  defaultSorting={[{ id: "app_name", desc: false }]}
-                  searchBarProps={{ placeholder: "Search apps..." }}
-                  rowSelectionProps={{
-                    rowSelection: selectedApps,
-                    onRowSelectionChange: setSelectedApps,
-                    getRowId: (row) => row.app_name,
-                  }}
-                />
-              </div>
+              <EnhancedDataTable
+                columns={columns}
+                data={appConfigs}
+                defaultSorting={[{ id: "app_name", desc: false }]}
+                searchBarProps={{ placeholder: "Search apps..." }}
+                rowSelectionProps={{
+                  rowSelection: selectedApps,
+                  onRowSelectionChange: setSelectedApps,
+                  getRowId: (row) => row.app_name,
+                }}
+              />
             )}
           </div>
 
