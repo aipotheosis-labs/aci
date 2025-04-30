@@ -24,22 +24,28 @@ import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-tabl
 import { Agent } from "@/lib/types/project";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { AppConfig } from "@/lib/types/appconfig";
+import { getAllAppConfigs } from "@/lib/api/appconfig";
 
 export default function ProjectSettingPage() {
   const { accessToken, activeProject, reloadActiveProject } = useMetaInfo();
-  // const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
+  const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
   const [apps, setApps] = useState<App[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const loadAppConfigs = useCallback(async () => {
     const apiKey = getApiKey(activeProject);
+    setLoading(true);
 
-    // const appConfigs = await getAllAppConfigs(apiKey);
-    // setAppConfigs(appConfigs);
     try {
+      const configs = await getAllAppConfigs(apiKey);
+      setAppConfigs(configs);
       const apps = await getAllApps(apiKey);
       setApps(apps);
     } catch (error) {
       console.error("Error fetching apps:", error);
+    } finally {
+      setLoading(false);
     }
   }, [activeProject]);
 
@@ -180,6 +186,8 @@ export default function ProjectSettingPage() {
               <AgentForm
                 title="Create Agent"
                 validAppNames={apps.map((app) => app.name)}
+                appConfigs={appConfigs}
+                onRequestRefreshAppConfigs={loadAppConfigs}
                 onSubmit={async (values) => {
                   try {
                     await createAgent(
@@ -197,7 +205,7 @@ export default function ProjectSettingPage() {
                   }
                 }}
               >
-                <Button variant="outline">
+                <Button variant="outline" disabled={loading}>
                   <MdAdd />
                   Create Agent
                   <Tooltip>
