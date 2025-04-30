@@ -410,7 +410,6 @@ async def execute_function(
             "scheme": security_credentials_response.scheme.model_dump(exclude_none=True),
             "is_app_default_credentials": security_credentials_response.is_app_default_credentials,
             "is_updated": security_credentials_response.is_updated,
-            "last_used_at": linked_account.last_used_at,
         },
     )
 
@@ -428,7 +427,6 @@ async def execute_function(
                 linked_account,
                 security_credentials=security_credentials_response.credentials,
             )
-
         db_session.commit()
 
     # Check for custom instruction violations if OpenAI client is provided
@@ -454,17 +452,15 @@ async def execute_function(
         security_credentials_response.credentials,
     )
 
-    if execution_result.success:
-        # Update the "last_used_at" timestamp
-        # "last_used_at" to indicate "last time a function is executed with this account credential"
-        last_used_at: datetime = datetime.now(UTC)
-        crud.linked_accounts.update_linked_account_last_used_at(
-            db_session,
-            last_used_at,
-            linked_account,
-        )
-        db_session.commit()
-    else:
+    last_used_at: datetime = datetime.now(UTC)
+    crud.linked_accounts.update_linked_account_last_used_at(
+        db_session,
+        last_used_at,
+        linked_account,
+    )
+    db_session.commit()
+
+    if not execution_result.success:
         logger.error(
             "function execution result error",
             extra={
