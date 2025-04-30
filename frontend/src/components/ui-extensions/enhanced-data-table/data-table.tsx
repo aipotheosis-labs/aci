@@ -32,10 +32,16 @@ import {
 import { useState, useMemo } from "react";
 import { EnhancedDataTableToolbar } from "@/components/ui-extensions/enhanced-data-table/data-table-toolbar";
 import { ColumnFilter } from "@/components/ui-extensions/enhanced-data-table/column-filter";
-import { useSelectionColumn } from "@/components/ui-extensions/enhanced-data-table/checkbox-column";
+import { getRowSelectionColumn } from "@/components/ui-extensions/enhanced-data-table/row-selection-column";
 
 interface SearchBarProps {
   placeholder: string;
+}
+
+interface RowSelectionProps<TData> {
+  rowSelection: RowSelectionState;
+  onRowSelectionChange: OnChangeFn<RowSelectionState>;
+  getRowId: (row: TData) => string;
 }
 
 interface EnhancedDataTableProps<TData, TValue> {
@@ -46,12 +52,7 @@ interface EnhancedDataTableProps<TData, TValue> {
     desc: boolean;
   }[];
   searchBarProps?: SearchBarProps;
-  state?: {
-    rowSelection?: RowSelectionState;
-  };
-  onRowSelectionChange?: OnChangeFn<RowSelectionState>;
-  getRowId?: (row: TData) => string;
-  renderSelectionColumn?: boolean;
+  rowSelectionProps?: RowSelectionProps<TData>;
 }
 
 export function EnhancedDataTable<TData, TValue>({
@@ -59,10 +60,7 @@ export function EnhancedDataTable<TData, TValue>({
   data,
   defaultSorting = [],
   searchBarProps,
-  state,
-  onRowSelectionChange,
-  getRowId,
-  renderSelectionColumn = false,
+  rowSelectionProps,
 }: EnhancedDataTableProps<TData, TValue>) {
   const generatedDefaultSorting = useMemo(() => {
     if (defaultSorting.length > 0) return defaultSorting;
@@ -86,29 +84,29 @@ export function EnhancedDataTable<TData, TValue>({
     return columns.some((column) => column.enableGlobalFilter === true);
   }, [columns]);
 
-  const selectionColumns = useSelectionColumn<TData>({ renderSelectionColumn });
-
   const allColumns = useMemo(() => {
-    return [...selectionColumns, ...columns] as ColumnDef<TData, TValue>[];
-  }, [selectionColumns, columns]);
+    if (!rowSelectionProps) return columns;
+
+    return [getRowSelectionColumn<TData>(), ...columns] as ColumnDef<
+      TData,
+      TValue
+    >[];
+  }, [columns, rowSelectionProps]);
 
   const tableState = useMemo(() => {
-    //Build different parameter schemes for different tables
     const baseState = {
       sorting,
       globalFilter,
       columnFilters,
     };
 
-    if (renderSelectionColumn && state?.rowSelection !== undefined) {
-      return {
-        ...baseState,
-        rowSelection: state.rowSelection,
-      };
-    }
+    if (!rowSelectionProps) return baseState;
 
-    return baseState;
-  }, [sorting, globalFilter, columnFilters, renderSelectionColumn, state]);
+    return {
+      ...baseState,
+      rowSelection: rowSelectionProps.rowSelection,
+    };
+  }, [sorting, globalFilter, columnFilters, rowSelectionProps]);
 
   const table = useReactTable({
     data,
@@ -121,9 +119,9 @@ export function EnhancedDataTable<TData, TValue>({
     onColumnFiltersChange: setColumnFilters,
     globalFilterFn: "includesString",
     state: tableState,
-    enableRowSelection: renderSelectionColumn,
-    onRowSelectionChange: onRowSelectionChange,
-    getRowId,
+    enableRowSelection: rowSelectionProps !== undefined,
+    onRowSelectionChange: rowSelectionProps?.onRowSelectionChange,
+    getRowId: rowSelectionProps?.getRowId,
   });
 
   const filterComponents = useMemo(() => {

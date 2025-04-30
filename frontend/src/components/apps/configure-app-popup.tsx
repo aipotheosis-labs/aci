@@ -35,6 +35,7 @@ import { updateAgent } from "@/lib/api/agent";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { RowSelectionState } from "@tanstack/react-table";
+import { Badge } from "@/components/ui/badge";
 
 const formSchema = z.object({
   security_scheme: z.string().min(1, "Security Scheme is required"),
@@ -177,19 +178,26 @@ export function ConfigureAppPopup({
 
             {activeProject.agents.length > 0 && (
               <div>
-                <h3 className="text-sm font-medium mb-2">
-                  Select Agents to enable this app
-                </h3>
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="text-sm font-medium">
+                    Select Agents to enable this app
+                  </h3>
+                  <Badge
+                    variant="secondary"
+                    className="flex items-center gap-1 px-2 py-1 text-xs"
+                  >
+                    {Object.keys(selectedAgentIds).length} selected
+                  </Badge>
+                </div>
                 <EnhancedDataTable
                   columns={columns}
                   data={activeProject.agents}
                   searchBarProps={{ placeholder: "Search Agent..." }}
-                  state={{
+                  rowSelectionProps={{
                     rowSelection: selectedAgentIds,
+                    onRowSelectionChange: setSelectedAgentIds,
+                    getRowId: (row) => row.id,
                   }}
-                  renderSelectionColumn={true}
-                  onRowSelectionChange={setSelectedAgentIds}
-                  getRowId={(row) => row.id}
                 />
               </div>
             )}
