@@ -120,10 +120,17 @@ export function LinkedAccountDetails({
                         Created at
                       </TableCell>
                       <TableCell className="text-right">
-                        {new Date(account.created_at)
-                          .toISOString()
-                          .replace(/\.\d{3}Z$/, "")
-                          .replace("T", " ")}
+                        {formatToLocalTime(account.created_at)}
+                      </TableCell>
+                    </TableRow>
+                    <TableRow>
+                      <TableCell className="font-medium text-left">
+                        Last Used At
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {account.last_used_at
+                          ? formatToLocalTime(account.last_used_at)
+                          : "Never"}
                       </TableCell>
                     </TableRow>
                   </TableBody>
