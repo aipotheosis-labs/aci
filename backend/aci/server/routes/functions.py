@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, Query
@@ -409,6 +410,7 @@ async def execute_function(
             "scheme": security_credentials_response.scheme.model_dump(exclude_none=True),
             "is_app_default_credentials": security_credentials_response.is_app_default_credentials,
             "is_updated": security_credentials_response.is_updated,
+            "last_used_at": linked_account.last_used_at,
         },
     )
 
@@ -444,13 +446,6 @@ async def execute_function(
         extra={"function_name": function_name, "function_executor": type(function_executor)},
     )
 
-    # Update the last used at timestamp
-    crud.linked_accounts.update_linked_account_last_used_at(
-        db_session,
-        linked_account,
-    )
-    db_session.commit()
-
     # Execute the function
     execution_result = function_executor.execute(
         function,
@@ -459,7 +454,17 @@ async def execute_function(
         security_credentials_response.credentials,
     )
 
-    if not execution_result.success:
+    if execution_result.success:
+        # Update the "last_used_at" timestamp
+        # "last_used_at" to indicate "last time a function is executed with this account credential"
+        last_used_at: datetime = datetime.now(UTC)
+        crud.linked_accounts.update_linked_account_last_used_at(
+            db_session,
+            last_used_at,
+            linked_account,
+        )
+        db_session.commit()
+    else:
         logger.error(
             "function execution result error",
             extra={

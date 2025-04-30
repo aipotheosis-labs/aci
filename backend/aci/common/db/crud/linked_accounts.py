@@ -1,6 +1,7 @@
+from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import func, select
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from aci.common import validators
@@ -145,9 +146,10 @@ def update_linked_account(
 
 def update_linked_account_last_used_at(
     db_session: Session,
+    last_used_at: datetime,
     linked_account: LinkedAccount,
 ) -> LinkedAccount:
-    linked_account.last_used_at = func.now()
+    linked_account.last_used_at = last_used_at
     db_session.flush()
     db_session.refresh(linked_account)
     return linked_account

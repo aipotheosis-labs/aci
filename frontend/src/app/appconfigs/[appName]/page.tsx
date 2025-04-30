@@ -167,7 +167,7 @@ export default function AppConfigDetailPage() {
                 <TableRow>
                   <TableHead>LINKED ACCOUNT OWNER ID</TableHead>
                   <TableHead>CREATED AT</TableHead>
-                  <TableHead>LAST USED</TableHead>
+                  <TableHead>LAST USED AT</TableHead>
                   <TableHead>ENABLED</TableHead>
                   <TableHead>DETAILS</TableHead>
                   <TableHead></TableHead>

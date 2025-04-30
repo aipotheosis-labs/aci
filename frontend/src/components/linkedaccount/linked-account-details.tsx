@@ -125,7 +125,7 @@ export function LinkedAccountDetails({
                     </TableRow>
                     <TableRow>
                       <TableCell className="font-medium text-left">
-                        Last Used
+                        Last Used At
                       </TableCell>
                       <TableCell className="text-right">
                         {account.last_used_at

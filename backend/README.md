@@ -230,10 +230,6 @@ For local development, the commands can be executed via the `runner` container.
 docker compose exec runner python -m aci.cli upsert-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
 ```
 
-```bash
-docker compose exec runner python -m aci.cli upsert-functions --functions-file ./apps/brave_search/functions.json --skip-dry-run
-```
-
 ## Contributing
 
 Please refer to the [Contributing Guide](../CONTRIBUTING.md) for details on making contributions to this project.
