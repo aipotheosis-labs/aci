@@ -35,9 +35,9 @@ class AppUpsert(BaseModel):
 
     @field_validator("name", check_fields=False)
     def validate_name(cls, v: str) -> str:
-        if not re.match(r"^[A-Z_]+$", v) or "__" in v:
+        if not re.match(r"^[A-Z0-9_]+$", v) or "__" in v:
             raise ValueError(
-                "name must be uppercase, contain only letters and underscores, and not have consecutive underscores"
+                "name must be uppercase, contain only letters, numbers and underscores, and not have consecutive underscores"
             )
         return v
 

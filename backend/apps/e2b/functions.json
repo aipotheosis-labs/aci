@@ -1,0 +1,23 @@
+[
+    {
+        "name": "E2B__RUN_CODE",
+        "description": "Runs code in an E2B.dev sandbox",
+        "tags": ["sandbox", "run", "code"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "connector",
+        "protocol_data": {},
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string",
+                    "description": "The python code to run in the sandbox"
+                }
+            },
+            "required": ["code"],
+            "visible": ["code"],
+            "additionalProperties": false
+        }
+    }
+]
