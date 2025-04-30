@@ -96,7 +96,7 @@ export default function AppConfigPage() {
             columns={appConfigsColumns}
             defaultSorting={[{ id: "app_name", desc: false }]}
             searchBarProps={{
-              placeholder: "Filter in table...",
+              placeholder: "Search by app name",
             }}
           />
         )}
