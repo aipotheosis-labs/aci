@@ -94,6 +94,7 @@ export default function AppConfigPage() {
           <EnhancedDataTable
             data={appConfigs}
             columns={appConfigsColumns}
+            defaultSorting={[{ id: "app_name", desc: false }]}
             searchBarProps={{
               placeholder: "Filter in table...",
             }}

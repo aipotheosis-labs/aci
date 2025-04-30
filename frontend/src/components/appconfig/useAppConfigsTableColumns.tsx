@@ -133,6 +133,7 @@ export const useAppConfigsTableColumns = ({
                 try {
                   const apiKey = getApiKey(activeProject);
                   await updateAppConfig(config.app_name, checked, apiKey);
+                  updateAppConfigs();
                   return true;
                 } catch (error) {
                   console.error("Failed to update app config:", error);
