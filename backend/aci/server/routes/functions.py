@@ -410,7 +410,6 @@ async def execute_function(
             "scheme": security_credentials_response.scheme.model_dump(exclude_none=True),
             "is_app_default_credentials": security_credentials_response.is_app_default_credentials,
             "is_updated": security_credentials_response.is_updated,
-            "last_used_at": linked_account.last_used_at,
         },
     )
 
@@ -428,7 +427,6 @@ async def execute_function(
                 linked_account,
                 security_credentials=security_credentials_response.credentials,
             )
-
         db_session.commit()
 
     # Check for custom instruction violations if OpenAI client is provided
