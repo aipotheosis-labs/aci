@@ -226,8 +226,39 @@ the local db.
 The CLI module is an internal admin tool for ACI to manage apps, functions, users, etc.
 For local development, the commands can be executed via the `runner` container.
 
+To see all available commands and their usage, run:
+
 ```bash
-docker compose exec runner python -m aci.cli upsert-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
+docker compose exec runner python -m aci.cli --help
+```
+
+Example output:
+
+```bash
+Usage: python -m aci.cli [OPTIONS] COMMAND [ARGS]...
+
+  AIPO CLI Tool
+
+Options:
+  -h, --help  Show this message and exit.
+
+Commands:
+  create-agent                   Create an agent in db.
+  create-project                 Create a project in db.
+  create-random-api-key          Create a random test api key for local...
+  delete-app                     Delete an app and all its references...
+  fuzzy-test-function-execution  Test function execution with...
+  get-app                        Get an app by name from the database.
+  rename-app                     Rename an app and update all related...
+  update-agent                   Update an existing agent in db.
+  upsert-app                     Insert or update an App in the DB from a...
+  upsert-functions               Upsert functions in the DB from a JSON...
+```
+
+To create a new app, run:
+
+```bash
+docker compose exec runner python -m aci.cli create-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
 ```
 
 ## Contributing
