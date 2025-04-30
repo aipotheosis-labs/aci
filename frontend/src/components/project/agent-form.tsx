@@ -189,10 +189,11 @@ export function AgentForm({
                     data={appConfigs}
                     defaultSorting={[{ id: "app_name", desc: true }]}
                     searchBarProps={{ placeholder: "Search apps..." }}
-                    state={{ rowSelection: selectedApps }}
-                    onRowSelectionChange={setSelectedApps}
-                    renderSelectionColumn={true}
-                    getRowId={(row) => row.app_name}
+                    rowSelectionProps={{
+                      rowSelection: selectedApps,
+                      onRowSelectionChange: setSelectedApps,
+                      getRowId: (row) => row.app_name,
+                    }}
                   />
                 </div>
               )}
