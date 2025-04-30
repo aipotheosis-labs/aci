@@ -187,6 +187,7 @@ export default function ProjectSettingPage() {
                 title="Create Agent"
                 validAppNames={apps.map((app) => app.name)}
                 appConfigs={appConfigs}
+                onRequestRefreshAppConfigs={loadAppConfigs}
                 onSubmit={async (values) => {
                   try {
                     await createAgent(
