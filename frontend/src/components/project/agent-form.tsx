@@ -27,9 +27,13 @@ import {
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { AppConfig } from "@/lib/types/appconfig";
+import { getAllAppConfigs } from "@/lib/api/appconfig";
 import { useAllowAppsColumns } from "@/components/project/useAllowAppsColumns";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { RowSelectionState } from "@tanstack/react-table";
+import { getApiKey } from "@/lib/api/util";
+import { useMetaInfo } from "@/components/context/metainfo";
+import { Loader2 } from "lucide-react";
 const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().min(1, "Description is required"),
@@ -56,7 +60,6 @@ interface AgentFormProps {
   initialValues?: Partial<FormValues>;
   title: string;
   validAppNames: string[];
-  appConfigs?: AppConfig[];
 }
 
 export function AgentForm({
@@ -65,12 +68,13 @@ export function AgentForm({
   initialValues,
   title,
   validAppNames,
-  appConfigs = [],
 }: AgentFormProps) {
   const [open, setOpen] = useState(false);
   const [selectedApps, setSelectedApps] = useState<RowSelectionState>({});
   const columns = useAllowAppsColumns();
-
+  const { activeProject } = useMetaInfo();
+  const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
+  const [loading, setLoading] = useState(false);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -107,6 +111,18 @@ export function AgentForm({
       console.error("Error submitting form:", error);
     }
   };
+
+  useEffect(() => {
+    if (!open) return;
+    setLoading(true);
+    const loadAppConfigs = async () => {
+      const apiKey = getApiKey(activeProject);
+      const appConfigs = await getAllAppConfigs(apiKey);
+      setAppConfigs(appConfigs);
+      setLoading(false);
+    };
+    loadAppConfigs();
+  }, [open, activeProject]);
 
   // Reset form values when dialog opens
   useEffect(() => {
@@ -169,33 +185,41 @@ export function AgentForm({
             />
 
             <div className="space-y-2">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-medium">Allowed Apps</h3>
-                <Badge
-                  variant="secondary"
-                  className="flex items-center gap-1 px-2 py-1 text-xs"
-                >
-                  {Object.keys(selectedApps).length} selected
-                </Badge>
-              </div>
-              {appConfigs.length === 0 ? (
+              {loading ? (
                 <div className="h-32 flex items-center justify-center">
-                  <p>No available app configs</p>
+                  <Loader2 className="w-4 h-4 animate-spin" />
                 </div>
               ) : (
-                <div className=" p-4 pt-0 overflow-auto border rounded-md h-[40vh] overflow-y-auto">
-                  <EnhancedDataTable
-                    columns={columns}
-                    data={appConfigs}
-                    defaultSorting={[{ id: "app_name", desc: true }]}
-                    searchBarProps={{ placeholder: "Search apps..." }}
-                    rowSelectionProps={{
-                      rowSelection: selectedApps,
-                      onRowSelectionChange: setSelectedApps,
-                      getRowId: (row) => row.app_name,
-                    }}
-                  />
-                </div>
+                <>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-sm font-medium">Allowed Apps</h3>
+                    <Badge
+                      variant="secondary"
+                      className="flex items-center gap-1 px-2 py-1 text-xs"
+                    >
+                      {Object.keys(selectedApps).length} selected
+                    </Badge>
+                  </div>
+                  {appConfigs.length === 0 ? (
+                    <div className="h-32 flex items-center justify-center">
+                      <p>No available app configs</p>
+                    </div>
+                  ) : (
+                    <div className=" p-4 pt-0 overflow-auto border rounded-md h-[40vh] overflow-y-auto">
+                      <EnhancedDataTable
+                        columns={columns}
+                        data={appConfigs}
+                        defaultSorting={[{ id: "app_name", desc: true }]}
+                        searchBarProps={{ placeholder: "Search apps..." }}
+                        rowSelectionProps={{
+                          rowSelection: selectedApps,
+                          onRowSelectionChange: setSelectedApps,
+                          getRowId: (row) => row.app_name,
+                        }}
+                      />
+                    </div>
+                  )}
+                </>
               )}
             </div>
 

@@ -1,9 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import ProjectSettingPage from "@/app/project-setting/page";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { getAllApps } from "@/lib/api/app";
-import { getAllAppConfigs } from "@/lib/api/appconfig";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { OrgMemberInfoClass } from "@propelauth/react";
 
@@ -12,7 +11,6 @@ vi.mock("@/components/context/metainfo", () => ({
   useMetaInfo: vi.fn(),
 }));
 vi.mock("@/lib/api/app");
-vi.mock("@/lib/api/appconfig");
 vi.mock("@/lib/api/util", () => ({
   getApiKey: vi.fn(() => "test-api-key"),
 }));
@@ -107,20 +105,6 @@ describe("ProjectSettingPage", () => {
         functions: [],
       },
     ]);
-
-    // Mock getAllAppConfigs
-    vi.mocked(getAllAppConfigs).mockResolvedValue([
-      {
-        id: "config-1",
-        project_id: "project-123",
-        app_name: "TEST_APP_1",
-        security_scheme: "none",
-        security_scheme_overrides: {},
-        enabled: true,
-        all_functions_enabled: true,
-        enabled_functions: [],
-      },
-    ]);
   });
 
   it("renders project settings when project is available", () => {
@@ -154,11 +138,8 @@ describe("ProjectSettingPage", () => {
     expect(agentDescriptions[0]).toBeInTheDocument();
   });
 
-  it("loads apps on component mount", async () => {
+  it("loads apps on component mount", () => {
     render(<ProjectSettingPage />, { wrapper: TestWrapper });
-    await waitFor(() => {
-      expect(getAllApps).toHaveBeenCalledWith("test-api-key");
-      expect(getAllAppConfigs).toHaveBeenCalledWith("test-api-key");
-    });
+    expect(getAllApps).toHaveBeenCalledWith("test-api-key");
   });
 });
