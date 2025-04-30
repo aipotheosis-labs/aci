@@ -5,13 +5,14 @@ import { useCallback, useEffect, useState } from "react";
 // import { GoPlus } from "react-icons/go";
 import { AppConfig } from "@/lib/types/appconfig";
 import { Separator } from "@/components/ui/separator";
-import { AppConfigsTable } from "@/components/appconfig/app-configs-table";
 import { getApiKey } from "@/lib/api/util";
 import { getAllAppConfigs } from "@/lib/api/appconfig";
 import { App } from "@/lib/types/app";
 import { getApps } from "@/lib/api/app";
 import { getAppLinkedAccounts } from "@/lib/api/linkedaccount";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { useAppConfigsTableColumns } from "@/components/appconfig/useAppConfigsTableColumns";
+import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 
 export default function AppConfigPage() {
   const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
@@ -61,6 +62,12 @@ export default function AppConfigPage() {
     loadAllData();
   }, [loadAllData]);
 
+  const appConfigsColumns = useAppConfigsTableColumns({
+    linkedAccountsCountMap,
+    appsMap,
+    updateAppConfigs: loadAllData,
+  });
+
   return (
     <div>
       <div className="m-4 flex items-center justify-between">
@@ -84,11 +91,12 @@ export default function AppConfigPage() {
           </div>
         )}
         {!isLoading && (
-          <AppConfigsTable
-            appConfigs={appConfigs}
-            appsMap={appsMap}
-            linkedAccountsCountMap={linkedAccountsCountMap}
-            updateAppConfigs={loadAllData}
+          <EnhancedDataTable
+            data={appConfigs}
+            columns={appConfigsColumns}
+            searchBarProps={{
+              placeholder: "Filter in table...",
+            }}
           />
         )}
       </div>
