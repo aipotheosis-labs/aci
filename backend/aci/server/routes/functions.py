@@ -342,7 +342,7 @@ async def execute_function(
             },
         )
         raise AppConfigurationDisabled(
-            f"configuration for app={function.app.name} is disabled, please enable the app first {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
+            f"configuration for app={function.app.name} is disabled, please enable the app first {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
         )
 
     # Check if the function is allowed to be executed by the agent
@@ -377,7 +377,7 @@ async def execute_function(
         )
         raise LinkedAccountNotFound(
             f"linked account with linked_account_owner_id={linked_account_owner_id} not found for app={function.app.name},"
-            f"please link the account for this app here: {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
+            f"please link the account for this app here: {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
         )
 
     if not linked_account.enabled:
@@ -392,7 +392,7 @@ async def execute_function(
         )
         raise LinkedAccountDisabled(
             f"linked account with linked_account_owner_id={linked_account_owner_id} is disabled for app={function.app.name},"
-            f"please enable the account for this app here: {config.DEV_PORTAL_URL}/appconfig/{function.app.name}"
+            f"please enable the account for this app here: {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
         )
 
     security_credentials_response: SecurityCredentialsResponse = await scm.get_security_credentials(

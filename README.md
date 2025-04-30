@@ -34,14 +34,13 @@ Build production-ready AI agents without the infrastructure headaches.
   </a>
 </p>
 
-
-## Demo Video
+## 📺 Demo Video
 
 [ACI.dev **Unified MCP Server** Demo](https://youtu.be/GSR9P53-_7E?feature=shared)
 
 [![ACI.dev Unified MCP Server Demo](frontend/public/umcp-demo-thumbnail.png)](https://youtu.be/GSR9P53-_7E?feature=shared)
 
-## Key Features
+## ✨ Key Features
 
 - **600+ Pre-built Integrations**: Connect to popular services and apps in minutes.
 - **Flexible Access Methods**: Use our unified MCP server or our lightweight SDK for direct function calling.
@@ -50,7 +49,7 @@ Build production-ready AI agents without the infrastructure headaches.
 - **Framework & Model Agnostic**: Works with any LLM framework and agent architecture.
 - **100% Open Source**: Everything released under Apache 2.0 (backend, dev portal, integrations).
 
-## Why Use ACI.dev?
+## 💡 Why Use ACI.dev?
 
 ACI.dev solves your critical infrastructure challenges for production-ready AI agents:
 
@@ -59,14 +58,14 @@ ACI.dev solves your critical infrastructure challenges for production-ready AI a
 - **Natural Language Permissions**: Control agent capabilities with human-readable boundaries.
 - **Build Once, Run Anywhere**: No vendor lock-in with our open source, framework-agnostic approach.
 
-## Common Use Cases
+## 🧰 Common Use Cases
 
 - **Personal Assistant Chatbots:** Build chatbots that can search the web, manage calendars, send emails, interact with SaaS tools, etc.
 - **Research Agent:** Conducts research on specific topics and syncs results to other apps (e.g., Notion, Google Sheets).
 - **Outbound Sales Agent:** Automates lead generation, email outreach, and CRM updates.
 - **Customer Support Agent:** Provides answers, manages tickets, and performs actions based on customer queries.
 
-## Quick Links
+## 🔗 Quick Links
 
 - **Managed Service:** [aci.dev](https://www.aci.dev/)
 - **Documentation:** [aci.dev/docs](https://www.aci.dev/docs)
@@ -77,15 +76,14 @@ ACI.dev solves your critical infrastructure challenges for production-ready AI a
 - **Blog:** [aci.dev/blog](https://www.aci.dev/blog)
 - **Community:** [Discord](https://discord.com/invite/UU2XAnfHJh) | [Twitter/X](https://x.com/AipoLabs) | [LinkedIn](https://www.linkedin.com/company/aipotheosis-labs-aipolabs/posts/?feedView=all)
 
-
-## Getting Started: Local Development
+## 💻 Getting Started: Local Development
 
 To run the full ACI.dev platform (backend server and frontend portal) locally, follow the individual README files for each component:
 
 - **Backend:** [backend/README.md](backend/README.md)
 - **Frontend:** [frontend/README.md](frontend/README.md)
 
-## Contributing
+## 👋 Contributing
 
 We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
 
