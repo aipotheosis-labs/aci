@@ -340,12 +340,14 @@ export function AddAccountForm({
                         <SelectItem key={appInfo.name} value={appInfo.name}>
                           <div className="flex items-center gap-2">
                             {appInfo.logo && (
-                              <Image
-                                src={appInfo.logo}
-                                alt={appInfo.name}
-                                width={16}
-                                height={16}
-                              />
+                              <div className="relative h-5 w-5 flex-shrink-0 overflow-hidden">
+                                <Image
+                                  src={appInfo.logo}
+                                  alt={appInfo.name}
+                                  fill
+                                  className="object-contain"
+                                />
+                              </div>
                             )}
                             {appInfo.name}
                           </div>
