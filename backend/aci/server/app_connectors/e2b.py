@@ -23,11 +23,6 @@ class E2b(AppConnectorBase):
         security_credentials: APIKeySchemeCredentials,
     ):
         super().__init__(linked_account, security_scheme, security_credentials)
-        logger.info("Initializing E2B connector")
-        logger.info(f"E2B API key: {self.security_credentials.secret_key}")
-        # Initialize with None, will be set when creating a sandbox
-        self.sandbox = None
-        self.sandbox_id = None
 
     @override
     def _before_execute(self) -> None:
