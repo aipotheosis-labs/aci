@@ -13,6 +13,13 @@
             "method": "GET",
             "path": "/v1/schedules",
             "server_url": "https://api.cal.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
         }
     },
     {
