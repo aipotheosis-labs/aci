@@ -1,6 +1,6 @@
 from typing import Any, override
 
-from e2b_code_interpreter import Sandbox # type: ignore
+from e2b_code_interpreter import Sandbox  # type: ignore
 
 from aci.common.db.sql_models import LinkedAccount
 from aci.common.logging_setup import get_logger
