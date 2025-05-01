@@ -29,8 +29,6 @@ class E2b(AppConnectorBase):
 
     @override
     def _before_execute(self) -> None:
-        # Nothing special needed before execution
-        logger.info("Before execute hook called for E2B connector")
         pass
 
     def run_code(
@@ -40,10 +38,6 @@ class E2b(AppConnectorBase):
         """
         Execute code in E2B sandbox and return the result.
         """
-        try:
-            with Sandbox(api_key=self.api_key) as sandbox:
-                execution = sandbox.run_code(code)
-                return {"text": execution.text}
-        except Exception as e:
-            logger.error(f"Error executing code in E2B sandbox: {e}")
-            raise
+        with Sandbox(api_key=self.api_key) as sandbox:
+            execution = sandbox.run_code(code)
+            return {"text": execution.text}
