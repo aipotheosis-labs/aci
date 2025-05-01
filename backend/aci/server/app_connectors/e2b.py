@@ -1,5 +1,6 @@
-from typing import override, Dict, Any
-from e2b_code_interpreter import Sandbox
+from typing import Any, override
+
+from e2b_code_interpreter import Sandbox # type: ignore
 
 from aci.common.db.sql_models import LinkedAccount
 from aci.common.logging_setup import get_logger
@@ -10,6 +11,7 @@ from aci.common.schemas.security_scheme import (
 from aci.server.app_connectors.base import AppConnectorBase
 
 logger = get_logger(__name__)
+
 
 class E2b(AppConnectorBase):
     """
@@ -23,6 +25,7 @@ class E2b(AppConnectorBase):
         security_credentials: APIKeySchemeCredentials,
     ):
         super().__init__(linked_account, security_scheme, security_credentials)
+        self.api_key = security_credentials.secret_key
 
     @override
     def _before_execute(self) -> None:
@@ -33,14 +36,10 @@ class E2b(AppConnectorBase):
     def run_code(
         self,
         code: str,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """
-        List all running sandboxes
+        Execute code in E2B sandbox and return the result.
         """
-
-        with Sandbox(
-            api_key=self.security_credentials.secret_key
-        ) as sandbox:
+        with Sandbox(api_key=self.api_key) as sandbox:
             execution = sandbox.run_code(code)
-            logger.info(f"Execution: {execution}")
-            return execution.text
+            return {"text": execution.text}
