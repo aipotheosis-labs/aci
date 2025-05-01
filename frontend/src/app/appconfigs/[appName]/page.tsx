@@ -48,6 +48,7 @@ import Link from "next/link";
 import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhanced-switch";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { formatToLocalTime } from "@/utils/time";
+
 export default function AppConfigDetailPage() {
   const { appName } = useParams<{ appName: string }>();
   const { activeProject } = useMetaInfo();
@@ -166,6 +167,7 @@ export default function AppConfigDetailPage() {
                 <TableRow>
                   <TableHead>LINKED ACCOUNT OWNER ID</TableHead>
                   <TableHead>CREATED AT</TableHead>
+                  <TableHead>LAST USED AT</TableHead>
                   <TableHead>ENABLED</TableHead>
                   <TableHead>DETAILS</TableHead>
                   <TableHead></TableHead>
