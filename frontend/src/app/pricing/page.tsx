@@ -23,7 +23,6 @@ const tiers = [
   {
     name: PlanName.Free,
     id: "tier-free",
-    href: "#", // Placeholder link
     priceMonthly: "$0",
     priceYearly: "$0",
     description: "Perfect for getting started & simple projects.",
@@ -41,7 +40,6 @@ const tiers = [
   {
     name: PlanName.Starter,
     id: "tier-starter",
-    href: process.env.NEXT_PUBLIC_SUBSCRIPTION_STARTER_LINK_MONTHLY,
     priceMonthly: "$29",
     priceYearly: "$299",
     discount: "saves $49 on annual",
@@ -60,7 +58,6 @@ const tiers = [
   {
     name: PlanName.Team,
     id: "tier-team",
-    href: process.env.NEXT_PUBLIC_SUBSCRIPTION_TEAM_LINK_MONTHLY,
     priceMonthly: "$99",
     priceYearly: "$999",
     discount: "saves $189 on annual",
@@ -80,7 +77,6 @@ const tiers = [
   {
     name: PlanName.Enterprise,
     id: "tier-enterprise",
-    href: "#", // Placeholder link
     priceMonthly: "Custom",
     description: "For large-scale applications with specific needs.",
     features: [
