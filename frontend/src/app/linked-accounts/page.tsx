@@ -4,14 +4,6 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { LinkedAccount } from "@/lib/types/linkedaccount";
 import { Button } from "@/components/ui/button";
 import { IdDisplay } from "@/components/apps/id-display";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { GoTrash } from "react-icons/go";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { getApiKey } from "@/lib/api/util";
@@ -38,42 +30,22 @@ import { Separator } from "@/components/ui/separator";
 import { LinkedAccountDetails } from "@/components/linkedaccount/linked-account-details";
 import { AppConfig } from "@/lib/types/appconfig";
 import { AddAccountForm } from "@/components/appconfig/add-account";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { App } from "@/lib/types/app";
 import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhanced-switch";
 import Image from "next/image";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { formatToLocalTime } from "@/utils/time";
+import { ArrowUpDown } from "lucide-react";
+import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
+import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+const columnHelper = createColumnHelper<LinkedAccount>();
 
 export default function LinkedAccountsPage() {
   const { activeProject } = useMetaInfo();
   const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
   const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [selectedOwnerId, setSelectedOwnerId] = useState<string>("all");
   const [appsMap, setAppsMap] = useState<Record<string, App>>({});
-  const ownerIds = useMemo(
-    () => [
-      "all",
-      ...new Set(linkedAccounts.map((a) => a.linked_account_owner_id)),
-    ],
-    [linkedAccounts],
-  );
-
-  const filteredLinkedAccounts = useMemo(() => {
-    if (selectedOwnerId === "all") {
-      return linkedAccounts;
-    }
-    return linkedAccounts.filter(
-      (account) => account.linked_account_owner_id === selectedOwnerId,
-    );
-  }, [linkedAccounts, selectedOwnerId]);
 
   const loadAppMaps = useCallback(async () => {
     if (linkedAccounts.length === 0) {
@@ -146,24 +118,24 @@ export default function LinkedAccountsPage() {
     [activeProject],
   );
 
-  const toggleAccountStatus = async (
-    accountId: string,
-    newStatus: boolean,
-  ): Promise<boolean> => {
-    try {
-      const apiKey = getApiKey(activeProject);
+  const toggleAccountStatus = useCallback(
+    async (accountId: string, newStatus: boolean): Promise<boolean> => {
+      try {
+        const apiKey = getApiKey(activeProject);
 
-      await updateLinkedAccount(accountId, apiKey, newStatus);
+        await updateLinkedAccount(accountId, apiKey, newStatus);
 
-      await refreshLinkedAccounts(true);
+        await refreshLinkedAccounts(true);
 
-      return true;
-    } catch (error) {
-      console.error("Failed to update linked account:", error);
-      toast.error("Failed to update linked account");
-      return false;
-    }
-  };
+        return true;
+      } catch (error) {
+        console.error("Failed to update linked account:", error);
+        toast.error("Failed to update linked account");
+        return false;
+      }
+    },
+    [activeProject, refreshLinkedAccounts],
+  );
 
   useEffect(() => {
     const loadData = async () => {
@@ -180,6 +152,196 @@ export default function LinkedAccountsPage() {
       loadAppMaps();
     }
   }, [linkedAccounts, loadAppMaps]);
+
+  const linkedAccountsColumns: ColumnDef<LinkedAccount>[] = useMemo(() => {
+    return [
+      columnHelper.accessor("app_name", {
+        header: ({ column }) => (
+          <div className="flex items-center justify-start">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              className="p-0 h-auto text-left font-normal bg-transparent hover:bg-transparent focus:ring-0"
+            >
+              APP NAME
+              <ArrowUpDown className="h-4 w-4" />
+            </Button>
+          </div>
+        ),
+        cell: (info) => {
+          const appName = info.getValue();
+          return (
+            <div className="flex items-center gap-2">
+              {appsMap[appName]?.logo && (
+                <div className="relative h-6 w-6 flex-shrink-0 overflow-hidden">
+                  <Image
+                    src={appsMap[appName].logo}
+                    alt={`${appName} logo`}
+                    fill
+                    className="object-contain rounded-sm"
+                  />
+                </div>
+              )}
+              <span className="font-medium">{appName}</span>
+            </div>
+          );
+        },
+        enableGlobalFilter: true,
+      }),
+
+      columnHelper.accessor((row) => [row.linked_account_owner_id], {
+        id: "linked_account_owner_id",
+        header: ({ column }) => (
+          <div className="flex items-center justify-start">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              className="p-0 h-auto text-left font-normal  hover:bg-transparent focus:ring-0"
+            >
+              LINKED ACCOUNT OWNER ID
+              <ArrowUpDown className="h-4 w-4" />
+            </Button>
+          </div>
+        ),
+        cell: (info) => {
+          const [ownerId] = info.getValue();
+          return (
+            <div className="flex-shrink-0">
+              <IdDisplay id={ownerId} />
+            </div>
+          );
+        },
+        enableColumnFilter: true,
+        filterFn: "arrIncludes",
+      }),
+
+      columnHelper.accessor("created_at", {
+        header: ({ column }) => (
+          <div className="flex items-center justify-start">
+            <Button
+              variant="ghost"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+              className="p-0 h-auto text-left font-normal hover:bg-transparent focus:ring-0"
+            >
+              CREATED AT
+              <ArrowUpDown className="h-4 w-4" />
+            </Button>
+          </div>
+        ),
+        cell: (info) => formatToLocalTime(info.getValue()),
+        enableGlobalFilter: false,
+      }),
+
+      columnHelper.accessor("last_used_at", {
+        header: "LAST USED AT",
+        cell: (info) => {
+          const lastUsedAt = info.getValue();
+          return lastUsedAt ? formatToLocalTime(lastUsedAt) : "Never";
+        },
+        enableGlobalFilter: false,
+      }),
+
+      columnHelper.accessor("enabled", {
+        header: "ENABLED",
+        cell: (info) => {
+          const account = info.row.original;
+          return (
+            <EnhancedSwitch
+              checked={info.getValue()}
+              onAsyncChange={(checked) =>
+                toggleAccountStatus(account.id, checked)
+              }
+              successMessage={(newState) => {
+                return `Linked account ${account.linked_account_owner_id} ${newState ? "enabled" : "disabled"}`;
+              }}
+              errorMessage="Failed to update linked account"
+            />
+          );
+        },
+        enableGlobalFilter: false,
+      }),
+
+      columnHelper.accessor((row) => row, {
+        id: "details",
+        header: "DETAILS",
+        cell: (info) => {
+          const account = info.getValue();
+          return (
+            <LinkedAccountDetails
+              account={account}
+              toggleAccountStatus={toggleAccountStatus}
+            >
+              <Button variant="outline" size="sm">
+                See Details
+              </Button>
+            </LinkedAccountDetails>
+          );
+        },
+        enableGlobalFilter: false,
+      }),
+
+      columnHelper.accessor((row) => row, {
+        id: "actions",
+        header: "",
+        cell: (info) => {
+          const account = info.getValue();
+          return (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="ghost" size="sm" className="text-red-600">
+                  <GoTrash />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Confirm Deletion?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. This will permanently delete
+                    the linked account for owner ID &quot;
+                    {account.linked_account_owner_id}&quot;.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={async () => {
+                      try {
+                        if (!activeProject) {
+                          console.warn("No active project");
+                          return;
+                        }
+                        const apiKey = getApiKey(activeProject);
+
+                        await deleteLinkedAccount(account.id, apiKey);
+
+                        refreshLinkedAccounts(true);
+
+                        toast.success(
+                          `Linked account ${account.linked_account_owner_id} deleted`,
+                        );
+                      } catch (error) {
+                        console.error(error);
+                        toast.error("Failed to delete linked account");
+                      }
+                    }}
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          );
+        },
+        enableGlobalFilter: false,
+      }),
+    ] as ColumnDef<LinkedAccount>[];
+  }, [appsMap, toggleAccountStatus, refreshLinkedAccounts, activeProject]);
 
   return (
     <div>
@@ -207,163 +369,26 @@ export default function LinkedAccountsPage() {
       <div className="m-4">
         <Tabs defaultValue={"linked"} className="w-full">
           <TabsContent value="linked">
-            <div className="flex items-center space-x-4 mb-6">
-              <Select
-                value={selectedOwnerId}
-                onValueChange={setSelectedOwnerId}
-              >
-                <SelectTrigger className="w-[120px]">
-                  <SelectValue placeholder="ALL" />
-                </SelectTrigger>
-                <SelectContent>
-                  {ownerIds.map((id) => (
-                    <SelectItem key={id} value={id}>
-                      {id}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
             {isLoading ? (
-              <div className="text-center p-8">Loading...</div>
-            ) : filteredLinkedAccounts.length === 0 ? (
+              <div className="flex items-center justify-center p-8">
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+                  <p className="text-sm text-gray-500">Loading...</p>
+                </div>
+              </div>
+            ) : linkedAccounts.length === 0 ? (
               <div className="text-center p-8 text-muted-foreground">
                 No linked accounts found
               </div>
             ) : (
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader className="bg-gray-100">
-                    <TableRow>
-                      <TableHead>APP NAME</TableHead>
-                      <TableHead>LINKED ACCOUNT OWNER ID</TableHead>
-                      <TableHead>CREATED AT</TableHead>
-                      <TableHead>LAST USED AT</TableHead>
-                      <TableHead>ENABLED</TableHead>
-                      <TableHead>DETAILS</TableHead>
-                      <TableHead></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredLinkedAccounts.map((account) => (
-                      <TableRow key={account.id}>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            {appsMap[account.app_name]?.logo && (
-                              <div className="relative h-6 w-6 flex-shrink-0 overflow-hidden">
-                                <Image
-                                  src={appsMap[account.app_name].logo}
-                                  alt={`${account.app_name} logo`}
-                                  fill
-                                  className="object-contain rounded-sm"
-                                />
-                              </div>
-                            )}
-                            <span className="font-medium">
-                              {account.app_name}
-                            </span>
-                          </div>
-                        </TableCell>
-
-                        <TableCell>
-                          <div className="flex-shrink-0">
-                            <IdDisplay id={account.linked_account_owner_id} />
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {formatToLocalTime(account.created_at)}
-                        </TableCell>
-                        <TableCell>
-                          {account.last_used_at
-                            ? formatToLocalTime(account.last_used_at)
-                            : "Never"}
-                        </TableCell>
-                        <TableCell>
-                          <EnhancedSwitch
-                            checked={account.enabled}
-                            onAsyncChange={(checked) =>
-                              toggleAccountStatus(account.id, checked)
-                            }
-                            successMessage={(newState) => {
-                              return `Linked account ${account.linked_account_owner_id} ${newState ? "enabled" : "disabled"}`;
-                            }}
-                            errorMessage="Failed to update linked account"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <LinkedAccountDetails
-                            account={account}
-                            toggleAccountStatus={toggleAccountStatus}
-                          >
-                            <Button variant="outline" size="sm">
-                              See Details
-                            </Button>
-                          </LinkedAccountDetails>
-                        </TableCell>
-                        <TableCell>
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-600"
-                              >
-                                <GoTrash />
-                              </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                              <AlertDialogHeader>
-                                <AlertDialogTitle>
-                                  Confirm Deletion?
-                                </AlertDialogTitle>
-                                <AlertDialogDescription>
-                                  This action cannot be undone. This will
-                                  permanently delete the linked account for
-                                  owner ID &quot;
-                                  {account.linked_account_owner_id}&quot;.
-                                </AlertDialogDescription>
-                              </AlertDialogHeader>
-                              <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction
-                                  onClick={async () => {
-                                    try {
-                                      if (!activeProject) {
-                                        console.warn("No active project");
-                                        return;
-                                      }
-                                      const apiKey = getApiKey(activeProject);
-
-                                      await deleteLinkedAccount(
-                                        account.id,
-                                        apiKey,
-                                      );
-
-                                      refreshLinkedAccounts(true);
-
-                                      toast.success(
-                                        `Linked account ${account.linked_account_owner_id} deleted`,
-                                      );
-                                    } catch (error) {
-                                      console.error(error);
-                                      toast.error(
-                                        "Failed to delete linked account",
-                                      );
-                                    }
-                                  }}
-                                >
-                                  Delete
-                                </AlertDialogAction>
-                              </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+              <EnhancedDataTable
+                columns={linkedAccountsColumns}
+                data={linkedAccounts}
+                defaultSorting={[{ id: "app_name", desc: false }]}
+                searchBarProps={{
+                  placeholder: "Search linked accounts",
+                }}
+              />
             )}
           </TabsContent>
         </Tabs>
