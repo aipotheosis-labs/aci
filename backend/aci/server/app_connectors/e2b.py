@@ -40,6 +40,10 @@ class E2b(AppConnectorBase):
         """
         Execute code in E2B sandbox and return the result.
         """
-        with Sandbox(api_key=self.api_key) as sandbox:
-            execution = sandbox.run_code(code)
-            return {"text": execution.text}
+        try:
+            with Sandbox(api_key=self.api_key) as sandbox:
+                execution = sandbox.run_code(code)
+                return {"text": execution.text}
+        except Exception as e:
+            logger.error(f"Error executing code in E2B sandbox: {e}")
+            raise
