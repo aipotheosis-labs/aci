@@ -38,8 +38,10 @@ import { formatToLocalTime } from "@/utils/time";
 import { ArrowUpDown } from "lucide-react";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
-const columnHelper = createColumnHelper<LinkedAccount>();
+const columnHelper = createColumnHelper<TableData>();
 import { getAllApps } from "@/lib/api/app";
+
+type TableData = LinkedAccount & { logo: string };
 
 export default function LinkedAccountsPage() {
   const { activeProject } = useMetaInfo();
@@ -83,6 +85,17 @@ export default function LinkedAccountsPage() {
       console.error("Failed to load app data:", error);
     }
   }, [activeProject, linkedAccounts]);
+
+  /**
+   * Generate tableData and attach the logo from appsMap to each row of data.
+   * In this way, columns no longer need to rely on appsMap, avoiding uninstalling pop-up components when columns are rebuilt.
+   */
+  const tableData = useMemo(() => {
+    return linkedAccounts.map((acc) => ({
+      ...acc,
+      logo: appsMap[acc.app_name]?.logo ?? "",
+    }));
+  }, [linkedAccounts, appsMap]);
 
   const loadAppConfigs = useCallback(async () => {
     try {
@@ -163,7 +176,7 @@ export default function LinkedAccountsPage() {
     }
   }, [linkedAccounts, loadAppMaps]);
 
-  const linkedAccountsColumns: ColumnDef<LinkedAccount>[] = useMemo(() => {
+  const linkedAccountsColumns: ColumnDef<TableData>[] = useMemo(() => {
     return [
       columnHelper.accessor("app_name", {
         header: ({ column }) => (
@@ -184,10 +197,10 @@ export default function LinkedAccountsPage() {
           const appName = info.getValue();
           return (
             <div className="flex items-center gap-2">
-              {appsMap[appName]?.logo && (
+              {info.row.original.logo && (
                 <div className="relative h-6 w-6 flex-shrink-0 overflow-hidden">
                   <Image
-                    src={appsMap[appName].logo}
+                    src={info.row.original.logo}
                     alt={`${appName} logo`}
                     fill
                     className="object-contain rounded-sm"
@@ -350,8 +363,8 @@ export default function LinkedAccountsPage() {
         },
         enableGlobalFilter: false,
       }),
-    ] as ColumnDef<LinkedAccount>[];
-  }, [appsMap, toggleAccountStatus, refreshLinkedAccounts, activeProject]);
+    ] as ColumnDef<TableData>[];
+  }, [toggleAccountStatus, refreshLinkedAccounts, activeProject]);
 
   return (
     <div>
@@ -387,14 +400,14 @@ export default function LinkedAccountsPage() {
                   <p className="text-sm text-gray-500">Loading...</p>
                 </div>
               </div>
-            ) : linkedAccounts.length === 0 ? (
+            ) : tableData.length === 0 ? (
               <div className="text-center p-8 text-muted-foreground">
                 No linked accounts found
               </div>
             ) : (
               <EnhancedDataTable
                 columns={linkedAccountsColumns}
-                data={linkedAccounts}
+                data={tableData}
                 defaultSorting={[{ id: "app_name", desc: false }]}
                 searchBarProps={{
                   placeholder: "Search linked accounts",
