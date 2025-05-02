@@ -1,0 +1,22 @@
+{
+  "name": "CAL_COM",
+  "display_name": "CAL.COM",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/acl_com.svg",
+  "provider": "Cal.com, Inc.",
+  "version": "aipolabs_0.0.1",
+  "description": "",
+  "security_schemes": {
+    "api_key": {
+      "location": "query",
+      "name": "apiKey",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "scheduling",
+    "meet"
+  ],
+  "visibility": "public",
+  "active": true
+}

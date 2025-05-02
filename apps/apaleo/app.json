@@ -1,0 +1,23 @@
+{
+    "name": "APALEO",
+    "display_name": "APALEO",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/apaleo.svg",
+    "provider": "Apaleo",
+    "version": "1.0",
+    "description": "The open platform for modern hospitality. Hotel and apartment businesses run more efficiently on Apaleo today and use innovative apps to be ready for tomorrow.",
+    "security_schemes": {
+        "api_key": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "hospitality",
+        "Hotel",
+        "apartment"
+    ],
+    "visibility": "public",
+    "active": true
+}

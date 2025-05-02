@@ -50,6 +50,7 @@ import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhan
 import Image from "next/image";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { formatToLocalTime } from "@/utils/time";
+import { getAllApps } from "@/lib/api/app";
 
 export default function LinkedAccountsPage() {
   const { activeProject } = useMetaInfo();
@@ -58,6 +59,7 @@ export default function LinkedAccountsPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedOwnerId, setSelectedOwnerId] = useState<string>("all");
   const [appsMap, setAppsMap] = useState<Record<string, App>>({});
+  const [allApps, setAllApps] = useState<App[]>([]);
   const ownerIds = useMemo(
     () => [
       "all",
@@ -124,6 +126,14 @@ export default function LinkedAccountsPage() {
     }
   }, [activeProject]);
 
+  useEffect(() => {
+    const fetchAllApps = async () => {
+      const apiKey = getApiKey(activeProject);
+      const apps = await getAllApps(apiKey);
+      setAllApps(apps);
+    };
+    fetchAllApps();
+  }, [activeProject]);
   const refreshLinkedAccounts = useCallback(
     async (silent: boolean = false) => {
       try {
@@ -195,6 +205,7 @@ export default function LinkedAccountsPage() {
             <AddAccountForm
               appInfos={appConfigs.map((config) => ({
                 name: config.app_name,
+                logo: allApps.find((app) => app.name === config.app_name)?.logo,
                 securitySchemes: [config.security_scheme],
               }))}
               updateLinkedAccounts={() => refreshLinkedAccounts(true)}

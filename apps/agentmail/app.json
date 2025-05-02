@@ -1,0 +1,23 @@
+{
+    "name": "AGENTMAIL",
+    "display_name": "Agent Mail",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/agentmail.svg",
+    "provider": "Agent Mail",
+    "version": "aipolabs_0.0.1",
+    "description": "Agent Mail is an email service that helps manage and automate email communications with features for inbox management, thread tracking, and message handling.",
+    "security_schemes": {
+        "api_key": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "productivity",
+        "communication",
+        "email"
+    ],
+    "visibility": "public",
+    "active": true
+}
