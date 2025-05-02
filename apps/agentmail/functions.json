@@ -1,0 +1,294 @@
+[
+    {
+        "name": "AGENTMAIL__GET_INBOX",
+        "description": "Retrieve information about a specific inbox by its ID (email address)",
+        "tags": [
+            "agentmail",
+            "inbox",
+            "information"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/inboxes/{inbox_id}",
+            "server_url": "https://api.agentmail.to/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the request",
+                    "properties": {
+                        "inbox_id": {
+                            "type": "string",
+                            "description": "ID (email address) of the inbox"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "inbox_id"
+                    ],
+                    "visible": [
+                        "inbox_id"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ]
+        }
+    },
+    {
+        "name": "AGENTMAIL__CREATE_INBOX",
+        "description": "Create a new inbox with a specified username and display name",
+        "tags": [
+            "agentmail",
+            "inbox",
+            "create"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/inboxes",
+            "server_url": "https://api.agentmail.to/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Body parameters for creating the inbox",
+                    "properties": {
+                        "username": {
+                            "type": "string",
+                            "description": "Username of address. Randomly generated if not specified."
+                        },
+                        "domain": {
+                            "type": "string",
+                            "description": "Domain of address. Must be verified domain. Defaults to agentmail.to"
+                        },
+                        "display_name": {
+                            "type": "string",
+                            "description": "Display name for address: Display Name <username@domain.com>"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "username",
+                        "display_name"
+                    ],
+                    "visible": [
+                        "username",
+                        "domain",
+                        "display_name"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "AGENTMAIL__LIST_THREADS",
+        "description": "List threads from a specific inbox with pagination support",
+        "tags": [
+            "agentmail",
+            "inbox",
+            "threads"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/inboxes/{inbox_id}/threads",
+            "server_url": "https://api.agentmail.to/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the request",
+                    "properties": {
+                        "inbox_id": {
+                            "type": "string",
+                            "description": "ID (email address) of the inbox"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "inbox_id"
+                    ],
+                    "visible": [
+                        "inbox_id"
+                    ]
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the request",
+                    "properties": {
+                        "limit": {
+                            "type": "integer",
+                            "description": "Limit of number of items returned"
+                        },
+                        "last_key": {
+                            "type": "string",
+                            "description": "Key of last item for pagination"
+                        },
+                        "labels": {
+                            "type": "array",
+                            "description": "Labels to filter threads by",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [],
+                    "visible": [
+                        "limit",
+                        "last_key",
+                        "labels"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path",
+                "query"
+            ]
+        }
+    },
+    {
+        "name": "AGENTMAIL__LIST_MESSAGES",
+        "description": "List messages from a specific inbox",
+        "tags": [
+            "agentmail",
+            "inbox",
+            "messages"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/inboxes/{inbox_id}/messages",
+            "server_url": "https://api.agentmail.to/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the request",
+                    "properties": {
+                        "inbox_id": {
+                            "type": "string",
+                            "description": "ID (email address) of the inbox"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "inbox_id"
+                    ],
+                    "visible": [
+                        "inbox_id"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ]
+        }
+    }
+]

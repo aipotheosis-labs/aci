@@ -46,6 +46,7 @@ import {
 } from "@/lib/api/linkedaccount";
 import { getApiKey } from "@/lib/api/util";
 import { useMetaInfo } from "@/components/context/metainfo";
+import Image from "next/image";
 
 const formSchema = z
   .object({
@@ -76,6 +77,7 @@ const FORM_SUBMIT_API_KEY = "apiKey";
 const FORM_SUBMIT_NO_AUTH = "noAuth";
 export interface AppInfo {
   name: string;
+  logo: string | undefined;
   securitySchemes: string[];
 }
 interface AddAccountProps {
@@ -336,7 +338,19 @@ export function AddAccountForm({
                     <SelectContent>
                       {appInfos.map((appInfo) => (
                         <SelectItem key={appInfo.name} value={appInfo.name}>
-                          {appInfo.name}
+                          <div className="flex items-center gap-2">
+                            {appInfo.logo && (
+                              <div className="relative h-5 w-5 flex-shrink-0 overflow-hidden">
+                                <Image
+                                  src={appInfo.logo}
+                                  alt={appInfo.name}
+                                  fill
+                                  className="object-contain"
+                                />
+                              </div>
+                            )}
+                            {appInfo.name}
+                          </div>
                         </SelectItem>
                       ))}
                     </SelectContent>

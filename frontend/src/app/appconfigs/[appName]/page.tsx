@@ -127,6 +127,7 @@ export default function AppConfigDetailPage() {
             appInfos={[
               {
                 name: app.name,
+                logo: app.logo,
                 securitySchemes: app.security_schemes,
               },
             ]}

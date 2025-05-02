@@ -32,6 +32,7 @@ dependencies = [
     "rich>=13.9.4,<14.0.0",
     "propelauth-fastapi>=4.2.5,<5.0.0",
     "svix>=1.63.1,<2.0.0",
+    "e2b-code-interpreter>=1.2.1",
 ]
 
 [dependency-groups]
@@ -109,6 +110,10 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "propelauth_py.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "e2b_code_interpreter"
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
