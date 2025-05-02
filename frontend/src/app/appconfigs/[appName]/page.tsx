@@ -63,9 +63,13 @@ export default function AppConfigDetailPage() {
   };
 
   const refreshLinkedAccounts = useCallback(async () => {
-    const apiKey = getApiKey(activeProject);
-    const linkedAccounts = await getAppLinkedAccounts(appName, apiKey);
-    setLinkedAccounts(sortLinkedAccountsByCreateTime(linkedAccounts));
+    try {
+      const apiKey = getApiKey(activeProject);
+      const linkedAccounts = await getAppLinkedAccounts(appName, apiKey);
+      setLinkedAccounts(sortLinkedAccountsByCreateTime(linkedAccounts));
+    } catch (error) {
+      console.error("Failed to refresh linked accounts:", error);
+    }
   }, [activeProject, appName]);
 
   const toggleAccountStatus = useCallback(
@@ -88,24 +92,19 @@ export default function AppConfigDetailPage() {
   );
 
   const handleDeleteLinkedAccount = useCallback(
-    async (accountId: string) => {
+    async (accountId: string, linkedAccountOwnerId: string) => {
       try {
         const apiKey = getApiKey(activeProject);
         await deleteLinkedAccount(accountId, apiKey);
         await refreshLinkedAccounts();
 
-        const account = linkedAccounts.find((acc) => acc.id === accountId);
-        if (account) {
-          toast.success(
-            `Linked account ${account.linked_account_owner_id} deleted`,
-          );
-        }
+        toast.success(`Linked account ${linkedAccountOwnerId} deleted`);
       } catch (error) {
         console.error("Failed to delete linked account:", error);
         toast.error("Failed to delete linked account");
       }
     },
-    [activeProject, appName, linkedAccounts, refreshLinkedAccounts],
+    [activeProject, refreshLinkedAccounts],
   );
 
   const linkedAccountsColumns: ColumnDef<LinkedAccount>[] = useMemo(() => {
@@ -131,9 +130,6 @@ export default function AppConfigDetailPage() {
           </div>
         ),
         enableGlobalFilter: true,
-        meta: {
-          defaultSort: true,
-        },
       }),
 
       columnHelper.accessor("created_at", {
@@ -227,7 +223,12 @@ export default function AppConfigDetailPage() {
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={() => handleDeleteLinkedAccount(account.id)}
+                    onClick={() =>
+                      handleDeleteLinkedAccount(
+                        account.id,
+                        account.linked_account_owner_id,
+                      )
+                    }
                   >
                     Delete
                   </AlertDialogAction>
@@ -243,11 +244,14 @@ export default function AppConfigDetailPage() {
 
   useEffect(() => {
     async function loadAppAndLinkedAccounts() {
-      const apiKey = getApiKey(activeProject);
-
-      const app = await getApp(appName, apiKey);
-      setApp(app);
-      await refreshLinkedAccounts();
+      try {
+        const apiKey = getApiKey(activeProject);
+        const app = await getApp(appName, apiKey);
+        setApp(app);
+        await refreshLinkedAccounts();
+      } catch (error) {
+        console.error("Failed to load app and linked accounts:", error);
+      }
     }
     loadAppAndLinkedAccounts();
   }, [activeProject, appName, refreshLinkedAccounts]);
