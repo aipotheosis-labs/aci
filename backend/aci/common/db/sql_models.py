@@ -41,11 +41,9 @@ from aci.common.db.custom_sql_types import (
     EncryptedSecurityCredentials,
     EncryptedSecurityScheme,
     Key,
-    PlanFeatures,
 )
 from aci.common.enums import (
     APIKeyStatus,
-    PlanName,
     Protocol,
     SecurityScheme,
     StripeSubscriptionInterval,
@@ -473,7 +471,7 @@ class Plan(Base):
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
     )
-    name: Mapped[PlanName] = mapped_column(SqlEnum(PlanName), nullable=False, unique=True)
+    name: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False, unique=True)
     stripe_product_id: Mapped[str] = mapped_column(
         String(MAX_STRING_LENGTH), nullable=False, unique=True
     )
@@ -483,7 +481,7 @@ class Plan(Base):
     stripe_yearly_price_id: Mapped[str] = mapped_column(
         String(MAX_STRING_LENGTH), nullable=False, unique=True
     )
-    features: Mapped[PlanFeatures] = mapped_column(MutableDict.as_mutable(JSONB), nullable=False)
+    features: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSONB), nullable=False)
     is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 
 
@@ -524,13 +522,13 @@ class Subscription(Base):
 
 
 class ProcessedStripeEvent(Base):
-    __tablename__ = "processed_events"
+    __tablename__ = "processed_stripe_events"
 
     id: Mapped[UUID] = mapped_column(
         PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
     )
     event_id: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False, unique=True)
-    processed_at: Mapped[datetime] = mapped_column(
+    created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
     )
 

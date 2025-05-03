@@ -3,7 +3,7 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from aci.common.enums import PlanName, StripeSubscriptionInterval, StripeSubscriptionStatus
+from aci.common.enums import StripeSubscriptionInterval, StripeSubscriptionStatus
 
 
 class SubscriptionBase(BaseModel):
@@ -31,7 +31,7 @@ class SubscriptionUpdate(BaseModel):
 
 
 class SubscriptionPublic(BaseModel):
-    plan: PlanName
+    plan: str
     status: StripeSubscriptionStatus
 
 
@@ -49,3 +49,8 @@ class StripeSubscriptionMetadata(BaseModel):
     org_id: UUID
     checkout_user_id: str
     checkout_user_email: str
+
+
+class StripeCheckoutSessionCreate(BaseModel):
+    plan_name: str
+    interval: StripeSubscriptionInterval

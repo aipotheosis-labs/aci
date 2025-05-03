@@ -86,18 +86,6 @@ class ClientIdentityProvider(StrEnum):
     # GITHUB = "github"
 
 
-class PlanName(StrEnum):
-    """
-    name of a plan
-    """
-
-    FREE = "free"
-    STARTER = "starter"
-    TEAM = "team"
-    GROWTH = "growth"
-    ENTERPRISE = "enterprise"
-
-
 class StripeSubscriptionStatus(StrEnum):
     """
     Stripe subscription status: https://docs.stripe.com/api/subscriptions/object#subscription_object-status

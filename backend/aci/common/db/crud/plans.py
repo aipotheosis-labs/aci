@@ -3,13 +3,11 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from aci.common.db.custom_sql_types import PlanFeatures
 from aci.common.db.sql_models import Plan
-from aci.common.enums import PlanName
-from aci.common.schemas.plans import PlanUpdate
+from aci.common.schemas.plans import PlanFeatures, PlanUpdate
 
 
-def get_by_name(db: Session, name: PlanName) -> Plan | None:
+def get_by_name(db: Session, name: str) -> Plan | None:
     """Get a plan by its name."""
     stmt = select(Plan).where(Plan.name == name)
     return db.execute(stmt).scalar_one_or_none()
@@ -32,7 +30,7 @@ def get_by_stripe_price_id(db: Session, stripe_price_id: str) -> Plan | None:
 
 def create(
     db: Session,
-    name: PlanName,
+    name: str,
     stripe_product_id: str,
     stripe_monthly_price_id: str,
     stripe_yearly_price_id: str,
@@ -45,7 +43,7 @@ def create(
         stripe_product_id=stripe_product_id,
         stripe_monthly_price_id=stripe_monthly_price_id,
         stripe_yearly_price_id=stripe_yearly_price_id,
-        features=features,
+        features=features.model_dump(),
         is_public=is_public,
     )
     db.add(plan)

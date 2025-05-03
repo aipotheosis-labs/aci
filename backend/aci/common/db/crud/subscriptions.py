@@ -45,7 +45,8 @@ def update_subscription_by_stripe_id(
     update_data = subscription_update.model_dump(exclude_unset=True)
     if not update_data:
         logger.info(
-            f"No fields to update for subscription with stripe_subscription_id={stripe_subscription_id}."
+            "No fields to update for subscription",
+            extra={"stripe_subscription_id": stripe_subscription_id},
         )
         # Need to fetch the subscription to return it
         return get_subscription_by_stripe_id(db_session, stripe_subscription_id)
@@ -62,15 +63,19 @@ def update_subscription_by_stripe_id(
 
     if updated_subscription:
         # No need to refresh as returning() fetches the updated state
-        logger.info(f"Updated subscription for stripe_subscription_id={stripe_subscription_id}")
+        logger.info(
+            "Updated subscription",
+            extra={"stripe_subscription_id": stripe_subscription_id},
+        )
     else:
         logger.warning(
-            f"Subscription not found for stripe_subscription_id={stripe_subscription_id} during update attempt."
+            "Subscription not found for stripe_subscription_id during update attempt.",
+            extra={"stripe_subscription_id": stripe_subscription_id},
         )
     return updated_subscription
 
 
-def delete_subscription_by_stripe_id(db_session: Session, stripe_subscription_id: str) -> bool:
+def delete_subscription_by_stripe_id(db_session: Session, stripe_subscription_id: str) -> None:
     """
     Mark a subscription as deleted by Stripe subscription ID. Returns True if marked, False otherwise.
     """
@@ -79,11 +84,11 @@ def delete_subscription_by_stripe_id(db_session: Session, stripe_subscription_id
         logger.warning(
             f"Subscription not found for stripe_subscription_id={stripe_subscription_id} during delete attempt."
         )
-        return False
+        return
 
     db_session.delete(subscription)
     db_session.flush()
     logger.info(
-        f"Marked subscription for stripe_subscription_id={stripe_subscription_id} as deleted"
+        "Deleted subscription",
+        extra={"stripe_subscription_id": stripe_subscription_id},
     )
-    return True

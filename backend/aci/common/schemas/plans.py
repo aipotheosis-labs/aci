@@ -1,6 +1,13 @@
 from pydantic import BaseModel, Field
 
-from aci.common.db.custom_sql_types import PlanFeatures
+
+class PlanFeatures(BaseModel):
+    linked_accounts: int
+    api_calls_monthly: int
+    agent_credentials: int
+    developer_seats: int
+    custom_oauth: bool
+    log_retention_days: int
 
 
 class PlanUpdate(BaseModel):
