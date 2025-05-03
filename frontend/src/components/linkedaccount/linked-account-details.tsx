@@ -49,7 +49,7 @@ export function LinkedAccountDetails({
           </div>
         </DialogHeader>
 
-        <div className="space-y-4 mt-4">
+        <div className="space-y-4">
           <Tabs defaultValue="account" className="w-full">
             <TabsList className="mb-2 bg-slate-200">
               {/* this button maybe should be active by default */}

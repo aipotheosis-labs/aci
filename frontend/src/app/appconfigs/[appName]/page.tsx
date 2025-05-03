@@ -292,7 +292,7 @@ export default function AppConfigDetailPage() {
       </div>
 
       <Tabs defaultValue={"linked"} className="w-full">
-        <TabsList className="">
+        <TabsList>
           <TabsTrigger value="linked">
             Linked Accounts
             <div className="ml-2">
@@ -322,7 +322,7 @@ export default function AppConfigDetailPage() {
             columns={linkedAccountsColumns}
             defaultSorting={[{ id: "created_at", desc: true }]}
             searchBarProps={{
-              placeholder: "Search by account owner ID",
+              placeholder: "Search by linked account owner ID",
             }}
           />
         </TabsContent>
