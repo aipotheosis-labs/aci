@@ -8,6 +8,7 @@ Usage: $0 [options]
 
 Options:
   -h, --help   Display this help message
+  plans        Seed only the subscription plans
   apps         Seed only the apps
   functions    Seed only the functions
   user         Seed only the user resource
@@ -17,6 +18,7 @@ EOF
 }
 
 # Declare flags for seeding various resources
+SEED_PLANS=false
 SEED_APPS=false
 SEED_FUNCTIONS=false
 SEED_USER=false
@@ -25,6 +27,7 @@ parse_arguments() {
 
   if [ $# -eq 0 ]; then
     # No arguments: default to seed everything
+    SEED_PLANS=true
     SEED_APPS=true
     SEED_FUNCTIONS=true
     SEED_USER=true
@@ -32,6 +35,9 @@ parse_arguments() {
     # Parse arguments
     for arg in "$@"; do
       case $arg in
+        plans)
+          SEED_PLANS=true
+          ;;
         apps)
           SEED_APPS=true
           ;;
@@ -58,6 +64,10 @@ parse_arguments() {
 # Call our argument parser
 parse_arguments "$@"
 
+# Seed the database with Plans
+if [ "$SEED_PLANS" = true ]; then
+  python -m aci.cli populate-subscription-plans --skip-dry-run
+fi
 
 # Seed the database with Apps
 if [ "$SEED_APPS" = true ]; then
@@ -67,12 +77,12 @@ if [ "$SEED_APPS" = true ]; then
 
     # Check if secrets file exists and construct command accordingly
     if [ -f "$secrets_file" ]; then
-      python -m aci.cli.aci upsert-app \
+      python -m aci.cli upsert-app \
         --app-file "$app_file" \
         --secrets-file "$secrets_file" \
         --skip-dry-run
     else
-      python -m aci.cli.aci upsert-app \
+      python -m aci.cli upsert-app \
         --app-file "$app_file" \
         --skip-dry-run
     fi
@@ -82,7 +92,7 @@ fi
 # Seed the database with Functions
 if [ "$SEED_FUNCTIONS" = true ]; then
   for functions_file in ./apps/*/functions.json; do
-    python -m aci.cli.aci upsert-functions \
+    python -m aci.cli upsert-functions \
       --functions-file "$functions_file" \
       --skip-dry-run
   done
@@ -90,5 +100,5 @@ fi
 
 # Seed the database with a user resource
 if [ "$SEED_USER" = true ]; then
-  python -m aci.cli.aci create-random-api-key --visibility-access public
+  python -m aci.cli create-random-api-key --visibility-access public
 fi

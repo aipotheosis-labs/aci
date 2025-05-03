@@ -38,13 +38,7 @@ services:
       start_period: 3s
       timeout: 10s
     env_file:
-      - .env.shared
-    environment:
-      - SERVER_OPENAI_API_KEY=${SERVER_OPENAI_API_KEY?}
-      - SERVER_PROPELAUTH_API_KEY=${SERVER_PROPELAUTH_API_KEY?}
-      - SERVER_SVIX_SIGNING_SECRET=${SERVER_SVIX_SIGNING_SECRET:-<svix-signing-secret>}
-      - SERVER_STRIPE_SECRET_KEY=${SERVER_STRIPE_SECRET_KEY:-<stripe-secret-key>}
-      - SERVER_STRIPE_WEBHOOK_SIGNING_SECRET=${SERVER_STRIPE_WEBHOOK_SIGNING_SECRET:-<stripe-webhook-signing-secret>}
+      - .env.local
     # useful for development, changes take effect in the container without needing to rebuild the image.
     volumes:
       - ./aci/server:/workdir/aci/server
@@ -61,20 +55,13 @@ services:
     restart: no
 
   # can think of runner as an staging host for executing any commands
-  # e.g., run pytest, seed db etc.
+  # e.g., run cli commands, run scripts such as seed db etc.
   runner:
     build:
       context: .
       dockerfile: Dockerfile.runner
     env_file:
-      - .env.shared
-    environment:
-      - SERVER_OPENAI_API_KEY=${SERVER_OPENAI_API_KEY?}
-      - SERVER_PROPELAUTH_API_KEY=${SERVER_PROPELAUTH_API_KEY?}
-      - SERVER_SVIX_SIGNING_SECRET=${SERVER_SVIX_SIGNING_SECRET:-<svix-signing-secret>}
-      - SERVER_STRIPE_SECRET_KEY=${SERVER_STRIPE_SECRET_KEY:-<stripe-secret-key>}
-      - SERVER_STRIPE_WEBHOOK_SIGNING_SECRET=${SERVER_STRIPE_WEBHOOK_SIGNING_SECRET:-<stripe-webhook-signing-secret>}
-      - CLI_OPENAI_API_KEY=${CLI_OPENAI_API_KEY?}
+      - .env.local
     # Mount the local code into the container so you can run scripts / Alembic
     volumes:
       - ./aci:/workdir/aci
@@ -82,7 +69,7 @@ services:
       - ./scripts:/workdir/scripts
       - ./alembic.ini:/workdir/alembic.ini
     command: >
-      /bin/sh -c "/workdir/scripts/on_startup.sh && tail -f /dev/null"
+      /bin/sh -c "alembic upgrade head && tail -f /dev/null"
     depends_on:
       db:
         condition: service_healthy
