@@ -1,27 +1,13 @@
-from dataclasses import dataclass
-
 import click
 from rich.console import Console
 
 from aci.cli import config
 from aci.common import utils
 from aci.common.db import crud
-from aci.common.db.custom_sql_types import PlanFeatures
-from aci.common.enums import PlanName
-from aci.common.schemas.plans import PlanUpdate
+from aci.common.db.sql_models import Plan
+from aci.common.schemas.plans import PlanFeatures, PlanUpdate
 
 console = Console()
-
-
-@dataclass
-class PlanData:
-    name: PlanName
-    stripe_product_id: str
-    stripe_monthly_price_id: str
-    stripe_yearly_price_id: str
-    features: PlanFeatures
-    is_public: bool = False
-
 
 STRIPE_STARTER_PRODUCT_ID = "prod_SB7tlLd8lSxbuO"
 STRIPE_STARTER_MONTHLY_PRICE_ID = "price_1RGldu2Nixr9IfKz20SLnp3G"
@@ -31,9 +17,9 @@ STRIPE_TEAM_PRODUCT_ID = "prod_SB85QAy6lgGUyZ"
 STRIPE_TEAM_MONTHLY_PRICE_ID = "price_1RGlp52Nixr9IfKzHEkpkUno"
 STRIPE_TEAM_YEARLY_PRICE_ID = "price_1RGlvI2Nixr9IfKzKf0vNDRq"
 
-PLANS_DATA: list[PlanData] = [
-    PlanData(
-        name=PlanName.FREE,
+PLANS_DATA = [
+    Plan(
+        name="free",
         stripe_product_id="prod_FREE_placeholder",
         stripe_monthly_price_id="price_FREE_monthly_placeholder",
         stripe_yearly_price_id="price_FREE_yearly_placeholder",
@@ -44,11 +30,11 @@ PLANS_DATA: list[PlanData] = [
             developer_seats=1,
             custom_oauth=False,
             log_retention_days=7,
-        ),
+        ).model_dump(),
         is_public=True,
     ),
-    PlanData(
-        name=PlanName.STARTER,
+    Plan(
+        name="starter",
         stripe_product_id=STRIPE_STARTER_PRODUCT_ID,
         stripe_monthly_price_id=STRIPE_STARTER_MONTHLY_PRICE_ID,
         stripe_yearly_price_id=STRIPE_STARTER_YEARLY_PRICE_ID,
@@ -59,11 +45,11 @@ PLANS_DATA: list[PlanData] = [
             developer_seats=5,
             custom_oauth=True,
             log_retention_days=30,
-        ),
+        ).model_dump(),
         is_public=True,
     ),
-    PlanData(
-        name=PlanName.TEAM,
+    Plan(
+        name="team",
         stripe_product_id=STRIPE_TEAM_PRODUCT_ID,
         stripe_monthly_price_id=STRIPE_TEAM_MONTHLY_PRICE_ID,
         stripe_yearly_price_id=STRIPE_TEAM_YEARLY_PRICE_ID,
@@ -74,7 +60,7 @@ PLANS_DATA: list[PlanData] = [
             developer_seats=10,
             custom_oauth=True,
             log_retention_days=30,
-        ),
+        ).model_dump(),
         is_public=True,
     ),
 ]
@@ -98,18 +84,18 @@ def populate_subscription_plans(skip_dry_run: bool) -> None:
         created_count = 0
         updated_count = 0
         for plan_data in PLANS_DATA:
-            plan_name = plan_data.name
+            plan_name = str(plan_data.name)
             existing_plan = crud.plans.get_by_name(db_session, plan_name)
 
             if existing_plan:
                 # Update existing plan
-                console.print(f"Updating existing plan: {plan_name.name}")
+                console.print(f"Updating existing plan: {plan_name}")
                 plan_update_schema = PlanUpdate(
-                    stripe_product_id=plan_data.stripe_product_id,
-                    stripe_monthly_price_id=plan_data.stripe_monthly_price_id,
-                    stripe_yearly_price_id=plan_data.stripe_yearly_price_id,
-                    features=plan_data.features,
-                    is_public=plan_data.is_public,
+                    stripe_product_id=str(plan_data.stripe_product_id),
+                    stripe_monthly_price_id=str(plan_data.stripe_monthly_price_id),
+                    stripe_yearly_price_id=str(plan_data.stripe_yearly_price_id),
+                    features=PlanFeatures(**plan_data.features),
+                    is_public=bool(plan_data.is_public),
                 )
                 updated_plan = crud.plans.update_plan(
                     db=db_session,
@@ -118,21 +104,21 @@ def populate_subscription_plans(skip_dry_run: bool) -> None:
                 )
                 if updated_plan:
                     updated_count += 1
-                console.print(f"  Plan: {updated_plan.name.name}, ID: {updated_plan.id}")
+                console.print(f"  Plan: {updated_plan.name}, ID: {updated_plan.id}")
 
             else:
                 # Create new plan
-                console.print(f"Creating new plan: {plan_name.name}")
+                console.print(f"Creating new plan: {plan_name}")
                 new_plan = crud.plans.create(
                     db=db_session,
-                    name=plan_name,
-                    stripe_product_id=plan_data.stripe_product_id,
-                    stripe_monthly_price_id=plan_data.stripe_monthly_price_id,
-                    stripe_yearly_price_id=plan_data.stripe_yearly_price_id,
-                    features=plan_data.features,
-                    is_public=plan_data.is_public,
+                    name=str(plan_data.name),
+                    stripe_product_id=str(plan_data.stripe_product_id),
+                    stripe_monthly_price_id=str(plan_data.stripe_monthly_price_id),
+                    stripe_yearly_price_id=str(plan_data.stripe_yearly_price_id),
+                    features=PlanFeatures(**plan_data.features),
+                    is_public=bool(plan_data.is_public),
                 )
-                console.print(f"  Plan: {new_plan.name.name}, ID: {new_plan.id}")
+                console.print(f"  Plan: {new_plan.name}, ID: {new_plan.id}")
                 created_count += 1
 
         if not skip_dry_run:

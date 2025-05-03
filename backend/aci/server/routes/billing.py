@@ -14,14 +14,13 @@ from aci.common.db import crud
 from aci.common.db.sql_models import Subscription
 from aci.common.enums import (
     OrganizationRole,
-    PlanName,
     StripeSubscriptionInterval,
     StripeSubscriptionStatus,
 )
 from aci.common.exceptions import BillingError, SubscriptionPlanNotFound
 from aci.common.logging_setup import get_logger
-from aci.common.schemas.stripe import StripeCheckoutSessionCreate
 from aci.common.schemas.subscription import (
+    StripeCheckoutSessionCreate,
     StripeSubscriptionDetails,
     StripeSubscriptionMetadata,
     SubscriptionPublic,
@@ -51,7 +50,7 @@ async def get_subscription(
             extra={"org_id": org_id},
         )
         return SubscriptionPublic(
-            plan=PlanName.FREE,
+            plan="free",
             status=StripeSubscriptionStatus.ACTIVE,
         )
 
@@ -122,9 +121,7 @@ async def create_checkout_session(
             "checkout session url not found",
             extra={"session": session},
         )
-        raise BillingError(
-            "checkout session url not found", error_code=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
+        raise BillingError("checkout session url not found")
 
     return session.url
 
@@ -279,6 +276,10 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
     stripe_subscription_id = session_data.get("subscription")
 
     if not client_reference_id or not stripe_customer_id or not stripe_subscription_id:
+        logger.error(
+            "Missing critical data in checkout.session.completed event payload.",
+            extra={"session_data": session_data},
+        )
         raise BillingError(
             "Missing critical data in checkout.session.completed event payload.",
             error_code=status.HTTP_400_BAD_REQUEST,
@@ -300,8 +301,9 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
         logger.error(
             f"Could not find internal Plan matching Stripe Price ID: {subscription_details.stripe_price_id}"
         )
-        raise ValueError(
-            f"Could not find internal Plan matching Stripe Price ID: {subscription_details.stripe_price_id}"
+        raise BillingError(
+            f"Could not find internal Plan matching Stripe Price ID: {subscription_details.stripe_price_id}",
+            error_code=status.HTTP_400_BAD_REQUEST,
         )
 
     # 4. Check if a subscription record already exists for this org. If it does, check
@@ -311,6 +313,14 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
         db_session, subscription_details.stripe_subscription_id
     )
     if existing_sub:
+        logger.info(
+            "Subscription record already exists, updating",
+            extra={
+                "org_id": client_reference_id,
+                "stripe_subscription_id": stripe_subscription_id,
+            },
+        )
+
         if existing_sub.stripe_subscription_id == subscription_details.stripe_subscription_id:
             # We don't check if the fields are the same because the subscription may
             # have already been updated after creation. This handler only needs to
@@ -337,6 +347,13 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
                 error_code=status.HTTP_400_BAD_REQUEST,
             )
     else:  # 5. Create the new Subscription record
+        logger.info(
+            "Creating new subscription record",
+            extra={
+                "org_id": client_reference_id,
+                "stripe_subscription_id": stripe_subscription_id,
+            },
+        )
         new_subscription = Subscription(
             org_id=client_reference_id,
             plan_id=plan.id,

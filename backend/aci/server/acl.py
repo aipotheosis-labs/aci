@@ -41,10 +41,10 @@ def validate_user_access_to_project(db_session: Session, user: User, project_id:
 
 
 def require_org_member(user: User, org_id: UUID) -> None:
-    _auth.require_org_member(user, str(org_id))
+    get_propelauth().require_org_member(user, str(org_id))
 
 
 def require_org_member_with_minimum_role(
     user: User, org_id: UUID, minimum_role: OrganizationRole
 ) -> None:
-    _auth.require_org_member_with_minimum_role(user, str(org_id), minimum_role)
+    get_propelauth().require_org_member_with_minimum_role(user, str(org_id), minimum_role)
