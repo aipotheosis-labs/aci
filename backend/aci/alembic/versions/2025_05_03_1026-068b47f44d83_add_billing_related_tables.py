@@ -1,8 +1,8 @@
 """Add billing related tables
 
-Revision ID: 403c0ff89028
+Revision ID: 068b47f44d83
 Revises: ce439f017e25
-Create Date: 2025-05-02 19:00:59.351492+00:00
+Create Date: 2025-05-03 10:26:45.067314+00:00
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = '403c0ff89028'
+revision: str = '068b47f44d83'
 down_revision: Union[str, None] = 'ce439f017e25'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -28,6 +28,8 @@ def upgrade() -> None:
     sa.Column('stripe_yearly_price_id', sa.String(length=255), nullable=False),
     sa.Column('features', postgresql.JSONB(astext_type=sa.Text()), nullable=False),
     sa.Column('is_public', sa.Boolean(), nullable=False),
+    sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name'),
     sa.UniqueConstraint('stripe_monthly_price_id'),
@@ -38,6 +40,7 @@ def upgrade() -> None:
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('event_id', sa.String(length=255), nullable=False),
     sa.Column('created_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('event_id')
     )

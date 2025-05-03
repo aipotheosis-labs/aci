@@ -483,6 +483,16 @@ class Plan(Base):
     )
     features: Mapped[dict] = mapped_column(MutableDict.as_mutable(JSONB), nullable=False)
     is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+        init=False,
+    )
 
 
 class Subscription(Base):
@@ -530,6 +540,13 @@ class ProcessedStripeEvent(Base):
     event_id: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False, unique=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+        init=False,
     )
 
 
