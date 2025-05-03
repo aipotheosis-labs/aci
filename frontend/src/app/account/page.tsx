@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { createCustomerPortalSession } from "@/lib/api/billing";
 import { useSubscription } from "@/lib/tanstack-query-hooks/use-subscription";
-import { PlanName } from "@/lib/types/billing";
 import { useLogoutFunction } from "@propelauth/react";
 import Link from "next/link";
 import { BsStars } from "react-icons/bs";
@@ -192,7 +191,7 @@ export default function AccountPage() {
               <div className="flex-1">
                 <div className="flex justify-between p-4">
                   <div>
-                    {subscription?.plan === PlanName.Free ? (
+                    {subscription?.plan === "free" ? (
                       <Link href="/pricing">
                         <Button variant="outline">
                           <BsStars />

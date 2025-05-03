@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { IoMdCheckmark } from "react-icons/io";
-import { Interval, PlanName } from "@/lib/types/billing";
+import { Interval } from "@/lib/types/billing";
 import { useSubscription } from "@/lib/tanstack-query-hooks/use-subscription";
 import { createCheckoutSession } from "@/lib/api/billing";
 import { useMetaInfo } from "@/components/context/metainfo";
@@ -21,7 +21,7 @@ import { useRouter } from "next/navigation";
 
 const tiers = [
   {
-    name: PlanName.Free,
+    name: "free",
     id: "tier-free",
     priceMonthly: "$0",
     priceYearly: "$0",
@@ -38,7 +38,7 @@ const tiers = [
     buttonVariant: "default" as const,
   },
   {
-    name: PlanName.Starter,
+    name: "starter",
     id: "tier-starter",
     priceMonthly: "$29",
     priceYearly: "$299",
@@ -56,7 +56,7 @@ const tiers = [
     buttonVariant: "default" as const,
   },
   {
-    name: PlanName.Team,
+    name: "team",
     id: "tier-team",
     priceMonthly: "$99",
     priceYearly: "$999",
@@ -75,7 +75,7 @@ const tiers = [
     buttonVariant: "default" as const,
   },
   {
-    name: PlanName.Enterprise,
+    name: "enterprise",
     id: "tier-enterprise",
     priceMonthly: "Custom",
     description: "For large-scale applications with specific needs.",
@@ -100,7 +100,7 @@ export default function PricingPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (subscription && subscription.plan !== PlanName.Free) {
+    if (subscription && subscription.plan !== "free") {
       router.replace("/account");
     }
   }, [subscription, router]);

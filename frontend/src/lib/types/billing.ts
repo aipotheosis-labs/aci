@@ -1,11 +1,3 @@
-export enum PlanName {
-  Free = "free",
-  Starter = "starter",
-  Team = "team",
-  Growth = "growth",
-  Enterprise = "enterprise",
-}
-
 export enum Interval {
   Month = "month",
   Year = "year",
@@ -23,6 +15,6 @@ export enum SubscriptionStatus {
 }
 
 export interface Subscription {
-  plan: PlanName;
+  plan: string;
   status: SubscriptionStatus;
 }

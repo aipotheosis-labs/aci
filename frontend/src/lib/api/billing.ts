@@ -1,4 +1,4 @@
-import { Interval, PlanName, Subscription } from "@/lib/types/billing";
+import { Interval, Subscription } from "@/lib/types/billing";
 
 export async function getSubscription(
   accessToken: string,
@@ -25,7 +25,7 @@ export async function getSubscription(
 export async function createCheckoutSession(
   accessToken: string,
   orgId: string,
-  planName: PlanName,
+  planName: string,
   interval: Interval,
 ): Promise<string> {
   const response = await fetch(
