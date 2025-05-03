@@ -55,7 +55,7 @@ services:
     restart: no
 
   # can think of runner as an staging host for executing any commands
-  # e.g., run cli commands, run scripts such as seed db etc.
+  # e.g., run pytest, cli commands and scripts such as seed db etc.
   runner:
     build:
       context: .

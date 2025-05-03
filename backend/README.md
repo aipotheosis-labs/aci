@@ -112,7 +112,7 @@ For VS Code users, configure Ruff formatter:
    - `server`: Backend API service
    - `db`: PostgreSQL database
    - `aws`: LocalStack for mocking AWS services
-   - `runner`: Container for running commands like cli commands or scripts
+   - `runner`: Container for running commands like pytest, cli commands or scripts
 
 6. (Optional) Seed the database with sample data:
 
