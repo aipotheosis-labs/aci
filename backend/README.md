@@ -18,7 +18,7 @@ The backend component of ACI.dev provides the server infrastructure, API endpoin
     - [Running Tests](#running-tests)
   - [Database Management](#database-management)
     - [Working with Migrations](#working-with-migrations)
-  - [PropelAuth Webhooks (for local end-to-end development with frontend)](#propelauth-webhooks-for-local-end-to-end-development-with-frontend)
+  - [PropelAuth Webhooks](#propelauth-webhooks)
   - [Stripe Webhooks](#stripe-webhooks)
   - [Admin CLI](#admin-cli)
   - [Contributing](#contributing)
@@ -87,24 +87,20 @@ For VS Code users, configure Ruff formatter:
    pre-commit install
    ```
 
-4. Set up environment variables:
+4. Set up environment variables for **local** development:
 
    ```bash
-   cp .env.example .env
+   cp .env.example .env.local
    ```
 
-   There are 4 env vars you need to set in `.env`:
+   Most sensitive variables and dummy values are already defined in `.env.example`, so you only need to set the following env vars in `.env.local`:
 
-   - `SERVER_OPENAI_API_KEY`: create an API key yourself
-   - `CLI_OPENAI_API_KEY`: create an API key yourself
-   - `SERVER_PROPELAUTH_API_KEY`: we'll give you an API key if you are one of our approved
-     contributors. You can also create a PropelAuth Org yourself. See the [Webhooks](#webhooks-for-local-end-to-end-development-with-frontend)
+   - `SERVER_OPENAI_API_KEY`: Use your own OpenAI API key
+   - `SERVER_PROPELAUTH_AUTH_URL`: (Required if you need to develop or run the frontend) Use the auth url of your [PropelAuth Org](https://www.propelauth.com/)
+   - `SERVER_PROPELAUTH_API_KEY`: (Required if you need to develop or run the frontend) Use the API key of your PropelAuth Org. See the [PropelAuth Webhooks](#propelauth-webhooks)
      section for how to get an API key once you have access to a PropelAuth Org.
-   - `SERVER_SVIX_SIGNING_SECRET`: you don't need it if you aren't developing the dev
-     portal. But if you are, complete the [Webhooks](#webhooks-for-local-end-to-end-development-with-frontend)
-     section before moving on.
-
-   Note: Most insensitive variables are already defined in `.env.shared`
+   - `SERVER_SVIX_SIGNING_SECRET`: (Required if you need to develop or run the frontend). If you need to develop the frontend, complete the [PropelAuth Webhooks](#propelauth-webhooks) section before moving on.
+   - `CLI_OPENAI_API_KEY`: Use your own OpenAI API key (can be the same as `SERVER_OPENAI_API_KEY`)
 
 5. Start services with Docker Compose:
 
@@ -116,7 +112,7 @@ For VS Code users, configure Ruff formatter:
    - `server`: Backend API service
    - `db`: PostgreSQL database
    - `aws`: LocalStack for mocking AWS services
-   - `runner`: Container for running commands like tests or database seeds
+   - `runner`: Container for running commands like cli commands or scripts
 
 6. (Optional) Seed the database with sample data:
 
@@ -126,7 +122,7 @@ For VS Code users, configure Ruff formatter:
 
 7. (Optional) Connect to the database using a GUI client (e.g., `DBeaver`)
 
-   - Parameters for the db connection can be found in the `.env.shared` file
+   - Parameters for the db connection can be found in the `.env.local` file you created in step 4.
 
 8. Create a random API key for local development (step 6 also creates a random API key when you run the seed db script):
 
@@ -189,7 +185,10 @@ When making changes to database models:
    docker compose exec runner alembic downgrade -1
    ```
 
-## PropelAuth Webhooks (for local end-to-end development with frontend)
+## PropelAuth Webhooks
+
+> [!NOTE]
+> This is only needed if you need to develop or run the dev portal.
 
 If you are developing the dev portal, you would need a real `user` and `org` in the
 PropelAuth test environment as well as a default `project` and `agent` in your local db.
@@ -205,14 +204,13 @@ the local db.
    - Copy your public endpoint you just exposed from previous step and create a new endpoint in the [ngrok dashboard](https://dashboard.ngrok.com/endpoints) (e.g. <https://7c4c-2a06-5904-1e06-6a00-ddc6-68ce-ffae-8783.ngrok-free.app>)
 
 2. Configure PropelAuth:
-   - Go to the `aipolabs local` PropelAuth Org [dashboard](https://app.propelauth.com/proj/1b327933-ffbf-4a36-bd05-76cd896b0d56) if you have access, or create your own local dev
-   organization yourself if you don't.
-   - Go to the **Users** and **Organizations** tabs, delete your previously created user and organization. (Note: only delete your own user and org)
+   - Go to your PropelAuth Org [dashboard](https://app.propelauth.com/proj/1b327933-ffbf-4a36-bd05-76cd896b0d56)
+   - Go to the **Users** and **Organizations** tabs, delete your previously created user and organization. (Note: only delete the user and org you created previously)
      ![delete user](./images/delete-user.png)
      ![delete org](./images/delete-org.png)
    - If you don't have a PropelAuth API key already, go to the **Backend Integration** tab and
      create an API key for the test environment, set it as `SERVER_PROPELAUTH_API_KEY`
-     in `.env`.
+     in `.env.local`. (If you haven't done so in previous steps)
     ![propelauth-api-key](./images/propelauth-api-key.png)
    - Go to the **Integrations** tab on the dashboard, click Webhooks. And click **Set Up Webhooks** for the **TEST ENV**, which will lead you to [Svix endpoints](https://app.svix.com/app_2uuG50X13IEu2cVRRL5fnXOeWWv/endpoints)
     page.
@@ -220,22 +218,25 @@ the local db.
    - Click `Add Endpoint`, put `<your_gnrok_public_endpoint>/v1/webhooks/auth/user-created` as the endpoint and subscribe to the `user.created` event. Hit Create.
     ![svix](./images/svix.png)
    - Copy the `Signing Secret` of the endpoint and set it as `SERVER_SVIX_SIGNING_SECRET`
-    in `.env`.
+    in `.env.local`.
     ![svix](./images/svix-signing-secret.png)
    - Go back to the [Getting Started](#getting-started) section step 5 to bring up
      docker compose
 
 ## Stripe Webhooks
 
+> [!NOTE]
+> This is only needed if you need to develop the stripe billing features.
+
 1. Download the [Stripe CLI](https://docs.stripe.com/stripe-cli#install)
 
-1. Log into our Stripe Sandbox with the CLI
+2. Log into our Stripe Sandbox with the CLI
 
    ```shell
    stripe login
    ```
 
-2. Set up webhooks with the Stripe CLI and get the webhook signing secret. By default,
+3. Set up webhooks with the Stripe CLI and get the webhook signing secret. By default,
 all events in the Sandbox will be forwarded to the local webhook endpoint. You can also
 use `--event` flag to filter the set of events you want to listen to.
 
@@ -244,7 +245,7 @@ use `--event` flag to filter the set of events you want to listen to.
    > Ready! You are using Stripe API Version [2025-02-24.acacia]. Your webhook signing secret is whsec_3b397734bb0362eac34a9611cc842f4a8cfb8f0e38eccf7ee666b09ac3aeec52
    ```
 
-1. Set the following two env vars in `.env`:
+4. Set the following two env vars in `.env.local`:
 
    - `SERVER_STRIPE_SECRET_KEY`: get it from the [Stripe dashboard](https://support.stripe.com/questions/what-are-stripe-api-keys-and-how-to-find-them)
    - `SERVER_STRIPE_WEBHOOK_SIGNING_SECRET`: get it from the output of the `stripe
