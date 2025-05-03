@@ -1,4 +1,5 @@
 # type: ignore
+# ruff: noqa
 
 from typing import Any
 

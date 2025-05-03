@@ -51,9 +51,6 @@ jobs:
     timeout-minutes: 30
     env:
       SERVER_OPENAI_API_KEY: ${{ secrets.SERVER_OPENAI_API_KEY }}
-      SERVER_PROPELAUTH_AUTH_URL: ${{ secrets.SERVER_PROPELAUTH_AUTH_URL }}
-      SERVER_PROPELAUTH_API_KEY: ${{ secrets.SERVER_PROPELAUTH_API_KEY }}
-      SERVER_SVIX_SIGNING_SECRET: ${{ secrets.SERVER_SVIX_SIGNING_SECRET }}
       CLI_OPENAI_API_KEY: ${{ secrets.CLI_OPENAI_API_KEY }}
 
     steps:

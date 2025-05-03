@@ -74,20 +74,20 @@ For VS Code users, configure Ruff formatter:
    cd aci/backend
    ```
 
-2. Install dependencies and activate virtual environment:
+1. Install dependencies and activate virtual environment:
 
    ```bash
    uv sync
    source .venv/bin/activate
    ```
 
-3. Install `pre-commit` hooks:
+1. Install `pre-commit` hooks:
 
    ```bash
    pre-commit install
    ```
 
-4. Set up environment variables for **local** development:
+1. Set up environment variables for **local** development:
 
    ```bash
    cp .env.example .env.local
@@ -96,13 +96,9 @@ For VS Code users, configure Ruff formatter:
    Most sensitive variables and dummy values are already defined in `.env.example`, so you only need to set the following env vars in `.env.local`:
 
    - `SERVER_OPENAI_API_KEY`: Use your own OpenAI API key
-   - `SERVER_PROPELAUTH_AUTH_URL`: (Required if you need to develop or run the frontend) Use the auth url of your [PropelAuth Org](https://www.propelauth.com/)
-   - `SERVER_PROPELAUTH_API_KEY`: (Required if you need to develop or run the frontend) Use the API key of your PropelAuth Org. See the [PropelAuth Webhooks](#propelauth-webhooks)
-     section for how to get an API key once you have access to a PropelAuth Org.
-   - `SERVER_SVIX_SIGNING_SECRET`: (Required if you need to develop or run the frontend). If you need to develop the frontend, complete the [PropelAuth Webhooks](#propelauth-webhooks) section before moving on.
    - `CLI_OPENAI_API_KEY`: Use your own OpenAI API key (can be the same as `SERVER_OPENAI_API_KEY`)
 
-5. Start services with Docker Compose:
+1. Start services with Docker Compose:
 
    ```bash
    docker compose up --build
@@ -114,36 +110,40 @@ For VS Code users, configure Ruff formatter:
    - `aws`: LocalStack for mocking AWS services
    - `runner`: Container for running commands like pytest, cli commands or scripts
 
-6. (Optional) Seed the database with sample data:
+1. Seed the database with sample data:
 
    ```bash
    docker compose exec runner ./scripts/seed_db.sh
    ```
 
-7. (Optional) Connect to the database using a GUI client (e.g., `DBeaver`)
+   The script will output an API key that you can use on the swagger UI or sending HTTP
+   requests to the local backend server directly.
+
+1. (Optional) Connect to the database using a GUI client (e.g., `DBeaver`)
 
    - Parameters for the db connection can be found in the `.env.local` file you created in step 4.
 
-8. Create a random API key for local development (step 6 also creates a random API key when you run the seed db script):
-
-   ```bash
-   docker compose exec runner python -m aci.cli create-random-api-key --visibility-access public
-   ```
-
-9. Access the API documentation at:
+1. Access the API documentation at:
 
    ```bash
    http://localhost:8000/v1/notforhuman-docs
    ```
 
-10. (Optional) If you are developing the dev portal, follow the instructions on [frontend README](../frontend/README.md) to start the dev portal.
+1. (Optional) If you are developing the dev portal, follow the instructions on [frontend README](../frontend/README.md) to start the dev portal.
 
-11. (Optional) If you are developing Stripe related billing features, follow the
+1. (Optional) If you are developing Stripe related billing features, follow the
     [Stripe Webhooks](#stripe-webhooks) section.
 
 ### Running Tests
 
-Ensure the `db` service is running and the database is empty (in case you have seeded the db in the previous steps) before running tests:
+Ensure the `db` service is running and the database is empty (in case you have seeded
+the db in `step 6`) before running tests.
+
+More specifically, if you have run the `seed_db.sh` script already, you need to bring
+down docker compose and bring it up again without running the `seed_db.sh` script this
+time.
+
+Then you can run the test in the `runner` container:
 
 ```bash
 docker compose exec runner pytest
@@ -188,10 +188,16 @@ When making changes to database models:
 ## PropelAuth Webhooks
 
 > [!NOTE]
-> This is only needed if you need to develop or run the dev portal.
+> This is only needed if you need to develop PropelAuth related features.
 
 If you are developing the dev portal, you would need a real `user` and `org` in the
 PropelAuth test environment as well as a default `project` and `agent` in your local db.
+
+You would need to replace a few dummy values with real values in `.env.local`:
+
+- `SERVER_PROPELAUTH_AUTH_URL`
+- `SERVER_PROPELAUTH_API_KEY`
+- `SERVER_SVIX_SIGNING_SECRET`
 
 Follow the steps here to set up the webhooks so that when you sign up on the PropelAuth
 test environment, PropelAuth will notify your local server to create an org in the
@@ -204,7 +210,8 @@ the local db.
    - Copy your public endpoint you just exposed from previous step and create a new endpoint in the [ngrok dashboard](https://dashboard.ngrok.com/endpoints) (e.g. <https://7c4c-2a06-5904-1e06-6a00-ddc6-68ce-ffae-8783.ngrok-free.app>)
 
 2. Configure PropelAuth:
-   - Go to your PropelAuth Org [dashboard](https://app.propelauth.com/proj/1b327933-ffbf-4a36-bd05-76cd896b0d56)
+   - Go to your PropelAuth Org [dashboard](https://app.propelauth.com/proj/1b327933-ffbf-4a36-bd05-76cd896b0d56) (the link here is ours, you would need your own)
+   - In the Frontend Integrations tab, you can find an Auth URL, copy that URL and use it to replace the dummy value of `SERVER_PROPELAUTH_AUTH_URL` in `.env.local`
    - Go to the **Users** and **Organizations** tabs, delete your previously created user and organization. (Note: only delete the user and org you created previously)
      ![delete user](./images/delete-user.png)
      ![delete org](./images/delete-org.png)

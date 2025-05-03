@@ -4,14 +4,10 @@ services:
   server:
     environment:
       - SERVER_OPENAI_API_KEY=${SERVER_OPENAI_API_KEY?}
-      - SERVER_PROPELAUTH_AUTH_URL=${SERVER_PROPELAUTH_AUTH_URL?}
-      - SERVER_PROPELAUTH_API_KEY=${SERVER_PROPELAUTH_API_KEY?}
       - CLI_OPENAI_API_KEY=${CLI_OPENAI_API_KEY?}
   runner:
     environment:
       - SERVER_OPENAI_API_KEY=${SERVER_OPENAI_API_KEY?}
-      - SERVER_PROPELAUTH_AUTH_URL=${SERVER_PROPELAUTH_AUTH_URL?}
-      - SERVER_PROPELAUTH_API_KEY=${SERVER_PROPELAUTH_API_KEY?}
       - CLI_OPENAI_API_KEY=${CLI_OPENAI_API_KEY?}
     command: >
       /bin/sh -c "alembic upgrade head && uv run pytest"
