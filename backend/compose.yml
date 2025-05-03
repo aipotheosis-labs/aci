@@ -27,6 +27,17 @@ services:
     volumes:
       - ./scripts/create-kms-encryption-key.sh:/etc/localstack/init/ready.d/create-kms-encryption-key.sh
 
+  propelauth_mock:
+    build:
+      context: .
+      dockerfile: Dockerfile.runner
+    ports:
+      - "12800:12800"
+    working_dir: /workdir
+    volumes:
+      - ./mock/propelauth_mock_server.py:/workdir/propelauth_mock_server.py
+    command: uvicorn propelauth_mock_server:app --proxy-headers --forwarded-allow-ips=* --host 0.0.0.0 --port 12800 --reload
+
   server:
     build:
       context: .
@@ -43,6 +54,8 @@ services:
     volumes:
       - ./aci/server:/workdir/aci/server
       - ./aci/common:/workdir/aci/common
+      # Mocks out the propelauth_fastapi module in server container to bypass token validation in local development
+      - ./mock/propelauth_fastapi_mock.py:/workdir/.venv/lib/python3.12/site-packages/propelauth_fastapi/__init__.py
     ports:
       - "8000:8000"
     # this overrides the default CMD specified in the Dockerfile, use this for local development

@@ -64,6 +64,11 @@ parse_arguments() {
 # Call our argument parser
 parse_arguments "$@"
 
+# Seed the database with a user resource
+if [ "$SEED_USER" = true ]; then
+  python -m aci.cli.aci create-random-api-key --visibility-access public --org-id 107e06da-e857-4864-bc1d-4adcba02ab76
+fi
+
 # Seed the database with Plans
 if [ "$SEED_PLANS" = true ]; then
   python -m aci.cli populate-subscription-plans --skip-dry-run
@@ -96,9 +101,4 @@ if [ "$SEED_FUNCTIONS" = true ]; then
       --functions-file "$functions_file" \
       --skip-dry-run
   done
-fi
-
-# Seed the database with a user resource
-if [ "$SEED_USER" = true ]; then
-  python -m aci.cli create-random-api-key --visibility-access public
 fi

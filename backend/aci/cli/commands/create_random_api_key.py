@@ -30,13 +30,20 @@ console = Console()
     type=Visibility,
     help="visibility access of the project that the api key belongs to, either 'public' or 'private'",
 )
+@click.option(
+    "--org-id",
+    "org_id",
+    required=False,
+    type=uuid.UUID,
+    help="organization id",
+)
 @click.command()
-def create_random_api_key(visibility_access: Visibility) -> str:
+def create_random_api_key(visibility_access: Visibility, org_id: uuid.UUID | None) -> str:
     """Create a random test api key for local development."""
-    return create_random_api_key_helper(visibility_access)
+    return create_random_api_key_helper(visibility_access, org_id)
 
 
-def create_random_api_key_helper(visibility_access: Visibility) -> str:
+def create_random_api_key_helper(visibility_access: Visibility, org_id: uuid.UUID | None) -> str:
     # can not do dry run because of the dependencies
     skip_dry_run = True
 
@@ -44,7 +51,7 @@ def create_random_api_key_helper(visibility_access: Visibility) -> str:
 
     project_id = create_project.create_project_helper(
         name=f"Test Project {random_id}",
-        org_id=uuid.uuid4(),
+        org_id=org_id or uuid.uuid4(),
         visibility_access=visibility_access,
         skip_dry_run=skip_dry_run,
     )
