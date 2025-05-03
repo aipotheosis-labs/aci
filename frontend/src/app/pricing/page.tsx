@@ -219,6 +219,11 @@ export default function PricingPage() {
                   variant={tier.buttonVariant}
                   disabled={subscription?.plan === tier.name}
                   onClick={async () => {
+                    if (tier.name === "enterprise") {
+                      window.location.href = "mailto:support@aipolabs.xyz";
+                      return;
+                    }
+
                     const url = await createCheckoutSession(
                       accessToken,
                       activeOrg.orgId,

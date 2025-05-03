@@ -70,4 +70,8 @@ def downgrade() -> None:
     op.drop_table('subscriptions')
     op.drop_table('processed_stripe_events')
     op.drop_table('plans')
+
+    # Drop all the enums created by this migration
+    op.execute("DROP TYPE IF EXISTS stripe_subscription_status")
+    op.execute("DROP TYPE IF EXISTS stripe_subscription_interval")
     # ### end Alembic commands ###

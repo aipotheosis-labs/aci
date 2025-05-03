@@ -103,6 +103,8 @@ async def create_checkout_session(
             mode="subscription",
             client_reference_id=str(org_id),
             ui_mode="hosted",
+            billing_address_collection="required",
+            customer_email=user.email,
             metadata=StripeSubscriptionMetadata(
                 org_id=org_id,
                 checkout_user_id=user.user_id,
