@@ -1,4 +1,0 @@
-services:
-  runner:
-    command: >
-      /bin/sh -c "alembic upgrade head && uv run pytest"

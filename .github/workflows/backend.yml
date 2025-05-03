@@ -61,6 +61,11 @@ jobs:
       - name: Set up Docker Compose
         uses: docker/setup-compose-action@v1
 
+      - name: Copy .env.example to .env.local
+        working-directory: backend
+        run: |
+          cp .env.example .env.local
+
       - name: Run compose test
         id: run_tests
         working-directory: backend
