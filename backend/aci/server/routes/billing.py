@@ -266,7 +266,10 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
     error and return an error code. If it does match, no-op.
     5. Create the new Subscription record
     """
-    logger.info(f"Handling checkout.session.completed event: {session_data}")
+    logger.info(
+        "Handling checkout.session.completed event",
+        extra={"session_data": session_data},
+    )
     # TODO: find out how to use the construct_from method
     # session = stripe.checkout.Session.construct_from(session_data, None)
 
@@ -288,9 +291,15 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
     # 2. Retrieve the subscription details from Stripe
     try:
         stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id)
-        logger.info(f"Retrieved subscription {stripe_subscription_id} for checkout session.")
+        logger.info(
+            "Retrieved subscription",
+            extra={"stripe_subscription_id": stripe_subscription_id},
+        )
     except stripe.StripeError as e:
-        logger.error(f"Failed to retrieve subscription {stripe_subscription_id}: {e}")
+        logger.error(
+            "Failed to retrieve subscription",
+            extra={"stripe_subscription_id": stripe_subscription_id, "error": e},
+        )
         raise BillingError() from e
 
     subscription_details = _parse_stripe_subscription_details(stripe_subscription)
@@ -562,6 +571,10 @@ def _parse_stripe_subscription_details(
     Parse the Stripe subscription details from a Stripe subscription dict based on the
     schema: https://docs.stripe.com/api/subscriptions/retrieve?lang=python
     """
+    logger.info(
+        "Parsing Stripe subscription details",
+        extra={"subscription_data": subscription_data},
+    )
     stripe_subscription_id = subscription_data.get("id")
     stripe_customer_id = subscription_data.get("customer")
     status = subscription_data.get("status")
