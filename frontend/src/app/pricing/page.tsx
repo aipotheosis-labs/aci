@@ -95,15 +95,18 @@ const tiers = [
 
 export default function PricingPage() {
   const { data: subscription } = useSubscription();
-  const { accessToken, activeOrg } = useMetaInfo();
+  const { accessToken, activeOrg, user } = useMetaInfo();
   const [isYearly, setIsYearly] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    if (subscription && subscription.plan !== "free") {
+    if (
+      (subscription && subscription.plan !== "free") ||
+      !user.email.endsWith("@aipolabs.xyz")
+    ) {
       router.replace("/account");
     }
-  }, [subscription, router]);
+  }, [subscription, router, user.email]);
 
   // TODO: Enterprise button should have a mail popup
   return (
