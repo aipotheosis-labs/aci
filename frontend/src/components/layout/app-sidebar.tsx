@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
 import { ProjectSelector } from "./project-selector";
-import { PiStorefront } from "react-icons/pi";
+import { PiStorefront, PiBrainLight } from "react-icons/pi";
 import {
   RiSettings3Line,
   RiSettings4Line,
@@ -64,6 +64,11 @@ export const sidebarItems = [
     title: "Agent Playground",
     url: `/playground`,
     icon: HiOutlineChatBubbleBottomCenterText,
+  },
+  {
+    title: "Agents",
+    url: `/agents`,
+    icon: PiBrainLight,
   },
   {
     title: "Usage",
