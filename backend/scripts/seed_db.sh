@@ -10,8 +10,6 @@ Options:
   -h, --help   Display this help message
   -a, --all    Seed all available Apps and Functions (without this flag, it will seed only a selected set of Apps and their Functions (with dummy OAuth2 client id & secret if it's OAuth2 app))
 
-
-If no arguments are provided, the script will seed everything.
 EOF
 }
 
