@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useAppFunctionsColumns } from "@/components/apps/useAppFunctionsColumns";
 import { Separator } from "@/components/ui/separator";
 import { useParams } from "next/navigation";
@@ -13,12 +13,10 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { type AppFunction } from "@/lib/types/appfunction";
-import { type App } from "@/lib/types/app";
 import { toast } from "sonner";
 import { AppConfig } from "@/lib/types/appconfig";
 import { getApiKey } from "@/lib/api/util";
-import { getApp } from "@/lib/api/app";
-import { getFunctionsForApp } from "@/lib/api/appfunction";
+import { useApp } from "@/hooks/use-app";
 import {
   AppAlreadyConfiguredError,
   createAppConfig,
@@ -30,13 +28,39 @@ import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-tabl
 import { useMetaInfo } from "@/components/context/metainfo";
 
 const AppPage = () => {
-  const { appName } = useParams<{ appName: string }>();
   const { activeProject } = useMetaInfo();
-  const [app, setApp] = useState<App | null>(null);
+  const { appName } = useParams<{ appName: string }>();
   const [functions, setFunctions] = useState<AppFunction[]>([]);
   const [appConfig, setAppConfig] = useState<AppConfig | null>(null);
 
+  const { app } = useApp(appName);
+
   const columns = useAppFunctionsColumns();
+
+  useEffect(() => {
+    if (app) {
+      setFunctions(app.functions);
+    }
+  }, [app]);
+
+  const loadAppConfig = useCallback(async () => {
+    // TODO: replace with TanStack Query
+    const apiKey = getApiKey(activeProject);
+    const appConfig = await getAppConfig(appName, apiKey);
+    setAppConfig(appConfig);
+  }, [activeProject, appName]);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        await loadAppConfig();
+      } catch (error) {
+        console.error("Error fetching app data:", error);
+      }
+    }
+
+    loadData();
+  }, [loadAppConfig]);
 
   const configureApp = async (security_scheme: string) => {
     const apiKey = getApiKey(activeProject);
@@ -57,27 +81,6 @@ const AppPage = () => {
       }
     }
   };
-
-  useEffect(() => {
-    async function loadData() {
-      try {
-        const apiKey = getApiKey(activeProject);
-
-        const app = await getApp(appName, apiKey);
-        setApp(app);
-
-        const functions = await getFunctionsForApp(appName, apiKey);
-        setFunctions(functions);
-
-        const appConfig = await getAppConfig(appName, apiKey);
-        setAppConfig(appConfig);
-      } catch (error) {
-        console.error("Error fetching app data:", error);
-      }
-    }
-
-    loadData();
-  }, [appName, activeProject]);
 
   return (
     <div>
