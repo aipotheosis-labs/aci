@@ -17,8 +17,6 @@ import {
 } from "@/components/ui/tooltip";
 import { useCallback, useEffect, useState } from "react";
 import { getApiKey } from "@/lib/api/util";
-import { App } from "@/lib/types/app";
-import { getAllApps } from "@/lib/api/app";
 import { useAgentsTableColumns } from "@/components/project/useAgentsTableColumns";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { Agent } from "@/lib/types/project";
@@ -30,7 +28,6 @@ import { getAllAppConfigs } from "@/lib/api/appconfig";
 export default function ProjectSettingPage() {
   const { accessToken, activeProject, reloadActiveProject } = useMetaInfo();
   const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
-  const [apps, setApps] = useState<App[]>([]);
   const [loading, setLoading] = useState(false);
 
   const loadAppConfigs = useCallback(async () => {
@@ -40,8 +37,6 @@ export default function ProjectSettingPage() {
     try {
       const configs = await getAllAppConfigs(apiKey);
       setAppConfigs(configs);
-      const apps = await getAllApps(apiKey);
-      setApps(apps);
     } catch (error) {
       console.error("Error fetching apps:", error);
     } finally {
@@ -185,7 +180,9 @@ export default function ProjectSettingPage() {
             <div className="flex items-center gap-2">
               <AgentForm
                 title="Create Agent"
-                validAppNames={apps.map((app) => app.name)}
+                validAppNames={appConfigs.map(
+                  (appConfig) => appConfig.app_name,
+                )}
                 appConfigs={appConfigs}
                 onRequestRefreshAppConfigs={loadAppConfigs}
                 onSubmit={async (values) => {
