@@ -99,7 +99,7 @@ seed_required_data() {
 
   # Seed the database with a default project and a default agent. The command will
   # output the API key of that agent that can be used in the swagger UI.
-  python -m aci.cli.aci create-random-api-key --visibility-access public --org-id 107e06da-e857-4864-bc1d-4adcba02ab76
+  python -m aci.cli create-random-api-key --visibility-access public --org-id 107e06da-e857-4864-bc1d-4adcba02ab76
 }
 
 # Execute the script functions
