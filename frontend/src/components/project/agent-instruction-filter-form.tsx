@@ -19,14 +19,12 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { getAllAppConfigs } from "@/lib/api/appconfig";
-import { getAllApps } from "@/lib/api/app";
 import { updateAgent } from "@/lib/api/agent";
 import { AppConfig } from "@/lib/types/appconfig";
-import { App } from "@/lib/types/app";
 import { getApiKey } from "@/lib/api/util";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
-
+import { useApps } from "@/hooks/use-app";
 interface AgentInstructionFilterFormProps {
   children: React.ReactNode;
   projectId: string;
@@ -48,7 +46,7 @@ export function AgentInstructionFilterForm({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
-  const [apps, setApps] = useState<App[]>([]);
+  const { data: apps, isPending, isError } = useApps();
   const [instructions, setInstructions] =
     useState<Record<string, string>>(initialInstructions);
 
@@ -64,10 +62,6 @@ export function AgentInstructionFilterForm({
         // Get App configurations
         const configs = await getAllAppConfigs(apiKey);
         setAppConfigs(configs);
-
-        // Get App data
-        const appsData = await getAllApps(apiKey);
-        setApps(appsData);
 
         setLoading(false);
       } catch (error) {
@@ -217,7 +211,7 @@ export function AgentInstructionFilterForm({
 
   // Match App name with app_name from AppConfig
   const getMatchingApp = (appConfigName: string) => {
-    return apps.find((app) => app.name === appConfigName);
+    return apps?.find((app) => app.name === appConfigName);
   };
 
   // Filter app configs to only show those in allowedApps
@@ -243,7 +237,7 @@ export function AgentInstructionFilterForm({
 
         <Separator className="my-4" />
 
-        {loading ? (
+        {loading || isPending || isError ? (
           <div className="flex justify-center py-6">
             <p>Loading...</p>
           </div>

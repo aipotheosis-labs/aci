@@ -8,15 +8,15 @@ import { Separator } from "@/components/ui/separator";
 import { getApiKey } from "@/lib/api/util";
 import { getAllAppConfigs } from "@/lib/api/appconfig";
 import { App } from "@/lib/types/app";
-import { getApps } from "@/lib/api/app";
 import { getAppLinkedAccounts } from "@/lib/api/linkedaccount";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { useAppConfigsTableColumns } from "@/components/appconfig/useAppConfigsTableColumns";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
-
+import { useApps } from "@/hooks/use-app";
 export default function AppConfigPage() {
   const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
   const [appsMap, setAppsMap] = useState<Record<string, App>>({});
+  const { data: apps } = useApps();
   const [linkedAccountsCountMap, setLinkedAccountsCountMap] = useState<
     Record<string, number>
   >({});
@@ -25,12 +25,13 @@ export default function AppConfigPage() {
   const { activeProject } = useMetaInfo();
 
   const loadAllData = useCallback(async () => {
-    const apiKey = getApiKey(activeProject);
+    if (!apps) {
+      return;
+    }
+
     try {
-      const [configs, apps] = await Promise.all([
-        getAllAppConfigs(apiKey),
-        getApps([], apiKey),
-      ]);
+      const apiKey = getApiKey(activeProject);
+      const configs = await getAllAppConfigs(apiKey);
 
       const appsMapData = apps.reduce(
         (acc, app) => {
@@ -56,7 +57,7 @@ export default function AppConfigPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [activeProject]);
+  }, [activeProject, apps]);
 
   useEffect(() => {
     loadAllData();

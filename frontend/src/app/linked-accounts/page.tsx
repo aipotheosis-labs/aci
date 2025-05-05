@@ -12,7 +12,6 @@ import {
   deleteLinkedAccount,
   updateLinkedAccount,
 } from "@/lib/api/linkedaccount";
-import { getApps } from "@/lib/api/app";
 import { getAllAppConfigs } from "@/lib/api/appconfig";
 import {
   AlertDialog,
@@ -48,43 +47,36 @@ export default function LinkedAccountsPage() {
   const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
   const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [appsMap, setAppsMap] = useState<Record<string, App>>({});
   const { data: apps, isPending, isError } = useApps();
+  const [appsMap, setAppsMap] = useState<Record<string, App>>({});
 
   const loadAppMaps = useCallback(async () => {
-    if (linkedAccounts.length === 0) {
+    if (linkedAccounts.length === 0 || !apps) {
       return;
     }
 
-    try {
-      const apiKey = getApiKey(activeProject);
-      const appNames = Array.from(
-        new Set(linkedAccounts.map((account) => account.app_name)),
-      );
+    const appNames = Array.from(
+      new Set(linkedAccounts.map((account) => account.app_name)),
+    );
 
-      const apps = await getApps(appNames, apiKey);
+    const missingApps = appNames.filter(
+      (name) => !apps.some((app) => app.name === name),
+    );
 
-      const missingApps = appNames.filter(
-        (name) => !apps.some((app) => app.name === name),
-      );
-
-      if (missingApps.length > 0) {
-        console.warn(`Missing apps: ${missingApps.join(", ")}`);
-      }
-
-      setAppsMap(
-        apps.reduce(
-          (acc, app) => {
-            acc[app.name] = app;
-            return acc;
-          },
-          {} as Record<string, App>,
-        ),
-      );
-    } catch (error) {
-      console.error("Failed to load app data:", error);
+    if (missingApps.length > 0) {
+      console.warn(`Missing apps: ${missingApps.join(", ")}`);
     }
-  }, [activeProject, linkedAccounts]);
+
+    setAppsMap(
+      apps.reduce(
+        (acc, app) => {
+          acc[app.name] = app;
+          return acc;
+        },
+        {} as Record<string, App>,
+      ),
+    );
+  }, [linkedAccounts, apps]);
 
   /**
    * Generate tableData and attach the logo from appsMap to each row of data.
