@@ -116,8 +116,49 @@ For VS Code users, configure Ruff formatter:
    docker compose exec runner ./scripts/seed_db.sh
    ```
 
-   The script will output an API key that you can use on the swagger UI or sending HTTP
-   requests to the local backend server directly.
+   The script will seed the database with below dummy data for local end-to-end development.
+   - A default project and agent (with an API key)
+   - Sample Apps and their functions
+     - `Brave Search`
+     - `Hacker News`
+     - `Gmail` (with dummy OAuth2 credentials)
+
+   The script will output an API key like below that you can use on the swagger UI, SDK, or
+   sending HTTP requests to the local backend server directly.
+
+   ```
+   {
+      'Project Id': '65cf26b9-a919-4008-85de-ecb850c3fc36',
+      'Agent Id': '74273ac1-f68e-4314-b8be-fee4a5855d8a',
+      'API Key': '88c55e31e817bd2d48aa455e94b61e766fb6e6610c97abe6f724733bf222e3e0'
+   }
+   ```
+
+   > [!NOTE]
+   > If you want to seed the database with all available apps, run the script with the `--all` flag.
+   > But you'll have to manually create a secrets file `.app.secrets.json`
+   > for each app that has OAuth2 scheme and put the OAuth2 credentials in that file, and the
+   > insertion process might take a while.
+   > See the example secrets file below for the `GMAIL` app.
+
+   ```bash
+   # put this in a file called .app.secrets.json under ./apps/gmail/
+   {
+      "AIPOLABS_GOOGLE_APP_CLIENT_ID": "<your_google_oauth2_client_id>",
+      "AIPOLABS_GOOGLE_APP_CLIENT_SECRET": "<your_google_oauth2_client_secret>"
+   }
+   ```
+
+1. (Optional) If you want to seed the database with specific `Apps` and `Functions`, use the cli command directly.
+   > [!NOTE]
+   > Add the `--skip-dry-run` flag to the commands below to actually insert the data into the database.
+
+   ```bash
+   # create app (--secrets-file is only needed for apps that have OAuth2 scheme)
+   docker compose exec runner python -m aci.cli upsert-app --app-file ./apps/gmail/app.json --secrets-file ./apps/gmail/.app.secrets.json
+   # create functions
+   docker compose exec runner python -m aci.cli upsert-functions --functions-file ./apps/gmail/functions.json
+   ```
 
 1. (Optional) Connect to the database using a GUI client (e.g., `DBeaver`)
 
@@ -139,9 +180,10 @@ For VS Code users, configure Ruff formatter:
 Ensure the `db` service is running and the database is empty (in case you have seeded
 the db in `step 6`) before running tests.
 
-More specifically, if you have run the `seed_db.sh` script already, you need to bring
-down docker compose and bring it up again without running the `seed_db.sh` script this
-time.
+> [!NOTE]
+> More specifically, if you have run the `seed_db.sh` script already, you need to bring
+> down docker compose and bring it up again without running the `seed_db.sh` script this
+> time.
 
 Then you can run the test in the `runner` container:
 
