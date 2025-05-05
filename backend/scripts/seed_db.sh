@@ -70,33 +70,29 @@ EOF
 
 seed_all_apps() {
   # Seed the database with Apps
-  if [ "$SEED_ALL" = true ]; then
-    for app_dir in ./apps/*/; do
-      app_file="${app_dir}app.json"
-      secrets_file="${app_dir}.app.secrets.json"
+  for app_dir in ./apps/*/; do
+    app_file="${app_dir}app.json"
+    secrets_file="${app_dir}.app.secrets.json"
 
-      # Check if secrets file exists and construct command accordingly
-      if [ -f "$secrets_file" ]; then
-        python -m aci.cli upsert-app \
-          --app-file "$app_file" \
-          --secrets-file "$secrets_file" \
-          --skip-dry-run
-      else
-        python -m aci.cli upsert-app \
-          --app-file "$app_file" \
-          --skip-dry-run
-      fi
-    done
-  fi
+    # Check if secrets file exists and construct command accordingly
+    if [ -f "$secrets_file" ]; then
+      python -m aci.cli upsert-app \
+        --app-file "$app_file" \
+        --secrets-file "$secrets_file" \
+        --skip-dry-run
+    else
+      python -m aci.cli upsert-app \
+        --app-file "$app_file" \
+        --skip-dry-run
+    fi
+  done
 
   # Seed the database with Functions
-  if [ "$SEED_FUNCTIONS" = true ]; then
-    for functions_file in ./apps/*/functions.json; do
-      python -m aci.cli upsert-functions \
-        --functions-file "$functions_file" \
-        --skip-dry-run
-    done
-  fi
+  for functions_file in ./apps/*/functions.json; do
+    python -m aci.cli upsert-functions \
+      --functions-file "$functions_file" \
+      --skip-dry-run
+  done
 }
 
 seed_required_data() {
