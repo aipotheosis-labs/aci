@@ -39,7 +39,7 @@ import { ArrowUpDown } from "lucide-react";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 const columnHelper = createColumnHelper<TableData>();
-import { getAllApps } from "@/lib/api/app";
+import { useApps } from "@/hooks/use-app";
 
 type TableData = LinkedAccount & { logo: string };
 
@@ -49,7 +49,7 @@ export default function LinkedAccountsPage() {
   const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [appsMap, setAppsMap] = useState<Record<string, App>>({});
-  const [allApps, setAllApps] = useState<App[]>([]);
+  const { data: apps, isPending, isError } = useApps();
 
   const loadAppMaps = useCallback(async () => {
     if (linkedAccounts.length === 0) {
@@ -111,14 +111,6 @@ export default function LinkedAccountsPage() {
     }
   }, [activeProject]);
 
-  useEffect(() => {
-    const fetchAllApps = async () => {
-      const apiKey = getApiKey(activeProject);
-      const apps = await getAllApps(apiKey);
-      setAllApps(apps);
-    };
-    fetchAllApps();
-  }, [activeProject]);
   const refreshLinkedAccounts = useCallback(
     async (silent: boolean = false) => {
       try {
@@ -376,11 +368,11 @@ export default function LinkedAccountsPage() {
           </p>
         </div>
         <div>
-          {!isLoading && appConfigs.length > 0 && (
+          {!isLoading && !isPending && !isError && appConfigs.length > 0 && (
             <AddAccountForm
               appInfos={appConfigs.map((config) => ({
                 name: config.app_name,
-                logo: allApps.find((app) => app.name === config.app_name)?.logo,
+                logo: apps.find((app) => app.name === config.app_name)?.logo,
                 securitySchemes: [config.security_scheme],
               }))}
               updateLinkedAccounts={() => refreshLinkedAccounts(true)}
