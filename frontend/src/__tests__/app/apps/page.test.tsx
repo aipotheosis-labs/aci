@@ -1,18 +1,13 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import AppStorePage from "@/app/apps/page";
-import { getAllApps } from "@/lib/api/app";
-import { useMetaInfo } from "@/components/context/metainfo";
-import { OrgMemberInfoClass } from "@propelauth/react";
-import { Project } from "@/lib/types/project";
+import { useApps } from "@/hooks/use-app";
+import { App } from "@/lib/types/app";
+import { UseQueryResult } from "@tanstack/react-query";
 
-// Mock the modules
-vi.mock("@/components/context/metainfo", () => ({
-  useMetaInfo: vi.fn(),
-}));
-vi.mock("@/lib/api/app");
-vi.mock("@/lib/api/util", () => ({
-  getApiKey: vi.fn(() => "test-api-key"),
+// Mock the useApps hook
+vi.mock("@/hooks/use-app", () => ({
+  useApps: vi.fn(),
 }));
 
 describe("AppStorePage", () => {
@@ -20,49 +15,45 @@ describe("AppStorePage", () => {
     vi.clearAllMocks();
   });
 
-  it("loads and displays apps when project is available", async () => {
-    // Mock the MetaInfo context - Changed
-    vi.mocked(useMetaInfo).mockReturnValue({
-      activeProject: {
-        id: "123",
-        name: "Test Project",
-        owner_id: "owner-1",
-        visibility_access: "private",
-        daily_quota_used: 0,
-        daily_quota_reset_at: "2024-01-01",
-        total_quota_used: 0,
-        created_at: "2024-01-01",
-        updated_at: "2024-01-01",
-        agents: [],
-      },
-      accessToken: "test-token",
-      // Add other required fields from MetaInfoContextType with dummy values
-      reloadActiveProject: vi.fn(),
-      setActiveProject: vi.fn(),
-      orgs: [],
-      activeOrg: {
-        orgId: "org-123",
-        orgName: "Test Org",
-      } as OrgMemberInfoClass,
-      setActiveOrg: vi.fn(),
-      projects: [
-        {
-          id: "123",
-          name: "Test Project",
-          owner_id: "owner-1",
-          visibility_access: "private",
-          daily_quota_used: 0,
-          daily_quota_reset_at: "2024-01-01",
-          total_quota_used: 0,
-          created_at: "2024-01-01",
-          updated_at: "2024-01-01",
-          agents: [],
-        } as Project,
-      ],
-    });
+  afterEach(() => {
+    cleanup();
+  });
 
-    // Mock the getAllApps response with complete app properties
-    const mockApps = [
+  it("shows loading state initially", () => {
+    // Mock loading state
+    vi.mocked(useApps).mockReturnValue({
+      data: undefined,
+      isPending: true,
+      isError: false,
+      refetch: vi.fn(),
+      error: null,
+    } as unknown as UseQueryResult<App[], Error>);
+
+    render(<AppStorePage />);
+
+    expect(screen.getByText("Loading apps...")).toBeInTheDocument();
+  });
+
+  it("shows error state", () => {
+    // Mock error state
+    vi.mocked(useApps).mockReturnValue({
+      data: undefined,
+      isPending: false,
+      isError: true,
+      refetch: vi.fn(),
+      error: new Error("Failed to fetch"),
+    } as unknown as UseQueryResult<App[], Error>);
+
+    render(<AppStorePage />);
+
+    expect(
+      screen.getByText("Failed to load apps. Please try to refresh the page."),
+    ).toBeInTheDocument();
+  });
+
+  it("loads and displays apps successfully", async () => {
+    // Mock successful data state
+    const mockApps: App[] = [
       {
         id: "1",
         name: "TEST_APP_1",
@@ -80,22 +71,26 @@ describe("AppStorePage", () => {
         functions: [],
       },
     ];
-    vi.mocked(getAllApps).mockResolvedValue(mockApps);
+    vi.mocked(useApps).mockReturnValue({
+      data: mockApps,
+      isPending: false,
+      isError: false,
+      refetch: vi.fn(),
+      error: null,
+    } as unknown as UseQueryResult<App[], Error>);
 
     render(<AppStorePage />);
+    screen.logTestingPlaygroundURL();
 
     expect(screen.getByText("App Store")).toBeInTheDocument();
-
     expect(
       screen.getByText("Browse and connect with your favorite apps and tools."),
     ).toBeInTheDocument();
 
-    // Wait for and verify that the test app is displayed
     await waitFor(() => {
-      expect(screen.getByText("TEST_APP_1")).toBeInTheDocument();
+      expect(screen.getByText("Test App 1")).toBeInTheDocument();
     });
 
-    // Verify that getAllApps was called
-    expect(getAllApps).toHaveBeenCalledWith("test-api-key");
+    expect(useApps).toHaveBeenCalledWith([]);
   });
 });

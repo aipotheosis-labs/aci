@@ -12,24 +12,14 @@ import { useState } from "react";
 import { App } from "@/lib/types/app";
 import { AppCardComingSoon } from "./app-card-coming-soon";
 import comingsoon from "@/lib/comingsoon/comingsoon.json";
-import { Loader2 } from "lucide-react";
 interface AppGridProps {
   apps: App[];
-  loading: boolean;
 }
 
-export function AppGrid({ apps, loading }: AppGridProps) {
+export function AppGrid({ apps }: AppGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const [selectedCategory, setSelectedCategory] = useState("all");
-
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center py-16">
-        <Loader2 className="animate-spin h-10 w-10 text-gray-500" />
-      </div>
-    );
-  }
 
   const categories = Array.from(new Set(apps.flatMap((app) => app.categories)));
 

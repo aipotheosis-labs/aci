@@ -2,34 +2,12 @@
 
 import { AppGrid } from "@/components/apps/app-grid";
 import { Separator } from "@/components/ui/separator";
-import { App } from "@/lib/types/app";
-import { useEffect, useState } from "react";
-import { getApiKey } from "@/lib/api/util";
-import { getAllApps } from "@/lib/api/app";
-import { useMetaInfo } from "@/components/context/metainfo";
+import { useApps } from "@/hooks/use-app";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 export default function AppStorePage() {
-  const { activeProject } = useMetaInfo();
-  const [apps, setApps] = useState<App[]>([]);
-  const [loading, setLoading] = useState(true);
-
   // TODO: implement pagination once we have a lot of apps
-  useEffect(() => {
-    async function loadApps() {
-      setLoading(true);
-      try {
-        const apiKey = getApiKey(activeProject);
-        const apps = await getAllApps(apiKey);
-
-        setApps(apps);
-      } catch (error) {
-        console.error("Error fetching apps:", error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadApps();
-  }, [activeProject]);
+  const { data: apps, isPending, isError } = useApps([]);
 
   return (
     <div>
@@ -42,7 +20,19 @@ export default function AppStorePage() {
       <Separator />
 
       <div className="m-4">
-        <AppGrid apps={apps} loading={loading} />
+        {isPending ? (
+          <div className="flex justify-center items-center py-16">
+            <Loader2 className="animate-spin h-10 w-10 text-gray-500" />
+            Loading apps...
+          </div>
+        ) : isError ? (
+          <div className="flex justify-center items-center py-16">
+            <AlertCircle className="h-10 w-10 text-red-500" />
+            Failed to load apps. Please try to refresh the page.
+          </div>
+        ) : (
+          <AppGrid apps={apps} />
+        )}
       </div>
     </div>
   );

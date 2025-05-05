@@ -1,3 +1,5 @@
+import { AppFunction } from "./appfunction";
+
 export interface App {
   id: string;
   name: string;
@@ -10,12 +12,7 @@ export interface App {
   visibility: string;
   active: boolean;
   security_schemes: string[];
-  functions: Function[];
+  functions: AppFunction[];
   created_at: string;
   updated_at: string;
-}
-
-interface Function {
-  name: string;
-  description: string;
 }
