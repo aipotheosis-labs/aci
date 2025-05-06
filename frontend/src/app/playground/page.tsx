@@ -8,7 +8,7 @@ import { SettingsSidebar } from "./playground-settings";
 import { ChatInput } from "./chat-input";
 import { Messages } from "./messages";
 import { useShallow } from "zustand/react/shallow";
-
+import { BetaAlert } from "@/components/playground/beta-alert";
 const Page = () => {
   const { activeProject } = useMetaInfo();
 
@@ -108,6 +108,7 @@ const Page = () => {
     <div className="flex flex-grow h-[calc(100vh-6rem)]">
       {/* Left part - Chat area */}
       <div className="flex-1 flex flex-col overflow-hidden">
+        <BetaAlert />
         <Messages messages={messages} status={status} />
         <ChatInput
           input={input}
