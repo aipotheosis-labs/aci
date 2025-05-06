@@ -108,7 +108,7 @@
                             "description": "Auto-stop interval in minutes"
                         }
                     },
-                    "required": [],
+                    "required": ["name", "imageId"],
                     "visible": ["name", "imageId", "size", "labels", "autoStop"],
                     "additionalProperties": true
                 }

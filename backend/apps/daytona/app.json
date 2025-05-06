@@ -5,11 +5,6 @@
     "provider": "Daytona.io",
     "version": "aipolabs_0.0.1",
     "description": "Daytona provides secure and elastic infrastructure for running AI-generated code in isolated environments with sub-90ms sandbox creation time.",
-    "api_key": {
-        "location": "header",
-        "name": "Authorization",
-        "prefix": "Bearer"
-    },
     "security_schemes": {
         "api_key": {
             "location": "header",
