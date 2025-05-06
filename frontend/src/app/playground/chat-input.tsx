@@ -12,7 +12,7 @@ interface ChatInputProps {
   status: string;
   linkedAccountOwnerId: string | null;
   stop?: () => void;
-  setMessages?: UseChatHelpers['setMessages'];
+  setMessages?: UseChatHelpers["setMessages"];
 }
 
 function PureStopButton({
@@ -20,7 +20,7 @@ function PureStopButton({
   setMessages,
 }: {
   stop: () => void;
-  setMessages: UseChatHelpers['setMessages'];
+  setMessages: UseChatHelpers["setMessages"];
 }) {
   return (
     <Button
@@ -40,11 +40,7 @@ function PureStopButton({
 
 const StopButton = memo(PureStopButton);
 
-function PureSendButton({
-  input
-}: {
-  input: string;
-}) {
+function PureSendButton({ input }: { input: string }) {
   return (
     <Button
       data-testid="send-button"
@@ -69,7 +65,7 @@ export function ChatInput({
   status,
   linkedAccountOwnerId,
   stop,
-  setMessages
+  setMessages,
 }: ChatInputProps) {
   const submitForm = useCallback(
     (e?: React.FormEvent<HTMLFormElement>) => {
@@ -96,13 +92,16 @@ export function ChatInput({
                   toast.error("Please select a linked account owner");
                   return;
                 }
-                if (event.key === "Enter" 
-                  && !event.shiftKey
-                  && linkedAccountOwnerId
+                if (
+                  event.key === "Enter" &&
+                  !event.shiftKey &&
+                  linkedAccountOwnerId
                 ) {
                   event.preventDefault();
                   if (status === "submitted" || status === "streaming") {
-                    toast.error("Please wait for the previous request to complete");
+                    toast.error(
+                      "Please wait for the previous request to complete",
+                    );
                     return;
                   } else {
                     submitForm();
@@ -115,10 +114,10 @@ export function ChatInput({
             />
             <div className="pointer-events-none">
               <div className="absolute top-1/2 right-4 -translate-y-1/2 flex flex-row justify-end pointer-events-auto">
-                {status === 'submitted' || status === 'streaming' ? (
+                {status === "submitted" || status === "streaming" ? (
                   <StopButton stop={stop!} setMessages={setMessages!} />
                 ) : (
-                  <SendButton input={input}/>
+                  <SendButton input={input} />
                 )}
               </div>
             </div>

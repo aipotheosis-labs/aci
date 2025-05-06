@@ -1,7 +1,7 @@
-import { useRef, useCallback, useState, useLayoutEffect } from 'react';
-import type { ToolInvocation } from 'ai';
-import { useDebounceCallback } from 'usehooks-ts';
-import { executeFunction } from '@/lib/api/appfunction';
+import { useRef, useCallback, useState, useLayoutEffect } from "react";
+import type { ToolInvocation } from "ai";
+import { useDebounceCallback } from "usehooks-ts";
+import { executeFunction } from "@/lib/api/appfunction";
 
 type UseToolExecutionProps = {
   toolInvocation: ToolInvocation;
@@ -49,9 +49,9 @@ export const useToolExecution = ({
         result,
       });
     } catch (error) {
-      console.error('Error in tool execution:', error);
+      console.error("Error in tool execution:", error);
       setError(
-        error instanceof Error ? error.message : 'An unexpected error occurred',
+        error instanceof Error ? error.message : "An unexpected error occurred",
       );
     } finally {
       hasStartedChecking.current.delete(toolInvocation.toolCallId);

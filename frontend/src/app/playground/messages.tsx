@@ -11,10 +11,22 @@ interface MessagesProps {
   messages: Array<UIMessage>;
   linkedAccountOwnerId: string;
   apiKey: string;
-  addToolResult: ({ toolCallId, result }: { toolCallId: string; result: object }) => void;
+  addToolResult: ({
+    toolCallId,
+    result,
+  }: {
+    toolCallId: string;
+    result: object;
+  }) => void;
 }
 
-function PureMessages({ status, messages, linkedAccountOwnerId, apiKey, addToolResult }: MessagesProps) {
+function PureMessages({
+  status,
+  messages,
+  linkedAccountOwnerId,
+  apiKey,
+  addToolResult,
+}: MessagesProps) {
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>(messages);
 

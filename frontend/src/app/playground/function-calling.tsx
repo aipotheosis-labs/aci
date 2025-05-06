@@ -5,10 +5,21 @@ type FunctionCallingProps = {
   toolInvocation: ToolInvocation;
   linkedAccountOwnerId: string;
   apiKey: string;
-  addToolResult: ({ toolCallId, result }: { toolCallId: string; result: object }) => void;
+  addToolResult: ({
+    toolCallId,
+    result,
+  }: {
+    toolCallId: string;
+    result: object;
+  }) => void;
 };
 
-export function FunctionCalling({ toolInvocation, linkedAccountOwnerId, apiKey, addToolResult }: FunctionCallingProps) {
+export function FunctionCalling({
+  toolInvocation,
+  linkedAccountOwnerId,
+  apiKey,
+  addToolResult,
+}: FunctionCallingProps) {
   const { toolName } = toolInvocation;
 
   const { error } = useToolExecution({

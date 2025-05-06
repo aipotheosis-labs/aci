@@ -23,7 +23,13 @@ const PurePreviewMessage = ({
   isLoading: boolean;
   linkedAccountOwnerId: string;
   apiKey: string;
-  addToolResult: ({ toolCallId, result }: { toolCallId: string; result: object }) => void;
+  addToolResult: ({
+    toolCallId,
+    result,
+  }: {
+    toolCallId: string;
+    result: object;
+  }) => void;
 }) => {
   return (
     <AnimatePresence>

@@ -56,7 +56,13 @@ const Page = () => {
     },
   });
 
-  const handleAddToolResult = ({ toolCallId, result }: { toolCallId: string; result: object }) => {
+  const handleAddToolResult = ({
+    toolCallId,
+    result,
+  }: {
+    toolCallId: string;
+    result: object;
+  }) => {
     addToolResult({ toolCallId, result });
   };
 
@@ -70,7 +76,13 @@ const Page = () => {
       {/* Left part - Chat area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <BetaAlert />
-        <Messages messages={messages} status={status} linkedAccountOwnerId={selectedLinkedAccountOwnerId} apiKey={apiKey} addToolResult={handleAddToolResult} />
+        <Messages
+          messages={messages}
+          status={status}
+          linkedAccountOwnerId={selectedLinkedAccountOwnerId}
+          apiKey={apiKey}
+          addToolResult={handleAddToolResult}
+        />
         <ChatInput
           input={input}
           setMessages={setMessages}
