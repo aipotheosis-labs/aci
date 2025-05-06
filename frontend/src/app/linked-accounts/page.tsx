@@ -396,6 +396,10 @@ export default function LinkedAccountsPage() {
                 searchBarProps={{
                   placeholder: "Search linked accounts",
                 }}
+                paginationOptions={{
+                  initialPageIndex: 0,
+                  initialPageSize: 10,
+                }}
               />
             )}
           </TabsContent>
