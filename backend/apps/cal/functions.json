@@ -1,0 +1,240 @@
+[
+    {
+        "name": "CAL__GET_SCHEDULES",
+        "description": "Retrieves a list of schedules from Cal.com",
+        "tags": [
+            "cal.com",
+            "schedules"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/schedules",
+            "server_url": "https://api.cal.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CAL__CREATE_SCHEDULE",
+        "description": "Create a new schedule in Cal.com",
+        "tags": [
+            "cal.com",
+            "scheduling",
+            "availability"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/schedules",
+            "server_url": "https://api.cal.com",
+            "content_type": "application/json"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the schedule"
+                        },
+                        "timeZone": {
+                            "type": "string",
+                            "description": "Timezone for the schedule",
+                            "example": "Asia/Shanghai"
+                        }
+                    },
+                    "required": [
+                        "name",
+                        "timeZone"
+                    ],
+                    "visible": [
+                        "name",
+                        "timeZone"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CAL__GET_SCHEDULE",
+        "description": "Retrieve a specific schedule from Cal.com by ID",
+        "tags": [
+            "cal.com",
+            "scheduling",
+            "availability"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/schedules/{schedule_id}",
+            "server_url": "https://api.cal.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "schedule_id": {
+                            "type": "string",
+                            "description": "ID of the schedule to retrieve",
+                            "example": "613135"
+                        }
+                    },
+                    "required": [
+                        "schedule_id"
+                    ],
+                    "visible": [
+                        "schedule_id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CAL__UPDATE_SCHEDULE",
+        "description": "Update an existing schedule in Cal.com",
+        "tags": [
+            "cal.com",
+            "scheduling",
+            "update"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/v1/schedules/{schedule_id}",
+            "server_url": "https://api.cal.com",
+            "content_type": "application/json"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "schedule_id": {
+                            "type": "string",
+                            "description": "ID of the schedule to update",
+                            "example": "613135"
+                        }
+                    },
+                    "required": [
+                        "schedule_id"
+                    ],
+                    "visible": [
+                        "schedule_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Updated name for the schedule",
+                            "example": "date1"
+                        },
+                        "timeZone": {
+                            "type": "string",
+                            "description": "Updated timezone in IANA format",
+                            "example": "Asia/Shanghai"
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "name",
+                        "timeZone"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CAL__DELETE_SCHEDULE",
+        "description": "Delete a specific schedule from Cal.com by ID",
+        "tags": [
+            "cal.com",
+            "scheduling",
+            "delete"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v1/schedules/{schedule_id}",
+            "server_url": "https://api.cal.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "schedule_id": {
+                            "type": "string",
+                            "description": "ID of the schedule to delete",
+                            "example": "613135"
+                        }
+                    },
+                    "required": [
+                        "schedule_id"
+                    ],
+                    "visible": [
+                        "schedule_id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    }
+]
