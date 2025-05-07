@@ -109,6 +109,7 @@ const AppPage = () => {
               name={app.name}
               security_schemes={app.security_schemes}
               configureApp={configureApp}
+              logo={app.logo}
             >
               <Button
                 className="bg-primary text-white hover:bg-primary/90"
