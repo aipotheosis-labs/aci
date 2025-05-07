@@ -75,7 +75,9 @@ def dummy_app_data() -> dict:
                 "client_id": "{{ AIPOLABS_GOOGLE_APP_CLIENT_ID }}",
                 "client_secret": "{{ AIPOLABS_GOOGLE_APP_CLIENT_SECRET }}",
                 "scope": "openid email profile https://www.googleapis.com/auth/calendar",
-                "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration",
+                "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth",
+                "access_token_url": "https://oauth2.googleapis.com/token",
+                "refresh_token_url": "https://oauth2.googleapis.com/token",
             }
         },
         "default_security_credentials_by_scheme": {},

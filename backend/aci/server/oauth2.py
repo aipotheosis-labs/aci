@@ -26,14 +26,13 @@ def create_oauth2_client(
     client_id: str,
     client_secret: str,
     scope: str,
+    authorize_url: str,
+    access_token_url: str,
+    refresh_token_url: str,
     prompt: str = "consent",
     code_challenge_method: str = "S256",
     access_type: str = "offline",
     token_endpoint_auth_method: str | None = None,
-    authorize_url: str | None = None,
-    access_token_url: str | None = None,
-    refresh_token_url: str | None = None,
-    server_metadata_url: str | None = None,
 ) -> StarletteOAuth2App:
     """
     Create an OAuth2 client for the given app.
@@ -48,13 +47,10 @@ def create_oauth2_client(
             "code_challenge_method": code_challenge_method,
             "token_endpoint_auth_method": token_endpoint_auth_method,
         },
-        # Note: usually if server_metadata_url (e.g., google's discovery doc https://accounts.google.com/.well-known/openid-configuration)
-        # is provided, the other endpoints are not needed.
         authorize_url=authorize_url,
         authorize_params={"access_type": access_type},
         access_token_url=access_token_url,
         refresh_token_url=refresh_token_url,
-        server_metadata_url=server_metadata_url,
     )
     return cast(StarletteOAuth2App, oauth_client)
 
