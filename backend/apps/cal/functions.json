@@ -3,8 +3,7 @@
         "name": "CAL__GET_SCHEDULES",
         "description": "Retrieves a list of schedules from Cal.com",
         "tags": [
-            "cal.com",
-            "schedules"
+            "schedule"
         ],
         "visibility": "public",
         "active": true,
@@ -26,9 +25,7 @@
         "name": "CAL__CREATE_SCHEDULE",
         "description": "Create a new schedule in Cal.com",
         "tags": [
-            "cal.com",
-            "scheduling",
-            "availability"
+            "schedule"
         ],
         "visibility": "public",
         "active": true,
@@ -79,9 +76,7 @@
         "name": "CAL__GET_SCHEDULE",
         "description": "Retrieve a specific schedule from Cal.com by ID",
         "tags": [
-            "cal.com",
-            "scheduling",
-            "availability"
+            "schedule"
         ],
         "visibility": "public",
         "active": true,
@@ -125,9 +120,7 @@
         "name": "CAL__UPDATE_SCHEDULE",
         "description": "Update an existing schedule in Cal.com",
         "tags": [
-            "cal.com",
-            "scheduling",
-            "update"
+            "schedule"
         ],
         "visibility": "public",
         "active": true,
@@ -195,9 +188,7 @@
         "name": "CAL__DELETE_SCHEDULE",
         "description": "Delete a specific schedule from Cal.com by ID",
         "tags": [
-            "cal.com",
-            "scheduling",
-            "delete"
+            "schedule"
         ],
         "visibility": "public",
         "active": true,
