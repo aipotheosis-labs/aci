@@ -432,3 +432,16 @@ class BillingError(ACIException):
             message=message,
             error_code=error_code,
         )
+
+
+class OAuth2Error(ACIException):
+    """
+    Exception raised when an OAuth2 error occurs
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="OAuth2 error",
+            message=message,
+            error_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )

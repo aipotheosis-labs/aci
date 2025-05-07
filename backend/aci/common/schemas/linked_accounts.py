@@ -37,7 +37,6 @@ class LinkedAccountOAuth2CreateState(BaseModel):
     linked_account_owner_id: str = Field(..., max_length=MAX_STRING_LENGTH)
     redirect_uri: str
     code_verifier: str
-    nonce: str | None = None
     after_oauth2_link_redirect_url: str | None = None
 
 

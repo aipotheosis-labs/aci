@@ -1,4 +1,4 @@
-from typing import TypeVar
+from typing import Literal, TypeVar
 
 from pydantic import BaseModel, Field
 
@@ -59,7 +59,7 @@ class OAuth2Scheme(BaseModel):
         ...,
         description="The URL of the OAuth2 refresh token server, e.g., 'https://oauth2.googleapis.com/token'",
     )
-    token_endpoint_auth_method: str | None = Field(
+    token_endpoint_auth_method: Literal["client_secret_basic", "client_secret_post"] | None = Field(
         default=None,
         description="The authentication method for the OAuth2 token endpoint, e.g., 'client_secret_post' "
         "for some providers that require client_id/client_secret to be sent in the body of the token request, like Hubspot",

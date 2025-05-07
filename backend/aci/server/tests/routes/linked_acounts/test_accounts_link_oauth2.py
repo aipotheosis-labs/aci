@@ -1,6 +1,6 @@
 import time
 from typing import cast
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 from urllib.parse import parse_qs, urlparse
 
 import pytest
@@ -67,11 +67,8 @@ def test_link_oauth2_account_success(
     assert state.redirect_uri == (
         f"{config.REDIRECT_URI_BASE}{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback"
     )
-    assert state.nonce is not None, (
-        "nonce should be present for google oauth2 if openid is requested"
-    )
 
-    # mock the oauth2 client's authorize_access_token method
+    # mock the oauth2 manager's fetch_token response
     mock_oauth2_token_response = {
         "access_token": "mock_access_token",
         "token_type": "Bearer",
@@ -83,8 +80,8 @@ def test_link_oauth2_account_success(
     mock_oauth2_token_retrieval_time = int(time.time())
     with (
         patch(
-            "aci.server.oauth2.authorize_access_token_without_browser_session",
-            return_value=mock_oauth2_token_response,
+            "aci.server.oauth2_manager.OAuth2Manager.fetch_token",
+            new=AsyncMock(return_value=mock_oauth2_token_response),
         ),
         patch("time.time", return_value=mock_oauth2_token_retrieval_time),
     ):
