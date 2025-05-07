@@ -14,9 +14,7 @@
     },
     "default_security_credentials_by_scheme": {},
     "categories": [
-        "hospitality",
-        "Hotel",
-        "apartment"
+        "Hospitality"
     ],
     "visibility": "public",
     "active": true

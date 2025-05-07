@@ -1,6 +1,6 @@
 from typing import TypeVar
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field
 
 from aci.common.enums import HttpLocation
 
@@ -47,42 +47,23 @@ class OAuth2Scheme(BaseModel):
         description="Space separated scopes of the OAuth2 client (provided by ACI) used for the app, "
         "e.g., 'openid email profile https://www.googleapis.com/auth/calendar'",
     )
+    authorize_url: str = Field(
+        ...,
+        description="The URL of the OAuth2 authorization server, e.g., 'https://accounts.google.com/o/oauth2/v2/auth'",
+    )
+    access_token_url: str = Field(
+        ...,
+        description="The URL of the OAuth2 access token server, e.g., 'https://oauth2.googleapis.com/token'",
+    )
+    refresh_token_url: str = Field(
+        ...,
+        description="The URL of the OAuth2 refresh token server, e.g., 'https://oauth2.googleapis.com/token'",
+    )
     token_endpoint_auth_method: str | None = Field(
         default=None,
         description="The authentication method for the OAuth2 token endpoint, e.g., 'client_secret_post' "
         "for some providers that require client_id/client_secret to be sent in the body of the token request, like Hubspot",
     )
-    # making below fields optional because if server_metadata_url is provided, the other endpoints are usually not needed
-    authorize_url: str | None = Field(
-        default=None,
-        description="The URL of the OAuth2 authorization server, e.g., 'https://accounts.google.com/o/oauth2/auth'",
-    )
-    access_token_url: str | None = Field(
-        default=None,
-        description="The URL of the OAuth2 access token server, e.g., 'https://oauth2.googleapis.com/token'",
-    )
-    refresh_token_url: str | None = Field(
-        default=None,
-        description="The URL of the OAuth2 refresh token server, e.g., 'https://oauth2.googleapis.com/token'",
-    )
-    server_metadata_url: str | None = Field(
-        default=None,
-        description="The URL of the OAuth2 server metadata/discovery doc, e.g., 'https://accounts.google.com/.well-known/openid-configuration'",
-    )
-
-    # validation: if server_metadata_url is None, the other urls must NOT be None
-    @model_validator(mode="after")
-    def validate_urls(self) -> "OAuth2Scheme":
-        if self.server_metadata_url is None:
-            if (
-                self.authorize_url is None
-                or self.access_token_url is None
-                or self.refresh_token_url is None
-            ):
-                raise ValueError(
-                    "If server_metadata_url is not provided, the other endpoints must be provided"
-                )
-        return self
 
 
 class NoAuthScheme(BaseModel, extra="forbid"):

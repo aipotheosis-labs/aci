@@ -366,8 +366,6 @@ async def link_oauth2_account(
             f"{app_configuration.security_scheme}, not OAuth2"
         )
 
-    # TODO: add correspinding validation of the oauth2 fields (e.g., client_id, client_secret, scope, etc.)
-    # when indexing an App. For example, if server_metadata_url is None, other url must be provided
     # TODO: load client's overrides if they specify any, for example, client_id, client_secret, scope, etc.
     # security_scheme of the app configuration must be one of the App's security_schemes, so we can safely validate it
     app_default_oauth2_config = OAuth2Scheme.model_validate(
@@ -378,11 +376,10 @@ async def link_oauth2_account(
         client_id=app_default_oauth2_config.client_id,
         client_secret=app_default_oauth2_config.client_secret,
         scope=app_default_oauth2_config.scope,
-        token_endpoint_auth_method=app_default_oauth2_config.token_endpoint_auth_method,
         authorize_url=app_default_oauth2_config.authorize_url,
         access_token_url=app_default_oauth2_config.access_token_url,
         refresh_token_url=app_default_oauth2_config.refresh_token_url,
-        server_metadata_url=app_default_oauth2_config.server_metadata_url,
+        token_endpoint_auth_method=app_default_oauth2_config.token_endpoint_auth_method,
     )
     path = request.url_for(LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
     redirect_uri = f"{config.REDIRECT_URI_BASE}{path}"
@@ -399,7 +396,7 @@ async def link_oauth2_account(
     # {
     #     "code_verifier": "...",
     #     "state": "...",
-    #     "url": "https://accounts.google.com/o/oauth2/auth?client_id=...&redirect_uri=...&scope=...&response_type=code&access_type=offline&state=...&code_verifier=...&nonce=...",
+    #     "url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=...&redirect_uri=...&scope=...&response_type=code&access_type=offline&state=...&code_verifier=...&nonce=...",
     #     "nonce": "..."
     # }
 
@@ -529,11 +526,10 @@ async def linked_accounts_oauth2_callback(
         client_id=app_default_oauth2_config.client_id,
         client_secret=app_default_oauth2_config.client_secret,
         scope=app_default_oauth2_config.scope,
-        token_endpoint_auth_method=app_default_oauth2_config.token_endpoint_auth_method,
         authorize_url=app_default_oauth2_config.authorize_url,
         access_token_url=app_default_oauth2_config.access_token_url,
         refresh_token_url=app_default_oauth2_config.refresh_token_url,
-        server_metadata_url=app_default_oauth2_config.server_metadata_url,
+        token_endpoint_auth_method=app_default_oauth2_config.token_endpoint_auth_method,
     )
 
     # get oauth2 account credentials

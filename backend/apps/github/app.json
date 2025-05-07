@@ -15,7 +15,7 @@
       "scope": "public_repo gist user workflow",
       "authorize_url": "https://github.com/login/oauth/authorize",
       "access_token_url": "https://github.com/login/oauth/access_token",
-      "refresh_token_url": ""
+      "refresh_token_url": "https://github.com/login/oauth/access_token"
     }
   },
   "default_security_credentials_by_scheme": {},

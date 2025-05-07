@@ -3,7 +3,6 @@
 import { useMetaInfo } from "@/components/context/metainfo";
 import { useChat } from "@ai-sdk/react";
 import { useAgentStore } from "@/lib/store/agent";
-import { executeFunction, searchFunctions } from "@/lib/api/appfunction";
 import { SettingsSidebar } from "./playground-settings";
 import { ChatInput } from "./chat-input";
 import { Messages } from "./messages";
@@ -38,6 +37,7 @@ const Page = () => {
     status,
     addToolResult,
     setMessages,
+    stop,
   } = useChat({
     api: `${process.env.NEXT_PUBLIC_API_URL}/v1/agent/chat`,
     headers: {
@@ -54,50 +54,17 @@ const Page = () => {
     onFinish: (message) => {
       console.log(message);
     },
-    onToolCall: async ({ toolCall }) => {
-      // TODO: Human in the loop
-      console.log("tool call", toolCall);
-
-      let result;
-      // when the tool call name is "ACI_SEARCH_FUNCTIONS"
-      if (toolCall.toolName === "ACI_SEARCH_FUNCTIONS") {
-        result = await searchFunctions(
-          toolCall.args as Record<string, unknown>,
-          apiKey,
-        );
-        addToolResult({
-          toolCallId: toolCall.toolCallId,
-          result: result,
-        });
-      } else if (toolCall.toolName === "ACI_EXECUTE_FUNCTION") {
-        result = await executeFunction(
-          toolCall.toolName,
-          {
-            function_input: toolCall.args as Record<string, unknown>,
-            linked_account_owner_id: selectedLinkedAccountOwnerId,
-          },
-          apiKey,
-        );
-        addToolResult({
-          toolCallId: toolCall.toolCallId,
-          result: result,
-        });
-      } else {
-        result = await executeFunction(
-          toolCall.toolName,
-          {
-            function_input: toolCall.args as Record<string, unknown>,
-            linked_account_owner_id: selectedLinkedAccountOwnerId,
-          },
-          apiKey,
-        );
-        addToolResult({
-          toolCallId: toolCall.toolCallId,
-          result: result,
-        });
-      }
-    },
   });
+
+  const handleAddToolResult = ({
+    toolCallId,
+    result,
+  }: {
+    toolCallId: string;
+    result: object;
+  }) => {
+    addToolResult({ toolCallId, result });
+  };
 
   if (!activeProject) {
     console.warn("No active project");
@@ -109,9 +76,17 @@ const Page = () => {
       {/* Left part - Chat area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         <BetaAlert />
-        <Messages messages={messages} status={status} />
+        <Messages
+          messages={messages}
+          status={status}
+          linkedAccountOwnerId={selectedLinkedAccountOwnerId}
+          apiKey={apiKey}
+          addToolResult={handleAddToolResult}
+        />
         <ChatInput
           input={input}
+          setMessages={setMessages}
+          stop={stop}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
           status={status}
