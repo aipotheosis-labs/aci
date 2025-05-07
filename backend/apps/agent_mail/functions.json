@@ -1,11 +1,9 @@
 [
     {
-        "name": "AGENTMAIL__GET_INBOX",
+        "name": "AGENT_MAIL__GET_INBOX",
         "description": "Retrieve information about a specific inbox by its ID (email address)",
         "tags": [
-            "agentmail",
-            "inbox",
-            "information"
+            "inbox"
         ],
         "visibility": "public",
         "active": true,
@@ -63,12 +61,10 @@
         }
     },
     {
-        "name": "AGENTMAIL__CREATE_INBOX",
+        "name": "AGENT_MAIL__CREATE_INBOX",
         "description": "Create a new inbox with a specified username and display name",
         "tags": [
-            "agentmail",
-            "inbox",
-            "create"
+            "inbox"
         ],
         "visibility": "public",
         "active": true,
@@ -137,11 +133,9 @@
         }
     },
     {
-        "name": "AGENTMAIL__LIST_THREADS",
+        "name": "AGENT_MAIL__LIST_THREADS",
         "description": "List threads from a specific inbox with pagination support",
         "tags": [
-            "agentmail",
-            "inbox",
             "threads"
         ],
         "visibility": "public",
@@ -229,11 +223,9 @@
         }
     },
     {
-        "name": "AGENTMAIL__LIST_MESSAGES",
+        "name": "AGENT_MAIL__LIST_MESSAGES",
         "description": "List messages from a specific inbox",
         "tags": [
-            "agentmail",
-            "inbox",
             "messages"
         ],
         "visibility": "public",
