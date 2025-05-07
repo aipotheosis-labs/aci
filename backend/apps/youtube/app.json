@@ -15,7 +15,9 @@
       "client_id": "{{ AIPOLABS_GOOGLE_APP_CLIENT_ID }}",
       "client_secret": "{{ AIPOLABS_GOOGLE_APP_CLIENT_SECRET }}",
       "scope": "https://www.googleapis.com/auth/youtube https://www.googleapis.com/auth/youtube.channel-memberships.creator https://www.googleapis.com/auth/youtube.force-ssl https://www.googleapis.com/auth/youtube.readonly https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtubepartner https://www.googleapis.com/auth/youtubepartner-channel-audit",
-      "server_metadata_url": "https://accounts.google.com/.well-known/openid-configuration"
+      "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth",
+      "access_token_url": "https://oauth2.googleapis.com/token",
+      "refresh_token_url": "https://oauth2.googleapis.com/token"
     }
   },
   "default_security_credentials_by_scheme": {},
