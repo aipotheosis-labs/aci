@@ -322,10 +322,6 @@ async def link_account_with_api_key(
     return linked_account
 
 
-# TODO:
-# Note:
-# - For token refresh (when executing functions), either use authlib's oauth2 client/session or build the request manually.
-#   If doing mannually, might need to handle dynamic url dicovery via discovery doc (e.g., google)
 @router.get("/oauth2")
 async def link_oauth2_account(
     request: Request,
@@ -387,36 +383,6 @@ async def link_oauth2_account(
 
     path = request.url_for(LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
     redirect_uri = f"{config.REDIRECT_URI_BASE}{path}"
-    # NOTE: normally we should generate "state"/"state_jwt" first, and then
-    # call authorize_redirect(request, redirect_uri, state=state_jwt), within which calls create_authorization_url() and save_authorize_data().
-    # But as we mentioned at the beginning of this file, we need to be a bit hacky to avoid any browser session related implementation.
-    # Here we just call create_authorization_url() to get the generated authorization_data, and we genrate a new 'state'
-    # value that contains both data from the authorization_data and data we need for further processing (like app_name,
-    # project_id, linked_account_owner_id, etc.), and replace the 'state' value in the url parameter with the new 'state' (jwt) value.
-    # In the callback endpoint, we will also need to manually parse the 'state' data and reconstruct the 'url' before calling fetch_access_token(), instead of calling
-    # authorize_access_token() directly in a normal oauth2 flow.
-
-    # authorization_data exmaple:
-    # {
-    #     "code_verifier": "...",
-    #     "state": "...",
-    #     "url": "https://accounts.google.com/o/oauth2/v2/auth?client_id=...&redirect_uri=...&scope=...&response_type=code&access_type=offline&state=...&code_verifier=...&nonce=...",
-    #     "nonce": "..."
-    # }
-
-    # the saved data (by calling save_authorize_data(request, redirect_uri=redirect_uri, **authorization_data), which also
-    # sets the request.session) is a bit different from the authrization data:
-    # {
-    # "_state_GOOGLE_CALENDAR_keyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE1MTYyMzkwMjIsImV4cCI6MTUxNjI0MjYyMiwiaXNzIjoibXlfaXNzdWVyIiwic3ViIjoibXlfc3ViamVjdCIsImF1ZCI6Im15X2F1ZGllbmNlIiwibmJmIjoxNTE2MjM5MDIyfQ.lgk5D-k4-tMsMKnTJd02v2tczPbQ9M87qOTtX-lCbX8": {
-    #     "data": {
-    #         "redirect_uri": "http://localhost:8000/v1/accounts/oauth2/callback",
-    #         "code_verifier": "NjpsQtcuLUNPAM5NQuMhE2UUavVB0BtYo0Ggr6EO3HPpGkxm",
-    #         "nonce": "Lr0KlHBM4ttofP16q9Hv",
-    #         "url": "https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=621325784080-uuu3mt1vvfmffbvdb7gj6ijq08q2iopi.apps.googleusercontent.com&redirect_uri=http%3A%2F%2Flocalhost%3A8000%2Fv1%2Faccounts%2Foauth2%2Fcallback&scope=openid+email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcalendar&state=eyJpYXQiOjE1MTYyMzkwMjIsImV4cCI6MTUxNjI0MjYyMiwiaXNzIjoibXlfaXNzdWVyIiwic3ViIjoibXlfc3ViamVjdCIsImF1ZCI6Im15X2F1ZGllbmNlIiwibmJmIjoxNTE2MjM5MDIyfQ.lgk5D-k4-tMsMKnTJd02v2tczPbQ9M87qOTtX-lCbX8&access_type=offline&nonce=Lr0KlHBM4ttofP16q9Hv&prompt=consent"
-    #     },
-    #     "exp": 1735786775.4127536
-    # }
-    # authorization_data = await oauth2.create_authorization_url(oauth2_client, redirect_uri)
 
     # create and encode the state payload.
     # NOTE: the state payload is jwt encoded (signed), but it's not encrypted, anyone can decode it
@@ -445,11 +411,6 @@ async def link_oauth2_account(
         "authorization url",
         extra={"authorization_url": authorization_url},
     )
-
-    # replace the state jwt token in the url parameter with the new state_jwt
-    # authorization_url = str(authorization_data["url"]).replace(
-    #     authorization_data["state"], new_state_jwt
-    # )
 
     # rewrite the authorization url for some apps that need special handling
     # TODO: this is hacky and need to refactor this in the future

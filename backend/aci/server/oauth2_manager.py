@@ -45,6 +45,8 @@ class OAuth2Manager:
         self.access_token_url = access_token_url
         self.refresh_token_url = refresh_token_url
 
+        # TODO: need to close the client after use
+        # Add an aclose() helper (or implement __aenter__/__aexit__) and make callers invoke it during shutdown.
         self.oauth2_client = AsyncOAuth2Client(
             client_id=client_id,
             client_secret=client_secret,
@@ -167,6 +169,8 @@ class OAuth2Manager:
         rand = random.SystemRandom()
         return "".join(rand.choice(UNICODE_ASCII_CHARACTER_SET) for _ in range(length))
 
+    # TODO: consider adding this inside create_authorization_url function instead of
+    # calling it separately
     @staticmethod
     def rewrite_oauth2_authorization_url(app_name: str, authorization_url: str) -> str:
         """
