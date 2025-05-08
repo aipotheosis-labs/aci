@@ -115,7 +115,14 @@ async def _get_oauth2_credentials(
         token_response = await _refresh_oauth2_access_token(
             app, oauth2_scheme_credentials.refresh_token
         )
-        if not token_response.get("access_token") or not token_response.get("expires_in"):
+
+        expires_at: int | None = None
+        if "expires_at" in token_response:
+            expires_at = int(token_response["expires_at"])
+        elif "expires_in" in token_response:
+            expires_at = int(time.time()) + int(token_response["expires_in"])
+
+        if not token_response.get("access_token") or not expires_at:
             logger.error(
                 "failed to refresh access token",
                 extra={
@@ -129,7 +136,7 @@ async def _get_oauth2_credentials(
 
         fields_to_update = {
             "access_token": token_response["access_token"],
-            "expires_at": int(time.time()) + token_response["expires_in"],
+            "expires_at": expires_at,
         }
         # NOTE: some app's refresh token can only be used once, so we need to update the refresh token (if returned)
         if token_response.get("refresh_token"):
