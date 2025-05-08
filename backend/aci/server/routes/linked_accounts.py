@@ -562,26 +562,17 @@ async def linked_accounts_oauth2_callback(
         refresh_token_url=app_default_oauth2_config.refresh_token_url,
         token_endpoint_auth_method=app_default_oauth2_config.token_endpoint_auth_method,
     )
+
     token_response = await oauth2_manager.fetch_token(
         redirect_uri=state.redirect_uri,
         code=code,
         code_verifier=state.code_verifier,
-    )
-    # TODO: remove PII log
-    logger.info(
-        "oauth2 token requested successfully",
-        extra={"token_response": token_response},
     )
 
     # TODO: we might want to verify scope authorized by end user (token_response["scope"]) is what we asked
     # parse the token_response into the security_credentials, handling provider-specific edge cases
     security_credentials: OAuth2SchemeCredentials = OAuth2Manager.parse_oauth2_security_credentials(
         app.name, token_response
-    )
-    # TODO: remove PII log
-    logger.info(
-        "security_credentials",
-        extra={"security_credentials": security_credentials.model_dump(exclude_none=True)},
     )
 
     # if the linked account already exists, update it, otherwise create a new one
