@@ -174,13 +174,9 @@ async def _refresh_oauth2_access_token(app: App, refresh_token: str) -> dict:
 
     token_response = await oauth2_manager.refresh_token(refresh_token)
 
-    # TODO: seems the token_response contains both "expires_at" and "expires_in", in which care
+    # TODO: seems the token_response contains both "expires_at" and "expires_in", in which case
     # the "expires_at" should be used. Need to double check if it's the same for "authorize_access_token" method
     # and other providers.
-    logger.debug(
-        "oauth2 access token refreshed",
-        extra={"token_response": token_response, "app": app.name},
-    )
 
     return token_response
 

@@ -407,7 +407,6 @@ async def execute_function(
             "app_name": function.app.name,
             "linked_account_owner_id": linked_account_owner_id,
             "linked_account_id": linked_account.id,
-            "scheme": security_credentials_response.scheme.model_dump(exclude_none=True),
             "is_app_default_credentials": security_credentials_response.is_app_default_credentials,
             "is_updated": security_credentials_response.is_updated,
         },

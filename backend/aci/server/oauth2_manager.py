@@ -214,38 +214,37 @@ class OAuth2Manager:
         Returns:
             OAuth2SchemeCredentials with appropriate fields set
         """
+        data = token_response
+
+        # handle Slack's special case
         if app_name == "SLACK":
-            authed_user = token_response.get("authed_user", {})
-            if not authed_user or "access_token" not in authed_user:
+            if "authed_user" in data:
+                data = cast(dict, data["authed_user"])
+            else:
                 logger.error(
-                    "Invalid Slack OAuth response",
-                    extra={"token_response": token_response, "app_name": app_name},
+                    "Missing authed_user in Slack OAuth response",
+                    extra={"token_response": token_response, "app": app_name},
                 )
-                raise OAuth2Error("Invalid Slack OAuth response")
+                raise OAuth2Error("Missing access_token in Slack OAuth response")
 
-            return OAuth2SchemeCredentials(
-                access_token=authed_user["access_token"],
-                token_type=authed_user.get("token_type"),
-                refresh_token=authed_user.get("refresh_token"),
-                expires_at=int(time.time()) + authed_user.get("expires_in")
-                if authed_user.get("expires_in")
-                else None,
-                raw_token_response=token_response,
-            )
-
-        if "access_token" not in token_response:
+        if "access_token" not in data:
             logger.error(
                 "Missing access_token in OAuth response",
-                extra={"token_response": token_response, "app_name": app_name},
+                extra={"token_response": token_response, "app": app_name},
             )
             raise OAuth2Error("Missing access_token in OAuth response")
 
+        # some apps have long live access token so expiration time may not be present
+        expires_at: int | None = None
+        if "expires_at" in data:
+            expires_at = int(data["expires_at"])
+        elif "expires_in" in data:
+            expires_at = int(time.time()) + int(data["expires_in"])
+
         return OAuth2SchemeCredentials(
-            access_token=token_response["access_token"],
-            token_type=token_response.get("token_type"),
-            expires_at=int(time.time()) + token_response["expires_in"]
-            if "expires_in" in token_response
-            else None,
-            refresh_token=token_response.get("refresh_token"),
+            access_token=data["access_token"],
+            token_type=data.get("token_type"),
+            expires_at=expires_at,
+            refresh_token=data.get("refresh_token"),
             raw_token_response=token_response,
         )
