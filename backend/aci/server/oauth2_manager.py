@@ -5,7 +5,7 @@ from typing import Any, cast
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 
-from aci.common.exceptions import LinkedAccountOAuth2Error
+from aci.common.exceptions import OAuth2Error
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.security_scheme import OAuth2SchemeCredentials
 
@@ -29,6 +29,7 @@ class OAuth2Manager:
         Initialize the OAuth2Manager
 
         Args:
+            app_name: The name of the ACI.dev App
             client_id: The client ID of the OAuth2 client
             client_secret: The client secret of the OAuth2 client
             scope: The scope of the OAuth2 client
@@ -36,7 +37,7 @@ class OAuth2Manager:
             access_token_url: The URL of the OAuth2 access token server
             refresh_token_url: The URL of the OAuth2 refresh token server
             token_endpoint_auth_method:
-                client_secret_basic (default) or client_secret_post or none
+                client_secret_basic (default) | client_secret_post | none
                 Additional options can be achieved by registering a custom auth method
         """
         self.app_name = app_name
@@ -67,14 +68,14 @@ class OAuth2Manager:
         Create authorization URL for user to authorize your application
 
         Args:
-            client: AsyncOAuth2Client instance
-            authorization_endpoint: Authorization URL
-            state: Optional state parameter for CSRF protection
-            scope: OAuth2 scopes (space-separated)
-            **kwargs: Additional parameters to include in authorization request
+            redirect_uri: The redirect URI of the OAuth2 client
+            state: state parameter for CSRF protection, also used to store required data for the callback
+            code_verifier: The code verifier used to for the authorization url
+            access_type: The access type of the OAuth2 client
+            prompt: The prompt of the OAuth2 client
 
         Returns:
-            Tuple of (authorization_url, state)
+            authorization_url: The authorization URL for the user to authorize the app
         """
 
         # TODO: some oauth2 apps may have unconventional params, temporarily handle them here
@@ -87,7 +88,7 @@ class OAuth2Manager:
                 "adding app specific params",
                 extra={"app_name": self.app_name, "params": app_specific_params},
             )
-        # TODO:
+        # NOTE:
         # - "scope" can be specified here
         # - "response_type" can be specified here (default is "code")
         # - and additional options can be specified here (like access_type, prompt, etc.)
@@ -99,12 +100,6 @@ class OAuth2Manager:
             access_type=access_type,
             prompt=prompt,
             **app_specific_params,
-        )
-
-        # TODO: remove PII log
-        logger.error(
-            "OAuth2Manager.create_authorization_url",
-            extra={"authorization_url": authorization_url},
         )
 
         return str(authorization_url)
@@ -120,69 +115,49 @@ class OAuth2Manager:
         Exchange authorization code for access token
 
         Args:
-            client: AsyncOAuth2Client instance
-            token_endpoint: Token URL
-            authorization_response: Full callback URL with code
-            code: Authorization code (alternative to authorization_response)
-            token_storage: Optional token storage mechanism
-            user_id: User identifier for token storage
-            **kwargs: Additional parameters for token request
+            redirect_uri: The redirect URI of the OAuth2 client
+            code: The authorization code returned from OAuth2 provider
+            code_verifier: The code verifier used to for the authorization url
 
         Returns:
             Token response dictionary
         """
-        # Can use either full response URL or just the code
-        token = cast(
-            dict[str, Any],
-            await self.oauth2_client.fetch_token(
-                self.access_token_url,
-                redirect_uri=redirect_uri,
-                code=code,
-                code_verifier=code_verifier,
-            ),
-        )
-
-        # TODO: remove PII log
-        logger.error(
-            "OAuth2Manager.fetch_token",
-            extra={"token": token},
-        )
-
-        # TODO: handle openid?
-
-        return token
+        try:
+            token = cast(
+                dict[str, Any],
+                await self.oauth2_client.fetch_token(
+                    self.access_token_url,
+                    redirect_uri=redirect_uri,
+                    code=code,
+                    code_verifier=code_verifier,
+                ),
+            )
+            return token
+        except Exception as e:
+            logger.error(
+                "failed to fetch access token",
+                extra={"error": e, "app_name": self.app_name},
+            )
+            raise OAuth2Error("failed to fetch access token") from e
 
     async def refresh_token(
         self,
         refresh_token: str,
     ) -> dict[str, Any]:
-        """
-        Refresh an access token
-
-        Args:
-            client: AsyncOAuth2Client instance with refresh token
-            token_endpoint: Token URL
-            token_storage: Optional token storage mechanism
-            user_id: User identifier for token storage
-            **kwargs: Additional parameters for refresh request
-
-        Returns:
-            Updated token dictionary
-        """
-        token = cast(
-            dict[str, Any],
-            await self.oauth2_client.refresh_token(
-                self.refresh_token_url, refresh_token=refresh_token
-            ),
-        )
-
-        # TODO: remove PII log
-        logger.error(
-            "OAuth2Manager.refresh_token",
-            extra={"token": token},
-        )
-
-        return token
+        try:
+            token = cast(
+                dict[str, Any],
+                await self.oauth2_client.refresh_token(
+                    self.refresh_token_url, refresh_token=refresh_token
+                ),
+            )
+            return token
+        except Exception as e:
+            logger.error(
+                "failed to refresh access token",
+                extra={"error": e, "app_name": self.app_name},
+            )
+            raise OAuth2Error("failed to refresh access token") from e
 
     @staticmethod
     def generate_code_verifier(length: int = 48) -> str:
@@ -242,8 +217,11 @@ class OAuth2Manager:
         if app_name == "SLACK":
             authed_user = token_response.get("authed_user", {})
             if not authed_user or "access_token" not in authed_user:
-                logger.error(f"Invalid Slack OAuth response: {token_response}")
-                raise LinkedAccountOAuth2Error("Invalid Slack OAuth response")
+                logger.error(
+                    "Invalid Slack OAuth response",
+                    extra={"token_response": token_response, "app_name": app_name},
+                )
+                raise OAuth2Error("Invalid Slack OAuth response")
 
             return OAuth2SchemeCredentials(
                 access_token=authed_user["access_token"],
@@ -256,8 +234,11 @@ class OAuth2Manager:
             )
 
         if "access_token" not in token_response:
-            logger.error(f"Missing access token in OAuth response: {token_response}")
-            raise LinkedAccountOAuth2Error("Missing access token in OAuth response")
+            logger.error(
+                "Missing access_token in OAuth response",
+                extra={"token_response": token_response, "app_name": app_name},
+            )
+            raise OAuth2Error("Missing access_token in OAuth response")
 
         return OAuth2SchemeCredentials(
             access_token=token_response["access_token"],
@@ -268,21 +249,3 @@ class OAuth2Manager:
             refresh_token=token_response.get("refresh_token"),
             raw_token_response=token_response,
         )
-
-    # def create_token_update_callback(token_storage, user_id: str) -> Callable:
-    #     """
-    #     Create a callback function to handle token updates
-
-    #     Args:
-    #         token_storage: Token storage mechanism
-    #         user_id: User identifier
-
-    #     Returns:
-    #         Callback function for update_token
-    #     """
-
-    #     async def update_token(token, refresh_token=None, access_token=None):
-    #         if token_storage:
-    #             await token_storage.save_token(token, user_id=user_id)
-
-    #     return update_token
