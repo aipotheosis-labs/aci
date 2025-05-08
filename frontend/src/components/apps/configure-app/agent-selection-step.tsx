@@ -20,8 +20,6 @@ interface AgentSelectionStepProps {
   onRowSelectionChange: OnChangeFn<RowSelectionState>;
   onPrevious: () => void;
   onNext: () => void;
-  onConfigureAndNext: () => Promise<void>;
-  isLoading: boolean;
 }
 
 export function AgentSelectionStep({
@@ -29,8 +27,7 @@ export function AgentSelectionStep({
   rowSelection,
   onRowSelectionChange,
   onPrevious,
-  onConfigureAndNext,
-  isLoading,
+  onNext,
 }: AgentSelectionStepProps) {
   const columns = useAgentColumns();
 
@@ -68,8 +65,8 @@ export function AgentSelectionStep({
         <Button type="button" variant="outline" onClick={onPrevious}>
           Back
         </Button>
-        <Button type="button" onClick={onConfigureAndNext} disabled={isLoading}>
-          {isLoading ? "loading..." : "Configure and Next"}
+        <Button type="button" onClick={onNext}>
+          Next
         </Button>
       </DialogFooter>
     </div>

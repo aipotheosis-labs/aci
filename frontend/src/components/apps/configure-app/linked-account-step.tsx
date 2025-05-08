@@ -57,6 +57,7 @@ interface LinkedAccountStepProps {
   authType: string;
   onSubmit: (e: React.FormEvent) => Promise<void>;
   isLoading: boolean;
+  setCurrentStep: (step: number) => void;
 }
 
 export function LinkedAccountStep({
@@ -64,6 +65,7 @@ export function LinkedAccountStep({
   authType,
   onSubmit,
   isLoading,
+  setCurrentStep,
 }: LinkedAccountStepProps) {
   return (
     <div className="space-y-5">
@@ -140,36 +142,72 @@ export function LinkedAccountStep({
                   Skip Add Account
                 </Button>
 
+                <Button
+                  type="button"
+                  name="back"
+                  variant="outline"
+                  onClick={() => {
+                    setCurrentStep(2);
+                  }}
+                >
+                  Back
+                </Button>
+
                 {authType === "oauth2" && (
                   <Button
                     type="submit"
-                    name={FORM_SUBMIT_COPY_OAUTH2_LINK_URL}
-                    variant="outline"
-                    className="flex items-center gap-2"
+                    name={FORM_SUBMIT_LINK_OAUTH2_ACCOUNT}
+                    className="group relative flex items-center px-6 gap-2"
                   >
-                    <GoCopy className="h-4 w-4" />
-                    Copy OAuth2 URL
+                    Start OAuth2 Flow
+                    <div className="absolute right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              const copyButton =
+                                document.createElement("button");
+                              copyButton.name =
+                                FORM_SUBMIT_COPY_OAUTH2_LINK_URL;
+                              copyButton.type = "submit";
+                              e.currentTarget
+                                .closest("form")
+                                ?.appendChild(copyButton);
+                              copyButton.click();
+                              copyButton.remove();
+                            }}
+                          >
+                            <GoCopy className="h-4 w-4" />
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          <p className="text-xs">Copy OAuth2 URL</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
                   </Button>
                 )}
 
-                <Button
-                  type="submit"
-                  name={(() => {
-                    switch (authType) {
-                      case "oauth2":
-                        return FORM_SUBMIT_LINK_OAUTH2_ACCOUNT;
-                      case "no_auth":
-                        return FORM_SUBMIT_NO_AUTH;
-                      case "api_key":
-                        return FORM_SUBMIT_API_KEY;
-                      default:
-                        return FORM_SUBMIT_NO_AUTH;
-                    }
-                  })()}
-                  disabled={isLoading}
-                >
-                  {authType === "oauth2" ? "start OAuth2 flow" : "save"}
-                </Button>
+                {authType !== "oauth2" && (
+                  <Button
+                    type="submit"
+                    name={(() => {
+                      switch (authType) {
+                        case "no_auth":
+                          return FORM_SUBMIT_NO_AUTH;
+                        case "api_key":
+                          return FORM_SUBMIT_API_KEY;
+                        default:
+                          return FORM_SUBMIT_NO_AUTH;
+                      }
+                    })()}
+                    disabled={isLoading}
+                  >
+                    Save
+                  </Button>
+                )}
               </div>
             </div>
           </DialogFooter>

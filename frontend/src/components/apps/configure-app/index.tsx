@@ -135,23 +135,6 @@ export function ConfigureApp({
     setCurrentStep(2);
   };
 
-  // step 2 submit - already configured app, go to step 3
-  const handleStep2ConfigureAndNextSubmit = async () => {
-    try {
-      setSubmitLoading(true);
-      // configure app and update agents
-      const configSuccess = await configureAppAndUpdateAgents();
-      if (configSuccess) {
-        setCurrentStep(3);
-      }
-    } catch (error) {
-      console.error("Error configuring app:", error);
-      toast.error("configure app failed");
-    } finally {
-      setSubmitLoading(false);
-    }
-  };
-
   // step 3 submit -  handle account linking
   const handleLinkedAccountSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -161,18 +144,38 @@ export function ConfigureApp({
     try {
       setSubmitLoading(true);
 
-      if (submitter.name === "skip") {
-        // skip add account, close dialog
-        setOpen(false);
+      // Check if back button clicked
+      if (submitter.name === "back") {
+        setCurrentStep(2);
+        setSubmitLoading(false);
         return;
       }
 
-      // 设置认证类型以便表单验证
+      // Skip adding account
+      if (submitter.name === "skip") {
+        // Configure app and update agents
+        const configSuccess = await configureAppAndUpdateAgents();
+        if (configSuccess) {
+          setOpen(false);
+        }
+        setSubmitLoading(false);
+        return;
+      }
+
+      // Set auth type for form validation
       linkedAccountForm.setValue("_authType", security_scheme);
 
       // validate form
       await linkedAccountForm.trigger();
       if (!linkedAccountForm.formState.isValid) {
+        setSubmitLoading(false);
+        return;
+      }
+
+      // Configure app and update agents
+      const configSuccess = await configureAppAndUpdateAgents();
+      if (!configSuccess) {
+        setSubmitLoading(false);
         return;
       }
 
@@ -397,8 +400,6 @@ export function ConfigureApp({
               onRowSelectionChange={setSelectedAgentIds}
               onPrevious={() => setCurrentStep(1)}
               onNext={() => setCurrentStep(3)}
-              onConfigureAndNext={handleStep2ConfigureAndNextSubmit}
-              isLoading={submitLoading}
             />
           )}
 
@@ -408,6 +409,7 @@ export function ConfigureApp({
               authType={security_scheme}
               onSubmit={handleLinkedAccountSubmit}
               isLoading={submitLoading}
+              setCurrentStep={setCurrentStep}
             />
           )}
         </div>
