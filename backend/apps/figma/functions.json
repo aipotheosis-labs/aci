@@ -4,7 +4,11 @@
     "description": "Retrieves the document structure of a Figma file based on the given file key. Returns the entire document as JSON including nodes, their names, and types.",
     "tags": [
       "figma",
-      "files"
+      "files",
+      "Starter",
+      "Professional",
+      "Organization",
+      "Enterprise"
     ],
     "visibility": "public",
     "active": true,
@@ -91,7 +95,11 @@
     "tags": [
       "figma",
       "files",
-      "nodes"
+      "nodes",
+      "Starter",
+      "Professional",
+      "Organization",
+      "Enterprise"
     ],
     "visibility": "public",
     "active": true,
@@ -155,7 +163,11 @@
     "description": "Retrieves images rendered from a Figma file based on the given file key and node IDs.",
     "tags": [
       "figma",
-      "images"
+      "images",
+      "Starter",
+      "Professional",
+      "Organization",
+      "Enterprise"
     ],
     "visibility": "public",
     "active": true,
@@ -230,7 +242,11 @@
     "tags": [
       "figma",
       "files",
-      "versions"
+      "versions",
+      "Starter",
+      "Professional",
+      "Organization",
+      "Enterprise"
     ],
     "visibility": "public",
     "active": true,
@@ -276,7 +292,10 @@
     "tags": [
       "figma",
       "teams",
-      "projects"
+      "projects",
+      "Professional",
+      "Organization",
+      "Enterprise"
     ],
     "visibility": "public",
     "active": true,
@@ -322,7 +341,10 @@
     "tags": [
       "figma",
       "projects",
-      "files"
+      "files",
+      "Professional",
+      "Organization",
+      "Enterprise"
     ],
     "visibility": "public",
     "active": true,
@@ -368,7 +390,11 @@
     "tags": [
       "figma",
       "files",
-      "comments"
+      "comments",
+      "Starter",
+      "Professional",
+      "Organization",
+      "Enterprise"
     ],
     "visibility": "public",
     "active": true,
@@ -414,7 +440,11 @@
     "tags": [
       "figma",
       "files",
-      "images"
+      "images",
+      "Starter",
+      "Professional",
+      "Organization",
+      "Enterprise"
     ],
     "visibility": "public",
     "active": true,
@@ -460,7 +490,11 @@
     "tags": [
       "figma",
       "files",
-      "components"
+      "components",
+      "Starter",
+      "Professional",
+      "Organization",
+      "Enterprise"
     ],
     "visibility": "public",
     "active": true,
@@ -496,6 +530,144 @@
       ],
       "visible": [
         "path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_STYLE",
+    "description": "Retrieves a specific style node from a Figma file based on the given file key and node ID. Returns detailed information about the style, including its properties and metadata.",
+    "tags": [
+      "figma",
+      "styles",
+      "nodes",
+      "Starter",
+      "Professional",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/files/{file_key}/styles",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file containing the style."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "ids": {
+              "type": "string",
+              "description": "The ID of the style node to retrieve."
+            }
+          },
+          "required": [
+            "ids"
+          ],
+          "visible": [
+            "ids"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path",
+        "query"
+      ],
+      "visible": [
+        "path",
+        "query"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_COMPONENT",
+    "description": "Retrieves a specific component node from a Figma file based on the given file key and node ID. Returns detailed information about the component, including its properties and metadata.",
+    "tags": [
+      "figma",
+      "components",
+      "nodes",
+      "Starter",
+      "Professional",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/files/{file_key}/components",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file containing the component."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "ids": {
+              "type": "string",
+              "description": "The ID of the component node to retrieve."
+            }
+          },
+          "required": [
+            "ids"
+          ],
+          "visible": [
+            "ids"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path",
+        "query"
+      ],
+      "visible": [
+        "path",
+        "query"
       ],
       "additionalProperties": false
     }
