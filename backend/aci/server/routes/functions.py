@@ -1,5 +1,5 @@
 from datetime import UTC, datetime
-from typing import Annotated, Any
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 from openai import OpenAI
@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 from aci.common import processor
 from aci.common.db import crud
-from aci.common.db.sql_models import Function
+from aci.common.db.sql_models import Agent, Function, Project
 from aci.common.embeddings import generate_embedding
 from aci.common.enums import FunctionDefinitionFormat, Visibility
 from aci.common.exceptions import (
@@ -269,12 +269,12 @@ def format_function_definition(
 
 async def execute_function(
     db_session: Session,
-    project: Any,
-    agent: Any,
+    project: Project,
+    agent: Agent,
     function_name: str,
     function_input: dict,
     linked_account_owner_id: str,
-    openai_client: OpenAI | None = None,
+    openai_client: OpenAI,
 ) -> FunctionExecutionResult:
     """
     Execute a function with the given parameters.
@@ -331,7 +331,6 @@ async def execute_function(
         raise AppConfigurationNotFound(
             f"configuration for app={function.app.name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{function.app.name}"
         )
-
     # Check if user has disabled the app configuration
     if not app_configuration.enabled:
         logger.error(
