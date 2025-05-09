@@ -37,7 +37,7 @@ export default withSentryConfig(nextConfig, {
   // https://github.com/getsentry/sentry-webpack-plugin#options
 
   org: "aipotheosis-labs",
-  project: "javascript-nextjs",
+  project: "aci-dev-portal",
 
   // Only print logs for uploading source maps in CI
   // CI=true is automatically set by GitHub Actions and other CI tools
