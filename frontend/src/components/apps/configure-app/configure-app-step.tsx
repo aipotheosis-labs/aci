@@ -17,29 +17,30 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
-
 // Form schema for security scheme selection
-export const securitySchemeFormSchema = z.object({
+export const ConfigureAppFormSchema = z.object({
   security_scheme: z.string().min(1, "Security Scheme is required"),
 });
 
-export type SecuritySchemeFormValues = z.infer<typeof securitySchemeFormSchema>;
+export type ConfigureAppFormValues = z.infer<typeof ConfigureAppFormSchema>;
 
-interface SecuritySchemeStepProps {
-  form: ReturnType<typeof useForm<SecuritySchemeFormValues>>;
+interface ConfigureAppStepProps {
+  form: ReturnType<typeof useForm<ConfigureAppFormValues>>;
   security_schemes: string[];
-  onNext: (values: SecuritySchemeFormValues) => void;
+  onNext: (values: ConfigureAppFormValues) => void;
   onCancel: () => void;
   name: string;
+  isLoading: boolean;
 }
 
-export function SecuritySchemeStep({
+export function ConfigureAppStep({
   form,
   security_schemes,
   onNext,
   onCancel,
   name,
-}: SecuritySchemeStepProps) {
+  isLoading,
+}: ConfigureAppStepProps) {
   return (
     <div className="space-y-4">
       <div className="mb-1">
@@ -82,7 +83,9 @@ export function SecuritySchemeStep({
             <Button type="button" variant="outline" onClick={onCancel}>
               Cancel
             </Button>
-            <Button type="submit">Next</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Confirming..." : "Confirm"}
+            </Button>
           </DialogFooter>
         </form>
       </Form>

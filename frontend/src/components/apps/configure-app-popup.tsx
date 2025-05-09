@@ -4,7 +4,7 @@ import { ConfigureApp } from "@/components/apps/configure-app";
 
 export interface ConfigureAppPopupProps {
   children: React.ReactNode;
-  configureApp: (security_scheme: string) => Promise<void>;
+  configureApp: (security_scheme: string) => Promise<boolean>;
   name: string;
   security_schemes: string[];
   logo?: string;

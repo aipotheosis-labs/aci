@@ -26,10 +26,10 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 
 import {
-  SecuritySchemeStep,
-  SecuritySchemeFormValues,
-  securitySchemeFormSchema,
-} from "@/components/apps/configure-app/security-scheme-step";
+  ConfigureAppStep,
+  ConfigureAppFormValues,
+  ConfigureAppFormSchema,
+} from "@/components/apps/configure-app/configure-app-step";
 import {
   AgentSelectionStep,
   AgentSelectFormValues,
@@ -47,14 +47,14 @@ import {
 
 // step definitions
 const STEPS = [
-  { id: 1, title: "Select Security Scheme" },
+  { id: 1, title: "Configure App" },
   { id: 2, title: "Select Agents" },
   { id: 3, title: "Add Linked Account" },
 ];
 
 interface ConfigureAppProps {
   children: React.ReactNode;
-  configureApp: (security_scheme: string) => Promise<void>;
+  configureApp: (security_scheme: string) => Promise<boolean>;
   name: string;
   security_schemes: string[];
   logo?: string;
@@ -77,11 +77,11 @@ export function ConfigureApp({
   const [submitLoading, setSubmitLoading] = useState(false);
 
   // security scheme
-  const [security_scheme, setSecurityScheme] = useState<string>("");
+  const [security_scheme, setConfigureApp] = useState<string>("");
 
   // security scheme form
-  const securitySchemeForm = useForm<SecuritySchemeFormValues>({
-    resolver: zodResolver(securitySchemeFormSchema),
+  const ConfigureAppForm = useForm<ConfigureAppFormValues>({
+    resolver: zodResolver(ConfigureAppFormSchema),
     defaultValues: {
       security_scheme: security_schemes?.[0] ?? "",
     },
@@ -106,10 +106,10 @@ export function ConfigureApp({
   const resetAll = useCallback(() => {
     setCurrentStep(1);
     setSelectedAgentIds({});
-    securitySchemeForm.reset();
+    ConfigureAppForm.reset();
     agentSelectForm.reset();
     linkedAccountForm.reset();
-  }, [securitySchemeForm, agentSelectForm, linkedAccountForm]);
+  }, [ConfigureAppForm, agentSelectForm, linkedAccountForm]);
 
   useEffect(() => {
     if (!open) {
@@ -130,9 +130,47 @@ export function ConfigureApp({
   }, [open, activeProject]);
 
   // step 1 submit
-  const handleStep1Submit = (values: SecuritySchemeFormValues) => {
-    setSecurityScheme(values.security_scheme);
-    setCurrentStep(2);
+  const handleConfigureAppSubmit = async (values: ConfigureAppFormValues) => {
+    setConfigureApp(values.security_scheme);
+    setSubmitLoading(true);
+    const success = await configureApp(values.security_scheme);
+    if (success) {
+      setCurrentStep(2);
+    }
+    setSubmitLoading(false);
+  };
+
+  // step 2 submit
+  const handleAgentSelectionSubmit = async () => {
+    if (Object.keys(selectedAgentIds).length === 0) {
+      setCurrentStep(3);
+      return;
+    }
+
+    try {
+      const agentsToUpdate = activeProject.agents.filter(
+        (agent) => agent.id && selectedAgentIds[agent.id],
+      );
+
+      for (const agent of agentsToUpdate) {
+        const allowedApps = new Set(agent.allowed_apps);
+        allowedApps.add(name);
+        await updateAgent(
+          activeProject.id,
+          agent.id,
+          accessToken,
+          undefined,
+          undefined,
+          Array.from(allowedApps),
+        );
+      }
+      toast.success("agents updated successfully");
+      await reloadActiveProject();
+      setCurrentStep(3);
+    } catch (error) {
+      console.error("agents updated app failed:", error);
+      toast.error("agents updated app failed");
+    }
   };
 
   // step 3 submit -  handle account linking
@@ -140,27 +178,13 @@ export function ConfigureApp({
     e.preventDefault();
     const nativeEvent = e.nativeEvent as SubmitEvent;
     const submitter = nativeEvent.submitter as HTMLButtonElement;
+    if (submitter.name == "skip") {
+      setOpen(false);
+      return;
+    }
 
     try {
       setSubmitLoading(true);
-
-      // Check if back button clicked
-      if (submitter.name === "back") {
-        setCurrentStep(2);
-        setSubmitLoading(false);
-        return;
-      }
-
-      // Skip adding account
-      if (submitter.name === "skip") {
-        // Configure app and update agents
-        const configSuccess = await configureAppAndUpdateAgents();
-        if (configSuccess) {
-          setOpen(false);
-        }
-        setSubmitLoading(false);
-        return;
-      }
 
       // Set auth type for form validation
       linkedAccountForm.setValue("_authType", security_scheme);
@@ -168,13 +192,6 @@ export function ConfigureApp({
       // validate form
       await linkedAccountForm.trigger();
       if (!linkedAccountForm.formState.isValid) {
-        setSubmitLoading(false);
-        return;
-      }
-
-      // Configure app and update agents
-      const configSuccess = await configureAppAndUpdateAgents();
-      if (!configSuccess) {
         setSubmitLoading(false);
         return;
       }
@@ -207,37 +224,6 @@ export function ConfigureApp({
       toast.error("add linked account failed");
     } finally {
       setSubmitLoading(false);
-    }
-  };
-
-  // configure app and update agents
-  const configureAppAndUpdateAgents = async () => {
-    try {
-      await configureApp(security_scheme);
-
-      const agentsToUpdate = activeProject.agents.filter(
-        (agent) => agent.id && selectedAgentIds[agent.id],
-      );
-
-      for (const agent of agentsToUpdate) {
-        const allowedApps = new Set(agent.allowed_apps);
-        allowedApps.add(name);
-        await updateAgent(
-          activeProject.id,
-          agent.id,
-          accessToken,
-          undefined,
-          undefined,
-          Array.from(allowedApps),
-        );
-      }
-
-      await reloadActiveProject();
-      return true;
-    } catch (error) {
-      console.error("Error configuring app:", error);
-      toast.error("configure app failed");
-      return false;
     }
   };
 
@@ -283,11 +269,15 @@ export function ConfigureApp({
         })
         .catch((err) => {
           console.error("Failed to copy:", err);
-          toast.error("copy OAuth2 link URL to clipboard failed");
+          toast.error(
+            "copy OAuth2 link URL to clipboard failed, please start OAuth2 Flow",
+          );
         });
     } catch (error) {
       console.error(error);
-      toast.error("copy OAuth2 link URL to clipboard failed");
+      toast.error(
+        "copy OAuth2 link URL to clipboard failed, please start OAuth2 Flow",
+      );
     }
   };
 
@@ -384,12 +374,13 @@ export function ConfigureApp({
         {/* step content */}
         <div className="max-h-[50vh] overflow-y-auto p-1">
           {currentStep === 1 && (
-            <SecuritySchemeStep
-              form={securitySchemeForm}
+            <ConfigureAppStep
+              form={ConfigureAppForm}
               security_schemes={security_schemes}
-              onNext={handleStep1Submit}
+              onNext={handleConfigureAppSubmit}
               onCancel={() => setOpen(false)}
               name={name}
+              isLoading={submitLoading}
             />
           )}
 
@@ -398,8 +389,8 @@ export function ConfigureApp({
               agents={activeProject.agents}
               rowSelection={selectedAgentIds}
               onRowSelectionChange={setSelectedAgentIds}
-              onPrevious={() => setCurrentStep(1)}
-              onNext={() => setCurrentStep(3)}
+              onNext={handleAgentSelectionSubmit}
+              isLoading={submitLoading}
             />
           )}
 
@@ -410,6 +401,7 @@ export function ConfigureApp({
               onSubmit={handleLinkedAccountSubmit}
               isLoading={submitLoading}
               setCurrentStep={setCurrentStep}
+              onClose={() => setOpen(false)}
             />
           )}
         </div>

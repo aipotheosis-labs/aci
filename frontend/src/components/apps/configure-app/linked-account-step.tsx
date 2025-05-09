@@ -58,6 +58,7 @@ interface LinkedAccountStepProps {
   onSubmit: (e: React.FormEvent) => Promise<void>;
   isLoading: boolean;
   setCurrentStep: (step: number) => void;
+  onClose: () => void;
 }
 
 export function LinkedAccountStep({
@@ -65,7 +66,7 @@ export function LinkedAccountStep({
   authType,
   onSubmit,
   isLoading,
-  setCurrentStep,
+  onClose,
 }: LinkedAccountStepProps) {
   return (
     <div className="space-y-5">
@@ -137,78 +138,55 @@ export function LinkedAccountStep({
 
           <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0">
             <div className="flex flex-row gap-2 w-full justify-end">
-              <div className="flex flex-row gap-2">
-                <Button type="submit" name="skip" variant="outline">
-                  Skip Add Account
-                </Button>
+              <Button
+                type="submit"
+                name="skip"
+                variant="outline"
+                onClick={onClose}
+              >
+                Skip Add Account
+              </Button>
 
+              {authType === "oauth2" && (
                 <Button
-                  type="button"
-                  name="back"
+                  type="submit"
+                  name={FORM_SUBMIT_COPY_OAUTH2_LINK_URL}
                   variant="outline"
-                  onClick={() => {
-                    setCurrentStep(2);
-                  }}
+                  className="flex items-center gap-2"
                 >
-                  Back
+                  <GoCopy className="h-4 w-4" />
+                  Copy OAuth2 URL
                 </Button>
+              )}
 
-                {authType === "oauth2" && (
-                  <Button
-                    type="submit"
-                    name={FORM_SUBMIT_LINK_OAUTH2_ACCOUNT}
-                    className="group relative flex items-center px-6 gap-2"
-                  >
-                    Start OAuth2 Flow
-                    <div className="absolute right-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <div
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              const copyButton =
-                                document.createElement("button");
-                              copyButton.name =
-                                FORM_SUBMIT_COPY_OAUTH2_LINK_URL;
-                              copyButton.type = "submit";
-                              e.currentTarget
-                                .closest("form")
-                                ?.appendChild(copyButton);
-                              copyButton.click();
-                              copyButton.remove();
-                            }}
-                          >
-                            <GoCopy className="h-4 w-4" />
-                          </div>
-                        </TooltipTrigger>
-                        <TooltipContent side="top">
-                          <p className="text-xs">Copy OAuth2 URL</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    </div>
-                  </Button>
-                )}
+              {authType === "oauth2" && (
+                <Button
+                  type="submit"
+                  name={FORM_SUBMIT_LINK_OAUTH2_ACCOUNT}
+                  className="group relative flex items-center px-6 gap-2"
+                >
+                  Start OAuth2 Flow
+                </Button>
+              )}
 
-                {authType !== "oauth2" && (
-                  <Button
-                    type="submit"
-                    name={(() => {
-                      switch (authType) {
-                        case "no_auth":
-                          return FORM_SUBMIT_NO_AUTH;
-                        case "api_key":
-                          return FORM_SUBMIT_API_KEY;
-                        default:
-                          return FORM_SUBMIT_NO_AUTH;
-                      }
-                    })()}
-                    disabled={isLoading}
-                  >
-                    Save
-                  </Button>
-                )}
-              </div>
+              {authType !== "oauth2" && (
+                <Button
+                  type="submit"
+                  name={(() => {
+                    switch (authType) {
+                      case "no_auth":
+                        return FORM_SUBMIT_NO_AUTH;
+                      case "api_key":
+                        return FORM_SUBMIT_API_KEY;
+                      default:
+                        return FORM_SUBMIT_NO_AUTH;
+                    }
+                  })()}
+                  disabled={isLoading}
+                >
+                  Save
+                </Button>
+              )}
             </div>
           </DialogFooter>
         </form>
