@@ -74,6 +74,7 @@ export function ConfigureApp({
   const [selectedAgentIds, setSelectedAgentIds] = useState<RowSelectionState>(
     {},
   );
+  const redirectUrl = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
   const [submitLoading, setSubmitLoading] = useState(false);
 
   // security scheme
@@ -380,6 +381,7 @@ export function ConfigureApp({
               onNext={handleConfigureAppSubmit}
               name={name}
               isLoading={submitLoading}
+              redirectUrl={redirectUrl}
             />
           )}
 
