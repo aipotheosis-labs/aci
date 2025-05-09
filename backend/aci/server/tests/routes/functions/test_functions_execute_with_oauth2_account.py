@@ -95,14 +95,11 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
     )
 
     # mock the refresh token endpoint
-    # TODO: note that /token endpoint is called instead of /refresh. I think this is because we user
-    # grant_type = "refresh_token" in the oauth2 code when refreshing the access token.
-    # Need to double check what happens if the oauth2 provider does not support this grant type.
     mock_refresh_token_response = {
         "access_token": "dummy_new_access_token",
         "expires_in": 3600,
     }
-    respx.post("https://api.mock.aci.com/v1/oauth2/token").mock(
+    respx.post("https://api.mock.aci.com/v1/oauth2/refresh").mock(
         return_value=httpx.Response(
             200,
             json=mock_refresh_token_response,
@@ -255,7 +252,7 @@ def test_execute_oauth2_based_function_with_expired_app_default_access_token(
         "access_token": "new_dummy_app_default_oauth2_access_token",
         "expires_in": 3600,
     }
-    respx.post("https://api.mock.aci.com/v1/oauth2/token").mock(
+    respx.post("https://api.mock.aci.com/v1/oauth2/refresh").mock(
         return_value=httpx.Response(
             200,
             json=mock_refresh_token_response,

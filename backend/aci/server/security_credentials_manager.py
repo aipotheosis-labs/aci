@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 from aci.common.db.sql_models import App, LinkedAccount
 from aci.common.enums import SecurityScheme
-from aci.common.exceptions import NoImplementationFound
+from aci.common.exceptions import NoImplementationFound, OAuth2Error
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.security_scheme import (
     APIKeyScheme,
@@ -14,7 +14,7 @@ from aci.common.schemas.security_scheme import (
     OAuth2Scheme,
     OAuth2SchemeCredentials,
 )
-from aci.server import oauth2
+from aci.server.oauth2_manager import OAuth2Manager
 
 logger = get_logger(__name__)
 
@@ -105,7 +105,7 @@ async def _get_oauth2_credentials(
         and oauth2_scheme_credentials.refresh_token
     ):
         logger.warning(
-            "access token expired",
+            "access token expired, trying to refresh",
             extra={
                 "linked_account": linked_account.id,
                 "security_scheme": linked_account.security_scheme,
@@ -115,13 +115,35 @@ async def _get_oauth2_credentials(
         token_response = await _refresh_oauth2_access_token(
             app, oauth2_scheme_credentials.refresh_token
         )
-        # TODO: use pydantic for validation; should we update "scope", "token_type" etc as well if
-        # returned by the provider?
+
+        expires_at: int | None = None
+        if "expires_at" in token_response:
+            expires_at = int(token_response["expires_at"])
+        elif "expires_in" in token_response:
+            expires_at = int(time.time()) + int(token_response["expires_in"])
+
+        if not token_response.get("access_token") or not expires_at:
+            logger.error(
+                "failed to refresh access token",
+                extra={
+                    "token_response": token_response,
+                    "app": app.name,
+                    "linked_account": linked_account.id,
+                    "security_scheme": linked_account.security_scheme,
+                },
+            )
+            raise OAuth2Error("failed to refresh access token")
+
+        fields_to_update = {
+            "access_token": token_response["access_token"],
+            "expires_at": expires_at,
+        }
+        # NOTE: some app's refresh token can only be used once, so we need to update the refresh token (if returned)
+        if token_response.get("refresh_token"):
+            fields_to_update["refresh_token"] = token_response["refresh_token"]
+
         oauth2_scheme_credentials = oauth2_scheme_credentials.model_copy(
-            update={
-                "access_token": token_response["access_token"],
-                "expires_at": int(time.time()) + token_response["expires_in"],
-            }
+            update=fields_to_update,
         )
         is_updated = True
     else:
@@ -146,8 +168,8 @@ async def _refresh_oauth2_access_token(app: App, refresh_token: str) -> dict:
     app_default_oauth2_config = OAuth2Scheme.model_validate(
         app.security_schemes[SecurityScheme.OAUTH2]
     )
-    oauth2_client = oauth2.create_oauth2_client(
-        name=app.name,
+    oauth2_manager = OAuth2Manager(
+        app_name=app.name,
         client_id=app_default_oauth2_config.client_id,
         client_secret=app_default_oauth2_config.client_secret,
         scope=app_default_oauth2_config.scope,
@@ -156,15 +178,12 @@ async def _refresh_oauth2_access_token(app: App, refresh_token: str) -> dict:
         refresh_token_url=app_default_oauth2_config.refresh_token_url,
         token_endpoint_auth_method=app_default_oauth2_config.token_endpoint_auth_method,
     )
-    # TODO: error handling for oauth2 methods
-    token_response = await oauth2.refresh_access_token(oauth2_client, refresh_token)
-    # TODO: seems the token_response contains both "expires_at" and "expires_in", in which care
+
+    token_response = await oauth2_manager.refresh_token(refresh_token)
+
+    # TODO: seems the token_response contains both "expires_at" and "expires_in", in which case
     # the "expires_at" should be used. Need to double check if it's the same for "authorize_access_token" method
     # and other providers.
-    logger.debug(
-        "oauth2 access token refreshed",
-        extra={"token_response": token_response, "app": app.name},
-    )
 
     return token_response
 
