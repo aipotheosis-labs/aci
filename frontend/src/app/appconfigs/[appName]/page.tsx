@@ -271,24 +271,31 @@ export default function AppConfigDetailPage() {
             )}
           </div>
           <div>
-            <Link href={`/apps/${app?.name}`}>
-              <h1 className="text-2xl font-semibold">{app?.display_name}</h1>
-            </Link>
+            <h1 className="text-2xl font-semibold">{app?.display_name}</h1>
             <IdDisplay id={app?.name ?? ""} />
           </div>
         </div>
-        {app && (
-          <AddAccountForm
-            appInfos={[
-              {
-                name: app.name,
-                logo: app.logo,
-                securitySchemes: app.security_schemes,
-              },
-            ]}
-            updateLinkedAccounts={refreshLinkedAccounts}
-          />
-        )}
+        <div className="flex items-center gap-4">
+          {app && (
+            <Link href={`/apps/${app?.name}`}>
+              <Button variant="outline" size="sm">
+                Go to App
+              </Button>
+            </Link>
+          )}
+          {app && (
+            <AddAccountForm
+              appInfos={[
+                {
+                  name: app.name,
+                  logo: app.logo,
+                  securitySchemes: app.security_schemes,
+                },
+              ]}
+              updateLinkedAccounts={refreshLinkedAccounts}
+            />
+          )}
+        </div>
       </div>
 
       <Tabs defaultValue={"linked"} className="w-full">
