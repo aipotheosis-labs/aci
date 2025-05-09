@@ -28,7 +28,6 @@ interface ConfigureAppStepProps {
   form: ReturnType<typeof useForm<ConfigureAppFormValues>>;
   security_schemes: string[];
   onNext: (values: ConfigureAppFormValues) => void;
-  onCancel: () => void;
   name: string;
   isLoading: boolean;
 }
@@ -37,7 +36,6 @@ export function ConfigureAppStep({
   form,
   security_schemes,
   onNext,
-  onCancel,
   name,
   isLoading,
 }: ConfigureAppStepProps) {
@@ -80,9 +78,6 @@ export function ConfigureAppStep({
           />
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={onCancel}>
-              Cancel
-            </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? "Confirming..." : "Confirm"}
             </Button>

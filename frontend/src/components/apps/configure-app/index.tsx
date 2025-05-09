@@ -353,7 +353,7 @@ export function ConfigureApp({
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold flex items-center gap-2">
-            Integrate App
+            Configure App
             <Badge variant="secondary" className="p-2">
               <Image
                 src={logo ?? ""}
@@ -378,7 +378,6 @@ export function ConfigureApp({
               form={ConfigureAppForm}
               security_schemes={security_schemes}
               onNext={handleConfigureAppSubmit}
-              onCancel={() => setOpen(false)}
               name={name}
               isLoading={submitLoading}
             />
