@@ -10,10 +10,9 @@ class PlanFeatures(BaseModel):
     log_retention_days: int
 
 
-class PlanUpdate(BaseModel):
+class PlanUpdate(BaseModel, extra="forbid"):
     stripe_product_id: str | None = Field(None)
     stripe_monthly_price_id: str | None = Field(None)
     stripe_yearly_price_id: str | None = Field(None)
     features: PlanFeatures | None = Field(None)
     is_public: bool | None = Field(None)
-    model_config = {"extra": "forbid"}

@@ -20,6 +20,11 @@ class APIKeyScheme(BaseModel):
     )
 
 
+# NOTE: not necessary but for the sake of consistency and future use
+class APIKeySchemePublic(BaseModel):
+    pass
+
+
 class OAuth2Scheme(BaseModel):
     # TODO: consider providing a default value for in_, name, prefix as they are usually the same for most apps
     location: HttpLocation = Field(
@@ -66,6 +71,16 @@ class OAuth2Scheme(BaseModel):
     )
 
 
+# NOTE: need to show these fields for custom oauth2 app feature.
+class OAuth2SchemePublic(BaseModel):
+    # user needs to know the scope to set in their own oauth2 app.
+    scope: str = Field(
+        ...,
+        description="Space separated scopes of the OAuth2 client used for the app, "
+        "e.g., 'openid email profile https://www.googleapis.com/auth/calendar'",
+    )
+
+
 class NoAuthScheme(BaseModel, extra="forbid"):
     """
     model for security scheme that has no authentication.
@@ -73,6 +88,11 @@ class NoAuthScheme(BaseModel, extra="forbid"):
     We could also add some fields as metadata in the future if needed.
     """
 
+    pass
+
+
+# NOTE: not necessary but for the sake of consistency and future use
+class NoAuthSchemePublic(BaseModel):
     pass
 
 
@@ -108,6 +128,16 @@ class NoAuthSchemeCredentials(BaseModel, extra="forbid"):
     """
 
     pass
+
+
+class SecuritySchemesPublic(BaseModel):
+    """
+    scheme_type -> scheme with sensitive information removed
+    """
+
+    api_key: APIKeySchemePublic | None = None
+    oauth2: OAuth2SchemePublic | None = None
+    no_auth: NoAuthSchemePublic | None = None
 
 
 TScheme = TypeVar("TScheme", APIKeyScheme, OAuth2Scheme, NoAuthScheme)

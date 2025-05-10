@@ -1,6 +1,5 @@
 import re
 from datetime import datetime
-from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -14,10 +13,11 @@ from aci.common.schemas.security_scheme import (
     NoAuthSchemeCredentials,
     OAuth2Scheme,
     OAuth2SchemeCredentials,
+    SecuritySchemesPublic,
 )
 
 
-class AppUpsert(BaseModel):
+class AppUpsert(BaseModel, extra="forbid"):
     name: str
     display_name: str
     provider: str
@@ -154,16 +154,11 @@ class AppDetails(BaseModel):
     # the security_schemes field in the db model is a dict of supported security schemes and their config,
     # which contains sensitive information like OAuth2 client secret.
     security_schemes: list[SecurityScheme]
+    # TODO: added supported_security_schemes instead of chaning security_schemes for backward compatibility
+    # consider merging the two fields in the future
+    supported_security_schemes: SecuritySchemesPublic
+
     functions: list[FunctionDetails]
 
     created_at: datetime
     updated_at: datetime
-
-    model_config = ConfigDict(from_attributes=True)
-
-    @field_validator("security_schemes", mode="before")
-    @classmethod
-    def extract_supported_security_schemes(cls, v: Any) -> Any:
-        if isinstance(v, dict):
-            return [SecurityScheme(k) for k in v.keys()]
-        return v
