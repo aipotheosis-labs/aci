@@ -98,7 +98,6 @@ app.add_middleware(SessionMiddleware, secret_key=config.SIGNING_KEY)
 # )
 app.add_middleware(
     CORSMiddleware,
-    # TODO: remove localhost:3000 after FE contractor is done with his work
     allow_origins=[config.DEV_PORTAL_URL],
     allow_credentials=True,
     allow_methods=["*"],

@@ -326,19 +326,6 @@ class LinkedAccountDisabled(ACIException):
         )
 
 
-class LinkedAccountOAuth2Error(ACIException):
-    """
-    Exception raised when an OAuth2 error occurs
-    """
-
-    def __init__(self, message: str | None = None):
-        super().__init__(
-            title="Linked account OAuth2 error",
-            message=message,
-            error_code=status.HTTP_400_BAD_REQUEST,
-        )
-
-
 class AgentNotFound(ACIException):
     """
     Exception raised when an agent is not found
@@ -431,4 +418,17 @@ class BillingError(ACIException):
             title="Billing error",
             message=message,
             error_code=error_code,
+        )
+
+
+class OAuth2Error(ACIException):
+    """
+    Exception raised when an OAuth2 error occurs
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="OAuth2 error",
+            message=message,
+            error_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )

@@ -21,7 +21,9 @@ def test_app_table_security_schemes_column_encryption(db_session: Session) -> No
             client_id="test_client_id",
             client_secret=expected_client_secret,
             scope="openid email profile",
-            server_metadata_url="https://example.com/metadata",
+            authorize_url="https://example.com/auth",
+            access_token_url="https://example.com/access_token",
+            refresh_token_url="https://example.com/refresh_token",
         ).model_dump()
     }
 
@@ -89,7 +91,9 @@ def test_app_configuration_table_security_scheme_overrides_column_encryption(
             client_id="test_client_id",
             client_secret=expected_client_secret,
             scope="openid email profile",
-            server_metadata_url="https://example.com/metadata",
+            authorize_url="https://example.com/auth",
+            access_token_url="https://example.com/access_token",
+            refresh_token_url="https://example.com/refresh_token",
         ).model_dump()
     }
 
@@ -143,7 +147,7 @@ def test_app_table_security_schemes_column_mutable_dict_detection(db_session: Se
     and save it to the database.
     """
     # Given - Create test data
-    initial_metadata_url = "https://example.com/metadata"
+    initial_authorize_url = "https://example.com/auth"
     security_schemes = {
         SecurityScheme.OAUTH2: OAuth2Scheme(
             location=HttpLocation.HEADER,
@@ -152,7 +156,9 @@ def test_app_table_security_schemes_column_mutable_dict_detection(db_session: Se
             client_id="test_client_id",
             client_secret="very_secret_value",
             scope="openid email profile",
-            server_metadata_url=initial_metadata_url,
+            authorize_url=initial_authorize_url,
+            access_token_url="https://example.com/access_token",
+            refresh_token_url="https://example.com/refresh_token",
         ).model_dump()
     }
 
@@ -175,9 +181,9 @@ def test_app_table_security_schemes_column_mutable_dict_detection(db_session: Se
     db_session.commit()
 
     # When - Update the security_schemes
-    new_metadata_url = "https://example.com/new_metadata"
+    new_authorize_url = "https://example.com/new_auth"
     new_security_schemes = app.security_schemes[SecurityScheme.OAUTH2].copy()
-    new_security_schemes["server_metadata_url"] = new_metadata_url
+    new_security_schemes["authorize_url"] = new_authorize_url
 
     app.security_schemes[SecurityScheme.OAUTH2] = new_security_schemes
     db_session.commit()
@@ -187,8 +193,7 @@ def test_app_table_security_schemes_column_mutable_dict_detection(db_session: Se
     retrieved_app = db_session.query(App).filter_by(name="test_app").first()
     assert retrieved_app is not None
     assert (
-        retrieved_app.security_schemes[SecurityScheme.OAUTH2]["server_metadata_url"]
-        == new_metadata_url
+        retrieved_app.security_schemes[SecurityScheme.OAUTH2]["authorize_url"] == new_authorize_url
     )
 
 
@@ -202,7 +207,7 @@ def test_app_configuration_table_security_scheme_overrides_column_mutable_dict_d
     and save it to the database.
     """
     # Given - Create and save AppConfiguration with security_scheme_overrides
-    initial_metadata_url = "https://example.com/metadata"
+    initial_authorize_url = "https://example.com/auth"
     security_scheme_overrides = {
         SecurityScheme.OAUTH2: OAuth2Scheme(
             location=HttpLocation.HEADER,
@@ -211,7 +216,9 @@ def test_app_configuration_table_security_scheme_overrides_column_mutable_dict_d
             client_id="test_client_id",
             client_secret="very_secret_value",
             scope="openid email profile",
-            server_metadata_url=initial_metadata_url,
+            authorize_url=initial_authorize_url,
+            access_token_url="https://example.com/access_token",
+            refresh_token_url="https://example.com/refresh_token",
         ).model_dump()
     }
     app_config = AppConfiguration(
@@ -227,11 +234,11 @@ def test_app_configuration_table_security_scheme_overrides_column_mutable_dict_d
     db_session.commit()
 
     # When - Update the security_scheme_overrides
-    new_metadata_url = "https://example.com/new_metadata"
+    new_authorize_url = "https://example.com/new_auth"
     new_security_scheme_overrides = app_config.security_scheme_overrides[
         SecurityScheme.OAUTH2
     ].copy()
-    new_security_scheme_overrides["server_metadata_url"] = new_metadata_url
+    new_security_scheme_overrides["authorize_url"] = new_authorize_url
 
     app_config.security_scheme_overrides[SecurityScheme.OAUTH2] = new_security_scheme_overrides
     db_session.commit()
@@ -242,6 +249,6 @@ def test_app_configuration_table_security_scheme_overrides_column_mutable_dict_d
     retrieved_app_config = db_session.query(AppConfiguration).filter_by(id=app_config_id).first()
     assert retrieved_app_config is not None
     assert (
-        retrieved_app_config.security_scheme_overrides[SecurityScheme.OAUTH2]["server_metadata_url"]
-        == new_metadata_url
+        retrieved_app_config.security_scheme_overrides[SecurityScheme.OAUTH2]["authorize_url"]
+        == new_authorize_url
     )

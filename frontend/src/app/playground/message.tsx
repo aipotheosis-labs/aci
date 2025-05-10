@@ -15,9 +15,21 @@ import { Markdown } from "./markdown";
 const PurePreviewMessage = ({
   message,
   isLoading,
+  linkedAccountOwnerId,
+  apiKey,
+  addToolResult,
 }: {
   message: UIMessage;
   isLoading: boolean;
+  linkedAccountOwnerId: string;
+  apiKey: string;
+  addToolResult: ({
+    toolCallId,
+    result,
+  }: {
+    toolCallId: string;
+    result: object;
+  }) => void;
 }) => {
   return (
     <AnimatePresence>
@@ -103,6 +115,9 @@ const PurePreviewMessage = ({
                     <FunctionCalling
                       key={`${toolCallId}-${state}`}
                       toolInvocation={toolInvocation}
+                      linkedAccountOwnerId={linkedAccountOwnerId}
+                      apiKey={apiKey}
+                      addToolResult={addToolResult}
                     />
                   );
                 }

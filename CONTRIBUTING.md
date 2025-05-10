@@ -14,14 +14,9 @@ Before you begin contributing, please set up your local development environment 
 
 Before we can merge your contribution, we need you to agree to our Contributor License Agreement (CLA). This protects both you and the project.
 
-- **Individuals:** Please read the [Individual CLA (CLA-Individual.md)](CLA-Individual.md). To signify your agreement, comment on your Pull Request with the exact phrase:
-    `I have read the CLA Document and I hereby sign the CLA`
+- **Contributors:** Please read the [CLA (CLA.md)](CLA.md). To signify your agreement, then proceed to [this link](https://bit.ly/4iTXI10) to sign the CLA.
 
-- **Corporations:** If you are contributing on behalf of a company, please ensure **both** of the following steps are completed:
-    1. An authorized representative from your company must read the [Corporate CLA (CLA-Corporate.md)](CLA-Corporate.md) and signify agreement by commenting on the Pull Request with the exact phrase: `We have read the CLA Document and we hereby sign the CLA`. This comment must also include the Corporation Name, Address, Point of Contact Name, Email, and Phone number as specified in the Corporate CLA.
-    2. The individual developer submitting the code must **also** sign the [Individual CLA (CLA-Individual.md)](CLA-Individual.md) by commenting with the phrase specified in the "Individuals" section above.
-
-We cannot accept pull requests until **all** required CLA agreements are met.
+*We cannot accept pull requests until you have signed the CLA*.
 
 ## Repository Structure
 
@@ -32,7 +27,7 @@ Our monorepo contains two main components:
 
 ## Getting in Touch
 
-Before starting work on a contribution, especially for larger features or changes, we kindly request that you first get in touch with the core team by emailing <support@aipolabs.xyz>. This helps us coordinate efforts, provide guidance, and ensure your contribution aligns with the project's roadmap.
+Before starting work on a contribution, especially for larger features or changes, we kindly request that you first get in touch with the core team on [Discord](https://discord.com/invite/UU2XAnfHJh) or by emailing <support@aipolabs.xyz>. This helps us coordinate efforts, provide guidance, and ensure your contribution aligns with the project's roadmap.
 
 ## How to Contribute
 

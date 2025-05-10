@@ -64,12 +64,13 @@ const AppPage = () => {
 
   const configureApp = async (security_scheme: string) => {
     const apiKey = getApiKey(activeProject);
-    if (!app) return;
+    if (!app) return false;
 
     try {
       const appConfig = await createAppConfig(appName, security_scheme, apiKey);
       setAppConfig(appConfig);
       toast.success(`Successfully configured app: ${app.display_name}`);
+      return true;
     } catch (error) {
       if (error instanceof AppAlreadyConfiguredError) {
         toast.error(
@@ -79,6 +80,7 @@ const AppPage = () => {
         console.error("Error configuring app:", error);
         toast.error(`Failed to configure app. Please try again.`);
       }
+      return false;
     }
   };
 
@@ -109,6 +111,7 @@ const AppPage = () => {
               name={app.name}
               security_schemes={app.security_schemes}
               configureApp={configureApp}
+              logo={app.logo}
             >
               <Button
                 className="bg-primary text-white hover:bg-primary/90"

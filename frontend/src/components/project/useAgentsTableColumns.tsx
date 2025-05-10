@@ -224,31 +224,31 @@ export const useAgentsTableColumns = (
         ),
         enableGlobalFilter: false,
       }) as ColumnDef<Agent>,
-      columnHelper.accessor("created_at", {
-        header: ({ column }) => (
-          <div className="text-left">
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-              className="w-full justify-start px-0"
-            >
-              CREATION TIME
-              <ArrowUpDown className="h-4 w-4" />
-            </Button>
-          </div>
-        ),
-        cell: (ctx) => (
-          <div>
-            {new Date(ctx.getValue())
-              .toISOString()
-              .replace(/\.\d{3}Z$/, "")
-              .replace("T", " ")}
-          </div>
-        ),
-        enableGlobalFilter: false,
-      }) as ColumnDef<Agent>,
+      // columnHelper.accessor("created_at", {
+      //   header: ({ column }) => (
+      //     <div className="text-left">
+      //       <Button
+      //         variant="ghost"
+      //         onClick={() =>
+      //           column.toggleSorting(column.getIsSorted() === "asc")
+      //         }
+      //         className="w-full justify-start px-0"
+      //       >
+      //         CREATION TIME
+      //         <ArrowUpDown className="h-4 w-4" />
+      //       </Button>
+      //     </div>
+      //   ),
+      //   cell: (ctx) => (
+      //     <div>
+      //       {new Date(ctx.getValue())
+      //         .toISOString()
+      //         .replace(/\.\d{3}Z$/, "")
+      //         .replace("T", " ")}
+      //     </div>
+      //   ),
+      //   enableGlobalFilter: false,
+      // }) as ColumnDef<Agent>,
       columnHelper.accessor("allowed_apps", {
         header: "ALLOWED APPS",
         cell: (ctx) => (
@@ -302,6 +302,28 @@ export const useAgentsTableColumns = (
         enableGlobalFilter: false,
       }) as ColumnDef<Agent>,
       columnHelper.accessor("id", {
+        header: () => (
+          <div className="text-left w-24">
+            <Tooltip>
+              <TooltipTrigger className="flex items-center whitespace-nowrap gap-1">
+                <span className="text-sm">AGENT ID</span>
+                <BsQuestionCircle className="h-4 w-4 text-muted-foreground" />
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>For debugging only: the unique identifier for the agent.</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+        ),
+        cell: (ctx: CellContext<Agent, string>) => (
+          <div className="font-mono w-24">
+            <IdDisplay id={`For Debugging Only: ${ctx.getValue()}`} />
+          </div>
+        ),
+        enableGlobalFilter: false,
+      }) as ColumnDef<Agent>,
+      columnHelper.accessor((row) => row.id, {
+        id: "delete",
         header: () => <div className="text-center">DELETE</div>,
         cell: (ctx) => (
           <div className="text-center">

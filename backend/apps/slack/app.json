@@ -13,7 +13,6 @@
       "client_id": "{{ AIPOLABS_SLACK_APP_CLIENT_ID }}",
       "client_secret": "{{ AIPOLABS_SLACK_APP_CLIENT_SECRET }}",
       "scope": "users:read users:write channels:read groups:read groups:write im:read im:write mpim:read chat:write channels:history groups:history mpim:history im:history bookmarks:write bookmarks:read pins:write pins:read reactions:read reactions:write reminders:write reminders:read emoji:read search:read team:read",
-      "server_metadata_url": "https://slack.com/.well-known/openid-configuration",
       "token_endpoint_auth_method": "client_secret_post",
       "authorize_url": "https://slack.com/oauth/v2/authorize",
       "access_token_url": "https://slack.com/api/oauth.v2.access",

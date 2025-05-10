@@ -9,9 +9,24 @@ import { Overview } from "./overview";
 interface MessagesProps {
   status: UseChatHelpers["status"];
   messages: Array<UIMessage>;
+  linkedAccountOwnerId: string;
+  apiKey: string;
+  addToolResult: ({
+    toolCallId,
+    result,
+  }: {
+    toolCallId: string;
+    result: object;
+  }) => void;
 }
 
-function PureMessages({ status, messages }: MessagesProps) {
+function PureMessages({
+  status,
+  messages,
+  linkedAccountOwnerId,
+  apiKey,
+  addToolResult,
+}: MessagesProps) {
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>(messages);
 
@@ -31,6 +46,9 @@ function PureMessages({ status, messages }: MessagesProps) {
             index === messages.length - 1 &&
             message.role === "assistant"
           }
+          linkedAccountOwnerId={linkedAccountOwnerId}
+          apiKey={apiKey}
+          addToolResult={addToolResult}
         />
       ))}
 

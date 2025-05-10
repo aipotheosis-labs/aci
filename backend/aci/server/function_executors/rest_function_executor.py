@@ -1,4 +1,3 @@
-import json
 from abc import abstractmethod
 from typing import Any, Generic, override
 
@@ -70,15 +69,12 @@ class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TC
             json=body if body else None,
         )
 
-        # TODO: remove sensitive data
         logger.info(
-            "function execution http request",
+            "executing function via raw http request",
             extra={
                 "function_name": function.name,
                 "method": request.method,
                 "url": str(request.url),
-                "headers": dict(request.headers),
-                "body": json.loads(request.content) if request.content else None,
             },
         )
 

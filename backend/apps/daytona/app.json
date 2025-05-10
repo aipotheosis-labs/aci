@@ -1,0 +1,24 @@
+{
+    "name": "DAYTONA",
+    "display_name": "Daytona.io",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/daytona.svg",
+    "provider": "Daytona.io",
+    "version": "aipolabs_0.0.1",
+    "description": "Daytona provides secure and elastic infrastructure for running AI-generated code in isolated environments with sub-90ms sandbox creation time.",
+    "security_schemes": {
+        "api_key": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+        "sandboxes",
+        "code",
+        "ai",
+        "infrastructure"
+    ],
+    "visibility": "public",
+    "active": true
+}
