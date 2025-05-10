@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { Table } from "@tanstack/react-table";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "@/components/ui/select";
 import {
   Pagination,
   PaginationContent,
@@ -61,11 +54,10 @@ export function DataTablePagination<TData>({
   const [pageInput, setPageInput] = useState(
     table.getState().pagination.pageIndex + 1,
   );
-
+  const pageIndex = table.getState().pagination.pageIndex;
   useEffect(() => {
-    const currentPageIndex = table.getState().pagination.pageIndex;
-    setPageInput(currentPageIndex + 1);
-  }, [table]);
+    setPageInput(pageIndex + 1);
+  }, [pageIndex]);
 
   const jumpToPage = () => {
     const idx = Math.min(Math.max(pageInput, 1), pageCount) - 1;
@@ -107,11 +99,13 @@ export function DataTablePagination<TData>({
                 onChange={(e) => setPageInput(Number(e.target.value))}
                 onKeyDown={(e) => e.key === "Enter" && jumpToPage()}
                 className="w-14 text-center"
+                aria-label="Page number"
               />
               <Button
                 size="sm"
                 onClick={jumpToPage}
                 className="ml-1 bg-primary text-white"
+                disabled={pageInput < 1 || pageInput > pageCount}
               >
                 Go
               </Button>
