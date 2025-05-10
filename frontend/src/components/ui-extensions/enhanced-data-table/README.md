@@ -333,6 +333,23 @@ columnHelper.accessor("name", {
 });
 ```
 
+## Pagination
+
+EnhancedDataTable supports client-side pagination using TanStack Table’s built-in `getPaginationRowModel()`.
+
+To enable pagination, pass the `paginationOptions` prop:
+
+```tsx
+<EnhancedDataTable
+  columns={columns}
+  data={data}
+  paginationOptions={{
+    initialPageIndex: 0, // Default to first page (0-based)
+    initialPageSize: 10, // Number of entries per page
+  }}
+/>
+```
+
 ## Practical Application Examples
 
 ### App Configuration Table (with Icons, Category Filtering, and Toggle Switch)

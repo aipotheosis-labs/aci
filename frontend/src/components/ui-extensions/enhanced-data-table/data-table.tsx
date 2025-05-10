@@ -11,6 +11,8 @@ import {
   ColumnFiltersState,
   RowSelectionState,
   OnChangeFn,
+  getPaginationRowModel,
+  PaginationState,
 } from "@tanstack/react-table";
 
 declare module "@tanstack/react-table" {
@@ -44,15 +46,18 @@ interface RowSelectionProps<TData> {
   getRowId: (row: TData) => string;
 }
 
+interface PaginationOptions {
+  initialPageIndex?: number;
+  initialPageSize?: number;
+}
+
 interface EnhancedDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  defaultSorting?: {
-    id: string;
-    desc: boolean;
-  }[];
+  defaultSorting?: { id: string; desc: boolean }[];
   searchBarProps?: SearchBarProps;
   rowSelectionProps?: RowSelectionProps<TData>;
+  paginationOptions?: PaginationOptions;
 }
 
 export function EnhancedDataTable<TData, TValue>({
@@ -61,6 +66,7 @@ export function EnhancedDataTable<TData, TValue>({
   defaultSorting = [],
   searchBarProps,
   rowSelectionProps,
+  paginationOptions,
 }: EnhancedDataTableProps<TData, TValue>) {
   const generatedDefaultSorting = useMemo(() => {
     if (defaultSorting.length > 0) return defaultSorting;
@@ -80,6 +86,11 @@ export function EnhancedDataTable<TData, TValue>({
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: paginationOptions?.initialPageIndex ?? 0,
+    pageSize: paginationOptions?.initialPageSize ?? 10,
+  });
+
   const hasFilterableColumns = useMemo(() => {
     return columns.some((column) => column.enableGlobalFilter === true);
   }, [columns]);
@@ -98,6 +109,7 @@ export function EnhancedDataTable<TData, TValue>({
       sorting,
       globalFilter,
       columnFilters,
+      pagination,
     };
 
     if (!rowSelectionProps) return baseState;
@@ -106,7 +118,7 @@ export function EnhancedDataTable<TData, TValue>({
       ...baseState,
       rowSelection: rowSelectionProps.rowSelection,
     };
-  }, [sorting, globalFilter, columnFilters, rowSelectionProps]);
+  }, [sorting, globalFilter, columnFilters, rowSelectionProps, pagination]);
 
   const table = useReactTable({
     data,
@@ -114,9 +126,13 @@ export function EnhancedDataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: paginationOptions
+      ? getPaginationRowModel()
+      : undefined,
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: setPagination,
     globalFilterFn: "includesString",
     state: tableState,
     enableRowSelection: rowSelectionProps !== undefined,
@@ -170,6 +186,7 @@ export function EnhancedDataTable<TData, TValue>({
           placeholder={searchBarProps.placeholder}
           showSearchInput={hasFilterableColumns}
           filterComponent={filterComponents}
+          paginationOptions={paginationOptions}
         />
       )}
       <div className="border rounded-lg">
