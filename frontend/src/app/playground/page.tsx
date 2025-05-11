@@ -1,13 +1,16 @@
 "use client";
 
 import { useMetaInfo } from "@/components/context/metainfo";
-import { useChat } from "@ai-sdk/react";
+import { Message, useChat } from "@ai-sdk/react";
 import { useAgentStore } from "@/lib/store/agent";
 import { SettingsSidebar } from "./playground-settings";
 import { ChatInput } from "./chat-input";
 import { Messages } from "./messages";
 import { useShallow } from "zustand/react/shallow";
 import { BetaAlert } from "@/components/playground/beta-alert";
+import { useEffect } from "react";
+
+const chatHistoryLocalStorageKey = `playground-chat-history`;
 const Page = () => {
   const { activeProject } = useMetaInfo();
 
@@ -29,6 +32,14 @@ const Page = () => {
   // Only compute this when activeProject changes
   const apiKey = activeProject ? getApiKey(activeProject) : "";
 
+  const getMessagesFromLocalStorage = () => {
+    const storedMessages = localStorage.getItem(chatHistoryLocalStorageKey);
+    if (storedMessages) {
+      const messages = JSON.parse(storedMessages) as Message[];
+      return messages;
+    }
+    return [];
+  };
   const {
     messages,
     input,
@@ -54,8 +65,12 @@ const Page = () => {
     onFinish: (message) => {
       console.log(message);
     },
+    initialMessages: getMessagesFromLocalStorage(),
   });
 
+  useEffect(() => {
+    localStorage.setItem(chatHistoryLocalStorageKey, JSON.stringify(messages));
+  }, [messages]);
   const handleAddToolResult = ({
     toolCallId,
     result,
