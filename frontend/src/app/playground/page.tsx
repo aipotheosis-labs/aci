@@ -35,8 +35,13 @@ const Page = () => {
   const getMessagesFromLocalStorage = () => {
     const storedMessages = localStorage.getItem(chatHistoryLocalStorageKey);
     if (storedMessages) {
-      const messages = JSON.parse(storedMessages) as Message[];
-      return messages;
+      try {
+        const messages = JSON.parse(storedMessages) as Message[];
+        return messages;
+      } catch (error) {
+        console.error("Failed to parse stored messages:", error);
+        return [];
+      }
     }
     return [];
   };
