@@ -41,10 +41,12 @@ class OAuth2Scheme(BaseModel):
     )
     client_id: str = Field(
         ...,
+        min_length=1,
         description="The client ID of the OAuth2 client (provided by ACI) used for the app",
     )
     client_secret: str = Field(
         ...,
+        min_length=1,
         description="The client secret of the OAuth2 client (provided by ACI) used for the app",
     )
     scope: str = Field(
@@ -79,6 +81,24 @@ class OAuth2SchemePublic(BaseModel):
         description="Space separated scopes of the OAuth2 client used for the app, "
         "e.g., 'openid email profile https://www.googleapis.com/auth/calendar'",
     )
+
+
+class OAuth2SchemeOverride(BaseModel, extra="forbid"):
+    """
+    Fields that are allowed to be overridden by the user.
+    """
+
+    client_id: str = Field(
+        ...,
+        min_length=1,
+        description="The client ID of the OAuth2 client used for the app",
+    )
+    client_secret: str = Field(
+        ...,
+        min_length=1,
+        description="The client secret of the OAuth2 client used for the app",
+    )
+    # TODO: will support "scope" and "redirect_uri" in the future, both will be optional
 
 
 class NoAuthScheme(BaseModel, extra="forbid"):
@@ -138,6 +158,15 @@ class SecuritySchemesPublic(BaseModel):
     api_key: APIKeySchemePublic | None = None
     oauth2: OAuth2SchemePublic | None = None
     no_auth: NoAuthSchemePublic | None = None
+
+
+class SecuritySchemeOverrides(BaseModel, extra="forbid"):
+    """
+    Allowed security scheme overrides
+    NOTE: for now we only support oauth2 overrides (because nothing is overridable for api_key and no_auth)
+    """
+
+    oauth2: OAuth2SchemeOverride | None = None
 
 
 TScheme = TypeVar("TScheme", APIKeyScheme, OAuth2Scheme, NoAuthScheme)

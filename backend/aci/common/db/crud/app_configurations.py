@@ -28,7 +28,9 @@ def create_app_configuration(
         project_id=project_id,
         app_id=app_id,
         security_scheme=app_configuration_create.security_scheme,
-        security_scheme_overrides=app_configuration_create.security_scheme_overrides,
+        security_scheme_overrides=app_configuration_create.security_scheme_overrides.model_dump(
+            exclude_none=True
+        ),  # type: ignore
         enabled=True,
         all_functions_enabled=app_configuration_create.all_functions_enabled,
         enabled_functions=app_configuration_create.enabled_functions,
@@ -50,10 +52,6 @@ def update_app_configuration(
     If a field is None, it will not be changed.
     """
     # TODO: a better way to do update?
-    if update.security_scheme is not None:
-        app_configuration.security_scheme = update.security_scheme
-    if update.security_scheme_overrides is not None:
-        app_configuration.security_scheme_overrides = update.security_scheme_overrides
     if update.enabled is not None:
         app_configuration.enabled = update.enabled
     if update.all_functions_enabled is not None:
