@@ -51,11 +51,11 @@ class OAuth2Manager:
 
         # TODO: need to close the client after use
         # Add an aclose() helper (or implement __aenter__/__aexit__) and make callers invoke it during shutdown.
+        # NOTE: don't pass in scope here, otherwise it will be sent during refresh token request which is not needed
         self.oauth2_client = AsyncOAuth2Client(
             client_id=client_id,
             client_secret=client_secret,
             token_endpoint_auth_method=token_endpoint_auth_method,
-            scope=scope,
             code_challenge_method="S256",  # only S256 is supported
             # TODO: use update_token callback to save tokens to the database
             update_token=None,
@@ -105,6 +105,7 @@ class OAuth2Manager:
             code_verifier=code_verifier,
             access_type=access_type,
             prompt=prompt,
+            scope=self.scope,
             **app_specific_params,
         )
 
@@ -136,6 +137,7 @@ class OAuth2Manager:
                     redirect_uri=redirect_uri,
                     code=code,
                     code_verifier=code_verifier,
+                    scope=self.scope,
                 ),
             )
             return token
