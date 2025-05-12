@@ -3,7 +3,7 @@ name: Backend Checks
 on:
   push:
     branches: [main]
-  pull_request:
+  pull_request_target:
     branches: [main]
   schedule:
     - cron: "0 9 * * *"
