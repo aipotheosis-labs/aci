@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
     ];
   },
 
+  // Enable browser source maps in production to help with debugging
+  productionBrowserSourceMaps: true,
+
   // TODO: directly sending requests to API URL right now
   // reenable rewrite after we switched to secure http cookie
   // for dev portal authentication
