@@ -1,5 +1,4 @@
 "use client";
-import React, { useEffect, useState } from "react";
 import { Table } from "@tanstack/react-table";
 import {
   Pagination,
@@ -10,23 +9,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
 }
 type PageItem = number | "ellipsis";
 
-// // `current0` indicates a 0-based page index (internal state), converted to `currentPage` (1-based) for user-facing pagination.
+// `current0` indicates a 0-based page index (internal state), converted to `currentPage` (1-based) for user-facing pagination.
 function getPageItems(current0: number, total: number): PageItem[] {
   if (total <= 0) return [];
   const current = current0 + 1;
   // If the total number of pages is less than or equal to 7, display all page numbers
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
 
-  // Case 2: At the beginning 3 pages
+  // Case 2: At the first 3 pages
   if (current <= 3) return [1, 2, 3, 4, 5, "ellipsis", total];
 
-  // Case 3: At the end 3 pages
+  // Case 3: At the last 3 pages
   if (current >= total - 2) {
     // let the tail interval start dynamically: total - 4, but not less than 2
     const tailStart = Math.max(total - 4, 2);
@@ -66,7 +66,19 @@ export function DataTablePagination<TData>({
   };
 
   /* Page number button array */
-  const pageItems = getPageItems(pageIndex, pageCount);
+  const pageItems = useMemo(
+    () => getPageItems(pageIndex, pageCount),
+    [pageIndex, pageCount],
+  );
+
+  // Handle empty table
+  if (table.getRowCount() === 0) {
+    return (
+      <div className="text-sm text-muted-foreground py-2">
+        No results to display
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-nowrap justify-between items-center px-3 py-1">
@@ -108,6 +120,7 @@ export function DataTablePagination<TData>({
                   <PaginationLink
                     isActive={item - 1 === pageIndex}
                     aria-label={`Page ${item}`}
+                    aria-current={item - 1 === pageIndex ? "page" : undefined}
                     onClick={() => table.setPageIndex(item - 1)}
                   >
                     {item}
