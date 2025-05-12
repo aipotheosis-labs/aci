@@ -35,6 +35,7 @@ import { useState, useMemo } from "react";
 import { EnhancedDataTableToolbar } from "@/components/ui-extensions/enhanced-data-table/data-table-toolbar";
 import { ColumnFilter } from "@/components/ui-extensions/enhanced-data-table/column-filter";
 import { getRowSelectionColumn } from "@/components/ui-extensions/enhanced-data-table/row-selection-column";
+import { DataTablePagination } from "@/components/ui-extensions/enhanced-data-table/data-table-pagination";
 
 interface SearchBarProps {
   placeholder: string;
@@ -186,12 +187,11 @@ export function EnhancedDataTable<TData, TValue>({
           placeholder={searchBarProps.placeholder}
           showSearchInput={hasFilterableColumns}
           filterComponent={filterComponents}
-          paginationOptions={paginationOptions}
         />
       )}
-      <div className="border rounded-lg">
+      <div className="border rounded-lg overflow-hidden">
         <Table>
-          <TableHeader className="bg-gray-50">
+          <TableHeader className="bg-gray-50 rounded-t-lg">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -236,6 +236,11 @@ export function EnhancedDataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+        {paginationOptions && (
+          <div className="border-t border-gray-200 bg-gray-50 ">
+            <DataTablePagination table={table} />
+          </div>
+        )}
       </div>
     </div>
   );

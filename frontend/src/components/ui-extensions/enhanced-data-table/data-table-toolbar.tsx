@@ -5,19 +5,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { useState } from "react";
-import { DataTablePagination } from "@/components/ui-extensions/enhanced-data-table/data-table-pagination";
-
-interface PaginationOptions {
-  initialPageIndex?: number;
-  initialPageSize?: number;
-}
 
 interface EnhancedDataTableToolbarProps<TData> {
   table: Table<TData>;
   placeholder?: string;
   showSearchInput?: boolean;
   filterComponent?: React.ReactNode;
-  paginationOptions?: PaginationOptions;
 }
 
 export function EnhancedDataTableToolbar<TData>({
@@ -25,7 +18,6 @@ export function EnhancedDataTableToolbar<TData>({
   placeholder = "Search...",
   showSearchInput,
   filterComponent,
-  paginationOptions,
 }: EnhancedDataTableToolbarProps<TData>) {
   const [searchValue, setSearchValue] = useState("");
 
@@ -67,7 +59,6 @@ export function EnhancedDataTableToolbar<TData>({
 
         {filterComponent}
       </div>
-      {paginationOptions && <DataTablePagination table={table} />}
     </div>
   );
 }

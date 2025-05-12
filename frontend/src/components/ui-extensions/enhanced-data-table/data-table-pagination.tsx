@@ -1,143 +1,165 @@
-import React, { useState, useEffect } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import { Table } from "@tanstack/react-table";
 import {
   Pagination,
   PaginationContent,
   PaginationItem,
   PaginationLink,
-  PaginationPrevious,
-  PaginationNext,
 } from "@/components/ui/pagination";
-import { ChevronsLeft, ChevronsRight } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-
-export const PaginationFirst = ({
-  className,
-  ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink
-    aria-label="Go to first page"
-    size="icon"
-    className={cn(className)}
-    {...props}
-  >
-    <ChevronsLeft className="h-4 w-4" />
-    <span className="sr-only">First</span>
-  </PaginationLink>
-);
-
-export const PaginationLast = ({
-  className,
-  ...props
-}: React.ComponentProps<typeof PaginationLink>) => (
-  <PaginationLink
-    aria-label="Go to last page"
-    size="icon"
-    className={cn(className)}
-    {...props}
-  >
-    <ChevronsRight className="h-4 w-4" />
-    <span className="sr-only">Last</span>
-  </PaginationLink>
-);
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+}
+type PageItem = number | "ellipsis";
+
+// // `current0` indicates a 0-based page index (internal state), converted to `currentPage` (1-based) for user-facing pagination.
+function getPageItems(current0: number, total: number): PageItem[] {
+  if (total <= 0) return [];
+  const current = current0 + 1;
+  // If the total number of pages is less than or equal to 7, display all page numbers
+  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+
+  // Case 2: At the beginning 3 pages
+  if (current <= 3) return [1, 2, 3, 4, 5, "ellipsis", total];
+
+  // Case 3: At the end 3 pages
+  if (current >= total - 2) {
+    // let the tail interval start dynamically: total - 4, but not less than 2
+    const tailStart = Math.max(total - 4, 2);
+    const tail = Array.from(
+      { length: total - tailStart },
+      (_, i) => tailStart + i,
+    );
+    return [1, "ellipsis", ...tail, total];
+  }
+
+  // Case 4: In the middle position
+  return [1, "ellipsis", current - 1, current, current + 1, "ellipsis", total];
 }
 
 export function DataTablePagination<TData>({
   table,
 }: DataTablePaginationProps<TData>) {
+  const { pageIndex, pageSize } = table.getState().pagination;
   const pageCount = table.getPageCount();
-  const [pageInput, setPageInput] = useState(
-    table.getState().pagination.pageIndex + 1,
-  );
-  const pageIndex = table.getState().pagination.pageIndex;
-  useEffect(() => {
-    setPageInput(pageIndex + 1);
-  }, [pageIndex]);
+  const rowsThisPage = table.getPaginationRowModel().rows.length;
+
+  /* Row number range 41 – 50 / 2167 */
+  const startRow = pageIndex * pageSize + 1;
+  const endRow = startRow + rowsThisPage - 1;
+
+  const [pageInput, setPageInput] = useState(pageIndex + 1);
+  useEffect(() => setPageInput(pageIndex + 1), [pageIndex]);
 
   const jumpToPage = () => {
-    const idx = Math.min(Math.max(pageInput, 1), pageCount) - 1;
-    table.setPageIndex(idx);
+    // Handle empty or non-numeric input
+    if (isNaN(pageInput) || pageInput === null) {
+      setPageInput(pageIndex + 1);
+      return;
+    }
+
+    table.setPageIndex(Math.min(Math.max(pageInput, 1), pageCount) - 1);
   };
 
+  /* Page number button array */
+  const pageItems = getPageItems(pageIndex, pageCount);
+
   return (
-    <div className="flex items-center justify-between px-2 py-4 ">
-      <div className="flex items-center ">
-        <Pagination className="mt-0 cursor-pointer">
-          <PaginationContent>
+    <div className="flex flex-nowrap justify-between items-center px-3 py-1">
+      {/* Left: Total row number information */}
+      <div className="text-sm font-medium">
+        {startRow} – {endRow} / {table.getRowCount()}
+      </div>
+
+      {/* Right: Pagination buttons + input box */}
+      <div className="ml-auto w-max cursor-pointer">
+        <Pagination>
+          <PaginationContent className="flex items-center">
+            {/* Prev */}
             <PaginationItem>
-              <PaginationFirst
-                onClick={() => table.firstPage()}
+              <PaginationLink
+                aria-label="Previous page"
                 className={
                   !table.getCanPreviousPage()
                     ? "pointer-events-none opacity-50"
-                    : ""
+                    : undefined
                 }
-              />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationPrevious
                 onClick={() => table.previousPage()}
-                className={
-                  !table.getCanPreviousPage()
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }
-              />
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </PaginationLink>
             </PaginationItem>
 
-            <PaginationItem className="flex items-center px-2">
+            {/* Dynamic page number group */}
+            {pageItems.map((item, i) => (
+              <PaginationItem key={i}>
+                {item === "ellipsis" ? (
+                  <span
+                    className="px-2 text-sm select-none text-muted-foreground"
+                    aria-hidden="true"
+                  >
+                    …
+                  </span>
+                ) : (
+                  <PaginationLink
+                    isActive={item - 1 === pageIndex}
+                    aria-label={`Page ${item}`}
+                    onClick={() => table.setPageIndex(item - 1)}
+                  >
+                    {item}
+                  </PaginationLink>
+                )}
+              </PaginationItem>
+            ))}
+
+            {/* Next */}
+            <PaginationItem>
+              <PaginationLink
+                aria-label="Next page"
+                className={
+                  !table.getCanNextPage()
+                    ? "pointer-events-none opacity-50"
+                    : undefined
+                }
+                onClick={() => table.nextPage()}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </PaginationLink>
+            </PaginationItem>
+
+            {/* Jump page input box */}
+            <PaginationItem className="ml-2 flex items-center gap-1">
               <Input
                 type="number"
+                inputMode="numeric"
+                pattern="[0-9]*"
                 min={1}
                 max={pageCount}
                 value={pageInput}
                 onChange={(e) => setPageInput(Number(e.target.value))}
                 onKeyDown={(e) => e.key === "Enter" && jumpToPage()}
-                className="w-14 text-center"
-                aria-label="Page number"
+                // Hide the arrow of the input box  [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
+                className="h-7 w-14 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                aria-label="To Page"
               />
               <Button
                 size="sm"
+                className="h-7"
+                disabled={
+                  isNaN(pageInput) || pageInput < 1 || pageInput > pageCount
+                }
                 onClick={jumpToPage}
-                className="ml-1 bg-primary text-white"
-                disabled={pageInput < 1 || pageInput > pageCount}
+                aria-label="Go"
               >
                 Go
               </Button>
             </PaginationItem>
-
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => table.nextPage()}
-                className={
-                  !table.getCanNextPage()
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }
-              />
-            </PaginationItem>
-            <PaginationItem>
-              <PaginationLast
-                onClick={() => table.lastPage()}
-                className={
-                  !table.getCanNextPage()
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }
-              />
-            </PaginationItem>
           </PaginationContent>
         </Pagination>
-
-        <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-          Page {table.getState().pagination.pageIndex + 1} of{" "}
-          {table.getPageCount()}
-        </div>
       </div>
     </div>
   );
