@@ -12,13 +12,20 @@ from sqlalchemy.orm import Session
 from aci.common.db import crud
 from aci.common.db.sql_models import App
 from aci.common.enums import SecurityScheme
-from aci.common.schemas.app_configurations import AppConfigurationPublic
+from aci.common.schemas.app_configurations import (
+    AppConfigurationCreate,
+    AppConfigurationPublic,
+)
 from aci.common.schemas.linked_accounts import (
     LinkedAccountOAuth2Create,
     LinkedAccountOAuth2CreateState,
     LinkedAccountPublic,
 )
-from aci.common.schemas.security_scheme import OAuth2SchemeCredentials
+from aci.common.schemas.security_scheme import (
+    OAuth2SchemeCredentials,
+    OAuth2SchemeOverride,
+    SecuritySchemeOverrides,
+)
 from aci.server import config
 
 MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX = (
@@ -27,23 +34,51 @@ MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX = (
 
 
 @pytest.mark.parametrize(
-    "after_oauth2_link_redirect_url,callback_response_code",
+    "use_custom_oauth2_app,after_oauth2_link_redirect_url,callback_response_code",
     [
-        (None, status.HTTP_200_OK),
-        ("https://platform.aci.dev", status.HTTP_302_FOUND),
+        (False, None, status.HTTP_200_OK),
+        (False, "https://platform.aci.dev", status.HTTP_302_FOUND),
+        (True, None, status.HTTP_200_OK),
+        (True, "https://platform.aci.dev", status.HTTP_302_FOUND),
     ],
 )
 def test_link_oauth2_account_success(
     test_client: TestClient,
     dummy_api_key_1: str,
-    dummy_app_configuration_oauth2_google_project_1: AppConfigurationPublic,
+    dummy_app_google: App,
     db_session: Session,
+    use_custom_oauth2_app: bool,
     after_oauth2_link_redirect_url: str | None,
     callback_response_code: int,
 ) -> None:
+    # create a new app configuration
+    if use_custom_oauth2_app:
+        app_configuration_create = AppConfigurationCreate(
+            app_name=dummy_app_google.name,
+            security_scheme=SecurityScheme.OAUTH2,
+            security_scheme_overrides=SecuritySchemeOverrides(
+                oauth2=OAuth2SchemeOverride(
+                    client_id="custom_client_id",
+                    client_secret="custom_client_secret",
+                )
+            ),
+        )
+    else:
+        app_configuration_create = AppConfigurationCreate(
+            app_name=dummy_app_google.name,
+            security_scheme=SecurityScheme.OAUTH2,
+        )
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",
+        json=app_configuration_create.model_dump(mode="json"),
+        headers={"x-api-key": dummy_api_key_1},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    google_app_configuration = AppConfigurationPublic.model_validate(response.json())
+
     # init account linking proces
     body = LinkedAccountOAuth2Create(
-        app_name=dummy_app_configuration_oauth2_google_project_1.app_name,
+        app_name=dummy_app_google.name,
         linked_account_owner_id="test_link_oauth2_account_success",
         after_oauth2_link_redirect_url=after_oauth2_link_redirect_url,
     )
@@ -60,13 +95,19 @@ def test_link_oauth2_account_success(
     state_jwt = qs_params.get("state", [None])[0]
     assert state_jwt is not None
     state = LinkedAccountOAuth2CreateState.model_validate(jwt.decode(state_jwt, config.SIGNING_KEY))
-    assert state.project_id == dummy_app_configuration_oauth2_google_project_1.project_id
-    assert state.app_name == dummy_app_configuration_oauth2_google_project_1.app_name
+    assert state.project_id == google_app_configuration.project_id
+    assert state.app_name == google_app_configuration.app_name
     assert state.linked_account_owner_id == "test_link_oauth2_account_success"
     assert state.after_oauth2_link_redirect_url == after_oauth2_link_redirect_url
     assert state.redirect_uri == (
         f"{config.REDIRECT_URI_BASE}{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback"
     )
+    if use_custom_oauth2_app:
+        assert state.client_id == "custom_client_id"
+    else:
+        assert (
+            state.client_id == dummy_app_google.security_schemes[SecurityScheme.OAUTH2]["client_id"]
+        )
 
     # mock the oauth2 manager's fetch_token response
     mock_oauth2_token_response = {
@@ -109,17 +150,34 @@ def test_link_oauth2_account_success(
             linked_account.security_credentials
         )
         assert linked_account.security_scheme == SecurityScheme.OAUTH2
+        assert (
+            oauth2_credentials.scope
+            == dummy_app_google.security_schemes[SecurityScheme.OAUTH2]["scope"]
+        )
         assert oauth2_credentials.access_token == mock_oauth2_token_response["access_token"]
         assert oauth2_credentials.token_type == mock_oauth2_token_response["token_type"]
         assert oauth2_credentials.expires_at == mock_oauth2_token_retrieval_time + cast(
             int, mock_oauth2_token_response["expires_in"]
         )
         assert oauth2_credentials.refresh_token == mock_oauth2_token_response["refresh_token"]
+        assert oauth2_credentials.raw_token_response == mock_oauth2_token_response
         assert linked_account.enabled is True
-        assert linked_account.app.name == dummy_app_configuration_oauth2_google_project_1.app_name
-        assert linked_account.app.name == state.app_name
-        assert linked_account.project_id == state.project_id
+        assert linked_account.app.name == google_app_configuration.app_name
+        assert linked_account.project_id == google_app_configuration.project_id
         assert linked_account.linked_account_owner_id == state.linked_account_owner_id
+
+        if use_custom_oauth2_app:
+            assert oauth2_credentials.client_id == "custom_client_id"
+            assert oauth2_credentials.client_secret == "custom_client_secret"
+        else:
+            assert (
+                oauth2_credentials.client_id
+                == dummy_app_google.security_schemes[SecurityScheme.OAUTH2]["client_id"]
+            )
+            assert (
+                oauth2_credentials.client_secret
+                == dummy_app_google.security_schemes[SecurityScheme.OAUTH2]["client_secret"]
+            )
 
         if not after_oauth2_link_redirect_url:
             assert LinkedAccountPublic.model_validate(response.json()), (

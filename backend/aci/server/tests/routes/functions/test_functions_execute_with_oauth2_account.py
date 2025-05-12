@@ -1,4 +1,5 @@
 import httpx
+import pytest
 import respx
 from fastapi import status
 from fastapi.testclient import TestClient
@@ -13,12 +14,32 @@ from aci.server import config
 
 
 @respx.mock
+@pytest.mark.parametrize("use_custom_oauth2_app", [True, False])
 def test_execute_oauth2_based_function_with_linked_account_credentials(
+    db_session: Session,
     test_client: TestClient,
     dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_aci_test__hello_world_with_args: Function,
     dummy_linked_account_oauth2_aci_test_project_1: LinkedAccount,
+    use_custom_oauth2_app: bool,
 ) -> None:
+    # update the linked account's credentials if use_custom_oauth2_app is True
+    if use_custom_oauth2_app:
+        dummy_linked_account_oauth2_aci_test_project_1.security_credentials["client_id"] = (
+            "custom_client_id"
+        )
+        dummy_linked_account_oauth2_aci_test_project_1.security_credentials["client_secret"] = (
+            "custom_client_secret"
+        )
+        crud.linked_accounts.update_linked_account_credentials(
+            db_session,
+            dummy_linked_account_oauth2_aci_test_project_1,
+            security_credentials=OAuth2SchemeCredentials.model_validate(
+                dummy_linked_account_oauth2_aci_test_project_1.security_credentials
+            ),
+        )
+        db_session.commit()
+
     # Mock the HTTP endpoint and response
     mock_response_data = {
         "message": "Hello, test_execute_oauth2_based_function_with_linked_account_credentials!"
@@ -76,13 +97,32 @@ def test_execute_oauth2_based_function_with_linked_account_credentials(
 
 
 @respx.mock
+@pytest.mark.parametrize("use_custom_oauth2_app", [True, False])
 def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
     db_session: Session,
     test_client: TestClient,
     dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_aci_test__hello_world_with_args: Function,
     dummy_linked_account_oauth2_aci_test_project_1: LinkedAccount,
+    use_custom_oauth2_app: bool,
 ) -> None:
+    # update the linked account's credentials if use_custom_oauth2_app is True
+    if use_custom_oauth2_app:
+        dummy_linked_account_oauth2_aci_test_project_1.security_credentials["client_id"] = (
+            "custom_client_id"
+        )
+        dummy_linked_account_oauth2_aci_test_project_1.security_credentials["client_secret"] = (
+            "custom_client_secret"
+        )
+        crud.linked_accounts.update_linked_account_credentials(
+            db_session,
+            dummy_linked_account_oauth2_aci_test_project_1,
+            security_credentials=OAuth2SchemeCredentials.model_validate(
+                dummy_linked_account_oauth2_aci_test_project_1.security_credentials
+            ),
+        )
+        db_session.commit()
+
     # Mock the function's HTTP endpoint and response
     mock_response_data = {
         "message": "Hello, test_execute_oauth2_based_function_with_expired_linked_account_access_token!"
