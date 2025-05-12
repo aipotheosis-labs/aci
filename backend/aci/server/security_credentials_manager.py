@@ -200,7 +200,7 @@ def get_app_configuration_oauth2_scheme(
     """
     Get the OAuth2 scheme for an app configuration, taking into account potential overrides.
     """
-    oauth2_scheme_data = app.security_schemes[SecurityScheme.OAUTH2]
+    oauth2_scheme = OAuth2Scheme.model_validate(app.security_schemes[SecurityScheme.OAUTH2])
 
     # Parse the security scheme overrides
     security_scheme_overrides = SecuritySchemeOverrides.model_validate(
@@ -209,6 +209,8 @@ def get_app_configuration_oauth2_scheme(
 
     # Apply oauth2 overrides if they exist
     if security_scheme_overrides.oauth2:
-        oauth2_scheme_data.update(security_scheme_overrides.oauth2.model_dump(exclude_none=True))
+        oauth2_scheme = oauth2_scheme.model_copy(
+            update=security_scheme_overrides.oauth2.model_dump(exclude_none=True)
+        )
 
-    return OAuth2Scheme.model_validate(oauth2_scheme_data)
+    return oauth2_scheme
