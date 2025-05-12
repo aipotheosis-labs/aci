@@ -3243,9 +3243,7 @@
         "tags": [
             "repository",
             "create",
-            "authenticated-user",
-            "user-repo",
-            "git"
+            "authenticated-user"
         ],
         "visibility": "public",
         "active": true,
