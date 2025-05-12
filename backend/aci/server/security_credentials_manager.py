@@ -59,14 +59,8 @@ async def _get_oauth2_credentials(
     """
     is_updated = False
     oauth2_scheme = get_app_configuration_oauth2_scheme(app_configuration.app, app_configuration)
-    # TODO: for backward compatibility, remove later
     oauth2_scheme_credentials = OAuth2SchemeCredentials.model_validate(
-        {
-            **linked_account.security_credentials,
-            "client_id": oauth2_scheme.client_id,
-            "client_secret": oauth2_scheme.client_secret,
-            "scope": oauth2_scheme.scope,
-        }
+        linked_account.security_credentials
     )
     if _access_token_is_expired(oauth2_scheme_credentials):
         logger.warning(
