@@ -26,7 +26,7 @@ logger = get_logger(__name__)
 
 
 # TODO: when creating an app configuration, allow user to specify list of agents that are allowed to access the app
-@router.post("", response_model=AppConfigurationPublic)
+@router.post("", response_model=AppConfigurationPublic, response_model_exclude_none=True)
 async def create_app_configuration(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     body: AppConfigurationCreate,
@@ -82,7 +82,7 @@ async def create_app_configuration(
     return app_configuration
 
 
-@router.get("", response_model=list[AppConfigurationPublic])
+@router.get("", response_model=list[AppConfigurationPublic], response_model_exclude_none=True)
 async def list_app_configurations(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[AppConfigurationsList, Query()],
@@ -101,7 +101,7 @@ async def list_app_configurations(
     )
 
 
-@router.get("/{app_name}", response_model=AppConfigurationPublic)
+@router.get("/{app_name}", response_model=AppConfigurationPublic, response_model_exclude_none=True)
 async def get_app_configuration(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     app_name: str,
@@ -176,7 +176,9 @@ async def delete_app_configuration(
     context.db_session.commit()
 
 
-@router.patch("/{app_name}", response_model=AppConfigurationPublic)
+@router.patch(
+    "/{app_name}", response_model=AppConfigurationPublic, response_model_exclude_none=True
+)
 async def update_app_configuration(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     app_name: str,
