@@ -552,6 +552,9 @@ def dummy_linked_account_api_key_credentials() -> APIKeySchemeCredentials:
 @pytest.fixture(scope="function")
 def dummy_linked_account_oauth2_credentials() -> OAuth2SchemeCredentials:
     return OAuth2SchemeCredentials(
+        client_id="dummy_linked_account_oauth2_credentials_client_id",
+        client_secret="dummy_linked_account_oauth2_credentials_client_secret",
+        scope="dummy_scope_1 dummy_scope_2",
         access_token="dummy_linked_account_oauth2_credentials_access_token",
         token_type="Bearer",
         expires_at=int(time.time()) + 3600,

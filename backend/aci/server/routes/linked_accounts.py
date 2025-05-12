@@ -32,11 +32,10 @@ from aci.common.schemas.linked_accounts import (
 from aci.common.schemas.security_scheme import (
     APIKeySchemeCredentials,
     NoAuthSchemeCredentials,
-    OAuth2Scheme,
-    OAuth2SchemeCredentials,
 )
 from aci.server import config
 from aci.server import dependencies as deps
+from aci.server import security_credentials_manager as scm
 from aci.server.oauth2_manager import OAuth2Manager
 
 router = APIRouter()
@@ -364,21 +363,19 @@ async def link_oauth2_account(
             f"{app_configuration.security_scheme}, not OAuth2"
         )
 
-    # TODO: load client's overrides if they specify any, for example, client_id, client_secret, scope, etc.
-    # security_scheme of the app configuration must be one of the App's security_schemes, so we can safely validate it
-    app_default_oauth2_config = OAuth2Scheme.model_validate(
-        app_configuration.app.security_schemes[SecurityScheme.OAUTH2]
+    oauth2_scheme = scm.get_app_configuration_oauth2_scheme(
+        app_configuration.app, app_configuration
     )
 
     oauth2_manager = OAuth2Manager(
         app_name=query_params.app_name,
-        client_id=app_default_oauth2_config.client_id,
-        client_secret=app_default_oauth2_config.client_secret,
-        scope=app_default_oauth2_config.scope,
-        authorize_url=app_default_oauth2_config.authorize_url,
-        access_token_url=app_default_oauth2_config.access_token_url,
-        refresh_token_url=app_default_oauth2_config.refresh_token_url,
-        token_endpoint_auth_method=app_default_oauth2_config.token_endpoint_auth_method,
+        client_id=oauth2_scheme.client_id,
+        client_secret=oauth2_scheme.client_secret,
+        scope=oauth2_scheme.scope,
+        authorize_url=oauth2_scheme.authorize_url,
+        access_token_url=oauth2_scheme.access_token_url,
+        refresh_token_url=oauth2_scheme.refresh_token_url,
+        token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
     )
 
     path = request.url_for(LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
@@ -391,6 +388,7 @@ async def link_oauth2_account(
         app_name=query_params.app_name,
         project_id=context.project.id,
         linked_account_owner_id=query_params.linked_account_owner_id,
+        client_id=oauth2_scheme.client_id,
         redirect_uri=redirect_uri,
         code_verifier=OAuth2Manager.generate_code_verifier(),
         after_oauth2_link_redirect_url=query_params.after_oauth2_link_redirect_url,
@@ -491,7 +489,10 @@ async def linked_accounts_oauth2_callback(
         )
         raise AppNotFound(f"app={state.app_name} not found")
 
-    # check if app configuration exists and configuration is OAuth2
+    # check app configuration
+    # - exists
+    # - configuration is OAuth2
+    # - client_id matches the one used at the start of the OAuth2 flow
     app_configuration = crud.app_configurations.get_app_configuration(
         db_session, state.project_id, state.app_name
     )
@@ -509,19 +510,29 @@ async def linked_accounts_oauth2_callback(
         raise NoImplementationFound(f"app configuration for app={state.app_name} is not OAuth2")
 
     # create oauth2 manager
-    app_default_oauth2_config = OAuth2Scheme.model_validate(
-        app.security_schemes[SecurityScheme.OAUTH2]
+    oauth2_scheme = scm.get_app_configuration_oauth2_scheme(
+        app_configuration.app, app_configuration
     )
+    if oauth2_scheme.client_id != state.client_id:
+        logger.error(
+            "unable to continue with account linking, client_id of state doesn't match client_id of app configuration",
+            extra={
+                "app_name": state.app_name,
+                "client_id": oauth2_scheme.client_id,
+                "state_client_id": state.client_id,
+            },
+        )
+        raise OAuth2Error("client_id mismatch during account linking")
 
     oauth2_manager = OAuth2Manager(
         app_name=state.app_name,
-        client_id=app_default_oauth2_config.client_id,
-        client_secret=app_default_oauth2_config.client_secret,
-        scope=app_default_oauth2_config.scope,
-        authorize_url=app_default_oauth2_config.authorize_url,
-        access_token_url=app_default_oauth2_config.access_token_url,
-        refresh_token_url=app_default_oauth2_config.refresh_token_url,
-        token_endpoint_auth_method=app_default_oauth2_config.token_endpoint_auth_method,
+        client_id=oauth2_scheme.client_id,
+        client_secret=oauth2_scheme.client_secret,
+        scope=oauth2_scheme.scope,
+        authorize_url=oauth2_scheme.authorize_url,
+        access_token_url=oauth2_scheme.access_token_url,
+        refresh_token_url=oauth2_scheme.refresh_token_url,
+        token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
     )
 
     token_response = await oauth2_manager.fetch_token(
@@ -529,12 +540,7 @@ async def linked_accounts_oauth2_callback(
         code=code,
         code_verifier=state.code_verifier,
     )
-
-    # TODO: we might want to verify scope authorized by end user (token_response["scope"]) is what we asked
-    # parse the token_response into the security_credentials, handling provider-specific edge cases
-    security_credentials: OAuth2SchemeCredentials = OAuth2Manager.parse_oauth2_security_credentials(
-        app.name, token_response
-    )
+    security_credentials = oauth2_manager.parse_fetch_token_response(token_response)
 
     # if the linked account already exists, update it, otherwise create a new one
     # TODO: consider separating the logic for updating and creating a linked account or give warning to clients

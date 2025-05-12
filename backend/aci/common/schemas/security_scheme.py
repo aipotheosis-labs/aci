@@ -83,7 +83,7 @@ class OAuth2SchemePublic(BaseModel):
     )
 
 
-class OAuth2SchemeOverride(BaseModel, extra="forbid"):
+class OAuth2SchemeOverride(BaseModel):
     """
     Fields that are allowed to be overridden by the user.
     """
@@ -132,6 +132,14 @@ class APIKeySchemeCredentials(BaseModel):
 class OAuth2SchemeCredentials(BaseModel):
     """Credentials for OAuth2 scheme"""
 
+    # We need to store client_id and client_secret as part of the credentials because oauth2 client can
+    # change any time for a particular App Configuration. (e.g., user provided custom oauth2 app, or we changed
+    # our default oauth2 app). In which case, we still want the existing linked accounts to work. (refresh token)
+    client_id: str
+    client_secret: str
+    # Technically we don't need to store scope, but can be useful if we know which accounts are not up to date
+    # with current App/ App Configuration's oauth2 scopes and to let user know.
+    scope: str
     access_token: str
     token_type: str | None = None
     expires_at: int | None = None
