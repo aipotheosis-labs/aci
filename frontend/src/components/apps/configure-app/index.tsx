@@ -388,7 +388,7 @@ export function ConfigureApp({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="sm:max-w-[65vw]">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold flex items-center gap-2">
             Configure App

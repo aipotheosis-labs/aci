@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { DialogFooter } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -26,7 +26,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { BsQuestionCircle } from "react-icons/bs";
+import { BsQuestionCircle, BsAsterisk } from "react-icons/bs";
 import { Badge } from "@/components/ui/badge";
 import { IdDisplay } from "@/components/apps/id-display";
 
@@ -56,15 +56,33 @@ export function ConfigureAppStep({
   redirectUrl,
   oauth2Scope,
 }: ConfigureAppStepProps) {
-  const [customOAuth2Credentials, setCustomOAuth2Credentials] = useState(false);
-  const scopes = oauth2Scope?.split(" ") ?? [];
+  // whether to use ACI.dev's OAuth2 App, default is false (default user uses their own OAuth2 client)
+  const [useACIDevOAuth2, setUseACIDevOAuth2] = useState(false);
+  const scopes = oauth2Scope ? oauth2Scope.split(/[\s,]+/).filter(Boolean) : [];
+  const currentSecurityScheme = form.watch("security_scheme");
+  const clientId = form.watch("client_id");
+  const clientSecret = form.watch("client_secret");
 
-  // only split into two columns when oauth2 + custom toggled
-  const isOAuth2Custom =
-    form.watch("security_scheme") === "oauth2" && customOAuth2Credentials;
+  // check if the form is valid
+  const isFormValid = () => {
+    // if oauth2 and not using ACI.dev's OAuth2 App, need to validate client_id and client_secret
+    if (currentSecurityScheme === "oauth2" && !useACIDevOAuth2) {
+      return !!clientId && !!clientSecret;
+    }
+    return true;
+  };
+
+  // listen to security_scheme changes, reset form state when needed
+  useEffect(() => {
+    if (currentSecurityScheme !== "oauth2") {
+      form.setValue("client_id", "");
+      form.setValue("client_secret", "");
+      setUseACIDevOAuth2(false);
+    }
+  }, [currentSecurityScheme, form]);
 
   const handleSubmit = (values: ConfigureAppFormValues) => {
-    if (values.security_scheme === "oauth2" && customOAuth2Credentials) {
+    if (values.security_scheme === "oauth2" && !useACIDevOAuth2) {
       if (!values.client_id || !values.client_secret) {
         form.setError("client_id", {
           type: "manual",
@@ -85,7 +103,7 @@ export function ConfigureAppStep({
     <div className="space-y-4">
       <div className="mb-1">
         <div className="text-sm font-medium mb-2">API Provider</div>
-        <div className="p-3 border rounded-md bg-muted/30 flex items-center gap-3">
+        <div className="p-2 border rounded-md bg-muted/30 flex items-center gap-3">
           <span className="font-medium">{name}</span>
         </div>
       </div>
@@ -119,80 +137,35 @@ export function ConfigureAppStep({
             )}
           />
 
-          {/* OAuth2 Custom Toggle */}
-          {form.watch("security_scheme") === "oauth2" && (
+          {/* OAuth2 Toggle - only show when security_scheme is oauth2 */}
+          {currentSecurityScheme === "oauth2" && (
             <div className="flex items-center gap-2">
               <Switch
-                checked={customOAuth2Credentials}
-                onCheckedChange={setCustomOAuth2Credentials}
+                checked={useACIDevOAuth2}
+                onCheckedChange={setUseACIDevOAuth2}
               />
-              <Label>Use Your Own OAuth2 App</Label>
+              <Label className="text-sm font-medium">
+                Use ACI.dev&apos;s OAuth2 App
+              </Label>
             </div>
           )}
 
-          {customOAuth2Credentials && (
-            <div
-              className={`grid gap-6 ${isOAuth2Custom ? "lg:grid-cols-2" : ""}`}
-            >
-              {/* Left column: Read-only information */}
-              <div className="space-y-6 min-w-0">
-                {/* Redirect URL */}
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-sm font-medium text-gray-700">
-                      Redirect URL
-                    </span>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <BsQuestionCircle className="h-4 w-4 text-muted-foreground cursor-pointer" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        Add this redirect URL in your OAuth2 app settings
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <IdDisplay id={redirectUrl} />
-                </div>
-
-                {/* Scope */}
-                <div className="min-w-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm font-medium text-gray-700">
-                      Scope
-                    </span>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <BsQuestionCircle className="h-4 w-4 text-muted-foreground cursor-pointer" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        Scopes requested by the OAuth2 provider
-                      </TooltipContent>
-                    </Tooltip>
-                  </div>
-                  <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-                    {scopes.map((s) => (
-                      <Badge
-                        key={s}
-                        variant="secondary"
-                        className="text-xs break-all"
-                      >
-                        <code className="break-all">{s}</code>
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Right column: Input fields */}
+          {/* only show when security_scheme is oauth2 and not using ACI.dev's OAuth2 App */}
+          {currentSecurityScheme === "oauth2" && !useACIDevOAuth2 && (
+            <div className="grid gap-6 lg:grid-cols-2">
+              {/* left column: input fields */}
               <div className="space-y-6 min-w-0">
                 <FormField
                   control={form.control}
                   name="client_id"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>OAuth2 Client ID</FormLabel>
+                      <FormLabel className="flex items-center gap-1">
+                        OAuth2 Client ID
+                        <BsAsterisk className="h-2 w-2 text-red-500" />
+                      </FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="Client ID" />
+                        <Input {...field} placeholder="Client ID" required />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -204,12 +177,16 @@ export function ConfigureAppStep({
                   name="client_secret"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>OAuth2 Client Secret</FormLabel>
+                      <FormLabel className="flex items-center gap-1">
+                        OAuth2 Client Secret
+                        <BsAsterisk className="h-2 w-2 text-red-500" />
+                      </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
                           type="password"
                           placeholder="Client Secret"
+                          required
                         />
                       </FormControl>
                       <FormMessage />
@@ -217,11 +194,62 @@ export function ConfigureAppStep({
                   )}
                 />
               </div>
+
+              {/* right column: read-only information */}
+              <div className="space-y-6 min-w-0">
+                {/* Redirect URL */}
+                <FormItem>
+                  <FormLabel className="flex items-center gap-1">
+                    Redirect URL
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <BsQuestionCircle className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Copy and paste this URL into your OAuth2 app&apos;s
+                        redirect/redirect URI settings
+                      </TooltipContent>
+                    </Tooltip>
+                  </FormLabel>
+                  <div className="pt-2">
+                    <IdDisplay id={redirectUrl} />
+                  </div>
+                </FormItem>
+
+                {/* Scope */}
+                <FormItem>
+                  <FormLabel className="flex items-center gap-1">
+                    Scope
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <BsQuestionCircle className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Enter/Tick the scopes exactly as shown below in your
+                        OAuth2 app settings. It defines the permissions your app
+                        will request and must match for authentication to work
+                        properly.
+                      </TooltipContent>
+                    </Tooltip>
+                  </FormLabel>
+                  <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pt-2">
+                    {scopes.map((s) => (
+                      <Badge
+                        key={s}
+                        variant="secondary"
+                        className="text-xs break-all"
+                      >
+                        <code className="break-all">{s}</code>
+                      </Badge>
+                    ))}
+                  </div>
+                </FormItem>
+              </div>
             </div>
           )}
 
           <DialogFooter>
-            <Button type="submit" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading || !isFormValid()}>
               {isLoading ? "Confirming..." : "Confirm"}
             </Button>
           </DialogFooter>

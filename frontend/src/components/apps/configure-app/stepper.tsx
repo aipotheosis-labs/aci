@@ -36,7 +36,7 @@ export function Stepper({ currentStep, totalSteps, steps }: StepperProps) {
           </div>
         ))}
 
-        <div className="absolute left-[calc(10%)] right-[calc(10%)] top-[16px] h-[2px] bg-muted -z-0">
+        <div className="absolute left-[calc(5%)] right-[calc(7%)] top-[16px] h-[2px] bg-muted -z-0">
           <Progress
             className="h-[2px]"
             value={((currentStep - 1) / (totalSteps - 1)) * 100}
