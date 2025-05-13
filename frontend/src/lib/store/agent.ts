@@ -169,7 +169,7 @@ export const useAgentStore = create<AgentState>()(
     }),
     {
       name: "playground-config-history",
-      storage: createJSONStorage(() => localStorage),
+      storage: createJSONStorage(() => sessionStorage),
       partialize: (state) => ({
         selectedApps: state.selectedApps,
         selectedLinkedAccountOwnerId: state.selectedLinkedAccountOwnerId,

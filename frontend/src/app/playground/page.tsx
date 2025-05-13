@@ -33,7 +33,7 @@ const Page = () => {
   const apiKey = activeProject ? getApiKey(activeProject) : "";
 
   const getMessagesFromLocalStorage = () => {
-    const storedMessages = localStorage.getItem(chatHistoryLocalStorageKey);
+    const storedMessages = sessionStorage.getItem(chatHistoryLocalStorageKey);
     if (storedMessages) {
       try {
         const messages = JSON.parse(storedMessages) as Message[];
@@ -74,7 +74,10 @@ const Page = () => {
   });
 
   useEffect(() => {
-    localStorage.setItem(chatHistoryLocalStorageKey, JSON.stringify(messages));
+    sessionStorage.setItem(
+      chatHistoryLocalStorageKey,
+      JSON.stringify(messages),
+    );
   }, [messages]);
   const handleAddToolResult = ({
     toolCallId,
