@@ -16,6 +16,9 @@ const nextConfig: NextConfig = {
     ];
   },
 
+  // Enable browser source maps in production to help with debugging
+  productionBrowserSourceMaps: true,
+
   // TODO: directly sending requests to API URL right now
   // reenable rewrite after we switched to secure http cookie
   // for dev portal authentication
@@ -37,7 +40,7 @@ export default withSentryConfig(nextConfig, {
   // https://github.com/getsentry/sentry-webpack-plugin#options
 
   org: "aipotheosis-labs",
-  project: "javascript-nextjs",
+  project: "aci-dev-portal",
 
   // Only print logs for uploading source maps in CI
   // CI=true is automatically set by GitHub Actions and other CI tools

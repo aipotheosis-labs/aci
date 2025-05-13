@@ -17,7 +17,13 @@ from aci.common.schemas.security_scheme import (
     [
         (
             SecurityScheme.OAUTH2,
-            OAuth2SchemeCredentials(access_token="test", refresh_token="test"),
+            OAuth2SchemeCredentials(
+                client_id="test",
+                client_secret="test",
+                scope="test_scope_1 test_scope_2",
+                access_token="test",
+                refresh_token="test",
+            ),
             False,
         ),
         (
@@ -27,16 +33,8 @@ from aci.common.schemas.security_scheme import (
         ),
         (SecurityScheme.NO_AUTH, NoAuthSchemeCredentials(), False),
         (SecurityScheme.OAUTH2, APIKeySchemeCredentials(secret_key="test"), True),
-        (
-            SecurityScheme.API_KEY,
-            OAuth2SchemeCredentials(access_token="test", refresh_token="test"),
-            True,
-        ),
-        (
-            SecurityScheme.NO_AUTH,
-            OAuth2SchemeCredentials(access_token="test", refresh_token="test"),
-            True,
-        ),
+        (SecurityScheme.API_KEY, NoAuthSchemeCredentials(), True),
+        (SecurityScheme.NO_AUTH, APIKeySchemeCredentials(secret_key="test"), True),
     ],
 )
 def test_update_linked_account_credentials(

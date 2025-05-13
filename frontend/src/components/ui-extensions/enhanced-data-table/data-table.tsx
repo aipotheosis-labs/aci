@@ -11,6 +11,8 @@ import {
   ColumnFiltersState,
   RowSelectionState,
   OnChangeFn,
+  getPaginationRowModel,
+  PaginationState,
 } from "@tanstack/react-table";
 
 declare module "@tanstack/react-table" {
@@ -33,6 +35,7 @@ import { useState, useMemo } from "react";
 import { EnhancedDataTableToolbar } from "@/components/ui-extensions/enhanced-data-table/data-table-toolbar";
 import { ColumnFilter } from "@/components/ui-extensions/enhanced-data-table/column-filter";
 import { getRowSelectionColumn } from "@/components/ui-extensions/enhanced-data-table/row-selection-column";
+import { DataTablePagination } from "@/components/ui-extensions/enhanced-data-table/data-table-pagination";
 
 interface SearchBarProps {
   placeholder: string;
@@ -44,15 +47,18 @@ interface RowSelectionProps<TData> {
   getRowId: (row: TData) => string;
 }
 
+interface PaginationOptions {
+  initialPageIndex?: number;
+  initialPageSize?: number;
+}
+
 interface EnhancedDataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-  defaultSorting?: {
-    id: string;
-    desc: boolean;
-  }[];
+  defaultSorting?: { id: string; desc: boolean }[];
   searchBarProps?: SearchBarProps;
   rowSelectionProps?: RowSelectionProps<TData>;
+  paginationOptions?: PaginationOptions;
 }
 
 export function EnhancedDataTable<TData, TValue>({
@@ -61,6 +67,7 @@ export function EnhancedDataTable<TData, TValue>({
   defaultSorting = [],
   searchBarProps,
   rowSelectionProps,
+  paginationOptions,
 }: EnhancedDataTableProps<TData, TValue>) {
   const generatedDefaultSorting = useMemo(() => {
     if (defaultSorting.length > 0) return defaultSorting;
@@ -80,6 +87,11 @@ export function EnhancedDataTable<TData, TValue>({
   const [globalFilter, setGlobalFilter] = useState("");
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: paginationOptions?.initialPageIndex ?? 0,
+    pageSize: paginationOptions?.initialPageSize ?? 10,
+  });
+
   const hasFilterableColumns = useMemo(() => {
     return columns.some((column) => column.enableGlobalFilter === true);
   }, [columns]);
@@ -98,6 +110,7 @@ export function EnhancedDataTable<TData, TValue>({
       sorting,
       globalFilter,
       columnFilters,
+      pagination,
     };
 
     if (!rowSelectionProps) return baseState;
@@ -106,7 +119,7 @@ export function EnhancedDataTable<TData, TValue>({
       ...baseState,
       rowSelection: rowSelectionProps.rowSelection,
     };
-  }, [sorting, globalFilter, columnFilters, rowSelectionProps]);
+  }, [sorting, globalFilter, columnFilters, rowSelectionProps, pagination]);
 
   const table = useReactTable({
     data,
@@ -114,9 +127,13 @@ export function EnhancedDataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: paginationOptions
+      ? getPaginationRowModel()
+      : undefined,
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
+    onPaginationChange: setPagination,
     globalFilterFn: "includesString",
     state: tableState,
     enableRowSelection: rowSelectionProps !== undefined,
@@ -172,9 +189,9 @@ export function EnhancedDataTable<TData, TValue>({
           filterComponent={filterComponents}
         />
       )}
-      <div className="border rounded-lg">
+      <div className="border rounded-lg overflow-hidden">
         <Table>
-          <TableHeader className="bg-gray-50">
+          <TableHeader className="bg-gray-50 rounded-t-lg">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -219,6 +236,11 @@ export function EnhancedDataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
+        {paginationOptions && (
+          <div className="border-t border-gray-200 bg-gray-50 ">
+            <DataTablePagination table={table} />
+          </div>
+        )}
       </div>
     </div>
   );

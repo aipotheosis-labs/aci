@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import { Progress } from "@/components/ui/progress";
+import { FaCheck } from "react-icons/fa6";
 
 interface StepperProps {
   currentStep: number;
@@ -23,7 +24,11 @@ export function Stepper({ currentStep, totalSteps, steps }: StepperProps) {
                     : "bg-muted text-muted-foreground",
               )}
             >
-              {currentStep > step.id ? "✓" : step.id}
+              {currentStep > step.id ? (
+                <FaCheck className="text-white" />
+              ) : (
+                step.id
+              )}
             </div>
             <span className="text-xs font-medium text-muted-foreground">
               {step.title}

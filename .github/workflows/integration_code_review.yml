@@ -1,7 +1,7 @@
 name: Integration PR Review
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, synchronize, reopened]
     paths:
       - 'apps/**'
@@ -12,19 +12,19 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Fetches all history for all branches and tags
-      
+
       - name: Detect changed files
         id: changed-files
         run: |
           # Execute the script and redirect its output to $GITHUB_OUTPUT
           bash .github/scripts/integration_detect_changed_files.sh "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" >> $GITHUB_OUTPUT
-      
+
       - name: Get PR title and body
         id: pr-info
         if: steps.changed-files.outputs.skip != 'true'
@@ -33,19 +33,19 @@ jobs:
           echo "body<<BODY_DELIMITER" >> $GITHUB_OUTPUT
           echo "${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
           echo "BODY_DELIMITER" >> $GITHUB_OUTPUT
-      
+
       - name: Generate file content for Claude
         id: file-content
         if: steps.changed-files.outputs.skip != 'true'
         run: |
           # Generate PR content using our script
           bash .github/scripts/integration_generate_pr_content.sh "${{ steps.pr-info.outputs.title }}" "${{ steps.pr-info.outputs.body }}" "${{ steps.changed-files.outputs.changed_files }}" "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
-      
+
       - name: Run Claude Code Review
         id: claude-review
         if: steps.changed-files.outputs.skip != 'true'
@@ -54,10 +54,10 @@ jobs:
         run: |
           # Install the Anthropic CLI
           pip install anthropic
-          
+
           # Run our Python script
           python .github/scripts/integration_pr_review.py
-      
+
       - name: Read Review and Post Comment
         uses: actions/github-script@v7
         if: steps.changed-files.outputs.skip != 'true'
@@ -65,7 +65,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const fs = require('fs');
-            
+
             // Read review from file
             let review = '';
             try {
@@ -75,7 +75,7 @@ jobs:
               console.error('Error reading review file:', error);
               review = 'Error: Could not read review content.';
             }
-            
+
             // Post review as comment
             try {
               const commentPrefix = 'ACI Integration Code Review (Sonnet 3.7)';

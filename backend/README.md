@@ -251,7 +251,7 @@ the local db.
    - Expose your local server: `ngrok http http://localhost:8000`
    - Copy your public endpoint you just exposed from previous step and create a new endpoint in the [ngrok dashboard](https://dashboard.ngrok.com/endpoints) (e.g. <https://7c4c-2a06-5904-1e06-6a00-ddc6-68ce-ffae-8783.ngrok-free.app>)
 
-2. Configure PropelAuth:
+1. Configure PropelAuth:
    - Go to your PropelAuth Org [dashboard](https://app.propelauth.com/proj/1b327933-ffbf-4a36-bd05-76cd896b0d56) (the link here is ours, you would need your own)
    - In the Frontend Integrations tab, you can find an Auth URL, copy that URL and use it to replace the dummy value of `SERVER_PROPELAUTH_AUTH_URL` in `.env.local`
    - Go to the **Users** and **Organizations** tabs, delete your previously created user and organization. (Note: only delete the user and org you created previously)
@@ -271,6 +271,9 @@ the local db.
     ![svix](./images/svix-signing-secret.png)
    - Go back to the [Getting Started](#getting-started) section step 5 to bring up
      docker compose
+
+1. Change the `NEXT_PUBLIC_AUTH_URL` in the frontend `.env` file to the value of the
+   `SERVER_PROPELAUTH_AUTH_URL`
 
 ## Stripe Webhooks
 

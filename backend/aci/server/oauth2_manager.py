@@ -41,17 +41,21 @@ class OAuth2Manager:
                 Additional options can be achieved by registering a custom auth method
         """
         self.app_name = app_name
+        self.client_id = client_id
+        self.client_secret = client_secret
+        self.scope = scope
         self.authorize_url = authorize_url
         self.access_token_url = access_token_url
         self.refresh_token_url = refresh_token_url
+        self.token_endpoint_auth_method = token_endpoint_auth_method
 
         # TODO: need to close the client after use
         # Add an aclose() helper (or implement __aenter__/__aexit__) and make callers invoke it during shutdown.
+        # NOTE: don't pass in scope here, otherwise it will be sent during refresh token request which is not needed
         self.oauth2_client = AsyncOAuth2Client(
             client_id=client_id,
             client_secret=client_secret,
             token_endpoint_auth_method=token_endpoint_auth_method,
-            scope=scope,
             code_challenge_method="S256",  # only S256 is supported
             # TODO: use update_token callback to save tokens to the database
             update_token=None,
@@ -101,6 +105,7 @@ class OAuth2Manager:
             code_verifier=code_verifier,
             access_type=access_type,
             prompt=prompt,
+            scope=self.scope,
             **app_specific_params,
         )
 
@@ -132,6 +137,7 @@ class OAuth2Manager:
                     redirect_uri=redirect_uri,
                     code=code,
                     code_verifier=code_verifier,
+                    scope=self.scope,
                 ),
             )
             return token
@@ -160,6 +166,56 @@ class OAuth2Manager:
                 extra={"error": e, "app_name": self.app_name},
             )
             raise OAuth2Error("failed to refresh access token") from e
+
+    def parse_fetch_token_response(self, token: dict) -> OAuth2SchemeCredentials:
+        """
+        Parse OAuth2SchemeCredentials from token response with app-specific handling.
+
+        Args:
+            token: OAuth2 token response from provider
+
+        Returns:
+            OAuth2SchemeCredentials with appropriate fields set
+        """
+        data = token
+
+        # handle Slack's special case
+        if self.app_name == "SLACK":
+            if "authed_user" in data:
+                data = cast(dict, data["authed_user"])
+            else:
+                logger.error(
+                    "Missing authed_user in Slack OAuth response",
+                    extra={"token": token, "app": self.app_name},
+                )
+                raise OAuth2Error("Missing access_token in Slack OAuth response")
+
+        if "access_token" not in data:
+            logger.error(
+                "Missing access_token in OAuth response",
+                extra={"token": token, "app": self.app_name},
+            )
+            raise OAuth2Error("Missing access_token in OAuth response")
+
+        # some apps have long live access token so expiration time may not be present
+        expires_at: int | None = None
+        if "expires_at" in data:
+            expires_at = int(data["expires_at"])
+        elif "expires_in" in data:
+            expires_at = int(time.time()) + int(data["expires_in"])
+
+        # TODO: if scope is present, check if it matches the scope in the App Configuration
+
+        return OAuth2SchemeCredentials(
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            scope=self.scope,
+            access_token=data["access_token"],
+            token_type=data.get("token_type"),
+            expires_at=expires_at,
+            refresh_token=data.get("refresh_token"),
+            raw_token_response=token,
+        )
 
     @staticmethod
     def generate_code_verifier(length: int = 48) -> str:
@@ -203,52 +259,3 @@ class OAuth2Manager:
                 return new_url
 
         return authorization_url
-
-    @staticmethod
-    def parse_oauth2_security_credentials(
-        app_name: str, token_response: dict
-    ) -> OAuth2SchemeCredentials:
-        """
-        Parse OAuth2SchemeCredentials from token response with app-specific handling.
-
-        Args:
-            app_name: Name of the app/provider (e.g., "SLACK", "GOOGLE")
-            token_response: OAuth2 token response from provider
-
-        Returns:
-            OAuth2SchemeCredentials with appropriate fields set
-        """
-        data = token_response
-
-        # handle Slack's special case
-        if app_name == "SLACK":
-            if "authed_user" in data:
-                data = cast(dict, data["authed_user"])
-            else:
-                logger.error(
-                    "Missing authed_user in Slack OAuth response",
-                    extra={"token_response": token_response, "app": app_name},
-                )
-                raise OAuth2Error("Missing access_token in Slack OAuth response")
-
-        if "access_token" not in data:
-            logger.error(
-                "Missing access_token in OAuth response",
-                extra={"token_response": token_response, "app": app_name},
-            )
-            raise OAuth2Error("Missing access_token in OAuth response")
-
-        # some apps have long live access token so expiration time may not be present
-        expires_at: int | None = None
-        if "expires_at" in data:
-            expires_at = int(data["expires_at"])
-        elif "expires_in" in data:
-            expires_at = int(time.time()) + int(data["expires_in"])
-
-        return OAuth2SchemeCredentials(
-            access_token=data["access_token"],
-            token_type=data.get("token_type"),
-            expires_at=expires_at,
-            refresh_token=data.get("refresh_token"),
-            raw_token_response=token_response,
-        )

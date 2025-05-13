@@ -4,7 +4,6 @@ from fastapi import APIRouter, Depends, Query
 from openai import OpenAI
 
 from aci.common.db import crud
-from aci.common.db.sql_models import App
 from aci.common.embeddings import generate_embedding
 from aci.common.enums import Visibility
 from aci.common.exceptions import AppNotFound
@@ -16,6 +15,7 @@ from aci.common.schemas.app import (
     AppsSearch,
 )
 from aci.common.schemas.function import BasicFunctionDefinition, FunctionDetails
+from aci.common.schemas.security_scheme import SecuritySchemesPublic
 from aci.server import config
 from aci.server import dependencies as deps
 
@@ -25,11 +25,11 @@ router = APIRouter()
 openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
 
 
-@router.get("", response_model=list[AppDetails])
+@router.get("", response_model_exclude_none=True)
 async def list_apps(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[AppsList, Query()],
-) -> list[App]:
+) -> list[AppDetails]:
     """
     Get a list of Apps and their details. Sorted by App name.
     """
@@ -40,7 +40,7 @@ async def list_apps(
         },
     )
 
-    return crud.apps.get_apps(
+    apps = crud.apps.get_apps(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
         True,
@@ -48,6 +48,30 @@ async def list_apps(
         query_params.limit,
         query_params.offset,
     )
+
+    response: list[AppDetails] = []
+    for app in apps:
+        app_details = AppDetails(
+            id=app.id,
+            name=app.name,
+            display_name=app.display_name,
+            provider=app.provider,
+            version=app.version,
+            description=app.description,
+            logo=app.logo,
+            categories=app.categories,
+            visibility=app.visibility,
+            active=app.active,
+            security_schemes=list(app.security_schemes.keys()),
+            # TODO: check validation latency
+            supported_security_schemes=SecuritySchemesPublic.model_validate(app.security_schemes),
+            functions=[FunctionDetails.model_validate(function) for function in app.functions],
+            created_at=app.created_at,
+            updated_at=app.updated_at,
+        )
+        response.append(app_details)
+
+    return response
 
 
 @router.get("/search", response_model_exclude_none=True)
@@ -113,7 +137,7 @@ async def search_apps(
     return apps
 
 
-@router.get("/{app_name}", response_model=AppDetails)
+@router.get("/{app_name}", response_model_exclude_none=True)
 async def get_app_details(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     app_name: str,
@@ -159,6 +183,7 @@ async def get_app_details(
         visibility=app.visibility,
         active=app.active,
         security_schemes=list(app.security_schemes.keys()),
+        supported_security_schemes=SecuritySchemesPublic.model_validate(app.security_schemes),
         functions=[FunctionDetails.model_validate(function) for function in functions],
         created_at=app.created_at,
         updated_at=app.updated_at,

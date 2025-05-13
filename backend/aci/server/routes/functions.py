@@ -396,7 +396,7 @@ async def execute_function(
         )
 
     security_credentials_response: SecurityCredentialsResponse = await scm.get_security_credentials(
-        function.app, linked_account
+        app_configuration.app, app_configuration, linked_account
     )
 
     logger.info(
@@ -427,14 +427,12 @@ async def execute_function(
             )
         db_session.commit()
 
-    # Check for custom instruction violations if OpenAI client is provided
-    if openai_client:
-        custom_instructions.check_for_violation(
-            openai_client,
-            function,
-            function_input,
-            agent.custom_instructions,
-        )
+    custom_instructions.check_for_violation(
+        openai_client,
+        function,
+        function_input,
+        agent.custom_instructions,
+    )
 
     function_executor = get_executor(function.protocol, linked_account)
     logger.info(

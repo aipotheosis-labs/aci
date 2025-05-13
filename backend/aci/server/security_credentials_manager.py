@@ -2,7 +2,7 @@ import time
 
 from pydantic import BaseModel
 
-from aci.common.db.sql_models import App, LinkedAccount
+from aci.common.db.sql_models import App, AppConfiguration, LinkedAccount
 from aci.common.enums import SecurityScheme
 from aci.common.exceptions import NoImplementationFound, OAuth2Error
 from aci.common.logging_setup import get_logger
@@ -13,6 +13,7 @@ from aci.common.schemas.security_scheme import (
     NoAuthSchemeCredentials,
     OAuth2Scheme,
     OAuth2SchemeCredentials,
+    SecuritySchemeOverrides,
 )
 from aci.server.oauth2_manager import OAuth2Manager
 
@@ -28,12 +29,12 @@ class SecurityCredentialsResponse(BaseModel):
 
 
 async def get_security_credentials(
-    app: App, linked_account: LinkedAccount
+    app: App, app_configuration: AppConfiguration, linked_account: LinkedAccount
 ) -> SecurityCredentialsResponse:
     if linked_account.security_scheme == SecurityScheme.API_KEY:
         return _get_api_key_credentials(app, linked_account)
     elif linked_account.security_scheme == SecurityScheme.OAUTH2:
-        return await _get_oauth2_credentials(app, linked_account)
+        return await _get_oauth2_credentials(app, app_configuration, linked_account)
     elif linked_account.security_scheme == SecurityScheme.NO_AUTH:
         return _get_no_auth_credentials(app, linked_account)
     else:
@@ -51,59 +52,17 @@ async def get_security_credentials(
 
 
 async def _get_oauth2_credentials(
-    app: App, linked_account: LinkedAccount
+    app: App, app_configuration: AppConfiguration, linked_account: LinkedAccount
 ) -> SecurityCredentialsResponse:
     """Get OAuth2 credentials from linked account or app's default credentials.
     If the access token is expired, it will be refreshed.
     """
-    is_app_default_credentials = False
     is_updated = False
-    oauth2_scheme = OAuth2Scheme.model_validate(app.security_schemes[SecurityScheme.OAUTH2])
-
-    if linked_account.security_credentials:
-        logger.debug(
-            "using linked account's security credentials",
-            extra={
-                "linked_account": linked_account.id,
-                "security_scheme": linked_account.security_scheme,
-            },
-        )
-        oauth2_credentials = linked_account.security_credentials
-
-    elif app.default_security_credentials_by_scheme.get(linked_account.security_scheme):
-        is_app_default_credentials = True
-        logger.info(
-            "using app's default security credentials",
-            extra={
-                "app": app.name,
-                "security_scheme": linked_account.security_scheme,
-                "linked_account": linked_account.id,
-            },
-        )
-        oauth2_credentials = app.default_security_credentials_by_scheme[
-            linked_account.security_scheme
-        ]
-    else:
-        logger.error(
-            "no security credentials usable",
-            extra={
-                "linked_account": linked_account.id,
-                "security_scheme": linked_account.security_scheme,
-                "app": app.name,
-            },
-        )
-        # TODO: check all 'NoImplementationFound' exceptions see if a more suitable exception can be used
-        raise NoImplementationFound(
-            f"no security credentials usable for app={app.name}, "
-            f"security_scheme={linked_account.security_scheme}, "
-            f"linked_account_owner_id={linked_account.linked_account_owner_id}"
-        )
-
-    oauth2_scheme_credentials = OAuth2SchemeCredentials.model_validate(oauth2_credentials)
-    if (
-        _access_token_is_expired(oauth2_scheme_credentials)
-        and oauth2_scheme_credentials.refresh_token
-    ):
+    oauth2_scheme = get_app_configuration_oauth2_scheme(app_configuration.app, app_configuration)
+    oauth2_scheme_credentials = OAuth2SchemeCredentials.model_validate(
+        linked_account.security_credentials
+    )
+    if _access_token_is_expired(oauth2_scheme_credentials):
         logger.warning(
             "access token expired, trying to refresh",
             extra={
@@ -113,9 +72,9 @@ async def _get_oauth2_credentials(
             },
         )
         token_response = await _refresh_oauth2_access_token(
-            app, oauth2_scheme_credentials.refresh_token
+            app.name, oauth2_scheme, oauth2_scheme_credentials
         )
-
+        # TODO: refactor parsing to _refresh_oauth2_access_token
         expires_at: int | None = None
         if "expires_at" in token_response:
             expires_at = int(token_response["expires_at"])
@@ -146,46 +105,36 @@ async def _get_oauth2_credentials(
             update=fields_to_update,
         )
         is_updated = True
-    else:
-        logger.debug(
-            "access token is valid",
-            extra={
-                "linked_account": linked_account.id,
-                "security_scheme": linked_account.security_scheme,
-                "app": app.name,
-            },
-        )
 
     return SecurityCredentialsResponse(
         scheme=oauth2_scheme,
         credentials=oauth2_scheme_credentials,
-        is_app_default_credentials=is_app_default_credentials,
+        is_app_default_credentials=False,  # Should never support default credentials for oauth2
         is_updated=is_updated,
     )
 
 
-async def _refresh_oauth2_access_token(app: App, refresh_token: str) -> dict:
-    app_default_oauth2_config = OAuth2Scheme.model_validate(
-        app.security_schemes[SecurityScheme.OAUTH2]
-    )
+async def _refresh_oauth2_access_token(
+    app_name: str, oauth2_scheme: OAuth2Scheme, oauth2_scheme_credentials: OAuth2SchemeCredentials
+) -> dict:
+    refresh_token = oauth2_scheme_credentials.refresh_token
+    if not refresh_token:
+        raise OAuth2Error("no refresh token found")
+
+    # NOTE: it's important to use oauth2_scheme_credentials's client_id, client_secret, scope because
+    # these fields might have changed for the app configuration after the linked account was created
     oauth2_manager = OAuth2Manager(
-        app_name=app.name,
-        client_id=app_default_oauth2_config.client_id,
-        client_secret=app_default_oauth2_config.client_secret,
-        scope=app_default_oauth2_config.scope,
-        authorize_url=app_default_oauth2_config.authorize_url,
-        access_token_url=app_default_oauth2_config.access_token_url,
-        refresh_token_url=app_default_oauth2_config.refresh_token_url,
-        token_endpoint_auth_method=app_default_oauth2_config.token_endpoint_auth_method,
+        app_name=app_name,
+        client_id=oauth2_scheme_credentials.client_id,
+        client_secret=oauth2_scheme_credentials.client_secret,
+        scope=oauth2_scheme_credentials.scope,
+        authorize_url=oauth2_scheme.authorize_url,
+        access_token_url=oauth2_scheme.access_token_url,
+        refresh_token_url=oauth2_scheme.refresh_token_url,
+        token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
     )
 
-    token_response = await oauth2_manager.refresh_token(refresh_token)
-
-    # TODO: seems the token_response contains both "expires_at" and "expires_in", in which case
-    # the "expires_at" should be used. Need to double check if it's the same for "authorize_access_token" method
-    # and other providers.
-
-    return token_response
+    return await oauth2_manager.refresh_token(refresh_token)
 
 
 def _get_api_key_credentials(
@@ -243,3 +192,25 @@ def _access_token_is_expired(oauth2_credentials: OAuth2SchemeCredentials) -> boo
     if oauth2_credentials.expires_at is None:
         return False
     return oauth2_credentials.expires_at < int(time.time())
+
+
+def get_app_configuration_oauth2_scheme(
+    app: App, app_configuration: AppConfiguration
+) -> OAuth2Scheme:
+    """
+    Get the OAuth2 scheme for an app configuration, taking into account potential overrides.
+    """
+    oauth2_scheme = OAuth2Scheme.model_validate(app.security_schemes[SecurityScheme.OAUTH2])
+
+    # Parse the security scheme overrides
+    security_scheme_overrides = SecuritySchemeOverrides.model_validate(
+        app_configuration.security_scheme_overrides
+    )
+
+    # Apply oauth2 overrides if they exist
+    if security_scheme_overrides.oauth2:
+        oauth2_scheme = oauth2_scheme.model_copy(
+            update=security_scheme_overrides.oauth2.model_dump(exclude_none=True)
+        )
+
+    return oauth2_scheme

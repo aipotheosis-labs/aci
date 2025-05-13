@@ -75,10 +75,15 @@ def test_linked_account_table_security_credentials_column_oauth2_encryption(
     for OAuth2 type security credentials.
     """
     # Given - Create test data
+    expected_client_id = "test_client_id"
+    expected_client_secret = "test_client_secret"
     expected_access_token = "test_access_token"
     expected_refresh_token = "test_refresh_token"
     expected_raw_token_response = {"key": "value"}
     expected_default_security_credential = OAuth2SchemeCredentials(
+        client_id=expected_client_id,
+        client_secret=expected_client_secret,
+        scope="test",
         access_token=expected_access_token,
         token_type="Bearer",
         expires_at=1234567890,
@@ -110,6 +115,8 @@ def test_linked_account_table_security_credentials_column_oauth2_encryption(
     retrieved_oauth2_scheme_credentials = OAuth2SchemeCredentials.model_validate(
         retrieved_linked_account.security_credentials
     )
+    assert retrieved_oauth2_scheme_credentials.client_id == expected_client_id
+    assert retrieved_oauth2_scheme_credentials.client_secret == expected_client_secret
     assert retrieved_oauth2_scheme_credentials.access_token == expected_access_token
     assert retrieved_oauth2_scheme_credentials.refresh_token == expected_refresh_token
     assert retrieved_oauth2_scheme_credentials.raw_token_response == expected_raw_token_response
@@ -120,6 +127,16 @@ def test_linked_account_table_security_credentials_column_oauth2_encryption(
     raw_security_credentials = result[0] if result else None
     assert raw_security_credentials is not None
     assert isinstance(raw_security_credentials, dict)
+
+    # Then - Verify client_secret is encrypted and can be decrypted to the original value
+    raw_client_secret = raw_security_credentials["client_secret"]
+    assert raw_client_secret is not None
+    assert raw_client_secret != expected_client_secret
+
+    decrypted_client_secret = encryption.decrypt(base64.b64decode(raw_client_secret)).decode(
+        "utf-8"
+    )
+    assert decrypted_client_secret == expected_client_secret
 
     # Then - Verify access_token is encrypted and can be decrypted to the original value
     raw_access_token = raw_security_credentials["access_token"]
@@ -162,6 +179,9 @@ def test_linked_account_table_security_credentials_column_mutable_dict_detection
     # Given - Create test data
     expected_token_type = "Bearer"
     expected_default_security_credential = OAuth2SchemeCredentials(
+        client_id="test",
+        client_secret="test",
+        scope="test",
         access_token="test_access_token",
         token_type=expected_token_type,
         expires_at=1234567890,

@@ -100,6 +100,10 @@ class EncryptedSecurityCredentials(TypeDecorator[dict]):
 
             # OAuth2SchemeCredentials
             elif "access_token" in encrypted_value:
+                client_secret = encrypted_value.get("client_secret")
+                if isinstance(client_secret, str):
+                    encrypted_value["client_secret"] = _encrypt_value(client_secret)
+
                 access_token = encrypted_value.get("access_token")
                 if isinstance(access_token, str):
                     encrypted_value["access_token"] = _encrypt_value(access_token)
@@ -130,6 +134,10 @@ class EncryptedSecurityCredentials(TypeDecorator[dict]):
 
             # OAuth2SchemeCredentials
             elif "access_token" in decrypted_value:
+                client_secret_b64 = decrypted_value.get("client_secret")
+                if isinstance(client_secret_b64, str):
+                    decrypted_value["client_secret"] = _decrypt_value(client_secret_b64)
+
                 access_token_b64 = decrypted_value.get("access_token")
                 if isinstance(access_token_b64, str):
                     decrypted_value["access_token"] = _decrypt_value(access_token_b64)

@@ -20,6 +20,11 @@ class APIKeyScheme(BaseModel):
     )
 
 
+# NOTE: not necessary but for the sake of consistency and future use
+class APIKeySchemePublic(BaseModel):
+    pass
+
+
 class OAuth2Scheme(BaseModel):
     # TODO: consider providing a default value for in_, name, prefix as they are usually the same for most apps
     location: HttpLocation = Field(
@@ -36,10 +41,12 @@ class OAuth2Scheme(BaseModel):
     )
     client_id: str = Field(
         ...,
+        min_length=1,
         description="The client ID of the OAuth2 client (provided by ACI) used for the app",
     )
     client_secret: str = Field(
         ...,
+        min_length=1,
         description="The client secret of the OAuth2 client (provided by ACI) used for the app",
     )
     scope: str = Field(
@@ -66,6 +73,34 @@ class OAuth2Scheme(BaseModel):
     )
 
 
+# NOTE: need to show these fields for custom oauth2 app feature.
+class OAuth2SchemePublic(BaseModel):
+    # user needs to know the scope to set in their own oauth2 app.
+    scope: str = Field(
+        ...,
+        description="Space separated scopes of the OAuth2 client used for the app, "
+        "e.g., 'openid email profile https://www.googleapis.com/auth/calendar'",
+    )
+
+
+class OAuth2SchemeOverride(BaseModel):
+    """
+    Fields that are allowed to be overridden by the user.
+    """
+
+    client_id: str = Field(
+        ...,
+        min_length=1,
+        description="The client ID of the OAuth2 client used for the app",
+    )
+    client_secret: str = Field(
+        ...,
+        min_length=1,
+        description="The client secret of the OAuth2 client used for the app",
+    )
+    # TODO: will support "scope" and "redirect_uri" in the future, both will be optional
+
+
 class NoAuthScheme(BaseModel, extra="forbid"):
     """
     model for security scheme that has no authentication.
@@ -73,6 +108,11 @@ class NoAuthScheme(BaseModel, extra="forbid"):
     We could also add some fields as metadata in the future if needed.
     """
 
+    pass
+
+
+# NOTE: not necessary but for the sake of consistency and future use
+class NoAuthSchemePublic(BaseModel):
     pass
 
 
@@ -92,6 +132,14 @@ class APIKeySchemeCredentials(BaseModel):
 class OAuth2SchemeCredentials(BaseModel):
     """Credentials for OAuth2 scheme"""
 
+    # We need to store client_id and client_secret as part of the credentials because oauth2 client can
+    # change any time for a particular App Configuration. (e.g., user provided custom oauth2 app, or we changed
+    # our default oauth2 app). In which case, we still want the existing linked accounts to work. (refresh token)
+    client_id: str
+    client_secret: str
+    # Technically we don't need to store scope, but can be useful if we know which accounts are not up to date
+    # with current App/ App Configuration's oauth2 scopes and to let user know.
+    scope: str
     access_token: str
     token_type: str | None = None
     expires_at: int | None = None
@@ -108,6 +156,25 @@ class NoAuthSchemeCredentials(BaseModel, extra="forbid"):
     """
 
     pass
+
+
+class SecuritySchemesPublic(BaseModel):
+    """
+    scheme_type -> scheme with sensitive information removed
+    """
+
+    api_key: APIKeySchemePublic | None = None
+    oauth2: OAuth2SchemePublic | None = None
+    no_auth: NoAuthSchemePublic | None = None
+
+
+class SecuritySchemeOverrides(BaseModel, extra="forbid"):
+    """
+    Allowed security scheme overrides
+    NOTE: for now we only support oauth2 overrides (because nothing is overridable for api_key and no_auth)
+    """
+
+    oauth2: OAuth2SchemeOverride | None = None
 
 
 TScheme = TypeVar("TScheme", APIKeyScheme, OAuth2Scheme, NoAuthScheme)
