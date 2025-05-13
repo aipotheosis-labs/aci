@@ -81,7 +81,6 @@ export function ConfigureApp({
   const [selectedAgentIds, setSelectedAgentIds] = useState<RowSelectionState>(
     {},
   );
-  const redirectUrl = "https://api.aci.dev/v1/linked-accounts/oauth2/callback";
   const [submitLoading, setSubmitLoading] = useState(false);
 
   // security scheme
@@ -415,7 +414,6 @@ export function ConfigureApp({
               onNext={handleConfigureAppSubmit}
               name={name}
               isLoading={submitLoading}
-              redirectUrl={redirectUrl}
             />
           )}
 

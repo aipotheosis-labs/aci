@@ -36,6 +36,7 @@ export const ConfigureAppFormSchema = z.object({
   client_secret: z.string().optional().default(""),
 });
 export type ConfigureAppFormValues = z.infer<typeof ConfigureAppFormSchema>;
+const oauth2RedirectUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/linked-accounts/oauth2/callback`;
 
 interface ConfigureAppStepProps {
   form: ReturnType<typeof useForm<ConfigureAppFormValues>>;
@@ -43,7 +44,6 @@ interface ConfigureAppStepProps {
   onNext: (values: ConfigureAppFormValues) => void;
   name: string;
   isLoading: boolean;
-  redirectUrl: string;
 }
 
 export function ConfigureAppStep({
@@ -52,7 +52,6 @@ export function ConfigureAppStep({
   onNext,
   name,
   isLoading,
-  redirectUrl,
 }: ConfigureAppStepProps) {
   const currentSecurityScheme = form.watch("security_scheme");
   const { scope = "" } =
@@ -211,7 +210,7 @@ export function ConfigureAppStep({
                     </Tooltip>
                   </FormLabel>
                   <div className="pt-2">
-                    <IdDisplay id={redirectUrl} />
+                    <IdDisplay id={oauth2RedirectUrl} />
                   </div>
                 </FormItem>
 
