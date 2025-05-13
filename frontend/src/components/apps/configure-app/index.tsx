@@ -54,10 +54,19 @@ const STEPS = [
 
 interface ConfigureAppProps {
   children: React.ReactNode;
-  configureApp: (security_scheme: string) => Promise<boolean>;
+  configureApp: (
+    security_scheme: string,
+    security_scheme_overrides?: {
+      oauth2?: {
+        client_id: string;
+        client_secret: string;
+      } | null;
+    },
+  ) => Promise<boolean>;
   name: string;
   security_schemes: string[];
   logo?: string;
+  oauth2Scope?: string;
 }
 
 export function ConfigureApp({
@@ -66,6 +75,7 @@ export function ConfigureApp({
   name,
   security_schemes,
   logo,
+  oauth2Scope,
 }: ConfigureAppProps) {
   const { activeProject, reloadActiveProject, accessToken } = useMetaInfo();
 
@@ -74,7 +84,7 @@ export function ConfigureApp({
   const [selectedAgentIds, setSelectedAgentIds] = useState<RowSelectionState>(
     {},
   );
-  const redirectUrl = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+  const redirectUrl = "https://api.aci.dev/v1/linked-accounts/oauth2/callback";
   const [submitLoading, setSubmitLoading] = useState(false);
 
   // security scheme
@@ -85,6 +95,8 @@ export function ConfigureApp({
     resolver: zodResolver(ConfigureAppFormSchema),
     defaultValues: {
       security_scheme: security_schemes?.[0] ?? "",
+      client_id: "",
+      client_secret: "",
     },
   });
 
@@ -134,11 +146,36 @@ export function ConfigureApp({
   const handleConfigureAppSubmit = async (values: ConfigureAppFormValues) => {
     setConfigureApp(values.security_scheme);
     setSubmitLoading(true);
-    const success = await configureApp(values.security_scheme);
-    if (success) {
-      setCurrentStep(2);
+
+    try {
+      let security_scheme_overrides = undefined;
+
+      if (
+        values.security_scheme === "oauth2" &&
+        values.client_id &&
+        values.client_secret
+      ) {
+        security_scheme_overrides = {
+          oauth2: {
+            client_id: values.client_id,
+            client_secret: values.client_secret,
+          },
+        };
+      }
+
+      const success = await configureApp(
+        values.security_scheme,
+        security_scheme_overrides,
+      );
+      if (success) {
+        setCurrentStep(2);
+      }
+    } catch (error) {
+      console.error("Failed to configure app:", error);
+      toast.error("Failed to configure app. Please try again.");
+    } finally {
+      setSubmitLoading(false);
     }
-    setSubmitLoading(false);
   };
 
   // step 2 submit
@@ -382,6 +419,7 @@ export function ConfigureApp({
               name={name}
               isLoading={submitLoading}
               redirectUrl={redirectUrl}
+              oauth2Scope={oauth2Scope}
             />
           )}
 

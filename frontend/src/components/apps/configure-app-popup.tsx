@@ -4,10 +4,19 @@ import { ConfigureApp } from "@/components/apps/configure-app";
 
 export interface ConfigureAppPopupProps {
   children: React.ReactNode;
-  configureApp: (security_scheme: string) => Promise<boolean>;
+  configureApp: (
+    security_scheme: string,
+    security_scheme_overrides?: {
+      oauth2?: {
+        client_id: string;
+        client_secret: string;
+      } | null;
+    },
+  ) => Promise<boolean>;
   name: string;
   security_schemes: string[];
   logo?: string;
+  oauth2Scope?: string;
 }
 
 export function ConfigureAppPopup(props: ConfigureAppPopupProps) {

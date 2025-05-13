@@ -27,11 +27,14 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { BsQuestionCircle } from "react-icons/bs";
-export const ConfigureAppFormSchema = z.object({
-  security_scheme: z.string().min(1, "Security Scheme is required"),
-});
+import { Badge } from "@/components/ui/badge";
 import { IdDisplay } from "@/components/apps/id-display";
 
+export const ConfigureAppFormSchema = z.object({
+  security_scheme: z.string().min(1, "Security Scheme is required"),
+  client_id: z.string().optional().default(""),
+  client_secret: z.string().optional().default(""),
+});
 export type ConfigureAppFormValues = z.infer<typeof ConfigureAppFormSchema>;
 
 interface ConfigureAppStepProps {
@@ -40,7 +43,8 @@ interface ConfigureAppStepProps {
   onNext: (values: ConfigureAppFormValues) => void;
   name: string;
   isLoading: boolean;
-  redirectUrl: string; // pass this in from parent
+  redirectUrl: string;
+  oauth2Scope?: string;
 }
 
 export function ConfigureAppStep({
@@ -50,8 +54,32 @@ export function ConfigureAppStep({
   name,
   isLoading,
   redirectUrl,
+  oauth2Scope,
 }: ConfigureAppStepProps) {
   const [customOAuth2Credentials, setCustomOAuth2Credentials] = useState(false);
+  const scopes = oauth2Scope?.split(" ") ?? [];
+
+  // only split into two columns when oauth2 + custom toggled
+  const isOAuth2Custom =
+    form.watch("security_scheme") === "oauth2" && customOAuth2Credentials;
+
+  const handleSubmit = (values: ConfigureAppFormValues) => {
+    if (values.security_scheme === "oauth2" && customOAuth2Credentials) {
+      if (!values.client_id || !values.client_secret) {
+        form.setError("client_id", {
+          type: "manual",
+          message: "Client ID is required for custom OAuth2",
+        });
+        form.setError("client_secret", {
+          type: "manual",
+          message: "Client Secret is required for custom OAuth2",
+        });
+        return;
+      }
+    }
+
+    onNext(values);
+  };
 
   return (
     <div className="space-y-4">
@@ -62,7 +90,7 @@ export function ConfigureAppStep({
         </div>
       </div>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onNext)} className="space-y-4">
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
           <FormField
             control={form.control}
             name="security_scheme"
@@ -91,6 +119,7 @@ export function ConfigureAppStep({
             )}
           />
 
+          {/* OAuth2 Custom Toggle */}
           {form.watch("security_scheme") === "oauth2" && (
             <div className="flex items-center gap-2">
               <Switch
@@ -102,43 +131,92 @@ export function ConfigureAppStep({
           )}
 
           {customOAuth2Credentials && (
-            <div className="space-y-4">
-              {/* 1. Redirect URL as read-only display with tooltip */}
-              <div className="flex items-center gap-2 w-[70%]">
-                <span className="text-sm font-medium text-gray-500 w-24 shrink-0">
-                  Redirect URL
-                </span>
-
-                <div className="flex items-center flex-1 gap-2 min-w-0">
+            <div
+              className={`grid gap-6 ${isOAuth2Custom ? "lg:grid-cols-2" : ""}`}
+            >
+              {/* Left column: Read-only information */}
+              <div className="space-y-6 min-w-0">
+                {/* Redirect URL */}
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-sm font-medium text-gray-700">
+                      Redirect URL
+                    </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <BsQuestionCircle className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Add this redirect URL in your OAuth2 app settings
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
                   <IdDisplay id={redirectUrl} />
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <span className="cursor-pointer">
-                        <BsQuestionCircle className="h-4 w-4 text-muted-foreground" />
-                      </span>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Add this redirect URL to your OAUTH2 App
-                    </TooltipContent>
-                  </Tooltip>
+                </div>
+
+                {/* Scope */}
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-sm font-medium text-gray-700">
+                      Scope
+                    </span>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <BsQuestionCircle className="h-4 w-4 text-muted-foreground cursor-pointer" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Scopes requested by the OAuth2 provider
+                      </TooltipContent>
+                    </Tooltip>
+                  </div>
+                  <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
+                    {scopes.map((s) => (
+                      <Badge
+                        key={s}
+                        variant="secondary"
+                        className="text-xs break-all"
+                      >
+                        <code className="break-all">{s}</code>
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              {/* 2. Client ID only */}
-              <FormItem>
-                <FormLabel>OAuth2 Client ID</FormLabel>
-                <FormControl>
-                  <Input type="text" placeholder="Client ID" />
-                </FormControl>
-              </FormItem>
+              {/* Right column: Input fields */}
+              <div className="space-y-6 min-w-0">
+                <FormField
+                  control={form.control}
+                  name="client_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>OAuth2 Client ID</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="Client ID" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              {/* (Keep client secret if you still need it) */}
-              <FormItem>
-                <FormLabel>OAuth2 Client Secret</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder="Client Secret" />
-                </FormControl>
-              </FormItem>
+                <FormField
+                  control={form.control}
+                  name="client_secret"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>OAuth2 Client Secret</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          type="password"
+                          placeholder="Client Secret"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
           )}
 

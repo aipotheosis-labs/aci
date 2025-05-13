@@ -60,6 +60,12 @@ export async function createAppConfig(
   appName: string,
   security_scheme: string,
   apiKey: string,
+  security_scheme_overrides?: {
+    oauth2?: {
+      client_id: string;
+      client_secret: string;
+    } | null;
+  },
 ): Promise<AppConfig> {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/app-configurations`,
@@ -72,7 +78,7 @@ export async function createAppConfig(
       body: JSON.stringify({
         app_name: appName,
         security_scheme: security_scheme,
-        security_scheme_overrides: {},
+        security_scheme_overrides: security_scheme_overrides ?? {},
         all_functions_enabled: true,
         enabled_functions: [],
       }),

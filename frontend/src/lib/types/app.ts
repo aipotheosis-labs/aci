@@ -13,6 +13,7 @@ export interface App {
   active: boolean;
   security_schemes: string[];
   functions: AppFunction[];
+  supported_security_schemes?: Record<string, { scope?: string }>;
   created_at: string;
   updated_at: string;
 }
