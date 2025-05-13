@@ -49,6 +49,7 @@ create_mock_secrets() {
   local app_dir=$1
   local secrets_file="${app_dir}.app.secrets.json"
   local app_json="${app_dir}app.json"
+  local app_name=$(basename "$app_dir")
 
   if [ "$USE_MOCK" = true ] && grep -q "oauth2" "$app_json"; then
     # Extract client_id and client_secret variable names from app.json
@@ -58,8 +59,8 @@ create_mock_secrets() {
     if [ -n "$client_id_var" ] && [ -n "$client_secret_var" ]; then
       cat > "$secrets_file" <<EOF
 {
-  "${client_id_var}": "mock_client_id_$(openssl rand -hex 8)",
-  "${client_secret_var}": "mock_client_secret_$(openssl rand -hex 16)"
+  "${client_id_var}": "mock_client_id_${app_name}",
+  "${client_secret_var}": "mock_client_secret_${app_name}"
 }
 EOF
     else
@@ -102,7 +103,6 @@ seed_all_apps() {
 
     # Check if secrets file exists and construct command accordingly
     if [ -f "$secrets_file" ]; then
-      echo "Upserting app $app_file with secrets file $secrets_file"
       python -m aci.cli upsert-app \
         --app-file "$app_file" \
         --secrets-file "$secrets_file" \
