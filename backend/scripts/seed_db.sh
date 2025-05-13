@@ -9,14 +9,15 @@ Usage: $0 [options]
 Options:
   -h, --help   Display this help message
   -a, --all    Seed all available Apps and Functions (without this flag, it will seed only a selected set of Apps and their Functions (with dummy OAuth2 client id & secret if it's OAuth2 app))
+  -m, --mock   Create .app.secrets.json files with mock credentials for OAuth2 apps
 
 EOF
 }
 
 SEED_ALL=false
+USE_MOCK=false
 
 parse_arguments() {
-
   if [ $# -eq 0 ]; then
     # No arguments: default to seed selected test data
     SEED_ALL=false
@@ -26,6 +27,9 @@ parse_arguments() {
       case $arg in
         -a|--all)
           SEED_ALL=true
+          ;;
+        -m|--mock)
+          USE_MOCK=true
           ;;
         -h|--help)
           usage
@@ -41,6 +45,28 @@ parse_arguments() {
   fi
 }
 
+create_mock_secrets() {
+  local app_dir=$1
+  local secrets_file="${app_dir}.app.secrets.json"
+  local app_json="${app_dir}app.json"
+
+  if [ "$USE_MOCK" = true ] && grep -q "oauth2" "$app_json"; then
+    # Extract client_id and client_secret variable names from app.json
+    local client_id_var=$(grep -o '"client_id": *"[^{]*{{ *[^}]*}}' "$app_json" | sed 's/.*{{ *\([^}]*\) *}}.*/\1/' | tr -d ' ')
+    local client_secret_var=$(grep -o '"client_secret": *"[^{]*{{ *[^}]*}}' "$app_json" | sed 's/.*{{ *\([^}]*\) *}}.*/\1/' | tr -d ' ')
+
+    if [ -n "$client_id_var" ] && [ -n "$client_secret_var" ]; then
+      cat > "$secrets_file" <<EOF
+{
+  "${client_id_var}": "mock_client_id_$(openssl rand -hex 8)",
+  "${client_secret_var}": "mock_client_secret_$(openssl rand -hex 16)"
+}
+EOF
+    else
+      echo "Warning: Could not find client_id or client_secret variables in $app_json"
+    fi
+  fi
+}
 
 seed_test_apps() {
   # Create a temporary file
@@ -72,8 +98,11 @@ seed_all_apps() {
     app_file="${app_dir}app.json"
     secrets_file="${app_dir}.app.secrets.json"
 
+    create_mock_secrets "$app_dir"
+
     # Check if secrets file exists and construct command accordingly
     if [ -f "$secrets_file" ]; then
+      echo "Upserting app $app_file with secrets file $secrets_file"
       python -m aci.cli upsert-app \
         --app-file "$app_file" \
         --secrets-file "$secrets_file" \
