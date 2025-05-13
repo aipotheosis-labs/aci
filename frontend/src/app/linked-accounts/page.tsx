@@ -365,7 +365,9 @@ export default function LinkedAccountsPage() {
               appInfos={appConfigs.map((config) => ({
                 name: config.app_name,
                 logo: apps.find((app) => app.name === config.app_name)?.logo,
-                securitySchemes: [config.security_scheme],
+                supported_security_schemes:
+                  apps.find((app) => app.name === config.app_name)
+                    ?.supported_security_schemes || {},
               }))}
               updateLinkedAccounts={() => refreshLinkedAccounts(true)}
             />

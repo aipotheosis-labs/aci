@@ -39,27 +39,27 @@ export type ConfigureAppFormValues = z.infer<typeof ConfigureAppFormSchema>;
 
 interface ConfigureAppStepProps {
   form: ReturnType<typeof useForm<ConfigureAppFormValues>>;
-  security_schemes: string[];
+  supported_security_schemes: Record<string, { scope?: string }>;
   onNext: (values: ConfigureAppFormValues) => void;
   name: string;
   isLoading: boolean;
   redirectUrl: string;
-  oauth2Scope?: string;
 }
 
 export function ConfigureAppStep({
   form,
-  security_schemes,
+  supported_security_schemes,
   onNext,
   name,
   isLoading,
   redirectUrl,
-  oauth2Scope,
 }: ConfigureAppStepProps) {
-  // whether to use ACI.dev's OAuth2 App, default is false (default user uses their own OAuth2 client)
-  const [useACIDevOAuth2, setUseACIDevOAuth2] = useState(false);
-  const scopes = oauth2Scope ? oauth2Scope.split(/[\s,]+/).filter(Boolean) : [];
   const currentSecurityScheme = form.watch("security_scheme");
+  const { scope = "" } =
+    supported_security_schemes?.[currentSecurityScheme] ?? {};
+  const scopes = scope.split(/[\s,]+/).filter(Boolean);
+
+  const [useACIDevOAuth2, setUseACIDevOAuth2] = useState(false);
   const clientId = form.watch("client_id");
   const clientSecret = form.watch("client_secret");
 
@@ -125,11 +125,13 @@ export function ConfigureAppStep({
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    {security_schemes.map((scheme, idx) => (
-                      <SelectItem key={idx} value={scheme}>
-                        {scheme}
-                      </SelectItem>
-                    ))}
+                    {Object.entries(supported_security_schemes || {}).map(
+                      ([scheme], idx) => (
+                        <SelectItem key={idx} value={scheme}>
+                          {scheme}
+                        </SelectItem>
+                      ),
+                    )}
                   </SelectContent>
                 </Select>
                 <FormMessage />
@@ -137,7 +139,6 @@ export function ConfigureAppStep({
             )}
           />
 
-          {/* OAuth2 Toggle - only show when security_scheme is oauth2 */}
           {currentSecurityScheme === "oauth2" && (
             <div className="flex items-center gap-2">
               <Switch
@@ -150,10 +151,8 @@ export function ConfigureAppStep({
             </div>
           )}
 
-          {/* only show when security_scheme is oauth2 and not using ACI.dev's OAuth2 App */}
           {currentSecurityScheme === "oauth2" && !useACIDevOAuth2 && (
             <div className="grid gap-6 lg:grid-cols-2">
-              {/* left column: input fields */}
               <div className="space-y-6 min-w-0">
                 <FormField
                   control={form.control}

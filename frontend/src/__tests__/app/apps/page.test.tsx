@@ -65,7 +65,11 @@ describe("AppStorePage", () => {
         logo: "/test.png",
         visibility: "public",
         active: true,
-        security_schemes: [],
+        supported_security_schemes: {
+          oauth2: {
+            scope: "test",
+          },
+        },
         created_at: "2024-01-01",
         updated_at: "2024-01-01",
         functions: [],

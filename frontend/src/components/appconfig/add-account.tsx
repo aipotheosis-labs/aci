@@ -78,7 +78,7 @@ const FORM_SUBMIT_NO_AUTH = "noAuth";
 export interface AppInfo {
   name: string;
   logo: string | undefined;
-  securitySchemes: string[];
+  supported_security_schemes: Record<string, { scope?: string }>;
 }
 interface AddAccountProps {
   appInfos: AppInfo[];
@@ -109,7 +109,7 @@ export function AddAccountForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       appName: appInfos[0].name,
-      authType: appInfos[0].securitySchemes[0] as
+      authType: Object.keys(appInfos[0].supported_security_schemes)[0] as
         | "api_key"
         | "oauth2"
         | "no_auth",
@@ -319,10 +319,9 @@ export function AddAccountForm({
                       field.onChange(value);
                       form.setValue(
                         "authType",
-                        appInfosDict[value].securitySchemes[0] as
-                          | "api_key"
-                          | "oauth2"
-                          | "no_auth",
+                        Object.keys(
+                          appInfosDict[value].supported_security_schemes,
+                        )[0] as "api_key" | "oauth2" | "no_auth",
                         {
                           shouldValidate: true,
                         },
@@ -424,13 +423,14 @@ export function AddAccountForm({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {appInfosDict[selectedAppName].securitySchemes.map(
-                        (scheme) => (
-                          <SelectItem key={scheme} value={scheme}>
-                            {scheme}
-                          </SelectItem>
-                        ),
-                      )}
+                      {Object.keys(
+                        appInfosDict[selectedAppName]
+                          .supported_security_schemes,
+                      ).map((scheme) => (
+                        <SelectItem key={scheme} value={scheme}>
+                          {scheme}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

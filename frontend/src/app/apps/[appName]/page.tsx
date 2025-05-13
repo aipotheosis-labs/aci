@@ -122,12 +122,9 @@ const AppPage = () => {
           {app && (
             <ConfigureAppPopup
               name={app.name}
-              security_schemes={Object.keys(
-                app.supported_security_schemes ?? {},
-              )}
+              supported_security_schemes={app.supported_security_schemes ?? {}}
               configureApp={configureApp}
               logo={app.logo}
-              oauth2Scope={app?.supported_security_schemes?.oauth2?.scope}
             >
               <Button
                 className="bg-primary text-white hover:bg-primary/90"

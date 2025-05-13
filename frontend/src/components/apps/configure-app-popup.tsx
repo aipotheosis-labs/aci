@@ -14,9 +14,8 @@ export interface ConfigureAppPopupProps {
     },
   ) => Promise<boolean>;
   name: string;
-  security_schemes: string[];
+  supported_security_schemes: Record<string, { scope?: string }>;
   logo?: string;
-  oauth2Scope?: string;
 }
 
 export function ConfigureAppPopup(props: ConfigureAppPopupProps) {

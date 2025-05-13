@@ -283,7 +283,8 @@ export default function AppConfigDetailPage() {
               {
                 name: app.name,
                 logo: app.logo,
-                securitySchemes: app.security_schemes,
+                supported_security_schemes:
+                  app.supported_security_schemes || {},
               },
             ]}
             updateLinkedAccounts={refreshLinkedAccounts}
