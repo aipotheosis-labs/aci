@@ -5,11 +5,6 @@
     "provider": "FoundryLabs, Inc.",
     "version": "aipolabs_0.0.1",
     "description": "E2B is an open-source runtime for executing AI-generated code in secure cloud sandboxes.",
-    "api_key": {
-        "location": "header",
-        "name": "E2B_API_KEY",
-        "prefix": null
-    },
     "security_schemes": {
         "api_key": {
             "location": "header",
@@ -19,9 +14,8 @@
     },
     "default_security_credentials_by_scheme": {},
     "categories": [
-        "sandboxes",
-        "code",
-        "ai"
+        "Sandboxes",
+        "Code"
     ],
     "visibility": "public",
     "active": true

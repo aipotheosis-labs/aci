@@ -5,8 +5,6 @@
   "provider": "Google LLC",
   "version": "1.0.0",
   "description": "YouTube API provides access to Google's streaming video repository, allowing you to search for videos, retrieve standard feeds, and manage YouTube subscriptions and playlists.",
-  "primary_color": "#FF0000",
-  "secondary_color": "#282828",
   "security_schemes": {
     "oauth2": {
       "location": "header",
@@ -25,6 +23,5 @@
     "Media"
   ],
   "visibility": "public",
-  "active": true,
-  "actions": []
+  "active": true
 }
