@@ -79,6 +79,7 @@ services:
     volumes:
       - ./aci:/workdir/aci
       - ./apps:/workdir/apps
+      - ./evals:/workdir/evals
       - ./scripts:/workdir/scripts
       - ./alembic.ini:/workdir/alembic.ini
       # Mocks out the propelauth_fastapi module in server container to bypass token validation in local development
