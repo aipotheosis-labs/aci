@@ -1,9 +1,9 @@
 import {
-  Function,
+  AppFunction,
   FunctionExecute,
   FunctionExecutionResult,
   FunctionsSearchParams,
-} from "@/lib/types/function";
+} from "@/lib/types/appfunction";
 
 export async function executeFunction(
   functionName: string,
@@ -37,7 +37,7 @@ export async function executeFunction(
 export async function searchFunctions(
   params: FunctionsSearchParams,
   apiKey: string,
-): Promise<Function[]> {
+): Promise<AppFunction[]> {
   const searchParams = new URLSearchParams();
 
   if (params.app_names?.length) {

@@ -12,7 +12,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { type Function } from "@/lib/types/function";
+import { type AppFunction } from "@/lib/types/appfunction";
 import { toast } from "sonner";
 import { AppConfig } from "@/lib/types/appconfig";
 import { getApiKey } from "@/lib/api/util";
@@ -30,7 +30,7 @@ import { useMetaInfo } from "@/components/context/metainfo";
 const AppPage = () => {
   const { activeProject } = useMetaInfo();
   const { appName } = useParams<{ appName: string }>();
-  const [functions, setFunctions] = useState<Function[]>([]);
+  const [functions, setFunctions] = useState<AppFunction[]>([]);
   const [appConfig, setAppConfig] = useState<AppConfig | null>(null);
 
   const { app } = useApp(appName);
