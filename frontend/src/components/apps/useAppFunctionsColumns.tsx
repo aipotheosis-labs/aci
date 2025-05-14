@@ -1,14 +1,14 @@
 "use client";
 
 import { FunctionDetail } from "@/components/apps/function-detail";
-import { type AppFunction } from "@/lib/types/appfunction";
+import { type Function } from "@/lib/types/function";
 import { useMemo } from "react";
 import { IdDisplay } from "@/components/apps/id-display";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 
-const columnHelper = createColumnHelper<AppFunction>();
+const columnHelper = createColumnHelper<Function>();
 
-export const useAppFunctionsColumns = (): ColumnDef<AppFunction>[] => {
+export const useAppFunctionsColumns = (): ColumnDef<Function>[] => {
   return useMemo(() => {
     return [
       columnHelper.accessor("name", {
@@ -60,6 +60,6 @@ export const useAppFunctionsColumns = (): ColumnDef<AppFunction>[] => {
         ),
         enableGlobalFilter: false,
       }),
-    ] as ColumnDef<AppFunction>[];
+    ] as ColumnDef<Function>[];
   }, []);
 };

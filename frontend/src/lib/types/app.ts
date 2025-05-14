@@ -1,4 +1,4 @@
-import { AppFunction } from "./appfunction";
+import { Function } from "./function";
 
 export interface App {
   id: string;
@@ -11,7 +11,7 @@ export interface App {
   categories: string[];
   visibility: string;
   active: boolean;
-  functions: AppFunction[];
+  functions: Function[];
   supported_security_schemes: Record<string, { scope?: string }>;
   created_at: string;
   updated_at: string;

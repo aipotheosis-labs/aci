@@ -1,4 +1,4 @@
-export interface AppFunction {
+export interface Function {
   id: string;
   app_name: string;
   name: string;

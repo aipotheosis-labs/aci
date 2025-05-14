@@ -11,11 +11,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { type AppFunction } from "@/lib/types/appfunction";
+import { type Function } from "@/lib/types/function";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface FunctionDetailProps {
-  func: AppFunction;
+  func: Function;
 }
 
 export function FunctionDetail({ func }: FunctionDetailProps) {

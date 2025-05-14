@@ -6,7 +6,7 @@ import { Agent } from "../types/project";
 import { getAllLinkedAccounts } from "../api/linkedaccount";
 import { getApps } from "../api/app";
 import { App } from "../types/app";
-import { AppFunction } from "../types/appfunction";
+import { Function } from "../types/function";
 import { searchFunctions } from "../api/appfunction";
 
 interface AgentState {
@@ -18,7 +18,7 @@ interface AgentState {
   linkedAccounts: LinkedAccount[];
   agents: Agent[];
   apps: App[];
-  appFunctions: AppFunction[];
+  appFunctions: Function[];
   loadingFunctions: boolean;
   setSelectedApps: (apps: string[]) => void;
   setSelectedLinkedAccountOwnerId: (id: string) => void;
@@ -31,8 +31,8 @@ interface AgentState {
   getUniqueLinkedAccounts: () => LinkedAccount[];
   fetchApps: (apiKey: string) => Promise<App[]>;
   getAvailableApps: () => App[];
-  fetchAppFunctions: (apiKey: string) => Promise<AppFunction[]>;
-  getAvailableAppFunctions: () => AppFunction[];
+  fetchAppFunctions: (apiKey: string) => Promise<Function[]>;
+  getAvailableAppFunctions: () => Function[];
   initializeFromProject: (project: Project) => void;
 }
 
