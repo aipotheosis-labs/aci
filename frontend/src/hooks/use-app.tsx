@@ -3,12 +3,16 @@ import { getAllApps } from "@/lib/api/app";
 import { getApiKey } from "@/lib/api/util";
 import { useQuery } from "@tanstack/react-query";
 
+export const appKeys = {
+  all: ["apps"] as const,
+};
+
 export function useApps(appNames?: string[]) {
   const { activeProject } = useMetaInfo();
   const apiKey = getApiKey(activeProject);
 
   return useQuery({
-    queryKey: ["apps"],
+    queryKey: appKeys.all,
     queryFn: () => getAllApps(apiKey),
     select: (data) => {
       if (!appNames || appNames.length === 0) {
