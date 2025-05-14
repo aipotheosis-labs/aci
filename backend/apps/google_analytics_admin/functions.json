@@ -1,6 +1,6 @@
 [
   {
-      "name": "GOOGLE_ANALYTICS__ACCOUNTS_LIST",
+      "name": "GOOGLE_ANALYTICS_ADMIN__ACCOUNTS_LIST",
       "description": "Lists all accounts available to the current user",
       "tags": ["accounts", "list"],
       "visibility": "public",
@@ -43,7 +43,7 @@
       }
   },
   {
-      "name": "GOOGLE_ANALYTICS__PROPERTIES_LIST",
+      "name": "GOOGLE_ANALYTICS_ADMIN__PROPERTIES_LIST",
       "description": "Lists properties under the specified account",
       "tags": ["properties", "list"],
       "visibility": "public",
@@ -90,7 +90,7 @@
       }
   },
   {
-      "name": "GOOGLE_ANALYTICS__DATA_STREAMS_LIST",
+      "name": "GOOGLE_ANALYTICS_ADMIN__DATA_STREAMS_LIST",
       "description": "Lists data streams under the specified property",
       "tags": ["data", "streams", "list"],
       "visibility": "public",
@@ -140,7 +140,7 @@
       }
   },
   {
-      "name": "GOOGLE_ANALYTICS__CUSTOM_DIMENSIONS_CREATE",
+      "name": "GOOGLE_ANALYTICS_ADMIN__CUSTOM_DIMENSIONS_CREATE",
       "description": "Creates a custom dimension for the specified property",
       "tags": ["custom", "dimensions", "create"],
       "visibility": "public",
@@ -202,7 +202,7 @@
       }
   },
   {
-      "name": "GOOGLE_ANALYTICS__GOOGLE_ADS_LINKS_LIST",
+      "name": "GOOGLE_ANALYTICS_ADMIN__GOOGLE_ADS_LINKS_LIST",
       "description": "Lists Google Ads links under the specified property",
       "tags": ["google ads", "links", "list"],
       "visibility": "public",

@@ -1,10 +1,10 @@
 {
-  "name": "GOOGLE_ANALYTICS",
-  "display_name": "Google Analytics",
+  "name": "GOOGLE_ANALYTICS_ADMIN",
+  "display_name": "Google Analytics Admin",
   "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/google_analytics.svg",
   "provider": "Google",
-  "version": "4.0.0",
-  "description": "The Google Analytics API provides programmatic access to both GA4 and Universal Analytics data. Supports reporting, configuration management, and real-time data access.",
+  "version": "1.0.0",
+  "description": "The Google Analytics Admin API allows for programmatic access to the Google Analytics configuration data and is only compatible with Google Analytics properties.",
   "security_schemes": {
     "oauth2": {
       "location": "header",
