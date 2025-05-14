@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 // import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { createCustomerPortalSession } from "@/lib/api/billing";
-import { useSubscription } from "@/lib/tanstack-query-hooks/use-subscription";
+import { useSubscription } from "@/hooks/use-subscription";
 import { useLogoutFunction } from "@propelauth/react";
 import Link from "next/link";
 import { BsStars } from "react-icons/bs";

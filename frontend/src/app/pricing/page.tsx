@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { IoMdCheckmark } from "react-icons/io";
 import { Interval } from "@/lib/types/billing";
-import { useSubscription } from "@/lib/tanstack-query-hooks/use-subscription";
+import { useSubscription } from "@/hooks/use-subscription";
 import { createCheckoutSession } from "@/lib/api/billing";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { useEffect, useState } from "react";
