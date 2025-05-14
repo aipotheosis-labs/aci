@@ -246,6 +246,23 @@ export function ConfigureAppStep({
             </div>
           )}
 
+          {currentSecurityScheme === "oauth2" && useACIDevOAuth2 && (
+            <div className="bg-yellow-100 border border-yellow-300 p-3 rounded flex items-start gap-2">
+              {/* <BsQuestionCircle className="mt-1 h-4 w-4 text-yellow-700" /> */}
+              <p className="text-sm text-yellow-900">
+                We <strong>recommend</strong> using your own OAuth2 app in
+                production.
+                {/* <a
+                  href="https://www.aci.dev/docs/core-concepts/linked-account#linking-oauth2-account"
+                  target="_blank"
+                  className="underline text-blue-700"
+                >
+                  See documentation →
+                </a> */}
+              </p>
+            </div>
+          )}
+
           <DialogFooter>
             <Button type="submit" disabled={isLoading || !isFormValid()}>
               {isLoading ? "Confirming..." : "Confirm"}
