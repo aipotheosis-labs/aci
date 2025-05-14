@@ -52,8 +52,8 @@ seed_test_apps() {
   # Add content to the temporary file
   cat > "$temp_oauth2_secrets_file" <<EOF
     {
-      "AIPOLABS_GOOGLE_APP_CLIENT_ID": "dummy_client_id",
-      "AIPOLABS_GOOGLE_APP_CLIENT_SECRET": "dummy_client_secret"
+      "AIPOLABS_GMAIL_CLIENT_ID": "dummy_gmail_client_id",
+      "AIPOLABS_GMAIL_CLIENT_SECRET": "dummy_gmail_client_secret"
     }
 EOF
 
