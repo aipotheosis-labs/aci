@@ -5,7 +5,7 @@ from sqlalchemy import distinct, func, select
 from sqlalchemy.orm import Session
 
 from aci.common import validators
-from aci.common.db.sql_models import App, LinkedAccount
+from aci.common.db.sql_models import App, LinkedAccount, Project
 from aci.common.enums import SecurityScheme
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.linked_accounts import LinkedAccountUpdate
@@ -168,6 +168,14 @@ def delete_linked_accounts(db_session: Session, project_id: UUID, app_name: str)
     return len(linked_accounts_to_delete)
 
 
-def get_total_number_of_unique_linked_account_owner_ids(db_session: Session) -> int:
-    statement = select(func.count(distinct(LinkedAccount.linked_account_owner_id)))
+def get_total_number_of_unique_linked_account_owner_ids(db_session: Session, org_id: UUID) -> int:
+    """Get the total number of unique linked account owner IDs for an organization across all its projects."""
+    # First create a subquery to get all project IDs for the organization
+    project_ids_subquery = select(Project.id).filter(Project.org_id == org_id).scalar_subquery()
+
+    # Then count distinct linked_account_owner_ids where project_id is in the subquery
+    statement = select(func.count(distinct(LinkedAccount.linked_account_owner_id))).where(
+        LinkedAccount.project_id.in_(project_ids_subquery)
+    )
+
     return db_session.execute(statement).scalar_one()

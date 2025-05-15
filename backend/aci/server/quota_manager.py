@@ -115,7 +115,7 @@ def enforce_linked_accounts_creation_quota(
     max_linked_accounts = plan.features.get("linked_accounts", 0)
 
     num_linked_accounts = crud.linked_accounts.get_total_number_of_unique_linked_account_owner_ids(
-        db_session
+        db_session, org_id
     )
     if num_linked_accounts >= max_linked_accounts:
         logger.error(
