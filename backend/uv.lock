@@ -39,12 +39,14 @@ dependencies = [
     { name = "sqlalchemy" },
     { name = "stripe" },
     { name = "svix" },
+    { name = "tenacity" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
 [package.optional-dependencies]
 eval = [
     { name = "datasets" },
+    { name = "huggingface-hub" },
     { name = "pandas" },
     { name = "requests" },
     { name = "tqdm" },
@@ -80,6 +82,7 @@ requires-dist = [
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.0,<0.116.0" },
     { name = "google-api-python-client", specifier = ">=2.163.0,<3.0.0" },
     { name = "httpx", specifier = ">=0.27.2,<0.28.0" },
+    { name = "huggingface-hub", marker = "extra == 'eval'", specifier = ">=0.31.2" },
     { name = "itsdangerous", specifier = ">=2.2.0,<3.0.0" },
     { name = "jinja2", specifier = ">=3.1.5,<4.0.0" },
     { name = "jsonschema", specifier = ">=4.23.0,<5.0.0" },
@@ -99,6 +102,7 @@ requires-dist = [
     { name = "sqlalchemy", specifier = ">=2.0.35,<3.0.0" },
     { name = "stripe", specifier = ">=12.0.1" },
     { name = "svix", specifier = ">=1.63.1,<2.0.0" },
+    { name = "tenacity", specifier = ">=9.1.2" },
     { name = "tqdm", marker = "extra == 'eval'", specifier = ">=4.67.1" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.31.0,<0.32.0" },
 ]
@@ -2583,6 +2587,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/55/00/16a0bef8b2a2ae22227165cfe2f96c0f4db5a12f9f95efabdf4ec02f56b0/svix-1.64.1.tar.gz", hash = "sha256:946a5b982ddbb0cd6784069a508ad669c6cdd85b5144b9df82469785c37fbb52", size = 46194 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7d/28/5a31a363b4c30f936a8345f6b994beee621d10a2b8cd9677a06a84ef5169/svix-1.64.1-py3-none-any.whl", hash = "sha256:1d7783e36dd7eba51b05edf5ec9877d451197cd635f9c584a49cbf057bd3edbc", size = 96153 },
+]
+
+[[package]]
+name = "tenacity"
+version = "9.1.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/0a/d4/2b0cd0fe285e14b36db076e78c93766ff1d529d70408bd1d2a5a84f1d929/tenacity-9.1.2.tar.gz", hash = "sha256:1169d376c297e7de388d18b4481760d478b0e99a777cad3a9c86e556f4b697cb", size = 48036 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/e5/30/643397144bfbfec6f6ef821f36f33e57d35946c44a2352d3c9f0ae847619/tenacity-9.1.2-py3-none-any.whl", hash = "sha256:f77bf36710d8b73a50b2dd155c97b870017ad21afe6ab300326b0371b3b05138", size = 28248 },
 ]
 
 [[package]]

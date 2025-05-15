@@ -6,6 +6,7 @@ from datasets import Dataset
 from dotenv import load_dotenv
 from intent_prompts import PROMPTS
 from sqlalchemy import select
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 from tqdm import tqdm
 
 from aci.cli import config
@@ -24,9 +25,9 @@ def generate_synthetic_intent_dataset(
     Generates synthetic data using OpenAI's API.
 
     Args:
-        openai_api_key (str): OpenAI API key
+        hf_dataset_name (str): Name of the Hugging Face dataset to upload the synthetic data
         model (str): OpenAI model to use
-        output_path (str): Path to save the output parquet file
+        prompt_type (str): Type of prompt to use
     """
     client = openai.OpenAI(api_key=os.getenv("EVALS_OPENAI_KEY"))
 
@@ -51,14 +52,21 @@ def generate_synthetic_intent_dataset(
     # Create a dataframe with the results
     df = pd.DataFrame(results)
 
+    @retry(
+        reraise=True,
+        stop=stop_after_attempt(3),
+        wait=wait_exponential(multiplier=2, min=4, max=60),
+        retry=retry_if_exception_type(openai.RateLimitError),
+    )
     def call_chatgpt(prompt: str) -> str:
         response = client.chat.completions.create(
             model=model,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
+            timeout=30,  # seconds
         )
         content = response.choices[0].message.content
-        return content.strip() if content is not None else ""
+        return content.strip() if content else ""
 
     df["prompt"] = df.apply(PROMPTS[prompt_type], axis=1)
     df["synthetic_output"] = [call_chatgpt(prompt) for prompt in tqdm(df["prompt"])]

@@ -1,10 +1,10 @@
 import json
 import logging
 import os
-import shutil
 import time
 from datetime import datetime
 from pathlib import Path
+from tempfile import TemporaryDirectory
 from typing import Any
 
 import requests
@@ -42,7 +42,11 @@ class SearchEvaluationPipeline:
 
     def _find_rank(self, results: list[dict[str, Any]], expected: str) -> int | None:
         """Find 1-based rank of expected function in results."""
-        return next((i + 1 for i, r in enumerate(results) if r["name"] == expected), None)
+        expected_lc = expected.lower()
+        return next(
+            (i + 1 for i, r in enumerate(results) if r["name"].lower() == expected_lc),
+            None,
+        )
 
     def _update_metrics(
         self, metrics: dict[str, Any], rank: int | None, response_time: float
@@ -112,12 +116,6 @@ class SearchEvaluationPipeline:
             logger.warning(f"Could not get commit hash: {e}")
             return None
 
-    def _setup_temp_dir(self) -> Path:
-        """Create and return path to temporary results directory."""
-        temp_dir = Path("results")
-        temp_dir.mkdir(exist_ok=True)
-        return temp_dir
-
     def _download_existing_results(self, dataset_name: str, results_file: Path) -> None:
         """Download existing results file if it exists."""
         try:
@@ -132,9 +130,8 @@ class SearchEvaluationPipeline:
             results_file.touch()
 
     def save_results(self, results: dict[str, Any], dataset_name: str, model_name: str) -> None:
-        temp_dir = self._setup_temp_dir()
-        try:
-            results_file = temp_dir / "results.jsonl"
+        with TemporaryDirectory(prefix="eval_results_") as temp_dir:
+            results_file = Path(temp_dir) / "results.jsonl"
             self._download_existing_results(dataset_name, results_file)
 
             commit_hash = self._get_commit_hash(dataset_name)
@@ -158,9 +155,6 @@ class SearchEvaluationPipeline:
                 repo_id=dataset_name,
                 repo_type="dataset",
             )
-        finally:
-            # Clean up temporary directory
-            shutil.rmtree(temp_dir, ignore_errors=True)
 
     def run(self, dataset_name: str, model_name: str) -> None:
         """Run the complete evaluation pipeline."""
