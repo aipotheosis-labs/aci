@@ -93,27 +93,29 @@ class SearchEvaluationPipeline:
             total=num_samples,
         ):
             results, response_time = self._search(intent)
+            found = False
+            results = [
+                {
+                    "rank": idx + 1,
+                    **r,
+                    "found": found or (found := r["name"].lower() == expected.lower()),
+                }
+                for idx, r in enumerate(results)
+            ]
             rank = self._find_rank(results, expected)
 
             self._update_metrics(metrics, rank, response_time)
 
-            if not rank or rank > 1:
+            if rank is None or rank > 1:
                 incorrect_results.append(
-                    {"intent": intent, "expected": expected, "results": results}
+                    {
+                        "intent": intent,
+                        "expected": expected,
+                        "results": results,
+                    }
                 )
 
         return self._calculate_final_metrics(metrics, num_samples, incorrect_results)
-
-    def _get_commit_hash(self, dataset_name: str) -> str | None:
-        """Get latest commit hash from dataset repository."""
-        try:
-            commits = self.hf_api.list_repo_commits(repo_id=dataset_name, repo_type="dataset")
-            commit_hash = commits[0].commit_id if commits else None
-            logger.info(f"Got latest commit hash: {commit_hash}")
-            return commit_hash
-        except Exception as e:
-            logger.warning(f"Could not get commit hash: {e}")
-            return None
 
     def _download_existing_results(self, dataset_name: str, results_file: Path) -> None:
         """Download existing results file if it exists."""
@@ -133,15 +135,12 @@ class SearchEvaluationPipeline:
             results_file = Path(temp_dir) / "results.jsonl"
             self._download_existing_results(dataset_name, results_file)
 
-            commit_hash = self._get_commit_hash(dataset_name)
-
             with open(results_file, "a") as f:
                 f.write(
                     json.dumps(
                         {
                             "timestamp": datetime.now().isoformat(),
                             "model": model_name,
-                            "commit_hash": commit_hash,
                             **results,
                         }
                     )
