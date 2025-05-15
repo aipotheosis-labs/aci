@@ -38,12 +38,10 @@ dependencies = [
 
 [project.optional-dependencies]
 eval = [
-    "pandas>=2.2.1,<3.0.0",
-    "pandas-stubs>=2.2.1,<3.0.0",
-    "requests>=2.31.0,<3.0.0",
-    "datasets>=2.16.0,<3.0.0",
-    "tqdm>=4.66.0,<5.0.0",
-    "types-tqdm>=4.66.0,<5.0.0",
+    "datasets>=3.6.0",
+    "pandas>=2.2.3",
+    "requests>=2.32.3",
+    "tqdm>=4.67.1",
 ]
 
 [dependency-groups]
@@ -58,6 +56,8 @@ dev = [
     "respx>=0.21.1,<0.22.0",
     "types-jsonschema>=4.23.0,<5.0.0",
     "google-api-python-client-stubs>=1.29.0,<2.0.0",
+    "pandas-stubs>=2.2.3.250308",
+    "types-tqdm>=4.67.0.20250513",
 ]
 
 
@@ -126,6 +126,14 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "e2b_code_interpreter"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "huggingface_hub.*"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "datasets.*"
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

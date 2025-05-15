@@ -31,7 +31,7 @@ class SearchEvaluationPipeline:
             start_time = time.time()
             response = requests.get(
                 f"{self.api_url}/v1/functions/search",
-                params={"intent": intent, "limit": limit, "format": "basic"},
+                params={"intent": intent, "limit": str(limit), "format": "basic"},
                 headers=self.headers,
             )
             response.raise_for_status()
@@ -168,7 +168,7 @@ class SearchEvaluationPipeline:
         self.save_results(results, dataset_name, model_name)
 
 
-def main():
+def main() -> None:
     if not (api_key := os.getenv("EVALS_API_KEY")):
         raise ValueError("EVALS_API_KEY environment variable is required")
 

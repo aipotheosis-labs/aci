@@ -19,7 +19,7 @@ def generate_synthetic_intent_dataset(
     hf_dataset_name: str,
     model: str,
     prompt_type: str,
-) -> pd.DataFrame:
+) -> None:
     """
     Generates synthetic data using OpenAI's API.
 
@@ -57,7 +57,8 @@ def generate_synthetic_intent_dataset(
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
         )
-        return response.choices[0].message.content.strip()
+        content = response.choices[0].message.content
+        return content.strip() if content is not None else ""
 
     df["prompt"] = df.apply(PROMPTS[prompt_type], axis=1)
     df["synthetic_output"] = [call_chatgpt(prompt) for prompt in tqdm(df["prompt"])]

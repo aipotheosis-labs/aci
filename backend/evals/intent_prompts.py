@@ -1,4 +1,7 @@
-def task_prompt(row):
+import pandas as pd
+
+
+def task_prompt(row: pd.Series) -> str:
     """Generate a task-oriented intent prompt."""
     return f"""
 You are simulating realistic user intents for a software platform with many apps and functions. The user knows they want to use the app called "{row["app_name"]}", which is used for {row["app_description"]}. One of the available functions is:
