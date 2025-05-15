@@ -375,7 +375,7 @@ docker compose exec runner ./scripts/seed_db.sh --all --mock
 To generate synthetic intent data for evaluations:
 
 ```bash
-docker compose exec runner python -m aci.evals.synthetic_intent_generator
+docker compose exec runner python -m evals.synthetic_intent_generator
 ```
 
 ### Running the Evaluation Pipeline
@@ -383,7 +383,7 @@ docker compose exec runner python -m aci.evals.synthetic_intent_generator
 To run the complete evaluation pipeline:
 
 ```bash
-docker compose exec runner python -m aci.evals.search_evaluation_pipeline.py
+docker compose exec runner python -m evals.search_evaluation_pipeline
 ```
 
 ## Contributing

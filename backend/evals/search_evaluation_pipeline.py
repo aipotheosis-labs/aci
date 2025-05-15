@@ -54,7 +54,6 @@ class SearchEvaluationPipeline:
         """Update running metrics with results from a single evaluation."""
         metrics["response_time"] += response_time
         if rank:
-            metrics["correct"] += 1
             metrics["mrr"] += 1.0 / rank
             for k in metrics["top_k"]:
                 if rank <= k:
@@ -65,12 +64,12 @@ class SearchEvaluationPipeline:
     ) -> dict[str, Any]:
         """Calculate final metrics from running totals."""
         return {
-            "accuracy": metrics["correct"] / num_samples,
+            "accuracy": metrics["top_k"][1] / num_samples,
             "mrr": metrics["mrr"] / num_samples,
             "top_k_accuracy": {k: v / num_samples for k, v in metrics["top_k"].items()},
             "avg_response_time": metrics["response_time"] / num_samples,
             "total_samples": num_samples,
-            "correct_predictions": metrics["correct"],
+            "correct_predictions": metrics["top_k"][1],
             "incorrect_results": incorrect_results,
         }
 
@@ -98,7 +97,7 @@ class SearchEvaluationPipeline:
 
             self._update_metrics(metrics, rank, response_time)
 
-            if not rank:
+            if not rank or rank > 1:
                 incorrect_results.append(
                     {"intent": intent, "expected": expected, "results": results}
                 )
