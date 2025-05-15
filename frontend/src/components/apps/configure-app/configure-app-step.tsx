@@ -29,6 +29,7 @@ import {
 import { BsQuestionCircle, BsAsterisk } from "react-icons/bs";
 import { Badge } from "@/components/ui/badge";
 import { IdDisplay } from "@/components/apps/id-display";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const ConfigureAppFormSchema = z.object({
   security_scheme: z.string().min(1, "Security Scheme is required"),
@@ -62,11 +63,14 @@ export function ConfigureAppStep({
   const clientId = form.watch("client_id");
   const clientSecret = form.watch("client_secret");
 
-  // check if the form is valid
+  const [isRedirectConfirmed, setIsRedirectConfirmed] = useState(false);
+  const [isScopeConfirmed, setIsScopeConfirmed] = useState(false);
+
   const isFormValid = () => {
-    // if oauth2 and not using ACI.dev's OAuth2 App, need to validate client_id and client_secret
     if (currentSecurityScheme === "oauth2" && !useACIDevOAuth2) {
-      return !!clientId && !!clientSecret;
+      return (
+        !!clientId && !!clientSecret && isRedirectConfirmed && isScopeConfirmed
+      );
     }
     return true;
   };
@@ -77,6 +81,8 @@ export function ConfigureAppStep({
       form.setValue("client_id", "");
       form.setValue("client_secret", "");
       setUseACIDevOAuth2(false);
+      setIsRedirectConfirmed(false);
+      setIsScopeConfirmed(false);
     }
   }, [currentSecurityScheme, form]);
 
@@ -212,6 +218,19 @@ export function ConfigureAppStep({
                   <div className="pt-2">
                     <IdDisplay id={oauth2RedirectUrl} />
                   </div>
+                  <div className="flex items-center gap-1">
+                    <Checkbox
+                      checked={isRedirectConfirmed}
+                      onCheckedChange={(checked) =>
+                        setIsRedirectConfirmed(checked === true)
+                      }
+                    />
+                    <BsAsterisk className="h-2 w-2 text-red-500" />
+
+                    <span className="text-xs">
+                      I have added the above redirect URL to my OAuth2 app.
+                    </span>
+                  </div>
                 </FormItem>
 
                 {/* Scope */}
@@ -230,7 +249,7 @@ export function ConfigureAppStep({
                       </TooltipContent>
                     </Tooltip>
                   </FormLabel>
-                  <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto pt-2">
+                  <div className="flex flex-wrap gap-2 max-h-28 overflow-y-auto pt-2">
                     {scopes.map((s) => (
                       <Badge
                         key={s}
@@ -240,6 +259,19 @@ export function ConfigureAppStep({
                         <code className="break-all">{s}</code>
                       </Badge>
                     ))}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Checkbox
+                      checked={isScopeConfirmed}
+                      onCheckedChange={(checked) =>
+                        setIsScopeConfirmed(checked === true)
+                      }
+                    />
+                    <BsAsterisk className="h-2 w-2 text-red-500" />
+
+                    <span className="text-xs">
+                      I have added the above scopes to my OAuth2 app.
+                    </span>
                   </div>
                 </FormItem>
               </div>
