@@ -11,10 +11,14 @@ import {
 import { useMetaInfo } from "@/components/context/metainfo";
 import { getApiKey } from "@/lib/api/util";
 import { AppConfig } from "@/lib/types/appconfig";
+import { toast } from "sonner";
 
+// TODO: think about what happens when the active project changes, and how to invalidate
+// the cache. May need to add project id to the query key.
 export const appConfigKeys = {
   all: ["appconfigs"] as const,
-  detail: (appName: string) => ["appconfigs", appName] as const,
+  detail: (appName: string | null | undefined) =>
+    ["appconfigs", appName ?? ""] as const,
 };
 
 export const useAppConfigs = () => {
@@ -24,31 +28,18 @@ export const useAppConfigs = () => {
   return useQuery<AppConfig[], Error>({
     queryKey: appConfigKeys.all,
     queryFn: () => getAllAppConfigs(apiKey),
-    enabled: !!apiKey,
-
-    // silent refresh settings
-    refetchOnWindowFocus: true,
-    refetchOnReconnect: true,
-    refetchInterval: 60_000,
-    refetchIntervalInBackground: true,
-
-    // SWR
-    staleTime: 5 * 60_000,
-    gcTime: 15 * 60_000,
-
-    // cache placeholder data
-    placeholderData: (prev) => prev,
   });
 };
 
-export const useAppConfig = (appName: string) => {
+export const useAppConfig = (appName?: string | null) => {
   const { activeProject } = useMetaInfo();
   const apiKey = getApiKey(activeProject);
 
   return useQuery<AppConfig | null, Error>({
     queryKey: appConfigKeys.detail(appName),
-    queryFn: () => getAppConfig(appName, apiKey),
-    enabled: !!apiKey && !!appName,
+    queryFn: () =>
+      appName ? getAppConfig(appName, apiKey) : Promise.resolve(null),
+    enabled: !!appName,
   });
 };
 
@@ -76,8 +67,16 @@ export const useCreateAppConfig = () => {
         apiKey,
         params.security_scheme_overrides,
       ),
-    onSuccess: () => {
+    onSuccess: (newConfig) => {
+      queryClient.setQueryData<AppConfig[]>(appConfigKeys.all, (old = []) => [
+        ...old,
+        newConfig,
+      ]);
       queryClient.invalidateQueries({ queryKey: appConfigKeys.all });
+    },
+    onError: (error) => {
+      console.error("Create AppConfig failed:", error);
+      toast.error("Failed to create app configuration");
     },
   });
 };
@@ -102,6 +101,10 @@ export const useUpdateAppConfig = () => {
         queryKey: appConfigKeys.detail(variables.app_name),
       });
     },
+    onError: (error) => {
+      console.error("Update AppConfig failed:", error);
+      toast.error("Failed to update app configuration");
+    },
   });
 };
 
@@ -112,8 +115,15 @@ export const useDeleteAppConfig = () => {
 
   return useMutation<Response, Error, string>({
     mutationFn: (app_name) => deleteAppConfig(app_name, apiKey),
-    onSuccess: () => {
+    onSuccess: (_, app_name) => {
       queryClient.invalidateQueries({ queryKey: appConfigKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: appConfigKeys.detail(app_name),
+      });
+    },
+    onError: (error) => {
+      console.error("Delete AppConfig failed:", error);
+      toast.error("Failed to delete app configuration");
     },
   });
 };

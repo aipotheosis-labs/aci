@@ -23,7 +23,25 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      // silent refresh settings
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+      refetchInterval: 60_000,
+      refetchIntervalInBackground: true,
+
+      // SWR
+      staleTime: 5 * 60_000,
+      gcTime: 15 * 60_000,
+
+      // cache placeholder data
+      placeholderData: (prev: unknown) => prev,
+    },
+  },
+});
 
 export default function RootLayout({
   children,

@@ -12,7 +12,8 @@ import { useApps } from "@/hooks/use-app";
 import { useAppConfigs } from "@/hooks/use-app-config";
 
 export default function AppConfigPage() {
-  const { data: appConfigs = [], isLoading: configsLoading } = useAppConfigs();
+  const { data: appConfigs = [], isPending: isConfigsPending } =
+    useAppConfigs();
   const { data: apps = [] } = useApps();
   const [linkedAccountsCountMap, setLinkedAccountsCountMap] = useState<
     Record<string, number>
@@ -62,7 +63,7 @@ export default function AppConfigPage() {
     appsMap,
   });
 
-  const isPageLoading = isLoading || configsLoading;
+  const isPageLoading = isLoading || isConfigsPending;
 
   return (
     <div>
