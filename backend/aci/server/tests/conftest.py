@@ -15,7 +15,9 @@ from sqlalchemy import inspect
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import Session
 
+from aci.common.db.sql_models import Plan
 from aci.common.enums import OrganizationRole
+from aci.common.schemas.plans import PlanFeatures
 from aci.server import acl
 
 # override the rate limit to a high number for testing before importing aci modules
@@ -740,3 +742,25 @@ def dummy_linked_account_no_auth_mock_app_connector_project_1(
     )
     db_session.commit()
     yield dummy_linked_account_no_auth_mock_app_connector_project_1
+
+
+@pytest.fixture(scope="function")
+def free_plan(db_session: Session) -> Plan:
+    plan = crud.plans.create(
+        db=db_session,
+        name="free",
+        stripe_product_id="prod_FREE_placeholder",
+        stripe_monthly_price_id="price_FREE_monthly_placeholder",
+        stripe_yearly_price_id="price_FREE_yearly_placeholder",
+        features=PlanFeatures(
+            linked_accounts=3,
+            api_calls_monthly=1000,
+            agent_credentials=5,
+            developer_seats=1,
+            custom_oauth=False,
+            log_retention_days=7,
+        ),
+        is_public=True,
+    )
+    db_session.commit()
+    return plan
