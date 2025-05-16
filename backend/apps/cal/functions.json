@@ -211,7 +211,7 @@
                         "name": {
                             "type": "string",
                             "description": "Updated name for the schedule",
-                            "example": "工作时间"
+                            "example": "work time"
                         },
                         "timeZone": {
                             "type": "string",
