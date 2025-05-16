@@ -39,14 +39,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useState } from "react";
-import {
-  createAPILinkedAccount,
-  createNoAuthLinkedAccount,
-  getOauth2LinkURL,
-} from "@/lib/api/linkedaccount";
-import { getApiKey } from "@/lib/api/util";
-import { useMetaInfo } from "@/components/context/metainfo";
 import Image from "next/image";
+import {
+  useCreateAPILinkedAccount,
+  useCreateNoAuthLinkedAccount,
+  useGetOauth2LinkURL,
+} from "@/hooks/use-linkedaccount";
 
 const formSchema = z
   .object({
@@ -89,9 +87,11 @@ export function AddAccountForm({
   appInfos,
   updateLinkedAccounts,
 }: AddAccountProps) {
-  const { activeProject } = useMetaInfo();
   const [open, setOpen] = useState(false);
 
+  const { mutateAsync: createApiLinkedAccount } = useCreateAPILinkedAccount();
+  const { mutateAsync: createNoAuth } = useCreateNoAuthLinkedAccount();
+  const { mutateAsync: getOauth2URL } = useGetOauth2LinkURL();
   if (appInfos.length === 0) {
     console.error("No app infos provided");
     throw new Error("No app infos provided");
@@ -130,18 +130,11 @@ export function AddAccountForm({
       throw new Error("No app selected");
     }
 
-    const apiKey = getApiKey(activeProject);
-
-    if (afterOAuth2LinkRedirectURL === undefined) {
-      return await getOauth2LinkURL(appName, linkedAccountOwnerId, apiKey);
-    } else {
-      return await getOauth2LinkURL(
-        appName,
-        linkedAccountOwnerId,
-        apiKey,
-        afterOAuth2LinkRedirectURL,
-      );
-    }
+    return await getOauth2URL({
+      appName,
+      linkedAccountOwnerId,
+      afterOAuth2LinkRedirectURL,
+    });
   };
 
   const copyOAuth2LinkURL = async (
@@ -201,15 +194,13 @@ export function AddAccountForm({
       throw new Error("No app selected");
     }
 
-    const apiKey = getApiKey(activeProject);
-
     try {
-      await createAPILinkedAccount(
+      await createApiLinkedAccount({
         appName,
         linkedAccountOwnerId,
         linkedAPIKey,
-        apiKey,
-      );
+      });
+
       toast.success("Account linked successfully");
       form.reset();
       setOpen(false);
@@ -228,10 +219,12 @@ export function AddAccountForm({
       throw new Error("No app selected");
     }
 
-    const apiKey = getApiKey(activeProject);
-
     try {
-      await createNoAuthLinkedAccount(appName, linkedAccountOwnerId, apiKey);
+      await createNoAuth({
+        appName,
+        linkedAccountOwnerId,
+      });
+
       toast.success("Account linked successfully");
       form.reset();
       setOpen(false);
