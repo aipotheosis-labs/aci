@@ -359,9 +359,9 @@ uv sync --extra eval
 You will need to set up the following environment variables:
 
 ```bash
-EVALS_OPENAI_KEY=<your_openai_api_key>
-EVALS_HF_TOKEN=<your_huggingface_token>
 EVALS_API_KEY=<your_api_key_for_the_server_returned_from_seed_db_script>
+EVALS_OPENAI_KEY=<your_openai_api_key>
+EVALS_WANDB_KEY=<your_wandb_api_key>
 ```
 
 Then, seed the database with all apps and mock credentials:
@@ -372,19 +372,22 @@ docker compose exec runner ./scripts/seed_db.sh --all --mock
 
 ### Generating Synthetic Intent Data
 
-To generate synthetic intent data for evaluations:
+To generate synthetic intent data and run evaluation on it:
 
 ```bash
-docker compose exec runner python -m evals.synthetic_intent_generator
+docker compose exec runner python -m evals.evaluation_pipeline --generate
 ```
 
 ### Running the Evaluation Pipeline
 
-To run the complete evaluation pipeline:
+To run the complete evaluation pipeline without generating data on the default `synthetic_intent_dataset` artifact.
 
 ```bash
 docker compose exec runner python -m evals.search_evaluation_pipeline
 ```
+
+> [!NOTE]
+> You can provide --dataset_artifact to specify a different artifact from the default `synthetic_intent_dataset`
 
 ## Contributing
 

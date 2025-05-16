@@ -126,7 +126,16 @@ class SyntheticIntentGenerator:
             description=f"Synthetic intent dataset generated with {self.model} using {self.prompt_type} prompts",
             metadata={
                 "model": self.model,
-                "prompt": PROMPTS[self.prompt_type],
+                "prompt": PROMPTS[self.prompt_type](
+                    pd.Series(
+                        {
+                            "function_name": "FUNCTION_NAME",
+                            "function_description": "FUNCTION_DESCRIPTION",
+                            "app_name": "APP_NAME",
+                            "app_description": "APP_DESCRIPTION",
+                        }
+                    )
+                ),
             },
         )
 
