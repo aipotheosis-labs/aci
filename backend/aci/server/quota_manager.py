@@ -11,7 +11,13 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 
 from aci.common.db import crud
-from aci.common.exceptions import MaxAgentsReached, MaxProjectsReached
+from aci.common.exceptions import (
+    MaxAgentSecretsReached,
+    MaxAgentsReached,
+    MaxProjectsReached,
+    ProjectNotFound,
+    SubscriptionPlanNotFound,
+)
 from aci.common.logging_setup import get_logger
 from aci.server import config
 
@@ -64,3 +70,53 @@ def enforce_agent_creation_quota(db_session: Session, project_id: UUID) -> None:
             },
         )
         raise MaxAgentsReached()
+
+
+def enforce_agent_secrets_quota(db_session: Session, project_id: UUID) -> None:
+    """
+    Check and enforce that the project hasn't exceeded its agent secrets quota.
+    The quota is determined by the organization's current subscription plan.
+
+    Args:
+        db_session: Database session
+        project_id: ID of the project to check
+
+    Raises:
+        MaxAgentSecretsReached: If the project has reached its maximum allowed agent secrets
+        SubscriptionPlanNotFound: If the organization's subscription plan cannot be found
+        ProjectNotFound: If the project cannot be found
+    """
+    # Get the project
+    project = crud.projects.get_project(db_session, project_id)
+    if not project:
+        raise ProjectNotFound(f"Project {project_id} not found")
+
+    # Get the organization's subscription
+    subscription = crud.subscriptions.get_subscription_by_org_id(db_session, project.org_id)
+    if not subscription:
+        # If no subscription found, use the free plan
+        plan = crud.plans.get_by_name(db_session, "free")
+        if not plan:
+            raise SubscriptionPlanNotFound("Free plan not found")
+    else:
+        # Get the plan from the subscription
+        plan = crud.plans.get_by_id(db_session, subscription.plan_id)
+        if not plan:
+            raise SubscriptionPlanNotFound(f"Plan {subscription.plan_id} not found")
+
+    # Get the agent secrets quota from the plan's features
+    max_agent_secrets = plan.features.get("agent_credentials", 0)
+
+    # Count the number of agent secrets for the project
+    num_agent_secrets = crud.secret.count_secrets_by_project(db_session, project_id)
+    if num_agent_secrets >= max_agent_secrets:
+        logger.error(
+            "project has reached maximum agent secrets quota",
+            extra={
+                "project_id": project_id,
+                "max_agent_secrets": max_agent_secrets,
+                "num_agent_secrets": num_agent_secrets,
+                "plan": plan.name,
+            },
+        )
+        raise MaxAgentSecretsReached()

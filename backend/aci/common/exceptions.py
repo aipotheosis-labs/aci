@@ -432,3 +432,17 @@ class OAuth2Error(ACIException):
             message=message,
             error_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+
+class MaxAgentSecretsReached(ACIException):
+    """
+    Exception raised when a project has reached the maximum number of agent secrets allowed by their subscription plan
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Max agent secrets reached",
+            message=message
+            or "You have reached the maximum number of agent secrets allowed for your subscription plan",
+            error_code=status.HTTP_403_FORBIDDEN,
+        )
