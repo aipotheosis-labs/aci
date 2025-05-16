@@ -148,7 +148,13 @@ export function ConfigureAppStep({
             <div className="flex items-center gap-2">
               <Switch
                 checked={useACIDevOAuth2}
-                onCheckedChange={setUseACIDevOAuth2}
+                onCheckedChange={(checked) => {
+                  setUseACIDevOAuth2(checked);
+                  form.setValue("client_id", "");
+                  form.setValue("client_secret", "");
+                  setIsRedirectConfirmed(false);
+                  setIsScopeConfirmed(false);
+                }}
               />
               <Label className="text-sm font-medium">
                 Use ACI.dev&apos;s OAuth2 App
