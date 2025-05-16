@@ -45,6 +45,7 @@ eval = [
     "semver>=3.0.4",
     "tenacity>=9.1.2",
     "tqdm>=4.67.1",
+    "wandb>=0.16.4",
 ]
 
 [dependency-groups]

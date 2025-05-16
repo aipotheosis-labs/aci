@@ -2,9 +2,8 @@ import os
 
 import openai
 import pandas as pd
-from datasets import Dataset
+import wandb
 from dotenv import load_dotenv
-from intent_prompts import PROMPTS
 from sqlalchemy import select
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 from tqdm import tqdm
@@ -12,45 +11,66 @@ from tqdm import tqdm
 from aci.cli import config
 from aci.common import utils
 from aci.common.db.sql_models import App, Function
+from evals.intent_prompts import PROMPTS
 
 load_dotenv()
 
 
-def generate_synthetic_intent_dataset(
-    hf_dataset_name: str,
-    model: str,
-    prompt_type: str,
-) -> None:
+class SyntheticIntentGenerator:
     """
-    Generates synthetic data using OpenAI's API.
+    Generates synthetic intents for function search evaluation.
 
-    Args:
-        hf_dataset_name (str): Name of the Hugging Face dataset to upload the synthetic data
-        model (str): OpenAI model to use
-        prompt_type (str): Type of prompt to use
+    This generator:
+    1. Fetches app and function data from the database
+    2. Generates synthetic intents using OpenAI's API
+    3. Saves the dataset as a W&B artifact
     """
-    client = openai.OpenAI(api_key=os.getenv("EVALS_OPENAI_KEY"))
 
-    if prompt_type not in PROMPTS:
-        raise ValueError(
-            f"Invalid prompt type: {prompt_type}. Must be one of {list(PROMPTS.keys())}"
-        )
+    def __init__(
+        self,
+        model: str,
+        prompt_type: str,
+        openai_api_key: str,
+    ):
+        """
+        Initialize the generator with configuration.
 
-    db_session = utils.create_db_session(config.DB_FULL_URL)
+        Args:
+            model: OpenAI model to use for generation
+            prompt_type: Type of prompt to use (must be in PROMPTS)
+            openai_api_key: OpenAI API key
+        """
+        self.model = model
+        self.prompt_type = prompt_type
 
-    # Select specific columns from both App and Function tables
-    statement = select(
-        App.name.label("app_name"),
-        App.description.label("app_description"),
-        Function.name.label("function_name"),
-        Function.description.label("function_description"),
-    ).join(App, Function.app_id == App.id)
+        if prompt_type not in PROMPTS:
+            raise ValueError(
+                f"Invalid prompt type: {prompt_type}. Must be one of {list(PROMPTS.keys())}"
+            )
 
-    # Execute the query and fetch results
-    results = db_session.execute(statement).fetchall()
+        # Initialize API clients
+        self.openai_client = openai.OpenAI(api_key=openai_api_key)
 
-    # Create a dataframe with the results
-    df = pd.DataFrame(results)
+    def _fetch_app_function_data(self) -> pd.DataFrame:
+        """
+        Fetch app and function data from the database.
+
+        Returns:
+            DataFrame containing app and function information
+        """
+        db_session = utils.create_db_session(config.DB_FULL_URL)
+
+        # Select specific columns from both App and Function tables
+        statement = select(
+            App.name.label("app_name"),
+            App.description.label("app_description"),
+            Function.name.label("function_name"),
+            Function.description.label("function_description"),
+        ).join(App, Function.app_id == App.id)
+
+        # Execute the query and fetch results
+        results = db_session.execute(statement).fetchall()
+        return pd.DataFrame(results)
 
     @retry(
         reraise=True,
@@ -58,9 +78,18 @@ def generate_synthetic_intent_dataset(
         wait=wait_exponential(multiplier=2, min=4, max=60),
         retry=retry_if_exception_type(openai.RateLimitError),
     )
-    def call_chatgpt(prompt: str) -> str:
-        response = client.chat.completions.create(
-            model=model,
+    def _generate_intent(self, prompt: str) -> str:
+        """
+        Generate a single intent using OpenAI's API.
+
+        Args:
+            prompt: The prompt to send to the model
+
+        Returns:
+            Generated intent text
+        """
+        response = self.openai_client.chat.completions.create(
+            model=self.model,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7,
             timeout=30,  # seconds
@@ -68,19 +97,73 @@ def generate_synthetic_intent_dataset(
         content = response.choices[0].message.content
         return content.strip() if content else ""
 
-    df["prompt"] = df.apply(PROMPTS[prompt_type], axis=1)
-    df["synthetic_output"] = [call_chatgpt(prompt) for prompt in tqdm(df["prompt"])]
+    def _log_dataset_stats(self, df: pd.DataFrame) -> None:
+        """
+        Log dataset statistics to wandb.
 
-    # Upload dataset to Hugging Face
-    dataset = Dataset.from_pandas(df)
-    dataset.push_to_hub(hf_dataset_name, token=os.getenv("EVALS_HF_TOKEN"), private=True)
+        Args:
+            df: DataFrame containing the generated dataset
+        """
+        wandb.log(
+            {
+                "dataset_size": len(df),
+            }
+        )
 
-    print(f"Dataset uploaded to {hf_dataset_name}")
+    def _save_to_wandb(self, df: pd.DataFrame, dataset_artifact: str) -> str:
+        """
+        Save the dataset as a wandb artifact.
 
+        Args:
+            df: DataFrame containing the generated dataset
 
-if __name__ == "__main__":
-    generate_synthetic_intent_dataset(
-        hf_dataset_name="Aipolabs/function_search_synthetic_data",
-        model="gpt-4o-mini",
-        prompt_type="task",
-    )
+        Returns:
+            The artifact name for reference
+        """
+        artifact = wandb.Artifact(
+            name=dataset_artifact,
+            type="dataset",
+            description=f"Synthetic intent dataset generated with {self.model} using {self.prompt_type} prompts",
+            metadata={
+                "model": self.model,
+                "prompt": PROMPTS[self.prompt_type],
+            },
+        )
+
+        # Save dataset to a temporary CSV and add to artifact
+        df.to_csv("temp_dataset.csv", index=False)
+        artifact.add_file("temp_dataset.csv")
+        wandb.log_artifact(artifact)
+        os.remove("temp_dataset.csv")  # Cleanup
+
+        return artifact.name
+
+    def generate(
+        self,
+        dataset_artifact: str,
+        limit: int | None = None,
+    ) -> pd.DataFrame:
+        """
+        Generate synthetic intents and save them.
+
+        Args:
+            limit: Optional limit on number of samples to generate
+
+        Returns:
+            The name of the saved artifact
+        """
+        # Fetch data
+        df = self._fetch_app_function_data()
+        if limit:
+            df = df[:limit]
+
+        # Generate intents
+        df["prompt"] = df.apply(PROMPTS[self.prompt_type], axis=1)
+        df["synthetic_output"] = [self._generate_intent(prompt) for prompt in tqdm(df["prompt"])]
+
+        # Log and save
+        self._log_dataset_stats(df)
+        artifact_name = self._save_to_wandb(df, dataset_artifact)
+
+        print(f"Dataset saved as W&B artifact: {artifact_name}")
+        return df
