@@ -13,9 +13,8 @@ from sqlalchemy.orm import Session
 from aci.common.db import crud
 from aci.common.exceptions import (
     MaxAgentsReached,
-    MaxLinkedAccountsReached,
     MaxProjectsReached,
-    ProjectNotFound,
+    MaxUniqueLinkedAccountOwnerIdsReached,
     SubscriptionPlanNotFound,
 )
 from aci.common.logging_setup import get_logger
@@ -73,30 +72,28 @@ def enforce_agent_creation_quota(db_session: Session, project_id: UUID) -> None:
 
 
 def enforce_linked_accounts_creation_quota(
-    db_session: Session, project_id: UUID, app_name: str
+    db_session: Session, org_id: UUID, linked_account_owner_id: str
 ) -> None:
     """
-    Check and enforce that the project hasn't exceeded its linked accounts creation quota for a specific app.
-    The quota is determined by the organization's current subscription plan.
+    Check and enforce that the organization hasn't exceeded its unique linked account owner ids
+    quota, which is determined by the organization's current subscription plan.
 
     Args:
         db_session: Database session
-        project_id: ID of the project to check
-        app_name: Name of the app to check linked accounts for
+        org_id: ID of the organization to check
+        linked_account_owner_id: ID of the linked account owner to check
 
     Raises:
-        MaxLinkedAccountsReached: If the project has reached its maximum allowed linked accounts for the app
+        MaxUniqueLinkedAccountOwnerIdsReached: If the organization has reached its maximum
+        allowed unique linked account owner ids
         SubscriptionPlanNotFound: If the organization's subscription plan cannot be found
     """
-    # Get the organization ID from the project
-    project = crud.projects.get_project(db_session, project_id)
-    if not project:
-        logger.error(
-            "project not found",
-            extra={"project_id": project_id},
-        )
-        raise ProjectNotFound(f"Project {project_id} not found")
-    org_id = project.org_id
+    if crud.linked_accounts.linked_account_owner_id_exists_in_org(
+        db_session, org_id, linked_account_owner_id
+    ):
+        # If the linked account owner id already exists in the organization, linking this account
+        # will not increase the total number of unique linked account owner ids or exceed the quota.
+        return
 
     # Get the organization's subscription
     subscription = crud.subscriptions.get_subscription_by_org_id(db_session, org_id)
@@ -112,20 +109,20 @@ def enforce_linked_accounts_creation_quota(
             raise SubscriptionPlanNotFound(f"Plan {subscription.plan_id} not found")
 
     # Get the linked accounts quota from the plan's features
-    max_linked_accounts = plan.features.get("linked_accounts", 0)
+    max_unique_linked_account_owner_ids = plan.features.get("linked_accounts", 0)
 
-    num_linked_accounts = crud.linked_accounts.get_total_number_of_unique_linked_account_owner_ids(
-        db_session, org_id
+    num_unique_linked_account_owner_ids = (
+        crud.linked_accounts.get_total_number_of_unique_linked_account_owner_ids(db_session, org_id)
     )
-    if num_linked_accounts >= max_linked_accounts:
+
+    if num_unique_linked_account_owner_ids >= max_unique_linked_account_owner_ids:
         logger.error(
-            "project has reached maximum linked accounts quota for app",
+            "organization has reached maximum unique linked account owner ids quota for the current plan",
             extra={
-                "project_id": project_id,
-                "app_name": app_name,
-                "max_linked_accounts": max_linked_accounts,
-                "num_linked_accounts": num_linked_accounts,
+                "org_id": org_id,
+                "max_unique_linked_account_owner_ids": max_unique_linked_account_owner_ids,
+                "num_unique_linked_account_owner_ids": num_unique_linked_account_owner_ids,
                 "plan": plan.name,
             },
         )
-        raise MaxLinkedAccountsReached()
+        raise MaxUniqueLinkedAccountOwnerIdsReached()

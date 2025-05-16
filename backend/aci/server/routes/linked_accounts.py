@@ -139,7 +139,7 @@ async def link_account_with_aci_default_credentials(
     else:
         # Enforce linked accounts quota before creating new account
         quota_manager.enforce_linked_accounts_creation_quota(
-            context.db_session, context.project.id, body.app_name
+            context.db_session, context.project.org_id, body.linked_account_owner_id
         )
 
         logger.info(
@@ -218,7 +218,7 @@ async def link_account_with_no_auth(
     else:
         # Enforce linked accounts quota before creating new account
         quota_manager.enforce_linked_accounts_creation_quota(
-            context.db_session, context.project.id, body.app_name
+            context.db_session, context.project.org_id, body.linked_account_owner_id
         )
 
         logger.info(
@@ -311,7 +311,7 @@ async def link_account_with_api_key(
     else:
         # Enforce linked accounts quota before creating new account
         quota_manager.enforce_linked_accounts_creation_quota(
-            context.db_session, context.project.id, body.app_name
+            context.db_session, context.project.org_id, body.linked_account_owner_id
         )
 
         logger.info(
@@ -377,6 +377,11 @@ async def link_oauth2_account(
             f"the security_scheme configured in app={query_params.app_name} is "
             f"{app_configuration.security_scheme}, not OAuth2"
         )
+
+    # Enforce linked accounts quota before creating new account
+    quota_manager.enforce_linked_accounts_creation_quota(
+        context.db_session, context.project.org_id, query_params.linked_account_owner_id
+    )
 
     oauth2_scheme = scm.get_app_configuration_oauth2_scheme(
         app_configuration.app, app_configuration
@@ -578,7 +583,7 @@ async def linked_accounts_oauth2_callback(
     else:
         # Enforce linked accounts quota before creating new account
         quota_manager.enforce_linked_accounts_creation_quota(
-            db_session, state.project_id, state.app_name
+            db_session, state.project_id, state.linked_account_owner_id
         )
 
         logger.info(

@@ -746,9 +746,6 @@ def dummy_linked_account_no_auth_mock_app_connector_project_1(
 
 @pytest.fixture(scope="function")
 def free_plan(db_session: Session) -> Plan:
-    """
-    Creates a free plan fixture with standard free tier features.
-    """
     plan = crud.plans.create(
         db=db_session,
         name="free",
@@ -756,7 +753,7 @@ def free_plan(db_session: Session) -> Plan:
         stripe_monthly_price_id="price_FREE_monthly_placeholder",
         stripe_yearly_price_id="price_FREE_yearly_placeholder",
         features=PlanFeatures(
-            linked_accounts=1,
+            linked_accounts=3,
             api_calls_monthly=1000,
             agent_credentials=5,
             developer_seats=1,

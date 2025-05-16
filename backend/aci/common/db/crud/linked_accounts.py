@@ -169,13 +169,17 @@ def delete_linked_accounts(db_session: Session, project_id: UUID, app_name: str)
 
 
 def get_total_number_of_unique_linked_account_owner_ids(db_session: Session, org_id: UUID) -> int:
-    """Get the total number of unique linked account owner IDs for an organization across all its projects."""
-    # First create a subquery to get all project IDs for the organization
-    project_ids_subquery = select(Project.id).filter(Project.org_id == org_id).scalar_subquery()
-
-    # Then count distinct linked_account_owner_ids where project_id is in the subquery
     statement = select(func.count(distinct(LinkedAccount.linked_account_owner_id))).where(
-        LinkedAccount.project_id.in_(project_ids_subquery)
+        LinkedAccount.project_id.in_(select(Project.id).filter(Project.org_id == org_id))
     )
-
     return db_session.execute(statement).scalar_one()
+
+
+def linked_account_owner_id_exists_in_org(
+    db_session: Session, org_id: UUID, linked_account_owner_id: str
+) -> bool:
+    statement = select(LinkedAccount).filter(
+        LinkedAccount.linked_account_owner_id == linked_account_owner_id,
+        LinkedAccount.project_id.in_(select(Project.id).filter(Project.org_id == org_id)),
+    )
+    return db_session.execute(statement).scalar_one_or_none() is not None
