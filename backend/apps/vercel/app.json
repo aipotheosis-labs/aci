@@ -1,0 +1,22 @@
+{
+    "name": "VERCEL",
+    "display_name": "Vercel",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/vercel.png",
+    "provider": "https://vercel.com/docs/rest-api/reference",
+    "version": "1.0.0",
+    "description": "The Vercel API allows programmatic control over deployments, projects, and integrations, including GitHub repository linking and deployment management.",
+    "security_schemes": {
+      "api_key": {
+        "location": "header",
+        "name": "Authorization",
+        "prefix": "Bearer"
+      }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+      "Deployment",
+      "CI/CD"
+    ],
+    "visibility": "public",
+    "active": true
+}
