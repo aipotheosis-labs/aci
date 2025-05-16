@@ -8,6 +8,4 @@ COPY ./pyproject.toml ./uv.lock /workdir/
 RUN uv sync --all-extras --dev --no-install-project
 
 ENV PATH="/workdir/.venv/bin:$PATH"
-
-# Check if PYTHONPATH exists and append /workdir, otherwise set it to /workdir
-RUN if [ -z "$PYTHONPATH" ]; then export PYTHONPATH=/workdir; else export PYTHONPATH=/workdir:$PYTHONPATH; fi
+ENV PYTHONPATH=/workdir:${PYTHONPATH}

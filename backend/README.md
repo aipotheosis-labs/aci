@@ -21,6 +21,7 @@ The backend component of ACI.dev provides the server infrastructure, API endpoin
   - [PropelAuth Webhooks](#propelauth-webhooks)
   - [Stripe Webhooks](#stripe-webhooks)
   - [Admin CLI](#admin-cli)
+  - [Running Evaluations](#running-evaluations)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -140,6 +141,10 @@ For VS Code users, configure Ruff formatter:
    > for each app that has OAuth2 scheme and put the OAuth2 credentials in that file, and the
    > insertion process might take a while.
    > See the example secrets file below for the `GMAIL` app.
+
+   > Alternatively, you can use the `--all --mock` flags together to seed all apps with mock OAuth2 credentials.
+   > This is useful for development and testing when you don't need real OAuth2 authentication.
+   > The mock values will be used instead of requiring `.app.secrets.json` files.
 
    ```bash
    # put this in a file called .app.secrets.json under ./apps/gmail/
@@ -342,6 +347,47 @@ To create a new app, run:
 ```bash
 docker compose exec runner python -m aci.cli create-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
 ```
+
+## Running Evaluations
+
+First, sync the required packages for evaluations:
+
+```bash
+uv sync --extra eval
+```
+
+You will need to set up the following environment variables:
+
+```bash
+EVALS_API_KEY=<your_api_key_for_the_server_returned_from_seed_db_script>
+EVALS_OPENAI_KEY=<your_openai_api_key>
+EVALS_WANDB_KEY=<your_wandb_api_key>
+```
+
+Then, seed the database with all apps and mock credentials:
+
+```bash
+docker compose exec runner ./scripts/seed_db.sh --all --mock
+```
+
+### Generating Synthetic Intent Data
+
+To generate synthetic intent data and run evaluation on it:
+
+```bash
+docker compose exec runner python -m evals.evaluation_pipeline --generate
+```
+
+### Running the Evaluation Pipeline
+
+To run the complete evaluation pipeline without generating data on the default `synthetic_intent_dataset` artifact.
+
+```bash
+docker compose exec runner python -m evals.search_evaluation_pipeline
+```
+
+> [!NOTE]
+> You can provide --dataset_artifact to specify a different artifact from the default `synthetic_intent_dataset`
 
 ## Contributing
 
