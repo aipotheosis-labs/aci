@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppFunctionsColumns } from "@/components/apps/useAppFunctionsColumns";
 import { Separator } from "@/components/ui/separator";
 import { useParams } from "next/navigation";
@@ -14,26 +14,19 @@ import {
 } from "@/components/ui/tooltip";
 import { type AppFunction } from "@/lib/types/appfunction";
 import { toast } from "sonner";
-import { AppConfig } from "@/lib/types/appconfig";
-import { getApiKey } from "@/lib/api/util";
 import { useApp } from "@/hooks/use-app";
-import {
-  AppAlreadyConfiguredError,
-  createAppConfig,
-  getAppConfig,
-} from "@/lib/api/appconfig";
+import { AppAlreadyConfiguredError } from "@/lib/api/appconfig";
 import Image from "next/image";
 import { ConfigureAppPopup } from "@/components/apps/configure-app-popup";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
-import { useMetaInfo } from "@/components/context/metainfo";
+import { useAppConfig, useCreateAppConfig } from "@/hooks/use-app-config";
 
 const AppPage = () => {
-  const { activeProject } = useMetaInfo();
   const { appName } = useParams<{ appName: string }>();
   const [functions, setFunctions] = useState<AppFunction[]>([]);
-  const [appConfig, setAppConfig] = useState<AppConfig | null>(null);
-
   const { app } = useApp(appName);
+  const { data: appConfig } = useAppConfig(appName);
+  const createAppConfigMutation = useCreateAppConfig();
 
   const columns = useAppFunctionsColumns();
 
@@ -42,25 +35,6 @@ const AppPage = () => {
       setFunctions(app.functions);
     }
   }, [app]);
-
-  const loadAppConfig = useCallback(async () => {
-    // TODO: replace with TanStack Query
-    const apiKey = getApiKey(activeProject);
-    const appConfig = await getAppConfig(appName, apiKey);
-    setAppConfig(appConfig);
-  }, [activeProject, appName]);
-
-  useEffect(() => {
-    async function loadData() {
-      try {
-        await loadAppConfig();
-      } catch (error) {
-        console.error("Error fetching app data:", error);
-      }
-    }
-
-    loadData();
-  }, [loadAppConfig]);
 
   const configureApp = async (
     security_scheme: string,
@@ -71,17 +45,15 @@ const AppPage = () => {
       } | null;
     },
   ) => {
-    const apiKey = getApiKey(activeProject);
     if (!app) return false;
 
     try {
-      const appConfig = await createAppConfig(
-        appName,
+      await createAppConfigMutation.mutateAsync({
+        app_name: appName,
         security_scheme,
-        apiKey,
         security_scheme_overrides,
-      );
-      setAppConfig(appConfig);
+      });
+
       toast.success(`Successfully configured app: ${app.display_name}`);
       return true;
     } catch (error) {
