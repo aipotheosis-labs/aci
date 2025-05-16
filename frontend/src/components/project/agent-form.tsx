@@ -61,7 +61,6 @@ interface AgentFormProps {
   title: string;
   validAppNames: string[];
   appConfigs?: AppConfig[];
-  onRequestRefreshAppConfigs: () => void;
 }
 
 export function AgentForm({
@@ -71,7 +70,6 @@ export function AgentForm({
   title,
   validAppNames,
   appConfigs = [],
-  onRequestRefreshAppConfigs,
 }: AgentFormProps) {
   const [open, setOpen] = useState(false);
   const [selectedApps, setSelectedApps] = useState<RowSelectionState>({});
@@ -139,11 +137,6 @@ export function AgentForm({
       console.error("Error submitting form:", error);
     }
   };
-  useEffect(() => {
-    if (open && onRequestRefreshAppConfigs) {
-      onRequestRefreshAppConfigs();
-    }
-  }, [open, onRequestRefreshAppConfigs]);
 
   // Reset form values when dialog opens
   useEffect(() => {

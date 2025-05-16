@@ -16,9 +16,9 @@ import { toast } from "sonner";
 // TODO: think about what happens when the active project changes, and how to invalidate
 // the cache. May need to add project id to the query key.
 export const appConfigKeys = {
-  all: ["appconfigs"] as const,
-  detail: (appName: string | null | undefined) =>
-    ["appconfigs", appName ?? ""] as const,
+  all: (projectId: string) => ["appconfigs", projectId] as const,
+  detail: (projectId: string, appName: string | null | undefined) =>
+    ["appconfigs", projectId, appName ?? ""] as const,
 };
 
 export const useAppConfigs = () => {
@@ -26,7 +26,9 @@ export const useAppConfigs = () => {
   const apiKey = getApiKey(activeProject);
 
   return useQuery<AppConfig[], Error>({
-    queryKey: appConfigKeys.all,
+    // Use projectId in the query key to clearly isolate project-specific data without relying on API key changes.
+    // In order to maintain the same functionality as the original page, pay attention to the project switching situation
+    queryKey: appConfigKeys.all(activeProject.id),
     queryFn: () => getAllAppConfigs(apiKey),
   });
 };
@@ -36,7 +38,7 @@ export const useAppConfig = (appName?: string | null) => {
   const apiKey = getApiKey(activeProject);
 
   return useQuery<AppConfig | null, Error>({
-    queryKey: appConfigKeys.detail(appName),
+    queryKey: appConfigKeys.detail(activeProject.id, appName),
     queryFn: () =>
       appName ? getAppConfig(appName, apiKey) : Promise.resolve(null),
     enabled: !!appName,
@@ -68,11 +70,13 @@ export const useCreateAppConfig = () => {
         params.security_scheme_overrides,
       ),
     onSuccess: (newConfig) => {
-      queryClient.setQueryData<AppConfig[]>(appConfigKeys.all, (old = []) => [
-        ...old,
-        newConfig,
-      ]);
-      queryClient.invalidateQueries({ queryKey: appConfigKeys.all });
+      queryClient.setQueryData<AppConfig[]>(
+        appConfigKeys.all(activeProject.id),
+        (old = []) => [...old, newConfig],
+      );
+      queryClient.invalidateQueries({
+        queryKey: appConfigKeys.all(activeProject.id),
+      });
     },
     onError: (error) => {
       console.error("Create AppConfig failed:", error);
@@ -95,10 +99,12 @@ export const useUpdateAppConfig = () => {
     mutationFn: (params) =>
       updateAppConfig(params.app_name, params.enabled, apiKey),
     onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: appConfigKeys.all });
+      queryClient.invalidateQueries({
+        queryKey: appConfigKeys.all(activeProject.id),
+      });
       // The current page may only use the update of a single data item when updating
       queryClient.invalidateQueries({
-        queryKey: appConfigKeys.detail(variables.app_name),
+        queryKey: appConfigKeys.detail(activeProject.id, variables.app_name),
       });
     },
     onError: (error) => {
@@ -116,9 +122,11 @@ export const useDeleteAppConfig = () => {
   return useMutation<Response, Error, string>({
     mutationFn: (app_name) => deleteAppConfig(app_name, apiKey),
     onSuccess: (_, app_name) => {
-      queryClient.invalidateQueries({ queryKey: appConfigKeys.all });
       queryClient.invalidateQueries({
-        queryKey: appConfigKeys.detail(app_name),
+        queryKey: appConfigKeys.all(activeProject.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: appConfigKeys.detail(activeProject.id, app_name),
       });
     },
     onError: (error) => {

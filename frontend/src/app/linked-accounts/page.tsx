@@ -12,7 +12,6 @@ import {
   deleteLinkedAccount,
   updateLinkedAccount,
 } from "@/lib/api/linkedaccount";
-import { getAllAppConfigs } from "@/lib/api/appconfig";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,7 +26,6 @@ import {
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { LinkedAccountDetails } from "@/components/linkedaccount/linked-account-details";
-import { AppConfig } from "@/lib/types/appconfig";
 import { AddAccountForm } from "@/components/appconfig/add-account";
 import { App } from "@/lib/types/app";
 import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhanced-switch";
@@ -39,13 +37,15 @@ import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-tabl
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 const columnHelper = createColumnHelper<TableData>();
 import { useApps } from "@/hooks/use-app";
+import { useAppConfigs } from "@/hooks/use-app-config";
 
 type TableData = LinkedAccount & { logo: string };
 
 export default function LinkedAccountsPage() {
   const { activeProject } = useMetaInfo();
   const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
-  const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
+  const { data: appConfigs = [], isPending: isConfigsPending } =
+    useAppConfigs();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const { data: apps, isPending, isError } = useApps();
   const [appsMap, setAppsMap] = useState<Record<string, App>>({});
@@ -88,20 +88,6 @@ export default function LinkedAccountsPage() {
       logo: appsMap[acc.app_name]?.logo ?? "",
     }));
   }, [linkedAccounts, appsMap]);
-
-  const loadAppConfigs = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const apiKey = getApiKey(activeProject);
-      const configs = await getAllAppConfigs(apiKey);
-      setAppConfigs(configs);
-    } catch (error) {
-      console.error("Failed to load app configurations:", error);
-      toast.error("Failed to load app configurations");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [activeProject]);
 
   const refreshLinkedAccounts = useCallback(
     async (silent: boolean = false) => {
@@ -147,12 +133,12 @@ export default function LinkedAccountsPage() {
   useEffect(() => {
     const loadData = async () => {
       setIsLoading(true);
-      await Promise.all([refreshLinkedAccounts(true), loadAppConfigs()]);
+      await refreshLinkedAccounts(true);
       setIsLoading(false);
     };
 
     loadData();
-  }, [activeProject, loadAppConfigs, refreshLinkedAccounts]);
+  }, [activeProject, refreshLinkedAccounts]);
 
   useEffect(() => {
     if (linkedAccounts.length > 0) {
@@ -350,6 +336,8 @@ export default function LinkedAccountsPage() {
     ] as ColumnDef<TableData>[];
   }, [toggleAccountStatus, refreshLinkedAccounts, activeProject]);
 
+  const isPageLoading = isLoading || isPending || isConfigsPending;
+
   return (
     <div>
       <div className="m-4 flex items-center justify-between">
@@ -360,7 +348,7 @@ export default function LinkedAccountsPage() {
           </p>
         </div>
         <div>
-          {!isLoading && !isPending && !isError && appConfigs.length > 0 && (
+          {!isPageLoading && !isError && appConfigs.length > 0 && (
             <AddAccountForm
               appInfos={appConfigs.map((config) => ({
                 name: config.app_name,
@@ -379,7 +367,7 @@ export default function LinkedAccountsPage() {
       <div className="m-4">
         <Tabs defaultValue={"linked"} className="w-full">
           <TabsContent value="linked">
-            {isLoading ? (
+            {isPageLoading ? (
               <div className="flex items-center justify-center p-8">
                 <div className="flex flex-col items-center space-y-4">
                   <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
