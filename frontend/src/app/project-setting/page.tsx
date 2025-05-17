@@ -15,38 +15,18 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useCallback, useEffect, useState } from "react";
-import { getApiKey } from "@/lib/api/util";
+import { useCallback } from "react";
 import { useAgentsTableColumns } from "@/components/project/useAgentsTableColumns";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { Agent } from "@/lib/types/project";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
-import { AppConfig } from "@/lib/types/appconfig";
-import { getAllAppConfigs } from "@/lib/api/appconfig";
+import { useAppConfigs } from "@/hooks/use-app-config";
 
 export default function ProjectSettingPage() {
   const { accessToken, activeProject, reloadActiveProject } = useMetaInfo();
-  const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  const loadAppConfigs = useCallback(async () => {
-    const apiKey = getApiKey(activeProject);
-    setLoading(true);
-
-    try {
-      const configs = await getAllAppConfigs(apiKey);
-      setAppConfigs(configs);
-    } catch (error) {
-      console.error("Error fetching apps:", error);
-    } finally {
-      setLoading(false);
-    }
-  }, [activeProject]);
-
-  useEffect(() => {
-    loadAppConfigs();
-  }, [activeProject, loadAppConfigs]);
+  const { data: appConfigs = [], isPending: isConfigsPending } =
+    useAppConfigs();
 
   const handleDeleteAgent = useCallback(
     async (agentId: string) => {
@@ -184,7 +164,6 @@ export default function ProjectSettingPage() {
                   (appConfig) => appConfig.app_name,
                 )}
                 appConfigs={appConfigs}
-                onRequestRefreshAppConfigs={loadAppConfigs}
                 onSubmit={async (values) => {
                   try {
                     await createAgent(
@@ -202,7 +181,7 @@ export default function ProjectSettingPage() {
                   }
                 }}
               >
-                <Button variant="outline" disabled={loading}>
+                <Button variant="outline" disabled={isConfigsPending}>
                   <MdAdd />
                   Create Agent
                   <Tooltip>
