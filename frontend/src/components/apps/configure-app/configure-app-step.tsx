@@ -100,8 +100,13 @@ export function ConfigureAppStep({
         return;
       }
     }
-
-    onNext(values);
+    const payload: ConfigureAppFormValues = {
+      ...values,
+      ...(values.security_scheme === "oauth2" && useACIDevOAuth2
+        ? { client_id: "", client_secret: "" }
+        : {}),
+    };
+    onNext(payload);
   };
 
   return (
