@@ -173,13 +173,13 @@ def main() -> None:
 
     # Get API keys from environment
     search_server_url = os.getenv("EVALS_SERVER_URL")
-    search_api_key = os.getenv("EVALS_API_KEY")
+    search_api_key = os.getenv("EVALS_ACI_API_KEY")
     openai_api_key = os.getenv("EVALS_OPENAI_KEY")
     wandb_token = os.getenv("EVALS_WANDB_KEY")
 
     if not all([search_server_url, search_api_key, openai_api_key, wandb_token]):
         raise ValueError(
-            "EVALS_SERVER_URL, EVALS_API_KEY, EVALS_OPENAI_KEY, and EVALS_WANDB_KEY must be set in environment"
+            "EVALS_SERVER_URL, EVALS_ACI_API_KEY, EVALS_OPENAI_KEY, and EVALS_WANDB_KEY must be set in environment"
         )
 
     # Create and run pipeline

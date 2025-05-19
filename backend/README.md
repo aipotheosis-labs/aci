@@ -359,7 +359,7 @@ uv sync --extra eval
 You will need to set up the following environment variables:
 
 ```bash
-EVALS_API_KEY=<your_api_key_for_the_server_returned_from_seed_db_script>
+EVALS_ACI_API_KEY=<your_api_key_for_the_server_returned_from_seed_db_script>
 EVALS_OPENAI_KEY=<your_openai_api_key>
 EVALS_WANDB_KEY=<your_wandb_api_key>
 ```
