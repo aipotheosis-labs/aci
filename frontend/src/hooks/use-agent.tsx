@@ -1,24 +1,10 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { toast } from "sonner";
 import { createAgent, updateAgent, deleteAgent } from "@/lib/api/agent";
-import { getProjects } from "@/lib/api/project";
 import { Agent } from "@/lib/types/project";
-
-// get all Agents No scene found, only need to get the scene of being an agent
-export const useAgents = () => {
-  const { activeProject, accessToken, activeOrg } = useMetaInfo();
-
-  return useQuery<Agent[], Error>({
-    queryKey: ["agents", activeProject.id],
-    queryFn: async () => {
-      const projects = await getProjects(accessToken, activeOrg.orgId);
-      const project = projects.find((p) => p.id === activeProject.id);
-      return project?.agents || [];
-    },
-  });
-};
 
 type CreateAgentParams = {
   name: string;
@@ -27,10 +13,8 @@ type CreateAgentParams = {
   custom_instructions?: Record<string, string>;
 };
 
-// create Agent
 export const useCreateAgent = () => {
-  const queryClient = useQueryClient();
-  const { activeProject, accessToken } = useMetaInfo();
+  const { activeProject, accessToken, reloadActiveProject } = useMetaInfo();
 
   return useMutation<Agent, Error, CreateAgentParams>({
     mutationFn: (params) =>
@@ -42,30 +26,24 @@ export const useCreateAgent = () => {
         params.allowed_apps,
         params.custom_instructions,
       ),
-    onSuccess: (newAgent) => {
-      queryClient.setQueryData<Agent[]>(
-        ["agents", activeProject.id],
-        (old = []) => [...old, newAgent],
-      );
-      queryClient.invalidateQueries({ queryKey: ["agents", activeProject.id] });
+    onSuccess: () => {
+      reloadActiveProject();
     },
+    onError: () => toast.error("Failed to create agent"),
   });
 };
 
 type UpdateAgentParams = {
   id: string;
-  data: {
+  data: Partial<Omit<CreateAgentParams, "name" | "description">> & {
     name?: string;
     description?: string;
-    allowed_apps?: string[];
-    custom_instructions?: Record<string, string>;
   };
+  noreload?: boolean;
 };
 
-// update Agent
 export const useUpdateAgent = () => {
-  const queryClient = useQueryClient();
-  const { activeProject, accessToken } = useMetaInfo();
+  const { activeProject, accessToken, reloadActiveProject } = useMetaInfo();
 
   return useMutation<Agent, Error, UpdateAgentParams>({
     mutationFn: ({ id, data }) =>
@@ -78,28 +56,23 @@ export const useUpdateAgent = () => {
         data.allowed_apps,
         data.custom_instructions,
       ),
-    onSuccess: (_data, { id }) => {
-      queryClient.invalidateQueries({ queryKey: ["agents", activeProject.id] });
-      queryClient.invalidateQueries({
-        queryKey: ["agents", activeProject.id, id],
-      });
+    onSuccess: (_, { noreload }) => {
+      if (!noreload) reloadActiveProject();
     },
   });
 };
 
 // delete Agent
 export const useDeleteAgent = () => {
-  const queryClient = useQueryClient();
-  const { activeProject, accessToken } = useMetaInfo();
+  const { activeProject, accessToken, reloadActiveProject } = useMetaInfo();
 
   return useMutation<void, Error, string>({
     mutationFn: (agentId) =>
       deleteAgent(activeProject.id, agentId, accessToken),
-    onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: ["agents", activeProject.id] });
-      queryClient.invalidateQueries({
-        queryKey: ["agents", activeProject.id, id],
-      });
+    onSuccess: () => {
+      reloadActiveProject();
+      toast.success("Agent deleted successfully");
     },
+    onError: () => toast.error("Failed to delete agent"),
   });
 };

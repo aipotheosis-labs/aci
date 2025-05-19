@@ -18,30 +18,24 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { updateAgent } from "@/lib/api/agent";
+import { useUpdateAgent } from "@/hooks/use-agent";
 import { toast } from "sonner";
-import { useMetaInfo } from "@/components/context/metainfo";
 import { useApps } from "@/hooks/use-app";
 import { useAppConfigs } from "@/hooks/use-app-config";
 
 interface AgentInstructionFilterFormProps {
   children: React.ReactNode;
-  projectId: string;
   agentId: string;
   initialInstructions?: Record<string, string>;
   allowedApps?: string[];
-  onSaveSuccess?: () => void;
 }
 
 export function AgentInstructionFilterForm({
   children,
-  projectId,
   agentId,
   initialInstructions = {},
   allowedApps = [],
-  onSaveSuccess,
 }: AgentInstructionFilterFormProps) {
-  const { accessToken } = useMetaInfo();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { data: appConfigs = [], isPending: isConfigsPending } =
@@ -49,6 +43,8 @@ export function AgentInstructionFilterForm({
   const { data: apps, isPending, isError } = useApps();
   const [instructions, setInstructions] =
     useState<Record<string, string>>(initialInstructions);
+  const { mutateAsync: updateAgentMutation, isPending: isUpdatingAgent } =
+    useUpdateAgent();
 
   useEffect(() => {
     if (!open) return;
@@ -75,24 +71,19 @@ export function AgentInstructionFilterForm({
       );
 
       // Update agent
-      await updateAgent(
-        projectId,
-        agentId,
-        accessToken,
-        undefined,
-        undefined,
-        undefined,
-        cleanedInstructions,
-      );
+
+      await updateAgentMutation({
+        id: agentId,
+        data: {
+          custom_instructions: cleanedInstructions,
+        },
+      });
 
       // Update local instructions state
       setInstructions(cleanedInstructions);
 
       toast.success("Custom instruction saved");
       setOpen(false);
-      if (onSaveSuccess) {
-        onSaveSuccess();
-      }
     } catch (error) {
       console.error("Failed to save custom instruction:", error);
       toast.error("Failed to save custom instruction");
@@ -133,15 +124,13 @@ export function AgentInstructionFilterForm({
       }
 
       // Update agent
-      await updateAgent(
-        projectId,
-        agentId,
-        accessToken,
-        undefined,
-        undefined,
-        undefined,
-        currentInstructions,
-      );
+      await updateAgentMutation({
+        id: agentId,
+        data: {
+          custom_instructions: currentInstructions,
+        },
+        noreload: true,
+      });
 
       // Update local instructions state
       setInstructions(currentInstructions);
@@ -169,15 +158,13 @@ export function AgentInstructionFilterForm({
       delete currentInstructions[key];
 
       // Update agent
-      await updateAgent(
-        projectId,
-        agentId,
-        accessToken,
-        undefined,
-        undefined,
-        undefined,
-        currentInstructions,
-      );
+      await updateAgentMutation({
+        id: agentId,
+        data: {
+          custom_instructions: currentInstructions,
+        },
+        noreload: true,
+      });
 
       // Update local instructions state
       setInstructions(currentInstructions);
@@ -200,15 +187,7 @@ export function AgentInstructionFilterForm({
   );
 
   return (
-    <Dialog
-      open={open}
-      onOpenChange={(newState) => {
-        if (open && !newState && onSaveSuccess) {
-          onSaveSuccess();
-        }
-        setOpen(newState);
-      }}
-    >
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-[800px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>
@@ -282,6 +261,7 @@ export function AgentInstructionFilterForm({
                                               func.name,
                                             )
                                           }
+                                          disabled={isUpdatingAgent}
                                         >
                                           Save
                                         </Button>
@@ -295,6 +275,7 @@ export function AgentInstructionFilterForm({
                                               func.name,
                                             )
                                           }
+                                          disabled={isUpdatingAgent}
                                         >
                                           Delete
                                         </Button>
