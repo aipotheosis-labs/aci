@@ -75,8 +75,8 @@ def enforce_linked_accounts_creation_quota(
     db_session: Session, org_id: UUID, linked_account_owner_id: str
 ) -> None:
     """
-    Check and enforce that the organization hasn't exceeded its unique linked account owner ids
-    quota, which is determined by the organization's current subscription plan.
+    Check and enforce that the organization doesn't have a unique_account_owner_id exceeding the
+    quota determined by the organization's current subscription plan.
 
     Args:
         db_session: Database session

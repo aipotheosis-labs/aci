@@ -17,6 +17,7 @@ from aci.common.exceptions import (
     LinkedAccountNotFound,
     NoImplementationFound,
     OAuth2Error,
+    ProjectNotFound,
 )
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.linked_accounts import (
@@ -581,9 +582,18 @@ async def linked_accounts_oauth2_callback(
             db_session, linked_account, security_credentials
         )
     else:
+        # Get the organization ID from the project
+        project = crud.projects.get_project(db_session, state.project_id)
+        if not project:
+            logger.error(
+                "project not found when creating linked account",
+                extra={"project_id": state.project_id},
+            )
+            raise ProjectNotFound(f"Project with ID {state.project_id} not found")
+        org_id = project.org_id
         # Enforce linked accounts quota before creating new account
         quota_manager.enforce_linked_accounts_creation_quota(
-            db_session, state.project_id, state.linked_account_owner_id
+            db_session, org_id, state.linked_account_owner_id
         )
 
         logger.info(
