@@ -41,7 +41,7 @@ class Gmail(AppConnectorBase):
         # e.g., if creds.expired and creds.refresh_token:
         #     creds.refresh(Request())
         # but this doesn't sit well with our existing credential fetch and update mechanism
-        # (which was built for generic oauht2/api_key rest apis)
+        # (which was built for generic oauth2/api_key REST APIs)
         pass
 
     # TODO: support HTML type for body
