@@ -17,6 +17,7 @@ from aci.common.exceptions import (
     LinkedAccountNotFound,
     NoImplementationFound,
     OAuth2Error,
+    ProjectNotFound,
 )
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.linked_accounts import (
@@ -33,7 +34,7 @@ from aci.common.schemas.security_scheme import (
     APIKeySchemeCredentials,
     NoAuthSchemeCredentials,
 )
-from aci.server import config
+from aci.server import config, quota_manager
 from aci.server import dependencies as deps
 from aci.server import security_credentials_manager as scm
 from aci.server.oauth2_manager import OAuth2Manager
@@ -137,6 +138,11 @@ async def link_account_with_aci_default_credentials(
             f"linked account with linked_account_owner_id={body.linked_account_owner_id} already exists for app={body.app_name}"
         )
     else:
+        # Enforce linked accounts quota before creating new account
+        quota_manager.enforce_linked_accounts_creation_quota(
+            context.db_session, context.project.org_id, body.linked_account_owner_id
+        )
+
         logger.info(
             "creating linked account with ACI default credentials",
             extra={
@@ -211,6 +217,11 @@ async def link_account_with_no_auth(
             f"linked account with linked_account_owner_id={body.linked_account_owner_id} already exists for app={body.app_name}"
         )
     else:
+        # Enforce linked accounts quota before creating new account
+        quota_manager.enforce_linked_accounts_creation_quota(
+            context.db_session, context.project.org_id, body.linked_account_owner_id
+        )
+
         logger.info(
             "creating no_auth linked account",
             extra={
@@ -299,6 +310,11 @@ async def link_account_with_api_key(
             f"linked account with linked_account_owner_id={body.linked_account_owner_id} already exists for app={body.app_name}"
         )
     else:
+        # Enforce linked accounts quota before creating new account
+        quota_manager.enforce_linked_accounts_creation_quota(
+            context.db_session, context.project.org_id, body.linked_account_owner_id
+        )
+
         logger.info(
             "creating api_key linked account",
             extra={
@@ -362,6 +378,11 @@ async def link_oauth2_account(
             f"the security_scheme configured in app={query_params.app_name} is "
             f"{app_configuration.security_scheme}, not OAuth2"
         )
+
+    # Enforce linked accounts quota before creating new account
+    quota_manager.enforce_linked_accounts_creation_quota(
+        context.db_session, context.project.org_id, query_params.linked_account_owner_id
+    )
 
     oauth2_scheme = scm.get_app_configuration_oauth2_scheme(
         app_configuration.app, app_configuration
@@ -561,6 +582,20 @@ async def linked_accounts_oauth2_callback(
             db_session, linked_account, security_credentials
         )
     else:
+        # Get the organization ID from the project
+        project = crud.projects.get_project(db_session, state.project_id)
+        if not project:
+            logger.error(
+                "project not found when creating linked account",
+                extra={"project_id": state.project_id},
+            )
+            raise ProjectNotFound(f"Project with ID {state.project_id} not found")
+        org_id = project.org_id
+        # Enforce linked accounts quota before creating new account
+        quota_manager.enforce_linked_accounts_creation_quota(
+            db_session, org_id, state.linked_account_owner_id
+        )
+
         logger.info(
             "creating oauth2 linked account",
             extra={
