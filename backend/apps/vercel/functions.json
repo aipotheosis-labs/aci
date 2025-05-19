@@ -38,6 +38,10 @@
                             "type": "string",
                             "description": "The desired name for the project"
                         },
+                        "framework": {
+                            "type": "string",
+                            "description": "The framework that is being used for this project. When null is used no framework is selected"
+                        },
                         "gitRepository": {
                             "type": "object",
                             "description": "The Git Repository that will be connected to the project. When this is defined, any pushes to the specified connected Git Repository will be automatically deployed. The Vercel app must be installed first to use this feature.",
@@ -56,15 +60,306 @@
                             "required": ["repo", "type"],
                             "visible": ["repo", "type"],
                             "additionalProperties": false
+                        },
+                        "rootDirectory": {
+                            "type": "string",
+                            "description": "The name of a directory or relative path to the source code of your project. When null is used it will default to the project root. Maximum length: 256."
+                        },
+                        "environmentVariables": {
+                            "type": "array",
+                            "description": "Environment variables to be applied to the project",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "key": {
+                                        "type": "string",
+                                        "description": "Name of the ENV variable"
+                                    },
+                                    "target": {
+                                        "type": "string",
+                                        "enum": ["production", "preview", "development"],
+                                        "description": "Deployment Target or Targets in which the ENV variable will be used"
+                                    },
+                                    "value": {
+                                        "type": "string",
+                                        "description": "Value for the ENV variable"
+                                    },
+                                    "gitBranch": {
+                                        "type": "string",
+                                        "description": "If defined, the git branch of the environment variable (must have target=preview). Maximum length: 250."
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "system",
+                                            "secret",
+                                            "encrypted",
+                                            "plain",
+                                            "sensitive"
+                                        ],
+                                        "description": "Type of the ENV variable"
+                                    }
+                                },
+                                "required": ["key", "target", "value", "type"],
+                                "visible": ["key", "target", "value", "gitBranch", "type"],
+                                "additionalProperties": false
+                            }
                         }
                     },
                     "required": ["name"],
-                    "visible": ["name", "gitRepository"],
+                    "visible": [
+                        "name",
+                        "framework",
+                        "gitRepository",
+                        "rootDirectory",
+                        "environmentVariables"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of. Example: 'team_1a2b3c4d5e6f7g8h9i0j1k2l'."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The Team slug to perform the request on behalf of. Example: 'my-team-url-slug'."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["teamId", "slug"],
                     "additionalProperties": false
                 }
             },
             "required": ["body"],
             "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "VERCEL__LIST_PROJECTS",
+        "description": "Lists all projects for the authenticated user.",
+        "tags": ["project", "list"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v10/projects",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "limit": {
+                            "type": "string",
+                            "description": "Limits the number of projects returned in the response. Example: '10'."
+                        },
+                        "search": {
+                            "type": "string",
+                            "description": "Search for projects by their name. Maximum length: 100 characters. Example: 'my-project'."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "Filter results to only include projects belonging to the specified repository. Example: 'vercel/next.js'."
+                        },
+                        "repoId": {
+                            "type": "string",
+                            "description": "Filter results by the unique Repository ID. Example: 'r1l2k3j4h5g6f7d8s9a0'."
+                        },
+                        "repoUrl": {
+                            "type": "string",
+                            "description": "Filter results by the full Repository URL. Example: 'https://github.com/vercel/next.js'."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The team slug to perform the request on behalf of a specific team. Example: 'my-team-url-slug'."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["limit", "search", "repo", "repoId", "repoUrl", "slug"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "VERCEL__DELETE_PROJECT",
+        "description": "Deletes a specific project by its id or name on Vercel.",
+        "tags": ["project", "delete"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v9/projects/{idOrName}",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "idOrName": {
+                            "type": "string",
+                            "description": "The unique project identifier or the project name. Example: 'prj_12HKQaOmR5t5Uy6vdcQsNIiZgHGB' or project name."
+                        }
+                    },
+                    "required": ["idOrName"],
+                    "visible": ["idOrName"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of. Example: 'team_1a2b3c4d5e6f7g8h9i0j1k2l'."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The Team slug to perform the request on behalf of. Example: 'my-team-url-slug'."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["teamId", "slug"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "VERCEL__DEPLOY",
+        "description": "Creates a new deployment on Vercel. A vercel project must be created first.",
+        "tags": ["deployment", "create"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v13/deployments",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters for deployment creation.",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "A string with the project name used in the deployment URL."
+                        },
+                        "customEnvironmentSlugOrId": {
+                            "type": "string",
+                            "description": "Deploy to a custom environment, which will override the default environment."
+                        },
+                        "deploymentId": {
+                            "type": "string",
+                            "description": "A deployment id for an existing deployment to redeploy."
+                        },
+                        "gitSource": {
+                            "type": "object",
+                            "description": "Defines the Git Repository source to be deployed. Required for git deployments.",
+                            "properties": {
+                                "org": {
+                                    "type": "string",
+                                    "description": "The organization/user of the repo. Example: 'vercel'"
+                                },
+                                "ref": {
+                                    "type": "string",
+                                    "description": "The branch or ref to deploy. Example: 'main'"
+                                },
+                                "repo": {
+                                    "type": "string",
+                                    "description": "The repository name. Example: 'next.js'"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["github"],
+                                    "description": "The Git provider type. Only 'github' is supported."
+                                },
+                                "sha": {
+                                    "type": "string",
+                                    "description": "The commit SHA to deploy."
+                                }
+                            },
+                            "required": ["org", "ref", "repo", "type"],
+                            "visible": ["org", "ref", "repo", "type", "sha"],
+                            "additionalProperties": false
+                        },
+                        "project": {
+                            "type": "string",
+                            "description": "The target project identifier in which the deployment will be created. Overrides name if defined."
+                        },
+                        "target": {
+                            "type": "string",
+                            "description": "Either not defined, 'staging', 'production', or a custom environment identifier. If omitted, the target will be preview."
+                        },
+                        "withLatestCommit": {
+                            "type": "boolean",
+                            "description": "When true and deploymentId is passed in, the sha from the previous deployment's gitSource is removed forcing the latest commit to be used."
+                        }
+                    },
+                    "required": ["name", "gitSource", "project"],
+                    "visible": [
+                        "name",
+                        "customEnvironmentSlugOrId",
+                        "deploymentId",
+                        "gitSource",
+                        "project",
+                        "target",
+                        "withLatestCommit"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request.",
+                    "properties": {
+                        "forceNew": {
+                            "type": "string",
+                            "enum": ["0", "1"],
+                            "description": "Forces a new deployment even if there is a previous similar deployment."
+                        },
+                        "skipAutoDetectionConfirmation": {
+                            "type": "string",
+                            "enum": ["0", "1"],
+                            "description": "Allows to skip framework detection so the API would not fail to ask for confirmation."
+                        },
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The Team slug to perform the request on behalf of."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["forceNew", "skipAutoDetectionConfirmation", "teamId", "slug"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body", "query"],
             "additionalProperties": false
         }
     }
