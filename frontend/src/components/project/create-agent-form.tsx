@@ -54,7 +54,7 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-interface AgentFormProps {
+interface CreateAgentFormProps {
   children: React.ReactNode;
   onSubmit: (values: FormValues) => Promise<void>;
   initialValues?: Partial<FormValues>;
@@ -63,14 +63,14 @@ interface AgentFormProps {
   appConfigs?: AppConfig[];
 }
 
-export function AgentForm({
+export function CreateAgentForm({
   children,
   onSubmit,
   initialValues,
   title,
   validAppNames,
   appConfigs = [],
-}: AgentFormProps) {
+}: CreateAgentFormProps) {
   const [open, setOpen] = useState(false);
   const [selectedApps, setSelectedApps] = useState<RowSelectionState>({});
 

@@ -47,7 +47,7 @@ export default function LinkedAccountsPage() {
   const { data: appConfigs = [], isPending: isConfigsPending } =
     useAppConfigs();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { data: apps, isPending, isError } = useApps();
+  const { data: apps, isPending: isAppsPending, isError } = useApps();
   const [appsMap, setAppsMap] = useState<Record<string, App>>({});
 
   const loadAppMaps = useCallback(async () => {
@@ -336,7 +336,7 @@ export default function LinkedAccountsPage() {
     ] as ColumnDef<TableData>[];
   }, [toggleAccountStatus, refreshLinkedAccounts, activeProject]);
 
-  const isPageLoading = isLoading || isPending || isConfigsPending;
+  const isPageLoading = isLoading || isAppsPending || isConfigsPending;
 
   return (
     <div>

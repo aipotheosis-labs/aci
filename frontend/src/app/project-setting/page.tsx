@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { Switch } from "@/components/ui/switch";
-import { AgentForm } from "@/components/project/agent-form";
+import { CreateAgentForm } from "@/components/project/create-agent-form";
 import { createAgent, deleteAgent } from "@/lib/api/agent";
 import { Separator } from "@/components/ui/separator";
 import { IdDisplay } from "@/components/apps/id-display";
@@ -158,7 +158,7 @@ export default function ProjectSettingPage() {
               <span className="text-sm">Enable</span>
             </div> */}
             <div className="flex items-center gap-2">
-              <AgentForm
+              <CreateAgentForm
                 title="Create Agent"
                 validAppNames={appConfigs.map(
                   (appConfig) => appConfig.app_name,
@@ -198,7 +198,7 @@ export default function ProjectSettingPage() {
                     </TooltipContent>
                   </Tooltip>
                 </Button>
-              </AgentForm>
+              </CreateAgentForm>
             </div>
           </div>
         </div>
