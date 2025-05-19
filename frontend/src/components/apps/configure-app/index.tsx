@@ -139,7 +139,10 @@ export function ConfigureApp({
   }, [open, activeProject]);
 
   // step 1 submit
-  const handleConfigureAppSubmit = async (values: ConfigureAppFormValues) => {
+  const handleConfigureAppSubmit = async (
+    values: ConfigureAppFormValues,
+    useACIDevOAuth2: boolean,
+  ) => {
     setSelectedSecurityScheme(values.security_scheme);
     setSubmitLoading(true);
 
@@ -148,8 +151,9 @@ export function ConfigureApp({
 
       if (
         values.security_scheme === "oauth2" &&
-        values.client_id &&
-        values.client_secret
+        !useACIDevOAuth2 &&
+        !!values.client_id &&
+        !!values.client_secret
       ) {
         security_scheme_overrides = {
           oauth2: {

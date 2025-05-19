@@ -42,7 +42,7 @@ const oauth2RedirectUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/linked-accounts
 interface ConfigureAppStepProps {
   form: ReturnType<typeof useForm<ConfigureAppFormValues>>;
   supported_security_schemes: Record<string, { scope?: string }>;
-  onNext: (values: ConfigureAppFormValues) => void;
+  onNext: (values: ConfigureAppFormValues, useACIDevOAuth2: boolean) => void;
   name: string;
   isLoading: boolean;
 }
@@ -100,13 +100,7 @@ export function ConfigureAppStep({
         return;
       }
     }
-    const payload: ConfigureAppFormValues = {
-      ...values,
-      ...(values.security_scheme === "oauth2" && useACIDevOAuth2
-        ? { client_id: "", client_secret: "" }
-        : {}),
-    };
-    onNext(payload);
+    onNext(values, useACIDevOAuth2);
   };
 
   return (
