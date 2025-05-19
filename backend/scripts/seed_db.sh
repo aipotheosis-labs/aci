@@ -110,12 +110,10 @@ seed_all_apps() {
   # Seed the database with Apps
   for app_dir in ./apps/*/; do
     app_file="${app_dir}app.json"
-    secrets_file="${app_dir}.app.secrets.json"
-
     secrets_file="$(create_mock_secrets "$app_dir")"
 
     # Check if secrets file exists and construct command accordingly
-    if [ -n "$secrets_file" ] && [ -f "$secrets_file" ]; then
+    if [ -f "$secrets_file" ]; then
       python -m aci.cli upsert-app \
         --app-file "$app_file" \
         --secrets-file "$secrets_file" \
