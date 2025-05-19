@@ -3,7 +3,6 @@ from uuid import UUID
 
 from sqlalchemy import distinct, func, select
 from sqlalchemy.orm import Session
-from sqlalchemy.sql.expression import text
 
 from aci.common import validators
 from aci.common.db.sql_models import App, LinkedAccount, Project
@@ -171,28 +170,21 @@ def delete_linked_accounts(db_session: Session, project_id: UUID, app_name: str)
 
 def get_total_number_of_unique_linked_account_owner_ids(db_session: Session, org_id: UUID) -> int:
     """
+    TODO: Add a lock to prevent the race condition.
     Get the total number of unique linked account owner IDs for an organization.
 
-    Uses SERIALIZABLE isolation level to prevent race conditions during concurrent operations.
+    WARNING: Race condition potential! This function is vulnerable to race conditions in
+    concurrent environments. If this function is called concurrently with operations that
+    add or remove linked accounts:
+
+    1. Thread A starts counting unique linked_account_owner_ids
+    2. Thread B adds a new linked account with a new owner_id
+    3. Thread A completes its count, unaware of the newly added account
     """
-    # Start a transaction with SERIALIZABLE isolation level to prevent race conditions
-    db_session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
-
-    try:
-        statement = select(func.count(distinct(LinkedAccount.linked_account_owner_id))).where(
-            LinkedAccount.project_id.in_(select(Project.id).filter(Project.org_id == org_id))
-        )
-        result = db_session.execute(statement).scalar_one()
-
-        # Commit the transaction to release any locks
-        db_session.commit()
-
-        return result
-    except Exception as e:
-        # Rollback in case of any errors
-        db_session.rollback()
-        logger.error(f"Error counting unique linked account owner IDs: {e}")
-        raise
+    statement = select(func.count(distinct(LinkedAccount.linked_account_owner_id))).where(
+        LinkedAccount.project_id.in_(select(Project.id).filter(Project.org_id == org_id))
+    )
+    return db_session.execute(statement).scalar_one()
 
 
 def linked_account_owner_id_exists_in_org(
