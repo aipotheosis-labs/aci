@@ -2,6 +2,12 @@
 
 set -euo pipefail
 
+# Initialize array to track temporary files
+declare -a temp_files=()
+
+# Set up trap to clean up temporary files
+trap 'rm -f "${temp_files[@]}"' EXIT
+
 function usage() {
   cat <<EOF
 Usage: $0 [options]
@@ -60,7 +66,7 @@ create_mock_secrets() {
       # If secrets file doesn't exist, create a temporary one
       if [ ! -f "$secrets_file" ]; then
         temp_oauth2_secrets_file=$(mktemp)
-        trap "rm -f $temp_oauth2_secrets_file" EXIT
+        temp_files+=("$temp_oauth2_secrets_file")
         cat > "$temp_oauth2_secrets_file" <<EOF
 {
   "${client_id_var}": "mock_client_id_${app_name}",
@@ -81,9 +87,7 @@ EOF
 seed_test_apps() {
   # Create a temporary file
   temp_oauth2_secrets_file=$(mktemp)
-
-  # Make sure it gets deleted when the script exits
-  trap "rm -f $temp_oauth2_secrets_file" EXIT
+  temp_files+=("$temp_oauth2_secrets_file")
 
   # Add content to the temporary file
   cat > "$temp_oauth2_secrets_file" <<EOF
@@ -108,10 +112,10 @@ seed_all_apps() {
     app_file="${app_dir}app.json"
     secrets_file="${app_dir}.app.secrets.json"
 
-    create_mock_secrets "$app_dir"
+    secrets_file="$(create_mock_secrets "$app_dir")"
 
     # Check if secrets file exists and construct command accordingly
-    if [ -f "$secrets_file" ]; then
+    if [ -n "$secrets_file" ] && [ -f "$secrets_file" ]; then
       python -m aci.cli upsert-app \
         --app-file "$app_file" \
         --secrets-file "$secrets_file" \
