@@ -1,4 +1,5 @@
 import os
+import tempfile
 
 import openai
 import pandas as pd
@@ -117,6 +118,7 @@ class SyntheticIntentGenerator:
 
         Args:
             df: DataFrame containing the generated dataset
+            dataset_artifact: Name for the artifact
 
         Returns:
             The artifact name for reference
@@ -141,13 +143,23 @@ class SyntheticIntentGenerator:
             },
         )
 
-        # Save dataset to a temporary CSV and add to artifact
-        df.to_csv("temp_dataset.csv", index=False)
-        artifact.add_file("temp_dataset.csv")
-        wandb.log_artifact(artifact)
-        os.remove("temp_dataset.csv")  # Cleanup
+        # Use tempfile to create and manage a temporary file
+        with tempfile.NamedTemporaryFile(suffix=".csv", delete=False) as temp_file:
+            temp_filename = temp_file.name
 
-        return artifact.name
+        try:
+            # Write dataframe to the temporary file
+            df.to_csv(temp_filename, index=False)
+            # Add the file to the artifact
+            artifact.add_file(temp_filename)
+            # Log the artifact
+            wandb.log_artifact(artifact)
+
+            return artifact.name
+        finally:
+            # Ensure temp file is removed even if any operation fails
+            if os.path.exists(temp_filename):
+                os.unlink(temp_filename)
 
     def generate(
         self,
