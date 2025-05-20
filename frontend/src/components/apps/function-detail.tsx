@@ -58,10 +58,11 @@ function filterVisibleProperties(
 
   const result = { ...parametersSchema };
   const visible = result.visible || [];
-  delete result.visible;
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { visible: _, ...resultWithoutVisible } = result;
 
-  const properties = result.properties || {};
-  const required = result.required || [];
+  const properties = resultWithoutVisible.properties || {};
+  const required = resultWithoutVisible.required || [];
 
   if (properties) {
     const filteredProperties: Record<string, ParameterSchema> = {};
@@ -75,11 +76,13 @@ function filterVisibleProperties(
       }
     }
 
-    result.properties = filteredProperties;
-    result.required = required.filter((key) => visible.includes(key));
+    resultWithoutVisible.properties = filteredProperties;
+    resultWithoutVisible.required = required.filter((key) =>
+      visible.includes(key),
+    );
   }
 
-  return result;
+  return resultWithoutVisible;
 }
 
 interface OpenAIFunctionDefinition {
@@ -218,7 +221,7 @@ export function FunctionDetail({ func }: FunctionDetailProps) {
             </Select>
           </div>
           <ScrollArea className="h-96 rounded-md border p-4">
-            <ReactJsonView name="parameters" src={formattedDefinition} />
+            <ReactJsonView name={false} src={formattedDefinition} />
           </ScrollArea>
         </div>
         <DialogFooter></DialogFooter>
