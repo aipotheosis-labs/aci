@@ -63,11 +63,9 @@ create_mock_secrets() {
     local client_secret_var=$(grep -o '"client_secret": *"[^{]*{{ *[^}]*}}' "$app_json" | sed 's/.*{{ *\([^}]*\) *}}.*/\1/' | tr -d ' ')
 
     if [ -n "$client_id_var" ] && [ -n "$client_secret_var" ]; then
-      # If secrets file doesn't exist, create a temporary one
-      if [ ! -f "$secrets_file" ]; then
-        temp_oauth2_secrets_file=$(mktemp)
-        temp_files+=("$temp_oauth2_secrets_file")
-        cat > "$temp_oauth2_secrets_file" <<EOF
+      temp_oauth2_secrets_file=$(mktemp)
+      temp_files+=("$temp_oauth2_secrets_file")
+      cat > "$temp_oauth2_secrets_file" <<EOF
 {
   "${client_id_var}": "mock_client_id_${app_name}",
   "${client_secret_var}": "mock_client_secret_${app_name}"
