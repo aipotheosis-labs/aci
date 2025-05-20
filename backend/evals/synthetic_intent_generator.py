@@ -70,6 +70,7 @@ class SyntheticIntentGenerator:
 
         # Execute the query and fetch results
         results = db_session.execute(statement).fetchall()
+
         return pd.DataFrame(results)
 
     @retry(
@@ -126,6 +127,7 @@ class SyntheticIntentGenerator:
             description=f"Synthetic intent dataset generated with {self.model} using {self.prompt_type} prompts",
             metadata={
                 "model": self.model,
+                "size": len(df),
                 "prompt": PROMPTS[self.prompt_type](
                     pd.Series(
                         {
@@ -163,6 +165,12 @@ class SyntheticIntentGenerator:
         """
         # Fetch data
         df = self._fetch_app_function_data()
+
+        if df.empty:
+            raise ValueError(
+                "No app and function data found in the database. Please seed the database by running: 'docker compose exec runner ./scripts/seed_db.sh'. This command will populate the database with sample apps and functions required for intent generation."
+            )
+
         if limit:
             df = df[:limit]
 

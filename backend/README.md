@@ -359,6 +359,7 @@ uv sync --extra eval
 You will need to set up the following environment variables:
 
 ```bash
+EVALS_SERVER_URL=<your_server_url_typically_http://localhost:8000>
 EVALS_ACI_API_KEY=<your_api_key_for_the_server_returned_from_seed_db_script>
 EVALS_OPENAI_KEY=<your_openai_api_key>
 EVALS_WANDB_KEY=<your_wandb_api_key>
@@ -370,24 +371,37 @@ Then, seed the database with all apps and mock credentials:
 docker compose exec runner ./scripts/seed_db.sh --all --mock
 ```
 
-### Generating Synthetic Intent Data
-
-To generate synthetic intent data and run evaluation on it:
-
-```bash
-docker compose exec runner python -m evals.evaluation_pipeline --generate
-```
-
 ### Running the Evaluation Pipeline
 
-To run the complete evaluation pipeline without generating data on the default `synthetic_intent_dataset` artifact.
+To run the complete evaluation pipeline with different modes:
 
 ```bash
-docker compose exec runner python -m evals.search_evaluation_pipeline
+# Generate synthetic intents and evaluate them
+docker compose exec runner python -m evals.evaluation_pipeline --mode generate-and-evaluate
+
+# Only generate synthetic intent data
+docker compose exec runner python -m evals.evaluation_pipeline --mode generate-only
+
+# Only evaluate using existing dataset
+docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only
+```
+
+Additional flags:
+
+```bash
+# Specify a custom dataset artifact name (default: "synthetic_intent_dataset")
+docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset my_custom_dataset
+
+# Limit the number of samples to generate
+docker compose exec runner python -m evals.evaluation_pipeline --mode generate-only --generation-limit 50
+
+# Limit the number of samples to evaluate
+docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --evaluation-samples 25
 ```
 
 > [!NOTE]
-> You can provide --dataset_artifact to specify a different artifact from the default `synthetic_intent_dataset`
+> If you use the `generate-and-evaluate` mode, the pipeline will use the freshly generated dataset directly
+> without having to reload it from Weights & Biases, which is more efficient.
 
 ## Contributing
 
