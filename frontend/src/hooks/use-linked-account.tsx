@@ -14,8 +14,8 @@ import { useMetaInfo } from "@/components/context/metainfo";
 import { getApiKey } from "@/lib/api/util";
 import { LinkedAccount } from "@/lib/types/linkedaccount";
 
-export const linkedAccountKeys = {
-  all: (projectId: string) => ["linkedaccounts", projectId] as const,
+const linkedAccountKeys = {
+  all: (projectId: string) => [projectId, "linkedaccounts"] as const,
 };
 
 export const useLinkedAccounts = () => {
@@ -34,7 +34,9 @@ export const useAppLinkedAccounts = (appName?: string | null) => {
     ...base,
     data: useMemo(
       () =>
-        appName ? (base.data?.filter((a) => a.app_name === appName) ?? []) : [],
+        appName && base.data
+          ? base.data.filter((a) => a.app_name === appName)
+          : [],
       [base.data, appName],
     ),
   };

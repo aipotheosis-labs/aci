@@ -18,7 +18,7 @@ import {
   useCreateAPILinkedAccount,
   useCreateNoAuthLinkedAccount,
   useGetOauth2LinkURL,
-} from "@/hooks/use-linkedaccount";
+} from "@/hooks/use-linked-account";
 
 // import sub components
 import { Stepper } from "@/components/apps/configure-app/stepper";
@@ -82,21 +82,23 @@ export function ConfigureApp({
     {},
   );
 
-  const { mutateAsync: createAPIAccount, isPending: isCreatingAPIAccount } =
-    useCreateAPILinkedAccount();
   const {
-    mutateAsync: createNoAuthAccount,
-    isPending: isCreatingNoAuthAccount,
+    mutateAsync: createAPILinkedAccount,
+    isPending: isCreatingAPILinkedAccount,
+  } = useCreateAPILinkedAccount();
+  const {
+    mutateAsync: createNoAuthLinkedAccount,
+    isPending: isCreatingNoAuthLinkedAccount,
   } = useCreateNoAuthLinkedAccount();
-  const { mutateAsync: getOauth2URL, isPending: isGettingOauthURL } =
+  const { mutateAsync: getOauth2LinkURL, isPending: isGettingOauth2LinkURL } =
     useGetOauth2LinkURL();
 
   const [manualLoading, setManualLoading] = useState(false);
   const isLoading =
     manualLoading ||
-    isCreatingAPIAccount ||
-    isCreatingNoAuthAccount ||
-    isGettingOauthURL;
+    isCreatingAPILinkedAccount ||
+    isCreatingNoAuthLinkedAccount ||
+    isGettingOauth2LinkURL;
 
   // security scheme
   const [security_scheme, setSelectedSecurityScheme] = useState<string>("");
@@ -290,7 +292,7 @@ export function ConfigureApp({
       throw new Error("no app selected");
     }
 
-    return await getOauth2URL({
+    return await getOauth2LinkURL({
       appName,
       linkedAccountOwnerId,
       afterOAuth2LinkRedirectURL,
@@ -359,7 +361,7 @@ export function ConfigureApp({
     }
 
     try {
-      await createAPIAccount({
+      await createAPILinkedAccount({
         appName,
         linkedAccountOwnerId,
         linkedAPIKey,
@@ -381,7 +383,7 @@ export function ConfigureApp({
     }
 
     try {
-      await createNoAuthAccount({
+      await createNoAuthLinkedAccount({
         appName,
         linkedAccountOwnerId,
       });

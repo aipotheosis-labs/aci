@@ -38,7 +38,7 @@ import {
   useAppLinkedAccounts,
   useDeleteLinkedAccount,
   useUpdateLinkedAccount,
-} from "@/hooks/use-linkedaccount";
+} from "@/hooks/use-linked-account";
 import { useApp } from "@/hooks/use-app";
 
 const columnHelper = createColumnHelper<LinkedAccount>();
@@ -50,13 +50,13 @@ export default function AppConfigDetailPage() {
 
   const { data: linkedAccounts = [] } = useAppLinkedAccounts(appName);
 
-  const { mutateAsync: deleteAccount } = useDeleteLinkedAccount();
-  const { mutateAsync: updateAccount } = useUpdateLinkedAccount();
+  const { mutateAsync: deleteLinkedAccount } = useDeleteLinkedAccount();
+  const { mutateAsync: updateLinkedAccount } = useUpdateLinkedAccount();
 
   const toggleAccountStatus = useCallback(
     async (accountId: string, newStatus: boolean) => {
       try {
-        await updateAccount({
+        await updateLinkedAccount({
           linkedAccountId: accountId,
           enabled: newStatus,
         });
@@ -67,13 +67,13 @@ export default function AppConfigDetailPage() {
         return false;
       }
     },
-    [updateAccount],
+    [updateLinkedAccount],
   );
 
   const handleDeleteLinkedAccount = useCallback(
     async (accountId: string, linkedAccountOwnerId: string) => {
       try {
-        await deleteAccount({
+        await deleteLinkedAccount({
           linkedAccountId: accountId,
         });
 
@@ -83,7 +83,7 @@ export default function AppConfigDetailPage() {
         toast.error("Failed to delete linked account");
       }
     },
-    [deleteAccount],
+    [deleteLinkedAccount],
   );
 
   const linkedAccountsColumns: ColumnDef<LinkedAccount>[] = useMemo(() => {

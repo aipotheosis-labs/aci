@@ -7,7 +7,7 @@ import { useAppConfigsTableColumns } from "@/components/appconfig/useAppConfigsT
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { useApps } from "@/hooks/use-app";
 import { useAppConfigs } from "@/hooks/use-app-config";
-import { useLinkedAccounts } from "@/hooks/use-linkedaccount";
+import { useLinkedAccounts } from "@/hooks/use-linked-account";
 
 export default function AppConfigPage() {
   const { data: appConfigs = [], isPending: isConfigsPending } =

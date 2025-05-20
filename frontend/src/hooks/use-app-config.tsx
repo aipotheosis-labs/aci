@@ -15,7 +15,7 @@ import { toast } from "sonner";
 
 // TODO: think about what happens when the active project changes, and how to invalidate
 // the cache. May need to add project id to the query key.
-export const appConfigKeys = {
+const appConfigKeys = {
   // Use projectId in the query key to clearly isolate project-specific data without
   // relying on API key changes. In order to maintain the same functionality as the
   // original page, pay attention to the project switching situation

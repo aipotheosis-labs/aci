@@ -44,7 +44,7 @@ import {
   useCreateAPILinkedAccount,
   useCreateNoAuthLinkedAccount,
   useGetOauth2LinkURL,
-} from "@/hooks/use-linkedaccount";
+} from "@/hooks/use-linked-account";
 
 const formSchema = z
   .object({
@@ -86,7 +86,8 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
   const [open, setOpen] = useState(false);
 
   const { mutateAsync: createApiLinkedAccount } = useCreateAPILinkedAccount();
-  const { mutateAsync: createNoAuth } = useCreateNoAuthLinkedAccount();
+  const { mutateAsync: createNoAuthLinkedAccount } =
+    useCreateNoAuthLinkedAccount();
   const { mutateAsync: getOauth2URL } = useGetOauth2LinkURL();
   if (appInfos.length === 0) {
     console.error("No app infos provided");
@@ -215,7 +216,7 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
     }
 
     try {
-      await createNoAuth({
+      await createNoAuthLinkedAccount({
         appName,
         linkedAccountOwnerId,
       });
