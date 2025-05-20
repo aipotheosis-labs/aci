@@ -1,0 +1,71 @@
+[
+    {
+        "name": "VERCEL__GET_URL_TO_INSTALL_VERCEL_APP_IN_GITHUB",
+        "description": "Installs the Vercel app in a GitHub repository. It will return a URL that user can follow to install the Vercel app in their GitHub repository.",
+        "tags": ["github", "installation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "connector",
+        "protocol_data": {},
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "VERCEL__CREATE_PROJECT",
+        "description": "Creates a new project on Vercel.",
+        "tags": ["project", "creation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v11/projects",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The desired name for the project"
+                        },
+                        "gitRepository": {
+                            "type": "object",
+                            "description": "The Git Repository that will be connected to the project. When this is defined, any pushes to the specified connected Git Repository will be automatically deployed. The Vercel app must be installed first to use this feature.",
+                            "properties": {
+                                "repo": {
+                                    "type": "string",
+                                    "description": "The name of the git repository. For example: 'vercel/next.js'"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["github", "gitlab", "bitbucket"],
+                                    "default": "github",
+                                    "description": "The Git Provider of the repository"
+                                }
+                            },
+                            "required": ["repo", "type"],
+                            "visible": ["repo", "type"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name", "gitRepository"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    }
+]

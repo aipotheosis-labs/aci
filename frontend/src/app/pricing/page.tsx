@@ -18,6 +18,7 @@ import { useMetaInfo } from "@/components/context/metainfo";
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { FaqSection } from "@/components/pricing/faq";
 
 const tiers = [
   {
@@ -27,12 +28,12 @@ const tiers = [
     priceYearly: "$0",
     description: "Perfect for getting started & simple projects.",
     features: [
-      "3 unique end user accounts",
+      "10 Unique End Users",
       "1K API calls/month",
-      "5 agent credentials",
-      "1 developer seat",
-      "1 week log retention",
-      "Discord support",
+      "5 Agent Credentials",
+      "1 Developer Seat",
+      "Custom OAuth2 Client",
+      "3 Days Log Retention",
     ],
     buttonText: "Start for Free",
     buttonVariant: "default" as const,
@@ -45,12 +46,12 @@ const tiers = [
     discount: "saves $49 on annual",
     description: "For growing applications needing more capacity.",
     features: [
-      "250 unique end user accounts",
+      "250 Unique End Users",
       "100K API calls/month",
-      "2500 agent credentials",
-      "5 developer seats",
-      "Custom OAuth credentials",
-      "1 month log retention",
+      "2500 Agent Credentials",
+      "5 Developer Seats",
+      "Custom OAuth2 Client",
+      "1 Week Log Retention",
     ],
     buttonText: "Get Started",
     buttonVariant: "default" as const,
@@ -63,12 +64,12 @@ const tiers = [
     discount: "saves $189 on annual",
     description: "Ideal for teams needing collaboration features.",
     features: [
-      "1500 unique end user accounts",
-      "200K API calls/month",
-      "Unlimited agent credentials",
-      "10 developer seats",
-      "Custom OAuth credentials",
-      "1 month log retention",
+      "1000 Unique End Users",
+      "300K API calls/month",
+      "10000 Agent Credentials",
+      "10 Developer Seats",
+      "Custom OAuth2 Client",
+      "1 Month Log Retention",
     ],
     mostPopular: true,
     buttonText: "Get Started",
@@ -80,13 +81,12 @@ const tiers = [
     priceMonthly: "Custom",
     description: "For large-scale applications with specific needs.",
     features: [
-      "Custom End user accounts",
-      "Custom API calls",
-      "Unlimited Agent credentials",
-      "Custom Developer seats",
-      "Custom OAuth credentials",
-      "Custom Log retention",
-      "Dedicated Rep Support",
+      "Custom Unique End User Accounts",
+      "Custom API Calls",
+      "Unlimited Agent Credentials",
+      "Custom Developer Seats",
+      "Custom OAuth2 Client",
+      "Custom Log Retention",
     ],
     buttonText: "Contact Us",
     buttonVariant: "outline" as const,
@@ -95,18 +95,15 @@ const tiers = [
 
 export default function PricingPage() {
   const { data: subscription } = useSubscription();
-  const { accessToken, activeOrg, user } = useMetaInfo();
+  const { accessToken, activeOrg } = useMetaInfo();
   const [isYearly, setIsYearly] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    if (
-      (subscription && subscription.plan !== "free") ||
-      !user.email.endsWith("@aipolabs.xyz")
-    ) {
+    if (subscription && subscription.plan !== "free") {
       router.replace("/account");
     }
-  }, [subscription, router, user.email]);
+  }, [subscription, router]);
 
   // TODO: Enterprise button should have a mail popup
   return (
@@ -246,6 +243,7 @@ export default function PricingPage() {
             </Card>
           ))}
         </div>
+        <FaqSection />
       </div>
     </div>
   );

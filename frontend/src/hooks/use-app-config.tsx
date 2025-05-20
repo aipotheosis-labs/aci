@@ -16,9 +16,12 @@ import { toast } from "sonner";
 // TODO: think about what happens when the active project changes, and how to invalidate
 // the cache. May need to add project id to the query key.
 export const appConfigKeys = {
-  all: (projectId: string) => ["appconfigs", projectId] as const,
+  // Use projectId in the query key to clearly isolate project-specific data without
+  // relying on API key changes. In order to maintain the same functionality as the
+  // original page, pay attention to the project switching situation
+  all: (projectId: string) => [projectId, "appconfigs"] as const,
   detail: (projectId: string, appName: string | null | undefined) =>
-    ["appconfigs", projectId, appName ?? ""] as const,
+    [projectId, "appconfigs", appName ?? ""] as const,
 };
 
 export const useAppConfigs = () => {
@@ -26,8 +29,6 @@ export const useAppConfigs = () => {
   const apiKey = getApiKey(activeProject);
 
   return useQuery<AppConfig[], Error>({
-    // Use projectId in the query key to clearly isolate project-specific data without relying on API key changes.
-    // In order to maintain the same functionality as the original page, pay attention to the project switching situation
     queryKey: appConfigKeys.all(activeProject.id),
     queryFn: () => getAllAppConfigs(apiKey),
   });

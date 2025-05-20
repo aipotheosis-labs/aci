@@ -43,7 +43,6 @@ export function AppEditForm({
   const [selectedApps, setSelectedApps] = useState<RowSelectionState>({});
   const { data: appConfigs = [], isPending: isConfigsPending } =
     useAppConfigs();
-  const [loading, setLoading] = useState(false);
   const columns: ColumnDef<AppConfig>[] = useMemo(() => {
     const columnHelper = createColumnHelper<AppConfig>();
     return [
@@ -72,10 +71,6 @@ export function AppEditForm({
     ] as ColumnDef<AppConfig>[];
   }, []);
   const [submitLoading, setSubmitLoading] = useState(false);
-
-  useEffect(() => {
-    setLoading(isConfigsPending);
-  }, [isConfigsPending]);
 
   useEffect(() => {
     if (!open) return;
@@ -149,7 +144,7 @@ export function AppEditForm({
               </div>
             )}
 
-            {loading ? (
+            {isConfigsPending ? (
               <div className="flex h-40  justify-center py-4 ">
                 <p>Loading...</p>
               </div>

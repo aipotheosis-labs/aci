@@ -168,61 +168,59 @@ export default function AccountPage() {
         <Separator /> */}
 
         {/* Subscription Section */}
-        {user.email.endsWith("@aipolabs.xyz") && (
-          <div className="flex flex-row">
-            <div className="flex flex-col items-left w-80">
-              <label className="font-semibold">Subscription</label>
-              <p className="text-sm text-muted-foreground">
-                Manage your subscription
-              </p>
-            </div>
-            {isLoading ? (
-              <div>Loading...</div>
-            ) : (
-              <>
-                <div className="flex-1">
-                  <div className="flex justify-between p-4">
-                    <div>
-                      <div className="font-medium">
-                        You are on the {subscription?.plan} plan
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex-1">
-                  <div className="flex justify-between p-4">
-                    <div>
-                      {subscription?.plan === "free" ? (
-                        <Link href="/pricing">
-                          <Button variant="outline">
-                            <BsStars />
-                            Subscribe Now
-                          </Button>
-                        </Link>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          onClick={async () => {
-                            const url = await createCustomerPortalSession(
-                              accessToken,
-                              activeOrg.orgId,
-                            );
-                            window.location.href = url;
-                          }}
-                        >
-                          <RiUserSettingsLine />
-                          Manage Subscription
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </>
-            )}
+        <div className="flex flex-row">
+          <div className="flex flex-col items-left w-80">
+            <label className="font-semibold">Subscription</label>
+            <p className="text-sm text-muted-foreground">
+              Manage your subscription
+            </p>
           </div>
-        )}
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : (
+            <>
+              <div className="flex-1">
+                <div className="flex justify-between p-4">
+                  <div>
+                    <div className="font-medium">
+                      You are on the {subscription?.plan} plan
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex-1">
+                <div className="flex justify-between p-4">
+                  <div>
+                    {subscription?.plan === "free" ? (
+                      <Link href="/pricing">
+                        <Button variant="outline">
+                          <BsStars />
+                          Subscribe Now
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        onClick={async () => {
+                          const url = await createCustomerPortalSession(
+                            accessToken,
+                            activeOrg.orgId,
+                          );
+                          window.location.href = url;
+                        }}
+                      >
+                        <RiUserSettingsLine />
+                        Manage Subscription
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </div>
 
-        {user.email.endsWith("@aipolabs.xyz") && <Separator />}
+        <Separator />
 
         {/* Payment Method Section */}
         {/* <div className="flex flex-row">

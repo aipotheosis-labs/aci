@@ -46,7 +46,7 @@ export default function LinkedAccountsPage() {
     useLinkedAccounts();
   const { data: appConfigs = [], isPending: isConfigsPending } =
     useAppConfigs();
-  const { data: apps = [], isPending: isAppsLoading, isError } = useApps();
+  const { data: apps, isPending: isAppsPending, isError } = useApps();
   const { mutateAsync: deleteAccount } = useDeleteLinkedAccount();
   const { mutateAsync: updateAccount } = useUpdateLinkedAccount();
   const [appsMap, setAppsMap] = useState<Record<string, App>>({});
@@ -302,7 +302,7 @@ export default function LinkedAccountsPage() {
     ] as ColumnDef<TableData>[];
   }, [toggleAccountStatus, deleteAccount, activeProject]);
 
-  const isPageLoading = isAccountsLoading || isAppsLoading || isConfigsPending;
+  const isPageLoading = isAccountsLoading || isAppsPending || isConfigsPending;
 
   return (
     <div>
