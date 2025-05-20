@@ -48,8 +48,7 @@ export default function AppConfigDetailPage() {
 
   const { app } = useApp(appName);
 
-  const { data: linkedAccounts = [], refetch: refreshLinkedAccounts } =
-    useAppLinkedAccounts(appName);
+  const { data: linkedAccounts = [] } = useAppLinkedAccounts(appName);
 
   const { mutateAsync: deleteAccount } = useDeleteLinkedAccount();
   const { mutateAsync: updateAccount } = useUpdateLinkedAccount();
@@ -253,7 +252,6 @@ export default function AppConfigDetailPage() {
                   app.supported_security_schemes || {},
               },
             ]}
-            updateLinkedAccounts={refreshLinkedAccounts}
           />
         )}
       </div>
