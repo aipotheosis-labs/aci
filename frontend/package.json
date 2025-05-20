@@ -16,6 +16,7 @@
   "dependencies": {
     "@ai-sdk/react": "^1.2.8",
     "@hookform/resolvers": "^3.10.0",
+    "@microlink/react-json-view": "^1.26.2",
     "@propelauth/react": "^2.0.29",
     "@radix-ui/react-accordion": "^1.2.10",
     "@radix-ui/react-alert-dialog": "^1.1.6",
@@ -54,7 +55,6 @@
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.54.2",
     "react-icons": "^5.4.0",
-    "react-json-view": "^1.21.3",
     "react-markdown": "^10.1.0",
     "recharts": "^2.15.1",
     "remark-gfm": "^4.0.1",
