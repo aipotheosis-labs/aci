@@ -323,7 +323,6 @@ export default function LinkedAccountsPage() {
                   apps.find((app) => app.name === config.app_name)
                     ?.supported_security_schemes || {},
               }))}
-              updateLinkedAccounts={() => {}}
             />
           )}
         </div>

@@ -80,13 +80,9 @@ export interface AppInfo {
 }
 interface AddAccountProps {
   appInfos: AppInfo[];
-  updateLinkedAccounts: () => void;
 }
 
-export function AddAccountForm({
-  appInfos,
-  updateLinkedAccounts,
-}: AddAccountProps) {
+export function AddAccountForm({ appInfos }: AddAccountProps) {
   const [open, setOpen] = useState(false);
 
   const { mutateAsync: createApiLinkedAccount } = useCreateAPILinkedAccount();
@@ -204,7 +200,6 @@ export function AddAccountForm({
       toast.success("Account linked successfully");
       form.reset();
       setOpen(false);
-      updateLinkedAccounts();
     } catch (error) {
       console.error("Error linking API account:", error);
       toast.error("Failed to link account");
@@ -228,7 +223,6 @@ export function AddAccountForm({
       toast.success("Account linked successfully");
       form.reset();
       setOpen(false);
-      updateLinkedAccounts();
     } catch (error) {
       console.error("Error linking no auth account:", error);
       toast.error("Failed to link account");
