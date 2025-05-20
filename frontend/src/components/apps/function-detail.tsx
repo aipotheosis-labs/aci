@@ -2,7 +2,6 @@
 import ReactJsonView from "@microlink/react-json-view";
 import * as React from "react";
 import { useState, useMemo } from "react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -40,7 +39,7 @@ function isParameterSchema(value: unknown): value is ParameterSchema {
   return typeof value === "object" && value !== null && "type" in value;
 }
 
-export enum FunctionDefinitionFormat {
+enum FunctionDefinitionFormat {
   OPENAI = "openai",
   OPENAI_RESPONSES = "openai_responses",
   ANTHROPIC = "anthropic",
@@ -49,10 +48,6 @@ export enum FunctionDefinitionFormat {
 function filterVisibleProperties(
   parametersSchema: unknown,
 ): ParameterSchema | null {
-  if (!parametersSchema || typeof parametersSchema !== "object") {
-    return null;
-  }
-
   if (!isParameterSchema(parametersSchema)) {
     return null;
   }
@@ -222,17 +217,9 @@ export function FunctionDetail({ func }: FunctionDetailProps) {
               </SelectContent>
             </Select>
           </div>
-
-          <Tabs defaultValue="formatted">
-            <TabsList>
-              <TabsTrigger value="formatted">Formatted Definition</TabsTrigger>
-            </TabsList>
-            <TabsContent value="formatted" className="mt-4">
-              <ScrollArea className="h-96 rounded-md border p-4">
-                <ReactJsonView name="parameters" src={formattedDefinition} />
-              </ScrollArea>
-            </TabsContent>
-          </Tabs>
+          <ScrollArea className="h-96 rounded-md border p-4">
+            <ReactJsonView name="parameters" src={formattedDefinition} />
+          </ScrollArea>
         </div>
         <DialogFooter></DialogFooter>
       </DialogContent>
