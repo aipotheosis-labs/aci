@@ -78,7 +78,6 @@ EOF
       fi
     else
       echo "Warning: Could not find client_id or client_secret variables in $app_json"
-    fi
   fi
 }
 
