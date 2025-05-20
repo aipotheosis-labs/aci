@@ -41,11 +41,10 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
                 "api key found in header", extra={"api_key": api_key[:4] + "..." + api_key[-4:]}
             )
             try:
-                db_session = utils.create_db_session(config.DB_FULL_URL)
-                api_key_id, agent_id, project_id, org_id = (
-                    crud.projects.get_project_agent_org_by_api_key(db_session, api_key)
-                )
-                db_session.close()
+                with utils.create_db_session(config.DB_FULL_URL) as db_session:
+                    api_key_id, agent_id, project_id, org_id = (
+                        crud.projects.get_project_agent_org_by_api_key(db_session, api_key)
+                    )
             except Exception as e:
                 logger.exception(
                     f"Can't access database to query request context for API key: {e!s}"
