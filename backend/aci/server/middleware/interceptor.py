@@ -1,4 +1,3 @@
-import logging
 import uuid
 from datetime import UTC, datetime
 
@@ -6,8 +5,17 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
+from aci.common import utils
+from aci.common.db import crud
 from aci.common.logging_setup import get_logger
-from aci.server.context import request_id_ctx_var
+from aci.server import config
+from aci.server.context import (
+    agent_id_ctx_var,
+    api_key_id_ctx_var,
+    org_id_ctx_var,
+    project_id_ctx_var,
+    request_id_ctx_var,
+)
 
 logger = get_logger(__name__)
 
@@ -16,20 +24,54 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
     """
     Middleware for logging structured analytics data for every request/response.
     It generates a unique request ID and logs some baseline details.
+    It also extracts and sets project_id and agent_id if available in headers.
     """
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
         start_time = datetime.now(UTC)
         request_id = str(uuid.uuid4())
         request_id_ctx_var.set(request_id)
+        # TODO: Get request context from bearer token(propelauth)
+
+        # Get request context from x-api-key header
+        api_key = request.headers.get(config.AOPOLABS_API_KEY_NAME)
+        api_key_id = agent_id = project_id = org_id = None
+        if api_key:
+            logger.info(
+                "api key found in header", extra={"api_key": api_key[:4] + "..." + api_key[-4:]}
+            )
+            try:
+                db_session = utils.create_db_session(config.DB_FULL_URL)
+                api_key_id, agent_id, project_id, org_id = (
+                    crud.projects.get_project_agent_org_by_api_key(db_session, api_key)
+                )
+                db_session.close()
+            except Exception as e:
+                logger.exception(
+                    f"Can't access database to query request context for API key: {e!s}"
+                )
+        # Set context variables from DB-derived values
+        context_vars = {
+            api_key_id_ctx_var: api_key_id,
+            agent_id_ctx_var: agent_id,
+            project_id_ctx_var: project_id,
+            org_id_ctx_var: org_id,
+        }
+
+        for var, value in context_vars.items():
+            if value:
+                var.set(value)
 
         request_log_data = {
-            "method": request.method,
+            "schema": request.url.scheme,
+            "http_version": request.scope.get("http_version", "unknown"),
+            "http_method": request.method,
             "url": str(request.url),
-            "query_params": dict(request.query_params),
+            "url_path": request.url.path,
+            "url_query_params": dict(request.query_params),
             "client_ip": self._get_client_ip(request),
             "user_agent": request.headers.get("User-Agent", "unknown"),
-            "x-forwarded-proto": request.headers.get("X-Forwarded-Proto", "unknown"),
+            "x_forwarded_proto": request.headers.get("X-Forwarded-Proto", "unknown"),
         }
         logger.info("received request", extra=request_log_data)
 
@@ -68,11 +110,3 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
 
         else:
             return request.client.host if request.client else "unknown"
-
-
-class RequestIDLogFilter(logging.Filter):
-    """Logging filter that injects the current request ID into every log record."""
-
-    def filter(self, record: logging.LogRecord) -> bool:
-        record.__dict__["request_id"] = request_id_ctx_var.get()
-        return True
