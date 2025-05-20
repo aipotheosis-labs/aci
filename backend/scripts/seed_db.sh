@@ -57,46 +57,28 @@ create_mock_secrets() {
   local app_json="${app_dir}app.json"
   local app_name=$(basename "$app_dir")
 
-  if [ "$USE_MOCK" = true ] && grep -q "oauth2" "$app_json"; then
-    # Extract client_id and client_secret variable names from app.json
-    local client_id_var=$(grep -o '"client_id": *"[^{]*{{ *[^}]*}}' "$app_json" | sed 's/.*{{ *\([^}]*\) *}}.*/\1/' | tr -d ' ')
-    local client_secret_var=$(grep -o '"client_secret": *"[^{]*{{ *[^}]*}}' "$app_json" | sed 's/.*{{ *\([^}]*\) *}}.*/\1/' | tr -d ' ')
+  local client_id_var=$(grep -o '"client_id": *"[^{]*{{ *[^}]*}}' "$app_json" | sed 's/.*{{ *\([^}]*\) *}}.*/\1/' | tr -d ' ')
+  local client_secret_var=$(grep -o '"client_secret": *"[^{]*{{ *[^}]*}}' "$app_json" | sed 's/.*{{ *\([^}]*\) *}}.*/\1/' | tr -d ' ')
 
-    if [ -n "$client_id_var" ] && [ -n "$client_secret_var" ]; then
-      temp_oauth2_secrets_file=$(mktemp)
-      temp_files+=("$temp_oauth2_secrets_file")
-      cat > "$temp_oauth2_secrets_file" <<EOF
-{
+  if [ -n "$client_id_var" ] && [ -n "$client_secret_var" ]; then
+    temp_oauth2_secrets_file=$(mktemp)
+    temp_files+=("$temp_oauth2_secrets_file")
+    cat > "$temp_oauth2_secrets_file" <<EOF
+    {
   "${client_id_var}": "mock_client_id_${app_name}",
   "${client_secret_var}": "mock_client_secret_${app_name}"
-}
+    }
 EOF
-        echo "$temp_oauth2_secrets_file"
-      else
-        # Use existing secrets file
-        echo "$secrets_file"
-      fi
-    else
-      echo "Warning: Could not find client_id or client_secret variables in $app_json"
+    echo "$temp_oauth2_secrets_file"
   fi
 }
 
 seed_test_apps() {
-  # Create a temporary file
-  temp_oauth2_secrets_file=$(mktemp)
-  temp_files+=("$temp_oauth2_secrets_file")
-
-  # Add content to the temporary file
-  cat > "$temp_oauth2_secrets_file" <<EOF
-    {
-      "AIPOLABS_GMAIL_CLIENT_ID": "dummy_gmail_client_id",
-      "AIPOLABS_GMAIL_CLIENT_SECRET": "dummy_gmail_client_secret"
-    }
-EOF
+  gmail_secrets_file="$(create_mock_secrets "./apps/gmail/")"
 
   python -m aci.cli upsert-app --app-file "./apps/brave_search/app.json" --skip-dry-run
   python -m aci.cli upsert-app --app-file "./apps/hackernews/app.json" --skip-dry-run
-  python -m aci.cli upsert-app --app-file "./apps/gmail/app.json" --secrets-file "$temp_oauth2_secrets_file" --skip-dry-run
+  python -m aci.cli upsert-app --app-file "./apps/gmail/app.json" --secrets-file "$gmail_secrets_file" --skip-dry-run
 
   python -m aci.cli upsert-functions --functions-file "./apps/brave_search/functions.json" --skip-dry-run
   python -m aci.cli upsert-functions --functions-file "./apps/hackernews/functions.json" --skip-dry-run
@@ -107,7 +89,12 @@ seed_all_apps() {
   # Seed the database with Apps
   for app_dir in ./apps/*/; do
     app_file="${app_dir}app.json"
-    secrets_file="$(create_mock_secrets "$app_dir")"
+
+    if [ "$USE_MOCK" = true ]; then
+      secrets_file="$(create_mock_secrets "$app_dir")"
+    else
+      secrets_file="${app_dir}.app.secrets.json"
+    fi
 
     # Check if secrets file exists and construct command accordingly
     if [ -f "$secrets_file" ]; then
