@@ -13,12 +13,12 @@ import { RowSelectionState } from "@tanstack/react-table";
 import { Agent } from "@/lib/types/project";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { updateAgent } from "@/lib/api/agent";
-import { getApiKey } from "@/lib/api/util";
+
 import {
-  createAPILinkedAccount,
-  createNoAuthLinkedAccount,
-  getOauth2LinkURL,
-} from "@/lib/api/linkedaccount";
+  useCreateAPILinkedAccount,
+  useCreateNoAuthLinkedAccount,
+  useGetOauth2LinkURL,
+} from "@/hooks/use-linked-account";
 
 // import sub components
 import { Stepper } from "@/components/apps/configure-app/stepper";
@@ -81,7 +81,24 @@ export function ConfigureApp({
   const [selectedAgentIds, setSelectedAgentIds] = useState<RowSelectionState>(
     {},
   );
-  const [submitLoading, setSubmitLoading] = useState(false);
+
+  const {
+    mutateAsync: createAPILinkedAccount,
+    isPending: isCreatingAPILinkedAccount,
+  } = useCreateAPILinkedAccount();
+  const {
+    mutateAsync: createNoAuthLinkedAccount,
+    isPending: isCreatingNoAuthLinkedAccount,
+  } = useCreateNoAuthLinkedAccount();
+  const { mutateAsync: getOauth2LinkURL, isPending: isGettingOauth2LinkURL } =
+    useGetOauth2LinkURL();
+
+  const [manualLoading, setManualLoading] = useState(false);
+  const isLoading =
+    manualLoading ||
+    isCreatingAPILinkedAccount ||
+    isCreatingNoAuthLinkedAccount ||
+    isGettingOauth2LinkURL;
 
   // security scheme
   const [security_scheme, setSelectedSecurityScheme] = useState<string>("");
@@ -144,7 +161,7 @@ export function ConfigureApp({
     useACIDevOAuth2: boolean,
   ) => {
     setSelectedSecurityScheme(values.security_scheme);
-    setSubmitLoading(true);
+    setManualLoading(true);
 
     try {
       let security_scheme_overrides = undefined;
@@ -174,7 +191,7 @@ export function ConfigureApp({
       console.error("Failed to configure app:", error);
       toast.error("Failed to configure app. Please try again.");
     } finally {
-      setSubmitLoading(false);
+      setManualLoading(false);
     }
   };
 
@@ -222,7 +239,7 @@ export function ConfigureApp({
     }
 
     try {
-      setSubmitLoading(true);
+      setManualLoading(true);
 
       // Set auth type for form validation
       linkedAccountForm.setValue("_authType", security_scheme);
@@ -230,7 +247,7 @@ export function ConfigureApp({
       // validate form
       await linkedAccountForm.trigger();
       if (!linkedAccountForm.formState.isValid) {
-        setSubmitLoading(false);
+        setManualLoading(false);
         return;
       }
 
@@ -261,7 +278,7 @@ export function ConfigureApp({
       console.error("Error adding linked account:", error);
       toast.error("add linked account failed");
     } finally {
-      setSubmitLoading(false);
+      setManualLoading(false);
     }
   };
 
@@ -275,18 +292,11 @@ export function ConfigureApp({
       throw new Error("no app selected");
     }
 
-    const apiKey = getApiKey(activeProject);
-
-    if (afterOAuth2LinkRedirectURL === undefined) {
-      return await getOauth2LinkURL(appName, linkedAccountOwnerId, apiKey);
-    } else {
-      return await getOauth2LinkURL(
-        appName,
-        linkedAccountOwnerId,
-        apiKey,
-        afterOAuth2LinkRedirectURL,
-      );
-    }
+    return await getOauth2LinkURL({
+      appName,
+      linkedAccountOwnerId,
+      afterOAuth2LinkRedirectURL,
+    });
   };
 
   const copyOAuth2LinkURL = async (
@@ -350,15 +360,13 @@ export function ConfigureApp({
       throw new Error("no app selected");
     }
 
-    const apiKey = getApiKey(activeProject);
-
     try {
-      await createAPILinkedAccount(
+      await createAPILinkedAccount({
         appName,
         linkedAccountOwnerId,
         linkedAPIKey,
-        apiKey,
-      );
+      });
+
       toast.success("account linked successfully");
     } catch (error) {
       console.error("Error linking API account:", error);
@@ -374,10 +382,12 @@ export function ConfigureApp({
       throw new Error("no app selected");
     }
 
-    const apiKey = getApiKey(activeProject);
-
     try {
-      await createNoAuthLinkedAccount(appName, linkedAccountOwnerId, apiKey);
+      await createNoAuthLinkedAccount({
+        appName,
+        linkedAccountOwnerId,
+      });
+
       toast.success("account linked successfully");
     } catch (error) {
       console.error("Error linking no auth account:", error);
@@ -417,7 +427,7 @@ export function ConfigureApp({
               supported_security_schemes={supported_security_schemes}
               onNext={handleConfigureAppSubmit}
               name={name}
-              isLoading={submitLoading}
+              isLoading={isLoading}
             />
           )}
 
@@ -427,7 +437,7 @@ export function ConfigureApp({
               rowSelection={selectedAgentIds}
               onRowSelectionChange={setSelectedAgentIds}
               onNext={handleAgentSelectionSubmit}
-              isLoading={submitLoading}
+              isLoading={isLoading}
             />
           )}
 
@@ -436,7 +446,7 @@ export function ConfigureApp({
               form={linkedAccountForm}
               authType={security_scheme}
               onSubmit={handleLinkedAccountSubmit}
-              isLoading={submitLoading}
+              isLoading={isLoading}
               setCurrentStep={setCurrentStep}
               onClose={() => setOpen(false)}
             />

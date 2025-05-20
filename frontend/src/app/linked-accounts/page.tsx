@@ -6,12 +6,6 @@ import { Button } from "@/components/ui/button";
 import { IdDisplay } from "@/components/apps/id-display";
 import { GoTrash } from "react-icons/go";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { getApiKey } from "@/lib/api/util";
-import {
-  getAllLinkedAccounts,
-  deleteLinkedAccount,
-  updateLinkedAccount,
-} from "@/lib/api/linkedaccount";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,19 +29,26 @@ import { formatToLocalTime } from "@/utils/time";
 import { ArrowUpDown } from "lucide-react";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
-const columnHelper = createColumnHelper<TableData>();
+import {
+  useLinkedAccounts,
+  useDeleteLinkedAccount,
+  useUpdateLinkedAccount,
+} from "@/hooks/use-linked-account";
 import { useApps } from "@/hooks/use-app";
 import { useAppConfigs } from "@/hooks/use-app-config";
 
+const columnHelper = createColumnHelper<TableData>();
 type TableData = LinkedAccount & { logo: string };
 
 export default function LinkedAccountsPage() {
   const { activeProject } = useMetaInfo();
-  const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
+  const { data: linkedAccounts = [], isPending: isLinkedAccountsPending } =
+    useLinkedAccounts();
   const { data: appConfigs = [], isPending: isConfigsPending } =
     useAppConfigs();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const { data: apps, isPending: isAppsPending, isError } = useApps();
+  const { mutateAsync: deleteLinkedAccount } = useDeleteLinkedAccount();
+  const { mutateAsync: updateLinkedAccount } = useUpdateLinkedAccount();
   const [appsMap, setAppsMap] = useState<Record<string, App>>({});
 
   const loadAppMaps = useCallback(async () => {
@@ -89,36 +90,13 @@ export default function LinkedAccountsPage() {
     }));
   }, [linkedAccounts, appsMap]);
 
-  const refreshLinkedAccounts = useCallback(
-    async (silent: boolean = false) => {
-      try {
-        if (!silent) {
-          setIsLoading(true);
-        }
-
-        const apiKey = getApiKey(activeProject);
-        const linkedAccounts = await getAllLinkedAccounts(apiKey);
-        setLinkedAccounts(linkedAccounts);
-      } catch (error) {
-        console.error("Failed to load linked accounts:", error);
-        toast.error("Failed to load linked accounts");
-      } finally {
-        if (!silent) {
-          setIsLoading(false);
-        }
-      }
-    },
-    [activeProject],
-  );
-
   const toggleAccountStatus = useCallback(
     async (accountId: string, newStatus: boolean): Promise<boolean> => {
       try {
-        const apiKey = getApiKey(activeProject);
-
-        await updateLinkedAccount(accountId, apiKey, newStatus);
-
-        await refreshLinkedAccounts(true);
+        await updateLinkedAccount({
+          linkedAccountId: accountId,
+          enabled: newStatus,
+        });
 
         return true;
       } catch (error) {
@@ -127,18 +105,8 @@ export default function LinkedAccountsPage() {
         return false;
       }
     },
-    [activeProject, refreshLinkedAccounts],
+    [updateLinkedAccount],
   );
-
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-      await refreshLinkedAccounts(true);
-      setIsLoading(false);
-    };
-
-    loadData();
-  }, [activeProject, refreshLinkedAccounts]);
 
   useEffect(() => {
     if (linkedAccounts.length > 0) {
@@ -309,11 +277,9 @@ export default function LinkedAccountsPage() {
                           console.warn("No active project");
                           return;
                         }
-                        const apiKey = getApiKey(activeProject);
-
-                        await deleteLinkedAccount(account.id, apiKey);
-
-                        refreshLinkedAccounts(true);
+                        await deleteLinkedAccount({
+                          linkedAccountId: account.id,
+                        });
 
                         toast.success(
                           `Linked account ${account.linked_account_owner_id} deleted`,
@@ -334,9 +300,10 @@ export default function LinkedAccountsPage() {
         enableGlobalFilter: false,
       }),
     ] as ColumnDef<TableData>[];
-  }, [toggleAccountStatus, refreshLinkedAccounts, activeProject]);
+  }, [toggleAccountStatus, deleteLinkedAccount, activeProject]);
 
-  const isPageLoading = isLoading || isAppsPending || isConfigsPending;
+  const isPageLoading =
+    isLinkedAccountsPending || isAppsPending || isConfigsPending;
 
   return (
     <div>
@@ -357,7 +324,6 @@ export default function LinkedAccountsPage() {
                   apps.find((app) => app.name === config.app_name)
                     ?.supported_security_schemes || {},
               }))}
-              updateLinkedAccounts={() => refreshLinkedAccounts(true)}
             />
           )}
         </div>
