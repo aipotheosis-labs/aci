@@ -215,6 +215,7 @@ export function ConfigureApp({
           data: {
             allowed_apps: Array.from(allowedApps),
           },
+          noreload: true,
         });
       }
       toast.success("agents updated successfully");

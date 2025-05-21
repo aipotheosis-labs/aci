@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -22,6 +22,7 @@ import { useUpdateAgent } from "@/hooks/use-agent";
 import { toast } from "sonner";
 import { useApps } from "@/hooks/use-app";
 import { useAppConfigs } from "@/hooks/use-app-config";
+import { useMetaInfo } from "@/components/context/metainfo";
 
 interface AgentInstructionFilterFormProps {
   children: React.ReactNode;
@@ -37,6 +38,7 @@ export function AgentInstructionFilterForm({
   allowedApps = [],
 }: AgentInstructionFilterFormProps) {
   const [open, setOpen] = useState(false);
+  const { reloadActiveProject } = useMetaInfo();
   const {
     data: appConfigs = [],
     isPending: isConfigsPending,
@@ -188,8 +190,18 @@ export function AgentInstructionFilterForm({
     allowedApps.includes(config.app_name),
   );
 
+  const handleDialogOpenChange = useCallback(
+    (isOpen: boolean) => {
+      setOpen(isOpen);
+      if (!isOpen) {
+        reloadActiveProject();
+      }
+    },
+    [reloadActiveProject],
+  );
+
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="max-w-[800px] max-h-[80vh] overflow-y-auto">
         <DialogHeader>

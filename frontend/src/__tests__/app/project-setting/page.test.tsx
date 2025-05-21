@@ -106,7 +106,6 @@ describe("ProjectSettingPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
 
-    // 在每次测试前重置QueryClient
     queryClient.clear();
 
     // Mock MetaInfo context
