@@ -117,6 +117,12 @@ class EncryptedSecurityCredentials(TypeDecorator[dict]):
                     raw_token_response_str = json.dumps(raw_token_response)
                     encrypted_value["raw_token_response"] = _encrypt_value(raw_token_response_str)
 
+            # HTTPBasicSchemeCredentials
+            elif "password" in encrypted_value:
+                password = encrypted_value.get("password")
+                if isinstance(password, str):
+                    encrypted_value["password"] = _encrypt_value(password)
+
             # NoAuthSchemeCredentials (empty dict) - do nothing
 
             return encrypted_value
@@ -150,6 +156,12 @@ class EncryptedSecurityCredentials(TypeDecorator[dict]):
                 if isinstance(raw_token_response_b64, str):
                     decrypted_str = _decrypt_value(raw_token_response_b64)
                     decrypted_value["raw_token_response"] = json.loads(decrypted_str)
+
+            # HTTPBasicSchemeCredentials
+            elif "password" in decrypted_value:
+                password_b64 = decrypted_value.get("password")
+                if isinstance(password_b64, str):
+                    decrypted_value["password"] = _decrypt_value(password_b64)
 
             # NoAuthSchemeCredentials (empty dict) - do nothing
 

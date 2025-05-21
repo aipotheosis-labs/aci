@@ -7,6 +7,8 @@ from aci.common.schemas.function import FunctionExecutionResult
 from aci.common.schemas.security_scheme import (
     APIKeyScheme,
     APIKeySchemeCredentials,
+    HTTPBasicScheme,
+    HTTPBasicSchemeCredentials,
     NoAuthScheme,
     NoAuthSchemeCredentials,
     OAuth2Scheme,
@@ -27,9 +29,10 @@ class AppConnectorBase(ABC):
     def __init__(
         self,
         linked_account: LinkedAccount,
-        security_scheme: OAuth2Scheme | APIKeyScheme | NoAuthScheme,
+        security_scheme: OAuth2Scheme | APIKeyScheme | HTTPBasicScheme | NoAuthScheme,
         security_credentials: OAuth2SchemeCredentials
         | APIKeySchemeCredentials
+        | HTTPBasicSchemeCredentials
         | NoAuthSchemeCredentials,
     ):
         self.linked_account = linked_account

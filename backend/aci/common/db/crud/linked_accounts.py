@@ -11,6 +11,7 @@ from aci.common.logging_setup import get_logger
 from aci.common.schemas.linked_accounts import LinkedAccountUpdate
 from aci.common.schemas.security_scheme import (
     APIKeySchemeCredentials,
+    HTTPBasicSchemeCredentials,
     NoAuthSchemeCredentials,
     OAuth2SchemeCredentials,
 )
@@ -85,6 +86,7 @@ def create_linked_account(
     security_scheme: SecurityScheme,
     security_credentials: OAuth2SchemeCredentials
     | APIKeySchemeCredentials
+    | HTTPBasicSchemeCredentials
     | NoAuthSchemeCredentials
     | None = None,
     enabled: bool = True,
@@ -115,6 +117,7 @@ def update_linked_account_credentials(
     linked_account: LinkedAccount,
     security_credentials: OAuth2SchemeCredentials
     | APIKeySchemeCredentials
+    | HTTPBasicSchemeCredentials
     | NoAuthSchemeCredentials,
 ) -> LinkedAccount:
     """

@@ -101,6 +101,25 @@ class OAuth2SchemeOverride(BaseModel):
     # TODO: will support "scope" and "redirect_uri" in the future, both will be optional
 
 
+class HTTPBasicScheme(BaseModel):
+    location: HttpLocation = Field(
+        ...,
+        description="The location of the HTTP Basic credentials in the request, e.g., 'header'",
+    )
+    name: str = Field(
+        ...,
+        description="The name of the HTTP Basic credentials in the request, e.g., 'Authorization'",
+    )
+    prefix: str | None = Field(
+        default=None,
+        description="The prefix of the HTTP Basic credentials in the request, e.g., 'Basic'. If None, no prefix will be used.",
+    )
+
+
+class HTTPBasicSchemePublic(BaseModel):
+    pass
+
+
 class NoAuthScheme(BaseModel, extra="forbid"):
     """
     model for security scheme that has no authentication.
@@ -147,6 +166,17 @@ class OAuth2SchemeCredentials(BaseModel):
     raw_token_response: dict | None = None
 
 
+class HTTPBasicSchemeCredentials(BaseModel):
+    """
+    Credentials for HTTP Basic scheme
+    """
+
+    # TODO: there may be more fields for http basic scheme in the future,
+    # e.g., "domain", but we will add them as needed.
+    username: str
+    password: str
+
+
 class NoAuthSchemeCredentials(BaseModel, extra="forbid"):
     """
     Credentials for no auth scheme
@@ -165,6 +195,7 @@ class SecuritySchemesPublic(BaseModel):
 
     api_key: APIKeySchemePublic | None = None
     oauth2: OAuth2SchemePublic | None = None
+    http_basic: HTTPBasicSchemePublic | None = None
     no_auth: NoAuthSchemePublic | None = None
 
 
@@ -177,5 +208,11 @@ class SecuritySchemeOverrides(BaseModel, extra="forbid"):
     oauth2: OAuth2SchemeOverride | None = None
 
 
-TScheme = TypeVar("TScheme", APIKeyScheme, OAuth2Scheme, NoAuthScheme)
-TCred = TypeVar("TCred", APIKeySchemeCredentials, OAuth2SchemeCredentials, NoAuthSchemeCredentials)
+TScheme = TypeVar("TScheme", APIKeyScheme, OAuth2Scheme, NoAuthScheme, HTTPBasicScheme)
+TCred = TypeVar(
+    "TCred",
+    APIKeySchemeCredentials,
+    OAuth2SchemeCredentials,
+    HTTPBasicSchemeCredentials,
+    NoAuthSchemeCredentials,
+)

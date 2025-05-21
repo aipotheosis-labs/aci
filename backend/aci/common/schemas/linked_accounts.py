@@ -19,6 +19,11 @@ class LinkedAccountAPIKeyCreate(LinkedAccountCreateBase):
     api_key: str
 
 
+class LinkedAccountHTTPBasicCreate(LinkedAccountCreateBase):
+    username: str
+    password: str
+
+
 class LinkedAccountDefaultCreate(LinkedAccountCreateBase):
     pass
 

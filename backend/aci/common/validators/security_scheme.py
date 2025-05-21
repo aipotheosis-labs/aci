@@ -2,6 +2,7 @@ from aci.common.enums import SecurityScheme
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.security_scheme import (
     APIKeySchemeCredentials,
+    HTTPBasicSchemeCredentials,
     NoAuthSchemeCredentials,
     OAuth2SchemeCredentials,
 )
@@ -13,11 +14,13 @@ def validate_scheme_and_credentials_type_match(
     security_scheme: SecurityScheme,
     security_credentials: OAuth2SchemeCredentials
     | APIKeySchemeCredentials
+    | HTTPBasicSchemeCredentials
     | NoAuthSchemeCredentials,
 ) -> None:
     scheme_to_credentials = {
         SecurityScheme.OAUTH2: OAuth2SchemeCredentials,
         SecurityScheme.API_KEY: APIKeySchemeCredentials,
+        SecurityScheme.HTTP_BASIC: HTTPBasicSchemeCredentials,
         SecurityScheme.NO_AUTH: NoAuthSchemeCredentials,
     }
 
