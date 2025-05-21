@@ -37,19 +37,21 @@ export function AgentInstructionFilterForm({
   allowedApps = [],
 }: AgentInstructionFilterFormProps) {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const { data: appConfigs = [], isPending: isConfigsPending } =
-    useAppConfigs();
-  const { data: apps, isPending, isError } = useApps();
+  const {
+    data: appConfigs = [],
+    isPending: isConfigsPending,
+    isError: isConfigsError,
+  } = useAppConfigs();
+  const {
+    data: apps,
+    isPending: isAppsPending,
+    isError: isAppsError,
+  } = useApps();
   const [instructions, setInstructions] =
     useState<Record<string, string>>(initialInstructions);
   const { mutateAsync: updateAgentMutation, isPending: isUpdatingAgent } =
     useUpdateAgent();
 
-  useEffect(() => {
-    if (!open) return;
-    setLoading(isPending || isConfigsPending);
-  }, [open, isPending, isConfigsPending]);
   // Initialize instruction data when dialog opens
   useEffect(() => {
     if (open && initialInstructions) {
@@ -196,7 +198,7 @@ export function AgentInstructionFilterForm({
 
         <Separator className="my-4" />
 
-        {loading || isPending || isError ? (
+        {isAppsPending || isConfigsPending || isAppsError || isConfigsError ? (
           <div className="flex justify-center py-6">
             <p>Loading...</p>
           </div>

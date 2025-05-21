@@ -44,7 +44,7 @@ import {
   useCreateAPILinkedAccount,
   useCreateNoAuthLinkedAccount,
   useGetOauth2LinkURL,
-} from "@/hooks/use-linkedaccount";
+} from "@/hooks/use-linked-account";
 
 const formSchema = z
   .object({
@@ -80,17 +80,14 @@ export interface AppInfo {
 }
 interface AddAccountProps {
   appInfos: AppInfo[];
-  updateLinkedAccounts: () => void;
 }
 
-export function AddAccountForm({
-  appInfos,
-  updateLinkedAccounts,
-}: AddAccountProps) {
+export function AddAccountForm({ appInfos }: AddAccountProps) {
   const [open, setOpen] = useState(false);
 
   const { mutateAsync: createApiLinkedAccount } = useCreateAPILinkedAccount();
-  const { mutateAsync: createNoAuth } = useCreateNoAuthLinkedAccount();
+  const { mutateAsync: createNoAuthLinkedAccount } =
+    useCreateNoAuthLinkedAccount();
   const { mutateAsync: getOauth2URL } = useGetOauth2LinkURL();
   if (appInfos.length === 0) {
     console.error("No app infos provided");
@@ -204,7 +201,6 @@ export function AddAccountForm({
       toast.success("Account linked successfully");
       form.reset();
       setOpen(false);
-      updateLinkedAccounts();
     } catch (error) {
       console.error("Error linking API account:", error);
       toast.error("Failed to link account");
@@ -220,7 +216,7 @@ export function AddAccountForm({
     }
 
     try {
-      await createNoAuth({
+      await createNoAuthLinkedAccount({
         appName,
         linkedAccountOwnerId,
       });
@@ -228,7 +224,6 @@ export function AddAccountForm({
       toast.success("Account linked successfully");
       form.reset();
       setOpen(false);
-      updateLinkedAccounts();
     } catch (error) {
       console.error("Error linking no auth account:", error);
       toast.error("Failed to link account");

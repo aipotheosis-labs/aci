@@ -33,7 +33,7 @@ import {
   useLinkedAccounts,
   useDeleteLinkedAccount,
   useUpdateLinkedAccount,
-} from "@/hooks/use-linkedaccount";
+} from "@/hooks/use-linked-account";
 import { useApps } from "@/hooks/use-app";
 import { useAppConfigs } from "@/hooks/use-app-config";
 
@@ -42,13 +42,13 @@ type TableData = LinkedAccount & { logo: string };
 
 export default function LinkedAccountsPage() {
   const { activeProject } = useMetaInfo();
-  const { data: linkedAccounts = [], isLoading: isAccountsLoading } =
+  const { data: linkedAccounts = [], isPending: isLinkedAccountsPending } =
     useLinkedAccounts();
   const { data: appConfigs = [], isPending: isConfigsPending } =
     useAppConfigs();
-  const { data: apps = [], isPending: isAppsLoading, isError } = useApps();
-  const { mutateAsync: deleteAccount } = useDeleteLinkedAccount();
-  const { mutateAsync: updateAccount } = useUpdateLinkedAccount();
+  const { data: apps, isPending: isAppsPending, isError } = useApps();
+  const { mutateAsync: deleteLinkedAccount } = useDeleteLinkedAccount();
+  const { mutateAsync: updateLinkedAccount } = useUpdateLinkedAccount();
   const [appsMap, setAppsMap] = useState<Record<string, App>>({});
 
   const loadAppMaps = useCallback(async () => {
@@ -93,7 +93,7 @@ export default function LinkedAccountsPage() {
   const toggleAccountStatus = useCallback(
     async (accountId: string, newStatus: boolean): Promise<boolean> => {
       try {
-        await updateAccount({
+        await updateLinkedAccount({
           linkedAccountId: accountId,
           enabled: newStatus,
         });
@@ -105,7 +105,7 @@ export default function LinkedAccountsPage() {
         return false;
       }
     },
-    [updateAccount],
+    [updateLinkedAccount],
   );
 
   useEffect(() => {
@@ -277,7 +277,7 @@ export default function LinkedAccountsPage() {
                           console.warn("No active project");
                           return;
                         }
-                        await deleteAccount({
+                        await deleteLinkedAccount({
                           linkedAccountId: account.id,
                         });
 
@@ -300,9 +300,10 @@ export default function LinkedAccountsPage() {
         enableGlobalFilter: false,
       }),
     ] as ColumnDef<TableData>[];
-  }, [toggleAccountStatus, deleteAccount, activeProject]);
+  }, [toggleAccountStatus, deleteLinkedAccount, activeProject]);
 
-  const isPageLoading = isAccountsLoading || isAppsLoading || isConfigsPending;
+  const isPageLoading =
+    isLinkedAccountsPending || isAppsPending || isConfigsPending;
 
   return (
     <div>
@@ -323,7 +324,6 @@ export default function LinkedAccountsPage() {
                   apps.find((app) => app.name === config.app_name)
                     ?.supported_security_schemes || {},
               }))}
-              updateLinkedAccounts={() => {}}
             />
           )}
         </div>

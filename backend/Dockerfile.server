@@ -4,12 +4,10 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 WORKDIR /workdir
 
 COPY ./pyproject.toml ./uv.lock /workdir/
-RUN uv sync --all-extras --no-install-project
+RUN uv sync --no-install-project
 
 ENV PATH="/workdir/.venv/bin:$PATH"
-
-# Check if PYTHONPATH exists and append /workdir, otherwise set it to /workdir
-RUN if [ -z "$PYTHONPATH" ]; then export PYTHONPATH=/workdir; else export PYTHONPATH=/workdir:$PYTHONPATH; fi
+ENV PYTHONPATH=/workdir:${PYTHONPATH}
 
 # .env files will be skipped by default specified in .dockerignore
 COPY ./aci/server /workdir/aci/server

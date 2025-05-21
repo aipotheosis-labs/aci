@@ -744,7 +744,7 @@ def dummy_linked_account_no_auth_mock_app_connector_project_1(
     yield dummy_linked_account_no_auth_mock_app_connector_project_1
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="function", autouse=True)
 def free_plan(db_session: Session) -> Plan:
     plan = crud.plans.create(
         db=db_session,

@@ -80,6 +80,7 @@ services:
       - ./aci:/workdir/aci
       - ./apps:/workdir/apps
       - ./scripts:/workdir/scripts
+      - ./evals:/workdir/evals
       - ./alembic.ini:/workdir/alembic.ini
       # Mocks out the propelauth_fastapi module in server container to bypass token validation in local development
       - ./mock/propelauth_fastapi_mock.py:/workdir/.venv/lib/python3.12/site-packages/propelauth_fastapi/__init__.py
