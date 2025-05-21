@@ -52,5 +52,39 @@
             "visible": [],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "SHAREPOINT__GET_SITE_BY_ID",
+        "description": "Get a site by its ID.",
+        "tags": ["sites"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/sites/{site_id}",
+            "server_url": "https://graph.microsoft.com/v1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "the http path parameters",
+                    "properties": {
+                        "site_id": {
+                            "type": "string",
+                            "description": "The ID of the site to get. e.g., 'contoso.sharepoint.com,2C712604-1370-44E7-A1F5-426573FDA80A,2D2244C3-251A-49EA-93A8-39E1C3A060FE'"
+                        }
+                    },
+                    "required": ["site_id"],
+                    "visible": ["site_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
     }
 ]
