@@ -18,7 +18,7 @@ The backend component of ACI.dev provides the server infrastructure, API endpoin
     - [Running Tests](#running-tests)
   - [Database Management](#database-management)
     - [Working with Migrations](#working-with-migrations)
-  - [PropelAuth Webhooks](#propelauth-webhooks)
+  - [PropelAuth Configuration](#propelauth-configuration)
   - [Stripe Webhooks](#stripe-webhooks)
   - [Admin CLI](#admin-cli)
   - [Running Evaluations](#running-evaluations)
