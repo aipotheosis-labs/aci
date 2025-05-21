@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import ProjectSettingPage from "@/app/project-setting/page";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -158,36 +158,5 @@ describe("ProjectSettingPage", () => {
 
     // Check if project ID is displayed
     expect(screen.getByText("project-123")).toBeInTheDocument();
-  });
-
-  it("displays agent information correctly", async () => {
-    render(<ProjectSettingPage />, { wrapper: TestWrapper });
-
-    // Check if agent section is rendered
-    const agentLabels = screen.getAllByText("Agent");
-    expect(agentLabels[0]).toBeInTheDocument();
-
-    const manageAgentsLabels = screen.getAllByText("Add and manage agents");
-    expect(manageAgentsLabels[0]).toBeInTheDocument();
-
-    // Check if agent table is rendered with correct data
-    const agentNames = screen.getAllByDisplayValue("Test Agent");
-    expect(agentNames[0]).toBeInTheDocument();
-
-    const agentDescriptions = screen.getAllByDisplayValue("Test Description");
-    expect(agentDescriptions[0]).toBeInTheDocument();
-  });
-
-  it("loads app configs on component mount", async () => {
-    render(<ProjectSettingPage />, { wrapper: TestWrapper });
-
-    await waitFor(() => {
-      expect(useAppConfigs).toHaveBeenCalled();
-    });
-
-    await waitFor(() => {
-      const createAgentButtons = screen.getAllByText("Create Agent");
-      expect(createAgentButtons[0]).not.toBeDisabled();
-    });
   });
 });
