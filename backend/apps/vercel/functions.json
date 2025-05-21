@@ -178,6 +178,10 @@
                             "type": "string",
                             "description": "Filter results by the full Repository URL."
                         },
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of."
+                        },
                         "slug": {
                             "type": "string",
                             "description": "The team slug to perform the request on behalf of a specific team."
