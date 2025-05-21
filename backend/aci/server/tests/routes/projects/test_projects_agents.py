@@ -194,12 +194,10 @@ def test_delete_agent(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    agent = crud.projects.get_agent_by_id(db_session, dummy_agent_1_with_no_apps_allowed.id)
+    agent = crud.agents.get_agent_by_id(db_session, dummy_agent_1_with_no_apps_allowed.id)
     assert agent is None, "agent should be deleted"
 
-    api_key = crud.projects.get_api_key_by_agent_id(
-        db_session, dummy_agent_1_with_no_apps_allowed.id
-    )
+    api_key = crud.agents.get_api_key_by_agent_id(db_session, dummy_agent_1_with_no_apps_allowed.id)
     assert api_key is None, "api key associated with agent should be deleted"
 
 

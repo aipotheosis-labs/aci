@@ -61,6 +61,11 @@ export const sidebarItems = [
     icon: RiLinkUnlinkM,
   },
   {
+    title: "Agents",
+    url: `/agents`,
+    icon: AiOutlineExperiment,
+  },
+  {
     title: "Agent Playground",
     url: `/playground`,
     icon: HiOutlineChatBubbleBottomCenterText,

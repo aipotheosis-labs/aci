@@ -79,7 +79,7 @@ def rename_app(
         )
 
         # Get agents that include this app in allowed_apps
-        agents = crud.projects.get_agents_whose_allowed_apps_contains(db_session, current_name)
+        agents = crud.agents.get_agents_whose_allowed_apps_contains(db_session, current_name)
 
         if not skip_dry_run:
             console.rule("[bold yellow]Dry run mode - no changes applied[/bold yellow]")
