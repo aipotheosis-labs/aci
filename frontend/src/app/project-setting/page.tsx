@@ -9,24 +9,54 @@ import { IdDisplay } from "@/components/apps/id-display";
 // import { RiTeamLine } from "react-icons/ri";
 import { MdAdd } from "react-icons/md";
 import { BsQuestionCircle } from "react-icons/bs";
+import { Check, Edit2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useCallback } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { useAgentsTableColumns } from "@/components/project/useAgentsTableColumns";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { Agent } from "@/lib/types/project";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { useAppConfigs } from "@/hooks/use-app-config";
+<<<<<<< HEAD
 import { useCreateAgent, useDeleteAgent } from "@/hooks/use-agent";
+=======
+import { updateProject } from "@/lib/api/project";
+>>>>>>> 302bb7f (Added support for multiple projects)
 
 export default function ProjectSettingPage() {
   const { activeProject } = useMetaInfo();
   const { data: appConfigs = [], isPending: isConfigsPending } =
     useAppConfigs();
+  const [projectName, setProjectName] = useState(activeProject.name);
+  const [isEditingName, setIsEditingName] = useState(false);
+
+  // Update state when active project changes
+  useEffect(() => {
+    setProjectName(activeProject.name);
+    setIsEditingName(false);
+  }, [activeProject]);
+
+  const handleSaveProjectName = async () => {
+    if (!projectName.trim()) {
+      toast.error("Project name cannot be empty");
+      return;
+    }
+
+    try {
+      await updateProject(accessToken, activeProject.id, projectName);
+      await reloadActiveProject();
+      setIsEditingName(false);
+      toast.success("Project name updated");
+    } catch (error) {
+      console.error("Failed to update project name:", error);
+      toast.error("Failed to update project name");
+    }
+  };
 
   const { mutateAsync: createAgentMutation } = useCreateAgent();
   const { mutateAsync: deleteAgentMutation } = useDeleteAgent();
@@ -76,12 +106,42 @@ export default function ProjectSettingPage() {
               Change the name of the project
             </p>
           </div>
-          <div>
-            <Input
-              defaultValue={activeProject.name}
-              className="w-96"
-              readOnly
-            />
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Input
+                value={projectName}
+                onChange={(e) => setProjectName(e.target.value)}
+                className="w-96"
+                disabled={!isEditingName}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSaveProjectName();
+                  } else if (e.key === "Escape") {
+                    setIsEditingName(false);
+                    setProjectName(activeProject.name);
+                  }
+                }}
+              />
+            </div>
+            {isEditingName ? (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleSaveProjectName}
+                className="h-8 w-8 p-0"
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setIsEditingName(true)}
+                className="h-8 w-8 p-0"
+              >
+                <Edit2 className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
 
