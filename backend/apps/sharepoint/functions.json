@@ -32,5 +32,25 @@
           "visible":  ["path"],
           "additionalProperties": false
         }
+    },
+    {
+        "name": "SHAREPOINT__GET_ROOT_SITE",
+        "description": "Get the root site of a SharePoint tenant.",
+        "tags": ["sites"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/sites/root",
+            "server_url": "https://graph.microsoft.com/v1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
     }
 ]
