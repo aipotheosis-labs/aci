@@ -36,18 +36,6 @@ dependencies = [
     "e2b-code-interpreter>=1.2.1",
 ]
 
-[project.optional-dependencies]
-eval = [
-    "datasets>=3.6.0",
-    "huggingface-hub>=0.31.2",
-    "pandas>=2.2.3",
-    "requests>=2.32.3",
-    "semver>=3.0.4",
-    "tenacity>=9.1.2",
-    "tqdm>=4.67.1",
-    "wandb>=0.16.4",
-]
-
 [dependency-groups]
 dev = [
     "pytest>=8.3.3,<9.0.0",
@@ -62,6 +50,14 @@ dev = [
     "google-api-python-client-stubs>=1.29.0,<2.0.0",
     "pandas-stubs>=2.2.3.250308",
     "types-tqdm>=4.67.0.20250513",
+    # eval dependencies
+    "datasets>=3.6.0",
+    "huggingface-hub>=0.31.2",
+    "pandas>=2.2.3",
+    "requests>=2.32.3",
+    "tenacity>=9.1.2",
+    "tqdm>=4.67.1",
+    "wandb>=0.16.4",
 ]
 
 

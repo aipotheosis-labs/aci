@@ -44,32 +44,27 @@ dependencies = [
     { name = "uvicorn", extra = ["standard"] },
 ]
 
-[package.optional-dependencies]
-eval = [
-    { name = "datasets" },
-    { name = "huggingface-hub" },
-    { name = "pandas" },
-    { name = "requests" },
-    { name = "semver" },
-    { name = "tenacity" },
-    { name = "tqdm" },
-    { name = "wandb" },
-]
-
 [package.dev-dependencies]
 dev = [
     { name = "alembic" },
+    { name = "datasets" },
     { name = "google-api-python-client-stubs" },
+    { name = "huggingface-hub" },
     { name = "mypy" },
+    { name = "pandas" },
     { name = "pandas-stubs" },
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-subtests" },
+    { name = "requests" },
     { name = "responses" },
     { name = "respx" },
     { name = "ruff" },
+    { name = "tenacity" },
+    { name = "tqdm" },
     { name = "types-jsonschema" },
     { name = "types-tqdm" },
+    { name = "wandb" },
 ]
 
 [package.metadata]
@@ -80,13 +75,11 @@ requires-dist = [
     { name = "boto3", specifier = ">=1.37.9,<2.0.0" },
     { name = "click", specifier = ">=8.1.7,<9.0.0" },
     { name = "constructs", specifier = ">=10.0.0,<11.0.0" },
-    { name = "datasets", marker = "extra == 'eval'", specifier = ">=3.6.0" },
     { name = "deepdiff", specifier = ">=8.2.0,<9.0.0" },
     { name = "e2b-code-interpreter", specifier = ">=1.2.1" },
     { name = "fastapi", extras = ["standard"], specifier = ">=0.115.0,<0.116.0" },
     { name = "google-api-python-client", specifier = ">=2.163.0,<3.0.0" },
     { name = "httpx", specifier = ">=0.27.2,<0.28.0" },
-    { name = "huggingface-hub", marker = "extra == 'eval'", specifier = ">=0.31.2" },
     { name = "itsdangerous", specifier = ">=2.2.0,<3.0.0" },
     { name = "jinja2", specifier = ">=3.1.5,<4.0.0" },
     { name = "jsonschema", specifier = ">=4.23.0,<5.0.0" },
@@ -94,40 +87,40 @@ requires-dist = [
     { name = "logfire", extras = ["fastapi", "sqlalchemy"], specifier = ">=3.6.4,<4.0.0" },
     { name = "openai", specifier = ">=1.72.0,<2.0.0" },
     { name = "openapi-spec-validator", specifier = ">=0.7.1,<0.8.0" },
-    { name = "pandas", marker = "extra == 'eval'", specifier = ">=2.2.3" },
     { name = "pgvector", specifier = ">=0.3.4,<0.4.0" },
     { name = "propelauth-fastapi", specifier = ">=4.2.5,<5.0.0" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.3,<4.0.0" },
     { name = "pydantic", specifier = ">=2.11.2,<3.0.0" },
     { name = "python-json-logger", specifier = ">=3.2.1,<4.0.0" },
-    { name = "requests", marker = "extra == 'eval'", specifier = ">=2.32.3" },
     { name = "rich", specifier = ">=13.9.4,<14.0.0" },
-    { name = "semver", marker = "extra == 'eval'", specifier = ">=3.0.4" },
     { name = "sentry-sdk", extras = ["fastapi"], specifier = ">=2.22.0,<3.0.0" },
     { name = "sqlalchemy", specifier = ">=2.0.35,<3.0.0" },
     { name = "stripe", specifier = ">=12.0.1" },
     { name = "svix", specifier = ">=1.63.1,<2.0.0" },
-    { name = "tenacity", marker = "extra == 'eval'", specifier = ">=9.1.2" },
-    { name = "tqdm", marker = "extra == 'eval'", specifier = ">=4.67.1" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.31.0,<0.32.0" },
-    { name = "wandb", marker = "extra == 'eval'", specifier = ">=0.16.4" },
 ]
-provides-extras = ["eval"]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "alembic", specifier = ">=1.13.3,<2.0.0" },
+    { name = "datasets", specifier = ">=3.6.0" },
     { name = "google-api-python-client-stubs", specifier = ">=1.29.0,<2.0.0" },
+    { name = "huggingface-hub", specifier = ">=0.31.2" },
     { name = "mypy", specifier = ">=1.11.2,<2.0.0" },
+    { name = "pandas", specifier = ">=2.2.3" },
     { name = "pandas-stubs", specifier = ">=2.2.3.250308" },
     { name = "pre-commit", specifier = ">=4.0.0,<5.0.0" },
     { name = "pytest", specifier = ">=8.3.3,<9.0.0" },
     { name = "pytest-subtests", specifier = ">=0.14.1,<0.15.0" },
+    { name = "requests", specifier = ">=2.32.3" },
     { name = "responses", specifier = ">=0.25.3,<0.26.0" },
     { name = "respx", specifier = ">=0.21.1,<0.22.0" },
     { name = "ruff", specifier = ">=0.9.9,<0.10.0" },
+    { name = "tenacity", specifier = ">=9.1.2" },
+    { name = "tqdm", specifier = ">=4.67.1" },
     { name = "types-jsonschema", specifier = ">=4.23.0,<5.0.0" },
     { name = "types-tqdm", specifier = ">=4.67.0.20250513" },
+    { name = "wandb", specifier = ">=0.16.4" },
 ]
 
 [[package]]
@@ -2421,16 +2414,16 @@ wheels = [
 
 [[package]]
 name = "rich-toolkit"
-version = "0.14.1"
+version = "0.14.6"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
     { name = "rich" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2e/ea/13945d58d556a28dfb0f774ad5c8af759527390e59505a40d164bf8ce1ce/rich_toolkit-0.14.1.tar.gz", hash = "sha256:9248e2d087bfc01f3e4c5c8987e05f7fa744d00dd22fa2be3aa6e50255790b3f", size = 104416 }
+sdist = { url = "https://files.pythonhosted.org/packages/f6/31/b6d055f291a660a7bcaec4bcc9457b9fef8ecb6293e527b1eef1840aefd4/rich_toolkit-0.14.6.tar.gz", hash = "sha256:9dbd40e83414b84e828bf899115fff8877ce5951b73175f44db142902f07645d", size = 110805 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/66/e8/61c5b12d1567fdba41a6775db12a090d88b8305424ee7c47259c70d33cb4/rich_toolkit-0.14.1-py3-none-any.whl", hash = "sha256:dc92c0117d752446d04fdc828dbca5873bcded213a091a5d3742a2beec2e6559", size = 24177 },
+    { url = "https://files.pythonhosted.org/packages/2e/3c/7a824c0514e87c61000583ac22c8321da6dc8e58a93d5f56e583482a2ee0/rich_toolkit-0.14.6-py3-none-any.whl", hash = "sha256:764f3a5f9e4b539ce805596863299e8982599514906dc5e3ccc2d390ef74c301", size = 24815 },
 ]
 
 [[package]]
@@ -2527,15 +2520,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/c4/2b/5c9562795c2eb2b5f63536961754760c25bf0f34af93d36aa28dea2fb303/s3transfer-0.11.5.tar.gz", hash = "sha256:8c8aad92784779ab8688a61aefff3e28e9ebdce43142808eaa3f0b0f402f68b7", size = 149107 }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/45/39/13402e323666d17850eca87e4cd6ecfcf9fd7809cac9efdcce10272fc29d/s3transfer-0.11.5-py3-none-any.whl", hash = "sha256:757af0f2ac150d3c75bc4177a32355c3862a98d20447b69a0161812992fe0bd4", size = 84782 },
-]
-
-[[package]]
-name = "semver"
-version = "3.0.4"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/72/d1/d3159231aec234a59dd7d601e9dd9fe96f3afff15efd33c1070019b26132/semver-3.0.4.tar.gz", hash = "sha256:afc7d8c584a5ed0a11033af086e8af226a9c0b206f313e0301f8dd7b6b589602", size = 269730 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/a6/24/4d91e05817e92e3a61c8a21e08fd0f390f5301f1c448b137c57c4bc6e543/semver-3.0.4-py3-none-any.whl", hash = "sha256:9c824d87ba7f7ab4a1890799cec8596f15c1241cb473404ea1cb0c55e4b04746", size = 17912 },
 ]
 
 [[package]]
@@ -2749,7 +2733,7 @@ wheels = [
 
 [[package]]
 name = "typer"
-version = "0.15.2"
+version = "0.15.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "click" },
@@ -2757,9 +2741,9 @@ dependencies = [
     { name = "shellingham" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8b/6f/3991f0f1c7fcb2df31aef28e0594d8d54b05393a0e4e34c65e475c2a5d41/typer-0.15.2.tar.gz", hash = "sha256:ab2fab47533a813c49fe1f16b1a370fd5819099c00b119e0633df65f22144ba5", size = 100711 }
+sdist = { url = "https://files.pythonhosted.org/packages/6c/89/c527e6c848739be8ceb5c44eb8208c52ea3515c6cf6406aa61932887bf58/typer-0.15.4.tar.gz", hash = "sha256:89507b104f9b6a0730354f27c39fae5b63ccd0c95b1ce1f1a6ba0cfd329997c3", size = 101559 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7f/fc/5b29fea8cee020515ca82cc68e3b8e1e34bb19a3535ad854cac9257b414c/typer-0.15.2-py3-none-any.whl", hash = "sha256:46a499c6107d645a9c13f7ee46c5d5096cae6f5fc57dd11eccbbb9ae3e44ddfc", size = 45061 },
+    { url = "https://files.pythonhosted.org/packages/c9/62/d4ba7afe2096d5659ec3db8b15d8665bdcb92a3c6ff0b95e99895b335a9c/typer-0.15.4-py3-none-any.whl", hash = "sha256:eb0651654dcdea706780c466cf06d8f174405a659ffff8f163cfbfee98c0e173", size = 45258 },
 ]
 
 [[package]]

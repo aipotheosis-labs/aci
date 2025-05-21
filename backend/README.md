@@ -390,12 +390,6 @@ docker compose exec runner python -m aci.cli create-app --app-file ./apps/brave_
 
 ## Running Evaluations
 
-First, sync the required packages for evaluations:
-
-```bash
-uv sync --extra eval
-```
-
 You will need to set up the following environment variables:
 
 ```bash
