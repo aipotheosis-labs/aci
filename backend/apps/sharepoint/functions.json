@@ -88,6 +88,44 @@
         }
     },
     {
+        "name": "SHAREPOINT__GET_SITE_BY_PATH",
+        "description": "retrieve a site based on server-relative URL path. Site collection hostname and Site path, relative to server hostname.",
+        "tags": ["sites"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/sites/{hostname}:/{relative_path}",
+            "server_url": "https://graph.microsoft.com/v1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "the http path parameters",
+                    "properties": {
+                        "hostname": {
+                            "type": "string",
+                            "description": "The hostname of the site to get. e.g., 'xxx.sharepoint.com'"
+                        },
+                        "relative_path": {
+                            "type": "string",
+                            "description": "The relative path of the site to get. e.g., '/sites/mySite'"
+                        }
+                    },
+                    "required": ["hostname", "relative_path"],
+                    "visible": ["hostname", "relative_path"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
         "name": "SHAREPOINT__LIST_SUBSITES_FOR_A_SITE",
         "description": "List all subsites for a site.",
         "tags": ["sites"],
