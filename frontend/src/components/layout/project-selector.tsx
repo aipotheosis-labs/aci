@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronsUpDown, Trash2, Edit2 } from "lucide-react";
+import { Check, ChevronsUpDown, Trash2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -225,7 +225,7 @@ export const ProjectSelector = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6 opacity-70 hover:opacity-100 text-destructive"
+                            className="h-6 w-6"
                             onClick={(e) => {
                               e.stopPropagation();
                               handleDeleteProject(option.value);
@@ -234,17 +234,6 @@ export const ProjectSelector = () => {
                             <Trash2 size={14} />
                           </Button>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 opacity-70 hover:opacity-100"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleEditProject(option.value, option.label);
-                          }}
-                        >
-                          <Edit2 size={14} />
-                        </Button>
                       </div>
                     </div>
                   )}
