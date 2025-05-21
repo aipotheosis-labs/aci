@@ -84,6 +84,40 @@ export async function createAPILinkedAccount(
   return linkedAccount;
 }
 
+export async function createHTTPBasicLinkedAccount(
+  appName: string,
+  linkedAccountOwnerId: string,
+  username: string,
+  password: string,
+  apiKey: string,
+): Promise<LinkedAccount> {
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/linked-accounts/http-basic`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-KEY": apiKey,
+      },
+      body: JSON.stringify({
+        app_name: appName,
+        linked_account_owner_id: linkedAccountOwnerId,
+        username,
+        password,
+      }),
+    },
+  );
+
+  if (!response.ok) {
+    throw new Error(
+      `Failed to create linked account: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  const linkedAccount = await response.json();
+  return linkedAccount;
+}
+
 export async function createNoAuthLinkedAccount(
   appName: string,
   linkedAccountOwnerId: string,

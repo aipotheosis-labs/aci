@@ -9,6 +9,7 @@ import {
   deleteLinkedAccount,
   updateLinkedAccount,
   getOauth2LinkURL,
+  createHTTPBasicLinkedAccount,
 } from "@/lib/api/linkedaccount";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { getApiKey } from "@/lib/api/util";
@@ -62,6 +63,34 @@ export const useCreateAPILinkedAccount = () => {
         apiKey,
       ),
 
+    onSuccess: () =>
+      queryClient.invalidateQueries({
+        queryKey: linkedAccountKeys.all(activeProject.id),
+      }),
+  });
+};
+
+type CreateHTTPBasicLinkedAccountParams = {
+  appName: string;
+  linkedAccountOwnerId: string;
+  username: string;
+  password: string;
+};
+
+export const useCreateHTTPBasicLinkedAccount = () => {
+  const queryClient = useQueryClient();
+  const { activeProject } = useMetaInfo();
+  const apiKey = getApiKey(activeProject);
+
+  return useMutation<LinkedAccount, Error, CreateHTTPBasicLinkedAccountParams>({
+    mutationFn: (params) =>
+      createHTTPBasicLinkedAccount(
+        params.appName,
+        params.linkedAccountOwnerId,
+        params.username,
+        params.password,
+        apiKey,
+      ),
     onSuccess: () =>
       queryClient.invalidateQueries({
         queryKey: linkedAccountKeys.all(activeProject.id),

@@ -42,6 +42,7 @@ import { useState } from "react";
 import Image from "next/image";
 import {
   useCreateAPILinkedAccount,
+  useCreateHTTPBasicLinkedAccount,
   useCreateNoAuthLinkedAccount,
   useGetOauth2LinkURL,
 } from "@/hooks/use-linked-account";
@@ -49,20 +50,36 @@ import {
 const formSchema = z
   .object({
     appName: z.string().min(1, "App name is required"),
-    authType: z.enum(["api_key", "oauth2", "no_auth"]),
+    authType: z.enum(["api_key", "oauth2", "no_auth", "http_basic"]),
     linkedAccountOwnerId: z.string().min(1, "Account owner ID is required"),
     apiKey: z.string().optional(),
+    username: z.string().optional(),
+    password: z.string().optional(),
   })
   .refine(
-    (data) => {
-      // If the current app uses api_key auth, then apiKey must be provided
-      return (
-        data.authType !== "api_key" || (data.apiKey && data.apiKey.length > 0)
-      );
-    },
+    (data) =>
+      data.authType !== "api_key" || (data.apiKey && data.apiKey.length > 0),
     {
       message: "API Key is required",
       path: ["apiKey"],
+    },
+  )
+  .refine(
+    (data) =>
+      data.authType !== "http_basic" ||
+      (data.username && data.username.length > 0),
+    {
+      message: "Username is required",
+      path: ["username"],
+    },
+  )
+  .refine(
+    (data) =>
+      data.authType !== "http_basic" ||
+      (data.password && data.password.length > 0),
+    {
+      message: "Password is required",
+      path: ["password"],
     },
   );
 
@@ -72,6 +89,7 @@ type FormValues = z.infer<typeof formSchema>;
 const FORM_SUBMIT_COPY_OAUTH2_LINK_URL = "copyOAuth2LinkURL";
 const FORM_SUBMIT_LINK_OAUTH2_ACCOUNT = "linkOAuth2";
 const FORM_SUBMIT_API_KEY = "apiKey";
+const FORM_SUBMIT_HTTP_BASIC = "httpBasic";
 const FORM_SUBMIT_NO_AUTH = "noAuth";
 export interface AppInfo {
   name: string;
@@ -86,6 +104,9 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
   const [open, setOpen] = useState(false);
 
   const { mutateAsync: createApiLinkedAccount } = useCreateAPILinkedAccount();
+  const { mutateAsync: createHTTPBasicLinkedAccount } =
+    useCreateHTTPBasicLinkedAccount();
+
   const { mutateAsync: createNoAuthLinkedAccount } =
     useCreateNoAuthLinkedAccount();
   const { mutateAsync: getOauth2URL } = useGetOauth2LinkURL();
@@ -109,9 +130,12 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
       authType: Object.keys(appInfos[0].supported_security_schemes)[0] as
         | "api_key"
         | "oauth2"
+        | "http_basic"
         | "no_auth",
       linkedAccountOwnerId: "",
       apiKey: "",
+      username: "",
+      password: "",
     },
   });
 
@@ -207,6 +231,32 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
     }
   };
 
+  const linkHTTPBasicAccount = async (
+    appName: string,
+    linkedAccountOwnerId: string,
+    username: string,
+    password: string,
+  ) => {
+    if (!appName) {
+      throw new Error("no app selected");
+    }
+
+    try {
+      await createHTTPBasicLinkedAccount({
+        appName,
+        linkedAccountOwnerId,
+        username,
+        password,
+      });
+      toast.success("account linked successfully");
+      form.reset();
+      setOpen(false);
+    } catch (error) {
+      console.error("Error linking HTTP Basic account:", error);
+      toast.error("link account failed");
+    }
+  };
+
   const linkNoAuthAccount = async (
     appName: string,
     linkedAccountOwnerId: string,
@@ -250,6 +300,14 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
           values.appName,
           values.linkedAccountOwnerId,
           values.apiKey as string,
+        );
+        break;
+      case FORM_SUBMIT_HTTP_BASIC:
+        await linkHTTPBasicAccount(
+          values.appName,
+          values.linkedAccountOwnerId,
+          values.username as string,
+          values.password as string,
         );
         break;
       case FORM_SUBMIT_NO_AUTH:
@@ -309,7 +367,7 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
                         "authType",
                         Object.keys(
                           appInfosDict[value].supported_security_schemes,
-                        )[0] as "api_key" | "oauth2" | "no_auth",
+                        )[0] as "api_key" | "oauth2" | "http_basic" | "no_auth",
                         {
                           shouldValidate: true,
                         },
@@ -442,6 +500,41 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
               />
             )}
 
+            {selectedAuthType === "http_basic" && (
+              <>
+                <FormField
+                  control={form.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl>
+                        <Input placeholder="username" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="password"
+                          type="password"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </>
+            )}
+
             <DialogFooter>
               <Button
                 variant="outline"
@@ -472,6 +565,8 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
                       return FORM_SUBMIT_NO_AUTH;
                     case "api_key":
                       return FORM_SUBMIT_API_KEY;
+                    case "http_basic":
+                      return FORM_SUBMIT_HTTP_BASIC;
                     default:
                       return FORM_SUBMIT_NO_AUTH;
                   }
