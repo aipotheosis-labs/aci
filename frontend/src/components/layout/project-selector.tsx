@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  Check,
-  ChevronsUpDown,
-  Trash2,
-  Edit2,
-  MoreVertical,
-} from "lucide-react";
+import { Check, ChevronsUpDown, Trash2, Edit2 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -24,12 +18,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useEffect, useState, useRef } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMetaInfo } from "@/components/context/metainfo";
@@ -233,44 +221,30 @@ export const ProjectSelector = () => {
                               : "opacity-0",
                           )}
                         />
-                        <DropdownMenu>
-                          <DropdownMenuTrigger
-                            asChild
-                            onClick={(e) => e.stopPropagation()}
+                        {projects.length > 1 && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 opacity-70 hover:opacity-100 text-destructive"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteProject(option.value);
+                            }}
                           >
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-6 w-6 hover:bg-accent"
-                            >
-                              <MoreVertical size={14} />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent
-                            align="end"
-                            className="w-[160px]"
-                          >
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleEditProject(option.value, option.label)
-                              }
-                            >
-                              <Edit2 className="mr-2 h-4 w-4" />
-                              <span>Rename</span>
-                            </DropdownMenuItem>
-                            {projects.length > 1 && (
-                              <DropdownMenuItem
-                                onClick={() =>
-                                  handleDeleteProject(option.value)
-                                }
-                                className="text-destructive focus:text-destructive"
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                <span>Delete</span>
-                              </DropdownMenuItem>
-                            )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                            <Trash2 size={14} />
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 opacity-70 hover:opacity-100"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditProject(option.value, option.label);
+                          }}
+                        >
+                          <Edit2 size={14} />
+                        </Button>
                       </div>
                     </div>
                   )}
