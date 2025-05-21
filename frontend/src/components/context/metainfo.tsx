@@ -77,9 +77,11 @@ export const MetaInfoProvider = withRequiredAuthInfo<MetaInfoProviderProps>(
       if (activeOrg) {
         const projects = await getProjects(accessToken, activeOrg.orgId);
         if (projects.length > 0) {
-          // Sort projects alphabetically by name
-          const sortedProjects = [...projects].sort((a, b) =>
-            a.name.localeCompare(b.name),
+          // Sort projects by creation date (newest first)
+          const sortedProjects = [...projects].sort(
+            (a, b) =>
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime(),
           );
           setProjects(sortedProjects);
         }
