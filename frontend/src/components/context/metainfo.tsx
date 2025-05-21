@@ -77,7 +77,11 @@ export const MetaInfoProvider = withRequiredAuthInfo<MetaInfoProviderProps>(
       if (activeOrg) {
         const projects = await getProjects(accessToken, activeOrg.orgId);
         if (projects.length > 0) {
-          setProjects(projects);
+          // Sort projects alphabetically by name
+          const sortedProjects = [...projects].sort((a, b) =>
+            a.name.localeCompare(b.name),
+          );
+          setProjects(sortedProjects);
         }
       }
     }, [activeOrg, accessToken]);

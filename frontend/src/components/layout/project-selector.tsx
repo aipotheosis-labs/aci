@@ -11,6 +11,7 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
+  CommandSeparator,
 } from "@/components/ui/command";
 import {
   Popover,
@@ -19,8 +20,8 @@ import {
 } from "@/components/ui/popover";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-// import { GoPlus } from "react-icons/go";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { GoPlus } from "react-icons/go";
 
 interface ProjectSelectOption {
   value: string; // project id
@@ -95,13 +96,13 @@ export const ProjectSelector = () => {
                 </CommandItem>
               ))}
             </CommandGroup>
-            {/* <CommandSeparator />
+            <CommandSeparator />
             <CommandGroup>
               <CommandItem>
                 <GoPlus />
                 <span>Create Project</span>
               </CommandItem>
-            </CommandGroup> */}
+            </CommandGroup>
           </CommandList>
         </Command>
       </PopoverContent>
