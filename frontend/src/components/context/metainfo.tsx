@@ -84,7 +84,16 @@ export const MetaInfoProvider = withRequiredAuthInfo<MetaInfoProviderProps>(
         activeOrg && accessToken
           ? metaKeys.projects(activeOrg.orgId)
           : ["projects"],
-      queryFn: () => getProjects(accessToken, activeOrg!.orgId),
+      queryFn: async () => {
+        const fetchedProjects = await getProjects(
+          accessToken,
+          activeOrg!.orgId,
+        );
+        // Sort projects alphabetically by name
+        return [...fetchedProjects].sort((a, b) =>
+          a.name.localeCompare(b.name),
+        );
+      },
       enabled: !!activeOrg && !!accessToken,
       retry: 2,
       retryDelay: 1000,
