@@ -7,6 +7,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from aci.common.logging_setup import get_logger
+from aci.server import config
 from aci.server.context import request_id_ctx_var
 
 logger = get_logger(__name__)
@@ -23,15 +24,19 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
         request_id = str(uuid.uuid4())
         request_id_ctx_var.set(request_id)
 
-        request_log_data = {
-            "method": request.method,
-            "url": str(request.url),
-            "query_params": dict(request.query_params),
-            "client_ip": self._get_client_ip(request),
-            "user_agent": request.headers.get("User-Agent", "unknown"),
-            "x-forwarded-proto": request.headers.get("X-Forwarded-Proto", "unknown"),
-        }
-        logger.info("received request", extra=request_log_data)
+        # Skip logging for health check endpoints
+        is_health_check = request.url.path == config.ROUTER_PREFIX_HEALTH
+
+        if not is_health_check or config.ENVIRONMENT != "local":
+            request_log_data = {
+                "method": request.method,
+                "url": str(request.url),
+                "query_params": dict(request.query_params),
+                "client_ip": self._get_client_ip(request),
+                "user_agent": request.headers.get("User-Agent", "unknown"),
+                "x-forwarded-proto": request.headers.get("X-Forwarded-Proto", "unknown"),
+            }
+            logger.info("received request", extra=request_log_data)
 
         try:
             response = await call_next(request)
@@ -45,12 +50,13 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
                 content={"error": "Internal server error"},
             )
 
-        response_log_data = {
-            "status_code": response.status_code,
-            "duration": (datetime.now(UTC) - start_time).total_seconds(),
-            "content_length": response.headers.get("content-length"),
-        }
-        logger.info("response sent", extra=response_log_data)
+        if not is_health_check or config.ENVIRONMENT != "local":
+            response_log_data = {
+                "status_code": response.status_code,
+                "duration": (datetime.now(UTC) - start_time).total_seconds(),
+                "content_length": response.headers.get("content-length"),
+            }
+            logger.info("response sent", extra=response_log_data)
 
         response.headers["X-Request-ID"] = request_id
 
