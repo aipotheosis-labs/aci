@@ -18,13 +18,12 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { getAllAppConfigs } from "@/lib/api/appconfig";
 import { updateAgent } from "@/lib/api/agent";
-import { AppConfig } from "@/lib/types/appconfig";
-import { getApiKey } from "@/lib/api/util";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { useApps } from "@/hooks/use-app";
+import { useAppConfigs } from "@/hooks/use-app-config";
+
 interface AgentInstructionFilterFormProps {
   children: React.ReactNode;
   projectId: string;
@@ -42,37 +41,20 @@ export function AgentInstructionFilterForm({
   allowedApps = [],
   onSaveSuccess,
 }: AgentInstructionFilterFormProps) {
-  const { activeProject, accessToken } = useMetaInfo();
+  const { accessToken } = useMetaInfo();
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
-  const { data: apps, isPending, isError } = useApps();
+  const {
+    data: appConfigs = [],
+    isPending: isConfigsPending,
+    isError: isConfigsError,
+  } = useAppConfigs();
+  const {
+    data: apps,
+    isPending: isAppsPending,
+    isError: isAppsError,
+  } = useApps();
   const [instructions, setInstructions] =
     useState<Record<string, string>>(initialInstructions);
-
-  // Fetch App configurations and App data
-  useEffect(() => {
-    if (!open) return;
-
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const apiKey = getApiKey(activeProject);
-
-        // Get App configurations
-        const configs = await getAllAppConfigs(apiKey);
-        setAppConfigs(configs);
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-        toast.error("Failed to load app data");
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [open, activeProject]);
 
   // Initialize instruction data when dialog opens
   useEffect(() => {
@@ -237,7 +219,7 @@ export function AgentInstructionFilterForm({
 
         <Separator className="my-4" />
 
-        {loading || isPending || isError ? (
+        {isAppsPending || isConfigsPending || isAppsError || isConfigsError ? (
           <div className="flex justify-center py-6">
             <p>Loading...</p>
           </div>

@@ -432,3 +432,17 @@ class OAuth2Error(ACIException):
             message=message,
             error_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+
+class MaxUniqueLinkedAccountOwnerIdsReached(ACIException):
+    """Raised when an organization has reached its maximum allowed linked accounts for an app."""
+
+    def __init__(self, plan: str | None = None, message: str | None = None):
+        title = "Max unique linked account owner ids reached"
+        if plan:
+            title = f"{title} for the {plan} plan"
+        super().__init__(
+            title=title,
+            message=message,
+            error_code=status.HTTP_403_FORBIDDEN,
+        )

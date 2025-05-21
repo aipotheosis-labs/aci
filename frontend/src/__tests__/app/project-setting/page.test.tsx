@@ -2,16 +2,26 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import ProjectSettingPage from "@/app/project-setting/page";
 import { useMetaInfo } from "@/components/context/metainfo";
-import { getAllAppConfigs } from "@/lib/api/appconfig";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { OrgMemberInfoClass } from "@propelauth/react";
+import { OrgMemberInfoClass, UserClass } from "@propelauth/react";
+import { useAppConfigs } from "@/hooks/use-app-config";
+import type { QueryObserverResult } from "@tanstack/react-query";
+import { AppConfig } from "@/lib/types/appconfig";
 
 // Mock the modules
 vi.mock("@/components/context/metainfo", () => ({
   useMetaInfo: vi.fn(),
 }));
+
+// Mock hooks/use-app-config instead of directly mocking API calls
+vi.mock("@/hooks/use-app-config", () => ({
+  useAppConfigs: vi.fn(),
+  useCreateAppConfig: vi.fn(() => ({
+    mutateAsync: vi.fn(),
+  })),
+}));
+
 vi.mock("@/lib/api/app");
-vi.mock("@/lib/api/appconfig");
 vi.mock("@/lib/api/util", () => ({
   getApiKey: vi.fn(() => "test-api-key"),
 }));
@@ -85,21 +95,56 @@ describe("ProjectSettingPage", () => {
       } as OrgMemberInfoClass,
       setActiveOrg: vi.fn(),
       projects: [mockProject],
+      user: {
+        userId: "user-123",
+        email: "test@example.com",
+        createdAt: 1653312000000,
+        getOrgByName: vi.fn(),
+        getUserProperty: vi.fn(),
+        getProperty: vi.fn(),
+        getMetadata: vi.fn(),
+        pictureUrl: "",
+        impersonatorUserId: "",
+        hasRole: vi.fn(),
+        hasPermission: vi.fn(),
+        hasAnyPermission: vi.fn(),
+      } as unknown as UserClass,
     });
 
-    // Mock getAllAppConfigs
-    vi.mocked(getAllAppConfigs).mockResolvedValue([
-      {
-        id: "config-1",
-        project_id: "project-123",
-        app_name: "TEST_APP_1",
-        security_scheme: "none",
-        security_scheme_overrides: {},
-        enabled: true,
-        all_functions_enabled: true,
-        enabled_functions: [],
-      },
-    ]);
+    // Mock useAppConfigs hook with proper React Query return structure
+    vi.mocked(useAppConfigs).mockReturnValue({
+      data: [
+        {
+          id: "config-1",
+          project_id: "project-123",
+          app_name: "TEST_APP_1",
+          security_scheme: "none",
+          security_scheme_overrides: {},
+          enabled: true,
+          all_functions_enabled: true,
+          enabled_functions: [],
+        },
+      ],
+      isPending: false,
+      isLoading: false,
+      isError: false,
+      error: null,
+      isSuccess: true,
+      isRefetching: false,
+      isLoadingError: false,
+      isRefetchError: false,
+      refetch: vi.fn(),
+      fetchStatus: "idle",
+      status: "success",
+      isFetched: true,
+      isFetchedAfterMount: true,
+      isFetching: false,
+      dataUpdatedAt: Date.now(),
+      errorUpdatedAt: 0,
+      failureCount: 0,
+      failureReason: null,
+      errorUpdateCount: 0,
+    } as unknown as QueryObserverResult<AppConfig[], Error>);
   });
 
   it("renders project settings when project is available", () => {
@@ -133,10 +178,16 @@ describe("ProjectSettingPage", () => {
     expect(agentDescriptions[0]).toBeInTheDocument();
   });
 
-  it("loads apps on component mount", async () => {
+  it("loads app configs on component mount", async () => {
     render(<ProjectSettingPage />, { wrapper: TestWrapper });
+
     await waitFor(() => {
-      expect(getAllAppConfigs).toHaveBeenCalledWith("test-api-key");
+      expect(useAppConfigs).toHaveBeenCalled();
+    });
+
+    await waitFor(() => {
+      const createAgentButtons = screen.getAllByText("Create Agent");
+      expect(createAgentButtons[0]).not.toBeDisabled();
     });
   });
 });

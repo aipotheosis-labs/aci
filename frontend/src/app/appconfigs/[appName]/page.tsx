@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import { LinkedAccount } from "@/lib/types/linkedaccount";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -15,15 +15,7 @@ import {
 import { GoTrash } from "react-icons/go";
 import { useParams } from "next/navigation";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { App } from "@/lib/types/app";
 import { AddAccountForm } from "@/components/appconfig/add-account";
-import { getApiKey } from "@/lib/api/util";
-import { getApp } from "@/lib/api/app";
-import {
-  getAppLinkedAccounts,
-  deleteLinkedAccount,
-  updateLinkedAccount,
-} from "@/lib/api/linkedaccount";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -38,49 +30,36 @@ import {
 import { toast } from "sonner";
 import Link from "next/link";
 import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhanced-switch";
-import { useMetaInfo } from "@/components/context/metainfo";
 import { formatToLocalTime } from "@/utils/time";
 import { ArrowUpDown } from "lucide-react";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import {
+  useAppLinkedAccounts,
+  useDeleteLinkedAccount,
+  useUpdateLinkedAccount,
+} from "@/hooks/use-linked-account";
+import { useApp } from "@/hooks/use-app";
 
 const columnHelper = createColumnHelper<LinkedAccount>();
 
 export default function AppConfigDetailPage() {
   const { appName } = useParams<{ appName: string }>();
-  const { activeProject } = useMetaInfo();
-  const [app, setApp] = useState<App | null>(null);
-  const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
 
-  const sortLinkedAccountsByCreateTime = (accounts: LinkedAccount[]) => {
-    return [...accounts].sort((a, b) => {
-      if (!a.created_at) return 1;
-      if (!b.created_at) return -1;
-      return (
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
-    });
-  };
+  const { app } = useApp(appName);
 
-  const refreshLinkedAccounts = useCallback(async () => {
-    try {
-      const apiKey = getApiKey(activeProject);
-      const linkedAccounts = await getAppLinkedAccounts(appName, apiKey);
-      setLinkedAccounts(sortLinkedAccountsByCreateTime(linkedAccounts));
-    } catch (error) {
-      console.error("Failed to refresh linked accounts:", error);
-    }
-  }, [activeProject, appName]);
+  const { data: linkedAccounts = [] } = useAppLinkedAccounts(appName);
+
+  const { mutateAsync: deleteLinkedAccount } = useDeleteLinkedAccount();
+  const { mutateAsync: updateLinkedAccount } = useUpdateLinkedAccount();
 
   const toggleAccountStatus = useCallback(
     async (accountId: string, newStatus: boolean) => {
       try {
-        const apiKey = getApiKey(activeProject);
-
-        await updateLinkedAccount(accountId, apiKey, newStatus);
-
-        // Refresh the linked accounts list after update
-        await refreshLinkedAccounts();
+        await updateLinkedAccount({
+          linkedAccountId: accountId,
+          enabled: newStatus,
+        });
 
         return true;
       } catch (error) {
@@ -88,15 +67,15 @@ export default function AppConfigDetailPage() {
         return false;
       }
     },
-    [activeProject, refreshLinkedAccounts],
+    [updateLinkedAccount],
   );
 
   const handleDeleteLinkedAccount = useCallback(
     async (accountId: string, linkedAccountOwnerId: string) => {
       try {
-        const apiKey = getApiKey(activeProject);
-        await deleteLinkedAccount(accountId, apiKey);
-        await refreshLinkedAccounts();
+        await deleteLinkedAccount({
+          linkedAccountId: accountId,
+        });
 
         toast.success(`Linked account ${linkedAccountOwnerId} deleted`);
       } catch (error) {
@@ -104,7 +83,7 @@ export default function AppConfigDetailPage() {
         toast.error("Failed to delete linked account");
       }
     },
-    [activeProject, refreshLinkedAccounts],
+    [deleteLinkedAccount],
   );
 
   const linkedAccountsColumns: ColumnDef<LinkedAccount>[] = useMemo(() => {
@@ -242,20 +221,6 @@ export default function AppConfigDetailPage() {
     ] as ColumnDef<LinkedAccount>[];
   }, [toggleAccountStatus, handleDeleteLinkedAccount]);
 
-  useEffect(() => {
-    async function loadAppAndLinkedAccounts() {
-      try {
-        const apiKey = getApiKey(activeProject);
-        const app = await getApp(appName, apiKey);
-        setApp(app);
-        await refreshLinkedAccounts();
-      } catch (error) {
-        console.error("Failed to load app and linked accounts:", error);
-      }
-    }
-    loadAppAndLinkedAccounts();
-  }, [activeProject, appName, refreshLinkedAccounts]);
-
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
@@ -287,7 +252,6 @@ export default function AppConfigDetailPage() {
                   app.supported_security_schemes || {},
               },
             ]}
-            updateLinkedAccounts={refreshLinkedAccounts}
           />
         )}
       </div>

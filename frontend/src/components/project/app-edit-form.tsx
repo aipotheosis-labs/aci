@@ -11,10 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { useState, useEffect, useMemo } from "react";
 import { Separator } from "@/components/ui/separator";
-import { getAllAppConfigs } from "@/lib/api/appconfig";
 import { updateAgent } from "@/lib/api/agent";
-import { AppConfig } from "@/lib/types/appconfig";
-import { getApiKey } from "@/lib/api/util";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { Badge } from "@/components/ui/badge";
@@ -23,6 +20,8 @@ import { RowSelectionState } from "@tanstack/react-table";
 import { IdDisplay } from "@/components/apps/id-display";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
+import { useAppConfigs } from "@/hooks/use-app-config";
+import { AppConfig } from "@/lib/types/appconfig";
 
 interface AppEditFormProps {
   children: React.ReactNode;
@@ -42,9 +41,8 @@ export function AppEditForm({
   const { accessToken } = useMetaInfo();
   const [open, setOpen] = useState(false);
   const [selectedApps, setSelectedApps] = useState<RowSelectionState>({});
-  const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
-  const [loading, setLoading] = useState(false);
-  const { activeProject } = useMetaInfo();
+  const { data: appConfigs = [], isPending: isConfigsPending } =
+    useAppConfigs();
   const columns: ColumnDef<AppConfig>[] = useMemo(() => {
     const columnHelper = createColumnHelper<AppConfig>();
     return [
@@ -77,30 +75,12 @@ export function AppEditForm({
   useEffect(() => {
     if (!open) return;
 
-    const apiKey = getApiKey(activeProject);
-    const fetchAppConfigs = async () => {
-      try {
-        setLoading(true);
-        const configs = await getAllAppConfigs(apiKey);
-        setAppConfigs(configs);
-
-        const initialSelection: RowSelectionState = {};
-        configs.forEach((config) => {
-          initialSelection[config.app_name] = allowedApps.includes(
-            config.app_name,
-          );
-        });
-        setSelectedApps(initialSelection);
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch app configurations:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchAppConfigs();
-  }, [activeProject, open, allowedApps]);
+    const initialSelection: RowSelectionState = {};
+    appConfigs.forEach((config: AppConfig) => {
+      initialSelection[config.app_name] = allowedApps.includes(config.app_name);
+    });
+    setSelectedApps(initialSelection);
+  }, [open, allowedApps, appConfigs]);
 
   const selectedAppNames = useMemo(
     () => Object.keys(selectedApps).filter((app) => selectedApps[app]),
@@ -164,7 +144,7 @@ export function AppEditForm({
               </div>
             )}
 
-            {loading ? (
+            {isConfigsPending ? (
               <div className="flex h-40  justify-center py-4 ">
                 <p>Loading...</p>
               </div>

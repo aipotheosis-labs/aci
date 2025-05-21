@@ -1,26 +1,21 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useMemo } from "react";
 import { Separator } from "@/components/ui/separator";
-import { getApiKey } from "@/lib/api/util";
 import { App } from "@/lib/types/app";
-import { getAppLinkedAccounts } from "@/lib/api/linkedaccount";
-import { useMetaInfo } from "@/components/context/metainfo";
 import { useAppConfigsTableColumns } from "@/components/appconfig/useAppConfigsTableColumns";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { useApps } from "@/hooks/use-app";
 import { useAppConfigs } from "@/hooks/use-app-config";
+import { useLinkedAccounts } from "@/hooks/use-linked-account";
 
 export default function AppConfigPage() {
   const { data: appConfigs = [], isPending: isConfigsPending } =
     useAppConfigs();
   const { data: apps = [] } = useApps();
-  const [linkedAccountsCountMap, setLinkedAccountsCountMap] = useState<
-    Record<string, number>
-  >({});
-  const [isLoading, setIsLoading] = useState(true);
-
-  const { activeProject } = useMetaInfo();
+  const { data: linkedAccounts = [], isPending: isLinkedAccountsPending } =
+    useLinkedAccounts();
+  const isLoading = isConfigsPending || isLinkedAccountsPending;
 
   const appsMap = useMemo(
     () =>
@@ -33,31 +28,17 @@ export default function AppConfigPage() {
       ),
     [apps],
   );
-
-  useEffect(() => {
-    async function fetchLinkedAccounts() {
-      try {
-        if (!appConfigs.length) return;
-        const apiKey = getApiKey(activeProject);
-        const linkedAccountsData = await Promise.all(
-          appConfigs.map(async (config) => {
-            const linkedAccounts = await getAppLinkedAccounts(
-              config.app_name,
-              apiKey,
-            );
-            return [config.app_name, linkedAccounts.length];
-          }),
-        );
-
-        setLinkedAccountsCountMap(Object.fromEntries(linkedAccountsData));
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchLinkedAccounts();
-  }, [appConfigs, activeProject]);
-
+  const linkedAccountsCountMap = useMemo(() => {
+    return linkedAccounts.reduce(
+      (countMap, linkedAccount) => {
+        const appName = linkedAccount.app_name;
+        const previousCount = countMap[appName] ?? 0;
+        countMap[appName] = previousCount + 1;
+        return countMap;
+      },
+      {} as Record<string, number>,
+    );
+  }, [linkedAccounts]);
   const appConfigsColumns = useAppConfigsTableColumns({
     linkedAccountsCountMap,
     appsMap,

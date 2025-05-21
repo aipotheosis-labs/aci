@@ -1,11 +1,11 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import select
+from sqlalchemy import distinct, func, select
 from sqlalchemy.orm import Session
 
 from aci.common import validators
-from aci.common.db.sql_models import App, LinkedAccount
+from aci.common.db.sql_models import App, LinkedAccount, Project
 from aci.common.enums import SecurityScheme
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.linked_accounts import LinkedAccountUpdate
@@ -166,3 +166,32 @@ def delete_linked_accounts(db_session: Session, project_id: UUID, app_name: str)
         db_session.delete(linked_account)
     db_session.flush()
     return len(linked_accounts_to_delete)
+
+
+def get_total_number_of_unique_linked_account_owner_ids(db_session: Session, org_id: UUID) -> int:
+    """
+    TODO: Add a lock to prevent the race condition.
+    Get the total number of unique linked account owner IDs for an organization.
+
+    WARNING: Race condition potential! This function is vulnerable to race conditions in
+    concurrent environments. If this function is called concurrently with operations that
+    add or remove linked accounts:
+
+    1. Thread A starts counting unique linked_account_owner_ids
+    2. Thread B adds a new linked account with a new owner_id
+    3. Thread A completes its count, unaware of the newly added account
+    """
+    statement = select(func.count(distinct(LinkedAccount.linked_account_owner_id))).where(
+        LinkedAccount.project_id.in_(select(Project.id).filter(Project.org_id == org_id))
+    )
+    return db_session.execute(statement).scalar_one()
+
+
+def linked_account_owner_id_exists_in_org(
+    db_session: Session, org_id: UUID, linked_account_owner_id: str
+) -> bool:
+    statement = select(LinkedAccount).filter(
+        LinkedAccount.linked_account_owner_id == linked_account_owner_id,
+        LinkedAccount.project_id.in_(select(Project.id).filter(Project.org_id == org_id)),
+    )
+    return db_session.execute(statement).scalar_one_or_none() is not None

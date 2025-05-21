@@ -6,13 +6,6 @@ import { Button } from "@/components/ui/button";
 import { IdDisplay } from "@/components/apps/id-display";
 import { GoTrash } from "react-icons/go";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import { getApiKey } from "@/lib/api/util";
-import {
-  getAllLinkedAccounts,
-  deleteLinkedAccount,
-  updateLinkedAccount,
-} from "@/lib/api/linkedaccount";
-import { getAllAppConfigs } from "@/lib/api/appconfig";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,7 +20,6 @@ import {
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
 import { LinkedAccountDetails } from "@/components/linkedaccount/linked-account-details";
-import { AppConfig } from "@/lib/types/appconfig";
 import { AddAccountForm } from "@/components/appconfig/add-account";
 import { App } from "@/lib/types/app";
 import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhanced-switch";
@@ -37,17 +29,26 @@ import { formatToLocalTime } from "@/utils/time";
 import { ArrowUpDown } from "lucide-react";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
-const columnHelper = createColumnHelper<TableData>();
+import {
+  useLinkedAccounts,
+  useDeleteLinkedAccount,
+  useUpdateLinkedAccount,
+} from "@/hooks/use-linked-account";
 import { useApps } from "@/hooks/use-app";
+import { useAppConfigs } from "@/hooks/use-app-config";
 
+const columnHelper = createColumnHelper<TableData>();
 type TableData = LinkedAccount & { logo: string };
 
 export default function LinkedAccountsPage() {
   const { activeProject } = useMetaInfo();
-  const [linkedAccounts, setLinkedAccounts] = useState<LinkedAccount[]>([]);
-  const [appConfigs, setAppConfigs] = useState<AppConfig[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const { data: apps, isPending, isError } = useApps();
+  const { data: linkedAccounts = [], isPending: isLinkedAccountsPending } =
+    useLinkedAccounts();
+  const { data: appConfigs = [], isPending: isConfigsPending } =
+    useAppConfigs();
+  const { data: apps, isPending: isAppsPending, isError } = useApps();
+  const { mutateAsync: deleteLinkedAccount } = useDeleteLinkedAccount();
+  const { mutateAsync: updateLinkedAccount } = useUpdateLinkedAccount();
   const [appsMap, setAppsMap] = useState<Record<string, App>>({});
 
   const loadAppMaps = useCallback(async () => {
@@ -89,50 +90,13 @@ export default function LinkedAccountsPage() {
     }));
   }, [linkedAccounts, appsMap]);
 
-  const loadAppConfigs = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const apiKey = getApiKey(activeProject);
-      const configs = await getAllAppConfigs(apiKey);
-      setAppConfigs(configs);
-    } catch (error) {
-      console.error("Failed to load app configurations:", error);
-      toast.error("Failed to load app configurations");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [activeProject]);
-
-  const refreshLinkedAccounts = useCallback(
-    async (silent: boolean = false) => {
-      try {
-        if (!silent) {
-          setIsLoading(true);
-        }
-
-        const apiKey = getApiKey(activeProject);
-        const linkedAccounts = await getAllLinkedAccounts(apiKey);
-        setLinkedAccounts(linkedAccounts);
-      } catch (error) {
-        console.error("Failed to load linked accounts:", error);
-        toast.error("Failed to load linked accounts");
-      } finally {
-        if (!silent) {
-          setIsLoading(false);
-        }
-      }
-    },
-    [activeProject],
-  );
-
   const toggleAccountStatus = useCallback(
     async (accountId: string, newStatus: boolean): Promise<boolean> => {
       try {
-        const apiKey = getApiKey(activeProject);
-
-        await updateLinkedAccount(accountId, apiKey, newStatus);
-
-        await refreshLinkedAccounts(true);
+        await updateLinkedAccount({
+          linkedAccountId: accountId,
+          enabled: newStatus,
+        });
 
         return true;
       } catch (error) {
@@ -141,18 +105,8 @@ export default function LinkedAccountsPage() {
         return false;
       }
     },
-    [activeProject, refreshLinkedAccounts],
+    [updateLinkedAccount],
   );
-
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true);
-      await Promise.all([refreshLinkedAccounts(true), loadAppConfigs()]);
-      setIsLoading(false);
-    };
-
-    loadData();
-  }, [activeProject, loadAppConfigs, refreshLinkedAccounts]);
 
   useEffect(() => {
     if (linkedAccounts.length > 0) {
@@ -323,11 +277,9 @@ export default function LinkedAccountsPage() {
                           console.warn("No active project");
                           return;
                         }
-                        const apiKey = getApiKey(activeProject);
-
-                        await deleteLinkedAccount(account.id, apiKey);
-
-                        refreshLinkedAccounts(true);
+                        await deleteLinkedAccount({
+                          linkedAccountId: account.id,
+                        });
 
                         toast.success(
                           `Linked account ${account.linked_account_owner_id} deleted`,
@@ -348,7 +300,10 @@ export default function LinkedAccountsPage() {
         enableGlobalFilter: false,
       }),
     ] as ColumnDef<TableData>[];
-  }, [toggleAccountStatus, refreshLinkedAccounts, activeProject]);
+  }, [toggleAccountStatus, deleteLinkedAccount, activeProject]);
+
+  const isPageLoading =
+    isLinkedAccountsPending || isAppsPending || isConfigsPending;
 
   return (
     <div>
@@ -360,7 +315,7 @@ export default function LinkedAccountsPage() {
           </p>
         </div>
         <div>
-          {!isLoading && !isPending && !isError && appConfigs.length > 0 && (
+          {!isPageLoading && !isError && appConfigs.length > 0 && (
             <AddAccountForm
               appInfos={appConfigs.map((config) => ({
                 name: config.app_name,
@@ -369,7 +324,6 @@ export default function LinkedAccountsPage() {
                   apps.find((app) => app.name === config.app_name)
                     ?.supported_security_schemes || {},
               }))}
-              updateLinkedAccounts={() => refreshLinkedAccounts(true)}
             />
           )}
         </div>
@@ -379,7 +333,7 @@ export default function LinkedAccountsPage() {
       <div className="m-4">
         <Tabs defaultValue={"linked"} className="w-full">
           <TabsContent value="linked">
-            {isLoading ? (
+            {isPageLoading ? (
               <div className="flex items-center justify-center p-8">
                 <div className="flex flex-col items-center space-y-4">
                   <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>

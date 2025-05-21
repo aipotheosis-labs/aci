@@ -54,25 +54,23 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-interface AgentFormProps {
+interface CreateAgentFormProps {
   children: React.ReactNode;
   onSubmit: (values: FormValues) => Promise<void>;
   initialValues?: Partial<FormValues>;
   title: string;
   validAppNames: string[];
   appConfigs?: AppConfig[];
-  onRequestRefreshAppConfigs: () => void;
 }
 
-export function AgentForm({
+export function CreateAgentForm({
   children,
   onSubmit,
   initialValues,
   title,
   validAppNames,
   appConfigs = [],
-  onRequestRefreshAppConfigs,
-}: AgentFormProps) {
+}: CreateAgentFormProps) {
   const [open, setOpen] = useState(false);
   const [selectedApps, setSelectedApps] = useState<RowSelectionState>({});
 
@@ -139,11 +137,6 @@ export function AgentForm({
       console.error("Error submitting form:", error);
     }
   };
-  useEffect(() => {
-    if (open && onRequestRefreshAppConfigs) {
-      onRequestRefreshAppConfigs();
-    }
-  }, [open, onRequestRefreshAppConfigs]);
 
   // Reset form values when dialog opens
   useEffect(() => {
