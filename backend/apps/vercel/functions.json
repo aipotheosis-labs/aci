@@ -48,7 +48,7 @@
                             "properties": {
                                 "repo": {
                                     "type": "string",
-                                    "description": "The name of the git repository. For example: 'vercel/next.js'"
+                                    "description": "The name of the git repository."
                                 },
                                 "type": {
                                     "type": "string",
@@ -122,11 +122,11 @@
                     "properties": {
                         "teamId": {
                             "type": "string",
-                            "description": "The Team identifier to perform the request on behalf of. Example: 'team_1a2b3c4d5e6f7g8h9i0j1k2l'."
+                            "description": "The Team identifier to perform the request on behalf of."
                         },
                         "slug": {
                             "type": "string",
-                            "description": "The Team slug to perform the request on behalf of. Example: 'my-team-url-slug'."
+                            "description": "The Team slug to perform the request on behalf of."
                         }
                     },
                     "required": [],
@@ -160,27 +160,27 @@
                     "properties": {
                         "limit": {
                             "type": "string",
-                            "description": "Limits the number of projects returned in the response. Example: '10'."
+                            "description": "Limits the number of projects returned in the response."
                         },
                         "search": {
                             "type": "string",
-                            "description": "Search for projects by their name. Maximum length: 100 characters. Example: 'my-project'."
+                            "description": "Search for projects by their name. Maximum length: 100 characters."
                         },
                         "repo": {
                             "type": "string",
-                            "description": "Filter results to only include projects belonging to the specified repository. Example: 'vercel/next.js'."
+                            "description": "Filter results to only include projects belonging to the specified repository."
                         },
                         "repoId": {
                             "type": "string",
-                            "description": "Filter results by the unique Repository ID. Example: 'r1l2k3j4h5g6f7d8s9a0'."
+                            "description": "Filter results by the unique Repository ID."
                         },
                         "repoUrl": {
                             "type": "string",
-                            "description": "Filter results by the full Repository URL. Example: 'https://github.com/vercel/next.js'."
+                            "description": "Filter results by the full Repository URL."
                         },
                         "slug": {
                             "type": "string",
-                            "description": "The team slug to perform the request on behalf of a specific team. Example: 'my-team-url-slug'."
+                            "description": "The team slug to perform the request on behalf of a specific team."
                         }
                     },
                     "required": [],
@@ -214,7 +214,7 @@
                     "properties": {
                         "idOrName": {
                             "type": "string",
-                            "description": "The unique project identifier or the project name. Example: 'prj_12HKQaOmR5t5Uy6vdcQsNIiZgHGB' or project name."
+                            "description": "The unique project identifier or the project name."
                         }
                     },
                     "required": ["idOrName"],
@@ -227,11 +227,11 @@
                     "properties": {
                         "teamId": {
                             "type": "string",
-                            "description": "The Team identifier to perform the request on behalf of. Example: 'team_1a2b3c4d5e6f7g8h9i0j1k2l'."
+                            "description": "The Team identifier to perform the request on behalf of."
                         },
                         "slug": {
                             "type": "string",
-                            "description": "The Team slug to perform the request on behalf of. Example: 'my-team-url-slug'."
+                            "description": "The Team slug to perform the request on behalf of."
                         }
                     },
                     "required": [],
@@ -281,15 +281,15 @@
                             "properties": {
                                 "org": {
                                     "type": "string",
-                                    "description": "The organization/user of the repo. Example: 'vercel'"
+                                    "description": "The organization/user of the repo."
                                 },
                                 "ref": {
                                     "type": "string",
-                                    "description": "The branch or ref to deploy. Example: 'main'"
+                                    "description": "The branch or ref to deploy."
                                 },
                                 "repo": {
                                     "type": "string",
-                                    "description": "The repository name. Example: 'next.js'"
+                                    "description": "The repository name."
                                 },
                                 "type": {
                                     "type": "string",
