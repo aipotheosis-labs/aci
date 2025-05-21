@@ -41,6 +41,16 @@ async def create_project(
     quota_manager.enforce_project_creation_quota(db_session, body.org_id)
 
     project = crud.projects.create_project(db_session, body.org_id, body.name)
+
+    # Create a default Agent for the project
+    crud.projects.create_agent(
+        db_session,
+        project.id,
+        name="Default Agent",
+        description="Default Agent",
+        allowed_apps=[],
+        custom_instructions={},
+    )
     db_session.commit()
 
     logger.info(
