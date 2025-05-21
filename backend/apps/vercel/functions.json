@@ -130,7 +130,7 @@
                         }
                     },
                     "required": [],
-                    "visible": ["teamId", "slug"],
+                    "visible": [],
                     "additionalProperties": false
                 }
             },
@@ -188,7 +188,7 @@
                         }
                     },
                     "required": [],
-                    "visible": ["limit", "search", "repo", "repoId", "repoUrl", "slug"],
+                    "visible": ["limit", "search", "repo", "repoId", "repoUrl"],
                     "additionalProperties": false
                 }
             },
@@ -239,7 +239,7 @@
                         }
                     },
                     "required": [],
-                    "visible": ["teamId", "slug"],
+                    "visible": [],
                     "additionalProperties": false
                 }
             },
@@ -358,7 +358,7 @@
                         }
                     },
                     "required": [],
-                    "visible": ["forceNew", "skipAutoDetectionConfirmation", "teamId", "slug"],
+                    "visible": ["forceNew", "skipAutoDetectionConfirmation"],
                     "additionalProperties": false
                 }
             },
