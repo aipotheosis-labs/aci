@@ -1,0 +1,36 @@
+[
+    {
+        "name": "SHAREPOINT__SEARCH_FOR_SITES",
+        "description": "Search across a SharePoint tenant for sites that match keywords provided.",
+        "tags": ["sites"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/sites?search={query}",
+            "server_url": "https://graph.microsoft.com/v1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "the http path parameters",
+              "properties": {
+                "query": {
+                  "type": "string",
+                  "description": "The search filter is a free text search that uses multiple properties when retrieving the search results"
+                }
+              },
+              "required": ["query"],
+              "visible":  ["query"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible":  ["path"],
+          "additionalProperties": false
+        }
+    }
+]
