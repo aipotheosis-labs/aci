@@ -1,3 +1,5 @@
+from typing import override
+
 from aci.common.enums import HttpLocation
 from aci.common.exceptions import NoImplementationFound
 from aci.common.logging_setup import get_logger
@@ -12,6 +14,7 @@ class RestAPIKeyFunctionExecutor(RestFunctionExecutor[APIKeyScheme, APIKeyScheme
     Function executor for API key based REST functions.
     """
 
+    @override
     def _inject_credentials(
         self,
         security_scheme: APIKeyScheme,
@@ -36,8 +39,9 @@ class RestAPIKeyFunctionExecutor(RestFunctionExecutor[APIKeyScheme, APIKeyScheme
         {
             "security_schemes": {
                 "api_key": {
-                    "in": "header",
+                    "location": "header",
                     "name": "X-Test-API-Key",
+                    "prefix": "Bearer"
                 }
             },
             "default_security_credentials_by_scheme": {

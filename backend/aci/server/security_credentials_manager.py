@@ -9,6 +9,8 @@ from aci.common.logging_setup import get_logger
 from aci.common.schemas.security_scheme import (
     APIKeyScheme,
     APIKeySchemeCredentials,
+    HTTPBasicScheme,
+    HTTPBasicSchemeCredentials,
     NoAuthScheme,
     NoAuthSchemeCredentials,
     OAuth2Scheme,
@@ -22,8 +24,13 @@ logger = get_logger(__name__)
 
 # TODO: only pass necessary data to the functions
 class SecurityCredentialsResponse(BaseModel):
-    scheme: APIKeyScheme | OAuth2Scheme | NoAuthScheme
-    credentials: APIKeySchemeCredentials | OAuth2SchemeCredentials | NoAuthSchemeCredentials
+    scheme: APIKeyScheme | OAuth2Scheme | HTTPBasicScheme | NoAuthScheme
+    credentials: (
+        APIKeySchemeCredentials
+        | OAuth2SchemeCredentials
+        | HTTPBasicSchemeCredentials
+        | NoAuthSchemeCredentials
+    )
     is_app_default_credentials: bool
     is_updated: bool
 
@@ -35,6 +42,8 @@ async def get_security_credentials(
         return _get_api_key_credentials(app, linked_account)
     elif linked_account.security_scheme == SecurityScheme.OAUTH2:
         return await _get_oauth2_credentials(app, app_configuration, linked_account)
+    elif linked_account.security_scheme == SecurityScheme.HTTP_BASIC:
+        return _get_http_basic_credentials(app, linked_account)
     elif linked_account.security_scheme == SecurityScheme.NO_AUTH:
         return _get_no_auth_credentials(app, linked_account)
     else:
@@ -168,6 +177,42 @@ def _get_api_key_credentials(
     return SecurityCredentialsResponse(
         scheme=APIKeyScheme.model_validate(app.security_schemes[SecurityScheme.API_KEY]),
         credentials=APIKeySchemeCredentials.model_validate(security_credentials),
+        is_app_default_credentials=not bool(linked_account.security_credentials),
+        is_updated=False,
+    )
+
+
+def _get_http_basic_credentials(
+    app: App, linked_account: LinkedAccount
+) -> SecurityCredentialsResponse:
+    """
+    Get HTTP Basic credentials from linked account or use app's default credentials if no linked account's HTTP Basic credentials are found
+    and if the app has a default shared HTTP Basic credentials.
+    """
+    security_credentials = (
+        linked_account.security_credentials
+        or app.default_security_credentials_by_scheme.get(linked_account.security_scheme)
+    )
+
+    # use "not" to cover empty dict case
+    if not security_credentials:
+        logger.error(
+            "no http basic credentials usable",
+            extra={
+                "app": app.name,
+                "security_scheme": linked_account.security_scheme,
+                "linked_account": linked_account.id,
+            },
+        )
+        raise NoImplementationFound(
+            f"no http basic credentials usable for app={app.name}, "
+            f"security_scheme={linked_account.security_scheme}, "
+            f"linked_account_owner_id={linked_account.linked_account_owner_id}"
+        )
+
+    return SecurityCredentialsResponse(
+        scheme=HTTPBasicScheme.model_validate(app.security_schemes[SecurityScheme.HTTP_BASIC]),
+        credentials=HTTPBasicSchemeCredentials.model_validate(security_credentials),
         is_app_default_credentials=not bool(linked_account.security_credentials),
         is_updated=False,
     )
