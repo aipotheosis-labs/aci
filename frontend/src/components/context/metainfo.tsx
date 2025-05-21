@@ -101,10 +101,25 @@ export const MetaInfoProvider = withRequiredAuthInfo<MetaInfoProviderProps>(
 
     useEffect(() => {
       if (projects.length > 0) {
-        // TODO: get active project from local storage
-        setActiveProject(projects[0]);
+        const savedProjectId = localStorage.getItem(
+          `activeProject_${activeOrg?.orgId}`,
+        );
+        const savedProject = savedProjectId
+          ? projects.find((p) => p.id === savedProjectId)
+          : null;
+
+        setActiveProject(savedProject || projects[0]);
       }
-    }, [projects]);
+    }, [projects, activeOrg]);
+
+    useEffect(() => {
+      if (activeProject && activeOrg) {
+        localStorage.setItem(
+          `activeProject_${activeOrg.orgId}`,
+          activeProject.id,
+        );
+      }
+    }, [activeProject, activeOrg]);
 
     const reloadActiveProject = useCallback(async () => {
       if (activeOrg && accessToken) {
