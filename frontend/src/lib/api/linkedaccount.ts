@@ -75,9 +75,16 @@ export async function createAPILinkedAccount(
   );
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to create linked account: ${response.status} ${response.statusText}`,
-    );
+    let errorMsg = `Failed to create linked account: ${response.status} ${response.statusText}`;
+    try {
+      const errorData = await response.json();
+      if (errorData && errorData.error) {
+        errorMsg = errorData.error;
+      }
+    } catch (e) {
+      console.error("Error parsing error response:", e);
+    }
+    throw new Error(errorMsg);
   }
 
   const linkedAccount = await response.json();
@@ -105,9 +112,16 @@ export async function createNoAuthLinkedAccount(
   );
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to create no auth linked account: ${response.status} ${response.statusText}`,
-    );
+    let errorMsg = `Failed to create no auth linked account: ${response.status} ${response.statusText}`;
+    try {
+      const errorData = await response.json();
+      if (errorData && errorData.error) {
+        errorMsg = errorData.error;
+      }
+    } catch (e) {
+      console.error("Error parsing error response:", e);
+    }
+    throw new Error(errorMsg);
   }
 
   const linkedAccount = await response.json();
@@ -141,9 +155,16 @@ export async function getOauth2LinkURL(
   );
 
   if (!response.ok) {
-    throw new Error(
-      `Failed to get OAuth2 link URL: ${response.status} ${response.statusText}`,
-    );
+    let errorMsg = `Failed to get OAuth2 link URL: ${response.status} ${response.statusText}`;
+    try {
+      const errorData = await response.json();
+      if (errorData && errorData.error) {
+        errorMsg = errorData.error;
+      }
+    } catch (e) {
+      console.error("Error parsing error response:", e);
+    }
+    throw new Error(errorMsg);
   }
 
   const data = await response.json();

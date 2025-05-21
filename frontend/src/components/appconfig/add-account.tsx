@@ -152,11 +152,9 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
         })
         .catch((err) => {
           console.error("Failed to copy:", err);
-          toast.error("Failed to copy OAuth2 Link URL to clipboard");
         });
     } catch (error) {
       console.error(error);
-      toast.error("Failed to copy OAuth2 Link URL to clipboard");
     }
   };
 
@@ -178,7 +176,6 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
       window.location.href = oauth2LinkURL;
     } catch (error) {
       console.error("Error linking OAuth2 account:", error);
-      toast.error("Failed to link account");
     }
   };
 
@@ -203,7 +200,6 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
       setOpen(false);
     } catch (error) {
       console.error("Error linking API account:", error);
-      toast.error("Failed to link account");
     }
   };
 
@@ -226,7 +222,6 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
       setOpen(false);
     } catch (error) {
       console.error("Error linking no auth account:", error);
-      toast.error("Failed to link account");
     }
   };
 
