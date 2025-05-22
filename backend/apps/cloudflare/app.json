@@ -1,0 +1,19 @@
+{
+    "name": "CLOUDFLARE",
+    "display_name": "Cloudflare",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/cloudflare.png",
+    "provider": "https://developers.cloudflare.com/api",
+    "version": "1.0.0",
+    "description": "The Cloudflare API allows programmatic control over your Cloudflare account, including DNS, DDoS protection, and more.",
+    "security_schemes": {
+        "api_key": {
+            "location": "header",
+            "name": "Authorization",
+            "prefix": "Bearer"
+        }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": ["Deployment"],
+    "visibility": "public",
+    "active": true
+}
