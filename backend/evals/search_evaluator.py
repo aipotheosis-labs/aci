@@ -2,8 +2,8 @@ import logging
 import time
 from typing import Any
 
+import httpx
 import pandas as pd
-import requests
 from dotenv import load_dotenv
 from tqdm import tqdm
 
@@ -49,14 +49,15 @@ class SearchEvaluator:
         """
         try:
             start_time = time.time()
-            response = requests.get(
-                f"{self.api_url}/v1/functions/search",
-                params={"intent": intent, "limit": str(limit), "format": "basic"},
-                headers=self.headers,
-            )
+            with httpx.Client() as client:
+                response = client.get(
+                    f"{self.api_url}/v1/functions/search",
+                    params={"intent": intent, "limit": str(limit), "format": "basic"},
+                    headers=self.headers,
+                )
             response.raise_for_status()
             return response.json(), time.time() - start_time
-        except requests.exceptions.RequestException as e:
+        except httpx.HTTPError as e:
             logger.error(f"Error searching functions: {e}")
             return [], 0.0
 

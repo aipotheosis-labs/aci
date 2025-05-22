@@ -54,7 +54,6 @@ dev = [
     "huggingface-hub>=0.31.2",
     "pandas>=2.2.3",
     "pandas-stubs>=2.2.3.250308",
-    "requests>=2.32.3",
     "tenacity>=9.1.2",
     "tqdm>=4.67.1",
     "types-tqdm>=4.67.0.20250516",
