@@ -191,7 +191,7 @@ def test_execute_oauth2_based_function_with_expired_linked_account_access_token(
     assert request.called
     assert request.calls.last.request.url == "https://api.mock.aci.com/v1/greet/John?lang=en"
     assert request.calls.last.request.headers["X-CUSTOM-HEADER"] == "header123"
-    assert request.calls.last.request.content == b'{"name":"John","greeting":"default-greeting"}'
+    assert request.calls.last.request.content == b'{"name": "John","greeting": "default-greeting"}'
 
     # verify request was made with the new access token
     app = dummy_function_aci_test__hello_world_with_args.app
