@@ -56,6 +56,7 @@ dev = [
     { name = "pre-commit" },
     { name = "pytest" },
     { name = "pytest-subtests" },
+    { name = "requests" },
     { name = "responses" },
     { name = "respx" },
     { name = "ruff" },
@@ -97,7 +98,6 @@ requires-dist = [
     { name = "stripe", specifier = ">=12.1.0" },
     { name = "svix", specifier = ">=1.65.0" },
     { name = "uvicorn", extras = ["standard"], specifier = ">=0.31.1" },
-]
 
 [package.metadata.requires-dev]
 dev = [

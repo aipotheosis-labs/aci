@@ -15,7 +15,7 @@ Usage: $0 [options]
 Options:
   -h, --help   Display this help message
   -a, --all    Seed all available Apps and Functions (without this flag, it will seed only a selected set of Apps and their Functions (with dummy OAuth2 client id & secret if it's OAuth2 app))
-  -m, --mock   Use mock oauth2 client id & client secret for OAuth2 apps (otherwise you'll need to provide them in .app.secret.json for each app)
+  -m, --mock   Uses temporary files to mock OAuth2 credentials (client ID and secret) for apps instead of using existing .app.secrets.json files
 EOF
 }
 
