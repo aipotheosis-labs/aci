@@ -158,5 +158,59 @@
             "visible": ["path"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "SHAREPOINT__LIST_USER_DRIVES",
+        "description": "List the current user's drives",
+        "tags": ["drives"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/me/drives",
+            "server_url": "https://graph.microsoft.com/v1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SHAREPOINT__SERACH_FOR_ITEMS_IN_USER_DRIVE",
+        "description": "Search the hierarchy of items for items matching a query. searches for a match across several fields in the signed-in user's drive items.",
+        "tags": ["drive"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/me/drive/root/search(q='{query}')",
+            "server_url": "https://graph.microsoft.com/v1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "the http path parameters",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "The query to search for."
+                        }
+                    },
+                    "required": ["query"],
+                    "visible": ["query"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
     }
 ]
