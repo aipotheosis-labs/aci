@@ -1,6 +1,6 @@
 {
-    "name": "SHAREPOINT",
-    "display_name": "Microsoft SharePoint",
+    "name": "SHARE_POINT",
+    "display_name": "SharePoint",
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/sharepoint.png",
     "provider": "Microsoft",
     "version": "2.0.0",
@@ -10,8 +10,8 @@
         "location": "header",
         "name": "Authorization",
         "prefix": "Bearer",
-        "client_id": "{{ AIPOLABS_SHAREPOINT_CLIENT_ID }}",
-        "client_secret": "{{ AIPOLABS_SHAREPOINT_CLIENT_SECRET }}",
+        "client_id": "{{ AIPOLABS_SHARE_POINT_CLIENT_ID }}",
+        "client_secret": "{{ AIPOLABS_SHARE_POINT_CLIENT_SECRET }}",
         "scope": "Sites.Manage.All Sites.Read.All Sites.ReadWrite.All Sites.Selected Files.ReadWrite.All User.Read offline_access",
         "authorize_url": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
         "access_token_url": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
@@ -21,7 +21,7 @@
     "default_security_credentials_by_scheme": {},
     "categories": [
       "Productivity",
-      "File Management"
+      "Document Management"
     ],
     "visibility": "public",
     "active": true

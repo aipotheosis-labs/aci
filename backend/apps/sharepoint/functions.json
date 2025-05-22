@@ -1,6 +1,6 @@
 [
     {
-        "name": "SHAREPOINT__SEARCH_FOR_SITES",
+        "name": "SHARE_POINT__SEARCH_FOR_SITES",
         "description": "Search across a SharePoint tenant for sites that match keywords provided.",
         "tags": ["sites"],
         "visibility": "public",
@@ -34,7 +34,7 @@
         }
     },
     {
-        "name": "SHAREPOINT__GET_ROOT_SITE",
+        "name": "SHARE_POINT__GET_ROOT_SITE",
         "description": "Get the root site of a SharePoint tenant.",
         "tags": ["sites"],
         "visibility": "public",
@@ -54,7 +54,7 @@
         }
     },
     {
-        "name": "SHAREPOINT__GET_SITE_BY_ID",
+        "name": "SHARE_POINT__GET_SITE_BY_ID",
         "description": "Get a site by its ID.",
         "tags": ["sites"],
         "visibility": "public",
@@ -88,7 +88,7 @@
         }
     },
     {
-        "name": "SHAREPOINT__GET_SITE_BY_PATH",
+        "name": "SHARE_POINT__GET_SITE_BY_PATH",
         "description": "retrieve a site based on server-relative URL path. Site collection hostname and Site path, relative to server hostname.",
         "tags": ["sites"],
         "visibility": "public",
@@ -126,7 +126,7 @@
         }
     },
     {
-        "name": "SHAREPOINT__LIST_SUBSITES_FOR_A_SITE",
+        "name": "SHARE_POINT__LIST_SUBSITES_FOR_A_SITE",
         "description": "List all subsites for a site.",
         "tags": ["sites"],
         "visibility": "public",
@@ -160,7 +160,7 @@
         }
     },
     {
-        "name": "SHAREPOINT__LIST_DRIVES_FOR_A_SITE",
+        "name": "SHARE_POINT__LIST_DRIVES_FOR_A_SITE",
         "description": "List the document libraries for a site",
         "tags": ["drives"],
         "visibility": "public",
@@ -194,7 +194,7 @@
         }
     },
     {
-        "name": "SHAREPOINT__SERACH_FOR_ITEMS_IN_A_SITE_DRIVE",
+        "name": "SHARE_POINT__SERACH_FOR_ITEMS_IN_A_SITE_DRIVE",
         "description": "Search the hierarchy of items for items matching a query. searches for a match across several fields in the signed-in user's drive items.",
         "tags": ["drive"],
         "visibility": "public",
@@ -232,7 +232,7 @@
         }
     },
     {
-        "name": "SHAREPOINT__CREATE_FOLDER_IN_SITE_DRIVE",
+        "name": "SHARE_POINT__CREATE_FOLDER_IN_SITE_DRIVE",
         "description": "Create a new folder in a SharePoint site's document library (drive).",
         "tags": ["drive", "sharepoint", "folders"],
         "visibility": "public",
@@ -297,7 +297,7 @@
         }
     },
     {
-        "name": "SHAREPOINT__DELETE_ITEM_IN_SITE_DRIVE",
+        "name": "SHARE_POINT__DELETE_ITEM_IN_SITE_DRIVE",
         "description": "Delete a DriveItem by using its ID from a SharePoint site's document library.",
         "tags": ["drive", "sharepoint", "delete"],
         "visibility": "public",
@@ -335,7 +335,7 @@
         }
     },
     {
-        "name": "SHAREPOINT__CREATE_LIST_IN_A_SITE",
+        "name": "SHARE_POINT__CREATE_LIST_IN_A_SITE",
         "description": "Creates a new list in a SharePoint site.",
         "tags": ["sharepoint", "lists", "create"],
         "visibility": "public",
