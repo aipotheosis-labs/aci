@@ -333,5 +333,76 @@
             "visible": ["path"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "SHAREPOINT__CREATE_LIST_IN_A_SITE",
+        "description": "Creates a new list in a SharePoint site.",
+        "tags": ["sharepoint", "lists", "create"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/sites/{site-id}/lists",
+            "server_url": "https://graph.microsoft.com/v1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "The path parameters for the request.",
+                    "properties": {
+                        "site-id": {
+                            "type": "string",
+                            "description": "The ID of the SharePoint site where the list will be created."
+                        }
+                    },
+                    "required": ["site-id"],
+                    "visible": ["site-id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "The body payload for creating the list.",
+                    "properties": {
+                        "displayName": {
+                            "type": "string",
+                            "description": "The display name of the list."
+                        },
+                        "columns": {
+                            "type": "array",
+                            "description": "Optional. An array of column definitions for the list.",
+                            "items": {
+                                "type": "object",
+                                "properties": {},
+                                "required": [],
+                                "visible": [],
+                                "additionalProperties": true
+                            }
+                        },
+                        "list": {
+                            "type": "object",
+                            "description": "Metadata for the list creation.",
+                            "properties": {
+                                "template": {
+                                    "type": "string",
+                                    "description": "The list template to use (e.g., 'genericList', 'task', 'issue')."
+                                }
+                            },
+                            "required": ["template"],
+                            "visible": ["template"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["displayName", "list"],
+                    "visible": ["displayName", "list"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
     }
 ]
