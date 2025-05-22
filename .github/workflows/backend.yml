@@ -28,6 +28,7 @@ jobs:
       - name: Install Dependencies with uv
         working-directory: backend
         run: |
+          cat uv.lock
           uv sync
 
       - name: Run Ruff Linting
