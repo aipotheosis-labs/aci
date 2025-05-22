@@ -16,6 +16,7 @@ def test_get_app(
     dummy_api_key_1: str,
     dummy_app_github: App,
 ) -> None:
+    assert False
     app_name = dummy_app_github.name
     response = test_client.get(
         f"{config.ROUTER_PREFIX_APPS}/{app_name}",
