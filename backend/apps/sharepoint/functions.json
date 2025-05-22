@@ -160,35 +160,15 @@
         }
     },
     {
-        "name": "SHAREPOINT__LIST_USER_DRIVES",
-        "description": "List the current user's drives",
+        "name": "SHAREPOINT__LIST_A_SITE_DRIVE",
+        "description": "List the document libraries for a site",
         "tags": ["drives"],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/me/drives",
-            "server_url": "https://graph.microsoft.com/v1.0"
-        },
-        "parameters": {
-            "type": "object",
-            "properties": {},
-            "required": [],
-            "visible": [],
-            "additionalProperties": false
-        }
-    },
-    {
-        "name": "SHAREPOINT__SERACH_FOR_ITEMS_IN_USER_DRIVE",
-        "description": "Search the hierarchy of items for items matching a query. searches for a match across several fields in the signed-in user's drive items.",
-        "tags": ["drive"],
-        "visibility": "public",
-        "active": true,
-        "protocol": "rest",
-        "protocol_data": {
-            "method": "GET",
-            "path": "/me/drive/root/search(q='{query}')",
+            "path": "/sites/{site-id}/drives",
             "server_url": "https://graph.microsoft.com/v1.0"
         },
         "parameters": {
@@ -198,13 +178,154 @@
                     "type": "object",
                     "description": "the http path parameters",
                     "properties": {
-                        "query": {
+                        "site-id": {
                             "type": "string",
-                            "description": "The query to search for."
+                            "description": "The ID of the SharePoint site."
                         }
                     },
-                    "required": ["query"],
-                    "visible": ["query"],
+                    "required": ["site-id"],
+                    "visible": ["site-id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SHAREPOINT__SERACH_FOR_ITEMS_IN_A_SITE_DRIVE",
+        "description": "Search the hierarchy of items for items matching a query. searches for a match across several fields in the signed-in user's drive items.",
+        "tags": ["drive"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/sites/{site-id}/drive/root/search(q='{search-text}')",
+            "server_url": "https://graph.microsoft.com/v1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "the http path parameters",
+                    "properties": {
+                        "site-id": {
+                            "type": "string",
+                            "description": "The ID of the SharePoint site."
+                        },
+                        "search-text": {
+                            "type": "string",
+                            "description": "The text to search for."
+                        }
+                    },
+                    "required": ["site-id", "search-text"],
+                    "visible": ["site-id", "search-text"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SHAREPOINT__CREATE_FOLDER_IN_SITE_DRIVE",
+        "description": "Create a new folder in a SharePoint site's document library (drive).",
+        "tags": ["drive", "sharepoint", "folders"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/sites/{site-id}/drive/items/{parent-item-id}/children",
+            "server_url": "https://graph.microsoft.com/v1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "The path parameters for the request.",
+                    "properties": {
+                        "site-id": {
+                            "type": "string",
+                            "description": "The ID of the SharePoint site."
+                        },
+                        "parent-item-id": {
+                            "type": "string",
+                            "description": "The ID of the parent folder or 'root' to create in the root directory."
+                        }
+                    },
+                    "required": ["site-id", "parent-item-id"],
+                    "visible": ["site-id", "parent-item-id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "The body payload containing the folder information.",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the new folder."
+                        },
+                        "folder": {
+                            "type": "object",
+                            "description": "An empty object to indicate a folder should be created.",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "default": {},
+                            "additionalProperties": false
+                        },
+                        "@microsoft.graph.conflictBehavior": {
+                            "type": "string",
+                            "enum": ["rename", "fail", "replace"],
+                            "description": "Specifies what to do if a folder with the same name already exists."
+                        }
+                    },
+                    "required": ["name", "folder"],
+                    "visible": ["name", "@microsoft.graph.conflictBehavior"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SHAREPOINT__DELETE_ITEM_IN_SITE_DRIVE",
+        "description": "Delete a DriveItem by using its ID from a SharePoint site's document library.",
+        "tags": ["drive", "sharepoint", "delete"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/sites/{site-id}/drive/items/{item-id}",
+            "server_url": "https://graph.microsoft.com/v1.0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "The path parameters identifying the SharePoint site and the item to delete.",
+                    "properties": {
+                        "site-id": {
+                            "type": "string",
+                            "description": "The ID of the SharePoint site."
+                        },
+                        "item-id": {
+                            "type": "string",
+                            "description": "The ID of the item (file or folder) to delete."
+                        }
+                    },
+                    "required": ["site-id", "item-id"],
+                    "visible": ["site-id", "item-id"],
                     "additionalProperties": false
                 }
             },
