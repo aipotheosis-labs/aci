@@ -160,7 +160,7 @@
         }
     },
     {
-        "name": "SHAREPOINT__LIST_A_SITE_DRIVE",
+        "name": "SHAREPOINT__LIST_DRIVES_FOR_A_SITE",
         "description": "List the document libraries for a site",
         "tags": ["drives"],
         "visibility": "public",
