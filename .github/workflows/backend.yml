@@ -28,7 +28,7 @@ jobs:
       - name: Install Dependencies with uv
         working-directory: backend
         run: |
-          uv sync --all-extras --dev
+          uv sync
 
       - name: Run Ruff Linting
         working-directory: backend

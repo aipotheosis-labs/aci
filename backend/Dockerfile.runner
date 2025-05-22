@@ -5,7 +5,7 @@ WORKDIR /workdir
 
 COPY ./pyproject.toml ./uv.lock /workdir/
 
-RUN uv sync --dev --no-install-project
+RUN uv sync --no-install-project
 
 ENV PATH="/workdir/.venv/bin:$PATH"
 ENV PYTHONPATH=/workdir:${PYTHONPATH}
