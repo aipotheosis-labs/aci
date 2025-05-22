@@ -8,7 +8,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/sites?search={query}",
+            "path": "/sites?search={search_text}",
             "server_url": "https://graph.microsoft.com/v1.0"
         },
         "parameters": {
@@ -18,13 +18,13 @@
               "type": "object",
               "description": "the http path parameters",
               "properties": {
-                "query": {
+                "search_text": {
                   "type": "string",
                   "description": "The search filter is a free text search that uses multiple properties when retrieving the search results"
                 }
               },
-              "required": ["query"],
-              "visible":  ["query"],
+              "required": ["search_text"],
+              "visible":  ["search_text"],
               "additionalProperties": false
             }
           },
@@ -168,7 +168,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/sites/{site-id}/drives",
+            "path": "/sites/{site_id}/drives",
             "server_url": "https://graph.microsoft.com/v1.0"
         },
         "parameters": {
@@ -178,13 +178,13 @@
                     "type": "object",
                     "description": "the http path parameters",
                     "properties": {
-                        "site-id": {
+                        "site_id": {
                             "type": "string",
                             "description": "The ID of the SharePoint site."
                         }
                     },
-                    "required": ["site-id"],
-                    "visible": ["site-id"],
+                    "required": ["site_id"],
+                    "visible": ["site_id"],
                     "additionalProperties": false
                 }
             },
@@ -202,7 +202,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/sites/{site-id}/drive/root/search(q='{search-text}')",
+            "path": "/sites/{site_id}/drive/root/search(q='{search_text}')",
             "server_url": "https://graph.microsoft.com/v1.0"
         },
         "parameters": {
@@ -212,17 +212,17 @@
                     "type": "object",
                     "description": "the http path parameters",
                     "properties": {
-                        "site-id": {
+                        "site_id": {
                             "type": "string",
                             "description": "The ID of the SharePoint site."
                         },
-                        "search-text": {
+                        "search_text": {
                             "type": "string",
                             "description": "The text to search for."
                         }
                     },
-                    "required": ["site-id", "search-text"],
-                    "visible": ["site-id", "search-text"],
+                    "required": ["site_id", "search_text"],
+                    "visible": ["site_id", "search_text"],
                     "additionalProperties": false
                 }
             },
@@ -240,7 +240,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "POST",
-            "path": "/sites/{site-id}/drive/items/{parent-item-id}/children",
+            "path": "/sites/{site_id}/drive/items/{parent_item_id}/children",
             "server_url": "https://graph.microsoft.com/v1.0"
         },
         "parameters": {
@@ -250,17 +250,17 @@
                     "type": "object",
                     "description": "The path parameters for the request.",
                     "properties": {
-                        "site-id": {
+                        "site_id": {
                             "type": "string",
                             "description": "The ID of the SharePoint site."
                         },
-                        "parent-item-id": {
+                        "parent_item_id": {
                             "type": "string",
                             "description": "The ID of the parent folder or 'root' to create in the root directory."
                         }
                     },
-                    "required": ["site-id", "parent-item-id"],
-                    "visible": ["site-id", "parent-item-id"],
+                    "required": ["site_id", "parent_item_id"],
+                    "visible": ["site_id", "parent_item_id"],
                     "additionalProperties": false
                 },
                 "body": {
@@ -305,7 +305,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "DELETE",
-            "path": "/sites/{site-id}/drive/items/{item-id}",
+            "path": "/sites/{site_id}/drive/items/{item_id}",
             "server_url": "https://graph.microsoft.com/v1.0"
         },
         "parameters": {
@@ -315,17 +315,17 @@
                     "type": "object",
                     "description": "The path parameters identifying the SharePoint site and the item to delete.",
                     "properties": {
-                        "site-id": {
+                        "site_id": {
                             "type": "string",
                             "description": "The ID of the SharePoint site."
                         },
-                        "item-id": {
+                        "item_id": {
                             "type": "string",
                             "description": "The ID of the item (file or folder) to delete."
                         }
                     },
-                    "required": ["site-id", "item-id"],
-                    "visible": ["site-id", "item-id"],
+                    "required": ["site_id", "item_id"],
+                    "visible": ["site_id", "item_id"],
                     "additionalProperties": false
                 }
             },
@@ -343,7 +343,7 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "POST",
-            "path": "/sites/{site-id}/lists",
+            "path": "/sites/{site_id}/lists",
             "server_url": "https://graph.microsoft.com/v1.0"
         },
         "parameters": {
@@ -353,13 +353,13 @@
                     "type": "object",
                     "description": "The path parameters for the request.",
                     "properties": {
-                        "site-id": {
+                        "site_id": {
                             "type": "string",
                             "description": "The ID of the SharePoint site where the list will be created."
                         }
                     },
-                    "required": ["site-id"],
-                    "visible": ["site-id"],
+                    "required": ["site_id"],
+                    "visible": ["site_id"],
                     "additionalProperties": false
                 },
                 "body": {
