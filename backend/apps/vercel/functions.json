@@ -369,7 +369,7 @@
     },
     {
         "name": "VERCEL__ADD_DOMAIN_TO_PROJECT",
-        "description": "Adds a domain to a Vercel project by project id or name. Only the domain name is required in the body.",
+        "description": "Adds a domain to a Vercel project by project id or name.",
         "tags": ["project", "domain", "add"],
         "visibility": "public",
         "active": true,
