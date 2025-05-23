@@ -22,11 +22,9 @@ import { Agent } from "@/lib/types/project";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { useAppConfigs } from "@/hooks/use-app-config";
-<<<<<<< HEAD
 import { useCreateAgent, useDeleteAgent } from "@/hooks/use-agent";
-=======
 import { updateProject } from "@/lib/api/project";
->>>>>>> 302bb7f (Added support for multiple projects)
+import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 
 export default function ProjectSettingPage() {
   const { activeProject } = useMetaInfo();
@@ -273,12 +271,11 @@ export default function ProjectSettingPage() {
                   permanently deletes the project and all related data.
                 </p>
               </div>
-              <Button
-                variant="destructive"
-                className="bg-red-600 hover:bg-red-700"
-              >
-                Delete project
-              </Button>
+              <DeleteProjectDialog
+                accessToken={accessToken}
+                projectId={activeProject.id}
+                projectName={activeProject.name}
+              />
             </div>
           </div>
         </div>

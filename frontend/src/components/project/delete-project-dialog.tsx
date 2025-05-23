@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +15,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { deleteProject } from "@/lib/api/project";
+import { useMetaInfo } from "@/components/context/metainfo";
 
 interface DeleteProjectDialogProps {
   accessToken: string;
@@ -29,14 +29,14 @@ export function DeleteProjectDialog({
   projectName,
 }: DeleteProjectDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
-  const router = useRouter();
+  const { reloadActiveProject } = useMetaInfo();
 
   const handleDeleteProject = async () => {
     try {
       setIsDeleting(true);
       await deleteProject(accessToken, projectId);
+      await reloadActiveProject();
       toast.success("Project deleted successfully");
-      router.push("/");
     } catch (error) {
       console.error("Failed to delete project:", error);
       toast.error("Failed to delete project");
