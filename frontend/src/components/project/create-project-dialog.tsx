@@ -26,6 +26,7 @@ import {
 import { toast } from "sonner";
 import { createProject } from "@/lib/api/project";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(1, "Project name cannot be empty"),
@@ -52,6 +53,7 @@ export function CreateProjectDialog({
 }: CreateProjectDialogProps) {
   const [open, setOpen] = useState(false);
   const { setActiveProject } = useMetaInfo();
+  const router = useRouter();
 
   // Use controlled open state if provided
   const isOpen = openDialog !== undefined ? openDialog : open;
@@ -72,6 +74,7 @@ export function CreateProjectDialog({
       setIsOpen(false);
       form.reset();
       toast.success("Project created successfully");
+      router.push("/apps");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Failed to create project:", error);

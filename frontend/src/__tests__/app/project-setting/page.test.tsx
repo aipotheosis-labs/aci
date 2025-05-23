@@ -8,6 +8,10 @@ import { useAppConfigs } from "@/hooks/use-app-config";
 import type { QueryObserverResult } from "@tanstack/react-query";
 import { AppConfig } from "@/lib/types/appconfig";
 
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(),
+}));
+
 // Mock the modules
 vi.mock("@/components/context/metainfo", () => ({
   useMetaInfo: vi.fn(),

@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/tooltip";
 import { deleteProject } from "@/lib/api/project";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { useRouter } from "next/navigation";
 
 interface DeleteProjectDialogProps {
   accessToken: string;
@@ -38,6 +39,7 @@ export function DeleteProjectDialog({
   const [confirmName, setConfirmName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const { reloadActiveProject, projects } = useMetaInfo();
+  const router = useRouter();
 
   const isLastProject = projects.length === 1;
 
@@ -59,6 +61,7 @@ export function DeleteProjectDialog({
       toast.success("Project deleted successfully");
       setIsOpen(false);
       resetForm();
+      router.push("/apps");
     } catch (error) {
       console.error("Failed to delete project:", error);
       toast.error("Failed to delete project");
