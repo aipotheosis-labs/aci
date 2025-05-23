@@ -27,7 +27,7 @@ import { toast } from "sonner";
 import { createProject } from "@/lib/api/project";
 
 const formSchema = z.object({
-  name: z.string().min(1, "Project name is required"),
+  name: z.string().min(1, "Project name cannot be empty"),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -119,15 +119,7 @@ export function CreateProjectDialog({
                 <FormItem>
                   <FormLabel>Project Name</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Enter project name"
-                      {...field}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          form.handleSubmit(handleSubmit)();
-                        }
-                      }}
-                    />
+                    <Input placeholder="Enter project name" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
