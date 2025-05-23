@@ -25,26 +25,47 @@ logger = get_logger(__name__)
 
 def enforce_project_creation_quota(db_session: Session, org_id: UUID) -> None:
     """
-    Check and enforce that the user/organization hasn't exceeded their project creation quota.
+    Check and enforce that the user/organization hasn't exceeded their project creation quota
+    based on their subscription plan.
 
     Args:
         db_session: Database session
-        user_id: ID of the user to check
+        org_id: ID of the organization to check
 
     Raises:
         MaxProjectsReached: If the user has reached their maximum allowed projects
+        SubscriptionPlanNotFound: If the organization's subscription plan cannot be found
     """
+    # Get the organization's subscription
+    subscription = crud.subscriptions.get_subscription_by_org_id(db_session, org_id)
+    if not subscription:
+        # If no subscription found, use the free plan
+        plan = crud.plans.get_by_name(db_session, "free")
+        if not plan:
+            raise SubscriptionPlanNotFound("Free plan not found")
+    else:
+        # Get the plan from the subscription
+        plan = crud.plans.get_by_id(db_session, subscription.plan_id)
+        if not plan:
+            raise SubscriptionPlanNotFound(f"Plan {subscription.plan_id} not found")
+
+    # Get the projects quota from the plan's features
+    max_projects = plan.features.get("projects", 1)  # Default to 1 if not specified
+
     projects = crud.projects.get_projects_by_org(db_session, org_id)
-    if len(projects) >= config.MAX_PROJECTS_PER_ORG:
+    if len(projects) >= max_projects:
         logger.error(
-            "user/organization has reached maximum projects quota",
+            "user/organization has reached maximum projects quota for their plan",
             extra={
                 "org_id": org_id,
-                "max_projects": config.MAX_PROJECTS_PER_ORG,
+                "max_projects": max_projects,
                 "num_projects": len(projects),
+                "plan": plan.name,
             },
         )
-        raise MaxProjectsReached()
+        raise MaxProjectsReached(
+            message=f"the {plan.name} plan only allows {max_projects} projects"
+        )
 
 
 def enforce_agent_creation_quota(db_session: Session, project_id: UUID) -> None:

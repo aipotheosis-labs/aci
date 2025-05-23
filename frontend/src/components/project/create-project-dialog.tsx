@@ -69,6 +69,7 @@ export function CreateProjectDialog({
   const handleSubmit = async (values: FormValues) => {
     try {
       const newProject = await createProject(accessToken, values.name, orgId);
+      console.log("newProject", newProject);
       setActiveProject(newProject);
       await onProjectCreated();
       setIsOpen(false);
@@ -77,19 +78,8 @@ export function CreateProjectDialog({
       router.push("/apps");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.error("Failed to create project:", error);
-
-      if (
-        error.message?.includes("maximum projects quota") ||
-        error.message?.includes("Max projects reached") ||
-        error.message?.toLowerCase().includes("max projects")
-      ) {
-        toast.error(
-          "You have reached the maximum number of projects allowed for your plan",
-        );
-      } else {
-        toast.error("Failed to create project");
-      }
+      console.log("error", error);
+      toast.error(error.message || "Failed to create project");
     }
   };
 
