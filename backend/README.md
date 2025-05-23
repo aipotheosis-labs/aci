@@ -18,7 +18,7 @@ The backend component of ACI.dev provides the server infrastructure, API endpoin
     - [Running Tests](#running-tests)
   - [Database Management](#database-management)
     - [Working with Migrations](#working-with-migrations)
-  - [PropelAuth Webhooks](#propelauth-webhooks)
+  - [PropelAuth Configuration](#propelauth-configuration)
   - [Stripe Webhooks](#stripe-webhooks)
   - [Admin CLI](#admin-cli)
   - [Running Evaluations](#running-evaluations)
@@ -149,8 +149,8 @@ For VS Code users, configure Ruff formatter:
    ```bash
    # put this in a file called .app.secrets.json under ./apps/gmail/
    {
-      "AIPOLABS_GOOGLE_APP_CLIENT_ID": "<your_google_oauth2_client_id>",
-      "AIPOLABS_GOOGLE_APP_CLIENT_SECRET": "<your_google_oauth2_client_secret>"
+      "AIPOLABS_GMAIL_CLIENT_ID": "<your_google_oauth2_client_id>",
+      "AIPOLABS_GMAIL_CLIENT_SECRET": "<your_google_oauth2_client_secret>"
    }
    ```
 
@@ -232,53 +232,93 @@ When making changes to database models:
    docker compose exec runner alembic downgrade -1
    ```
 
-## PropelAuth Webhooks
+## PropelAuth Configuration
 
 > [!NOTE]
-> This is only needed if you need to develop PropelAuth related features.
+> This section is only required if you need to develop features that integrate with PropelAuth.
 
-If you are developing the dev portal, you would need a real `user` and `org` in the
-PropelAuth test environment as well as a default `project` and `agent` in your local db.
+When developing the dev portal, you'll need an actual user and organization in PropelAuth's test environment, along with a default project and agent in your local database. This section guides you through setting up these connections.
+
+### Values to be filled
 
 You would need to replace a few dummy values with real values in `.env.local`:
+- `SERVER_PROPELAUTH_AUTH_URL` - The authentication URL from PropelAuth
+- `SERVER_PROPELAUTH_API_KEY` - Your PropelAuth API key
+- `SERVER_SVIX_SIGNING_SECRET` - The signing secret for webhooks
 
-- `SERVER_PROPELAUTH_AUTH_URL`
-- `SERVER_PROPELAUTH_API_KEY`
-- `SERVER_SVIX_SIGNING_SECRET`
+### Setup Steps
 
-Follow the steps here to set up the webhooks so that when you sign up on the PropelAuth
-test environment, PropelAuth will notify your local server to create an org in the
-PropelAuth test environment for you as well as creating a default project and agent in
-the local db.
+Follow these steps to configure PropelAuth for local development:
 
-1. Install and set up ngrok:
-   - Follow [ngrok's getting started guide](https://ngrok.com/docs/getting-started/?os=macos)
-   - Expose your local server: `ngrok http http://localhost:8000`
-   - Copy your public endpoint you just exposed from previous step and create a new endpoint in the [ngrok dashboard](https://dashboard.ngrok.com/endpoints) (e.g. <https://7c4c-2a06-5904-1e06-6a00-ddc6-68ce-ffae-8783.ngrok-free.app>)
+#### 1. Set Up Ngrok
 
-1. Configure PropelAuth:
-   - Go to your PropelAuth Org [dashboard](https://app.propelauth.com/proj/1b327933-ffbf-4a36-bd05-76cd896b0d56) (the link here is ours, you would need your own)
-   - In the Frontend Integrations tab, you can find an Auth URL, copy that URL and use it to replace the dummy value of `SERVER_PROPELAUTH_AUTH_URL` in `.env.local`
-   - Go to the **Users** and **Organizations** tabs, delete your previously created user and organization. (Note: only delete the user and org you created previously)
-     ![delete user](./images/delete-user.png)
-     ![delete org](./images/delete-org.png)
-   - If you don't have a PropelAuth API key already, go to the **Backend Integration** tab and
-     create an API key for the test environment, set it as `SERVER_PROPELAUTH_API_KEY`
-     in `.env.local`. (If you haven't done so in previous steps)
-    ![propelauth-api-key](./images/propelauth-api-key.png)
-   - Go to the **Integrations** tab on the dashboard, click Webhooks. And click **Set Up Webhooks** for the **TEST ENV**, which will lead you to [Svix endpoints](https://app.svix.com/app_2uuG50X13IEu2cVRRL5fnXOeWWv/endpoints)
-    page.
-    ![webhook-setup](./images/webhook-setup.png)
-   - Click `Add Endpoint`, put `<your_gnrok_public_endpoint>/v1/webhooks/auth/user-created` as the endpoint and subscribe to the `user.created` event. Hit Create.
-    ![svix](./images/svix.png)
-   - Copy the `Signing Secret` of the endpoint and set it as `SERVER_SVIX_SIGNING_SECRET`
-    in `.env.local`.
-    ![svix](./images/svix-signing-secret.png)
-   - Go back to the [Getting Started](#getting-started) section step 5 to bring up
-     docker compose
+Ngrok creates a public URL for your local server, allowing PropelAuth webhooks to reach your machine:
 
-1. Change the `NEXT_PUBLIC_AUTH_URL` in the frontend `.env` file to the value of the
-   `SERVER_PROPELAUTH_AUTH_URL`
+- Install ngrok from the [getting started guide](https://ngrok.com/docs/getting-started/?os=macos)
+- Start a tunnel to your local server:
+  ```bash
+  ngrok http http://localhost:8000
+  ```
+- Copy the generated public endpoint (e.g., `https://7c4c-2a06-5904-1e06-6a00-ddc6-68ce-ffae-8783.ngrok-free.app`)
+- Optional: View traffic logs in the [ngrok dashboard](https://dashboard.ngrok.com/endpoints)
+
+#### 2. Configure PropelAuth Settings
+
+- Navigate to the [PropelAuth dashboard](https://app.propelauth.com/proj/1b327933-ffbf-4a36-bd05-76cd896b0d56)
+- If needed, switch to the `aipolabs local` organization by clicking your account name and selecting **Switch to aipolabs local**
+
+  <img src="./images/propelauth-switch-to-local.png" width="300" alt="Switch to aipolabs-local project in PropelAuth" />
+
+- In the **Users** and **Organizations** tabs:
+  - Remove any previously created test users and organizations
+
+- In the **Frontend Integrations** tab:
+  - Locate and copy the Auth URL
+  - Use this URL for both:
+    - `SERVER_PROPELAUTH_AUTH_URL` in backend's `.env.local`
+    - `NEXT_PUBLIC_AUTH_URL` in frontend's `.env`
+
+- In the **Backend Integration** tab (if you need a new API key):
+  1. Click **Create New API Key**
+  2. Name it `<Your name> Local Testing`
+  3. Copy the key and set it as `SERVER_PROPELAUTH_API_KEY` in `.env.local`
+
+#### 3. Set Up Webhooks
+
+- Navigate to **Integrations** → **Webhooks** in the dashboard
+- Click **Set Up Webhooks** for the **TEST ENV**
+- On the Svix endpoints page:
+  1. Click **Add Endpoint**
+  2. For the endpoint URL, enter your ngrok URL followed by the path:
+     ```
+     <your-ngrok-url>/v1/webhooks/auth/user-created
+     ```
+  3. Subscribe to the `user.created` event
+  4. Click **Create**
+- After creation:
+  - Find and copy the **Signing Secret**
+  - Set it as `SERVER_SVIX_SIGNING_SECRET` in `.env.local`
+
+#### 4. Update Docker Configuration
+
+- Edit `backend/compose.yml` to comment out the PropelAuth mock service:
+  - In the `server` service section, comment out:
+    ```yaml
+    # - ./mock/propelauth_fastapi_mock.py:/workdir/.venv/lib/python3.12/site-packages/propelauth_fastapi/__init__.py
+    ```
+  - In the `runner` service section, comment out:
+    ```yaml
+    # - ./mock/propelauth_fastapi_mock.py:/workdir/.venv/lib/python3.12/site-packages/propelauth_fastapi/__init__.py
+    ```
+
+#### 5. Restart the Docker container
+
+#### 6. Verify Your Setup
+
+Test your configuration by:
+- Visiting your frontend application (typically at `http://localhost:3000`)
+- Creating a new account or logging in
+- When successful, the webhook should trigger and automatically create the organization and project
 
 ## Stripe Webhooks
 
@@ -349,12 +389,6 @@ docker compose exec runner python -m aci.cli create-app --app-file ./apps/brave_
 ```
 
 ## Running Evaluations
-
-First, sync the required packages for evaluations:
-
-```bash
-uv sync --extra eval
-```
 
 You will need to set up the following environment variables:
 

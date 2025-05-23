@@ -3,7 +3,7 @@ name: Backend Checks
 on:
   push:
     branches: [main]
-  pull_request_target:
+  pull_request:
     branches: [main]
   schedule:
     - cron: "0 9 * * *"
@@ -28,7 +28,7 @@ jobs:
       - name: Install Dependencies with uv
         working-directory: backend
         run: |
-          uv sync --all-extras --dev
+          uv sync
 
       - name: Run Ruff Linting
         working-directory: backend

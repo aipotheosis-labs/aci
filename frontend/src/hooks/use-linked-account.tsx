@@ -13,6 +13,7 @@ import {
 import { useMetaInfo } from "@/components/context/metainfo";
 import { getApiKey } from "@/lib/api/util";
 import { LinkedAccount } from "@/lib/types/linkedaccount";
+import { toast } from "sonner";
 
 const linkedAccountKeys = {
   all: (projectId: string) => [projectId, "linkedaccounts"] as const,
@@ -66,6 +67,9 @@ export const useCreateAPILinkedAccount = () => {
       queryClient.invalidateQueries({
         queryKey: linkedAccountKeys.all(activeProject.id),
       }),
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
 };
 
@@ -90,6 +94,9 @@ export const useCreateNoAuthLinkedAccount = () => {
       queryClient.invalidateQueries({
         queryKey: linkedAccountKeys.all(activeProject.id),
       }),
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
 };
 type GetOauth2LinkURLParams = {
@@ -110,6 +117,9 @@ export const useGetOauth2LinkURL = () => {
         apiKey,
         params.afterOAuth2LinkRedirectURL,
       ),
+    onError: (error) => {
+      toast.error(error.message);
+    },
   });
 };
 

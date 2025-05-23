@@ -125,4 +125,4 @@ def enforce_linked_accounts_creation_quota(
                 "plan": plan.name,
             },
         )
-        raise MaxUniqueLinkedAccountOwnerIdsReached()
+        raise MaxUniqueLinkedAccountOwnerIdsReached(plan.name)

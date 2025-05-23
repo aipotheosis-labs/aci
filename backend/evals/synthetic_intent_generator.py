@@ -129,7 +129,6 @@ class SyntheticIntentGenerator:
             description=f"Synthetic intent dataset generated with {self.model} using {self.prompt_type} prompts",
             metadata={
                 "model": self.model,
-                "size": len(df),
                 "prompt": PROMPTS[self.prompt_type](
                     pd.Series(
                         {

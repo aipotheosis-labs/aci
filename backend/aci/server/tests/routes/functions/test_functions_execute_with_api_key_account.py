@@ -1,3 +1,5 @@
+import json
+
 import httpx
 import pytest
 import respx
@@ -180,4 +182,4 @@ def test_execute_function_with_app_default_api_key(
             assert mock_request.calls.last.request.headers["X-CUSTOM-HEADER"] == "header123"
 
         # Verify request content for cases with args
-        assert mock_request.calls.last.request.content == expected_content
+        assert json.loads(mock_request.calls.last.request.content) == json.loads(expected_content)
