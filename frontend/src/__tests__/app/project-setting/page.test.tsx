@@ -9,6 +9,10 @@ import type { QueryObserverResult } from "@tanstack/react-query";
 import { AppConfig } from "@/lib/types/appconfig";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(),
+}));
+
 // Mock the modules
 vi.mock("@/components/context/metainfo", () => ({
   useMetaInfo: vi.fn(),
