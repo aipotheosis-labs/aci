@@ -15,6 +15,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { deleteProject } from "@/lib/api/project";
 import { useMetaInfo } from "@/components/context/metainfo";
 
@@ -32,7 +37,9 @@ export function DeleteProjectDialog({
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmName, setConfirmName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const { reloadActiveProject } = useMetaInfo();
+  const { reloadActiveProject, projects } = useMetaInfo();
+
+  const isLastProject = projects.length === 1;
 
   const resetForm = () => {
     setConfirmName("");
@@ -68,11 +75,28 @@ export function DeleteProjectDialog({
         if (!open) resetForm();
       }}
     >
-      <AlertDialogTrigger asChild>
-        <Button variant="destructive" className="bg-red-600 hover:bg-red-700">
-          Delete project
-        </Button>
-      </AlertDialogTrigger>
+      {isLastProject ? (
+        <Tooltip>
+          <TooltipTrigger>
+            <Button
+              variant="destructive"
+              className="bg-red-600 hover:bg-red-700"
+              disabled={true}
+            >
+              Delete project
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>Cannot delete the last project</p>
+          </TooltipContent>
+        </Tooltip>
+      ) : (
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" className="bg-red-600 hover:bg-red-700">
+            Delete project
+          </Button>
+        </AlertDialogTrigger>
+      )}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Project</AlertDialogTitle>
