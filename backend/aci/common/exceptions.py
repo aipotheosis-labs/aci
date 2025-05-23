@@ -216,9 +216,12 @@ class MaxProjectsReached(ACIException):
     Exception raised when a user/organization has reached the maximum number of projects
     """
 
-    def __init__(self, message: str | None = None):
+    def __init__(self, plan: str | None = None, message: str | None = None):
+        title = "Max projects reached"
+        if plan:
+            title = f"{title} for the {plan} plan"
         super().__init__(
-            title="Max projects reached",
+            title=title,
             message=message,
             error_code=status.HTTP_403_FORBIDDEN,
         )

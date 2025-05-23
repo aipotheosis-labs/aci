@@ -134,7 +134,6 @@ export default function ProjectSettingPage() {
               </Button>
             ) : (
               <Button
-                size="sm"
                 variant="ghost"
                 onClick={() => setIsEditingName(true)}
                 className="h-8 w-8 p-0"
@@ -262,6 +261,27 @@ export default function ProjectSettingPage() {
             searchBarProps={{ placeholder: "Search agents..." }}
           />
         )}
+        {/* Delete Project Section */}
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold mb-4">Danger Zone</h2>
+          <div className="border border-red-200 rounded-md bg-red-50">
+            <div className="p-4 flex items-center justify-between">
+              <div>
+                <h3 className="font-medium">Delete this project</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  Once you delete a project, there is no going back. This action
+                  permanently deletes the project and all related data.
+                </p>
+              </div>
+              <Button
+                variant="destructive"
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Delete project
+              </Button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
