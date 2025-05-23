@@ -23,6 +23,7 @@ from aci.common.logging_setup import get_logger
 from aci.common.schemas.linked_accounts import (
     LinkedAccountAPIKeyCreate,
     LinkedAccountDefaultCreate,
+    LinkedAccountHTTPBasicCreate,
     LinkedAccountNoAuthCreate,
     LinkedAccountOAuth2Create,
     LinkedAccountOAuth2CreateState,
@@ -32,6 +33,7 @@ from aci.common.schemas.linked_accounts import (
 )
 from aci.common.schemas.security_scheme import (
     APIKeySchemeCredentials,
+    HTTPBasicSchemeCredentials,
     NoAuthSchemeCredentials,
 )
 from aci.server import config, quota_manager
@@ -618,6 +620,96 @@ async def linked_accounts_oauth2_callback(
         return RedirectResponse(
             url=state.after_oauth2_link_redirect_url, status_code=status.HTTP_302_FOUND
         )
+
+    return linked_account
+
+
+@router.post("/http-basic", response_model=LinkedAccountPublic)
+async def link_account_with_http_basic(
+    context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
+    body: LinkedAccountHTTPBasicCreate,
+) -> LinkedAccount:
+    """
+    Create a linked account under an HTTP Basic based app.
+    """
+    logger.info(
+        "linking HTTP Basic account",
+        extra={
+            "app_name": body.app_name,
+            "linked_account_owner_id": body.linked_account_owner_id,
+        },
+    )
+    app_configuration = crud.app_configurations.get_app_configuration(
+        context.db_session, context.project.id, body.app_name
+    )
+    if not app_configuration:
+        logger.error(
+            "failed to link HTTP Basic account, app configuration not found",
+            extra={"app_name": body.app_name},
+        )
+        raise AppConfigurationNotFound(
+            f"configuration for app={body.app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{body.app_name}"
+        )
+    # TODO: for now we require the security_schema used for accounts under an App must be the same as the security_schema configured in the app
+    # configuration. But in the future, we might lift this restriction and allow any security_schema as long the App supports it.
+    if app_configuration.security_scheme != SecurityScheme.HTTP_BASIC:
+        logger.error(
+            "failed to link HTTP Basic account, app configuration security scheme is "
+            f"{app_configuration.security_scheme} instead of HTTP Basic",
+            extra={
+                "app_name": body.app_name,
+                "security_scheme": app_configuration.security_scheme,
+            },
+        )
+        raise NoImplementationFound(
+            f"the security_scheme configured in app={body.app_name} is "
+            f"{app_configuration.security_scheme}, not HTTP Basic"
+        )
+    linked_account = crud.linked_accounts.get_linked_account(
+        context.db_session,
+        context.project.id,
+        body.app_name,
+        body.linked_account_owner_id,
+    )
+    security_credentials = HTTPBasicSchemeCredentials(
+        username=body.username,
+        password=body.password,
+    )
+    # TODO: same as other linked account creation, we might want to separate the logic for updating and creating a linked account
+    # or give warning to clients if the linked account already exists to avoid accidental overwriting the account
+    if linked_account:
+        # TODO: support updating http basic linked account
+        logger.error(
+            "failed to link HTTP Basic account, linked account already exists",
+            extra={"linked_account_id": linked_account.id},
+        )
+        raise LinkedAccountAlreadyExists(
+            f"linked account={linked_account.id} already exists, please update the linked account instead"
+        )
+    else:
+        # Enforce linked accounts quota before creating new account
+        quota_manager.enforce_linked_accounts_creation_quota(
+            context.db_session, context.project.org_id, body.linked_account_owner_id
+        )
+
+        logger.info(
+            "creating HTTP Basic linked account",
+            extra={
+                "app_name": body.app_name,
+                "linked_account_owner_id": body.linked_account_owner_id,
+            },
+        )
+        linked_account = crud.linked_accounts.create_linked_account(
+            context.db_session,
+            context.project.id,
+            body.app_name,
+            body.linked_account_owner_id,
+            SecurityScheme.HTTP_BASIC,
+            security_credentials,
+            enabled=True,
+        )
+
+    context.db_session.commit()
 
     return linked_account
 

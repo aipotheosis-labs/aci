@@ -16,6 +16,7 @@ import { updateAgent } from "@/lib/api/agent";
 
 import {
   useCreateAPILinkedAccount,
+  useCreateHTTPBasicLinkedAccount,
   useCreateNoAuthLinkedAccount,
   useGetOauth2LinkURL,
 } from "@/hooks/use-linked-account";
@@ -43,6 +44,7 @@ import {
   FORM_SUBMIT_LINK_OAUTH2_ACCOUNT,
   FORM_SUBMIT_API_KEY,
   FORM_SUBMIT_NO_AUTH,
+  FORM_SUBMIT_HTTP_BASIC,
 } from "@/components/apps/configure-app/linked-account-step";
 
 // step definitions
@@ -87,6 +89,10 @@ export function ConfigureApp({
     isPending: isCreatingAPILinkedAccount,
   } = useCreateAPILinkedAccount();
   const {
+    mutateAsync: createHTTPBasicLinkedAccount,
+    isPending: isCreatingHTTPBasicLinkedAccount,
+  } = useCreateHTTPBasicLinkedAccount();
+  const {
     mutateAsync: createNoAuthLinkedAccount,
     isPending: isCreatingNoAuthLinkedAccount,
   } = useCreateNoAuthLinkedAccount();
@@ -97,6 +103,7 @@ export function ConfigureApp({
   const isLoading =
     manualLoading ||
     isCreatingAPILinkedAccount ||
+    isCreatingHTTPBasicLinkedAccount ||
     isCreatingNoAuthLinkedAccount ||
     isGettingOauth2LinkURL;
 
@@ -125,6 +132,8 @@ export function ConfigureApp({
     defaultValues: {
       linkedAccountOwnerId: "",
       apiKey: "",
+      username: "",
+      password: "",
     },
   });
 
@@ -268,6 +277,14 @@ export function ConfigureApp({
             values.apiKey as string,
           );
           break;
+        case FORM_SUBMIT_HTTP_BASIC:
+          await linkHTTPBasicAccount(
+            name,
+            values.linkedAccountOwnerId,
+            values.username as string,
+            values.password as string,
+          );
+          break;
         case FORM_SUBMIT_NO_AUTH:
           await linkNoAuthAccount(name, values.linkedAccountOwnerId);
           break;
@@ -370,6 +387,30 @@ export function ConfigureApp({
       toast.success("account linked successfully");
     } catch (error) {
       console.error("Error linking API account:", error);
+      toast.error("link account failed");
+    }
+  };
+
+  const linkHTTPBasicAccount = async (
+    appName: string,
+    linkedAccountOwnerId: string,
+    username: string,
+    password: string,
+  ) => {
+    if (!appName) {
+      throw new Error("no app selected");
+    }
+
+    try {
+      await createHTTPBasicLinkedAccount({
+        appName,
+        linkedAccountOwnerId,
+        username,
+        password,
+      });
+      toast.success("account linked successfully");
+    } catch (error) {
+      console.error("Error linking HTTP Basic account:", error);
       toast.error("link account failed");
     }
   };

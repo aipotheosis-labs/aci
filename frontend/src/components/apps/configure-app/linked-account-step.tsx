@@ -24,6 +24,7 @@ import { GoCopy } from "react-icons/go";
 export const FORM_SUBMIT_COPY_OAUTH2_LINK_URL = "copyOAuth2LinkURL";
 export const FORM_SUBMIT_LINK_OAUTH2_ACCOUNT = "linkOAuth2";
 export const FORM_SUBMIT_API_KEY = "apiKey";
+export const FORM_SUBMIT_HTTP_BASIC = "httpBasic";
 export const FORM_SUBMIT_NO_AUTH = "noAuth";
 
 // Form schema for linked account
@@ -31,24 +32,42 @@ export interface LinkedAccountFormValues {
   linkedAccountOwnerId: string;
   apiKey?: string;
   _authType?: string;
+  username?: string;
+  password?: string;
 }
 
 export const linkedAccountFormSchema = z
   .object({
     linkedAccountOwnerId: z.string().min(1, "Account owner ID is required"),
-    apiKey: z.string().optional(),
     _authType: z.string().optional(),
+    apiKey: z.string().optional(),
+    username: z.string().optional(),
+    password: z.string().optional(),
   })
   .refine(
-    (data) => {
-      // if auth type is api_key, apiKey is required
-      return (
-        data._authType !== "api_key" || (data.apiKey && data.apiKey.length > 0)
-      );
-    },
+    (data) =>
+      data._authType !== "api_key" || (data.apiKey && data.apiKey.length > 0),
     {
       message: "API Key is required",
       path: ["apiKey"],
+    },
+  )
+  .refine(
+    (data) =>
+      data._authType !== "http_basic" ||
+      (data.username && data.username.length > 0),
+    {
+      message: "Username is required",
+      path: ["username"],
+    },
+  )
+  .refine(
+    (data) =>
+      data._authType !== "http_basic" ||
+      (data.password && data.password.length > 0),
+    {
+      message: "Password is required",
+      path: ["password"],
     },
   );
 
@@ -136,6 +155,41 @@ export function LinkedAccountStep({
             />
           )}
 
+          {authType === "http_basic" && (
+            <>
+              <FormField
+                control={form.control}
+                name="username"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder="username" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="password"
+                        type="password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </>
+          )}
+
           <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-0">
             <div className="flex flex-row gap-2 w-full justify-end">
               <Button
@@ -174,10 +228,12 @@ export function LinkedAccountStep({
                   type="submit"
                   name={(() => {
                     switch (authType) {
-                      case "no_auth":
-                        return FORM_SUBMIT_NO_AUTH;
                       case "api_key":
                         return FORM_SUBMIT_API_KEY;
+                      case "http_basic":
+                        return FORM_SUBMIT_HTTP_BASIC;
+                      case "no_auth":
+                        return FORM_SUBMIT_NO_AUTH;
                       default:
                         return FORM_SUBMIT_NO_AUTH;
                     }
