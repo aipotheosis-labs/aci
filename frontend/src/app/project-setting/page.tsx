@@ -15,6 +15,7 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { updateProject } from "@/lib/api/project";
+import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 
 export default function ProjectSettingPage() {
   const { accessToken, activeProject, reloadActiveProject } = useMetaInfo();
@@ -136,12 +137,11 @@ export default function ProjectSettingPage() {
                   permanently deletes the project and all related data.
                 </p>
               </div>
-              <Button
-                variant="destructive"
-                className="bg-red-600 hover:bg-red-700"
-              >
-                Delete project
-              </Button>
+              <DeleteProjectDialog
+                accessToken={accessToken}
+                projectId={activeProject.id}
+                projectName={activeProject.name}
+              />
             </div>
           </div>
         </div>

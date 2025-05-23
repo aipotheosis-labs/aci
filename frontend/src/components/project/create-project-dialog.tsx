@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { createProject } from "@/lib/api/project";
+import { useMetaInfo } from "@/components/context/metainfo";
 
 const formSchema = z.object({
   name: z.string().min(1, "Project name cannot be empty"),
@@ -50,6 +51,7 @@ export function CreateProjectDialog({
   setOpenDialog,
 }: CreateProjectDialogProps) {
   const [open, setOpen] = useState(false);
+  const { setActiveProject } = useMetaInfo();
 
   // Use controlled open state if provided
   const isOpen = openDialog !== undefined ? openDialog : open;
@@ -64,7 +66,8 @@ export function CreateProjectDialog({
 
   const handleSubmit = async (values: FormValues) => {
     try {
-      await createProject(accessToken, values.name, orgId);
+      const newProject = await createProject(accessToken, values.name, orgId);
+      setActiveProject(newProject);
       await onProjectCreated();
       setIsOpen(false);
       form.reset();
