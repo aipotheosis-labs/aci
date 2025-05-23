@@ -30,6 +30,7 @@ PLANS_DATA = [
             developer_seats=1,
             custom_oauth=False,
             log_retention_days=7,
+            projects=1,  # Free plan gets 1 project
         ).model_dump(),
         is_public=True,
     ),
@@ -45,6 +46,7 @@ PLANS_DATA = [
             developer_seats=5,
             custom_oauth=True,
             log_retention_days=30,
+            projects=5,  # Starter plan gets 5 projects
         ).model_dump(),
         is_public=True,
     ),
@@ -60,6 +62,7 @@ PLANS_DATA = [
             developer_seats=10,
             custom_oauth=True,
             log_retention_days=30,
+            projects=20,  # Team plan gets 20 projects
         ).model_dump(),
         is_public=True,
     ),
