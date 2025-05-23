@@ -31,7 +31,13 @@ export function DeleteProjectDialog({
 }: DeleteProjectDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmName, setConfirmName] = useState("");
+  const [isOpen, setIsOpen] = useState(false);
   const { reloadActiveProject } = useMetaInfo();
+
+  const resetForm = () => {
+    setConfirmName("");
+    setIsDeleting(false);
+  };
 
   const handleDeleteProject = async () => {
     if (confirmName !== projectName) {
@@ -44,6 +50,8 @@ export function DeleteProjectDialog({
       await deleteProject(accessToken, projectId);
       await reloadActiveProject();
       toast.success("Project deleted successfully");
+      setIsOpen(false);
+      resetForm();
     } catch (error) {
       console.error("Failed to delete project:", error);
       toast.error("Failed to delete project");
@@ -53,7 +61,13 @@ export function DeleteProjectDialog({
   };
 
   return (
-    <AlertDialog>
+    <AlertDialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) resetForm();
+      }}
+    >
       <AlertDialogTrigger asChild>
         <Button variant="destructive" className="bg-red-600 hover:bg-red-700">
           Delete project
@@ -79,9 +93,7 @@ export function DeleteProjectDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={() => setConfirmName("")}>
-            Cancel
-          </AlertDialogCancel>
+          <AlertDialogCancel onClick={resetForm}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDeleteProject}
             className="bg-red-600 hover:bg-red-700"
