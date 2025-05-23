@@ -45,6 +45,12 @@ export default function ProjectSettingPage() {
       return;
     }
 
+    // Only update if the name has actually changed
+    if (projectName === activeProject.name) {
+      setIsEditingName(false);
+      return;
+    }
+
     try {
       await updateProject(accessToken, activeProject.id, projectName);
       await reloadActiveProject();
@@ -131,13 +137,20 @@ export default function ProjectSettingPage() {
                 <Check className="h-4 w-4" />
               </Button>
             ) : (
-              <Button
-                variant="ghost"
-                onClick={() => setIsEditingName(true)}
-                className="h-8 w-8 p-0"
-              >
-                <Edit2 className="h-4 w-4" />
-              </Button>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setIsEditingName(true)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Click to edit project name</p>
+                </TooltipContent>
+              </Tooltip>
             )}
           </div>
         </div>
