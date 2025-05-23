@@ -99,8 +99,6 @@ export const MetaInfoProvider = withRequiredAuthInfo<MetaInfoProviderProps>(
 
     const reloadActiveProject = useCallback(async () => {
       if (activeOrg && accessToken) {
-        console.log("reloadActiveProject", activeOrg, accessToken);
-
         await queryClient.invalidateQueries({
           queryKey: metaKeys.projects(activeOrg.orgId),
         });
