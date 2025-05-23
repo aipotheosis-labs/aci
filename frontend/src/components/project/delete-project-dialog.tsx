@@ -77,14 +77,16 @@ export function DeleteProjectDialog({
     >
       {isLastProject ? (
         <Tooltip>
-          <TooltipTrigger>
-            <Button
-              variant="destructive"
-              className="bg-red-600 hover:bg-red-700"
-              disabled={true}
-            >
-              Delete project
-            </Button>
+          <TooltipTrigger asChild>
+            <div>
+              <Button
+                variant="destructive"
+                className="bg-red-600 hover:bg-red-700"
+                disabled={true}
+              >
+                Delete project
+              </Button>
+            </div>
           </TooltipTrigger>
           <TooltipContent>
             <p>Cannot delete the last project</p>
