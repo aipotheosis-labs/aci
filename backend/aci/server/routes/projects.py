@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, HTTPException
 from propelauth_fastapi import User
 from sqlalchemy.orm import Session
 
@@ -106,6 +106,26 @@ async def delete_project(
     )
 
     acl.validate_user_access_to_project(db_session, user, project_id)
+
+    # Get the project to check its organization
+    project = crud.projects.get_project(db_session, project_id)
+    if not project:
+        logger.error(
+            "project not found",
+            extra={"project_id": project_id},
+        )
+        raise ProjectNotFound(f"project={project_id} not found")
+
+    # Check if this is the last project in the organization
+    org_projects = crud.projects.get_projects_by_org(db_session, project.org_id)
+    if len(org_projects) <= 1:
+        logger.error(
+            "cannot delete last project",
+            extra={"project_id": project_id, "org_id": project.org_id},
+        )
+        raise HTTPException(
+            status_code=400, detail="Cannot delete the last project in the organization"
+        )
 
     crud.projects.delete_project(db_session, project_id)
     db_session.commit()
