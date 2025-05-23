@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,9 +30,15 @@ export function DeleteProjectDialog({
   projectName,
 }: DeleteProjectDialogProps) {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [confirmName, setConfirmName] = useState("");
   const { reloadActiveProject } = useMetaInfo();
 
   const handleDeleteProject = async () => {
+    if (confirmName !== projectName) {
+      toast.error("Project name does not match");
+      return;
+    }
+
     try {
       setIsDeleting(true);
       await deleteProject(accessToken, projectId);
@@ -54,18 +61,31 @@ export function DeleteProjectDialog({
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete the
-            project <b>{projectName}</b> and all of its data.
+          <AlertDialogTitle>Delete Project</AlertDialogTitle>
+          <AlertDialogDescription className="space-y-4">
+            This will permanently delete this project (including all agents,
+            configurations, API keys, linked accounts, function executions, and
+            project settings).
+            <br />
+            <br />
+            To confirm, type{" "}
+            <span className="font-semibold">{projectName}</span> below:
+            <Input
+              placeholder="Enter project name to confirm"
+              value={confirmName}
+              onChange={(e) => setConfirmName(e.target.value)}
+              className="mt-2"
+            />
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={() => setConfirmName("")}>
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDeleteProject}
             className="bg-red-600 hover:bg-red-700"
-            disabled={isDeleting}
+            disabled={isDeleting || confirmName !== projectName}
           >
             {isDeleting ? "Deleting..." : "Delete Project"}
           </AlertDialogAction>
