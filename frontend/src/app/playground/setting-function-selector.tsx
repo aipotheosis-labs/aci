@@ -123,9 +123,6 @@ export function FunctionMultiSelector() {
                         className="flex items-center justify-between"
                         data-value={func.name}
                       >
-                        <div className="flex flex-col gap-1 flex-1">
-                          <span>{func.name}</span>
-                        </div>
                         <Check
                           className={cn(
                             "h-4 w-4",
@@ -134,6 +131,23 @@ export function FunctionMultiSelector() {
                               : "opacity-0",
                           )}
                         />
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div
+                              className={cn(
+                                "flex flex-col gap-1 flex-1 px-2 py-1 rounded-md",
+                                selectedFunctions.includes(func.name)
+                                  ? "bg-slate-300 text-accent-foreground"
+                                  : "hover:bg-muted",
+                              )}
+                            >
+                              <span className="text-sm">{func.name}</span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{func.name}</p>
+                          </TooltipContent>
+                        </Tooltip>
                       </CommandItem>
                     ))}
                   </>
