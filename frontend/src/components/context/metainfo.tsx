@@ -77,7 +77,13 @@ export const MetaInfoProvider = withRequiredAuthInfo<MetaInfoProviderProps>(
       if (activeOrg) {
         const projects = await getProjects(accessToken, activeOrg.orgId);
         if (projects.length > 0) {
-          setProjects(projects);
+          // Sort projects by creation date (newest first)
+          const sortedProjects = [...projects].sort(
+            (a, b) =>
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime(),
+          );
+          setProjects(sortedProjects);
         }
       }
     }, [activeOrg, accessToken]);
@@ -88,10 +94,25 @@ export const MetaInfoProvider = withRequiredAuthInfo<MetaInfoProviderProps>(
 
     useEffect(() => {
       if (projects.length > 0) {
-        // TODO: get active project from local storage
-        setActiveProject(projects[0]);
+        const savedProjectId = localStorage.getItem(
+          `activeProject_${activeOrg?.orgId}`,
+        );
+        const savedProject = savedProjectId
+          ? projects.find((p) => p.id === savedProjectId)
+          : null;
+
+        setActiveProject(savedProject || projects[0]);
       }
-    }, [projects]);
+    }, [projects, activeOrg]);
+
+    useEffect(() => {
+      if (activeProject && activeOrg) {
+        localStorage.setItem(
+          `activeProject_${activeOrg.orgId}`,
+          activeProject.id,
+        );
+      }
+    }, [activeProject, activeOrg]);
 
     return (
       <div>

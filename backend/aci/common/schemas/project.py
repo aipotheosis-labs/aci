@@ -16,6 +16,12 @@ class ProjectCreate(BaseModel):
     )
 
 
+class ProjectUpdate(BaseModel):
+    """Schema for updating a project."""
+
+    name: str | None = None
+
+
 class ProjectPublic(BaseModel):
     id: UUID
     org_id: UUID
