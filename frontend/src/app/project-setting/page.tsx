@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 // import { Switch } from "@/components/ui/switch";
 import { CreateAgentForm } from "@/components/project/create-agent-form";
-import { createAgent, deleteAgent } from "@/lib/api/agent";
 import { Separator } from "@/components/ui/separator";
 import { IdDisplay } from "@/components/apps/id-display";
 // import { RiTeamLine } from "react-icons/ri";
@@ -22,11 +21,15 @@ import { Agent } from "@/lib/types/project";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { useAppConfigs } from "@/hooks/use-app-config";
+import { useCreateAgent, useDeleteAgent } from "@/hooks/use-agent";
 
 export default function ProjectSettingPage() {
-  const { accessToken, activeProject, reloadActiveProject } = useMetaInfo();
+  const { activeProject } = useMetaInfo();
   const { data: appConfigs = [], isPending: isConfigsPending } =
     useAppConfigs();
+
+  const { mutateAsync: createAgentMutation } = useCreateAgent();
+  const { mutateAsync: deleteAgentMutation } = useDeleteAgent();
 
   const handleDeleteAgent = useCallback(
     async (agentId: string) => {
@@ -38,20 +41,17 @@ export default function ProjectSettingPage() {
           return;
         }
 
-        await deleteAgent(activeProject.id, agentId, accessToken);
-        await reloadActiveProject();
+        await deleteAgentMutation(agentId);
       } catch (error) {
         console.error("Error deleting agent:", error);
       }
     },
-    [activeProject, accessToken, reloadActiveProject],
+    [activeProject, deleteAgentMutation],
   );
 
   const agentTableColumns = useAgentsTableColumns(
     activeProject.id,
     handleDeleteAgent,
-    reloadActiveProject,
-    reloadActiveProject,
   );
 
   return (
@@ -166,16 +166,7 @@ export default function ProjectSettingPage() {
                 appConfigs={appConfigs}
                 onSubmit={async (values) => {
                   try {
-                    await createAgent(
-                      activeProject.id,
-                      accessToken,
-                      values.name,
-                      values.description,
-                      // TODO: need to create a UI for specifying allowed apps
-                      values.allowed_apps,
-                      values.custom_instructions,
-                    );
-                    await reloadActiveProject();
+                    await createAgentMutation(values);
                   } catch (error) {
                     console.error("Error creating agent:", error);
                   }

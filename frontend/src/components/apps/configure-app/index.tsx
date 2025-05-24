@@ -12,7 +12,7 @@ import { toast } from "sonner";
 import { RowSelectionState } from "@tanstack/react-table";
 import { Agent } from "@/lib/types/project";
 import { useMetaInfo } from "@/components/context/metainfo";
-import { updateAgent } from "@/lib/api/agent";
+import { useUpdateAgent } from "@/hooks/use-agent";
 
 import {
   useCreateAPILinkedAccount,
@@ -75,13 +75,13 @@ export function ConfigureApp({
   supported_security_schemes,
   logo,
 }: ConfigureAppProps) {
-  const { activeProject, reloadActiveProject, accessToken } = useMetaInfo();
+  const { activeProject, reloadActiveProject } = useMetaInfo();
   const [open, setOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedAgentIds, setSelectedAgentIds] = useState<RowSelectionState>(
     {},
   );
-
+  const { mutateAsync: updateAgent } = useUpdateAgent();
   const {
     mutateAsync: createAPILinkedAccount,
     isPending: isCreatingAPILinkedAccount,
@@ -210,14 +210,13 @@ export function ConfigureApp({
       for (const agent of agentsToUpdate) {
         const allowedApps = new Set(agent.allowed_apps);
         allowedApps.add(name);
-        await updateAgent(
-          activeProject.id,
-          agent.id,
-          accessToken,
-          undefined,
-          undefined,
-          Array.from(allowedApps),
-        );
+        await updateAgent({
+          id: agent.id,
+          data: {
+            allowed_apps: Array.from(allowedApps),
+          },
+          noreload: true,
+        });
       }
       toast.success("agents updated successfully");
       await reloadActiveProject();

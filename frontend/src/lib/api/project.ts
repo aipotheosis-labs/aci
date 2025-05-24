@@ -17,7 +17,6 @@ export async function getProjects(
   );
 
   if (!response.ok) {
-    console.log(response);
     throw new Error(
       `Failed to fetch projects: ${response.status} ${response.statusText}`,
     );

@@ -33,9 +33,8 @@ import {
 import { ArrowUpDown } from "lucide-react";
 import { Agent } from "@/lib/types/project";
 import { useState, useEffect, useMemo, useCallback } from "react";
-import { updateAgent } from "@/lib/api/agent";
 import { toast } from "sonner";
-import { useMetaInfo } from "@/components/context/metainfo";
+import { useUpdateAgent } from "@/hooks/use-agent";
 
 const EditableCell = ({
   initialValue,
@@ -130,44 +129,29 @@ const columnHelper = createColumnHelper<Agent>();
 export const useAgentsTableColumns = (
   projectId: string,
   onDeleteAgent: (agentId: string) => Promise<void>,
-  reload: () => Promise<void>,
-  onInstructionsSave: () => Promise<void>,
 ): ColumnDef<Agent>[] => {
-  const { accessToken } = useMetaInfo();
+  const { mutateAsync: updateAgentMutation } = useUpdateAgent();
 
   const handleUpdateAgent = useCallback(
     async (agentId: string, field: string, value: string) => {
       if (!projectId) return;
 
       try {
-        if (field === "name") {
-          await updateAgent(
-            projectId,
-            agentId,
-            accessToken,
-            value,
-            undefined,
-            undefined,
-            undefined,
-          );
-        } else if (field === "description") {
-          await updateAgent(
-            projectId,
-            agentId,
-            accessToken,
-            undefined,
-            value,
-            undefined,
-            undefined,
-          );
-        }
+        const updateData: Record<string, string> = {};
+        updateData[field] = value;
+
+        await updateAgentMutation({
+          id: agentId,
+          data: updateData,
+        });
+
         toast.success(`Agent ${field} updated successfully`);
-        await reload();
       } catch (error) {
+        toast.error(`Error updating agent ${field}`);
         console.error(`Error updating agent ${field}:`, error);
       }
     },
-    [projectId, accessToken, reload],
+    [projectId, updateAgentMutation],
   );
 
   return useMemo(() => {
@@ -254,8 +238,6 @@ export const useAgentsTableColumns = (
         cell: (ctx) => (
           <div className="text-center">
             <AppEditForm
-              reload={reload}
-              projectId={projectId}
               agentId={ctx.row.original.id}
               allowedApps={ctx.row.original.allowed_apps || []}
             >
@@ -287,11 +269,9 @@ export const useAgentsTableColumns = (
         cell: (ctx) => (
           <div className="text-center">
             <AgentInstructionFilterForm
-              projectId={projectId}
               agentId={ctx.row.original.id}
               initialInstructions={ctx.row.original.custom_instructions}
               allowedApps={ctx.row.original.allowed_apps || []}
-              onSaveSuccess={onInstructionsSave}
             >
               <Button variant="outline" size="sm">
                 Edit
@@ -358,5 +338,5 @@ export const useAgentsTableColumns = (
         enableGlobalFilter: false,
       }) as ColumnDef<Agent>,
     ];
-  }, [handleUpdateAgent, reload, projectId, onInstructionsSave, onDeleteAgent]);
+  }, [handleUpdateAgent, onDeleteAgent]);
 };
