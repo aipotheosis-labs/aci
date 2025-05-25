@@ -153,17 +153,19 @@ export function AppEditForm({
                 <p>No app configurations available</p>
               </div>
             ) : (
-              <EnhancedDataTable
-                columns={columns}
-                data={appConfigs}
-                defaultSorting={[{ id: "app_name", desc: false }]}
-                searchBarProps={{ placeholder: "Search apps..." }}
-                rowSelectionProps={{
-                  rowSelection: selectedApps,
-                  onRowSelectionChange: setSelectedApps,
-                  getRowId: (row) => row.app_name,
-                }}
-              />
+              <div className="max-h-[45vh] overflow-y-auto">
+                <EnhancedDataTable
+                  columns={columns}
+                  data={appConfigs}
+                  defaultSorting={[{ id: "app_name", desc: false }]}
+                  searchBarProps={{ placeholder: "Search apps..." }}
+                  rowSelectionProps={{
+                    rowSelection: selectedApps,
+                    onRowSelectionChange: setSelectedApps,
+                    getRowId: (row) => row.app_name,
+                  }}
+                />
+              </div>
             )}
           </div>
 
