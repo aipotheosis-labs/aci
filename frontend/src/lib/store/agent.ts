@@ -63,7 +63,25 @@ export const useAgentStore = create<AgentState>()(
       setAgents: (agents: Agent[]) =>
         set((state) => ({ ...state, agents: agents })),
       getApiKey: (activeProject: Project) => {
-        const apiKey = getApiKey(activeProject, get().selectedAgent);
+        let selectedAgent = get().selectedAgent;
+        const agentExists = activeProject.agents?.some(
+          (agent) => agent.id === selectedAgent,
+        );
+
+        if (
+          !agentExists &&
+          activeProject.agents &&
+          activeProject.agents.length > 0
+        ) {
+          selectedAgent = activeProject.agents[0].id;
+          set((state) => ({
+            ...state,
+            selectedAgent,
+            allowedApps: activeProject.agents[0].allowed_apps || [],
+          }));
+        }
+
+        const apiKey = getApiKey(activeProject, selectedAgent);
         return apiKey;
       },
       fetchLinkedAccounts: async (apiKey: string) => {
