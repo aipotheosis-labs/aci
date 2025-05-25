@@ -39,10 +39,15 @@ def test_create_project_under_user(
 
 def test_create_project_reached_max_projects_per_org(
     test_client: TestClient,
+    db_session: Session,
     dummy_user: DummyUser,
 ) -> None:
+    # Get the plan's project limit
+    plan = crud.subscriptions.get_plan_for_org(db_session, dummy_user.org_id)
+    max_projects = plan.features.get("projects", 1)
+
     # create max number of projects under the user
-    for i in range(config.MAX_PROJECTS_PER_ORG):
+    for i in range(max_projects):
         body = ProjectCreate(name=f"project_{i}", org_id=dummy_user.org_id)
         response = test_client.post(
             f"{config.ROUTER_PREFIX_PROJECTS}",
@@ -50,11 +55,11 @@ def test_create_project_reached_max_projects_per_org(
             headers={"Authorization": f"Bearer {dummy_user.access_token}"},
         )
         assert response.status_code == status.HTTP_200_OK, (
-            f"should be able to create {config.MAX_PROJECTS_PER_ORG} projects"
+            f"should be able to create {max_projects} projects"
         )
 
     # try to create one more project under the user
-    body = ProjectCreate(name=f"project_{config.MAX_PROJECTS_PER_ORG}", org_id=dummy_user.org_id)
+    body = ProjectCreate(name=f"project_{max_projects}", org_id=dummy_user.org_id)
     response = test_client.post(
         f"{config.ROUTER_PREFIX_PROJECTS}",
         json=body.model_dump(mode="json"),

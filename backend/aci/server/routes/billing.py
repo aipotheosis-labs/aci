@@ -54,13 +54,7 @@ async def get_subscription(
             status=StripeSubscriptionStatus.ACTIVE,
         )
 
-    plan = crud.plans.get_by_id(db_session, active_subscription.plan_id)
-    if not plan:
-        logger.error(
-            "plan not found",
-            extra={"plan_id": active_subscription.plan_id},
-        )
-        raise SubscriptionPlanNotFound(f"plan={active_subscription.plan_id} not found")
+    plan = crud.subscriptions.get_plan_for_org(db_session, org_id)
     return SubscriptionPublic(
         plan=plan.name,
         status=active_subscription.status,

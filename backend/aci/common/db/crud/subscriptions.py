@@ -3,7 +3,9 @@ from uuid import UUID
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
-from aci.common.db.sql_models import Subscription
+from aci.common.db import crud
+from aci.common.db.sql_models import Plan, Subscription
+from aci.common.exceptions import SubscriptionPlanNotFound
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.subscription import SubscriptionUpdate
 
@@ -92,3 +94,32 @@ def delete_subscription_by_stripe_id(db_session: Session, stripe_subscription_id
         "Deleted subscription",
         extra={"stripe_subscription_id": stripe_subscription_id},
     )
+
+
+def get_plan_for_org(db_session: Session, org_id: UUID) -> Plan:
+    """
+    Get the plan for an organization, falling back to the free plan if no subscription exists.
+
+    Args:
+        db_session: Database session
+        org_id: ID of the organization to check
+
+    Returns:
+        The plan for the organization
+
+    Raises:
+        SubscriptionPlanNotFound: If neither the subscription plan nor the free plan can be found
+    """
+    subscription = get_subscription_by_org_id(db_session, org_id)
+    if not subscription:
+        # If no subscription found, use the free plan
+        plan = crud.plans.get_by_name(db_session, "free")
+        if not plan:
+            raise SubscriptionPlanNotFound("Free plan not found")
+        return plan
+
+    # Get the plan from the subscription
+    plan = crud.plans.get_by_id(db_session, subscription.plan_id)
+    if not plan:
+        raise SubscriptionPlanNotFound(f"Plan {subscription.plan_id} not found")
+    return plan
