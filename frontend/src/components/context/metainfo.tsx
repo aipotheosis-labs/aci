@@ -89,11 +89,11 @@ export const MetaInfoProvider = withRequiredAuthInfo<MetaInfoProviderProps>(
           accessToken,
           activeOrg!.orgId,
         );
-        // Sort projects by creation date (newest first)
+        // Sort projects by creation date (oldest first)
         return [...fetchedProjects].sort(
           (a, b) =>
-            new Date(b.created_at).getTime() -
-            new Date(a.created_at).getTime(),
+            new Date(a.created_at).getTime() -
+            new Date(b.created_at).getTime(),
         );
       },
       enabled: !!activeOrg && !!accessToken,

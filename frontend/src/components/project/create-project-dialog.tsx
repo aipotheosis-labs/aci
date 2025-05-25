@@ -77,9 +77,12 @@ export function CreateProjectDialog({
       toast.success("Project created successfully");
       router.push("/apps");
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      console.log("error", error);
-      toast.error(error.message || "Failed to create project");
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("Failed to create project");
+      }
     }
   };
 

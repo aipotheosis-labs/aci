@@ -43,14 +43,25 @@ async def create_project(
     project = crud.projects.create_project(db_session, body.org_id, body.name)
 
     # Create a default Agent for the project
-    crud.projects.create_agent(
-        db_session,
-        project.id,
-        name="Default Agent",
-        description="Default Agent",
-        allowed_apps=[],
-        custom_instructions={},
-    )
+    try:
+        crud.projects.create_agent(
+            db_session,
+            project.id,
+            name="Default Agent",
+            description="Default Agent",
+            allowed_apps=[],
+            custom_instructions={},
+        )
+    except Exception as e:
+        logger.error(
+            "Failed to create default agent",
+            extra={"project_id": project.id, "error": str(e)},
+        )
+        # Consider whether to rollback the entire project creation
+        db_session.rollback()
+        raise HTTPException(
+            status_code=500, detail="Failed to create project with default agent"
+        ) from e
     db_session.commit()
 
     logger.info(
