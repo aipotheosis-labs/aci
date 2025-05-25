@@ -20,6 +20,7 @@ from aci.server.middleware.interceptor import InterceptorMiddleware, RequestIDLo
 from aci.server.middleware.ratelimit import RateLimitMiddleware
 from aci.server.routes import (
     agent,
+    agents,
     analytics,
     app_configurations,
     apps,
@@ -131,6 +132,14 @@ app.include_router(
     tags=[config.ROUTER_PREFIX_PROJECTS.split("/")[-1]],
     dependencies=[Depends(auth.require_user)],
 )
+
+app.include_router(
+    agents.router,
+    prefix=config.ROUTER_PREFIX_PROJECTS,
+    tags=[config.ROUTER_PREFIX_PROJECTS.split("/")[-1]],
+    dependencies=[Depends(auth.require_user)],
+)
+
 # TODO: add validate_project_quota to all routes
 app.include_router(
     apps.router,
