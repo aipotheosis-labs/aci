@@ -1,7 +1,7 @@
 from datetime import datetime
 from uuid import UUID
 
-from sqlalchemy import distinct, func, select
+from sqlalchemy import distinct, exists, func, select
 from sqlalchemy.orm import Session
 
 from aci.common import validators
@@ -190,8 +190,10 @@ def get_total_number_of_unique_linked_account_owner_ids(db_session: Session, org
 def linked_account_owner_id_exists_in_org(
     db_session: Session, org_id: UUID, linked_account_owner_id: str
 ) -> bool:
-    statement = select(LinkedAccount).filter(
-        LinkedAccount.linked_account_owner_id == linked_account_owner_id,
-        LinkedAccount.project_id.in_(select(Project.id).filter(Project.org_id == org_id)),
+    statement = select(
+        exists().where(
+            LinkedAccount.linked_account_owner_id == linked_account_owner_id,
+            LinkedAccount.project_id.in_(select(Project.id).filter(Project.org_id == org_id)),
+        )
     )
-    return db_session.execute(statement).scalar_one_or_none() is not None
+    return db_session.execute(statement).scalar() or False
