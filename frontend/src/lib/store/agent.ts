@@ -157,12 +157,25 @@ export const useAgentStore = create<AgentState>()(
       },
       initializeFromProject: (project: Project) => {
         if (project?.agents && project.agents.length > 0) {
-          // set default agent
+          // After the selected agent's loaded from session storage,
+          // we need to check if the selected agent is still in the project.
+          // If not, we need to set the default agent to the first agent in the project.
+          const currentSelectedAgent = get().selectedAgent;
+          let selectedAgent = currentSelectedAgent;
+
+          if (
+            !project.agents.find((agent) => agent.id === currentSelectedAgent)
+          ) {
+            selectedAgent = project.agents[0].id;
+          }
+
           set((state) => ({
             ...state,
             agents: project.agents,
-            selectedAgent: project.agents[0].id,
-            allowedApps: project.agents[0].allowed_apps || [],
+            selectedAgent: selectedAgent,
+            allowedApps:
+              project.agents.find((agent) => agent.id === selectedAgent)
+                ?.allowed_apps || [],
           }));
         }
       },
