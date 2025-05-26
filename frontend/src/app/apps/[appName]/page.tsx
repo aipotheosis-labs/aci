@@ -131,7 +131,7 @@ const AppPage = () => {
           searchBarProps={{ placeholder: "Search functions..." }}
           paginationOptions={{
             initialPageIndex: 0,
-            initialPageSize: 10,
+            initialPageSize: 15,
           }}
         />
       </div>

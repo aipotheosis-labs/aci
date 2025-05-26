@@ -78,7 +78,7 @@ export default function AppConfigPage() {
             }}
             paginationOptions={{
               initialPageIndex: 0,
-              initialPageSize: 10,
+              initialPageSize: 15,
             }}
           />
         )}
