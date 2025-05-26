@@ -1,0 +1,27 @@
+{
+  "name": "GOOGLE_MEET",
+  "display_name": "Google Meet",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/google_meet.svg",
+  "provider": "Google",
+  "version": "1.0.0",
+  "description": "The Google Meet API is a RESTful API that can be accessed through explicit HTTP calls. The API exposes most of the features available in the Google Meet Web interface.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_GOOGLE_MEET_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_GOOGLE_MEET_CLIENT_SECRET }}",
+      "scope": "https://www.googleapis.com/auth/calendar https://meet.googleapis.com",
+      "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth",
+      "access_token_url": "https://oauth2.googleapis.com/token",
+      "refresh_token_url": "https://oauth2.googleapis.com/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Productivity"
+  ],
+  "visibility": "public",
+  "active": true
+}
