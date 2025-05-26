@@ -129,6 +129,10 @@ const AppPage = () => {
           columns={columns}
           data={functions}
           searchBarProps={{ placeholder: "Search functions..." }}
+          paginationOptions={{
+            initialPageIndex: 0,
+            initialPageSize: 10,
+          }}
         />
       </div>
     </div>

@@ -74,7 +74,7 @@ export function DataTablePagination<TData>({
   // Handle empty table
   if (table.getRowCount() === 0) {
     return (
-      <div className="text-sm text-muted-foreground py-2">
+      <div className="text-sm text-muted-foreground py-2 ml-4">
         No results to display
       </div>
     );
