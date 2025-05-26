@@ -40,7 +40,56 @@
                         },
                         "framework": {
                             "type": "string",
-                            "description": "The framework that is being used for this project. When null is used no framework is selected"
+                            "description": "The framework that is being used for this project. When null is used no framework is selected",
+                            "enum": [
+                                "blitzjs",
+                                "nextjs",
+                                "gatsby",
+                                "remix",
+                                "react-router",
+                                "astro",
+                                "hexo",
+                                "eleventy",
+                                "docusaurus-2",
+                                "docusaurus",
+                                "preact",
+                                "solidstart-1",
+                                "solidstart",
+                                "dojo",
+                                "ember",
+                                "vue",
+                                "scully",
+                                "ionic-angular",
+                                "angular",
+                                "polymer",
+                                "svelte",
+                                "sveltekit",
+                                "sveltekit-1",
+                                "ionic-react",
+                                "create-react-app",
+                                "gridsome",
+                                "umijs",
+                                "sapper",
+                                "saber",
+                                "stencil",
+                                "nuxtjs",
+                                "redwoodjs",
+                                "hugo",
+                                "jekyll",
+                                "brunch",
+                                "middleman",
+                                "zola",
+                                "hydrogen",
+                                "vite",
+                                "vitepress",
+                                "vuepress",
+                                "parcel",
+                                "fasthtml",
+                                "sanity-v3",
+                                "sanity",
+                                "storybook",
+                                null
+                            ]
                         },
                         "gitRepository": {
                             "type": "object",
@@ -106,7 +155,7 @@
                             }
                         }
                     },
-                    "required": ["name"],
+                    "required": ["name", "framework"],
                     "visible": [
                         "name",
                         "framework",
@@ -136,6 +185,146 @@
             },
             "required": ["body"],
             "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "VERCEL__UPDATE_PROJECT",
+        "description": "Updates an existing project on Vercel using either its name or id.",
+        "tags": ["project", "update"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/v9/projects/{idOrName}",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "idOrName": {
+                            "type": "string",
+                            "description": "The unique project identifier or the project name."
+                        }
+                    },
+                    "required": ["idOrName"],
+                    "visible": ["idOrName"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters for updating the project",
+                    "properties": {
+                        "buildCommand": {
+                            "type": ["string", "null"],
+                            "description": "The build command for this project. When null is used this value will be automatically detected. Maximum length: 256."
+                        },
+                        "devCommand": {
+                            "type": ["string", "null"],
+                            "description": "The dev command for this project. When null is used this value will be automatically detected. Maximum length: 256."
+                        },
+                        "framework": {
+                            "type": ["string", "null"],
+                            "description": "The framework that is being used for this project. When null is used no framework is selected",
+                            "enum": [
+                                "blitzjs",
+                                "nextjs",
+                                "gatsby",
+                                "remix",
+                                "react-router",
+                                "astro",
+                                "hexo",
+                                "eleventy",
+                                "docusaurus-2",
+                                "docusaurus",
+                                "preact",
+                                "solidstart-1",
+                                "solidstart",
+                                "dojo",
+                                "ember",
+                                "vue",
+                                "scully",
+                                "ionic-angular",
+                                "angular",
+                                "polymer",
+                                "svelte",
+                                "sveltekit",
+                                "sveltekit-1",
+                                "ionic-react",
+                                "create-react-app",
+                                "gridsome",
+                                "umijs",
+                                "sapper",
+                                "saber",
+                                "stencil",
+                                "nuxtjs",
+                                "redwoodjs",
+                                "hugo",
+                                "jekyll",
+                                "brunch",
+                                "middleman",
+                                "zola",
+                                "hydrogen",
+                                "vite",
+                                "vitepress",
+                                "vuepress",
+                                "parcel",
+                                "fasthtml",
+                                "sanity-v3",
+                                "sanity",
+                                "storybook",
+                                null
+                            ]
+                        },
+                        "installCommand": {
+                            "type": ["string", "null"],
+                            "description": "The install command for this project. When null is used this value will be automatically detected. Maximum length: 256."
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "The desired name for the project. Maximum length: 100."
+                        },
+                        "rootDirectory": {
+                            "type": ["string", "null"],
+                            "description": "The name of a directory or relative path to the source code of your project. When null is used it will default to the project root. Maximum length: 256."
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "buildCommand",
+                        "devCommand",
+                        "framework",
+                        "installCommand",
+                        "name",
+                        "rootDirectory"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The Team slug to perform the request on behalf of."
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "body"],
             "additionalProperties": false
         }
     },
