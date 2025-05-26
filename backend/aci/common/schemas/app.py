@@ -9,6 +9,7 @@ from aci.common.schemas.function import BasicFunctionDefinition, FunctionDetails
 from aci.common.schemas.security_scheme import (
     APIKeyScheme,
     APIKeySchemeCredentials,
+    HTTPBasicSchemeCredentials,
     NoAuthScheme,
     NoAuthSchemeCredentials,
     OAuth2Scheme,
@@ -30,7 +31,11 @@ class AppUpsert(BaseModel, extra="forbid"):
     # TODO: consider refactor and use discriminator for security_schemes/default_security_credentials_by_scheme
     security_schemes: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme | NoAuthScheme]
     default_security_credentials_by_scheme: dict[
-        SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials | NoAuthSchemeCredentials
+        SecurityScheme,
+        APIKeySchemeCredentials
+        | OAuth2SchemeCredentials
+        | HTTPBasicSchemeCredentials
+        | NoAuthSchemeCredentials,
     ]
 
     @field_validator("name", check_fields=False)

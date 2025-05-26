@@ -8,6 +8,9 @@ from aci.server.function_executors.connector_function_executor import (
 from aci.server.function_executors.rest_api_key_function_executor import (
     RestAPIKeyFunctionExecutor,
 )
+from aci.server.function_executors.rest_http_basic_function_executor import (
+    RestHTTPBasicFunctionExecutor,
+)
 from aci.server.function_executors.rest_no_auth_function_executor import (
     RestNoAuthFunctionExecutor,
 )
@@ -24,6 +27,8 @@ def get_executor(protocol: Protocol, linked_account: LinkedAccount) -> FunctionE
             return RestAPIKeyFunctionExecutor(linked_account)
         case Protocol.REST, SecurityScheme.OAUTH2:
             return RestOAuth2FunctionExecutor(linked_account)
+        case Protocol.REST, SecurityScheme.HTTP_BASIC:
+            return RestHTTPBasicFunctionExecutor(linked_account)
         case Protocol.REST, SecurityScheme.NO_AUTH:
             return RestNoAuthFunctionExecutor(linked_account)
         case Protocol.CONNECTOR, _:
