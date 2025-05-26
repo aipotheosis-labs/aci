@@ -86,6 +86,9 @@ const AppPage = () => {
               <div>
                 <h1 className="text-2xl font-bold">{app.display_name}</h1>
                 <IdDisplay id={app.name} />
+                <div className="mt-2 max-w-3xl text-sm text-muted-foreground">
+                  {app.description}
+                </div>
               </div>
             </div>
           )}
