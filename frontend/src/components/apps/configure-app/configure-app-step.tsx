@@ -30,6 +30,9 @@ import { BsQuestionCircle, BsAsterisk } from "react-icons/bs";
 import { Badge } from "@/components/ui/badge";
 import { IdDisplay } from "@/components/apps/id-display";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useCreateAppConfig } from "@/hooks/use-app-config";
+import { toast } from "sonner";
+import { AppAlreadyConfiguredError } from "@/lib/api/appconfig";
 
 export const ConfigureAppFormSchema = z.object({
   security_scheme: z.string().min(1, "Security Scheme is required"),
@@ -42,9 +45,8 @@ const oauth2RedirectUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/linked-accounts
 interface ConfigureAppStepProps {
   form: ReturnType<typeof useForm<ConfigureAppFormValues>>;
   supported_security_schemes: Record<string, { scope?: string }>;
-  onNext: (values: ConfigureAppFormValues, useACIDevOAuth2: boolean) => void;
+  onNext: () => void;
   name: string;
-  isLoading: boolean;
 }
 
 export function ConfigureAppStep({
@@ -52,8 +54,8 @@ export function ConfigureAppStep({
   supported_security_schemes,
   onNext,
   name,
-  isLoading,
 }: ConfigureAppStepProps) {
+  const createAppConfigMutation = useCreateAppConfig();
   const currentSecurityScheme = form.watch("security_scheme");
   const { scope = "" } =
     supported_security_schemes?.[currentSecurityScheme] ?? {};
@@ -86,7 +88,7 @@ export function ConfigureAppStep({
     }
   }, [currentSecurityScheme, form]);
 
-  const handleSubmit = (values: ConfigureAppFormValues) => {
+  const handleSubmit = async (values: ConfigureAppFormValues) => {
     if (values.security_scheme === "oauth2" && !useACIDevOAuth2) {
       if (!values.client_id || !values.client_secret) {
         form.setError("client_id", {
@@ -100,7 +102,40 @@ export function ConfigureAppStep({
         return;
       }
     }
-    onNext(values, useACIDevOAuth2);
+
+    try {
+      let security_scheme_overrides = undefined;
+
+      if (
+        values.security_scheme === "oauth2" &&
+        !useACIDevOAuth2 &&
+        !!values.client_id &&
+        !!values.client_secret
+      ) {
+        security_scheme_overrides = {
+          oauth2: {
+            client_id: values.client_id,
+            client_secret: values.client_secret,
+          },
+        };
+      }
+
+      await createAppConfigMutation.mutateAsync({
+        app_name: name,
+        security_scheme: values.security_scheme,
+        security_scheme_overrides,
+      });
+
+      toast.success(`Successfully configured app: ${name}`);
+      onNext();
+    } catch (error) {
+      if (error instanceof AppAlreadyConfiguredError) {
+        toast.error(`App configuration already exists for app: ${name}`);
+      } else {
+        console.error("Error configuring app:", error);
+        toast.error(`Failed to configure app. Please try again.`);
+      }
+    }
   };
 
   return (
@@ -295,8 +330,11 @@ export function ConfigureAppStep({
           )}
 
           <DialogFooter>
-            <Button type="submit" disabled={isLoading || !isFormValid()}>
-              {isLoading ? "Confirming..." : "Confirm"}
+            <Button
+              type="submit"
+              disabled={createAppConfigMutation.isPending || !isFormValid()}
+            >
+              {createAppConfigMutation.isPending ? "Confirming..." : "Confirm"}
             </Button>
           </DialogFooter>
         </form>

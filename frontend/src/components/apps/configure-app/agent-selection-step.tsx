@@ -6,6 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { DialogFooter } from "@/components/ui/dialog";
 import { RowSelectionState, OnChangeFn } from "@tanstack/react-table";
 import * as z from "zod";
+import { useMetaInfo } from "@/components/context/metainfo";
+import { updateAgent } from "@/lib/api/agent";
+import { toast } from "sonner";
+import { useState } from "react";
 
 // Form schema for agent selection
 export const agentSelectFormSchema = z.object({
@@ -19,7 +23,7 @@ interface AgentSelectionStepProps {
   rowSelection: RowSelectionState;
   onRowSelectionChange: OnChangeFn<RowSelectionState>;
   onNext: () => void;
-  isLoading: boolean;
+  appName: string;
 }
 
 export function AgentSelectionStep({
@@ -27,9 +31,46 @@ export function AgentSelectionStep({
   rowSelection,
   onRowSelectionChange,
   onNext,
-  isLoading,
+  appName,
 }: AgentSelectionStepProps) {
+  const { activeProject, reloadActiveProject, accessToken } = useMetaInfo();
+  const [isLoading, setIsLoading] = useState(false);
   const columns = useAgentColumns();
+
+  const handleNext = async () => {
+    if (Object.keys(rowSelection).length === 0) {
+      onNext();
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const agentsToUpdate = agents.filter(
+        (agent) => agent.id && rowSelection[agent.id],
+      );
+
+      for (const agent of agentsToUpdate) {
+        const allowedApps = new Set(agent.allowed_apps);
+        allowedApps.add(appName);
+        await updateAgent(
+          activeProject.id,
+          agent.id,
+          accessToken,
+          undefined,
+          undefined,
+          Array.from(allowedApps),
+        );
+      }
+      toast.success("agents updated successfully");
+      await reloadActiveProject();
+      onNext();
+    } catch (error) {
+      console.error("agents updated app failed:", error);
+      toast.error("agents updated app failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-2">
@@ -62,7 +103,7 @@ export function AgentSelectionStep({
       )}
 
       <DialogFooter>
-        <Button type="button" onClick={onNext} disabled={isLoading}>
+        <Button type="button" onClick={handleNext} disabled={isLoading}>
           {isLoading ? "Confirming..." : "Confirm"}
         </Button>
       </DialogFooter>
