@@ -109,7 +109,7 @@ async def handle_user_created_webhook(
     project = crud.projects.create_project(db_session, org.org_id, "Default Project")
 
     # Create a default Agent for the project
-    crud.projects.create_agent(
+    crud.agents.create_agent(
         db_session,
         project.id,
         name="Default Agent",

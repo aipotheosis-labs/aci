@@ -50,7 +50,7 @@ def validate_api_key(
     api_key_key: Annotated[str, Security(api_key_header)],
 ) -> UUID:
     """Validate API key and return the API key ID. (not the actual API key string)"""
-    api_key = crud.projects.get_api_key(db_session, api_key_key)
+    api_key = crud.agents.get_api_key(db_session, api_key_key)
     if api_key is None:
         logger.error(
             "api key not found",
@@ -76,7 +76,7 @@ def validate_agent(
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> Agent:
-    agent = crud.projects.get_agent_by_api_key_id(db_session, api_key_id)
+    agent = crud.agents.get_agent_by_api_key_id(db_session, api_key_id)
     if not agent:
         raise AgentNotFound(f"agent not found for api_key_id={api_key_id}")
 
