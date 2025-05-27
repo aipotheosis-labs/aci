@@ -65,9 +65,16 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
                         var.set(str(value) if value else "unknown")
 
             except Exception as e:
-                logger.exception(
-                    f"Can't access database to query request context for API key: {e!s}"
+                logger.warning(
+                    "Can't access database to query request context for API key",
+                    extra={"api_key": api_key[:4] + "..." + api_key[-4:], "error": e},
                 )
+                return JSONResponse(
+                    status_code=500,
+                    content={"error": "Internal server error"},
+                )
+            finally:
+                db_session.close()
 
         # Skip logging for health check endpoints
         is_health_check = request.url.path == config.ROUTER_PREFIX_HEALTH
