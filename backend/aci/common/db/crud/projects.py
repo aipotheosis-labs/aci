@@ -213,7 +213,7 @@ def get_api_key(db_session: Session, key: str) -> APIKey | None:
     return db_session.execute(select(APIKey).filter_by(key_hmac=key_hmac)).scalar_one_or_none()
 
 
-def get_project_agent_org_by_api_key(
+def get_request_context_by_api_key(
     db_session: Session, key: str
 ) -> tuple[UUID | None, UUID | None, UUID | None, UUID | None]:
     """

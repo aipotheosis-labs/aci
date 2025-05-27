@@ -1,3 +1,4 @@
+import logging
 import uuid
 from datetime import UTC, datetime
 
@@ -24,7 +25,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
     """
     Middleware for logging structured analytics data for every request/response.
     It generates a unique request ID and logs some baseline details.
-    It also extracts and sets project_id and agent_id if available in headers.
+    It also extracts and sets request context from the API key.
     """
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
@@ -43,7 +44,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
             try:
                 with utils.create_db_session(config.DB_FULL_URL) as db_session:
                     api_key_id, agent_id, project_id, org_id = (
-                        crud.projects.get_project_agent_org_by_api_key(db_session, api_key)
+                        crud.projects.get_request_context_by_api_key(db_session, api_key)
                     )
                     if not api_key_id and not agent_id and not project_id and not org_id:
                         logger.warning(
@@ -54,16 +55,15 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
                             status_code=401,
                             content={"error": "Unauthorized"},
                         )
-                    else:
-                        # Set context variables from DB-derived values
-                        context_vars = {
-                            api_key_id_ctx_var: api_key_id,
-                            agent_id_ctx_var: agent_id,
-                            project_id_ctx_var: project_id,
-                            org_id_ctx_var: org_id,
-                        }
-                        for var, value in context_vars.items():
-                            var.set(value)
+                    context_vars = {
+                        api_key_id_ctx_var: api_key_id,
+                        agent_id_ctx_var: agent_id,
+                        project_id_ctx_var: project_id,
+                        org_id_ctx_var: org_id,
+                    }
+                    for var, value in context_vars.items():
+                        var.set(value)
+
             except Exception as e:
                 logger.exception(
                     f"Can't access database to query request context for API key: {e!s}"
@@ -123,3 +123,24 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
 
         else:
             return request.client.host if request.client else "unknown"
+
+
+class RequestContextFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        # Only add attributes when values are not None
+        request_id = request_id_ctx_var.get()
+        record.__dict__["request_id"] = request_id
+
+        api_key_id = api_key_id_ctx_var.get()
+        record.__dict__["api_key_id"] = api_key_id
+
+        project_id = project_id_ctx_var.get()
+        record.__dict__["project_id"] = project_id
+
+        agent_id = agent_id_ctx_var.get()
+        record.__dict__["agent_id"] = agent_id
+
+        org_id = org_id_ctx_var.get()
+        record.__dict__["org_id"] = org_id
+
+        return True

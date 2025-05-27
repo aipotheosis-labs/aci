@@ -11,12 +11,12 @@ from starlette.middleware.sessions import SessionMiddleware
 from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from aci.common.exceptions import ACIException
-from aci.common.logging_setup import RequestContextFilter, setup_logging
+from aci.common.logging_setup import setup_logging
 from aci.server import config
 from aci.server import dependencies as deps
 from aci.server.acl import get_propelauth
 from aci.server.dependency_check import check_dependencies
-from aci.server.middleware.interceptor import InterceptorMiddleware
+from aci.server.middleware.interceptor import InterceptorMiddleware, RequestContextFilter
 from aci.server.middleware.ratelimit import RateLimitMiddleware
 from aci.server.routes import (
     agent,
