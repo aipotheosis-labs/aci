@@ -62,7 +62,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
                         org_id_ctx_var: org_id,
                     }
                     for var, value in context_vars.items():
-                        var.set(value)
+                        var.set(str(value) if value else "unknown")
 
             except Exception as e:
                 logger.exception(
