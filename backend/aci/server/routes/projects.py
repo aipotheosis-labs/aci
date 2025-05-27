@@ -1,14 +1,20 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header
 from propelauth_fastapi import User
+from sqlalchemy import exc as sqlalchemy
 from sqlalchemy.orm import Session
 
 from aci.common.db import crud
 from aci.common.db.sql_models import Agent, Project
 from aci.common.enums import OrganizationRole
-from aci.common.exceptions import AgentNotFound, ProjectNotFound
+from aci.common.exceptions import (
+    AgentNotFound,
+    ProjectCreationError,
+    ProjectIsLastInOrgError,
+    ProjectNotFound,
+)
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.agent import AgentCreate, AgentPublic, AgentUpdate
 from aci.common.schemas.project import ProjectCreate, ProjectPublic, ProjectUpdate
@@ -52,16 +58,14 @@ async def create_project(
             allowed_apps=[],
             custom_instructions={},
         )
-    except Exception as e:
+    except sqlalchemy.DatabaseError as e:
         logger.error(
             "Failed to create default agent",
             extra={"project_id": project.id, "error": str(e)},
         )
         # Consider whether to rollback the entire project creation
         db_session.rollback()
-        raise HTTPException(
-            status_code=500, detail="Failed to create project with default agent"
-        ) from e
+        raise ProjectCreationError() from e
     db_session.commit()
 
     logger.info(
@@ -134,9 +138,7 @@ async def delete_project(
             "cannot delete last project",
             extra={"project_id": project_id, "org_id": project.org_id},
         )
-        raise HTTPException(
-            status_code=409, detail="Cannot delete the last project in the organization"
-        )
+        raise ProjectIsLastInOrgError()
 
     crud.projects.delete_project(db_session, project_id)
     db_session.commit()
