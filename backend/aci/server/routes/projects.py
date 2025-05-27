@@ -40,9 +40,6 @@ async def create_project(
     acl.validate_user_access_to_org(user, body.org_id, OrganizationRole.OWNER)
     quota_manager.enforce_project_creation_quota(db_session, body.org_id)
 
-    if not body.name:
-        raise HTTPException(status_code=422, detail="Project name cannot be empty")
-
     project = crud.projects.create_project(db_session, body.org_id, body.name)
 
     # Create a default Agent for the project
@@ -168,9 +165,6 @@ async def update_project(
     )
 
     acl.validate_user_access_to_project(db_session, user, project_id)
-
-    if not body.name:
-        raise HTTPException(status_code=422, detail="Project name cannot be empty")
 
     project = crud.projects.get_project(db_session, project_id)
     if not project:
