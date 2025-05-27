@@ -74,21 +74,23 @@ const AppPage = () => {
       <div className="m-4 flex items-center justify-between">
         <div>
           {app && (
-            <div className="flex items-center gap-4">
-              <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
-                <Image
-                  src={app?.logo ?? ""}
-                  alt={`${app?.display_name} logo`}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold">{app.display_name}</h1>
-                <IdDisplay id={app.name} />
-                <div className="mt-2 max-w-3xl text-sm text-muted-foreground">
-                  {app.description}
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-4">
+                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+                  <Image
+                    src={app?.logo ?? ""}
+                    alt={`${app?.display_name} logo`}
+                    fill
+                    className="object-contain"
+                  />
                 </div>
+                <div>
+                  <h1 className="text-2xl font-bold">{app.display_name}</h1>
+                  <IdDisplay id={app.name} />
+                </div>
+              </div>
+              <div className="max-w-3xl text-sm text-muted-foreground">
+                {app.description}
               </div>
             </div>
           )}
