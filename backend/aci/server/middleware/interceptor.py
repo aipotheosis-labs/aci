@@ -38,9 +38,6 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
         api_key = request.headers.get(config.AOPOLABS_API_KEY_NAME)
         api_key_id = agent_id = project_id = org_id = None
         if api_key:
-            logger.info(
-                "api key found in header", extra={"api_key": api_key[:4] + "..." + api_key[-4:]}
-            )
             try:
                 with utils.create_db_session(config.DB_FULL_URL) as db_session:
                     api_key_id, agent_id, project_id, org_id = (
@@ -63,6 +60,16 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
                     }
                     for var, value in context_vars.items():
                         var.set(str(value) if value else "unknown")
+                    logger.info(
+                        "api key found in header",
+                        extra={
+                            "api_key": api_key[:4] + "..." + api_key[-4:],
+                            "api_key_id": api_key_id,
+                            "agent_id": agent_id,
+                            "project_id": project_id,
+                            "org_id": org_id,
+                        },
+                    )
 
             except Exception as e:
                 logger.warning(
