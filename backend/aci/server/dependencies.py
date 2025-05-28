@@ -20,6 +20,7 @@ from aci.common.exceptions import (
 from aci.common.logging_setup import get_logger
 from aci.common.opensearch.client import get_opensearch_client
 from aci.server import config
+from aci.server.opensearch import get_opensearch_client  # type: ignore[import-untyped]
 
 logger = get_logger(__name__)
 http_bearer = HTTPBearer(auto_error=True, description="login to receive a JWT token")
