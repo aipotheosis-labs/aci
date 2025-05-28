@@ -42,3 +42,5 @@ services:
     depends_on:
       test-db:
         condition: service_healthy
+      aws:
+        condition: service_healthy

@@ -184,8 +184,6 @@ For VS Code users, configure Ruff formatter:
 
 ```bash
 docker compose -f compose.yml -f compose.test.yml run --rm test-runner
-# or if you already have the compose.yml file running, you can just run:
-docker compose -f compose.test.yml run --rm test-runner
 ```
 
 ## Database Management
