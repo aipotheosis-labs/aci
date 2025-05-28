@@ -1,17 +1,4 @@
 services:
-  test-runner:
-    extends:
-      file: compose.yml
-      service: runner
-    environment:
-      - SERVER_DB_HOST=test-db
-      - ALEMBIC_DB_HOST=test-db
-      - CLI_DB_HOST=test-db
-    depends_on:
-      test-db:
-        condition: service_healthy
-
-  # extend doesn't work, there will still be port conflicts even if we override the ports
   test-db:
     image: pgvector/pgvector:pg17
     healthcheck:
@@ -28,3 +15,30 @@ services:
     ports:
       - "5433:5432"
     restart: no
+
+
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.runner
+    env_file:
+      - .env.local
+    environment:
+      # override the db host to use the test-db service
+      - SERVER_DB_HOST=test-db
+      - ALEMBIC_DB_HOST=test-db
+      - CLI_DB_HOST=test-db
+    # Mount the local code into the container so you can run scripts / Alembic
+    volumes:
+      - ./aci:/workdir/aci
+      - ./apps:/workdir/apps
+      - ./scripts:/workdir/scripts
+      - ./evals:/workdir/evals
+      - ./alembic.ini:/workdir/alembic.ini
+      # Mocks out the propelauth_fastapi module in server container to bypass token validation in local development
+      - ./mock/propelauth_fastapi_mock.py:/workdir/.venv/lib/python3.12/site-packages/propelauth_fastapi/__init__.py
+    command: >
+      /bin/sh -c "alembic upgrade head && uv run pytest"
+    depends_on:
+      test-db:
+        condition: service_healthy
