@@ -1,12 +1,17 @@
 import uuid
 from uuid import uuid4
 
+import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from aci.common.db import crud
-from aci.common.enums import Visibility
+from aci.common.db.sql_models import App, Project
+from aci.common.enums import SecurityScheme, Visibility
+from aci.common.schemas.agent import AgentCreate
+from aci.common.schemas.app_configurations import AppConfigurationCreate
+from aci.common.schemas.linked_accounts import LinkedAccountNoAuthCreate
 from aci.common.schemas.project import ProjectCreate, ProjectPublic
 from aci.server import config
 from aci.server.tests.conftest import DummyUser
@@ -192,7 +197,6 @@ def test_update_project_not_found(
 
 def test_update_project_empty_name(
     test_client: TestClient,
-    db_session: Session,
     dummy_user: DummyUser,
 ) -> None:
     # First create a project
@@ -220,31 +224,27 @@ def test_update_project_empty_name(
 
 def test_delete_project_success(
     test_client: TestClient,
-    db_session: Session,
     dummy_user: DummyUser,
+    dummy_project_1: Project,
 ) -> None:
-    # First create two projects
-    project_names = ["project_1", "project_2"]
-    project_ids = []
-    for name in project_names:
-        body = ProjectCreate(
-            name=name,
-            org_id=dummy_user.org_id,
-        )
-        create_response = test_client.post(
-            f"{config.ROUTER_PREFIX_PROJECTS}",
-            json=body.model_dump(mode="json"),
-            headers={
-                "Authorization": f"Bearer {dummy_user.access_token}",
-                "X-ACI-ORG-ID": str(dummy_user.org_id),
-            },
-        )
-        assert create_response.status_code == status.HTTP_200_OK
-        project_ids.append(ProjectPublic.model_validate(create_response.json()).id)
+    body = ProjectCreate(
+        name="project_test_delete",
+        org_id=dummy_user.org_id,
+    )
+    create_response = test_client.post(
+        f"{config.ROUTER_PREFIX_PROJECTS}",
+        json=body.model_dump(mode="json"),
+        headers={
+            "Authorization": f"Bearer {dummy_user.access_token}",
+            "X-ACI-ORG-ID": str(dummy_user.org_id),
+        },
+    )
+    assert create_response.status_code == status.HTTP_200_OK
+    project_id = ProjectPublic.model_validate(create_response.json()).id
 
     # Test deleting one project (should succeed as it's not the last one)
     response = test_client.delete(
-        f"{config.ROUTER_PREFIX_PROJECTS}/{project_ids[0]}",
+        f"{config.ROUTER_PREFIX_PROJECTS}/{project_id}",
         headers={"Authorization": f"Bearer {dummy_user.access_token}"},
     )
     assert response.status_code == status.HTTP_200_OK
@@ -260,7 +260,7 @@ def test_delete_project_success(
     assert response.status_code == status.HTTP_200_OK
     projects = [ProjectPublic.model_validate(project) for project in response.json()]
     assert len(projects) == 1
-    assert projects[0].id == project_ids[1]
+    assert projects[0].id == dummy_project_1.id
 
 
 def test_delete_last_project(
@@ -320,3 +320,93 @@ def test_delete_project_not_found(
         },
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+@pytest.mark.usefixtures(
+    "dummy_project_1"
+)  # Can't delete last project that's why we need this fixture
+def test_delete_project_cascading_deletion(
+    test_client: TestClient,
+    dummy_user: DummyUser,
+    dummy_apps: list[App],
+    db_session: Session,
+) -> None:
+    dummy_app = dummy_apps[0]
+    # First create a project
+    body = ProjectCreate(
+        name="project_test_cascading_deletion",
+        org_id=dummy_user.org_id,
+    )
+    create_response = test_client.post(
+        f"{config.ROUTER_PREFIX_PROJECTS}",
+        json=body.model_dump(mode="json"),
+        headers={
+            "Authorization": f"Bearer {dummy_user.access_token}",
+            "X-ACI-ORG-ID": str(dummy_user.org_id),
+        },
+    )
+    assert create_response.status_code == status.HTTP_200_OK
+    project_public = ProjectPublic.model_validate(create_response.json())
+    project_id = project_public.id
+    api_key = str(project_public.agents[0].api_keys[0].key)
+
+    # Create an app configuration
+    app_config_body = AppConfigurationCreate(
+        app_name=dummy_app.name, security_scheme=SecurityScheme.NO_AUTH
+    )
+    app_config_response = test_client.post(
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",
+        json=app_config_body.model_dump(mode="json"),
+        headers={"x-api-key": api_key},
+    )
+    assert app_config_response.status_code == status.HTTP_200_OK
+
+    # Create a linked account
+    linked_account_body = LinkedAccountNoAuthCreate(
+        app_name=dummy_app.name,
+        linked_account_owner_id="test_link_no_auth_account_success",
+    )
+    linked_account_response = test_client.post(
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/no-auth",
+        json=linked_account_body.model_dump(mode="json", exclude_none=True),
+        headers={"x-api-key": api_key},
+    )
+    assert linked_account_response.status_code == status.HTTP_200_OK
+
+    # Create an agent
+    agent_body = AgentCreate(
+        name="new test agent",
+        description="new test agent description",
+    )
+    agent_response = test_client.post(
+        f"{config.ROUTER_PREFIX_PROJECTS}/{project_id}/agents",
+        json=agent_body.model_dump(mode="json"),
+        headers={"Authorization": f"Bearer {dummy_user.access_token}"},
+    )
+    assert agent_response.status_code == status.HTTP_200_OK
+
+    # Delete the project
+    delete_response = test_client.delete(
+        f"{config.ROUTER_PREFIX_PROJECTS}/{project_id}",
+        headers={
+            "Authorization": f"Bearer {dummy_user.access_token}",
+            "X-ACI-ORG-ID": str(dummy_user.org_id),
+        },
+    )
+    assert delete_response.status_code == status.HTTP_200_OK
+
+    # Verify app configuration is deleted from DB
+    app_config = crud.app_configurations.get_app_configuration(
+        db_session, project_id, dummy_app.name
+    )
+    assert app_config is None, "App configuration should be deleted from database"
+
+    # Verify linked account is deleted from DB
+    linked_account = crud.linked_accounts.get_linked_account(
+        db_session, project_id, dummy_app.name, linked_account_body.linked_account_owner_id
+    )
+    assert linked_account is None, "Linked account should be deleted from database"
+
+    # Verify agent is deleted from DB
+    agent = crud.projects.get_agent_by_id(db_session, project_public.agents[0].id)
+    assert agent is None, "Agent should be deleted from database"
