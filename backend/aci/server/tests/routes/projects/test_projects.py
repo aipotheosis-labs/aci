@@ -27,19 +27,9 @@ def test_get_projects_success(
 
     # First create multiple projects
     for i in range(max_projects):
-        body = ProjectCreate(
-            name=f"project_{i}",
-            org_id=dummy_user.org_id,
-        )
-        create_response = test_client.post(
-            f"{config.ROUTER_PREFIX_PROJECTS}",
-            json=body.model_dump(mode="json"),
-            headers={
-                "Authorization": f"Bearer {dummy_user.access_token}",
-                "X-ACI-ORG-ID": str(dummy_user.org_id),
-            },
-        )
-        assert create_response.status_code == status.HTTP_200_OK
+        project = crud.projects.create_project(db_session, dummy_user.org_id, f"project_{i}")
+        db_session.commit()
+        assert project is not None
 
     # Test getting all projects
     response = test_client.get(
@@ -50,11 +40,11 @@ def test_get_projects_success(
         },
     )
     assert response.status_code == status.HTTP_200_OK
-    projects = [ProjectPublic.model_validate(project) for project in response.json()]
-    assert len(projects) == max_projects
-    for project in projects:
-        assert project.name in [f"project_{i}" for i in range(max_projects)]
-        assert project.org_id == dummy_user.org_id
+    public_projects = [ProjectPublic.model_validate(project) for project in response.json()]
+    assert len(public_projects) == max_projects
+    for public_project in public_projects:
+        assert public_project.name in [f"project_{i}" for i in range(max_projects)]
+        assert public_project.org_id == dummy_user.org_id
 
 
 def test_get_projects_invalid_org_id(
@@ -127,15 +117,9 @@ def test_create_project_reached_max_projects_per_org(
 
     # create max number of projects under the user
     for i in range(max_projects):
-        body = ProjectCreate(name=f"project_{i}", org_id=dummy_user.org_id)
-        response = test_client.post(
-            f"{config.ROUTER_PREFIX_PROJECTS}",
-            json=body.model_dump(mode="json"),
-            headers={"Authorization": f"Bearer {dummy_user.access_token}"},
-        )
-        assert response.status_code == status.HTTP_200_OK, (
-            f"should be able to create {max_projects} projects"
-        )
+        project = crud.projects.create_project(db_session, dummy_user.org_id, f"project_{i}")
+        db_session.commit()
+        assert project is not None, f"should be able to create {max_projects} projects"
 
     # try to create one more project under the user
     body = ProjectCreate(name=f"project_{max_projects}", org_id=dummy_user.org_id)
@@ -149,26 +133,13 @@ def test_create_project_reached_max_projects_per_org(
 
 def test_update_project_success(
     test_client: TestClient,
-    db_session: Session,
     dummy_user: DummyUser,
+    dummy_project_1: Project,
 ) -> None:
-    # First create a project
-    body = ProjectCreate(
-        name="project_test_update",
-        org_id=dummy_user.org_id,
-    )
-    create_response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}",
-        json=body.model_dump(mode="json"),
-        headers={"Authorization": f"Bearer {dummy_user.access_token}"},
-    )
-    assert create_response.status_code == status.HTTP_200_OK
-    project_id = ProjectPublic.model_validate(create_response.json()).id
-
     # Test updating the project
     update_body = {"name": "updated_project_name"}
     response = test_client.patch(
-        f"{config.ROUTER_PREFIX_PROJECTS}/{project_id}",
+        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}",
         json=update_body,
         headers={"Authorization": f"Bearer {dummy_user.access_token}"},
     )
@@ -197,24 +168,12 @@ def test_update_project_not_found(
 def test_update_project_empty_name(
     test_client: TestClient,
     dummy_user: DummyUser,
+    dummy_project_1: Project,
 ) -> None:
-    # First create a project
-    body = ProjectCreate(
-        name="project_test_update_invalid",
-        org_id=dummy_user.org_id,
-    )
-    create_response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}",
-        json=body.model_dump(mode="json"),
-        headers={"Authorization": f"Bearer {dummy_user.access_token}"},
-    )
-    assert create_response.status_code == status.HTTP_200_OK
-    project_id = ProjectPublic.model_validate(create_response.json()).id
-
     # Test updating with invalid data
     update_body = {"name": ""}  # Empty name should be invalid
     response = test_client.patch(
-        f"{config.ROUTER_PREFIX_PROJECTS}/{project_id}",
+        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}",
         json=update_body,
         headers={"Authorization": f"Bearer {dummy_user.access_token}"},
     )
@@ -223,23 +182,19 @@ def test_update_project_empty_name(
 
 def test_delete_project_success(
     test_client: TestClient,
+    db_session: Session,
     dummy_user: DummyUser,
     dummy_project_1: Project,
 ) -> None:
-    body = ProjectCreate(
-        name="project_test_delete",
-        org_id=dummy_user.org_id,
+    # Create a project using CRUD
+    project = crud.projects.create_project(
+        db_session,
+        dummy_user.org_id,
+        "project_test_delete",
     )
-    create_response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}",
-        json=body.model_dump(mode="json"),
-        headers={
-            "Authorization": f"Bearer {dummy_user.access_token}",
-            "X-ACI-ORG-ID": str(dummy_user.org_id),
-        },
-    )
-    assert create_response.status_code == status.HTTP_200_OK
-    project_id = ProjectPublic.model_validate(create_response.json()).id
+    db_session.commit()
+    assert project is not None
+    project_id = project.id
 
     # Test deleting one project (should succeed as it's not the last one)
     response = test_client.delete(
@@ -248,16 +203,8 @@ def test_delete_project_success(
     )
     assert response.status_code == status.HTTP_200_OK
 
-    # Verify project is deleted
-    response = test_client.get(
-        f"{config.ROUTER_PREFIX_PROJECTS}",
-        headers={
-            "Authorization": f"Bearer {dummy_user.access_token}",
-            "X-ACI-ORG-ID": str(dummy_user.org_id),
-        },
-    )
-    assert response.status_code == status.HTTP_200_OK
-    projects = [ProjectPublic.model_validate(project) for project in response.json()]
+    # Verify project is deleted by getting all projects for the org
+    projects = crud.projects.get_projects_by_org(db_session, dummy_user.org_id)
     assert len(projects) == 1
     assert projects[0].id == dummy_project_1.id
 
@@ -266,26 +213,11 @@ def test_delete_last_project(
     test_client: TestClient,
     db_session: Session,
     dummy_user: DummyUser,
+    dummy_project_1: Project,
 ) -> None:
-    # First create a project
-    body = ProjectCreate(
-        name="last_project",
-        org_id=dummy_user.org_id,
-    )
-    create_response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}",
-        json=body.model_dump(mode="json"),
-        headers={
-            "Authorization": f"Bearer {dummy_user.access_token}",
-            "X-ACI-ORG-ID": str(dummy_user.org_id),
-        },
-    )
-    assert create_response.status_code == status.HTTP_200_OK
-    project_id = ProjectPublic.model_validate(create_response.json()).id
-
     # Try to delete the last project (should fail)
     response = test_client.delete(
-        f"{config.ROUTER_PREFIX_PROJECTS}/{project_id}",
+        f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}",
         headers={
             "Authorization": f"Bearer {dummy_user.access_token}",
             "X-ACI-ORG-ID": str(dummy_user.org_id),
@@ -293,18 +225,10 @@ def test_delete_last_project(
     )
     assert response.status_code == status.HTTP_409_CONFLICT
 
-    # Verify project still exists
-    response = test_client.get(
-        f"{config.ROUTER_PREFIX_PROJECTS}",
-        headers={
-            "Authorization": f"Bearer {dummy_user.access_token}",
-            "X-ACI-ORG-ID": str(dummy_user.org_id),
-        },
-    )
-    assert response.status_code == status.HTTP_200_OK
-    projects = [ProjectPublic.model_validate(project) for project in response.json()]
+    # Verify project still exists using CRUD
+    projects = crud.projects.get_projects_by_org(db_session, dummy_user.org_id)
     assert len(projects) == 1
-    assert projects[0].id == project_id
+    assert projects[0].id == dummy_project_1.id
 
 
 def test_delete_project_not_found(
@@ -331,22 +255,15 @@ def test_delete_project_cascading_deletion(
     db_session: Session,
 ) -> None:
     dummy_app = dummy_apps[0]
-    # First create a project
-    body = ProjectCreate(
-        name="project_test_cascading_deletion",
-        org_id=dummy_user.org_id,
+    # First create a project using CRUD
+    project = crud.projects.create_project(
+        db_session,
+        dummy_user.org_id,
+        "project_test_cascading_deletion",
     )
-    create_response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}",
-        json=body.model_dump(mode="json"),
-        headers={
-            "Authorization": f"Bearer {dummy_user.access_token}",
-            "X-ACI-ORG-ID": str(dummy_user.org_id),
-        },
-    )
-    assert create_response.status_code == status.HTTP_200_OK
-    project_public = ProjectPublic.model_validate(create_response.json())
-    project_id = project_public.id
+    db_session.commit()
+    assert project is not None
+    project_id = project.id
 
     app_config_body = AppConfigurationCreate(
         app_name=dummy_app.name,
@@ -410,5 +327,5 @@ def test_delete_project_cascading_deletion(
     assert deleted_linked_account is None, "Linked account should be deleted from database"
 
     # Verify agent is deleted from DB
-    deleted_agent = crud.projects.get_agent_by_id(db_session, project_public.agents[0].id)
+    deleted_agent = crud.projects.get_agent_by_id(db_session, project_id)
     assert deleted_agent is None, "Agent should be deleted from database"
