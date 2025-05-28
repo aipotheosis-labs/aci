@@ -7,6 +7,7 @@ import { OrgMemberInfoClass, UserClass } from "@propelauth/react";
 import { useAppConfigs } from "@/hooks/use-app-config";
 import type { QueryObserverResult } from "@tanstack/react-query";
 import { AppConfig } from "@/lib/types/appconfig";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Mock the modules
 vi.mock("@/components/context/metainfo", () => ({
@@ -17,6 +18,19 @@ vi.mock("@/components/context/metainfo", () => ({
 vi.mock("@/hooks/use-app-config", () => ({
   useAppConfigs: vi.fn(),
   useCreateAppConfig: vi.fn(() => ({
+    mutateAsync: vi.fn(),
+  })),
+}));
+
+// Mock hooks/use-agent
+vi.mock("@/hooks/use-agent", () => ({
+  useCreateAgent: vi.fn(() => ({
+    mutateAsync: vi.fn(),
+  })),
+  useUpdateAgent: vi.fn(() => ({
+    mutateAsync: vi.fn(),
+  })),
+  useDeleteAgent: vi.fn(() => ({
     mutateAsync: vi.fn(),
   })),
 }));
@@ -38,8 +52,18 @@ vi.mock("@/components/project/agent-instruction-filter-form", () => ({
   ),
 }));
 
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+  },
+});
+
 const TestWrapper = ({ children }: { children: React.ReactNode }) => (
-  <TooltipProvider>{children}</TooltipProvider>
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>{children}</TooltipProvider>
+  </QueryClientProvider>
 );
 
 describe("ProjectSettingPage", () => {
@@ -81,6 +105,8 @@ describe("ProjectSettingPage", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+
+    queryClient.clear();
 
     // Mock MetaInfo context
     vi.mocked(useMetaInfo).mockReturnValue({

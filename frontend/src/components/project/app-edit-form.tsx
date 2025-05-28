@@ -11,9 +11,8 @@ import {
 } from "@/components/ui/dialog";
 import { useState, useEffect, useMemo } from "react";
 import { Separator } from "@/components/ui/separator";
-import { updateAgent } from "@/lib/api/agent";
+import { useUpdateAgent } from "@/hooks/use-agent";
 import { toast } from "sonner";
-import { useMetaInfo } from "@/components/context/metainfo";
 import { Badge } from "@/components/ui/badge";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { RowSelectionState } from "@tanstack/react-table";
@@ -25,24 +24,21 @@ import { AppConfig } from "@/lib/types/appconfig";
 
 interface AppEditFormProps {
   children: React.ReactNode;
-  reload: () => Promise<void>;
-  projectId: string;
   agentId: string;
   allowedApps: string[];
 }
 
 export function AppEditForm({
   children,
-  reload,
-  projectId,
   agentId,
   allowedApps,
 }: AppEditFormProps) {
-  const { accessToken } = useMetaInfo();
   const [open, setOpen] = useState(false);
   const [selectedApps, setSelectedApps] = useState<RowSelectionState>({});
   const { data: appConfigs = [], isPending: isConfigsPending } =
     useAppConfigs();
+
+  const { mutateAsync: updateAgentMutation } = useUpdateAgent();
   const columns: ColumnDef<AppConfig>[] = useMemo(() => {
     const columnHelper = createColumnHelper<AppConfig>();
     return [
@@ -90,21 +86,13 @@ export function AppEditForm({
   const handleSubmit = async () => {
     try {
       setSubmitLoading(true);
-      if (projectId && agentId) {
-        await updateAgent(
-          projectId,
-          agentId,
-          accessToken,
-          undefined,
-          undefined,
-          selectedAppNames,
-        );
-
-        toast.success("Agent's allowed apps have been updated successfully.");
-
-        reload();
-      }
-      setOpen(false);
+      await updateAgentMutation({
+        id: agentId,
+        data: {
+          allowed_apps: selectedAppNames,
+        },
+      });
+      toast.success("Agent's allowed apps have been updated successfully.");
     } catch (error) {
       console.error("Failed to update agent's allowed apps:", error);
       toast.error("Failed to update agent's allowed apps.");
