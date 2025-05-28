@@ -1,0 +1,92 @@
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d local_db"]
+      interval: 1s
+      retries: 5
+      start_period: 1s
+      timeout: 10s
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: local_db
+    restart: no
+    networks:
+      - test_network
+
+  aws:
+    image: localstack/localstack
+    environment:
+      - DEBUG=1
+      - DATA_DIR=/var/lib/localstack/data
+      - SERVICES=kms
+    volumes:
+      - ./scripts/create-kms-encryption-key.sh:/etc/localstack/init/ready.d/create-kms-encryption-key.sh
+    networks:
+      - test_network
+
+  propelauth_mock:
+    build:
+      context: .
+      dockerfile: Dockerfile.runner
+    working_dir: /workdir
+    volumes:
+      - ./mock/propelauth_mock_server.py:/workdir/propelauth_mock_server.py
+    command: uvicorn propelauth_mock_server:app --proxy-headers --forwarded-allow-ips=* --host 0.0.0.0 --port 12800
+    networks:
+      - test_network
+
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    healthcheck:
+      test: ["CMD-SHELL", "curl localhost:8000/v1/health"]
+      interval: 10s
+      retries: 5
+      start_period: 3s
+      timeout: 10s
+    env_file:
+      - .env.local
+    volumes:
+      - ./aci/server:/workdir/aci/server
+      - ./aci/common:/workdir/aci/common
+    command: uvicorn aci.server.main:app --proxy-headers --forwarded-allow-ips=* --host 0.0.0.0 --port 8000 --no-access-log
+    depends_on:
+      db:
+        condition: service_healthy
+      aws:
+        condition: service_healthy
+    restart: no
+    networks:
+      - test_network
+
+  runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.runner
+    env_file:
+      - .env.local
+    environment:
+      - PYTEST_ARGS=${PYTEST_ARGS:-}
+    volumes:
+      - ./aci:/workdir/aci
+      - ./apps:/workdir/apps
+      - ./scripts:/workdir/scripts
+      - ./evals:/workdir/evals
+      - ./alembic.ini:/workdir/alembic.ini
+    command: >
+      /bin/sh -c "alembic upgrade head && pytest $PYTEST_ARGS"
+    depends_on:
+      db:
+        condition: service_healthy
+      server:
+        condition: service_healthy
+    networks:
+      - test_network
+
+networks:
+  test_network:
+    name: aci_test_network
+    driver: bridge
