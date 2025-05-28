@@ -24,6 +24,7 @@ services:
       - DEBUG=1
       - DATA_DIR=/var/lib/localstack/data
       - SERVICES=kms
+      - LS_LOG=warn
     volumes:
       - ./scripts/create-kms-encryption-key.sh:/etc/localstack/init/ready.d/create-kms-encryption-key.sh
 
