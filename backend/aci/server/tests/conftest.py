@@ -132,7 +132,7 @@ def database_setup_and_cleanup(db_session: Session) -> Generator[None, None, Non
     """
     # make sure we are connecting to the local db not the production db
     # TODO: it's part of the environment separation problem, need to properly set up failsafe prod isolation
-    assert config.DB_HOST in ["localhost", "db"]
+    assert config.DB_HOST in ["localhost", "test-db"]
 
     # Use 'with' to manage the session context
 

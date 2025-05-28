@@ -1,0 +1,30 @@
+services:
+  test-runner:
+    extends:
+      file: compose.yml
+      service: runner
+    environment:
+      - SERVER_DB_HOST=test-db
+      - ALEMBIC_DB_HOST=test-db
+      - CLI_DB_HOST=test-db
+    depends_on:
+      test-db:
+        condition: service_healthy
+
+  # extend doesn't work, there will still be port conflicts even if we override the ports
+  test-db:
+    image: pgvector/pgvector:pg17
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d local_db"]
+      interval: 1s
+      retries: 5
+      start_period: 1s
+      timeout: 10s
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: local_db
+    # using a different port to avoid conflicts with the main db
+    ports:
+      - "5433:5432"
+    restart: no
