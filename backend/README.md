@@ -102,7 +102,7 @@ For VS Code users, configure Ruff formatter:
 1. Start services with Docker Compose:
 
    ```bash
-   docker compose up --build
+   docker compose -f compose.yml -f compose.test.yml up --build
    ```
 
    This will start:
@@ -110,6 +110,8 @@ For VS Code users, configure Ruff formatter:
    - `db`: PostgreSQL database
    - `aws`: LocalStack for mocking AWS services
    - `runner`: Container for running commands like pytest, cli commands or scripts
+   - `test-db`: PostgreSQL database for running pytests
+   - `test-runner`: Container for running pytests against the test database
 
 1. Seed the database with sample data:
 
@@ -182,18 +184,11 @@ For VS Code users, configure Ruff formatter:
 
 ### Running Tests
 
-Ensure the `db` service is running and the database is empty (in case you have seeded
-the db in `step 6`) before running tests.
-
 > [!NOTE]
-> More specifically, if you have run the `seed_db.sh` script already, you need to bring
-> down docker compose and bring it up again without running the `seed_db.sh` script this
-> time.
-
-Then you can run the test in the `runner` container:
+> Make sure the `test-db` service is running and the database is empty. And run it via the `test-runner` container instead of the `runner` container.
 
 ```bash
-docker compose exec runner pytest
+docker compose exec test-runner pytest
 ```
 
 ## Database Management
@@ -206,6 +201,8 @@ When making changes to database models:
 
    ```bash
    docker compose exec runner alembic check
+   # or if test-db migrations are needed
+   docker compose exec test-runner alembic check
    ```
 
 2. Generate a migration:
@@ -224,12 +221,16 @@ When making changes to database models:
 
    ```bash
    docker compose exec runner alembic upgrade head
+   # or if test-db migrations are needed
+   docker compose exec test-runner alembic upgrade head
    ```
 
 5. To revert the latest migration:
 
    ```bash
    docker compose exec runner alembic downgrade -1
+   # or if test-db migrations are needed
+   docker compose exec test-runner alembic downgrade -1
    ```
 
 ## PropelAuth Configuration
