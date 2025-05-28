@@ -4,12 +4,12 @@ import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-tabl
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DialogFooter } from "@/components/ui/dialog";
-import { RowSelectionState, OnChangeFn } from "@tanstack/react-table";
+import { RowSelectionState } from "@tanstack/react-table";
 import * as z from "zod";
 import { useMetaInfo } from "@/components/context/metainfo";
-import { updateAgent } from "@/lib/api/agent";
+import { useUpdateAgent } from "@/hooks/use-agent";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 // Form schema for agent selection
 export const agentSelectFormSchema = z.object({
@@ -19,47 +19,56 @@ export const agentSelectFormSchema = z.object({
 export type AgentSelectFormValues = z.infer<typeof agentSelectFormSchema>;
 
 interface AgentSelectionStepProps {
-  agents: Agent[];
-  rowSelection: RowSelectionState;
-  onRowSelectionChange: OnChangeFn<RowSelectionState>;
   onNext: () => void;
   appName: string;
+  isDialogOpen: boolean;
 }
 
 export function AgentSelectionStep({
-  agents,
-  rowSelection,
-  onRowSelectionChange,
   onNext,
   appName,
+  isDialogOpen,
 }: AgentSelectionStepProps) {
-  const { activeProject, reloadActiveProject, accessToken } = useMetaInfo();
-  const [isLoading, setIsLoading] = useState(false);
+  const [selectedAgentIds, setSelectedAgentIds] = useState<RowSelectionState>(
+    {},
+  );
+  const { reloadActiveProject, activeProject } = useMetaInfo();
   const columns = useAgentColumns();
+  const { mutateAsync: updateAgentMutation, isPending: isUpdatingAgent } =
+    useUpdateAgent();
+
+  useEffect(() => {
+    if (isDialogOpen && activeProject?.agents) {
+      const initialSelection: RowSelectionState = {};
+      activeProject.agents.forEach((agent: Agent) => {
+        if (agent.id) {
+          initialSelection[agent.id] = true;
+        }
+      });
+      setSelectedAgentIds(initialSelection);
+    }
+  }, [isDialogOpen, activeProject]);
 
   const handleNext = async () => {
-    if (Object.keys(rowSelection).length === 0) {
+    if (Object.keys(selectedAgentIds).length === 0) {
       onNext();
       return;
     }
-
-    setIsLoading(true);
     try {
-      const agentsToUpdate = agents.filter(
-        (agent) => agent.id && rowSelection[agent.id],
+      const agentsToUpdate = activeProject.agents.filter(
+        (agent) => agent.id && selectedAgentIds[agent.id],
       );
 
       for (const agent of agentsToUpdate) {
         const allowedApps = new Set(agent.allowed_apps);
         allowedApps.add(appName);
-        await updateAgent(
-          activeProject.id,
-          agent.id,
-          accessToken,
-          undefined,
-          undefined,
-          Array.from(allowedApps),
-        );
+        await updateAgentMutation({
+          id: agent.id,
+          data: {
+            allowed_apps: Array.from(allowedApps),
+          },
+          noreload: true,
+        });
       }
       toast.success("agents updated successfully");
       await reloadActiveProject();
@@ -67,10 +76,10 @@ export function AgentSelectionStep({
     } catch (error) {
       console.error("agents updated app failed:", error);
       toast.error("agents updated app failed");
-    } finally {
-      setIsLoading(false);
     }
   };
+
+  const agents = activeProject?.agents || [];
 
   return (
     <div className="space-y-2">
@@ -82,7 +91,7 @@ export function AgentSelectionStep({
               variant="secondary"
               className="flex items-center gap-1 px-2 py-1 text-xs"
             >
-              Selected {Object.keys(rowSelection).length} Agents
+              Selected {Object.keys(selectedAgentIds).length} Agents
             </Badge>
           </div>
           <EnhancedDataTable
@@ -90,8 +99,8 @@ export function AgentSelectionStep({
             data={agents}
             searchBarProps={{ placeholder: "search agent..." }}
             rowSelectionProps={{
-              rowSelection: rowSelection,
-              onRowSelectionChange: onRowSelectionChange,
+              rowSelection: selectedAgentIds,
+              onRowSelectionChange: setSelectedAgentIds,
               getRowId: (row) => row.id,
             }}
           />
@@ -103,8 +112,8 @@ export function AgentSelectionStep({
       )}
 
       <DialogFooter>
-        <Button type="button" onClick={handleNext} disabled={isLoading}>
-          {isLoading ? "Confirming..." : "Confirm"}
+        <Button type="button" onClick={handleNext} disabled={isUpdatingAgent}>
+          {isUpdatingAgent ? "Confirming..." : "Confirm"}
         </Button>
       </DialogFooter>
     </div>

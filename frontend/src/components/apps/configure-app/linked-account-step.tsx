@@ -26,6 +26,7 @@ import {
 } from "@/hooks/use-linked-account";
 import { toast } from "sonner";
 import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // Form submission types constants
 export const FORM_SUBMIT_COPY_OAUTH2_LINK_URL = "copyOAuth2LinkURL";
@@ -60,19 +61,25 @@ export const linkedAccountFormSchema = z
   );
 
 interface LinkedAccountStepProps {
-  form: ReturnType<typeof useForm<LinkedAccountFormValues>>;
   authType: string;
   onClose: () => void;
   appName: string;
 }
 
 export function LinkedAccountStep({
-  form,
   authType,
   onClose,
   appName,
 }: LinkedAccountStepProps) {
   const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<LinkedAccountFormValues>({
+    resolver: zodResolver(linkedAccountFormSchema),
+    defaultValues: {
+      linkedAccountOwnerId: "",
+      apiKey: "",
+    },
+  });
 
   const {
     mutateAsync: createAPILinkedAccount,

@@ -1,6 +1,4 @@
 import { useEffect, useState, useCallback } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogContent,
@@ -8,30 +6,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { RowSelectionState } from "@tanstack/react-table";
-import { Agent } from "@/lib/types/project";
-import { useMetaInfo } from "@/components/context/metainfo";
 
 // import sub components
 import { Stepper } from "@/components/apps/configure-app/stepper";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 
-import {
-  ConfigureAppStep,
-  ConfigureAppFormValues,
-  ConfigureAppFormSchema,
-} from "@/components/apps/configure-app/configure-app-step";
-import {
-  AgentSelectionStep,
-  AgentSelectFormValues,
-  agentSelectFormSchema,
-} from "@/components/apps/configure-app/agent-selection-step";
-import {
-  LinkedAccountStep,
-  LinkedAccountFormValues,
-  linkedAccountFormSchema,
-} from "@/components/apps/configure-app/linked-account-step";
+import { ConfigureAppStep } from "@/components/apps/configure-app/configure-app-step";
+import { AgentSelectionStep } from "@/components/apps/configure-app/agent-selection-step";
+import { LinkedAccountStep } from "@/components/apps/configure-app/linked-account-step";
 
 // step definitions
 const STEPS = [
@@ -53,48 +36,15 @@ export function ConfigureApp({
   supported_security_schemes,
   logo,
 }: ConfigureAppProps) {
-  const { activeProject } = useMetaInfo();
   const [open, setOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [selectedAgentIds, setSelectedAgentIds] = useState<RowSelectionState>(
-    {},
-  );
+
   const [security_scheme, setSelectedSecurityScheme] = useState<string>("");
 
-  // security scheme form
-  const ConfigureAppForm = useForm<ConfigureAppFormValues>({
-    resolver: zodResolver(ConfigureAppFormSchema),
-    defaultValues: {
-      security_scheme: Object.keys(supported_security_schemes || {})[0],
-      client_id: "",
-      client_secret: "",
-    },
-  });
-
-  const agentSelectForm = useForm<AgentSelectFormValues>({
-    resolver: zodResolver(agentSelectFormSchema),
-    defaultValues: {
-      agents: [],
-    },
-  });
-
-  const linkedAccountForm = useForm<LinkedAccountFormValues>({
-    resolver: zodResolver(linkedAccountFormSchema),
-    defaultValues: {
-      linkedAccountOwnerId: "",
-      apiKey: "",
-    },
-  });
-
-  // reset all form and state
   const resetAll = useCallback(() => {
     setCurrentStep(1);
-    setSelectedAgentIds({});
     setSelectedSecurityScheme("");
-    ConfigureAppForm.reset();
-    agentSelectForm.reset();
-    linkedAccountForm.reset();
-  }, [ConfigureAppForm, agentSelectForm, linkedAccountForm]);
+  }, []);
 
   useEffect(() => {
     if (!open) {
@@ -102,22 +52,9 @@ export function ConfigureApp({
     }
   }, [open, resetAll]);
 
-  useEffect(() => {
-    if (open && activeProject?.agents) {
-      const initialSelection: RowSelectionState = {};
-      activeProject.agents.forEach((agent: Agent) => {
-        if (agent.id) {
-          initialSelection[agent.id] = true;
-        }
-      });
-      setSelectedAgentIds(initialSelection);
-    }
-  }, [open, activeProject]);
-
   // step navigation handlers
-  const handleConfigureAppNext = () => {
-    const currentSecurityScheme = ConfigureAppForm.getValues("security_scheme");
-    setSelectedSecurityScheme(currentSecurityScheme);
+  const handleConfigureAppNext = (selectedSecurityScheme: string) => {
+    setSelectedSecurityScheme(selectedSecurityScheme);
     setCurrentStep(2);
   };
 
@@ -156,7 +93,6 @@ export function ConfigureApp({
         <div className="max-h-[50vh] overflow-y-auto p-1">
           {currentStep === 1 && (
             <ConfigureAppStep
-              form={ConfigureAppForm}
               supported_security_schemes={supported_security_schemes}
               onNext={handleConfigureAppNext}
               name={name}
@@ -165,17 +101,14 @@ export function ConfigureApp({
 
           {currentStep === 2 && (
             <AgentSelectionStep
-              agents={activeProject.agents}
-              rowSelection={selectedAgentIds}
-              onRowSelectionChange={setSelectedAgentIds}
               onNext={handleAgentSelectionNext}
               appName={name}
+              isDialogOpen={open}
             />
           )}
 
           {currentStep === 3 && (
             <LinkedAccountStep
-              form={linkedAccountForm}
               authType={security_scheme}
               onClose={handleClose}
               appName={name}

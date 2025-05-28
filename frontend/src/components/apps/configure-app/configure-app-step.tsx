@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
   FormControl,
@@ -43,19 +44,30 @@ export type ConfigureAppFormValues = z.infer<typeof ConfigureAppFormSchema>;
 const oauth2RedirectUrl = `${process.env.NEXT_PUBLIC_API_URL}/v1/linked-accounts/oauth2/callback`;
 
 interface ConfigureAppStepProps {
-  form: ReturnType<typeof useForm<ConfigureAppFormValues>>;
   supported_security_schemes: Record<string, { scope?: string }>;
-  onNext: () => void;
+  onNext: (securityScheme: string) => void;
   name: string;
 }
 
 export function ConfigureAppStep({
-  form,
   supported_security_schemes,
   onNext,
   name,
 }: ConfigureAppStepProps) {
-  const createAppConfigMutation = useCreateAppConfig();
+  const {
+    mutateAsync: createAppConfigMutation,
+    isPending: isCreatingAppConfig,
+  } = useCreateAppConfig();
+
+  const form = useForm<ConfigureAppFormValues>({
+    resolver: zodResolver(ConfigureAppFormSchema),
+    defaultValues: {
+      security_scheme: Object.keys(supported_security_schemes || {})[0],
+      client_id: "",
+      client_secret: "",
+    },
+  });
+
   const currentSecurityScheme = form.watch("security_scheme");
   const { scope = "" } =
     supported_security_schemes?.[currentSecurityScheme] ?? {};
@@ -120,14 +132,14 @@ export function ConfigureAppStep({
         };
       }
 
-      await createAppConfigMutation.mutateAsync({
+      await createAppConfigMutation({
         app_name: name,
         security_scheme: values.security_scheme,
         security_scheme_overrides,
       });
 
       toast.success(`Successfully configured app: ${name}`);
-      onNext();
+      onNext(values.security_scheme);
     } catch (error) {
       if (error instanceof AppAlreadyConfiguredError) {
         toast.error(`App configuration already exists for app: ${name}`);
@@ -332,9 +344,9 @@ export function ConfigureAppStep({
           <DialogFooter>
             <Button
               type="submit"
-              disabled={createAppConfigMutation.isPending || !isFormValid()}
+              disabled={isCreatingAppConfig || !isFormValid()}
             >
-              {createAppConfigMutation.isPending ? "Confirming..." : "Confirm"}
+              {isCreatingAppConfig ? "Confirming..." : "Confirm"}
             </Button>
           </DialogFooter>
         </form>
