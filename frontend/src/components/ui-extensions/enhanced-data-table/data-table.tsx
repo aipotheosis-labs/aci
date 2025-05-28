@@ -89,7 +89,7 @@ export function EnhancedDataTable<TData, TValue>({
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: paginationOptions?.initialPageIndex ?? 0,
-    pageSize: paginationOptions?.initialPageSize ?? 10,
+    pageSize: paginationOptions?.initialPageSize ?? 15,
   });
 
   const hasFilterableColumns = useMemo(() => {

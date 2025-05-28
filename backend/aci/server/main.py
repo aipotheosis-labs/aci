@@ -16,7 +16,7 @@ from aci.server import config
 from aci.server import dependencies as deps
 from aci.server.acl import get_propelauth
 from aci.server.dependency_check import check_dependencies
-from aci.server.middleware.interceptor import InterceptorMiddleware, RequestIDLogFilter
+from aci.server.middleware.interceptor import InterceptorMiddleware, RequestContextFilter
 from aci.server.middleware.ratelimit import RateLimitMiddleware
 from aci.server.routes import (
     agent,
@@ -42,7 +42,7 @@ setup_logging(
         style="{",
         rename_fields={"asctime": "timestamp", "name": "file", "levelname": "level"},
     ),
-    filters=[RequestIDLogFilter()],
+    filters=[RequestContextFilter()],
     environment=config.ENVIRONMENT,
 )
 
@@ -73,6 +73,7 @@ def scrubbing_callback(m: logfire.ScrubMatch) -> Any:
 
 if config.ENVIRONMENT != "local":
     logfire.configure(
+        console=False,
         token=config.LOGFIRE_WRITE_TOKEN,
         environment=config.ENVIRONMENT,
         scrubbing=logfire.ScrubbingOptions(callback=scrubbing_callback),

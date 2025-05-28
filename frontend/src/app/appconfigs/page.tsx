@@ -76,6 +76,10 @@ export default function AppConfigPage() {
             searchBarProps={{
               placeholder: "Search by app name",
             }}
+            paginationOptions={{
+              initialPageIndex: 0,
+              initialPageSize: 15,
+            }}
           />
         )}
       </div>
