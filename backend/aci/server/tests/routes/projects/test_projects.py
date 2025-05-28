@@ -9,10 +9,9 @@ from sqlalchemy.orm import Session
 from aci.common.db import crud
 from aci.common.db.sql_models import App, Project
 from aci.common.enums import SecurityScheme, Visibility
-from aci.common.schemas.agent import AgentCreate
 from aci.common.schemas.app_configurations import AppConfigurationCreate
-from aci.common.schemas.linked_accounts import LinkedAccountNoAuthCreate
 from aci.common.schemas.project import ProjectCreate, ProjectPublic
+from aci.common.schemas.security_scheme import NoAuthSchemeCredentials
 from aci.server import config
 from aci.server.tests.conftest import DummyUser
 
@@ -348,42 +347,45 @@ def test_delete_project_cascading_deletion(
     assert create_response.status_code == status.HTTP_200_OK
     project_public = ProjectPublic.model_validate(create_response.json())
     project_id = project_public.id
-    api_key = str(project_public.agents[0].api_keys[0].key)
 
-    # Create an app configuration
     app_config_body = AppConfigurationCreate(
-        app_name=dummy_app.name, security_scheme=SecurityScheme.NO_AUTH
-    )
-    app_config_response = test_client.post(
-        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",
-        json=app_config_body.model_dump(mode="json"),
-        headers={"x-api-key": api_key},
-    )
-    assert app_config_response.status_code == status.HTTP_200_OK
-
-    # Create a linked account
-    linked_account_body = LinkedAccountNoAuthCreate(
         app_name=dummy_app.name,
-        linked_account_owner_id="test_link_no_auth_account_success",
+        security_scheme=SecurityScheme.NO_AUTH,
     )
-    linked_account_response = test_client.post(
-        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/no-auth",
-        json=linked_account_body.model_dump(mode="json", exclude_none=True),
-        headers={"x-api-key": api_key},
-    )
-    assert linked_account_response.status_code == status.HTTP_200_OK
 
-    # Create an agent
-    agent_body = AgentCreate(
-        name="new test agent",
-        description="new test agent description",
+    # Create an app configuration using CRUD
+    app_config = crud.app_configurations.create_app_configuration(
+        db_session,
+        project_id,
+        app_config_body,
     )
-    agent_response = test_client.post(
-        f"{config.ROUTER_PREFIX_PROJECTS}/{project_id}/agents",
-        json=agent_body.model_dump(mode="json"),
-        headers={"Authorization": f"Bearer {dummy_user.access_token}"},
+    db_session.commit()
+    assert app_config is not None
+
+    # Create a linked account using CRUD
+    linked_account = crud.linked_accounts.create_linked_account(
+        db_session,
+        project_id,
+        dummy_app.name,
+        "test_link_no_auth_account_success",
+        SecurityScheme.NO_AUTH,
+        NoAuthSchemeCredentials(),
+        enabled=True,
     )
-    assert agent_response.status_code == status.HTTP_200_OK
+    db_session.commit()
+    assert linked_account is not None
+
+    # Create an agent using CRUD
+    agent = crud.projects.create_agent(
+        db_session,
+        project_id,
+        "new test agent",
+        "new test agent description",
+        allowed_apps=[dummy_app.name],
+        custom_instructions={},
+    )
+    db_session.commit()
+    assert agent is not None
 
     # Delete the project
     delete_response = test_client.delete(
@@ -396,17 +398,17 @@ def test_delete_project_cascading_deletion(
     assert delete_response.status_code == status.HTTP_200_OK
 
     # Verify app configuration is deleted from DB
-    app_config = crud.app_configurations.get_app_configuration(
+    deleted_app_config = crud.app_configurations.get_app_configuration(
         db_session, project_id, dummy_app.name
     )
-    assert app_config is None, "App configuration should be deleted from database"
+    assert deleted_app_config is None, "App configuration should be deleted from database"
 
     # Verify linked account is deleted from DB
-    linked_account = crud.linked_accounts.get_linked_account(
-        db_session, project_id, dummy_app.name, linked_account_body.linked_account_owner_id
+    deleted_linked_account = crud.linked_accounts.get_linked_account(
+        db_session, project_id, dummy_app.name, "test_link_no_auth_account_success"
     )
-    assert linked_account is None, "Linked account should be deleted from database"
+    assert deleted_linked_account is None, "Linked account should be deleted from database"
 
     # Verify agent is deleted from DB
-    agent = crud.projects.get_agent_by_id(db_session, project_public.agents[0].id)
-    assert agent is None, "Agent should be deleted from database"
+    deleted_agent = crud.projects.get_agent_by_id(db_session, project_public.agents[0].id)
+    assert deleted_agent is None, "Agent should be deleted from database"
