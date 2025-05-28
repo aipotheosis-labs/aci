@@ -28,6 +28,7 @@ import {
   RiSettings3Line,
   RiSettings4Line,
   RiLinkUnlinkM,
+  RiFileList3Line,
 } from "react-icons/ri";
 import { AiOutlineExperiment } from "react-icons/ai";
 import { HiOutlineChatBubbleBottomCenterText } from "react-icons/hi2";
@@ -37,6 +38,10 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+
+// import a enviroment variable to check if the user is a admin
+const showLogDashboard =
+  process.env.NEXT_PUBLIC_FEATURE_SHOW_LOG_DASHBOARD === "true";
 
 // Export sidebar items so they can be used in header
 export const sidebarItems = [
@@ -65,6 +70,15 @@ export const sidebarItems = [
     url: `/playground`,
     icon: HiOutlineChatBubbleBottomCenterText,
   },
+  ...(showLogDashboard
+    ? [
+        {
+          title: "Logs",
+          url: `/logs`,
+          icon: RiFileList3Line,
+        },
+      ]
+    : []),
   {
     title: "Usage",
     url: `/usage`,
