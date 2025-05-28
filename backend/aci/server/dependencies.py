@@ -1,6 +1,6 @@
 from collections.abc import Generator
 from datetime import UTC, datetime, timedelta
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import Depends, Security
@@ -19,6 +19,7 @@ from aci.common.exceptions import (
 )
 from aci.common.logging_setup import get_logger
 from aci.server import config
+from aci.server.opensearch import get_opensearch_client  # type: ignore[import-untyped]
 
 logger = get_logger(__name__)
 http_bearer = HTTPBearer(auto_error=True, description="login to receive a JWT token")
@@ -142,3 +143,10 @@ def get_request_context(
         project=project,
         agent=agent,
     )
+
+
+def get_opensearch() -> Generator[Any, None, None]:
+    """
+    Dependency that provides an OpenSearch client configured with AWS credentials.
+    """
+    yield from get_opensearch_client()

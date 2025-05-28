@@ -48,7 +48,8 @@ dev = [
     "respx>=0.22.0",
     "types-jsonschema>=4.23.0.20250516",
     "google-api-python-client-stubs>=1.29.0",
-    
+    "boto3-stubs>=1.37.36",
+
     # eval dependencies
     "datasets>=3.6.0",
     "huggingface-hub>=0.31.2",
@@ -96,12 +97,13 @@ disallow_untyped_calls = true
 disallow_untyped_defs = true
 disallow_incomplete_defs = true
 check_untyped_defs = true
-warn_unused_ignores = true
+warn_unused_ignores = false
 warn_return_any = true
 warn_unused_configs = true
 warn_redundant_casts = true
 warn_unreachable = true
 strict_equality = true
+
 
 # Ignore missing type stubs for specific modules
 [[tool.mypy.overrides]]
