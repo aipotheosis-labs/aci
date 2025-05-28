@@ -29,7 +29,6 @@ const AppPage = () => {
 
   useEffect(() => {
     if (app) {
-      console.log(app);
       setFunctions(app.functions);
     }
   }, [app]);
