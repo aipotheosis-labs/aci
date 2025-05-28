@@ -52,6 +52,7 @@ services:
     volumes:
       - ./aci/server:/workdir/aci/server
       - ./aci/common:/workdir/aci/common
+      - ./mock/propelauth_fastapi_mock.py:/workdir/.venv/lib/python3.12/site-packages/propelauth_fastapi/__init__.py
     command: uvicorn aci.server.main:app --proxy-headers --forwarded-allow-ips=* --host 0.0.0.0 --port 8000 --no-access-log
     depends_on:
       db:
@@ -76,6 +77,7 @@ services:
       - ./scripts:/workdir/scripts
       - ./evals:/workdir/evals
       - ./alembic.ini:/workdir/alembic.ini
+      - ./mock/propelauth_fastapi_mock.py:/workdir/.venv/lib/python3.12/site-packages/propelauth_fastapi/__init__.py
     command: >
       /bin/sh -c "alembic upgrade head && pytest $PYTEST_ARGS"
     depends_on:
