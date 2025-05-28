@@ -32,6 +32,7 @@ export default function ProjectSettingPage() {
     useAppConfigs();
   const [projectName, setProjectName] = useState(activeProject.name);
   const [isEditingName, setIsEditingName] = useState(false);
+  const { accessToken, reloadActiveProject } = useMetaInfo();
 
   // Update state when active project changes
   useEffect(() => {
