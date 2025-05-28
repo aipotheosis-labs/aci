@@ -243,6 +243,12 @@ export default function PricingPage() {
             </Card>
           ))}
         </div>
+        <div className="mx-auto mt-8 max-w-2xl text-center">
+          <p className="text-sm text-muted-foreground">
+            Rate limits are set at the organization level, so every project in
+            the same organization draws from the same allowance.
+          </p>
+        </div>
         <FaqSection />
       </div>
     </div>
