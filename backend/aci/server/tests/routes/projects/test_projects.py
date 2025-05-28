@@ -97,13 +97,13 @@ def test_create_project_empty_name(
     test_client: TestClient,
     dummy_user: DummyUser,
 ) -> None:
-    body = ProjectCreate(
-        name="",
-        org_id=dummy_user.org_id,
-    )
+    # Send raw JSON data with empty name
     response = test_client.post(
         f"{config.ROUTER_PREFIX_PROJECTS}",
-        json=body.model_dump(mode="json"),
+        json={
+            "name": "",
+            "org_id": str(dummy_user.org_id),
+        },
         headers={
             "Authorization": f"Bearer {dummy_user.access_token}",
             "X-ACI-ORG-ID": str(dummy_user.org_id),
