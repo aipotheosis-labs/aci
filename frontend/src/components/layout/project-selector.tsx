@@ -18,16 +18,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { GoPlus } from "react-icons/go";
 import { CreateProjectDialog } from "@/components/project/create-project-dialog";
-
-interface ProjectSelectOption {
-  value: string; // project id
-  label: string; // project name
-}
 
 export const ProjectSelector = () => {
   const {
@@ -38,20 +33,8 @@ export const ProjectSelector = () => {
     reloadActiveProject,
     activeOrg,
   } = useMetaInfo();
-  const [projectSelectOptions, setProjectSelectOptions] = useState<
-    ProjectSelectOption[]
-  >([]);
   const [open, setOpen] = useState(false);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
-
-  useEffect(() => {
-    setProjectSelectOptions(
-      projects.map((p) => ({
-        value: p.id,
-        label: p.name,
-      })),
-    );
-  }, [projects]);
 
   const handleCreateProjectClick = () => {
     setOpen(false);
@@ -82,30 +65,23 @@ export const ProjectSelector = () => {
             <CommandList>
               <CommandEmpty>No project found.</CommandEmpty>
               <CommandGroup>
-                {projectSelectOptions.map((option) => (
+                {projects.map((project) => (
                   <CommandItem
-                    key={option.value}
-                    value={option.value}
+                    key={project.id}
+                    value={project.id}
                     onSelect={() => {
-                      const selectedProject = projects.find(
-                        (p) => p.id === option.value,
-                      );
-                      if (selectedProject) {
-                        setActiveProject(selectedProject);
-                        setOpen(false);
-                      } else {
-                        console.error(`Project ${option.value} not found`);
-                      }
+                      setActiveProject(project);
+                      setOpen(false);
                     }}
                     className="flex justify-between items-center relative"
                   >
                     <div className="flex justify-between items-center w-full">
-                      <div className="flex-grow">{option.label}</div>
+                      <div className="flex-grow">{project.name}</div>
                       <div className="flex items-center">
                         <Check
                           className={cn(
                             "mr-2",
-                            activeProject?.id === option.value
+                            activeProject?.id === project.id
                               ? "opacity-100"
                               : "opacity-0",
                           )}
