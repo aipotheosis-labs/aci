@@ -182,6 +182,9 @@ For VS Code users, configure Ruff formatter:
 
 ### Running Tests
 
+> [!NOTE]
+> Make sure the services are running with `docker compose -f compose.yml -f compose.test.yml up --build` before running the tests.
+
 ```bash
 docker compose exec test-runner pytest
 ```

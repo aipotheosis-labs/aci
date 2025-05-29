@@ -17,6 +17,7 @@ def clear_database_at_start() -> None:
     """
     # make sure we are connecting to the test database
     assert config.DB_HOST == "test-db", "Must use test-db for tests"
+    assert "test" in config.DB_FULL_URL.lower(), "Database URL must contain 'test' for safety"
 
     # Create database session
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
