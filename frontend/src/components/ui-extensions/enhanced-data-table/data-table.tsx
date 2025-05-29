@@ -50,6 +50,9 @@ interface RowSelectionProps<TData> {
 interface PaginationOptions {
   initialPageIndex?: number;
   initialPageSize?: number;
+  totalCount?: number;
+  onPageChange?: (page: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
 }
 
 interface EnhancedDataTableProps<TData, TValue> {
@@ -105,6 +108,29 @@ export function EnhancedDataTable<TData, TValue>({
     >[];
   }, [columns, rowSelectionProps]);
 
+  // Handle pagination changes
+  const handlePaginationChange = (
+    updater: PaginationState | ((old: PaginationState) => PaginationState),
+  ) => {
+    const newPagination =
+      typeof updater === "function" ? updater(pagination) : updater;
+    setPagination(newPagination);
+
+    // Call external handlers if provided
+    if (
+      paginationOptions?.onPageChange &&
+      newPagination.pageIndex !== pagination.pageIndex
+    ) {
+      paginationOptions.onPageChange(newPagination.pageIndex);
+    }
+    if (
+      paginationOptions?.onPageSizeChange &&
+      newPagination.pageSize !== pagination.pageSize
+    ) {
+      paginationOptions.onPageSizeChange(newPagination.pageSize);
+    }
+  };
+
   const tableState = useMemo(() => {
     const baseState = {
       sorting,
@@ -127,18 +153,20 @@ export function EnhancedDataTable<TData, TValue>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: paginationOptions
-      ? getPaginationRowModel()
-      : undefined,
+    getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
     onColumnFiltersChange: setColumnFilters,
-    onPaginationChange: setPagination,
+    onPaginationChange: handlePaginationChange,
     globalFilterFn: "includesString",
     state: tableState,
     enableRowSelection: rowSelectionProps !== undefined,
     onRowSelectionChange: rowSelectionProps?.onRowSelectionChange,
     getRowId: rowSelectionProps?.getRowId,
+    pageCount: paginationOptions?.totalCount
+      ? Math.ceil(paginationOptions.totalCount / pagination.pageSize)
+      : undefined,
+    manualPagination: !!paginationOptions?.totalCount,
   });
 
   const filterComponents = useMemo(() => {
@@ -236,11 +264,9 @@ export function EnhancedDataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
-        {paginationOptions && (
-          <div className="border-t border-gray-200 bg-gray-50 ">
-            <DataTablePagination table={table} />
-          </div>
-        )}
+        <div className="border-t border-gray-200 bg-gray-50">
+          <DataTablePagination table={table} />
+        </div>
       </div>
     </div>
   );
