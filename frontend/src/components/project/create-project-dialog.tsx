@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import { createProject } from "@/lib/api/project";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Project name cannot be empty"),
@@ -49,6 +50,7 @@ export function CreateProjectDialog({
 }: CreateProjectDialogProps) {
   const { setActiveProject } = useMetaInfo();
   const router = useRouter();
+  const [isCreating, setIsCreating] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -59,6 +61,7 @@ export function CreateProjectDialog({
 
   const handleSubmit = async (values: FormValues) => {
     try {
+      setIsCreating(true);
       const newProject = await createProject(accessToken, values.name, orgId);
       setActiveProject(newProject);
       await onProjectCreated();
@@ -72,6 +75,8 @@ export function CreateProjectDialog({
       } else {
         toast.error("Failed to create project");
       }
+    } finally {
+      setIsCreating(false);
     }
   };
 
@@ -96,7 +101,11 @@ export function CreateProjectDialog({
                 <FormItem>
                   <FormLabel>Project Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter project name" {...field} />
+                    <Input
+                      placeholder="Enter project name"
+                      {...field}
+                      disabled={isCreating}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -107,10 +116,13 @@ export function CreateProjectDialog({
                 type="button"
                 variant="outline"
                 onClick={() => setOpenDialog(false)}
+                disabled={isCreating}
               >
                 Cancel
               </Button>
-              <Button type="submit">Create</Button>
+              <Button type="submit" disabled={isCreating}>
+                {isCreating ? "Creating..." : "Create"}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

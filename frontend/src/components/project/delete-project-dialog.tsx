@@ -71,13 +71,7 @@ export function DeleteProjectDialog({
   };
 
   return (
-    <AlertDialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        setIsOpen(open);
-        if (!open) resetForm();
-      }}
-    >
+    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
       {isLastProject ? (
         <Tooltip>
           <TooltipTrigger asChild>
