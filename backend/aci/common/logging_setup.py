@@ -1,7 +1,9 @@
+import datetime
 import logging
 from logging.handlers import RotatingFileHandler
 
 import logfire
+from opensearchpy import OpenSearch
 
 
 # the setup is called once at the start of the app
@@ -16,6 +18,10 @@ def setup_logging(
     if filters is None:
         filters = []
 
+    # Add OpenSearch filter for local environment to avoid duplicate logs
+    if environment == "local":
+        filters.append(LocalOpenSearchFilter())
+
     if formatter is None:
         formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
@@ -28,6 +34,7 @@ def setup_logging(
     console_handler.setLevel(level)
     for filter in filters:
         console_handler.addFilter(filter)
+
     root_logger.addHandler(console_handler)
 
     if include_file_handler:
@@ -42,6 +49,12 @@ def setup_logging(
 
     if environment != "local":
         root_logger.addHandler(logfire.LogfireLoggingHandler())
+    else:
+        # Add OpenSearch handler for local environment to send logs to OpenSearch
+        opensearch_handler = LocalOpenSearchHandler()
+        for filter in filters:
+            opensearch_handler.addFilter(filter)
+        root_logger.addHandler(opensearch_handler)
 
     # Set up module-specific loggers if necessary (e.g., with different levels)
     logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -51,3 +64,47 @@ def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
     logger = logging.getLogger(name)
     logger.setLevel(level)
     return logger
+
+
+class LocalOpenSearchFilter(logging.Filter):
+    def filter(self, record: logging.LogRecord) -> bool:
+        # Filter out logs that contain OpenSearch-related messages
+        return not (
+            "opensearch" in record.name.lower()
+            or "opensearch" in record.getMessage().lower()
+            or "POST http://opensearch" in record.getMessage()
+        )
+
+
+class LocalOpenSearchHandler(logging.Handler):
+    def __init__(self) -> None:
+        super().__init__()
+        # Because opensearch client will also output logs, we need to filter them out
+        # We need create client here to avoid circular import
+        self.opensearch_client: OpenSearch = OpenSearch(
+            hosts=[{"host": "opensearch", "port": 9200}],
+            http_auth=("admin", "admin"),
+            use_ssl=False,
+            verify_certs=False,
+        )
+
+    def emit(self, record: logging.LogRecord) -> None:
+        # get timestamp from record's timestamp field
+        timestamp = record.created
+        timestamp_iso = datetime.datetime.fromtimestamp(timestamp).isoformat()
+
+        log_body = {
+            "message": record.getMessage(),
+            "level": record.levelname,
+            "@timestamp": timestamp_iso,
+        }
+
+        for key, value in record.__dict__.items():
+            log_body[key] = value
+
+        # Create daily index name in format: aci-logs-YYYY.MM.DD
+        index_name = f"aci-logs-{datetime.datetime.fromtimestamp(timestamp).strftime('%Y.%m.%d')}"
+        self.opensearch_client.index(
+            index=index_name,
+            body=log_body,
+        )
