@@ -35,6 +35,7 @@ export function DeleteProjectDialog({
   projectId,
   projectName,
 }: DeleteProjectDialogProps) {
+  console.log("projectName", projectName);
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmName, setConfirmName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -106,7 +107,7 @@ export function DeleteProjectDialog({
             <br />
             <br />
             To confirm, type{" "}
-            <span className="font-semibold">{projectName}</span> below:
+            <b style={{ whiteSpace: "pre-wrap" }}>{projectName}</b> below:
             <Input
               placeholder="Enter project name to confirm"
               value={confirmName}
