@@ -51,7 +51,7 @@ const useLogsTable = () => {
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(5);
+  const [pageSize, setPageSize] = useState(10);
 
   const { activeProject } = useMetaInfo();
   const apiKey = getApiKey(activeProject);
