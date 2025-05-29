@@ -123,6 +123,12 @@ def db_session() -> Generator[Session, None, None]:
     yield from create_test_db_session()
 
 
+@pytest.fixture(autouse=True)
+def clear_db_before_tests(db_session: Session) -> Generator[None, None, None]:
+    clear_database(db_session)
+    yield
+
+
 @pytest.fixture(scope="function", autouse=True)
 def database_setup_and_cleanup(db_session: Session) -> Generator[None, None, None]:
     """
@@ -142,13 +148,7 @@ def database_setup_and_cleanup(db_session: Session) -> Generator[None, None, Non
             pytest.exit(f"Table {table} is not empty.")
 
     yield  # This allows the test to run
-
-    # Clean up: Empty all tables after tests in reverse order of creation
-    for table in reversed(Base.metadata.sorted_tables):
-        if table.name != "alembic_version" and db_session.query(table).count() > 0:
-            logger.debug(f"Deleting all records from table {table.name}")
-            db_session.execute(table.delete())
-    db_session.commit()
+    clear_database(db_session)
 
 
 @pytest.fixture(scope="function")
@@ -756,15 +756,3 @@ def free_plan(db_session: Session) -> Plan:
     )
     db_session.commit()
     return plan
-
-
-@pytest.fixture(autouse=True)
-def clear_db_before_tests(db_session: Session) -> Generator[None, None, None]:
-    """
-    Automatically clear the database before each test.
-    This ensures tests start with a clean state.
-    """
-    clear_database(db_session)
-    yield
-    # Clean up after the test as well
-    clear_database(db_session)
