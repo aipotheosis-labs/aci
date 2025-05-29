@@ -18,11 +18,11 @@ from sqlalchemy.orm import Session
 from aci.common.db.sql_models import Plan
 from aci.common.enums import OrganizationRole
 from aci.common.schemas.plans import PlanFeatures
+from aci.common.test_utils import clear_database, create_test_db_session
 from aci.server import acl
 
 # override the rate limit to a high number for testing before importing aci modules
 with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
-    from aci.common import utils
     from aci.common.db import crud
     from aci.common.db.sql_models import (
         Agent,
@@ -43,7 +43,6 @@ with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
         NoAuthSchemeCredentials,
         OAuth2SchemeCredentials,
     )
-    from aci.server import config
     from aci.server.main import app as fastapi_app
     from aci.server.tests import helper
 
@@ -121,8 +120,7 @@ def test_client(dummy_user: DummyUser) -> Generator[TestClient, None, None]:
 
 @pytest.fixture(scope="function")
 def db_session() -> Generator[Session, None, None]:
-    with utils.create_db_session(config.DB_FULL_URL) as db_session:
-        yield db_session
+    yield from create_test_db_session()
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -758,3 +756,15 @@ def free_plan(db_session: Session) -> Plan:
     )
     db_session.commit()
     return plan
+
+
+@pytest.fixture(autouse=True)
+def clear_db_before_tests(db_session: Session) -> Generator[None, None, None]:
+    """
+    Automatically clear the database before each test.
+    This ensures tests start with a clean state.
+    """
+    clear_database(db_session)
+    yield
+    # Clean up after the test as well
+    clear_database(db_session)

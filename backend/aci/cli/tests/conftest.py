@@ -12,16 +12,15 @@ from sqlalchemy.orm import Session
 from aci.cli import config
 
 # override the rate limit to a high number for testing before importing aipolabs modules
-from aci.common import utils
 from aci.common.db.sql_models import Base
+from aci.common.test_utils import clear_database, create_test_db_session
 
 logger = logging.getLogger(__name__)
 
 
 @pytest.fixture(scope="function")
 def db_session() -> Generator[Session, None, None]:
-    with utils.create_db_session(config.DB_FULL_URL) as db_session:
-        yield db_session
+    yield from create_test_db_session()
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -155,3 +154,15 @@ def dummy_functions_file(tmp_path: Path, dummy_functions_data: list[dict]) -> Pa
     dummy_functions_file = tmp_path / "functions.json"
     dummy_functions_file.write_text(json.dumps(dummy_functions_data))
     return dummy_functions_file
+
+
+@pytest.fixture(autouse=True)
+def clear_db_before_tests(db_session: Session) -> Generator[None, None, None]:
+    """
+    Automatically clear the database before each test.
+    This ensures tests start with a clean state.
+    """
+    clear_database(db_session)
+    yield
+    # Clean up after the test as well
+    clear_database(db_session)
