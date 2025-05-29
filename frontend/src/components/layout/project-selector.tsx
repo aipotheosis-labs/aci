@@ -135,7 +135,6 @@ export const ProjectSelector = () => {
         onProjectCreated={reloadActiveProject}
         openDialog={openCreateDialog}
         setOpenDialog={setOpenCreateDialog}
-        trigger={<span style={{ display: "none" }} />}
       />
     </>
   );

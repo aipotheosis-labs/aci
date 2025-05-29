@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -13,7 +12,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -38,26 +36,19 @@ interface CreateProjectDialogProps {
   accessToken: string;
   orgId: string;
   onProjectCreated: () => Promise<void>;
-  trigger?: React.ReactNode;
-  openDialog?: boolean;
-  setOpenDialog?: (open: boolean) => void;
+  openDialog: boolean;
+  setOpenDialog: (open: boolean) => void;
 }
 
 export function CreateProjectDialog({
   accessToken,
   orgId,
   onProjectCreated,
-  trigger,
   openDialog,
   setOpenDialog,
 }: CreateProjectDialogProps) {
-  const [open, setOpen] = useState(false);
   const { setActiveProject } = useMetaInfo();
   const router = useRouter();
-
-  // Use controlled open state if provided
-  const isOpen = openDialog !== undefined ? openDialog : open;
-  const setIsOpen = setOpenDialog || setOpen;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -71,7 +62,7 @@ export function CreateProjectDialog({
       const newProject = await createProject(accessToken, values.name, orgId);
       setActiveProject(newProject);
       await onProjectCreated();
-      setIsOpen(false);
+      setOpenDialog(false);
       form.reset();
       toast.success("Project created successfully");
       router.push("/apps");
@@ -85,18 +76,7 @@ export function CreateProjectDialog({
   };
 
   return (
-    <Dialog
-      open={isOpen}
-      onOpenChange={(open) => {
-        setIsOpen(open);
-        if (!open) {
-          form.reset();
-        }
-      }}
-    >
-      <DialogTrigger asChild>
-        {trigger || <Button>Create Project</Button>}
-      </DialogTrigger>
+    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create New Project</DialogTitle>
@@ -126,7 +106,7 @@ export function CreateProjectDialog({
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => setIsOpen(false)}
+                onClick={() => setOpenDialog(false)}
               >
                 Cancel
               </Button>
