@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -10,20 +9,19 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Eye } from "lucide-react";
+import { Eye, ArrowUpDown, RefreshCw } from "lucide-react";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
-import { ArrowUpDown } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { searchLogs } from "@/lib/api/logs";
+import { useMetaInfo } from "@/components/context/metainfo";
+import { getApiKey } from "@/lib/api/util";
+import { LogEntry, LogSearchResponse } from "@/lib/types/logs";
 
 // Configuration
 export const LOGS_CONFIG = {
   refreshInterval: 30000, // 30 seconds
   maxLogsPerPage: 50,
-  logTypes: {
-    API: "api",
-    SYSTEM: "system",
-    ALL: "all",
-  },
   statusColors: {
     success: {
       bg: "bg-green-100",
@@ -44,21 +42,7 @@ export const LOGS_CONFIG = {
   },
 } as const;
 
-export type LogType =
-  (typeof LOGS_CONFIG.logTypes)[keyof typeof LOGS_CONFIG.logTypes];
 export type LogStatus = keyof typeof LOGS_CONFIG.statusColors;
-
-// Types
-interface LogEntry {
-  id: string;
-  timestamp: string;
-  appName: string;
-  functionName: string;
-  input: string;
-  output: string;
-  status: LogStatus;
-  type: "api" | "system";
-}
 
 const columnHelper = createColumnHelper<LogEntry>();
 
@@ -66,32 +50,19 @@ const columnHelper = createColumnHelper<LogEntry>();
 const useLogsTable = () => {
   const [selectedLog, setSelectedLog] = useState<LogEntry | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
 
-  // Mock data - replace with actual data fetching
-  const logs: LogEntry[] = [
-    {
-      id: "1",
-      timestamp: "2024-03-20T10:00:00Z",
-      appName: "app1",
-      functionName: "function1",
-      input: '{"key": "value"}',
-      output: '{"result": "success"}',
-      status: "success",
-      type: "api",
-    },
-    {
-      id: "2",
-      timestamp: "2024-03-20T10:01:00Z",
-      appName: "app2",
-      functionName: "function2",
-      input: '{"check": "system"}',
-      output: '{"status": "healthy"}',
-      status: "info",
-      type: "system",
-    },
-  ];
+  const { activeProject } = useMetaInfo();
+  const apiKey = getApiKey(activeProject);
 
-  const getJsonPreview = (jsonStr: string) => {
+  const { data, isLoading, error, refetch } = useQuery<LogSearchResponse>({
+    queryKey: ["logs", page, pageSize],
+    queryFn: () => searchLogs(apiKey, page, pageSize),
+  });
+
+  const getJsonPreview = (jsonStr: string | null) => {
+    if (!jsonStr) return "";
     try {
       const obj = JSON.parse(jsonStr);
       const firstKey = Object.keys(obj)[0];
@@ -102,7 +73,8 @@ const useLogsTable = () => {
     }
   };
 
-  const formatJson = (jsonStr: string) => {
+  const formatJson = (jsonStr: string | null) => {
+    if (!jsonStr) return "";
     try {
       const obj = JSON.parse(jsonStr);
       return JSON.stringify(obj, null, 2);
@@ -112,13 +84,21 @@ const useLogsTable = () => {
   };
 
   return {
-    logs,
+    logs: data?.logs || [],
+    total: data?.total || 0,
+    isLoading,
+    error,
     selectedLog,
     setSelectedLog,
     isDetailOpen,
     setIsDetailOpen,
     getJsonPreview,
     formatJson,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    refetch,
   };
 };
 
@@ -126,7 +106,7 @@ const useLogsTable = () => {
 const useTableColumns = (
   setSelectedLog: (log: LogEntry) => void,
   setIsDetailOpen: (isOpen: boolean) => void,
-  getJsonPreview: (jsonStr: string) => string,
+  getJsonPreview: (jsonStr: string | null) => string,
 ) => {
   return useMemo(() => {
     return [
@@ -145,10 +125,10 @@ const useTableColumns = (
             </Button>
           </div>
         ),
-        cell: (info) => new Date(info.getValue()).toLocaleString(),
+        cell: (info) => info.getValue(),
         enableGlobalFilter: true,
       }),
-      columnHelper.accessor("appName", {
+      columnHelper.accessor("function_execution_app_name", {
         header: ({ column }) => (
           <div className="flex items-center justify-start">
             <Button
@@ -163,10 +143,10 @@ const useTableColumns = (
             </Button>
           </div>
         ),
-        cell: (info) => info.getValue(),
+        cell: (info) => info.getValue() || "-",
         enableGlobalFilter: true,
       }),
-      columnHelper.accessor("functionName", {
+      columnHelper.accessor("function_execution_function_name", {
         header: ({ column }) => (
           <div className="flex items-center justify-start">
             <Button
@@ -181,17 +161,35 @@ const useTableColumns = (
             </Button>
           </div>
         ),
-        cell: (info) => info.getValue(),
+        cell: (info) => info.getValue() || "-",
         enableGlobalFilter: true,
       }),
-      columnHelper.accessor("input", {
+      columnHelper.accessor("function_execution_input", {
         header: "INPUT",
-        cell: (info) => getJsonPreview(info.getValue()),
+        cell: (info) => {
+          const value = info.getValue();
+          const preview = getJsonPreview(value);
+          if (!preview) return "-";
+          return (
+            <div className="flex items-center">
+              <span className="truncate max-w-[200px]">{preview}</span>
+            </div>
+          );
+        },
         enableGlobalFilter: true,
       }),
-      columnHelper.accessor("output", {
+      columnHelper.accessor("function_execution_result_data", {
         header: "OUTPUT",
-        cell: (info) => getJsonPreview(info.getValue()),
+        cell: (info) => {
+          const value = info.getValue();
+          const preview = getJsonPreview(value);
+          if (!preview) return "-";
+          return (
+            <div className="flex items-center">
+              <span className="truncate max-w-[200px]">{preview}</span>
+            </div>
+          );
+        },
         enableGlobalFilter: true,
       }),
       columnHelper.accessor((row) => row, {
@@ -222,29 +220,85 @@ const useTableColumns = (
 const LogsTableView = ({
   logs,
   columns,
+  isLoading,
+  page,
+  setPage,
+  pageSize,
+  setPageSize,
+  total,
+  onRefresh,
 }: {
   logs: LogEntry[];
   columns: ColumnDef<LogEntry>[];
+  isLoading: boolean;
+  page: number;
+  setPage: (page: number) => void;
+  pageSize: number;
+  setPageSize: (size: number) => void;
+  total: number;
+  onRefresh: () => void;
 }) => {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[400px]">
+        <div className="text-center space-y-2">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <p className="text-muted-foreground">Loading logs...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (logs.length === 0) {
     return (
-      <div className="text-center p-8 text-muted-foreground">No logs found</div>
+      <div className="flex items-center justify-center h-[400px]">
+        <div className="text-center space-y-2">
+          <p className="text-muted-foreground">No logs found</p>
+          <Button
+            onClick={onRefresh}
+            variant="default"
+            size="sm"
+            className="gap-2"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </Button>
+        </div>
+      </div>
     );
   }
 
   return (
-    <EnhancedDataTable
-      columns={columns}
-      data={logs}
-      defaultSorting={[{ id: "timestamp", desc: true }]}
-      searchBarProps={{
-        placeholder: "Search logs",
-      }}
-      paginationOptions={{
-        initialPageIndex: 0,
-        initialPageSize: 15,
-      }}
-    />
+    <div className="rounded-md p-4">
+      <div className="flex justify-end mb-4">
+        <Button
+          onClick={onRefresh}
+          variant="default"
+          size="sm"
+          className="gap-2"
+        >
+          <RefreshCw className="h-4 w-4" />
+          Refresh
+        </Button>
+      </div>
+      <div className="overflow-x-auto w-full">
+        <EnhancedDataTable
+          columns={columns}
+          data={logs}
+          defaultSorting={[{ id: "timestamp", desc: true }]}
+          searchBarProps={{
+            placeholder: "Search logs",
+          }}
+          paginationOptions={{
+            initialPageIndex: page - 1,
+            initialPageSize: pageSize,
+            totalCount: total,
+            onPageChange: (newPage) => setPage(newPage + 1),
+            onPageSizeChange: setPageSize,
+          }}
+        />
+      </div>
+    </div>
   );
 };
 
@@ -258,13 +312,24 @@ const LogDetailSheet = ({
   selectedLog: LogEntry | null;
   isDetailOpen: boolean;
   setIsDetailOpen: (isOpen: boolean) => void;
-  formatJson: (jsonStr: string) => string;
+  formatJson: (jsonStr: string | null) => string;
 }) => {
   if (!selectedLog) return null;
 
+  const getStatusColor = (success: boolean | null) => {
+    if (success === null) return LOGS_CONFIG.statusColors.info;
+    return success
+      ? LOGS_CONFIG.statusColors.success
+      : LOGS_CONFIG.statusColors.error;
+  };
+
+  const statusColor = getStatusColor(
+    selectedLog.function_execution_result_success,
+  );
+
   return (
     <Sheet open={isDetailOpen} onOpenChange={setIsDetailOpen}>
-      <SheetContent className="w-[600px] sm:w-[800px]">
+      <SheetContent className="min-w-[600px] sm:min-w-[800px] max-w-[60vw]">
         <SheetHeader>
           <SheetTitle>Log Details</SheetTitle>
         </SheetHeader>
@@ -275,22 +340,24 @@ const LogDetailSheet = ({
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-muted-foreground">Timestamp:</span>
-                  <p>{new Date(selectedLog.timestamp).toLocaleString()}</p>
+                  <p>{selectedLog.timestamp}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">App Name:</span>
-                  <p>{selectedLog.appName}</p>
+                  <p>{selectedLog.function_execution_app_name || "-"}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Function:</span>
-                  <p>{selectedLog.functionName}</p>
+                  <p>{selectedLog.function_execution_function_name || "-"}</p>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Status:</span>
                   <p
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${LOGS_CONFIG.statusColors[selectedLog.status].bg} ${LOGS_CONFIG.statusColors[selectedLog.status].text}`}
+                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusColor.bg} ${statusColor.text}`}
                   >
-                    {selectedLog.status}
+                    {selectedLog.function_execution_result_success
+                      ? "success"
+                      : "error"}
                   </p>
                 </div>
               </div>
@@ -299,16 +366,25 @@ const LogDetailSheet = ({
             <div>
               <h3 className="text-sm font-medium mb-2">Input</h3>
               <pre className="bg-muted p-4 rounded-lg overflow-auto text-sm">
-                {formatJson(selectedLog.input)}
+                {formatJson(selectedLog.function_execution_input)}
               </pre>
             </div>
 
             <div>
               <h3 className="text-sm font-medium mb-2">Output</h3>
               <pre className="bg-muted p-4 rounded-lg overflow-auto text-sm">
-                {formatJson(selectedLog.output)}
+                {formatJson(selectedLog.function_execution_result_data)}
               </pre>
             </div>
+
+            {selectedLog.function_execution_result_error && (
+              <div>
+                <h3 className="text-sm font-medium mb-2">Error</h3>
+                <pre className="bg-red-50 p-4 rounded-lg overflow-auto text-sm text-red-800">
+                  {selectedLog.function_execution_result_error}
+                </pre>
+              </div>
+            )}
           </div>
         </ScrollArea>
       </SheetContent>
@@ -320,12 +396,19 @@ const LogDetailSheet = ({
 export default function LogsPage() {
   const {
     logs,
+    total,
+    isLoading,
     selectedLog,
     setSelectedLog,
     isDetailOpen,
     setIsDetailOpen,
     getJsonPreview,
     formatJson,
+    page,
+    setPage,
+    pageSize,
+    setPageSize,
+    refetch,
   } = useLogsTable();
 
   const columns = useTableColumns(
@@ -335,12 +418,18 @@ export default function LogsPage() {
   );
 
   return (
-    <div className="container mx-auto py-6 space-y-6 h-full">
-      <Card className="border-none h-full">
-        <CardContent className="h-full">
-          <LogsTableView logs={logs} columns={columns} />
-        </CardContent>
-      </Card>
+    <div className="container mx-auto">
+      <LogsTableView
+        logs={logs}
+        columns={columns}
+        isLoading={isLoading}
+        page={page}
+        setPage={setPage}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        total={total}
+        onRefresh={refetch}
+      />
 
       <LogDetailSheet
         selectedLog={selectedLog}

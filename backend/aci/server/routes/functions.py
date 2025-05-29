@@ -229,8 +229,9 @@ async def execute(
         raise
     finally:
         logger.info(
-            "function_execution",
+            "function execution result",
             extra={
+                "log_search_type": "function_execution",
                 "function_execution_app_name": function_name.split("__")[0]
                 if "__" in function_name
                 else None,

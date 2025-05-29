@@ -11,11 +11,11 @@ export const BetaAlert = () => {
     <Alert
       variant="default"
       className={cn(
-        "relative m-1 w-[calc(100%-0.5rem)] pr-10",
+        "relative m-1 w-[calc(100%-0.5rem)] max-w-2xl mx-auto",
         "bg-blue-100 text-blue-800 border border-blue-200",
       )}
     >
-      <AlertDescription>
+      <AlertDescription className="text-sm">
         Agent Playground is a beta feature and not recommended for production
         use. Expect limited stability and possible changes.
       </AlertDescription>

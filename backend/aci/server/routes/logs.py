@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime
 from typing import Annotated, Any, TypedDict, cast
 from uuid import UUID
@@ -7,11 +6,12 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from opensearchpy import NotFoundError, OpenSearch, RequestError
 from pydantic import BaseModel
 
+from aci.common.logging_setup import get_logger
 from aci.server.config import OPENSEARCH_LOG_INDEX_PATTERN
 from aci.server.dependencies import RequestContext, get_opensearch, get_request_context
 
 router = APIRouter()
-logger = logging.getLogger(__name__)
+logger = get_logger(__name__)
 
 
 class LogEntry(BaseModel):
@@ -22,6 +22,14 @@ class LogEntry(BaseModel):
     agent_id: UUID | None = None
     function_id: UUID | None = None
     metadata: dict = {}
+    log_search_type: str
+    function_execution_app_name: str | None = None
+    function_execution_function_name: str | None = None
+    function_execution_input: str | None = None
+    function_execution_linked_account_owner_id: str | None = None
+    function_execution_result_success: bool | None = None
+    function_execution_result_error: str | None = None
+    function_execution_result_data: str | None = None
 
 
 class LogSearchResponse(BaseModel):
@@ -45,37 +53,42 @@ class OpenSearchResponse(TypedDict):
 
 
 @router.get("/search", response_model=LogSearchResponse)
-async def search_logs(
+async def search_execution_logs(
     context: Annotated[RequestContext, Depends(get_request_context)],
     opensearch: Annotated[OpenSearch, Depends(get_opensearch)],
-    keyword: str | None = Query(None, description="Search query string"),
-    request_id: str | None = Query(None, description="Request ID to search for"),
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of results per page"),
+    app_name: str | None = Query(None, description="Filter by app name"),
+    function_name: str | None = Query(None, description="Filter by function name"),
 ) -> LogSearchResponse:
     """
     Search logs with optional query string and request ID.
     """
+    project_id = context.project.id
     try:
         from_index = (page - 1) * page_size
+
+        # Build filter conditions
+        filter_conditions = [
+            {"term": {"log_search_type.keyword": "function_execution"}},
+            {"term": {"project_id.keyword": str(project_id)}},
+        ]
+
+        if app_name:
+            filter_conditions.append({"term": {"function_execution_app_name.keyword": app_name}})
+        if function_name:
+            filter_conditions.append(
+                {"term": {"function_execution_function_name.keyword": function_name}}
+            )
 
         # Basic search query
         search_body = {
             "sort": [{"@timestamp": {"order": "desc"}}],
             "from": from_index,
             "size": page_size,
-            "query": {"bool": {"must": [{"match": {"level": "INFO"}}]}},
+            "query": {"bool": {"filter": filter_conditions}},
         }
-
-        # Add query if provided
-        if keyword:
-            search_body["query"]["bool"]["must"].append({"match": {"message": keyword}})  # type: ignore
-
-        # Add request_id if provided
-        if request_id:
-            search_body["query"]["bool"]["must"].append({"term": {"request_id": request_id}})  # type: ignore
-
-        logger.debug(f"Executing OpenSearch query with body: {search_body}")
+        logger.info(f"Executing OpenSearch query with body: {search_body}")
 
         response = cast(
             OpenSearchResponse,
@@ -84,6 +97,7 @@ async def search_logs(
                 body=search_body,
             ),
         )
+        logger.info(f"OpenSearch query response: {response}")
 
         hits = cast(list[OpenSearchHit], response["hits"]["hits"])  # type: ignore
         total = response["hits"]["total"]["value"]
@@ -106,6 +120,18 @@ async def search_logs(
                     if source.get("function_id")
                     else None,
                     metadata=source.get("metadata", {}),
+                    log_search_type=source.get("log_search_type", ""),
+                    function_execution_app_name=source.get("function_execution_app_name"),
+                    function_execution_function_name=source.get("function_execution_function_name"),
+                    function_execution_input=source.get("function_execution_input"),
+                    function_execution_linked_account_owner_id=source.get(
+                        "function_execution_linked_account_owner_id"
+                    ),
+                    function_execution_result_success=source.get(
+                        "function_execution_result_success"
+                    ),
+                    function_execution_result_error=source.get("function_execution_result_error"),
+                    function_execution_result_data=source.get("function_execution_result_data"),
                 )
             )
 

@@ -71,11 +71,13 @@ def get_logger(name: str, level: int = logging.INFO) -> logging.Logger:
 
 class LocalOpenSearchFilter(logging.Filter):
     def filter(self, record: logging.LogRecord) -> bool:
-        # Filter out logs that contain OpenSearch-related messages
+        # Filter out logs that contain OpenSearch client-related messages
         return not (
             "opensearch" in record.name.lower()
-            or "opensearch" in record.getMessage().lower()
             or "POST http://opensearch" in record.getMessage()
+            or "GET http://opensearch" in record.getMessage()
+            or "PUT http://opensearch" in record.getMessage()
+            or "DELETE http://opensearch" in record.getMessage()
         )
 
 
