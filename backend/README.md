@@ -102,7 +102,7 @@ For VS Code users, configure Ruff formatter:
 1. Start services with Docker Compose:
 
    ```bash
-   docker compose -f compose.yml -f compose.test.yml up --build
+   docker compose up --build
    ```
 
    This will start:
@@ -181,9 +181,6 @@ For VS Code users, configure Ruff formatter:
     [Stripe Webhooks](#stripe-webhooks) section.
 
 ### Running Tests
-
-> [!NOTE]
-> Make sure the services are running with `docker compose -f compose.yml -f compose.test.yml up --build` before running the tests.
 
 ```bash
 docker compose exec test-runner pytest

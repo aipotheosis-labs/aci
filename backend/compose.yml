@@ -16,6 +16,20 @@ services:
       - "5432:5432"
     restart: no
 
+  test-db:
+    image: pgvector/pgvector:pg17
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d local_db"]
+      interval: 1s
+      retries: 5
+      start_period: 1s
+      timeout: 10s
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: local_db
+    restart: no
+
   aws:
     image: localstack/localstack
     ports:
@@ -69,7 +83,7 @@ services:
     restart: no
 
   # can think of runner as an staging host for executing any commands
-  # e.g., run pytest, cli commands and scripts such as seed db etc.
+  # e.g., run cli commands and scripts such as seed db etc.
   runner:
     build:
       context: .
@@ -91,4 +105,32 @@ services:
       db:
         condition: service_healthy
       server:
+        condition: service_healthy
+
+  test-runner:
+    build:
+      context: .
+      dockerfile: Dockerfile.runner
+    env_file:
+      - .env.local
+    environment:
+      # override the db host to use the test-db service
+      - SERVER_DB_HOST=test-db
+      - ALEMBIC_DB_HOST=test-db
+      - CLI_DB_HOST=test-db
+    # Mount the local code into the container so you can run scripts / Alembic
+    volumes:
+      - ./aci:/workdir/aci
+      - ./apps:/workdir/apps
+      - ./scripts:/workdir/scripts
+      - ./evals:/workdir/evals
+      - ./alembic.ini:/workdir/alembic.ini
+      # Mocks out the propelauth_fastapi module in server container to bypass token validation in local development
+      - ./mock/propelauth_fastapi_mock.py:/workdir/.venv/lib/python3.12/site-packages/propelauth_fastapi/__init__.py
+    command: >
+      /bin/sh -c "alembic upgrade head && tail -f /dev/null"
+    depends_on:
+      test-db:
+        condition: service_healthy
+      aws:
         condition: service_healthy
