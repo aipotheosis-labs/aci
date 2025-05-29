@@ -2,6 +2,7 @@ import uuid
 from uuid import uuid4
 
 import pytest
+import sqlalchemy.orm.exc
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -327,5 +328,9 @@ def test_delete_project_cascading_deletion(
     assert deleted_linked_account is None, "Linked account should be deleted from database"
 
     # Verify agent is deleted from DB
-    deleted_agent = crud.projects.get_agent_by_id(db_session, agent.id)
-    assert deleted_agent is None, "Agent should be deleted from database"
+    try:
+        deleted_agent = crud.projects.get_agent_by_id(db_session, agent.id)
+        assert deleted_agent is None, "Agent should be deleted from database"
+    except sqlalchemy.orm.exc.ObjectDeletedError:
+        # This is also a valid case - the agent was deleted
+        pass
