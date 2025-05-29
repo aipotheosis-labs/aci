@@ -186,14 +186,6 @@ For VS Code users, configure Ruff formatter:
 docker compose exec test-runner pytest
 ```
 
-
-> [!NOTE]
-> If you interrupt the tests with Ctrl+C, the test database may not be properly cleared. In this case, you can manually truncate the database by running:
-> ```bash
-> docker compose exec test-runner python -m scripts.truncate_db
-> ```
-
-
 ## Database Management
 
 ### Working with Migrations
