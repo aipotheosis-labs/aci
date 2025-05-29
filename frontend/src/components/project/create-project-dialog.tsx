@@ -69,14 +69,12 @@ export function CreateProjectDialog({
   const handleSubmit = async (values: FormValues) => {
     try {
       const newProject = await createProject(accessToken, values.name, orgId);
-      console.log("newProject", newProject);
       setActiveProject(newProject);
       await onProjectCreated();
       setIsOpen(false);
       form.reset();
       toast.success("Project created successfully");
       router.push("/apps");
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
