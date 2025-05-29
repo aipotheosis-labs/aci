@@ -1,3 +1,4 @@
+import json
 from datetime import UTC, datetime
 from typing import Annotated
 
@@ -212,16 +213,36 @@ async def execute(
         },
     )
 
-    # Use the service method to execute the function
-    result = await execute_function(
-        db_session=context.db_session,
-        project=context.project,
-        agent=context.agent,
-        function_name=function_name,
-        function_input=body.function_input,
-        linked_account_owner_id=body.linked_account_owner_id,
-        openai_client=openai_client,
-    )
+    try:
+        # Use the service method to execute the function
+        result = await execute_function(
+            db_session=context.db_session,
+            project=context.project,
+            agent=context.agent,
+            function_name=function_name,
+            function_input=body.function_input,
+            linked_account_owner_id=body.linked_account_owner_id,
+            openai_client=openai_client,
+        )
+    except Exception as e:
+        result = FunctionExecutionResult(success=False, error=str(e))
+        raise
+    finally:
+        logger.info(
+            "function_execution",
+            extra={
+                "function_execution_app_name": function_name.split("__")[0]
+                if "__" in function_name
+                else None,
+                "function_execution_function_name": function_name,
+                "function_execution_input": json.dumps(body.function_input),
+                "function_execution_linked_account_owner_id": body.linked_account_owner_id,
+                "function_execution_result_success": result.success,
+                "function_execution_result_error": result.error,
+                "function_execution_result_data": json.dumps(result.data),
+            },
+        )
+
     return result
 
 

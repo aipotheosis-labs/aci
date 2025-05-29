@@ -1,9 +1,12 @@
 import datetime
 import logging
 from logging.handlers import RotatingFileHandler
+from typing import Any
 
 import logfire
 from opensearchpy import OpenSearch
+
+LOCAL_OPENSEARCH_LOG_INDEX_PREFIX = "aci-logs-local-"
 
 
 # the setup is called once at the start of the app
@@ -93,17 +96,24 @@ class LocalOpenSearchHandler(logging.Handler):
         timestamp = record.created
         timestamp_iso = datetime.datetime.fromtimestamp(timestamp).isoformat()
 
-        log_body = {
+        log_body: dict[
+            str, str | int | float | bool | list[Any] | dict[str, Any] | tuple[Any, ...] | None
+        ] = {
             "message": record.getMessage(),
             "level": record.levelname,
             "@timestamp": timestamp_iso,
         }
 
+        # Filter out non-serializable objects
         for key, value in record.__dict__.items():
-            log_body[key] = value
+            if isinstance(value, str | int | float | bool | list | dict | tuple | type(None)):
+                log_body[key] = value
+            else:
+                log_body[key] = str(value)  # Convert any non-serializable objects to string
 
         # Create daily index name in format: aci-logs-YYYY.MM.DD
-        index_name = f"aci-logs-{datetime.datetime.fromtimestamp(timestamp).strftime('%Y.%m.%d')}"
+        index_name = f"{LOCAL_OPENSEARCH_LOG_INDEX_PREFIX}{datetime.datetime.fromtimestamp(timestamp).strftime('%Y.%m.%d')}"
+
         self.opensearch_client.index(
             index=index_name,
             body=log_body,
