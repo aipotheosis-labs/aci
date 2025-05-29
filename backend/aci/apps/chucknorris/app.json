@@ -1,0 +1,17 @@
+{
+  "name": "CHUCKNORRIS",
+  "display_name": "Chuck Norris Jokes",
+  "logo": "https://api.chucknorris.io/img/avatar/chuck-norris.png",
+  "provider": "chucknorris.io",
+  "version": "1.0.0",
+  "description": "Provides a random Chuck Norris joke.",
+  "security_schemes": {
+    "no_auth": {}
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Entertainment"
+  ],
+  "visibility": "public",
+  "active": true
+}

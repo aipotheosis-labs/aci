@@ -109,3 +109,11 @@ class StripeSubscriptionInterval(StrEnum):
 
     MONTH = "month"
     YEAR = "year"
+
+
+class AppNames(StrEnum):
+    """
+    Known application names.
+    This can be used for strong typing where app names are used in backend logic.
+    """
+    CHUCKNORRIS = "CHUCKNORRIS"

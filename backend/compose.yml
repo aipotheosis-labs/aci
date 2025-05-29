@@ -14,7 +14,7 @@ services:
       POSTGRES_DB: local_db
     ports:
       - "5432:5432"
-    restart: no
+    restart: "no"
 
   aws:
     image: localstack/localstack
@@ -65,7 +65,7 @@ services:
         condition: service_healthy
       aws:
         condition: service_healthy
-    restart: no
+    restart: "no"
 
   # can think of runner as an staging host for executing any commands
   # e.g., run pytest, cli commands and scripts such as seed db etc.

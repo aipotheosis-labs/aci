@@ -1,0 +1,151 @@
+[
+    {
+        "name": "CHUCKNORRIS__GET_RANDOM_JOKE",
+        "description": "Retrieves a random Chuck Norris joke.",
+        "tags": [
+            "jokes",
+            "entertainment"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/jokes/random",
+            "server_url": "https://api.chucknorris.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    {
+        "name": "CHUCKNORRIS__GET_RANDOM_JOKE_FROM_CATEGORY",
+        "description": "Retrieves a random Chuck Norris joke from a given category.",
+        "tags": [
+            "jokes",
+            "entertainment",
+            "category"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/jokes/random",
+            "server_url": "https://api.chucknorris.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "category": {
+                            "type": "string",
+                            "description": "The category to get a random joke from."
+                        }
+                    },
+                    "required": [
+                        "category"
+                    ]
+                },
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    }
+                }
+            },
+            "required": ["query"]
+        }
+    },
+    {
+        "name": "CHUCKNORRIS__GET_CATEGORIES",
+        "description": "Retrieves a list of available joke categories.",
+        "tags": [
+            "jokes",
+            "entertainment",
+            "category"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/jokes/categories",
+            "server_url": "https://api.chucknorris.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    {
+        "name": "CHUCKNORRIS__SEARCH_JOKES",
+        "description": "Searches for Chuck Norris jokes based on a query string.",
+        "tags": [
+            "jokes",
+            "entertainment",
+            "search"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/jokes/search",
+            "server_url": "https://api.chucknorris.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "The text to search for."
+                        }
+                    },
+                    "required": [
+                        "query"
+                    ]
+                },
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    }
+                }
+            },
+            "required": ["query"]
+        }
+    }
+]
