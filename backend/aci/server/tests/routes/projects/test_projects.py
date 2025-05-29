@@ -200,7 +200,10 @@ def test_delete_project_success(
     # Test deleting one project (should succeed as it's not the last one)
     response = test_client.delete(
         f"{config.ROUTER_PREFIX_PROJECTS}/{project_id}",
-        headers={"Authorization": f"Bearer {dummy_user.access_token}"},
+        headers={
+            "Authorization": f"Bearer {dummy_user.access_token}",
+            "X-ACI-ORG-ID": str(dummy_user.org_id),
+        },
     )
     assert response.status_code == status.HTTP_200_OK
 
