@@ -327,5 +327,5 @@ def test_delete_project_cascading_deletion(
     assert deleted_linked_account is None, "Linked account should be deleted from database"
 
     # Verify agent is deleted from DB
-    deleted_agent = crud.projects.get_agent_by_id(db_session, project_id)
+    deleted_agent = crud.projects.get_agent_by_id(db_session, agent.id)
     assert deleted_agent is None, "Agent should be deleted from database"
