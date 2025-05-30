@@ -52,7 +52,7 @@ def setup_logging(
 
     if environment != "local":
         root_logger.addHandler(logfire.LogfireLoggingHandler())
-    else:
+    if environment == "local":
         # Add OpenSearch handler for local environment to send logs to OpenSearch
         opensearch_handler = LocalOpenSearchHandler()
         for filter in filters:
