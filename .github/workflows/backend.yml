@@ -52,6 +52,7 @@ jobs:
     env:
       SERVER_OPENAI_API_KEY: ${{ secrets.SERVER_OPENAI_API_KEY }}
       CLI_OPENAI_API_KEY: ${{ secrets.CLI_OPENAI_API_KEY }}
+      SERVER_ENVIRONMENT: test
 
     steps:
       - uses: actions/checkout@v4
