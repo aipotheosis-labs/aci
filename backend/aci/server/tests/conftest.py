@@ -18,11 +18,11 @@ from sqlalchemy.orm import Session
 from aci.common.db.sql_models import Plan
 from aci.common.enums import OrganizationRole
 from aci.common.schemas.plans import PlanFeatures
+from aci.common.test_utils import clear_database, create_test_db_session
 from aci.server import acl
 
 # override the rate limit to a high number for testing before importing aci modules
 with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
-    from aci.common import utils
     from aci.common.db import crud
     from aci.common.db.sql_models import (
         Agent,
@@ -43,7 +43,6 @@ with patch.dict("os.environ", {"SERVER_RATE_LIMIT_IP_PER_SECOND": "999"}):
         NoAuthSchemeCredentials,
         OAuth2SchemeCredentials,
     )
-    from aci.server import config
     from aci.server.main import app as fastapi_app
     from aci.server.tests import helper
 
@@ -121,8 +120,7 @@ def test_client(dummy_user: DummyUser) -> Generator[TestClient, None, None]:
 
 @pytest.fixture(scope="function")
 def db_session() -> Generator[Session, None, None]:
-    with utils.create_db_session(config.DB_FULL_URL) as db_session:
-        yield db_session
+    yield from create_test_db_session()
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -130,12 +128,6 @@ def database_setup_and_cleanup(db_session: Session) -> Generator[None, None, Non
     """
     Setup and cleanup the database for each test case.
     """
-    # make sure we are connecting to the local db not the production db
-    # TODO: it's part of the environment separation problem, need to properly set up failsafe prod isolation
-    assert config.DB_HOST in ["localhost", "test-db", "db"]
-
-    # Use 'with' to manage the session context
-
     inspector = cast(Inspector, inspect(db_session.bind))
 
     # Check if all tables defined in models are created in the db
@@ -143,20 +135,9 @@ def database_setup_and_cleanup(db_session: Session) -> Generator[None, None, Non
         if not inspector.has_table(table.name):
             pytest.exit(f"Table {table} does not exist in the database.")
 
-    # Go through all tables and make sure there are no records in the table
-    # (skip alembic_version table)
-    for table in Base.metadata.tables.values():
-        if table.name != "alembic_version" and db_session.query(table).count() > 0:
-            pytest.exit(f"Table {table} is not empty.")
-
+    clear_database(db_session)
     yield  # This allows the test to run
-
-    # Clean up: Empty all tables after tests in reverse order of creation
-    for table in reversed(Base.metadata.sorted_tables):
-        if table.name != "alembic_version" and db_session.query(table).count() > 0:
-            logger.debug(f"Deleting all records from table {table.name}")
-            db_session.execute(table.delete())
-    db_session.commit()
+    clear_database(db_session)
 
 
 @pytest.fixture(scope="function")
