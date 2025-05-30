@@ -24,26 +24,10 @@ export const LOGS_CONFIG = {
   refreshInterval: 30000, // 30 seconds
   maxLogsPerPage: 50,
   statusColors: {
-    success: {
-      bg: "bg-green-100",
-      text: "text-green-800",
-    },
-    error: {
-      bg: "bg-red-100",
-      text: "text-red-800",
-    },
-    warning: {
-      bg: "bg-yellow-100",
-      text: "text-yellow-800",
-    },
-    info: {
-      bg: "bg-blue-100",
-      text: "text-blue-800",
-    },
+    success: "bg-green-100 text-green-800",
+    fail: "bg-red-100 text-red-800",
   },
 } as const;
-
-export type LogStatus = keyof typeof LOGS_CONFIG.statusColors;
 
 const columnHelper = createColumnHelper<LogEntry>();
 
@@ -64,14 +48,8 @@ const useLogsTable = () => {
 
   const getJsonPreview = (jsonStr: string | null) => {
     if (!jsonStr) return "";
-    try {
-      const obj = JSON.parse(jsonStr);
-      const firstKey = Object.keys(obj)[0];
-      const firstValue = obj[firstKey];
-      return `${firstKey}: ${typeof firstValue === "string" ? firstValue : JSON.stringify(firstValue)}`;
-    } catch {
-      return jsonStr;
-    }
+    if (jsonStr.length < 12) return jsonStr;
+    return jsonStr.slice(0, 12) + "...";
   };
 
   const formatJson = (jsonStr: string | null) => {
@@ -163,6 +141,26 @@ const useTableColumns = (
           </div>
         ),
         cell: (info) => info.getValue() || "-",
+        enableGlobalFilter: true,
+      }),
+      columnHelper.accessor("function_execution_result_success", {
+        header: "STATUS",
+        cell: (info) => {
+          const success = info.getValue();
+          const statusColor = success
+            ? LOGS_CONFIG.statusColors.success
+            : LOGS_CONFIG.statusColors.fail;
+
+          return (
+            <div className="flex items-center">
+              <span
+                className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusColor}`}
+              >
+                {success ? "success" : "fail"}
+              </span>
+            </div>
+          );
+        },
         enableGlobalFilter: true,
       }),
       columnHelper.accessor("function_execution_input", {
@@ -317,17 +315,6 @@ const LogDetailSheet = ({
 }) => {
   if (!selectedLog) return null;
 
-  const getStatusColor = (success: boolean | null) => {
-    if (success === null) return LOGS_CONFIG.statusColors.info;
-    return success
-      ? LOGS_CONFIG.statusColors.success
-      : LOGS_CONFIG.statusColors.error;
-  };
-
-  const statusColor = getStatusColor(
-    selectedLog.function_execution_result_success,
-  );
-
   return (
     <Sheet open={isDetailOpen} onOpenChange={setIsDetailOpen}>
       <SheetContent className="min-w-[600px] sm:min-w-[800px] max-w-[60vw]">
@@ -352,14 +339,8 @@ const LogDetailSheet = ({
                   <p>{selectedLog.function_execution_function_name || "-"}</p>
                 </div>
                 <div>
-                  <span className="text-muted-foreground">Status:</span>
-                  <p
-                    className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusColor.bg} ${statusColor.text}`}
-                  >
-                    {selectedLog.function_execution_result_success
-                      ? "success"
-                      : "error"}
-                  </p>
+                  <span className="text-muted-foreground">Agent ID:</span>
+                  <p>{selectedLog.agent_id || "-"}</p>
                 </div>
               </div>
             </div>

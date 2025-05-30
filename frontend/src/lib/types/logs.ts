@@ -5,6 +5,7 @@ export interface LogEntry {
   function_name: string;
   success: boolean;
   message: string;
+  agent_id: string | null;
   function_execution_app_name: string | null;
   function_execution_function_name: string | null;
   function_execution_input: string | null;

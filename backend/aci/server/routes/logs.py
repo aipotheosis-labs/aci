@@ -20,8 +20,6 @@ class LogEntry(BaseModel):
     message: str
     project_id: UUID
     agent_id: UUID | None = None
-    function_id: UUID | None = None
-    metadata: dict = {}
     log_search_type: str
     function_execution_app_name: str | None = None
     function_execution_function_name: str | None = None
@@ -65,6 +63,7 @@ async def search_execution_logs(
     Search logs with optional query string and request ID.
     """
     project_id = context.project.id
+    org_id = context.project.org_id
     try:
         from_index = (page - 1) * page_size
 
@@ -72,6 +71,7 @@ async def search_execution_logs(
         filter_conditions = [
             {"term": {"log_search_type.keyword": "function_execution"}},
             {"term": {"project_id.keyword": str(project_id)}},
+            {"term": {"org_id.keyword": str(org_id)}},
         ]
 
         if app_name:
@@ -116,10 +116,6 @@ async def search_execution_logs(
                         source.get("project_id", "00000000-0000-0000-0000-000000000000")
                     ),
                     agent_id=UUID(source.get("agent_id")) if source.get("agent_id") else None,
-                    function_id=UUID(source.get("function_id"))
-                    if source.get("function_id")
-                    else None,
-                    metadata=source.get("metadata", {}),
                     log_search_type=source.get("log_search_type", ""),
                     function_execution_app_name=source.get("function_execution_app_name"),
                     function_execution_function_name=source.get("function_execution_function_name"),

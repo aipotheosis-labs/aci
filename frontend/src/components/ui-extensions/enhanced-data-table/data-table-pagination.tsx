@@ -20,6 +20,7 @@ import {
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  totalCount: number;
 }
 type PageItem = number | "ellipsis";
 
@@ -49,6 +50,7 @@ function getPageItems(current0: number, total: number): PageItem[] {
 }
 
 export function DataTablePagination<TData>({
+  totalCount,
   table,
 }: DataTablePaginationProps<TData>) {
   const { pageIndex, pageSize } = table.getState().pagination;
@@ -93,7 +95,7 @@ export function DataTablePagination<TData>({
       {/* Left: Total row number information and page size selector */}
       <div className="flex items-center gap-4">
         <div className="text-sm font-medium">
-          {startRow} – {endRow} / {totalRows}
+          {startRow} – {endRow} / {totalCount ?? totalRows}
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-muted-foreground">Rows per page</span>
