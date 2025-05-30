@@ -123,12 +123,6 @@ def db_session() -> Generator[Session, None, None]:
     yield from create_test_db_session()
 
 
-@pytest.fixture(autouse=True)
-def clear_db_before_tests(db_session: Session) -> Generator[None, None, None]:
-    clear_database(db_session)
-    yield
-
-
 @pytest.fixture(scope="function", autouse=True)
 def database_setup_and_cleanup(db_session: Session) -> Generator[None, None, None]:
     """
@@ -141,12 +135,7 @@ def database_setup_and_cleanup(db_session: Session) -> Generator[None, None, Non
         if not inspector.has_table(table.name):
             pytest.exit(f"Table {table} does not exist in the database.")
 
-    # Go through all tables and make sure there are no records in the table
-    # (skip alembic_version table)
-    for table in Base.metadata.tables.values():
-        if table.name != "alembic_version" and db_session.query(table).count() > 0:
-            pytest.exit(f"Table {table} is not empty.")
-
+    clear_database(db_session)
     yield  # This allows the test to run
     clear_database(db_session)
 

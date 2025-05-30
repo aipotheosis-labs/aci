@@ -19,7 +19,6 @@ def clear_database(db_session: Session) -> None:
             logger.debug(f"Deleting all records from table {table.name}")
             db_session.execute(table.delete())
     db_session.commit()
-    logger.info("Database cleared")
 
 
 def create_test_db_session() -> Generator[Session, None, None]:
