@@ -18,7 +18,7 @@ from aci.common.exceptions import (
     ProjectNotFound,
 )
 from aci.common.logging_setup import get_logger
-from aci.common.opensearch.client import get_opensearch_client
+from aci.common.opensearch.client import yield_opensearch_client
 from aci.server import config
 
 logger = get_logger(__name__)
@@ -149,4 +149,4 @@ def get_opensearch() -> Generator[Any, None, None]:
     """
     Dependency that provides an OpenSearch client configured with AWS credentials.
     """
-    yield from get_opensearch_client()
+    yield from yield_opensearch_client()

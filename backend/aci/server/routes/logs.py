@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated, Any, TypedDict, cast
+from typing import Annotated, Any, Literal, TypedDict, cast
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -14,13 +14,11 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 
-class LogEntry(BaseModel):
+class FunctionExecutionLogEntry(BaseModel):
+    log_search_type: Literal["function_execution"] = "function_execution"
     timestamp: datetime
-    level: str
-    message: str
     project_id: UUID
     agent_id: UUID | None = None
-    log_search_type: str
     function_execution_app_name: str | None = None
     function_execution_function_name: str | None = None
     function_execution_input: str | None = None
@@ -31,7 +29,7 @@ class LogEntry(BaseModel):
 
 
 class LogSearchResponse(BaseModel):
-    logs: list[LogEntry]
+    logs: list[FunctionExecutionLogEntry]
     total: int
     page: int
     page_size: int
@@ -51,25 +49,29 @@ class OpenSearchResponse(TypedDict):
 
 
 @router.get("/search", response_model=LogSearchResponse)
-async def search_execution_logs(
+async def search_logs(
     context: Annotated[RequestContext, Depends(get_request_context)],
     opensearch: Annotated[OpenSearch, Depends(get_opensearch)],
     page: int = Query(1, ge=1, description="Page number"),
     page_size: int = Query(20, ge=1, le=100, description="Number of results per page"),
     app_name: str | None = Query(None, description="Filter by app name"),
     function_name: str | None = Query(None, description="Filter by function name"),
+    log_search_type: str | None = Query(None, description="Filter by log search type"),
 ) -> LogSearchResponse:
     """
     Search logs with optional query string and request ID.
+    TODO: currently only supports function execution logs.
+    TODO: add support for other log types in this unified endpoint.
     """
     project_id = context.project.id
     org_id = context.project.org_id
+    log_search_type = log_search_type or "function_execution"
     try:
         from_index = (page - 1) * page_size
 
         # Build filter conditions
         filter_conditions = [
-            {"term": {"log_search_type.keyword": "function_execution"}},
+            {"term": {"log_search_type.keyword": log_search_type}},
             {"term": {"project_id.keyword": str(project_id)}},
             {"term": {"org_id.keyword": str(org_id)}},
         ]
@@ -88,7 +90,6 @@ async def search_execution_logs(
             "size": page_size,
             "query": {"bool": {"filter": filter_conditions}},
         }
-        logger.info(f"Executing OpenSearch query with body: {search_body}")
 
         response = cast(
             OpenSearchResponse,
@@ -97,7 +98,6 @@ async def search_execution_logs(
                 body=search_body,
             ),
         )
-        logger.info(f"OpenSearch query response: {response}")
 
         hits = cast(list[OpenSearchHit], response["hits"]["hits"])  # type: ignore
         total = response["hits"]["total"]["value"]
@@ -106,17 +106,15 @@ async def search_execution_logs(
         for hit in hits:
             source = hit["_source"]
             logs.append(
-                LogEntry(
+                FunctionExecutionLogEntry(
                     timestamp=datetime.fromisoformat(
                         source.get("@timestamp") or source.get("timestamp") or ""
                     ),
-                    level=source.get("level", "INFO"),
-                    message=source.get("message", ""),
                     project_id=UUID(
                         source.get("project_id", "00000000-0000-0000-0000-000000000000")
                     ),
                     agent_id=UUID(source.get("agent_id")) if source.get("agent_id") else None,
-                    log_search_type=source.get("log_search_type", ""),
+                    log_search_type=source.get("log_search_type", "function_execution"),
                     function_execution_app_name=source.get("function_execution_app_name"),
                     function_execution_function_name=source.get("function_execution_function_name"),
                     function_execution_input=source.get("function_execution_input"),

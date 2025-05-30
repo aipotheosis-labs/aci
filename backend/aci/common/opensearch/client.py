@@ -7,10 +7,11 @@ from aci.common.logging_setup import get_logger
 from aci.server.config import ENVIRONMENT, OPENSEARCH_AWS_REGION, OPENSEARCH_HOST, OPENSEARCH_PORT
 
 
-def get_opensearch_client() -> Generator[OpenSearch, None, None]:
+def yield_opensearch_client() -> Generator[OpenSearch, None, None]:
     """
     Creates and yields an OpenSearch client configured with either HTTP basic auth (local) or IAM auth (production).
     """
+    client = None
     try:
         if ENVIRONMENT == "local":
             # Create OpenSearch client with HTTP basic auth for local development
@@ -42,3 +43,6 @@ def get_opensearch_client() -> Generator[OpenSearch, None, None]:
     except Exception as e:
         get_logger(__name__).error(f"Error creating OpenSearch client: {e!s}")
         raise
+    finally:
+        if client:
+            client.close()
