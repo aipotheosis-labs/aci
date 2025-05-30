@@ -13,7 +13,7 @@ from aci.common.enums import SecurityScheme, Visibility
 from aci.common.schemas.app_configurations import AppConfigurationCreate
 from aci.common.schemas.project import ProjectCreate, ProjectPublic
 from aci.common.schemas.security_scheme import NoAuthSchemeCredentials
-from aci.server import config
+from aci.server import billing, config
 from aci.server.tests.conftest import DummyUser
 
 
@@ -23,8 +23,8 @@ def test_get_projects_success(
     dummy_user: DummyUser,
 ) -> None:
     # Get the plan's project limit
-    plan = crud.subscriptions.get_plan_for_org(db_session, dummy_user.org_id)
-    max_projects = plan.features.get("projects", 1)
+    subscription = billing.get_subscription_by_org_id(db_session, dummy_user.org_id)
+    max_projects = subscription.plan.features["projects"]
 
     # First create multiple projects
     for i in range(max_projects):
@@ -113,8 +113,8 @@ def test_create_project_reached_max_projects_per_org(
     dummy_user: DummyUser,
 ) -> None:
     # Get the plan's project limit
-    plan = crud.subscriptions.get_plan_for_org(db_session, dummy_user.org_id)
-    max_projects = plan.features.get("projects", 1)
+    subscription = billing.get_subscription_by_org_id(db_session, dummy_user.org_id)
+    max_projects = subscription.plan.features["projects"]
 
     # create max number of projects under the user
     for i in range(max_projects):
@@ -266,7 +266,6 @@ def test_delete_project_cascading_deletion(
         "project_test_cascading_deletion",
     )
     db_session.commit()
-    assert project is not None
     project_id = project.id
 
     app_config_body = AppConfigurationCreate(
@@ -275,16 +274,15 @@ def test_delete_project_cascading_deletion(
     )
 
     # Create an app configuration using CRUD
-    app_config = crud.app_configurations.create_app_configuration(
+    crud.app_configurations.create_app_configuration(
         db_session,
         project_id,
         app_config_body,
     )
     db_session.commit()
-    assert app_config is not None
 
     # Create a linked account using CRUD
-    linked_account = crud.linked_accounts.create_linked_account(
+    crud.linked_accounts.create_linked_account(
         db_session,
         project_id,
         dummy_app.name,
@@ -294,7 +292,6 @@ def test_delete_project_cascading_deletion(
         enabled=True,
     )
     db_session.commit()
-    assert linked_account is not None
 
     # Create an agent using CRUD
     agent = crud.projects.create_agent(
@@ -306,7 +303,6 @@ def test_delete_project_cascading_deletion(
         custom_instructions={},
     )
     db_session.commit()
-    assert agent is not None
 
     # Delete the project
     delete_response = test_client.delete(

@@ -455,7 +455,7 @@ class ProjectCreationError(ACIException):
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="Failed to create project with default agent",
+            title="Failed to create project",
             message=message,
             error_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )

@@ -3,7 +3,6 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header
 from propelauth_fastapi import User
-from sqlalchemy import exc as sqlalchemy
 from sqlalchemy.orm import Session
 
 from aci.common.db import crud
@@ -11,7 +10,6 @@ from aci.common.db.sql_models import Agent, Project
 from aci.common.enums import OrganizationRole
 from aci.common.exceptions import (
     AgentNotFound,
-    ProjectCreationError,
     ProjectIsLastInOrgError,
     ProjectNotFound,
 )
@@ -49,23 +47,14 @@ async def create_project(
     project = crud.projects.create_project(db_session, body.org_id, body.name)
 
     # Create a default Agent for the project
-    try:
-        crud.projects.create_agent(
-            db_session,
-            project.id,
-            name="Default Agent",
-            description="Default Agent",
-            allowed_apps=[],
-            custom_instructions={},
-        )
-    except sqlalchemy.DatabaseError as e:
-        logger.error(
-            "Failed to create default agent",
-            extra={"project_id": project.id, "error": str(e)},
-        )
-        # Consider whether to rollback the entire project creation
-        db_session.rollback()
-        raise ProjectCreationError() from e
+    crud.projects.create_agent(
+        db_session,
+        project.id,
+        name="Default Agent",
+        description="Default Agent",
+        allowed_apps=[],
+        custom_instructions={},
+    )
     db_session.commit()
 
     logger.info(
