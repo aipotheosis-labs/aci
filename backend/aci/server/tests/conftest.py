@@ -740,6 +740,7 @@ def free_plan(db_session: Session) -> Plan:
             developer_seats=1,
             custom_oauth=False,
             log_retention_days=7,
+            projects=1,
         ),
         is_public=True,
     )

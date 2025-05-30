@@ -26,7 +26,7 @@ from aci.common.schemas.subscription import (
     SubscriptionPublic,
     SubscriptionUpdate,
 )
-from aci.server import acl, config
+from aci.server import acl, billing, config
 from aci.server import dependencies as deps
 
 router = APIRouter()
@@ -43,27 +43,10 @@ async def get_subscription(
 ) -> SubscriptionPublic:
     acl.require_org_member(user, org_id)
 
-    active_subscription = crud.subscriptions.get_subscription_by_org_id(db_session, org_id)
-    if not active_subscription:
-        logger.info(
-            "no active subscription found, the org is on the free plan",
-            extra={"org_id": org_id},
-        )
-        return SubscriptionPublic(
-            plan="free",
-            status=StripeSubscriptionStatus.ACTIVE,
-        )
-
-    plan = crud.plans.get_by_id(db_session, active_subscription.plan_id)
-    if not plan:
-        logger.error(
-            "plan not found",
-            extra={"plan_id": active_subscription.plan_id},
-        )
-        raise SubscriptionPlanNotFound(f"plan={active_subscription.plan_id} not found")
+    subscription = billing.get_subscription_by_org_id(db_session, org_id)
     return SubscriptionPublic(
-        plan=plan.name,
-        status=active_subscription.status,
+        plan=subscription.plan.name,
+        status=subscription.status,
     )
 
 

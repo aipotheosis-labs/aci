@@ -28,6 +28,7 @@ const tiers = [
     priceYearly: "$0",
     description: "Perfect for getting started & simple projects.",
     features: [
+      "2 Projects",
       "10 Unique End Users",
       "1K API calls/month",
       "5 Agent Credentials",
@@ -46,6 +47,7 @@ const tiers = [
     discount: "saves $49 on annual",
     description: "For growing applications needing more capacity.",
     features: [
+      "5 Projects",
       "250 Unique End Users",
       "100K API calls/month",
       "2500 Agent Credentials",
@@ -64,6 +66,7 @@ const tiers = [
     discount: "saves $189 on annual",
     description: "Ideal for teams needing collaboration features.",
     features: [
+      "10 Projects",
       "1000 Unique End Users",
       "300K API calls/month",
       "10000 Agent Credentials",
@@ -81,6 +84,7 @@ const tiers = [
     priceMonthly: "Custom",
     description: "For large-scale applications with specific needs.",
     features: [
+      "Custom Projects",
       "Custom Unique End User Accounts",
       "Custom API Calls",
       "Unlimited Agent Credentials",

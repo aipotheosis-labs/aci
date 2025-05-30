@@ -108,6 +108,9 @@ class Project(Base):
     app_configurations: Mapped[list[AppConfiguration]] = relationship(
         "AppConfiguration", lazy="select", cascade="all, delete-orphan", init=False
     )
+    linked_accounts: Mapped[list[LinkedAccount]] = relationship(
+        "LinkedAccount", lazy="select", cascade="all, delete-orphan", init=False
+    )
 
 
 class Agent(Base):
