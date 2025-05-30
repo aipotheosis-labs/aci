@@ -268,7 +268,7 @@ export function EnhancedDataTable<TData, TValue>({
           <div className="border-t border-gray-200 bg-gray-50 ">
             <DataTablePagination
               table={table}
-              totalCount={paginationOptions.totalCount ?? 0}
+              totalCount={paginationOptions.totalCount}
             />
           </div>
         )}

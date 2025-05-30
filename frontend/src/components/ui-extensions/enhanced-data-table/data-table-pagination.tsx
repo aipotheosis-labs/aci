@@ -20,7 +20,7 @@ import {
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
-  totalCount: number;
+  totalCount?: number;
 }
 type PageItem = number | "ellipsis";
 
