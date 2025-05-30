@@ -17,6 +17,7 @@ import { searchLogs } from "@/lib/api/logs";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { getApiKey } from "@/lib/api/util";
 import { LogEntry, LogSearchResponse } from "@/lib/types/logs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Configuration
 export const LOGS_CONFIG = {
@@ -286,9 +287,9 @@ const LogsTableView = ({
           columns={columns}
           data={logs}
           defaultSorting={[{ id: "timestamp", desc: true }]}
-          searchBarProps={{
-            placeholder: "Search logs",
-          }}
+          // searchBarProps={{
+          //   placeholder: "Search logs",
+          // }}
           paginationOptions={{
             initialPageIndex: page - 1,
             initialPageSize: pageSize,
@@ -419,17 +420,26 @@ export default function LogsPage() {
 
   return (
     <div className="container mx-auto">
-      <LogsTableView
-        logs={logs}
-        columns={columns}
-        isLoading={isLoading}
-        page={page}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        total={total}
-        onRefresh={refetch}
-      />
+      <Tabs defaultValue="function-executions" className="w-full pt-4">
+        <TabsList className="px-2 ml-8 pl-2">
+          <TabsTrigger value="function-executions">
+            Function Executions
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="function-executions" className="px-4">
+          <LogsTableView
+            logs={logs}
+            columns={columns}
+            isLoading={isLoading}
+            page={page}
+            setPage={setPage}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            total={total}
+            onRefresh={refetch}
+          />
+        </TabsContent>
+      </Tabs>
 
       <LogDetailSheet
         selectedLog={selectedLog}
