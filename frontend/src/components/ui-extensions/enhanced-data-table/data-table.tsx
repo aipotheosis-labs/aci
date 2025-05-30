@@ -264,9 +264,11 @@ export function EnhancedDataTable<TData, TValue>({
             )}
           </TableBody>
         </Table>
-        <div className="border-t border-gray-200 bg-gray-50">
-          <DataTablePagination table={table} />
-        </div>
+        {paginationOptions && (
+          <div className="border-t border-gray-200 bg-gray-50 ">
+            <DataTablePagination table={table} />
+          </div>
+        )}
       </div>
     </div>
   );
