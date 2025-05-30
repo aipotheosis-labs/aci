@@ -2,7 +2,6 @@ import uuid
 from uuid import uuid4
 
 import pytest
-import sqlalchemy.orm.exc
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -205,7 +204,7 @@ def test_delete_project_success(
             "X-ACI-ORG-ID": str(dummy_user.org_id),
         },
     )
-    assert response.status_code == status.HTTP_200_OK
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
     # Verify project is deleted by getting all projects for the org
     projects = crud.projects.get_projects_by_org(db_session, dummy_user.org_id)
@@ -294,7 +293,7 @@ def test_delete_project_cascading_deletion(
     db_session.commit()
 
     # Create an agent using CRUD
-    agent = crud.projects.create_agent(
+    crud.projects.create_agent(
         db_session,
         project_id,
         "new test agent",
@@ -312,7 +311,7 @@ def test_delete_project_cascading_deletion(
             "X-ACI-ORG-ID": str(dummy_user.org_id),
         },
     )
-    assert delete_response.status_code == status.HTTP_200_OK
+    assert delete_response.status_code == status.HTTP_204_NO_CONTENT
 
     # Verify app configuration is deleted from DB
     deleted_app_config = crud.app_configurations.get_app_configuration(
@@ -327,9 +326,31 @@ def test_delete_project_cascading_deletion(
     assert deleted_linked_account is None, "Linked account should be deleted from database"
 
     # Verify agent is deleted from DB
-    try:
-        deleted_agent = crud.projects.get_agent_by_id(db_session, agent.id)
-        assert deleted_agent is None, "Agent should be deleted from database"
-    except sqlalchemy.orm.exc.ObjectDeletedError:
-        # This is also a valid case - the agent was deleted
-        pass
+    deleted_agent = crud.projects.get_agents_by_project(db_session, project_id)
+    assert len(deleted_agent) == 0, "Agent should be deleted from database"
+
+
+def test_cannot_access_project_from_other_org(
+    test_client: TestClient,
+    db_session: Session,
+    dummy_user: DummyUser,
+    dummy_user_2: DummyUser,
+) -> None:
+    # Create a project for dummy_user_2
+    crud.projects.create_project(
+        db_session,
+        org_id=dummy_user_2.org_id,
+        name="Other Org Project",
+    )
+    db_session.commit()
+
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_PROJECTS}",
+        headers={
+            "Authorization": f"Bearer {dummy_user.access_token}",
+            "X-ACI-ORG-ID": str(dummy_user.org_id),
+        },
+    )
+    assert response.status_code == status.HTTP_200_OK
+    projects = response.json()
+    assert len(projects) == 0, "User should not see projects from other organizations"

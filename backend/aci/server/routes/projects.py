@@ -1,7 +1,7 @@
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, status
 from propelauth_fastapi import User
 from sqlalchemy.orm import Session
 
@@ -88,12 +88,12 @@ async def get_projects(
     return projects
 
 
-@router.delete("/{project_id}", include_in_schema=True)
+@router.delete("/{project_id}", status_code=status.HTTP_204_NO_CONTENT, include_in_schema=True)
 async def delete_project(
     project_id: UUID,
     user: Annotated[User, Depends(auth.require_user)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-) -> dict[str, str]:
+) -> None:
     """
     Delete a project by project id.
 
@@ -131,8 +131,6 @@ async def delete_project(
 
     crud.projects.delete_project(db_session, project_id)
     db_session.commit()
-
-    return {"message": f"Project={project_id} deleted successfully"}
 
 
 @router.patch("/{project_id}", response_model=ProjectPublic, include_in_schema=True)
