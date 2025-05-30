@@ -9,6 +9,8 @@ import { Messages } from "./messages";
 import { useShallow } from "zustand/react/shallow";
 import { BetaAlert } from "@/components/playground/beta-alert";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 
 const chatHistoryLocalStorageKey = `playground-chat-history`;
 const Page = () => {
@@ -89,6 +91,11 @@ const Page = () => {
     addToolResult({ toolCallId, result });
   };
 
+  const handleClearStorage = () => {
+    sessionStorage.removeItem(chatHistoryLocalStorageKey);
+    setMessages([]);
+  };
+
   if (!activeProject) {
     console.warn("No active project");
     return <div>No project selected</div>;
@@ -97,8 +104,21 @@ const Page = () => {
   return (
     <div className="flex flex-grow h-[calc(100vh-6rem)]">
       {/* Left part - Chat area */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden relative">
         <BetaAlert />
+        {messages.length > 0 && (
+          <div className="absolute top-2 left-2 z-10">
+            <Button
+              onClick={handleClearStorage}
+              variant="outline"
+              size="sm"
+              className="gap-2"
+            >
+              <Trash2 className="h-4 w-4" />
+              New Chat
+            </Button>
+          </div>
+        )}
         <Messages
           messages={messages}
           status={status}
