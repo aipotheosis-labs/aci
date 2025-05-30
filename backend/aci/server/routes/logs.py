@@ -17,7 +17,7 @@ logger = get_logger(__name__)
 class FunctionExecutionLogEntry(BaseModel):
     log_search_type: Literal["function_execution"] = "function_execution"
     timestamp: datetime
-    project_id: UUID
+    project_id: UUID | None = None
     agent_id: UUID | None = None
     function_execution_app_name: str | None = None
     function_execution_function_name: str | None = None
@@ -110,9 +110,7 @@ async def search_logs(
                     timestamp=datetime.fromisoformat(
                         source.get("@timestamp") or source.get("timestamp") or ""
                     ),
-                    project_id=UUID(
-                        source.get("project_id", "00000000-0000-0000-0000-000000000000")
-                    ),
+                    project_id=UUID(source.get("project_id")) if source.get("project_id") else None,
                     agent_id=UUID(source.get("agent_id")) if source.get("agent_id") else None,
                     log_search_type=source.get("log_search_type", "function_execution"),
                     function_execution_app_name=source.get("function_execution_app_name"),

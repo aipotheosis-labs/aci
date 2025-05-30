@@ -19,16 +19,6 @@ import { getApiKey } from "@/lib/api/util";
 import { LogEntry, LogSearchResponse } from "@/lib/types/logs";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-// Configuration
-export const LOGS_CONFIG = {
-  refreshInterval: 30000, // 30 seconds
-  maxLogsPerPage: 50,
-  statusColors: {
-    success: "bg-green-100 text-green-800",
-    fail: "bg-red-100 text-red-800",
-  },
-} as const;
-
 const columnHelper = createColumnHelper<LogEntry>();
 
 // Custom hook for table data and operations
@@ -148,8 +138,8 @@ const useTableColumns = (
         cell: (info) => {
           const success = info.getValue();
           const statusColor = success
-            ? LOGS_CONFIG.statusColors.success
-            : LOGS_CONFIG.statusColors.fail;
+            ? `bg-green-100 text-green-800`
+            : `bg-red-100 text-red-800`;
 
           return (
             <div className="flex items-center">

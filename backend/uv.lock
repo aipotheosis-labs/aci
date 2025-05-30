@@ -88,7 +88,7 @@ requires-dist = [
     { name = "logfire", extras = ["fastapi", "sqlalchemy"], specifier = ">=3.16.0" },
     { name = "openai", specifier = ">=1.80.0" },
     { name = "openapi-spec-validator", specifier = ">=0.7.1" },
-    { name = "opensearch-py", specifier = ">=2.4.0" },
+    { name = "opensearch-py", specifier = ">=2.8.0" },
     { name = "pgvector", specifier = ">=0.4.1" },
     { name = "propelauth-fastapi", specifier = ">=4.2.6" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.9" },
