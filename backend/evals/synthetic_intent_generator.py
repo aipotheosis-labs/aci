@@ -1,6 +1,3 @@
-import os
-import tempfile
-
 import openai
 import pandas as pd
 import wandb
@@ -112,7 +109,7 @@ class SyntheticIntentGenerator:
             }
         )
 
-    def _save_to_wandb(self, df: pd.DataFrame, dataset_artifact: str) -> str:
+    def _save_to_wandb(self, df: pd.DataFrame, dataset_artifact: str, dataset_filename: str) -> str:
         """
         Save the dataset as a wandb artifact.
 
@@ -142,27 +139,19 @@ class SyntheticIntentGenerator:
             },
         )
 
-        # Use tempfile to create and manage a temporary file
-        with tempfile.NamedTemporaryFile(suffix=".csv", delete=False) as temp_file:
-            temp_filename = temp_file.name
+        # Write dataframe to the temporary file
+        df.to_csv(dataset_filename, index=False)
+        # Add the file to the artifact
+        artifact.add_file(dataset_filename)
+        # Log the artifact
+        wandb.log_artifact(artifact)
 
-        try:
-            # Write dataframe to the temporary file
-            df.to_csv(temp_filename, index=False)
-            # Add the file to the artifact
-            artifact.add_file(temp_filename)
-            # Log the artifact
-            wandb.log_artifact(artifact)
-
-            return artifact.name
-        finally:
-            # Ensure temp file is removed even if any operation fails
-            if os.path.exists(temp_filename):
-                os.unlink(temp_filename)
+        return artifact.name
 
     def generate(
         self,
         dataset_artifact: str,
+        dataset_filename: str,
         limit: int | None = None,
     ) -> pd.DataFrame:
         """
@@ -191,7 +180,7 @@ class SyntheticIntentGenerator:
 
         # Log and save
         self._log_dataset_stats(df)
-        artifact_name = self._save_to_wandb(df, dataset_artifact)
+        artifact_name = self._save_to_wandb(df, dataset_artifact, dataset_filename)
 
         print(f"Dataset saved as W&B artifact: {artifact_name}")
         return df
