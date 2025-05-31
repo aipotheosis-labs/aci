@@ -400,7 +400,7 @@ async def link_oauth2_account(
     )
 
     path = request.url_for(LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
-    redirect_uri = f"{config.REDIRECT_URI_BASE}{path}"
+    redirect_uri = oauth2_scheme.redirect_url or f"{config.REDIRECT_URI_BASE}{path}"
 
     # create and encode the state payload.
     # NOTE: the state payload is jwt encoded (signed), but it's not encrypted, anyone can decode it
