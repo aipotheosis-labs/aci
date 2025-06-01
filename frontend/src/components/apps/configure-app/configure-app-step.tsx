@@ -346,7 +346,7 @@ export function ConfigureAppStep({
                   <div className="pt-2">
                     <IdDisplay id={effectiveRedirectUrl} />
                   </div>
-                  <div className="flex items-center gap-1 mt-3">
+                  <div className="flex items-center gap-1">
                     <Checkbox
                       checked={isRedirectUrlAdditionConfirmed}
                       onCheckedChange={(checked) =>
