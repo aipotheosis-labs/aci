@@ -2,7 +2,10 @@
   {
     "name": "DISCORD__GET_CURRENT_USER",
     "description": "Get a user object for the current user.",
-    "tags": ["user", "info"],
+    "tags": [
+      "user",
+      "info"
+    ],
     "visibility": "public",
     "active": true,
     "protocol": "rest",
@@ -16,6 +19,153 @@
       "properties": {},
       "required": [],
       "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_USER_GUILDS",
+    "description": "Get a list of guilds the current user is a member of. Returns an array of guild objects, each containing at least id, name, and icon fields.",
+    "tags": [
+      "guilds",
+      "servers"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/users/@me/guilds",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_GUILD_CHANNELS",
+    "description": "Get a list of channels in a guild. Returns an array of channel objects, each containing id, type, and name fields. Channel types: 0 for text channels, 5 for announcement channels, 2 for voice channels, etc.",
+    "tags": [
+      "guilds",
+      "channels"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/guilds/{guild_id}/channels",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "The ID of the guild to get channels from"
+            }
+          },
+          "required": [
+            "guild_id"
+          ],
+          "visible": [
+            "guild_id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_CHANNEL_MESSAGES",
+    "description": "Get messages from a channel. Returns an array of message objects, each containing id, channel_id, author, content, timestamp, attachments, embeds, and other fields.",
+    "tags": [
+      "channels",
+      "messages"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/channels/{channel_id}/messages",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "The ID of the channel to get messages from"
+            }
+          },
+          "required": [
+            "channel_id"
+          ],
+          "visible": [
+            "channel_id"
+          ],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "description": "Maximum number of messages to return (1-100)",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 50
+            },
+            "before": {
+              "type": "string",
+              "description": "Get messages before this message ID (for pagination of older messages)"
+            },
+            "after": {
+              "type": "string",
+              "description": "Get messages after this message ID (for pagination of newer messages)"
+            },
+            "around": {
+              "type": "string",
+              "description": "Get messages around this message ID"
+            }
+          },
+          "required": [],
+          "visible": [
+            "limit",
+            "before",
+            "after",
+            "around"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path",
+        "query"
+      ],
       "additionalProperties": false
     }
   }
