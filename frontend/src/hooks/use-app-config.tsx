@@ -54,6 +54,7 @@ type CreateAppConfigParams = {
     oauth2?: {
       client_id: string;
       client_secret: string;
+      redirect_url?: string;
     } | null;
   };
 };

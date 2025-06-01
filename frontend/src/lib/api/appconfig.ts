@@ -64,6 +64,7 @@ export async function createAppConfig(
     oauth2?: {
       client_id: string;
       client_secret: string;
+      redirect_url?: string;
     } | null;
   },
 ): Promise<AppConfig> {
