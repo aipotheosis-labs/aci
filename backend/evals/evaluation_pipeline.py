@@ -86,6 +86,7 @@ class EvaluationPipeline:
 
         Args:
             dataset_artifact: Name of the artifact to save the dataset to
+            dataset_filename: Filename to save the dataset to
             generation_limit: Optional limit on number of samples to generate
 
         Returns:
@@ -113,6 +114,7 @@ class EvaluationPipeline:
 
         Args:
             dataset_artifact: Name of the dataset artifact to evaluate
+            dataset_filename: Filename of the dataset in the artifact
             evaluation_samples: Optional limit on number of samples to evaluate
             df: Optional DataFrame containing the dataset. If None, load from dataset_artifact
 
@@ -157,9 +159,10 @@ class EvaluationPipeline:
         Run the evaluation pipeline.
 
         Args:
+            dataset_artifact: Name of dataset artifact to use
+            dataset_filename: Filename to save/load the dataset to/from
             generate_data: Whether to generate new data
             evaluate_data: Whether to evaluate data
-            dataset_artifact: Name of dataset artifact to use
             generation_limit: Optional limit on number of samples to generate
             evaluation_samples: Optional limit on number of samples to evaluate
 

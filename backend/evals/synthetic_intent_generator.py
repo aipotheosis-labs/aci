@@ -116,6 +116,7 @@ class SyntheticIntentGenerator:
         Args:
             df: DataFrame containing the generated dataset
             dataset_artifact: Name for the artifact
+            dataset_filename: Filename to save the dataset to
 
         Returns:
             The artifact name for reference
@@ -158,10 +159,12 @@ class SyntheticIntentGenerator:
         Generate synthetic intents and save them.
 
         Args:
+            dataset_artifact: Name of the artifact to save the dataset to
+            dataset_filename: Filename to save the dataset to
             limit: Optional limit on number of samples to generate
 
         Returns:
-            The name of the saved artifact
+            DataFrame containing the generated dataset
         """
         # Fetch data
         df = self._fetch_app_function_data()
