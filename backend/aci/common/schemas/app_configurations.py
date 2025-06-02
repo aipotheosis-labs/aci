@@ -66,7 +66,7 @@ class AppConfigurationCreate(BaseModel):
 
 
 class AppConfigurationUpdate(BaseModel):
-    # TODO: we currently don't support changing security_scheme and security_scheme_overrides (e.g., client_id, client_secret, redirect_url).
+    # TODO: we currently don't support updating security_scheme and security_scheme_overrides (e.g., client_id, client_secret, redirect_url).
     # it might be useful to support updating custom redirect_url.
     enabled: bool | None = None
     all_functions_enabled: bool | None = None
