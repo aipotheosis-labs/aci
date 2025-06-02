@@ -43,11 +43,12 @@ export const ConfigureAppFormSchema = z.object({
     .string()
     .optional()
     .default("")
+    .transform((value) => value.trim())
     .refine(
       (value) => {
-        if (!value || value.trim() === "") return true; // Empty is valid (optional field)
+        if (!value) return true; // Empty is valid (optional field)
         try {
-          const url = new URL(value.trim());
+          const url = new URL(value);
           return url.protocol === "http:" || url.protocol === "https:";
         } catch {
           return false;
@@ -59,8 +60,8 @@ export const ConfigureAppFormSchema = z.object({
     )
     .refine(
       (value) => {
-        if (!value || value.trim() === "") return true;
-        return value.trim() !== defaultRedirectUrl;
+        if (!value) return true;
+        return value !== defaultRedirectUrl;
       },
       // to catch likely user error
       {
