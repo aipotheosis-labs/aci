@@ -446,3 +446,29 @@ class MaxUniqueLinkedAccountOwnerIdsReached(ACIException):
             message=message,
             error_code=status.HTTP_403_FORBIDDEN,
         )
+
+
+class ProjectCreationError(ACIException):
+    """
+    Exception raised when there is an error creating a project
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Failed to create project",
+            message=message,
+            error_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+class ProjectIsLastInOrgError(ACIException):
+    """
+    Exception raised when a project cannot be deleted
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Project is the last in the organization",
+            message=message,
+            error_code=status.HTTP_409_CONFLICT,
+        )

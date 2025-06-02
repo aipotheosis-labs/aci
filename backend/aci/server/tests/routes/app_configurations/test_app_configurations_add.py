@@ -1,3 +1,4 @@
+import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -41,10 +42,17 @@ def test_create_app_configuration(
     assert str(response.json()["error"]).startswith("App configuration already exists")
 
 
+# use parametrize to test two cases:
+# 1. no redirect_url
+# 2. with redirect_url
+@pytest.mark.parametrize(
+    "redirect_url", [None, "https://api.user-app.com/v1/linked-accounts/oauth2/callback"]
+)
 def test_create_app_configuration_with_security_scheme_override(
     test_client: TestClient,
     dummy_api_key_1: str,
     dummy_apps: list[App],
+    redirect_url: str | None,
 ) -> None:
     dummy_app = dummy_apps[0]
     body = AppConfigurationCreate.model_validate(
@@ -52,7 +60,11 @@ def test_create_app_configuration_with_security_scheme_override(
             "app_name": dummy_app.name,
             "security_scheme": SecurityScheme.OAUTH2,
             "security_scheme_overrides": {
-                "oauth2": {"client_id": "123456", "client_secret": "abcdef"}
+                "oauth2": {
+                    "client_id": "123456",
+                    "client_secret": "abcdef",
+                    "redirect_url": redirect_url,
+                }
             },
         }
     )
@@ -68,6 +80,10 @@ def test_create_app_configuration_with_security_scheme_override(
     assert app_configuration.security_scheme_overrides.oauth2.client_secret == "******", (
         "client_secret should be redacted"
     )
+    if redirect_url:
+        assert app_configuration.security_scheme_overrides.oauth2.redirect_url == redirect_url
+    else:
+        assert app_configuration.security_scheme_overrides.oauth2.redirect_url is None
 
 
 def test_create_app_configuration_security_scheme_not_supported(

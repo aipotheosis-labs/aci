@@ -201,3 +201,67 @@ def test_link_oauth2_account_non_existent_app_configuration(
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert str(response.json()["error"]).startswith("App configuration not found")
+
+
+@pytest.mark.parametrize(
+    "redirect_url", [None, "https://api.user-app.com/v1/linked-accounts/oauth2/callback"]
+)
+def test_link_oauth2_account_under_app_config_with_custom_redirect_url(
+    test_client: TestClient,
+    dummy_api_key_1: str,
+    dummy_app_google: App,
+    redirect_url: str | None,
+) -> None:
+    # create app configuration
+    app_configuration_create = AppConfigurationCreate(
+        app_name=dummy_app_google.name,
+        security_scheme=SecurityScheme.OAUTH2,
+        security_scheme_overrides=SecuritySchemeOverrides(
+            oauth2=OAuth2SchemeOverride(
+                client_id="custom_client_id",
+                client_secret="custom_client_secret",
+                redirect_url=redirect_url,
+            )
+        ),
+    )
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_APP_CONFIGURATIONS}",
+        json=app_configuration_create.model_dump(mode="json"),
+        headers={"x-api-key": dummy_api_key_1},
+    )
+    assert response.status_code == status.HTTP_200_OK
+
+    # get oauth2 account linking URL
+    linked_account_oauth2_create = LinkedAccountOAuth2Create(
+        app_name=dummy_app_google.name,
+        linked_account_owner_id="test_link_oauth2_account_with_custom_redirect_url",
+    )
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2",
+        params=linked_account_oauth2_create.model_dump(mode="json"),
+        headers={"x-api-key": dummy_api_key_1},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    authorization_url = str(response.json()["url"])
+    assert authorization_url.startswith(MOCK_GOOGLE_AUTH_REDIRECT_URI_PREFIX)
+    qs_params = parse_qs(urlparse(authorization_url).query)
+
+    # validate redirect_uri in authorization url and state are correct
+    redirect_uri_in_authorization_url = qs_params.get("redirect_uri", [None])[0]
+    state_jwt = qs_params.get("state", [None])[0]
+    assert redirect_uri_in_authorization_url is not None
+    assert state_jwt is not None
+    state = LinkedAccountOAuth2CreateState.model_validate(jwt.decode(state_jwt, config.SIGNING_KEY))
+
+    if redirect_url:
+        assert redirect_uri_in_authorization_url == redirect_url
+        assert state.redirect_uri == redirect_url
+    else:
+        assert (
+            redirect_uri_in_authorization_url
+            == f"{config.REDIRECT_URI_BASE}{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback"
+        )
+        assert (
+            state.redirect_uri
+            == f"{config.REDIRECT_URI_BASE}{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback"
+        )

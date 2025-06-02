@@ -7,7 +7,7 @@ COPY ./pyproject.toml ./uv.lock /workdir/
 RUN uv sync --no-dev --no-install-project
 
 ENV PATH="/workdir/.venv/bin:$PATH"
-ENV PYTHONPATH=/workdir:${PYTHONPATH}
+ENV PYTHONPATH=/workdir
 
 # .env files will be skipped by default specified in .dockerignore
 COPY ./aci/server /workdir/aci/server

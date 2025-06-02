@@ -15,6 +15,7 @@ from aci.common.db.sql_models import Agent, APIKey, Project
 from aci.common.enums import APIKeyStatus, Visibility
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.agent import AgentUpdate, ValidInstruction
+from aci.common.schemas.project import ProjectUpdate
 
 logger = get_logger(__name__)
 
@@ -68,6 +69,18 @@ def get_project_by_api_key_id(db_session: Session, api_key_id: UUID) -> Project 
     ).scalar_one_or_none()
 
     return project
+
+
+def delete_project(db_session: Session, project_id: UUID) -> None:
+    # Get the project to delete
+    project = get_project(db_session, project_id)
+
+    if not project:
+        return
+
+    # Delete the project which will cascade delete all related records
+    db_session.delete(project)
+    db_session.flush()
 
 
 def set_project_visibility_access(
@@ -245,3 +258,20 @@ def get_all_api_key_ids_for_project(db_session: Session, project_id: UUID) -> li
             project_api_key_ids.append(api_key.id)
 
     return project_api_key_ids
+
+
+def update_project(
+    db_session: Session,
+    project: Project,
+    update: ProjectUpdate,
+) -> Project:
+    """
+    Update Project record
+    """
+    if update.name is not None:
+        project.name = update.name
+
+    db_session.flush()
+    db_session.refresh(project)
+
+    return project

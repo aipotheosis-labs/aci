@@ -389,6 +389,8 @@ EVALS_OPENAI_KEY=<your_openai_api_key>
 EVALS_WANDB_KEY=<your_wandb_api_key>
 ```
 
+The evaluation results will be logged to [Weights & Biases](https://wandb.ai/aipotheosis-labs/function-search-evaluation) where you can track metrics, view experiment configurations, and analyze the results.
+
 Then, seed the database with all apps and mock credentials:
 
 ```bash
@@ -414,7 +416,10 @@ Additional flags:
 
 ```bash
 # Specify a custom dataset artifact name (default: "synthetic_intent_dataset")
-docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset my_custom_dataset
+docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset_artifact my_custom_artifact
+
+# Specify the filename saved on the dataset artifact
+docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset_filename my_custom_dataset.csv
 
 # Limit the number of samples to generate
 docker compose exec runner python -m evals.evaluation_pipeline --mode generate-only --generation-limit 50

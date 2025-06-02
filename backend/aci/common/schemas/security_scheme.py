@@ -1,6 +1,6 @@
 from typing import Literal, TypeVar
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from aci.common.enums import HttpLocation
 
@@ -42,11 +42,13 @@ class OAuth2Scheme(BaseModel):
     client_id: str = Field(
         ...,
         min_length=1,
+        max_length=2048,
         description="The client ID of the OAuth2 client (provided by ACI) used for the app",
     )
     client_secret: str = Field(
         ...,
         min_length=1,
+        max_length=2048,
         description="The client secret of the OAuth2 client (provided by ACI) used for the app",
     )
     scope: str = Field(
@@ -71,6 +73,12 @@ class OAuth2Scheme(BaseModel):
         description="The authentication method for the OAuth2 token endpoint, e.g., 'client_secret_post' "
         "for some providers that require client_id/client_secret to be sent in the body of the token request, like Hubspot",
     )
+    # NOTE: For now this field should not be provided when creating a new OAuth2 App (because the current server redirect URL should be used,
+    # which is constructed dynamically).
+    # It only makes sense for user to provide it in OAuth2SchemeOverride if they want whitelabeling.
+    redirect_url: str | None = Field(
+        default=None, min_length=1, max_length=2048, description="Redirect URL for OAuth2 callback."
+    )
 
 
 # NOTE: need to show these fields for custom oauth2 app feature.
@@ -91,14 +99,39 @@ class OAuth2SchemeOverride(BaseModel):
     client_id: str = Field(
         ...,
         min_length=1,
+        max_length=2048,
         description="The client ID of the OAuth2 client used for the app",
     )
     client_secret: str = Field(
         ...,
         min_length=1,
+        max_length=2048,
         description="The client secret of the OAuth2 client used for the app",
     )
-    # TODO: will support "scope" and "redirect_uri" in the future, both will be optional
+    # NOTE: for some OAuth2 app such as google apps, it will still show "ACI.dev" on the authorization page even if the user provides their own OAuth2 app.
+    # It's because the domains shown there is determined by the redirect URL.
+    # If user needs complete whitelabeling, they need to provide a custom redirect URL (and set it as redirect URL in their OAuth2 app)
+    # and forward the OAuth2 callback response to ACI.dev's callback endpoint.
+    # e.g, https://my-app.com/v1/linked-accounts/oauth2/callback (set as redirect URL in OAuth2 app) --forward--> https://api.aci.dev/v1/linked-accounts/oauth2/callback
+    redirect_url: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=2048,
+        description="Custom redirect URL for OAuth2 callback for complete whitelabeling. "
+        "If not provided, ACI.dev's server redirect URL will be used. "
+        "When user uses a custom redirect URL, their backend should forward the OAuth2 callback response to ACI.dev's callback endpoint.",
+    )
+
+    @field_validator("redirect_url")
+    def validate_redirect_url(cls, v: str | None) -> str | None:
+        if v is None:
+            return v
+        # sanity check: must be http or https
+        if not (v.startswith("http") or v.startswith("https")):
+            raise ValueError("Redirect URL must start with http or https")
+        return v
+
+    # TODO: might need to support "scope" in the future
 
 
 class NoAuthScheme(BaseModel, extra="forbid"):

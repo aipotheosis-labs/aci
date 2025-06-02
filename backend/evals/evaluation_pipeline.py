@@ -12,6 +12,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 DEFAULT_DATASET_ARTIFACT = "synthetic_intent_dataset"
+DEFAULT_DATASET_FILENAME = "synthetic_intents.csv"
 DEFAULT_EVALUATION_MODEL = "dual-encoder-text-embedding-1024"
 
 
@@ -60,26 +61,32 @@ class EvaluationPipeline:
             api_key=search_api_key,
         )
 
-    def _load_dataset_from_wandb(self, artifact_name: str) -> pd.DataFrame:
+    def _load_dataset_from_wandb(self, artifact_name: str, dataset_filename: str) -> pd.DataFrame:
         """
         Load a dataset from a W&B artifact.
 
         Args:
             artifact_name: Name of the W&B artifact
-
+            dataset_filename: Filename to save the dataset to
         Returns:
             DataFrame containing the dataset
         """
         artifact = wandb.use_artifact(f"{artifact_name}:latest")
         artifact_dir = artifact.download()
-        return pd.read_csv(os.path.join(artifact_dir, "temp_dataset.csv"))
+        return pd.read_csv(os.path.join(artifact_dir, dataset_filename))
 
-    def _generate(self, dataset_artifact: str, generation_limit: int | None = None) -> pd.DataFrame:
+    def _generate(
+        self,
+        dataset_artifact: str,
+        dataset_filename: str,
+        generation_limit: int | None = None,
+    ) -> pd.DataFrame:
         """
         Generate synthetic intents.
 
         Args:
             dataset_artifact: Name of the artifact to save the dataset to
+            dataset_filename: Filename to save the dataset to
             generation_limit: Optional limit on number of samples to generate
 
         Returns:
@@ -88,6 +95,7 @@ class EvaluationPipeline:
         logger.info("Generating synthetic intents...")
         df = self.generator.generate(
             dataset_artifact=dataset_artifact,
+            dataset_filename=dataset_filename,
             limit=generation_limit,
         )
 
@@ -97,6 +105,7 @@ class EvaluationPipeline:
     def _evaluate(
         self,
         dataset_artifact: str,
+        dataset_filename: str,
         evaluation_samples: int | None = None,
         df: pd.DataFrame | None = None,
     ) -> dict:
@@ -105,6 +114,7 @@ class EvaluationPipeline:
 
         Args:
             dataset_artifact: Name of the dataset artifact to evaluate
+            dataset_filename: Filename of the dataset in the artifact
             evaluation_samples: Optional limit on number of samples to evaluate
             df: Optional DataFrame containing the dataset. If None, load from dataset_artifact
 
@@ -113,7 +123,7 @@ class EvaluationPipeline:
         """
         if df is None:
             logger.info(f"Loading dataset from artifact: {dataset_artifact}")
-            df = self._load_dataset_from_wandb(dataset_artifact)
+            df = self._load_dataset_from_wandb(dataset_artifact, dataset_filename)
 
         # Evaluate search performance
         logger.info("Evaluating search performance...")
@@ -138,9 +148,10 @@ class EvaluationPipeline:
 
     def run(
         self,
+        dataset_artifact: str,
+        dataset_filename: str,
         generate_data: bool = False,
         evaluate_data: bool = True,
-        dataset_artifact: str = DEFAULT_DATASET_ARTIFACT,
         generation_limit: int | None = None,
         evaluation_samples: int | None = None,
     ) -> None:
@@ -148,9 +159,10 @@ class EvaluationPipeline:
         Run the evaluation pipeline.
 
         Args:
+            dataset_artifact: Name of dataset artifact to use
+            dataset_filename: Filename to save/load the dataset to/from
             generate_data: Whether to generate new data
             evaluate_data: Whether to evaluate data
-            dataset_artifact: Name of dataset artifact to use
             generation_limit: Optional limit on number of samples to generate
             evaluation_samples: Optional limit on number of samples to evaluate
 
@@ -169,6 +181,7 @@ class EvaluationPipeline:
                 "evaluation_model": DEFAULT_EVALUATION_MODEL,
                 "evaluation_samples": evaluation_samples,
                 "dataset_artifact": dataset_artifact,
+                "dataset_filename": dataset_filename,
             },
         )
 
@@ -177,12 +190,14 @@ class EvaluationPipeline:
             if generate_data:
                 df = self._generate(
                     dataset_artifact=dataset_artifact,
+                    dataset_filename=dataset_filename,
                     generation_limit=generation_limit,
                 )
 
             if evaluate_data:
                 self._evaluate(
                     dataset_artifact=dataset_artifact,
+                    dataset_filename=dataset_filename,
                     evaluation_samples=evaluation_samples,
                     df=df,
                 )
@@ -199,15 +214,26 @@ class EvaluationPipeline:
     required=True,
 )
 @click.option(
-    "--dataset",
+    "--dataset-artifact",
     default=DEFAULT_DATASET_ARTIFACT,
     help="Name of the W&B dataset artifact to use",
+    show_default=True,
+)
+@click.option(
+    "--dataset-filename",
+    default=DEFAULT_DATASET_FILENAME,
+    type=str,
+    help="Filename to save the generated dataset to",
     show_default=True,
 )
 @click.option("--generation-limit", type=int, help="Limit number of samples to generate")
 @click.option("--evaluation-samples", type=int, help="Limit number of samples to evaluate")
 def main(
-    mode: str, dataset: str, generation_limit: int | None, evaluation_samples: int | None
+    mode: str,
+    dataset_artifact: str,
+    generation_limit: int | None,
+    evaluation_samples: int | None,
+    dataset_filename: str,
 ) -> None:
     """Main entry point for the evaluation pipeline."""
     # Get API keys from environment
@@ -235,9 +261,10 @@ def main(
 
     # Run pipeline
     pipeline.run(
+        dataset_artifact=dataset_artifact,
+        dataset_filename=dataset_filename,
         generate_data=generate_data,
         evaluate_data=evaluate_data,
-        dataset_artifact=dataset,
         generation_limit=generation_limit,
         evaluation_samples=evaluation_samples,
     )
