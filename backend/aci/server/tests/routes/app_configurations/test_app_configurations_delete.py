@@ -54,7 +54,9 @@ def test_delete_app_configuration(
         db_session, project_id, app_name, linked_account_owner_id
     )
     assert linked_account is None, "linked account should be deleted"
-    updated_agent = crud.agents.get_agent_by_id(db_session, dummy_agent_1_with_all_apps_allowed.id)
+    updated_agent = crud.projects.get_agent_by_id(
+        db_session, dummy_agent_1_with_all_apps_allowed.id
+    )
     assert updated_agent is not None, "agent should exist"
     assert app_name not in updated_agent.allowed_apps, (
         "app should no longer be in the agent's allowed apps list"

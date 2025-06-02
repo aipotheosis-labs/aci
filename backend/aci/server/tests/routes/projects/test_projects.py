@@ -293,7 +293,7 @@ def test_delete_project_cascading_deletion(
     db_session.commit()
 
     # Create an agent using CRUD
-    crud.agents.create_agent(
+    crud.projects.create_agent(
         db_session,
         project_id,
         "new test agent",

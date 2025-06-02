@@ -62,7 +62,7 @@ def delete_app(
         app_configurations = crud.app_configurations.get_app_configurations_by_app_id(
             db_session, app.id
         )
-        agents = crud.agents.get_agents_whose_allowed_apps_contains(db_session, app_name)
+        agents = crud.projects.get_agents_whose_allowed_apps_contains(db_session, app_name)
 
         # Get linked accounts
         linked_accounts = crud.linked_accounts.get_linked_accounts_by_app_id(db_session, app.id)

@@ -171,7 +171,7 @@ def dummy_project_2(db_session: Session, dummy_user: DummyUser) -> Generator[Pro
 
 @pytest.fixture(scope="function")
 def dummy_api_key_2(db_session: Session, dummy_project_2: Project) -> Generator[str, None, None]:
-    dummy_agent = crud.agents.create_agent(
+    dummy_agent = crud.projects.create_agent(
         db_session,
         project_id=dummy_project_2.id,
         name="Dummy Agent 2",
@@ -187,7 +187,7 @@ def dummy_api_key_2(db_session: Session, dummy_project_2: Project) -> Generator[
 def dummy_agent_1_with_no_apps_allowed(
     db_session: Session, dummy_project_1: Project
 ) -> Generator[Agent, None, None]:
-    dummy_agent_1_with_no_apps_allowed = crud.agents.create_agent(
+    dummy_agent_1_with_no_apps_allowed = crud.projects.create_agent(
         db_session,
         project_id=dummy_project_1.id,
         name="Dummy Agent 1",

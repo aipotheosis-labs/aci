@@ -169,7 +169,7 @@ async def delete_app_configuration(
     )
 
     # 3. delete this App from all agents' allowed_apps if exists
-    crud.agents.delete_app_from_agents_allowed_apps(
+    crud.projects.delete_app_from_agents_allowed_apps(
         context.db_session, context.project.id, app_name
     )
 

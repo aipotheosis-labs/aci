@@ -80,7 +80,7 @@ def update_agent_helper(
     skip_dry_run: bool,
 ) -> UUID:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
-        agent = crud.agents.get_agent_by_id(db_session, agent_id)
+        agent = crud.projects.get_agent_by_id(db_session, agent_id)
         if not agent:
             raise AgentNotFound(f"agent={agent_id} not found.")
 
@@ -91,7 +91,7 @@ def update_agent_helper(
             custom_instructions=custom_instructions,
         )
 
-        updated_agent = crud.agents.update_agent(db_session, agent, update)
+        updated_agent = crud.projects.update_agent(db_session, agent, update)
 
         if not skip_dry_run:
             console.rule(

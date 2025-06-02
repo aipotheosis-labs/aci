@@ -84,7 +84,7 @@ def create_agent_helper(
     skip_dry_run: bool,
 ) -> UUID:
     with utils.create_db_session(config.DB_FULL_URL) as db_session:
-        agent = crud.agents.create_agent(
+        agent = crud.projects.create_agent(
             db_session,
             project_id,
             name,
