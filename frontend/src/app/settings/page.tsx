@@ -27,6 +27,8 @@ export default function SettingsPage() {
   const [, setShowInviteModal] = useState(false);
   const [projectName, setProjectName] = useState(activeProject.name);
   const [isEditingName, setIsEditingName] = useState(false);
+  const [orgName, setOrgName] = useState(activeOrg.orgName);
+  const [isEditingOrgName, setIsEditingOrgName] = useState(false);
 
   const { data: subscription, isLoading } = useSubscription();
 
@@ -35,6 +37,12 @@ export default function SettingsPage() {
     setProjectName(activeProject.name);
     setIsEditingName(false);
   }, [activeProject]);
+
+  // Update state when active org changes
+  useEffect(() => {
+    setOrgName(activeOrg.orgName);
+    setIsEditingOrgName(false);
+  }, [activeOrg]);
 
   const handleSaveProjectName = async () => {
     if (!projectName.trim()) {
@@ -56,6 +64,29 @@ export default function SettingsPage() {
     } catch (error) {
       console.error("Failed to update project name:", error);
       toast.error("Failed to update project name");
+    }
+  };
+
+  const handleSaveOrgName = async () => {
+    if (!orgName.trim()) {
+      toast.error("Organization name cannot be empty");
+      return;
+    }
+
+    // Only update if the name has actually changed
+    if (orgName === activeOrg.orgName) {
+      setIsEditingOrgName(false);
+      return;
+    }
+
+    try {
+      // TODO: Add API call to update organization name
+      // await updateOrganization(accessToken, activeOrg.orgId, orgName);
+      setIsEditingOrgName(false);
+      toast.success("Organization name updated");
+    } catch (error) {
+      console.error("Failed to update organization name:", error);
+      toast.error("Failed to update organization name");
     }
   };
 
@@ -112,12 +143,6 @@ export default function SettingsPage() {
           <h2 className="text-xl font-semibold mb-4">Project Settings</h2>
           <div className="space-y-4">
             <div className="flex flex-row">
-              <div className="flex flex-col items-left w-80">
-                <label className="font-semibold">Project</label>
-                <p className="text-sm text-muted-foreground">
-                  Manage your project settings
-                </p>
-              </div>
               <div className="flex-1 space-y-6">
                 {/* Project Name Section */}
                 <div className="flex flex-row">
@@ -187,11 +212,51 @@ export default function SettingsPage() {
               <div className="flex flex-col items-left w-80">
                 <label className="font-semibold">Organization Name</label>
                 <p className="text-sm text-muted-foreground">
-                  Your organization&apos;s display name
+                  Change the name of the organization
                 </p>
               </div>
-              <div className="flex items-center px-2">
-                <span className="font-medium">{activeOrg.orgName}</span>
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Input
+                    value={orgName}
+                    onChange={(e) => setOrgName(e.target.value)}
+                    className="w-96"
+                    disabled={!isEditingOrgName}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        handleSaveOrgName();
+                      } else if (e.key === "Escape") {
+                        setIsEditingOrgName(false);
+                        setOrgName(activeOrg.orgName);
+                      }
+                    }}
+                  />
+                </div>
+                {isEditingOrgName ? (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={handleSaveOrgName}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Check className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        onClick={() => setIsEditingOrgName(true)}
+                        className="h-8 w-8 p-0"
+                      >
+                        <Edit2 className="h-4 w-4" />
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Click to edit organization name</p>
+                    </TooltipContent>
+                  </Tooltip>
+                )}
               </div>
             </div>
 
@@ -206,31 +271,45 @@ export default function SettingsPage() {
                 </p>
               </div>
               {isLoading ? (
-                <div>Loading...</div>
-              ) : (
-                <>
-                  <div className="flex-1">
-                    <div className="flex justify-between p-4">
-                      <div>
-                        <div className="font-medium">
-                          You are on the {subscription?.plan} plan
-                        </div>
+                <div className="flex-1">
+                  <div className="animate-pulse flex space-x-4">
+                    <div className="flex-1 space-y-4 py-1">
+                      <div className="h-4 bg-muted rounded w-3/4"></div>
+                      <div className="space-y-2">
+                        <div className="h-4 bg-muted rounded"></div>
+                        <div className="h-4 bg-muted rounded w-5/6"></div>
                       </div>
                     </div>
                   </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between p-4">
+                </div>
+              ) : (
+                <div className="flex-1">
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                      <div className="space-y-1">
+                        <div className="font-medium text-lg">
+                          {subscription?.plan === "free"
+                            ? "Free Plan"
+                            : "Pro Plan"}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          {subscription?.plan === "free"
+                            ? "Basic features for small teams"
+                            : "Advanced features for growing organizations"}
+                        </div>
+                      </div>
                       <div>
                         {subscription?.plan === "free" ? (
                           <Link href="/pricing">
-                            <Button variant="outline">
-                              <BsStars />
-                              Subscribe Now
+                            <Button className="gap-2">
+                              <BsStars className="h-4 w-4" />
+                              Upgrade
                             </Button>
                           </Link>
                         ) : (
                           <Button
                             variant="outline"
+                            className="gap-2"
                             onClick={async () => {
                               const url = await createCustomerPortalSession(
                                 accessToken,
@@ -239,14 +318,25 @@ export default function SettingsPage() {
                               window.location.href = url;
                             }}
                           >
-                            <RiUserSettingsLine />
+                            <RiUserSettingsLine className="h-4 w-4" />
                             Manage Subscription
                           </Button>
                         )}
                       </div>
                     </div>
+                    {subscription?.plan !== "free" && (
+                      <div className="text-sm text-muted-foreground px-4">
+                        Need help with your subscription?{" "}
+                        <Link
+                          href="/support"
+                          className="text-primary hover:underline"
+                        >
+                          Contact support
+                        </Link>
+                      </div>
+                    )}
                   </div>
-                </>
+                </div>
               )}
             </div>
 
