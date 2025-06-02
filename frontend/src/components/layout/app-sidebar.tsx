@@ -24,11 +24,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { ProjectSelector } from "./project-selector";
 import { PiStorefront } from "react-icons/pi";
-import {
-  RiSettings3Line,
-  RiSettings4Line,
-  RiLinkUnlinkM,
-} from "react-icons/ri";
+import { RiSettings3Line, RiLinkUnlinkM } from "react-icons/ri";
 import { AiOutlineExperiment } from "react-icons/ai";
 import { HiOutlineChatBubbleBottomCenterText } from "react-icons/hi2";
 
@@ -40,11 +36,6 @@ import {
 
 // Export sidebar items so they can be used in header
 export const sidebarItems = [
-  // {
-  //   title: "Home",
-  //   url: `/home`,
-  //   icon: GoHome,
-  // },
   {
     title: "App Store",
     url: `/apps`,
@@ -78,18 +69,11 @@ export const sidebarItems = [
 ];
 
 // Add settings routes to be accessible in header
-export const settingsItems = [
-  {
-    title: "Manage Project",
-    url: "/project-setting",
-    icon: RiSettings3Line,
-  },
-  {
-    title: "Account Settings",
-    url: "/account",
-    icon: RiSettings4Line,
-  },
-];
+export const settingsItem = {
+  title: "Settings",
+  url: "/settings",
+  icon: RiSettings3Line,
+};
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -191,72 +175,32 @@ export function AppSidebar() {
               <TooltipTrigger asChild>
                 <SidebarMenuButton asChild>
                   <Link
-                    href={settingsItems[0].url}
+                    href={settingsItem.url}
                     className={cn(
                       "flex items-center gap-3 p-4 transition-colors",
                       isCollapsed && "justify-center",
-                      pathname === settingsItems[0].url &&
+                      pathname === settingsItem.url &&
                         "bg-primary/10 text-primary font-medium",
                     )}
                   >
                     {(() => {
-                      const IconComponent = settingsItems[0].icon;
+                      const IconComponent = settingsItem.icon;
                       return (
                         <IconComponent
                           className={cn(
                             "h-5 w-5 flex-shrink-0",
-                            pathname === settingsItems[0].url && "text-primary",
+                            pathname === settingsItem.url && "text-primary",
                           )}
                         />
                       );
                     })()}
-                    {!isCollapsed && <span>{settingsItems[0].title}</span>}
+                    {!isCollapsed && <span>{settingsItem.title}</span>}
                   </Link>
                 </SidebarMenuButton>
               </TooltipTrigger>
               {isCollapsed && (
                 <TooltipContent side="right">
-                  {settingsItems[0].title}
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </SidebarMenuItem>
-        </SidebarMenu>
-
-        <Separator />
-
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <SidebarMenuButton asChild>
-                  <Link
-                    href={settingsItems[1].url}
-                    className={cn(
-                      "flex items-center gap-3 p-4 transition-colors",
-                      isCollapsed && "justify-center",
-                      pathname === settingsItems[1].url &&
-                        "bg-primary/10 text-primary font-medium",
-                    )}
-                  >
-                    {(() => {
-                      const IconComponent = settingsItems[1].icon;
-                      return (
-                        <IconComponent
-                          className={cn(
-                            "h-5 w-5 flex-shrink-0",
-                            pathname === settingsItems[1].url && "text-primary",
-                          )}
-                        />
-                      );
-                    })()}
-                    {!isCollapsed && <span>{settingsItems[1].title}</span>}
-                  </Link>
-                </SidebarMenuButton>
-              </TooltipTrigger>
-              {isCollapsed && (
-                <TooltipContent side="right">
-                  {settingsItems[1].title}
+                  {settingsItem.title}
                 </TooltipContent>
               )}
             </Tooltip>
