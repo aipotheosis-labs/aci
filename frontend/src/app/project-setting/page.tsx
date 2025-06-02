@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { updateProject } from "@/lib/api/project";
 import { Button } from "@/components/ui/button";
+import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 
 export default function ProjectSettingPage() {
   const { activeProject } = useMetaInfo();
@@ -133,6 +134,26 @@ export default function ProjectSettingPage() {
           </div>
           <div className="flex items-center px-2">
             <IdDisplay id={activeProject.id} dim={false} />
+          </div>
+        </div>
+        <Separator />
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold mb-4">Danger Zone</h2>
+          <div className="border border-red-200 rounded-md bg-red-50">
+            <div className="p-4 flex items-center justify-between">
+              <div>
+                <h3 className="font-medium">Delete this project</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  Once you delete a project, there is no going back. This action
+                  permanently deletes the project and all related data.
+                </p>
+              </div>
+              <DeleteProjectDialog
+                accessToken={accessToken}
+                projectId={activeProject.id}
+                projectName={activeProject.name}
+              />
+            </div>
           </div>
         </div>
       </div>
