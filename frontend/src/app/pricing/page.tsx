@@ -28,7 +28,7 @@ const tiers = [
     priceYearly: "$0",
     description: "Perfect for getting started & simple projects.",
     features: [
-      "2 Projects",
+      "1 Project",
       "10 Unique End Users",
       "1K API calls/month",
       "5 Agent Credentials",
