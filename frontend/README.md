@@ -45,7 +45,7 @@ The Dev Portal enables developers to create and manage their projects efficientl
 
    (Note: This repo uses Next.js 15, which requires React 19 that is
    [stabilized in Dec 05, 2024](https://react.dev/blog/2024/12/05/react-19).
-   Some libraries are stilling upgrading to React 19, so we need to use the
+   Some libraries are still upgrading to React 19, so we need to use the
    `--legacy-peer-deps` flag in the mean time.)
 
 1. **Configure Environment Variables:** Copy `.env.example` to `.env`

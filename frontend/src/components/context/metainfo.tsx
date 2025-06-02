@@ -84,17 +84,7 @@ export const MetaInfoProvider = withRequiredAuthInfo<MetaInfoProviderProps>(
         activeOrg && accessToken
           ? metaKeys.projects(activeOrg.orgId)
           : ["projects"],
-      queryFn: async () => {
-        const fetchedProjects = await getProjects(
-          accessToken,
-          activeOrg!.orgId,
-        );
-        // Sort projects by creation date (oldest first)
-        return [...fetchedProjects].sort(
-          (a, b) =>
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
-        );
-      },
+      queryFn: () => getProjects(accessToken, activeOrg!.orgId),
       enabled: !!activeOrg && !!accessToken,
       retry: 2,
       retryDelay: 1000,
@@ -102,25 +92,10 @@ export const MetaInfoProvider = withRequiredAuthInfo<MetaInfoProviderProps>(
 
     useEffect(() => {
       if (projects.length > 0) {
-        const savedProjectId = localStorage.getItem(
-          `activeProject_${activeOrg?.orgId}`,
-        );
-        const savedProject = savedProjectId
-          ? projects.find((p) => p.id === savedProjectId)
-          : null;
-
-        setActiveProject(savedProject || projects[0]);
+        // TODO: get active project from local storage
+        setActiveProject(projects[0]);
       }
-    }, [projects, activeOrg]);
-
-    useEffect(() => {
-      if (activeProject && activeOrg) {
-        localStorage.setItem(
-          `activeProject_${activeOrg.orgId}`,
-          activeProject.id,
-        );
-      }
-    }, [activeProject, activeOrg]);
+    }, [projects]);
 
     const reloadActiveProject = useCallback(async () => {
       if (activeOrg && accessToken) {
