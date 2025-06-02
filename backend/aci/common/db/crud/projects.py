@@ -9,6 +9,7 @@ from uuid import UUID
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
+from aci.common import encryption
 from aci.common.db.crud.agents import get_agents_by_project, get_api_key_by_agent_id
 from aci.common.db.sql_models import Agent, APIKey, Project
 from aci.common.enums import Visibility
@@ -118,3 +119,26 @@ def get_all_api_key_ids_for_project(db_session: Session, project_id: UUID) -> li
             project_api_key_ids.append(api_key.id)
 
     return project_api_key_ids
+
+
+def get_request_context_by_api_key(
+    db_session: Session, key: str
+) -> tuple[UUID | None, UUID | None, UUID | None, UUID | None]:
+    """
+    Get project_id, agent_id, api_key_id, and org_id in a single query given an API key string.
+    Returns a tuple of (api_key_id, agent_id, project_id, org_id) - any of which can be None if not found.
+    """
+    key_hmac = encryption.hmac_sha256(key)
+
+    result = db_session.execute(
+        select(APIKey.id, Agent.id, Project.id, Project.org_id)
+        .join(Agent, APIKey.agent_id == Agent.id, isouter=True)
+        .join(Project, Agent.project_id == Project.id, isouter=True)
+        .filter(APIKey.key_hmac == key_hmac)
+    ).first()
+
+    if not result:
+        return None, None, None, None
+
+    api_key_id, agent_id, project_id, org_id = result
+    return api_key_id, agent_id, project_id, org_id

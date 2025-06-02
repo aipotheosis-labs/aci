@@ -17,32 +17,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 // import { GoPlus } from "react-icons/go";
 import { useMetaInfo } from "@/components/context/metainfo";
 
-interface ProjectSelectOption {
-  value: string; // project id
-  label: string; // project name
-}
-
 export const ProjectSelector = () => {
   const { projects, activeProject, setActiveProject } = useMetaInfo();
-  const [projectSelectOptions, setProjectSelectOptions] = useState<
-    ProjectSelectOption[]
-  >([]);
 
   const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    setProjectSelectOptions(
-      projects.map((p) => ({
-        value: p.id,
-        label: p.name,
-      })),
-    );
-  }, [projects]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -67,27 +50,20 @@ export const ProjectSelector = () => {
           <CommandList>
             <CommandEmpty>No project found.</CommandEmpty>
             <CommandGroup>
-              {projectSelectOptions.map((option) => (
+              {projects.map((project) => (
                 <CommandItem
-                  key={option.value}
-                  value={option.value}
+                  key={project.id}
+                  value={project.id}
                   onSelect={() => {
-                    const selectedProject = projects.find(
-                      (p) => p.id === option.value,
-                    );
-                    if (selectedProject) {
-                      setActiveProject(selectedProject);
-                      setOpen(false);
-                    } else {
-                      console.error(`Project ${option.value} not found`);
-                    }
+                    setActiveProject(project);
+                    setOpen(false);
                   }}
                 >
-                  {option.label}
+                  {project.name}
                   <Check
                     className={cn(
                       "ml-auto",
-                      activeProject?.id === option.value
+                      activeProject?.id === project.id
                         ? "opacity-100"
                         : "opacity-0",
                     )}

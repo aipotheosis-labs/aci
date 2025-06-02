@@ -182,18 +182,8 @@ For VS Code users, configure Ruff formatter:
 
 ### Running Tests
 
-Ensure the `db` service is running and the database is empty (in case you have seeded
-the db in `step 6`) before running tests.
-
-> [!NOTE]
-> More specifically, if you have run the `seed_db.sh` script already, you need to bring
-> down docker compose and bring it up again without running the `seed_db.sh` script this
-> time.
-
-Then you can run the test in the `runner` container:
-
 ```bash
-docker compose exec runner pytest
+docker compose exec test-runner pytest
 ```
 
 ## Database Management

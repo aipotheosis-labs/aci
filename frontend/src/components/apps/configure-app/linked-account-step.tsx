@@ -19,6 +19,14 @@ import Link from "next/link";
 import { BsQuestionCircle } from "react-icons/bs";
 import { MdDescription } from "react-icons/md";
 import { GoCopy } from "react-icons/go";
+import {
+  useCreateAPILinkedAccount,
+  useCreateNoAuthLinkedAccount,
+  useGetOauth2LinkURL,
+} from "@/hooks/use-linked-account";
+import { toast } from "sonner";
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 // Form submission types constants
 export const FORM_SUBMIT_COPY_OAUTH2_LINK_URL = "copyOAuth2LinkURL";
@@ -53,21 +61,196 @@ export const linkedAccountFormSchema = z
   );
 
 interface LinkedAccountStepProps {
-  form: ReturnType<typeof useForm<LinkedAccountFormValues>>;
   authType: string;
-  onSubmit: (e: React.FormEvent) => Promise<void>;
-  isLoading: boolean;
-  setCurrentStep: (step: number) => void;
   onClose: () => void;
+  appName: string;
 }
 
 export function LinkedAccountStep({
-  form,
   authType,
-  onSubmit,
-  isLoading,
   onClose,
+  appName,
 }: LinkedAccountStepProps) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const form = useForm<LinkedAccountFormValues>({
+    resolver: zodResolver(linkedAccountFormSchema),
+    defaultValues: {
+      linkedAccountOwnerId: "",
+      apiKey: "",
+    },
+  });
+
+  const {
+    mutateAsync: createAPILinkedAccount,
+    isPending: isCreatingAPILinkedAccount,
+  } = useCreateAPILinkedAccount();
+  const {
+    mutateAsync: createNoAuthLinkedAccount,
+    isPending: isCreatingNoAuthLinkedAccount,
+  } = useCreateNoAuthLinkedAccount();
+  const { mutateAsync: getOauth2LinkURL, isPending: isGettingOauth2LinkURL } =
+    useGetOauth2LinkURL();
+
+  const totalLoading =
+    isLoading ||
+    isCreatingAPILinkedAccount ||
+    isCreatingNoAuthLinkedAccount ||
+    isGettingOauth2LinkURL;
+
+  // fetch oauth2 link url
+  const fetchOAuth2LinkURL = async (
+    linkedAccountOwnerId: string,
+    afterOAuth2LinkRedirectURL?: string,
+  ): Promise<string> => {
+    if (!appName) {
+      throw new Error("no app selected");
+    }
+
+    return await getOauth2LinkURL({
+      appName,
+      linkedAccountOwnerId,
+      afterOAuth2LinkRedirectURL,
+    });
+  };
+
+  const copyOAuth2LinkURL = async (linkedAccountOwnerId: string) => {
+    try {
+      const url = await fetchOAuth2LinkURL(linkedAccountOwnerId);
+      if (!navigator.clipboard) {
+        console.error("Clipboard API not supported");
+        toast.error("your browser does not support copy to clipboard");
+        return;
+      }
+      navigator.clipboard
+        .writeText(url)
+        .then(() => {
+          toast.success("OAuth2 link URL copied to clipboard");
+        })
+        .catch((err) => {
+          console.error("Failed to copy:", err);
+          toast.error(
+            "copy OAuth2 link URL to clipboard failed, please start OAuth2 Flow",
+          );
+        });
+    } catch (error) {
+      console.error(error);
+      toast.error(
+        "copy OAuth2 link URL to clipboard failed, please start OAuth2 Flow",
+      );
+    }
+  };
+
+  const linkOauth2Account = async (linkedAccountOwnerId: string) => {
+    if (!appName) {
+      toast.error("no app selected");
+      return;
+    }
+
+    try {
+      const oauth2LinkURL = await fetchOAuth2LinkURL(
+        linkedAccountOwnerId,
+        `${process.env.NEXT_PUBLIC_DEV_PORTAL_URL}/appconfigs/${appName}`,
+      );
+      window.location.href = oauth2LinkURL;
+    } catch (error) {
+      console.error("Error linking OAuth2 account:", error);
+      toast.error("link account failed");
+    }
+  };
+
+  const linkAPIAccount = async (
+    linkedAccountOwnerId: string,
+    linkedAPIKey: string,
+  ) => {
+    if (!appName) {
+      throw new Error("no app selected");
+    }
+
+    try {
+      await createAPILinkedAccount({
+        appName,
+        linkedAccountOwnerId,
+        linkedAPIKey,
+      });
+
+      toast.success("account linked successfully");
+      onClose();
+    } catch (error) {
+      console.error("Error linking API account:", error);
+      toast.error("link account failed");
+    }
+  };
+
+  const linkNoAuthAccount = async (linkedAccountOwnerId: string) => {
+    if (!appName) {
+      throw new Error("no app selected");
+    }
+
+    try {
+      await createNoAuthLinkedAccount({
+        appName,
+        linkedAccountOwnerId,
+      });
+
+      toast.success("account linked successfully");
+      onClose();
+    } catch (error) {
+      console.error("Error linking no auth account:", error);
+      toast.error("link account failed");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const nativeEvent = e.nativeEvent as SubmitEvent;
+    const submitter = nativeEvent.submitter as HTMLButtonElement;
+    if (submitter.name == "skip") {
+      onClose();
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      // Set auth type for form validation
+      form.setValue("_authType", authType);
+
+      // validate form
+      await form.trigger();
+      if (!form.formState.isValid) {
+        setIsLoading(false);
+        return;
+      }
+
+      const values = form.getValues();
+
+      // handle different actions based on submit button
+      switch (submitter.name) {
+        case FORM_SUBMIT_COPY_OAUTH2_LINK_URL:
+          await copyOAuth2LinkURL(values.linkedAccountOwnerId);
+          break;
+        case FORM_SUBMIT_LINK_OAUTH2_ACCOUNT:
+          await linkOauth2Account(values.linkedAccountOwnerId);
+          break;
+        case FORM_SUBMIT_API_KEY:
+          await linkAPIAccount(
+            values.linkedAccountOwnerId,
+            values.apiKey as string,
+          );
+          break;
+        case FORM_SUBMIT_NO_AUTH:
+          await linkNoAuthAccount(values.linkedAccountOwnerId);
+          break;
+      }
+    } catch (error) {
+      console.error("Error adding linked account:", error);
+      toast.error("add linked account failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-5">
       <div className="space-y-2">
@@ -75,7 +258,7 @@ export function LinkedAccountStep({
       </div>
 
       <FormProvider {...form}>
-        <form onSubmit={onSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
           <FormField
             control={form.control}
             name="linkedAccountOwnerId"
@@ -153,6 +336,7 @@ export function LinkedAccountStep({
                   name={FORM_SUBMIT_COPY_OAUTH2_LINK_URL}
                   variant="outline"
                   className="flex items-center gap-2"
+                  disabled={totalLoading}
                 >
                   <GoCopy className="h-4 w-4" />
                   Copy OAuth2 URL
@@ -164,6 +348,7 @@ export function LinkedAccountStep({
                   type="submit"
                   name={FORM_SUBMIT_LINK_OAUTH2_ACCOUNT}
                   className="group relative flex items-center px-6 gap-2"
+                  disabled={totalLoading}
                 >
                   Start OAuth2 Flow
                 </Button>
@@ -182,7 +367,7 @@ export function LinkedAccountStep({
                         return FORM_SUBMIT_NO_AUTH;
                     }
                   })()}
-                  disabled={isLoading}
+                  disabled={totalLoading}
                 >
                   Save
                 </Button>

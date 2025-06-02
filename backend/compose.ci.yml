@@ -5,7 +5,7 @@ services:
     environment:
       - SERVER_OPENAI_API_KEY=${SERVER_OPENAI_API_KEY?}
       - CLI_OPENAI_API_KEY=${CLI_OPENAI_API_KEY?}
-  runner:
+  test-runner:
     environment:
       - SERVER_OPENAI_API_KEY=${SERVER_OPENAI_API_KEY?}
       - CLI_OPENAI_API_KEY=${CLI_OPENAI_API_KEY?}

@@ -17,12 +17,15 @@ import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { useAppConfigs } from "@/hooks/use-app-config";
 import { CreateAgentForm } from "@/components/project/create-agent-form";
-import { createAgent, deleteAgent } from "@/lib/api/agent";
+import { useCreateAgent, useDeleteAgent } from "@/hooks/use-agent";
 
 export default function AgentsPage() {
-  const { accessToken, activeProject, reloadActiveProject } = useMetaInfo();
+  const { activeProject } = useMetaInfo();
   const { data: appConfigs = [], isPending: isConfigsPending } =
     useAppConfigs();
+
+  const { mutateAsync: createAgentMutation } = useCreateAgent();
+  const { mutateAsync: deleteAgentMutation } = useDeleteAgent();
 
   const handleDeleteAgent = useCallback(
     async (agentId: string) => {
@@ -34,20 +37,19 @@ export default function AgentsPage() {
           return;
         }
 
-        await deleteAgent(activeProject.id, agentId, accessToken);
-        await reloadActiveProject();
+        await deleteAgentMutation(agentId);
+        toast.success("Agent deleted successfully");
       } catch (error) {
         console.error("Error deleting agent:", error);
+        toast.error("Failed to delete agent");
       }
     },
-    [activeProject, accessToken, reloadActiveProject],
+    [activeProject, deleteAgentMutation],
   );
 
   const agentTableColumns = useAgentsTableColumns(
     activeProject.id,
     handleDeleteAgent,
-    reloadActiveProject,
-    reloadActiveProject,
   );
 
   return (
@@ -65,15 +67,7 @@ export default function AgentsPage() {
           appConfigs={appConfigs}
           onSubmit={async (values) => {
             try {
-              await createAgent(
-                activeProject.id,
-                accessToken,
-                values.name,
-                values.description,
-                values.allowed_apps,
-                values.custom_instructions,
-              );
-              await reloadActiveProject();
+              await createAgentMutation(values);
               toast.success("Agent created successfully");
             } catch (error) {
               console.error("Error creating agent:", error);

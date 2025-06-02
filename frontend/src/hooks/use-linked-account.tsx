@@ -15,7 +15,7 @@ import { getApiKey } from "@/lib/api/util";
 import { LinkedAccount } from "@/lib/types/linkedaccount";
 import { toast } from "sonner";
 
-const linkedAccountKeys = {
+export const linkedAccountKeys = {
   all: (projectId: string) => [projectId, "linkedaccounts"] as const,
 };
 

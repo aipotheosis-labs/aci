@@ -68,7 +68,7 @@ jobs:
         id: run_tests
         working-directory: backend
         run: |
-          docker compose -f compose.yml -f compose.ci.yml run runner
+          docker compose -f compose.yml -f compose.ci.yml run test-runner
 
       - name: Get service names
         id: service_names
