@@ -23,6 +23,7 @@ import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-tabl
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 import { Plan } from "@/lib/types/billing";
+import { Separator } from "@/components/ui/separator";
 
 export default function SettingsPage() {
   const { user, activeOrg, accessToken, activeProject, reloadActiveProject } =
@@ -170,272 +171,278 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div className="w-full p-6 space-y-10">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Settings</h1>
-        <p className="text-muted-foreground text-lg">
-          Manage your account, project, and organization settings in one place.
-        </p>
-      </div>
-
-      {/* Account Settings Section */}
-      <div className="bg-muted/40 rounded-xl shadow p-8 space-y-6">
-        <h2 className="text-2xl font-semibold mb-4">Account Settings</h2>
-        <div className="space-y-4">
-          <div className="flex flex-row">
-            <div className="flex flex-col items-left w-80">
-              <label className="font-semibold">User Name</label>
-            </div>
-            <div className="flex items-center px-2 text-sm">{`${user.firstName} ${user.lastName}`}</div>
-          </div>
-          <div className="flex flex-row">
-            <div className="flex flex-col items-left w-80">
-              <label className="font-semibold">Email</label>
-            </div>
-            <div className="flex items-center px-2 text-sm">{user.email}</div>
-          </div>
-          <div className="flex flex-row pt-2">
-            <div>
-              <Button variant="destructive" onClick={() => logoutFn(true)}>
-                Sign Out
-              </Button>
-            </div>
-          </div>
+    <div>
+      <div className="m-4 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Settings</h1>
+          <p className="text-sm text-muted-foreground">
+            Manage your account, project, and organization settings in one
+            place.
+          </p>
         </div>
       </div>
+      <Separator />
 
-      {/* Project Settings Section */}
-      <div className="bg-muted/40 rounded-xl shadow p-8 space-y-6">
-        <h2 className="text-2xl font-semibold mb-4">Project Settings</h2>
-        <div className="flex flex-row">
-          <div className="flex-1 space-y-6">
-            <div className="flex flex-row items-center">
+      <div className="m-4 space-y-6">
+        {/* Account Settings Section */}
+        <div className="bg-muted/40 rounded-xl shadow p-8 space-y-6">
+          <h2 className="text-xl font-semibold mb-4">Account Settings</h2>
+          <div className="space-y-4">
+            <div className="flex flex-row">
               <div className="flex flex-col items-left w-80">
-                <label className="font-semibold">Project Name</label>
-                <p className="text-sm text-muted-foreground">
-                  Change the name of the project
-                </p>
+                <label className="font-semibold">User Name</label>
               </div>
-              <div className="flex items-center gap-2">
-                <div className="relative">
-                  <Input
-                    value={projectName}
-                    onChange={(e) => setProjectName(e.target.value)}
-                    className="w-96"
-                    disabled={!isEditingName}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        handleSaveProjectName();
-                      } else if (e.key === "Escape") {
-                        setIsEditingName(false);
-                        setProjectName(activeProject.name);
-                      }
-                    }}
-                  />
-                </div>
-                {isEditingName ? (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={handleSaveProjectName}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Check className="h-4 w-4" />
-                  </Button>
-                ) : (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        onClick={() => setIsEditingName(true)}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Edit2 className="h-4 w-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Click to edit project name</p>
-                    </TooltipContent>
-                  </Tooltip>
-                )}
-              </div>
+              <div className="flex items-center px-2 text-sm">{`${user.firstName} ${user.lastName}`}</div>
             </div>
-          </div>
-        </div>
-        <div className="mt-8">
-          <h2 className="font-semibold mb-4">Danger Zone</h2>
-          <div className="border border-red-200 rounded-md bg-red-50">
-            <div className="p-4 flex items-center justify-between">
+            <div className="flex flex-row">
+              <div className="flex flex-col items-left w-80">
+                <label className="font-semibold">Email</label>
+              </div>
+              <div className="flex items-center px-2 text-sm">{user.email}</div>
+            </div>
+            <div className="flex flex-row pt-2">
               <div>
-                <h3 className="font-medium">Delete this project</h3>
-                <p className="text-sm text-gray-500 mt-1">
-                  Once you delete a project, there is no going back. This action
-                  permanently deletes the project and all related data.
-                </p>
+                <Button variant="destructive" onClick={() => logoutFn(true)}>
+                  Sign Out
+                </Button>
               </div>
-              <DeleteProjectDialog
-                accessToken={accessToken}
-                projectId={activeProject.id}
-                projectName={activeProject.name}
-              />
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Organization Settings Section */}
-      <div className="bg-muted/40 rounded-xl shadow p-8 space-y-8">
-        <h2 className="text-2xl font-semibold mb-4">Organization Settings</h2>
-        {/* Organization Name Section */}
-        <div className="flex flex-row items-center">
-          <div className="flex flex-col items-left w-80">
-            <label className="font-semibold">Organization Name</label>
-            <p className="text-sm text-muted-foreground">
-              Change the name of the organization
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <Input
-                value={orgName}
-                onChange={(e) => setOrgName(e.target.value)}
-                className="w-96"
-                disabled={!isEditingOrgName}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    handleSaveOrgName();
-                  } else if (e.key === "Escape") {
-                    setIsEditingOrgName(false);
-                    setOrgName(activeOrg.orgName);
-                  }
-                }}
-              />
+        {/* Project Settings Section */}
+        <div className="bg-muted/40 rounded-xl shadow p-8 space-y-6">
+          <h2 className="text-xl font-semibold mb-4">Project Settings</h2>
+          <div className="flex flex-row">
+            <div className="flex-1 space-y-6">
+              <div className="flex flex-row items-center">
+                <div className="flex flex-col items-left w-80">
+                  <label className="font-semibold">Project Name</label>
+                  <p className="text-sm text-muted-foreground">
+                    Change the name of the project
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <Input
+                      value={projectName}
+                      onChange={(e) => setProjectName(e.target.value)}
+                      className="w-96"
+                      disabled={!isEditingName}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          handleSaveProjectName();
+                        } else if (e.key === "Escape") {
+                          setIsEditingName(false);
+                          setProjectName(activeProject.name);
+                        }
+                      }}
+                    />
+                  </div>
+                  {isEditingName ? (
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={handleSaveProjectName}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Check className="h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          onClick={() => setIsEditingName(true)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Edit2 className="h-4 w-4" />
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Click to edit project name</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  )}
+                </div>
+              </div>
             </div>
-            {isEditingOrgName ? (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={handleSaveOrgName}
-                className="h-8 w-8 p-0"
-              >
-                <Check className="h-4 w-4" />
-              </Button>
+          </div>
+          <div className="mt-8">
+            <h2 className="font-semibold mb-4">Danger Zone</h2>
+            <div className="border border-red-200 rounded-md bg-red-50">
+              <div className="p-4 flex items-center justify-between">
+                <div>
+                  <h3 className="font-medium">Delete this project</h3>
+                  <p className="text-sm text-gray-500 mt-1">
+                    Once you delete a project, there is no going back. This
+                    action permanently deletes the project and all related data.
+                  </p>
+                </div>
+                <DeleteProjectDialog
+                  accessToken={accessToken}
+                  projectId={activeProject.id}
+                  projectName={activeProject.name}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Organization Settings Section */}
+        <div className="bg-muted/40 rounded-xl shadow p-8 space-y-8">
+          <h2 className="text-xl font-semibold mb-4">Organization Settings</h2>
+          {/* Organization Name Section */}
+          <div className="flex flex-row items-center">
+            <div className="flex flex-col items-left w-80">
+              <label className="font-semibold">Organization Name</label>
+              <p className="text-sm text-muted-foreground">
+                Change the name of the organization
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Input
+                  value={orgName}
+                  onChange={(e) => setOrgName(e.target.value)}
+                  className="w-96"
+                  disabled={!isEditingOrgName}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSaveOrgName();
+                    } else if (e.key === "Escape") {
+                      setIsEditingOrgName(false);
+                      setOrgName(activeOrg.orgName);
+                    }
+                  }}
+                />
+              </div>
+              {isEditingOrgName ? (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={handleSaveOrgName}
+                  className="h-8 w-8 p-0"
+                >
+                  <Check className="h-4 w-4" />
+                </Button>
+              ) : (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      onClick={() => setIsEditingOrgName(true)}
+                      className="h-8 w-8 p-0"
+                    >
+                      <Edit2 className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Click to edit organization name</p>
+                  </TooltipContent>
+                </Tooltip>
+              )}
+            </div>
+          </div>
+          {/* Subscription Section */}
+          <div className="flex flex-row">
+            <div className="flex flex-col items-left w-80">
+              <label className="font-semibold">Subscription</label>
+              <p className="text-sm text-muted-foreground">
+                Manage your organization&apos;s subscription
+              </p>
+            </div>
+            {isLoading ? (
+              <div className="flex-1">
+                <div className="animate-pulse flex space-x-4">
+                  <div className="flex-1 space-y-4 py-1">
+                    <div className="h-4 bg-muted rounded w-3/4"></div>
+                    <div className="space-y-2">
+                      <div className="h-4 bg-muted rounded"></div>
+                      <div className="h-4 bg-muted rounded w-5/6"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             ) : (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    onClick={() => setIsEditingOrgName(true)}
-                    className="h-8 w-8 p-0"
-                  >
-                    <Edit2 className="h-4 w-4" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Click to edit organization name</p>
-                </TooltipContent>
-              </Tooltip>
+              <div className="flex-1">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center justify-between p-4 bg-muted/100 rounded-lg">
+                    <div className="space-y-1">
+                      <div className="font-medium text-lg">
+                        {subscription!.plan.charAt(0).toUpperCase() +
+                          subscription!.plan.slice(1) +
+                          "Plan"}
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {subscription!.plan === Plan.Free
+                          ? "Basic features for small teams"
+                          : "Advanced features for growing organizations"}
+                      </div>
+                    </div>
+                    <div>
+                      {subscription!.plan === Plan.Free ? (
+                        <Link href="/pricing">
+                          <Button className="gap-2">
+                            <BsStars className="h-4 w-4" />
+                            Upgrade
+                          </Button>
+                        </Link>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          className="gap-2"
+                          onClick={async () => {
+                            const url = await createCustomerPortalSession(
+                              accessToken,
+                              activeOrg.orgId,
+                            );
+                            window.location.href = url;
+                          }}
+                        >
+                          <RiUserSettingsLine className="h-4 w-4" />
+                          Manage Subscription
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                  {subscription!.plan !== Plan.Free && (
+                    <div className="text-sm text-muted-foreground px-4">
+                      Need help with your subscription?{" "}
+                      <Link
+                        href="/support"
+                        className="text-primary hover:underline"
+                      >
+                        Contact support
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
           </div>
-        </div>
-        {/* Subscription Section */}
-        <div className="flex flex-row">
-          <div className="flex flex-col items-left w-80">
-            <label className="font-semibold">Subscription</label>
-            <p className="text-sm text-muted-foreground">
-              Manage your organization&apos;s subscription
-            </p>
-          </div>
-          {isLoading ? (
-            <div className="flex-1">
-              <div className="animate-pulse flex space-x-4">
-                <div className="flex-1 space-y-4 py-1">
-                  <div className="h-4 bg-muted rounded w-3/4"></div>
-                  <div className="space-y-2">
-                    <div className="h-4 bg-muted rounded"></div>
-                    <div className="h-4 bg-muted rounded w-5/6"></div>
-                  </div>
-                </div>
-              </div>
+          {/* Team Members Table Section */}
+          <div className="space-y-4 pt-2">
+            <div className="flex items-center justify-between">
+              <Button variant="default">
+                <Plus className="w-4 h-4" />
+                Invite user
+              </Button>
+              <Input
+                placeholder="Search by email"
+                value={userSearch}
+                onChange={(e) => setUserSearch(e.target.value)}
+                className="w-72 bg-background border border-muted text-foreground placeholder:text-muted-foreground rounded-md shadow-none"
+              />
             </div>
-          ) : (
-            <div className="flex-1">
-              <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between p-4 bg-muted/100 rounded-lg">
-                  <div className="space-y-1">
-                    <div className="font-medium text-lg">
-                      {subscription!.plan.charAt(0).toUpperCase() +
-                        subscription!.plan.slice(1) +
-                        "Plan"}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {subscription!.plan === Plan.Free
-                        ? "Basic features for small teams"
-                        : "Advanced features for growing organizations"}
-                    </div>
-                  </div>
-                  <div>
-                    {subscription!.plan === Plan.Free ? (
-                      <Link href="/pricing">
-                        <Button className="gap-2">
-                          <BsStars className="h-4 w-4" />
-                          Upgrade
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        className="gap-2"
-                        onClick={async () => {
-                          const url = await createCustomerPortalSession(
-                            accessToken,
-                            activeOrg.orgId,
-                          );
-                          window.location.href = url;
-                        }}
-                      >
-                        <RiUserSettingsLine className="h-4 w-4" />
-                        Manage Subscription
-                      </Button>
-                    )}
-                  </div>
-                </div>
-                {subscription!.plan !== Plan.Free && (
-                  <div className="text-sm text-muted-foreground px-4">
-                    Need help with your subscription?{" "}
-                    <Link
-                      href="/support"
-                      className="text-primary hover:underline"
-                    >
-                      Contact support
-                    </Link>
-                  </div>
-                )}
-              </div>
+            <div>
+              <EnhancedDataTable
+                data={filteredUsers}
+                columns={userColumns}
+                searchBarProps={undefined}
+                paginationOptions={undefined}
+              />
             </div>
-          )}
-        </div>
-        {/* Team Members Table Section */}
-        <div className="space-y-4 pt-2">
-          <div className="flex items-center justify-between">
-            <Button variant="default">
-              <Plus className="w-4 h-4" />
-              Invite user
-            </Button>
-            <Input
-              placeholder="Search by email"
-              value={userSearch}
-              onChange={(e) => setUserSearch(e.target.value)}
-              className="w-72 bg-background border border-muted text-foreground placeholder:text-muted-foreground rounded-md shadow-none"
-            />
-          </div>
-          <div>
-            <EnhancedDataTable
-              data={filteredUsers}
-              columns={userColumns}
-              searchBarProps={undefined}
-              paginationOptions={undefined}
-            />
           </div>
         </div>
       </div>
