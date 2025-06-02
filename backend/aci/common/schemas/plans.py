@@ -8,6 +8,7 @@ class PlanFeatures(BaseModel):
     developer_seats: int
     custom_oauth: bool
     log_retention_days: int
+    projects: int
 
 
 class PlanUpdate(BaseModel, extra="forbid"):
