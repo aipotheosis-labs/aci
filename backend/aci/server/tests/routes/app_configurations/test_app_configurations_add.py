@@ -42,7 +42,7 @@ def test_create_app_configuration(
     assert str(response.json()["error"]).startswith("App configuration already exists")
 
 
-# use paramterize to test two cases:
+# use parametrize to test two cases:
 # 1. no redirect_url
 # 2. with redirect_url
 @pytest.mark.parametrize(
