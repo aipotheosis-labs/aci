@@ -22,6 +22,7 @@ import { Badge } from "@/components/ui/badge";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
+import { Plan } from "@/lib/types/billing";
 
 export default function SettingsPage() {
   const { user, activeOrg, accessToken, activeProject, reloadActiveProject } =
@@ -185,13 +186,13 @@ export default function SettingsPage() {
             <div className="flex flex-col items-left w-80">
               <label className="font-semibold">User Name</label>
             </div>
-            <div className="flex items-center px-2">{`${user.firstName} ${user.lastName}`}</div>
+            <div className="flex items-center px-2 text-sm">{`${user.firstName} ${user.lastName}`}</div>
           </div>
           <div className="flex flex-row">
             <div className="flex flex-col items-left w-80">
               <label className="font-semibold">Email</label>
             </div>
-            <div className="flex items-center px-2">{user.email}</div>
+            <div className="flex items-center px-2 text-sm">{user.email}</div>
           </div>
           <div className="flex flex-row pt-2">
             <div>
@@ -363,16 +364,18 @@ export default function SettingsPage() {
                 <div className="flex items-center justify-between p-4 bg-muted/100 rounded-lg">
                   <div className="space-y-1">
                     <div className="font-medium text-lg">
-                      {subscription?.plan === "free" ? "Free Plan" : "Pro Plan"}
+                      {subscription!.plan.charAt(0).toUpperCase() +
+                        subscription!.plan.slice(1) +
+                        "Plan"}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                      {subscription?.plan === "free"
+                      {subscription!.plan === Plan.Free
                         ? "Basic features for small teams"
                         : "Advanced features for growing organizations"}
                     </div>
                   </div>
                   <div>
-                    {subscription?.plan === "free" ? (
+                    {subscription!.plan === Plan.Free ? (
                       <Link href="/pricing">
                         <Button className="gap-2">
                           <BsStars className="h-4 w-4" />
@@ -397,7 +400,7 @@ export default function SettingsPage() {
                     )}
                   </div>
                 </div>
-                {subscription?.plan !== "free" && (
+                {subscription!.plan !== Plan.Free && (
                   <div className="text-sm text-muted-foreground px-4">
                     Need help with your subscription?{" "}
                     <Link
