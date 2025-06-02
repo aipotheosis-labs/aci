@@ -23,7 +23,7 @@ from aci.server import config
 logger = get_logger(__name__)
 http_bearer = HTTPBearer(auto_error=True, description="login to receive a JWT token")
 api_key_header = APIKeyHeader(
-    name=config.AOPOLABS_API_KEY_NAME,
+    name=config.AIPOLABS_API_KEY_NAME,
     description="API key for authentication",
     auto_error=True,
 )
