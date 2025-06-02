@@ -118,10 +118,8 @@ export function ConfigureAppStep({
   const [isScopeConfirmed, setIsScopeConfirmed] = useState(false);
 
   // Determine which redirect URL to display - if custom is provided, show it, otherwise show default
-  const effectiveRedirectUrl = redirectUrl?.trim()
-    ? redirectUrl.trim()
-    : defaultRedirectUrl;
-  const isUsingCustomRedirectUrl = !!redirectUrl?.trim();
+  const effectiveRedirectUrl = redirectUrl || defaultRedirectUrl;
+  const isUsingCustomRedirectUrl = !!redirectUrl;
 
   const isFormValid = () => {
     if (currentSecurityScheme === "oauth2" && !useACIDevOAuth2) {
@@ -177,8 +175,8 @@ export function ConfigureAppStep({
           oauth2: {
             client_id: values.client_id,
             client_secret: values.client_secret,
-            ...(values.redirect_url?.trim() && {
-              redirect_url: values.redirect_url.trim(),
+            ...(values.redirect_url && {
+              redirect_url: values.redirect_url,
             }),
           },
         };
