@@ -11,7 +11,7 @@ import Link from "next/link";
 import { BsStars } from "react-icons/bs";
 import { RiUserSettingsLine } from "react-icons/ri";
 import { useState, useEffect } from "react";
-import { Check, Edit2 } from "lucide-react";
+import { Check, Edit2, MoreHorizontal, User2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -19,12 +19,14 @@ import {
 } from "@/components/ui/tooltip";
 import { updateProject } from "@/lib/api/project";
 import { toast } from "sonner";
+import { Badge } from "@/components/ui/badge";
+import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
+import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 
 export default function SettingsPage() {
   const { user, activeOrg, accessToken, activeProject, reloadActiveProject } =
     useMetaInfo();
   const logoutFn = useLogoutFunction();
-  const [, setShowInviteModal] = useState(false);
   const [projectName, setProjectName] = useState(activeProject.name);
   const [isEditingName, setIsEditingName] = useState(false);
   const [orgName, setOrgName] = useState(activeOrg.orgName);
@@ -89,6 +91,82 @@ export default function SettingsPage() {
       toast.error("Failed to update organization name");
     }
   };
+
+  // Mock users data
+  const [userSearch, setUserSearch] = useState("");
+  const [users, setUsers] = useState([
+    {
+      email: "alex@aipolabs.xyz",
+      role: "Owner",
+      status: "ACTIVE",
+    },
+    // Add more users as needed
+  ]);
+  const filteredUsers = users.filter((u) =>
+    u.email.toLowerCase().includes(userSearch.toLowerCase()),
+  );
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userColumnHelper = createColumnHelper<any>();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userColumns: ColumnDef<any>[] = [
+    userColumnHelper.accessor("email", {
+      header: () => <span>Email</span>,
+      cell: (info) => (
+        <div className="flex items-center gap-2 font-medium text-foreground">
+          <User2 className="h-5 w-5 text-muted-foreground" />
+          {String(info.getValue())}
+        </div>
+      ),
+      enableGlobalFilter: true,
+    }),
+    userColumnHelper.accessor("role", {
+      header: () => <span>Role</span>,
+      cell: (info) => {
+        const idx = users.findIndex(
+          (u) => u.email === String(info.row.original.email),
+        );
+        return (
+          <select
+            className="bg-muted/40 border border-muted text-foreground rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-primary/40"
+            value={String(info.getValue())}
+            onChange={(e) => {
+              const newUsers = [...users];
+              newUsers[idx].role = e.target.value;
+              setUsers(newUsers);
+            }}
+          >
+            <option value="Owner">Owner</option>
+            <option value="Admin">Admin</option>
+            <option value="Member">Member</option>
+          </select>
+        );
+      },
+    }),
+    userColumnHelper.accessor("status", {
+      header: () => <span>Status</span>,
+      cell: (info) => (
+        <Badge
+          className={`text-xs px-3 py-1 rounded-full font-semibold ${String(info.getValue()) === "ACTIVE" ? "bg-green-600 text-white" : "bg-muted text-muted-foreground"}`}
+        >
+          {String(info.getValue())}
+        </Badge>
+      ),
+    }),
+    userColumnHelper.display({
+      id: "actions",
+      header: () => null,
+      cell: () => (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-muted-foreground hover:bg-muted/40"
+        >
+          <MoreHorizontal className="h-5 w-5" />
+        </Button>
+      ),
+    }),
+  ];
 
   return (
     <div>
@@ -342,42 +420,26 @@ export default function SettingsPage() {
 
             <Separator />
 
-            {/* Team Members Section */}
-            <div className="flex flex-row">
-              <div className="flex flex-col items-left w-80">
-                <label className="font-semibold">Team Members</label>
-                <p className="text-sm text-muted-foreground">
-                  Manage your organization&apos;s team members
-                </p>
+            {/* Team Members Table Section */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <Button variant="outline" className="font-semibold">
+                  + Invite user
+                </Button>
+                <Input
+                  placeholder="Search by email"
+                  value={userSearch}
+                  onChange={(e) => setUserSearch(e.target.value)}
+                  className="w-72 bg-background border border-muted text-foreground placeholder:text-muted-foreground rounded-md shadow-none"
+                />
               </div>
-              <div className="flex-1 space-y-4">
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">Your Role:</span>
-                    <span>{activeOrg.userAssignedRole}</span>
-                  </div>
-                </div>
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowInviteModal(true)}
-                    >
-                      Invite Members
-                    </Button>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() =>
-                        window.open("https://auth.propelauth.com/org", "_blank")
-                      }
-                    >
-                      Manage Organization
-                    </Button>
-                  </div>
-                </div>
+              <div>
+                <EnhancedDataTable
+                  data={filteredUsers}
+                  columns={userColumns}
+                  searchBarProps={undefined}
+                  paginationOptions={undefined}
+                />
               </div>
             </div>
           </div>
