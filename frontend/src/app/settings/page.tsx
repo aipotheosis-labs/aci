@@ -10,7 +10,7 @@ import Link from "next/link";
 import { BsStars } from "react-icons/bs";
 import { RiUserSettingsLine } from "react-icons/ri";
 import { useState, useEffect } from "react";
-import { Check, Edit2, MoreHorizontal, User2 } from "lucide-react";
+import { Check, Edit2, MoreHorizontal, User2, Plus } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 
 export default function SettingsPage() {
   const { user, activeOrg, accessToken, activeProject, reloadActiveProject } =
@@ -184,13 +185,13 @@ export default function SettingsPage() {
             <div className="flex flex-col items-left w-80">
               <label className="font-semibold">User Name</label>
             </div>
-            <div className="flex items-center px-2 text-lg">{`${user.firstName} ${user.lastName}`}</div>
+            <div className="flex items-center px-2">{`${user.firstName} ${user.lastName}`}</div>
           </div>
           <div className="flex flex-row">
             <div className="flex flex-col items-left w-80">
               <label className="font-semibold">Email</label>
             </div>
-            <div className="flex items-center px-2 text-lg">{user.email}</div>
+            <div className="flex items-center px-2">{user.email}</div>
           </div>
           <div className="flex flex-row pt-2">
             <div>
@@ -257,6 +258,25 @@ export default function SettingsPage() {
                   </Tooltip>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+        <div className="mt-8">
+          <h2 className="font-semibold mb-4">Danger Zone</h2>
+          <div className="border border-red-200 rounded-md bg-red-50">
+            <div className="p-4 flex items-center justify-between">
+              <div>
+                <h3 className="font-medium">Delete this project</h3>
+                <p className="text-sm text-gray-500 mt-1">
+                  Once you delete a project, there is no going back. This action
+                  permanently deletes the project and all related data.
+                </p>
+              </div>
+              <DeleteProjectDialog
+                accessToken={accessToken}
+                projectId={activeProject.id}
+                projectName={activeProject.name}
+              />
             </div>
           </div>
         </div>
@@ -340,7 +360,7 @@ export default function SettingsPage() {
           ) : (
             <div className="flex-1">
               <div className="flex flex-col gap-4">
-                <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                <div className="flex items-center justify-between p-4 bg-muted/100 rounded-lg">
                   <div className="space-y-1">
                     <div className="font-medium text-lg">
                       {subscription?.plan === "free" ? "Free Plan" : "Pro Plan"}
@@ -395,8 +415,9 @@ export default function SettingsPage() {
         {/* Team Members Table Section */}
         <div className="space-y-4 pt-2">
           <div className="flex items-center justify-between">
-            <Button variant="default" className="font-semibold">
-              + Invite user
+            <Button variant="default">
+              <Plus className="w-4 h-4" />
+              Invite user
             </Button>
             <Input
               placeholder="Search by email"
