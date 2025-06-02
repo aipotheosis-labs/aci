@@ -3,7 +3,6 @@
 import { useMetaInfo } from "@/components/context/metainfo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
 import { createCustomerPortalSession } from "@/lib/api/billing";
 import { useSubscription } from "@/hooks/use-subscription";
 import { useLogoutFunction } from "@propelauth/react";
@@ -169,152 +168,74 @@ export default function SettingsPage() {
   ];
 
   return (
-    <div>
-      <div className="mx-4 py-6">
-        <h1 className="text-2xl font-semibold">Settings</h1>
-        <p className="text-muted-foreground mt-2">
+    <div className="w-full p-6 space-y-10">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">Settings</h1>
+        <p className="text-muted-foreground text-lg">
           Manage your account, project, and organization settings in one place.
         </p>
       </div>
 
-      <Separator />
-
-      <div className="container p-4 space-y-8">
-        {/* Account Settings Section */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Account Settings</h2>
-          <div className="space-y-4">
-            {/* User Details Section */}
-            <div className="flex flex-row">
-              <div className="flex flex-col items-left w-80">
-                <label className="font-semibold">User Name</label>
-              </div>
-              <div className="flex items-center px-2">{`${user.firstName} ${user.lastName}`}</div>
+      {/* Account Settings Section */}
+      <div className="bg-muted/40 rounded-xl shadow p-8 space-y-6">
+        <h2 className="text-2xl font-semibold mb-4">Account Settings</h2>
+        <div className="space-y-4">
+          <div className="flex flex-row">
+            <div className="flex flex-col items-left w-80">
+              <label className="font-semibold">User Name</label>
             </div>
-
-            <Separator />
-
-            <div className="flex flex-row">
-              <div className="flex flex-col items-left w-80">
-                <label className="font-semibold">Email</label>
-              </div>
-              <div className="flex items-center px-2">{user.email}</div>
+            <div className="flex items-center px-2 text-lg">{`${user.firstName} ${user.lastName}`}</div>
+          </div>
+          <div className="flex flex-row">
+            <div className="flex flex-col items-left w-80">
+              <label className="font-semibold">Email</label>
             </div>
-
-            <Separator />
-
-            {/* Danger Zone */}
-            <div className="flex flex-row">
-              <div>
-                <Button variant="destructive" onClick={() => logoutFn(true)}>
-                  Sign Out
-                </Button>
-              </div>
+            <div className="flex items-center px-2 text-lg">{user.email}</div>
+          </div>
+          <div className="flex flex-row pt-2">
+            <div>
+              <Button variant="destructive" onClick={() => logoutFn(true)}>
+                Sign Out
+              </Button>
             </div>
           </div>
         </div>
+      </div>
 
-        <Separator className="my-8" />
-
-        {/* Project Settings Section */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Project Settings</h2>
-          <div className="space-y-4">
-            <div className="flex flex-row">
-              <div className="flex-1 space-y-6">
-                {/* Project Name Section */}
-                <div className="flex flex-row">
-                  <div className="flex flex-col items-left w-80">
-                    <label className="font-semibold">Project Name</label>
-                    <p className="text-sm text-muted-foreground">
-                      Change the name of the project
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="relative">
-                      <Input
-                        value={projectName}
-                        onChange={(e) => setProjectName(e.target.value)}
-                        className="w-96"
-                        disabled={!isEditingName}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            handleSaveProjectName();
-                          } else if (e.key === "Escape") {
-                            setIsEditingName(false);
-                            setProjectName(activeProject.name);
-                          }
-                        }}
-                      />
-                    </div>
-                    {isEditingName ? (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={handleSaveProjectName}
-                        className="h-8 w-8 p-0"
-                      >
-                        <Check className="h-4 w-4" />
-                      </Button>
-                    ) : (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            onClick={() => setIsEditingName(true)}
-                            className="h-8 w-8 p-0"
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          <p>Click to edit project name</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <Separator className="my-8" />
-
-        {/* Organization Settings Section */}
-        <div>
-          <h2 className="text-xl font-semibold mb-4">Organization Settings</h2>
-          <div className="space-y-4">
-            {/* Organization Name Section */}
-            <div className="flex flex-row">
+      {/* Project Settings Section */}
+      <div className="bg-muted/40 rounded-xl shadow p-8 space-y-6">
+        <h2 className="text-2xl font-semibold mb-4">Project Settings</h2>
+        <div className="flex flex-row">
+          <div className="flex-1 space-y-6">
+            <div className="flex flex-row items-center">
               <div className="flex flex-col items-left w-80">
-                <label className="font-semibold">Organization Name</label>
+                <label className="font-semibold">Project Name</label>
                 <p className="text-sm text-muted-foreground">
-                  Change the name of the organization
+                  Change the name of the project
                 </p>
               </div>
               <div className="flex items-center gap-2">
                 <div className="relative">
                   <Input
-                    value={orgName}
-                    onChange={(e) => setOrgName(e.target.value)}
+                    value={projectName}
+                    onChange={(e) => setProjectName(e.target.value)}
                     className="w-96"
-                    disabled={!isEditingOrgName}
+                    disabled={!isEditingName}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
-                        handleSaveOrgName();
+                        handleSaveProjectName();
                       } else if (e.key === "Escape") {
-                        setIsEditingOrgName(false);
-                        setOrgName(activeOrg.orgName);
+                        setIsEditingName(false);
+                        setProjectName(activeProject.name);
                       }
                     }}
                   />
                 </div>
-                {isEditingOrgName ? (
+                {isEditingName ? (
                   <Button
                     size="sm"
                     variant="ghost"
-                    onClick={handleSaveOrgName}
+                    onClick={handleSaveProjectName}
                     className="h-8 w-8 p-0"
                   >
                     <Check className="h-4 w-4" />
@@ -324,124 +245,173 @@ export default function SettingsPage() {
                     <TooltipTrigger asChild>
                       <Button
                         variant="ghost"
-                        onClick={() => setIsEditingOrgName(true)}
+                        onClick={() => setIsEditingName(true)}
                         className="h-8 w-8 p-0"
                       >
                         <Edit2 className="h-4 w-4" />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Click to edit organization name</p>
+                      <p>Click to edit project name</p>
                     </TooltipContent>
                   </Tooltip>
                 )}
               </div>
             </div>
+          </div>
+        </div>
+      </div>
 
-            <Separator />
-
-            {/* Subscription Section */}
-            <div className="flex flex-row">
-              <div className="flex flex-col items-left w-80">
-                <label className="font-semibold">Subscription</label>
-                <p className="text-sm text-muted-foreground">
-                  Manage your organization&apos;s subscription
-                </p>
-              </div>
-              {isLoading ? (
-                <div className="flex-1">
-                  <div className="animate-pulse flex space-x-4">
-                    <div className="flex-1 space-y-4 py-1">
-                      <div className="h-4 bg-muted rounded w-3/4"></div>
-                      <div className="space-y-2">
-                        <div className="h-4 bg-muted rounded"></div>
-                        <div className="h-4 bg-muted rounded w-5/6"></div>
-                      </div>
-                    </div>
+      {/* Organization Settings Section */}
+      <div className="bg-muted/40 rounded-xl shadow p-8 space-y-8">
+        <h2 className="text-2xl font-semibold mb-4">Organization Settings</h2>
+        {/* Organization Name Section */}
+        <div className="flex flex-row items-center">
+          <div className="flex flex-col items-left w-80">
+            <label className="font-semibold">Organization Name</label>
+            <p className="text-sm text-muted-foreground">
+              Change the name of the organization
+            </p>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Input
+                value={orgName}
+                onChange={(e) => setOrgName(e.target.value)}
+                className="w-96"
+                disabled={!isEditingOrgName}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleSaveOrgName();
+                  } else if (e.key === "Escape") {
+                    setIsEditingOrgName(false);
+                    setOrgName(activeOrg.orgName);
+                  }
+                }}
+              />
+            </div>
+            {isEditingOrgName ? (
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleSaveOrgName}
+                className="h-8 w-8 p-0"
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setIsEditingOrgName(true)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Click to edit organization name</p>
+                </TooltipContent>
+              </Tooltip>
+            )}
+          </div>
+        </div>
+        {/* Subscription Section */}
+        <div className="flex flex-row">
+          <div className="flex flex-col items-left w-80">
+            <label className="font-semibold">Subscription</label>
+            <p className="text-sm text-muted-foreground">
+              Manage your organization&apos;s subscription
+            </p>
+          </div>
+          {isLoading ? (
+            <div className="flex-1">
+              <div className="animate-pulse flex space-x-4">
+                <div className="flex-1 space-y-4 py-1">
+                  <div className="h-4 bg-muted rounded w-3/4"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-muted rounded"></div>
+                    <div className="h-4 bg-muted rounded w-5/6"></div>
                   </div>
                 </div>
-              ) : (
-                <div className="flex-1">
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
-                      <div className="space-y-1">
-                        <div className="font-medium text-lg">
-                          {subscription?.plan === "free"
-                            ? "Free Plan"
-                            : "Pro Plan"}
-                        </div>
-                        <div className="text-sm text-muted-foreground">
-                          {subscription?.plan === "free"
-                            ? "Basic features for small teams"
-                            : "Advanced features for growing organizations"}
-                        </div>
-                      </div>
-                      <div>
-                        {subscription?.plan === "free" ? (
-                          <Link href="/pricing">
-                            <Button className="gap-2">
-                              <BsStars className="h-4 w-4" />
-                              Upgrade
-                            </Button>
-                          </Link>
-                        ) : (
-                          <Button
-                            variant="outline"
-                            className="gap-2"
-                            onClick={async () => {
-                              const url = await createCustomerPortalSession(
-                                accessToken,
-                                activeOrg.orgId,
-                              );
-                              window.location.href = url;
-                            }}
-                          >
-                            <RiUserSettingsLine className="h-4 w-4" />
-                            Manage Subscription
-                          </Button>
-                        )}
-                      </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex-1">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg">
+                  <div className="space-y-1">
+                    <div className="font-medium text-lg">
+                      {subscription?.plan === "free" ? "Free Plan" : "Pro Plan"}
                     </div>
-                    {subscription?.plan !== "free" && (
-                      <div className="text-sm text-muted-foreground px-4">
-                        Need help with your subscription?{" "}
-                        <Link
-                          href="/support"
-                          className="text-primary hover:underline"
-                        >
-                          Contact support
-                        </Link>
-                      </div>
+                    <div className="text-sm text-muted-foreground">
+                      {subscription?.plan === "free"
+                        ? "Basic features for small teams"
+                        : "Advanced features for growing organizations"}
+                    </div>
+                  </div>
+                  <div>
+                    {subscription?.plan === "free" ? (
+                      <Link href="/pricing">
+                        <Button className="gap-2">
+                          <BsStars className="h-4 w-4" />
+                          Upgrade
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        className="gap-2"
+                        onClick={async () => {
+                          const url = await createCustomerPortalSession(
+                            accessToken,
+                            activeOrg.orgId,
+                          );
+                          window.location.href = url;
+                        }}
+                      >
+                        <RiUserSettingsLine className="h-4 w-4" />
+                        Manage Subscription
+                      </Button>
                     )}
                   </div>
                 </div>
-              )}
-            </div>
-
-            <Separator />
-
-            {/* Team Members Table Section */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <Button variant="outline" className="font-semibold">
-                  + Invite user
-                </Button>
-                <Input
-                  placeholder="Search by email"
-                  value={userSearch}
-                  onChange={(e) => setUserSearch(e.target.value)}
-                  className="w-72 bg-background border border-muted text-foreground placeholder:text-muted-foreground rounded-md shadow-none"
-                />
-              </div>
-              <div>
-                <EnhancedDataTable
-                  data={filteredUsers}
-                  columns={userColumns}
-                  searchBarProps={undefined}
-                  paginationOptions={undefined}
-                />
+                {subscription?.plan !== "free" && (
+                  <div className="text-sm text-muted-foreground px-4">
+                    Need help with your subscription?{" "}
+                    <Link
+                      href="/support"
+                      className="text-primary hover:underline"
+                    >
+                      Contact support
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
+          )}
+        </div>
+        {/* Team Members Table Section */}
+        <div className="space-y-4 pt-2">
+          <div className="flex items-center justify-between">
+            <Button variant="default" className="font-semibold">
+              + Invite user
+            </Button>
+            <Input
+              placeholder="Search by email"
+              value={userSearch}
+              onChange={(e) => setUserSearch(e.target.value)}
+              className="w-72 bg-background border border-muted text-foreground placeholder:text-muted-foreground rounded-md shadow-none"
+            />
+          </div>
+          <div>
+            <EnhancedDataTable
+              data={filteredUsers}
+              columns={userColumns}
+              searchBarProps={undefined}
+              paginationOptions={undefined}
+            />
           </div>
         </div>
       </div>
