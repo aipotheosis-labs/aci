@@ -33,7 +33,7 @@ class AppUpsert(BaseModel, extra="forbid"):
         SecurityScheme, APIKeySchemeCredentials | OAuth2SchemeCredentials | NoAuthSchemeCredentials
     ]
 
-    @field_validator("name", check_fields=False)
+    @field_validator("name")
     def validate_name(cls, v: str) -> str:
         if not re.match(r"^[A-Z0-9_]+$", v) or "__" in v:
             raise ValueError(
@@ -41,7 +41,7 @@ class AppUpsert(BaseModel, extra="forbid"):
             )
         return v
 
-    @field_validator("security_schemes", check_fields=False)
+    @field_validator("security_schemes")
     def validate_security_schemes(
         cls, v: dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]
     ) -> dict[SecurityScheme, APIKeyScheme | OAuth2Scheme]:
