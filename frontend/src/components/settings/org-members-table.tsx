@@ -48,7 +48,7 @@ export function OrgMembersTable() {
     OrganizationRole.Member,
   ];
   const currentRoleIndex = roleHierarchy.indexOf(currentRole);
-  const availableRoles = roleHierarchy.slice(currentRoleIndex + 1);
+  const availableRoles = roleHierarchy.slice(currentRoleIndex);
 
   const fetchMembers = async () => {
     try {

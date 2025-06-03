@@ -59,7 +59,8 @@ async def remove_member(
 ) -> None:
     """
     Remove a member from the organization.
-    Only organization owners and admins can remove members.
+    Only organization owners and admins can remove other members.
+    Any member can remove themselves.
     """
     logger.info(
         "removing member from organization",
@@ -70,7 +71,15 @@ async def remove_member(
         },
     )
 
-    # Only owners and admins can remove members
+    # Allow users to remove themselves regardless of role
+    if member_id == user.user_id:
+        auth.remove_user_from_org(
+            org_id=str(org_id),
+            user_id=member_id,
+        )
+        return
+
+    # Only owners and admins can remove other members
     acl.require_org_member_with_minimum_role(user, org_id, OrganizationRole.ADMIN)
 
     # Remove the member
