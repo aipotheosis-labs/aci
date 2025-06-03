@@ -3,7 +3,7 @@ import hmac
 from typing import cast
 
 import aws_encryption_sdk  # type: ignore
-import boto3
+import boto3  # type: ignore
 from aws_cryptographic_material_providers.mpl import (  # type: ignore
     AwsCryptographicMaterialProviders,
 )
