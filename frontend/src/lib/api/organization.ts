@@ -45,30 +45,6 @@ export async function inviteToOrganization(
   }
 }
 
-export async function changeMemberRole(
-  accessToken: string,
-  orgId: string,
-  userId: string,
-  role: string,
-): Promise<void> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/members/${userId}/role`,
-    {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "X-ACI-ORG-ID": orgId,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ role }),
-    },
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to change member role");
-  }
-}
-
 export async function removeMember(
   accessToken: string,
   orgId: string,

@@ -19,7 +19,7 @@ export function DangerZone({
       <Alert variant="destructive" className="bg-destructive/5">
         <AlertTriangle className="h-4 w-4" />
         <AlertTitle>Delete this project</AlertTitle>
-        <AlertDescription className="flex items-center justify-between mt-2">
+        <AlertDescription className="flex items-center justify-between">
           <span className="text-sm text-destructive/90">
             Once you delete a project, there is no going back. This action
             permanently deletes the project and all related data.

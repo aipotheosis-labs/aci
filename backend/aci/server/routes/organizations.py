@@ -14,9 +14,11 @@ logger = get_logger(__name__)
 
 auth = acl.get_propelauth()
 
+
 class InviteMemberRequest(BaseModel):
     email: str
     role: OrganizationRole = OrganizationRole.MEMBER
+
 
 @router.post("/invite", status_code=status.HTTP_204_NO_CONTENT)
 async def invite_member(
