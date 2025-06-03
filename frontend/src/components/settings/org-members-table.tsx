@@ -6,6 +6,7 @@ import {
   listOrganizationMembers,
   inviteToOrganization,
   removeMember,
+  leaveOrganization,
 } from "@/lib/api/organization";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export function OrgMembersTable() {
   const { accessToken, activeOrg } = useMetaInfo();
@@ -39,6 +41,7 @@ export function OrgMembersTable() {
   );
   const [inviting, setInviting] = useState(false);
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   // Determine available roles for inviting
   const currentRole = activeOrg.userAssignedRole as OrganizationRole;
@@ -95,7 +98,21 @@ export function OrgMembersTable() {
     }
   };
 
-  const columns = useOrgMembersTableColumns({ onRemove: handleRemove });
+  const handleLeave = async () => {
+    try {
+      await leaveOrganization(accessToken, activeOrg.orgId);
+      toast.success("Left organization successfully");
+      router.push("/apps");
+    } catch (error) {
+      console.error("Failed to leave organization:", error);
+      toast.error("Failed to leave organization");
+    }
+  };
+
+  const columns = useOrgMembersTableColumns({
+    onRemove: handleRemove,
+    onLeave: handleLeave,
+  });
 
   return (
     <div className="space-y-4">
