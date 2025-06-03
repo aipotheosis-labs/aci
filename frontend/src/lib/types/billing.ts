@@ -14,13 +14,7 @@ export enum SubscriptionStatus {
   Paused = "paused",
 }
 
-export enum Plan {
-  Free = "free",
-  Starter = "starter",
-  Team = "team",
-}
-
 export interface Subscription {
-  plan: Plan;
+  plan: string;
   status: SubscriptionStatus;
 }
