@@ -1,6 +1,6 @@
 from collections.abc import Generator
 from datetime import UTC, datetime, timedelta
-from typing import Annotated
+from typing import Annotated, Any
 from uuid import UUID
 
 from fastapi import Depends, Security
@@ -18,6 +18,7 @@ from aci.common.exceptions import (
     ProjectNotFound,
 )
 from aci.common.logging_setup import get_logger
+from aci.common.opensearch.client import yield_opensearch_client
 from aci.server import config
 
 logger = get_logger(__name__)
@@ -142,3 +143,10 @@ def get_request_context(
         project=project,
         agent=agent,
     )
+
+
+def get_opensearch() -> Generator[Any, None, None]:
+    """
+    Dependency that provides an OpenSearch client configured with AWS credentials.
+    """
+    yield from yield_opensearch_client()

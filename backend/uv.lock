@@ -31,6 +31,7 @@ dependencies = [
     { name = "logfire", extra = ["fastapi", "sqlalchemy"] },
     { name = "openai" },
     { name = "openapi-spec-validator" },
+    { name = "opensearch-py" },
     { name = "pgvector" },
     { name = "propelauth-fastapi" },
     { name = "psycopg", extra = ["binary"] },
@@ -47,6 +48,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "alembic" },
+    { name = "boto3-stubs" },
     { name = "datasets" },
     { name = "google-api-python-client-stubs" },
     { name = "huggingface-hub" },
@@ -86,6 +88,7 @@ requires-dist = [
     { name = "logfire", extras = ["fastapi", "sqlalchemy"], specifier = ">=3.16.0" },
     { name = "openai", specifier = ">=1.80.0" },
     { name = "openapi-spec-validator", specifier = ">=0.7.1" },
+    { name = "opensearch-py", specifier = ">=2.8.0" },
     { name = "pgvector", specifier = ">=0.4.1" },
     { name = "propelauth-fastapi", specifier = ">=4.2.6" },
     { name = "psycopg", extras = ["binary"], specifier = ">=3.2.9" },
@@ -102,6 +105,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "alembic", specifier = ">=1.15.2" },
+    { name = "boto3-stubs", specifier = ">=1.37.36" },
     { name = "datasets", specifier = ">=3.6.0" },
     { name = "google-api-python-client-stubs", specifier = ">=1.29.0" },
     { name = "huggingface-hub", specifier = ">=0.31.2" },
@@ -420,6 +424,19 @@ wheels = [
 ]
 
 [[package]]
+name = "boto3-stubs"
+version = "1.38.24"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "botocore-stubs" },
+    { name = "types-s3transfer" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/15/db/357512e220359c1240ac2e8de6e358e181cdfb113397f71879d94193e89a/boto3_stubs-1.38.24.tar.gz", hash = "sha256:1607784fd379458e55ee92f4fd1d76bf328781a27ddbc322c3dd61b7ce4aa1e3", size = 99072, upload-time = "2025-05-27T21:31:32.857Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f7/f4/09306180c2fd5e5f742dbe0f105dd5a245ed4f42e4a274b29a3a09ac7f97/boto3_stubs-1.38.24-py3-none-any.whl", hash = "sha256:b62c43115013d53bb65816b85ad71786de854d0f98c463d5d3d8d228f1c2c334", size = 68669, upload-time = "2025-05-27T21:31:27.343Z" },
+]
+
+[[package]]
 name = "botocore"
 version = "1.38.21"
 source = { registry = "https://pypi.org/simple" }
@@ -431,6 +448,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/05/4a/89f2beab6757c900b15aa301227c9447feff7d327ff0595a2b74406a388c/botocore-1.38.21.tar.gz", hash = "sha256:08d5e9c00e5cc9e0ae0e60570846011789dc7f1d4ea094b3f3e3f3ae1ff2063a", size = 13904318, upload-time = "2025-05-21T19:27:59.79Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/ae/bf/8e943894e0c9f898db63c6af4c590c153dff680bd02536777b0a543e94e5/botocore-1.38.21-py3-none-any.whl", hash = "sha256:567b4d338114174d0b41857002a4b1e8efb68f1654ed9f3ec6c34ebdef5e9eaf", size = 13564842, upload-time = "2025-05-21T19:27:53.955Z" },
+]
+
+[[package]]
+name = "botocore-stubs"
+version = "1.38.24"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "types-awscrt" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d7/23/e482bb36372f58ea3751344e285d456c44a91220bcf0384e48e1f7895a67/botocore_stubs-1.38.24.tar.gz", hash = "sha256:ed346917591d1b74992eadc8bd020a09d55228cbdf9d3273a4db2b88f0bdb8f9", size = 42292, upload-time = "2025-05-28T02:23:31.576Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/29/77/c9b8f3943b27718bce7277d9bad72fab7c80f41130880c593faf2511ef95/botocore_stubs-1.38.24-py3-none-any.whl", hash = "sha256:15fcbd07541b7f82271637cfbc88e60e7ec8bccdbe9b33d6611b63b5d22ea7eb", size = 65629, upload-time = "2025-05-28T02:23:28.962Z" },
 ]
 
 [[package]]
@@ -752,6 +781,14 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/48/ce/13508a1ec3f8bb981ae4ca79ea40384becc868bfae97fd1c942bb3a001b1/email_validator-2.2.0.tar.gz", hash = "sha256:cb690f344c617a714f22e66ae771445a1ceb46821152df8e165c5f9a364582b7", size = 48967, upload-time = "2024-06-20T11:30:30.034Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/d7/ee/bf0adb559ad3c786f12bcbc9296b3f5675f529199bef03e2df281fa1fadb/email_validator-2.2.0-py3-none-any.whl", hash = "sha256:561977c2d73ce3611850a06fa56b414621e0c8faa9d66f2611407d87465da631", size = 33521, upload-time = "2024-06-20T11:30:28.248Z" },
+]
+
+[[package]]
+name = "events"
+version = "0.5"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/25/ed/e47dec0626edd468c84c04d97769e7ab4ea6457b7f54dcb3f72b17fcd876/Events-0.5-py3-none-any.whl", hash = "sha256:a7286af378ba3e46640ac9825156c93bdba7502174dd696090fdfcd4d80a1abd", size = 6758, upload-time = "2023-07-31T08:23:13.645Z" },
 ]
 
 [[package]]
@@ -1636,6 +1673,22 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/67/fe/21954ff978239dc29ebb313f5c87eeb4ec929b694b9667323086730998e2/openapi_spec_validator-0.7.1.tar.gz", hash = "sha256:8577b85a8268685da6f8aa30990b83b7960d4d1117e901d451b5d572605e5ec7", size = 37985, upload-time = "2023-10-13T11:43:40.53Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2b/4d/e744fff95aaf3aeafc968d5ba7297c8cda0d1ecb8e3acd21b25adae4d835/openapi_spec_validator-0.7.1-py3-none-any.whl", hash = "sha256:3c81825043f24ccbcd2f4b149b11e8231abce5ba84f37065e14ec947d8f4e959", size = 38998, upload-time = "2023-10-13T11:43:38.371Z" },
+]
+
+[[package]]
+name = "opensearch-py"
+version = "2.8.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "certifi" },
+    { name = "events" },
+    { name = "python-dateutil" },
+    { name = "requests" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/7c/e4/192c97ca676c81f69e138a22e10fb03f64e14a55633cb2acffb41bf6d061/opensearch_py-2.8.0.tar.gz", hash = "sha256:6598df0bc7a003294edd0ba88a331e0793acbb8c910c43edf398791e3b2eccda", size = 237923, upload-time = "2024-11-29T21:06:02.952Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/23/35/a957c6fb88ff6874996be688448b889475cf0ea978446cd5a30e764e0561/opensearch_py-2.8.0-py3-none-any.whl", hash = "sha256:52c60fdb5d4dcf6cce3ee746c13b194529b0161e0f41268b98ab8f1624abe2fa", size = 353492, upload-time = "2024-11-29T21:05:56.075Z" },
 ]
 
 [[package]]
@@ -2759,6 +2812,15 @@ wheels = [
 ]
 
 [[package]]
+name = "types-awscrt"
+version = "0.27.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/36/6c/583522cfb3c330e92e726af517a91c13247e555e021791a60f1b03c6ff16/types_awscrt-0.27.2.tar.gz", hash = "sha256:acd04f57119eb15626ab0ba9157fc24672421de56e7bd7b9f61681fedee44e91", size = 16304, upload-time = "2025-05-16T03:10:08.712Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4c/82/1ee2e5c9d28deac086ab3a6ff07c8bc393ef013a083f546c623699881715/types_awscrt-0.27.2-py3-none-any.whl", hash = "sha256:49a045f25bbd5ad2865f314512afced933aed35ddbafc252e2268efa8a787e4e", size = 37761, upload-time = "2025-05-16T03:10:07.466Z" },
+]
+
+[[package]]
 name = "types-deprecated"
 version = "1.2.15.20250304"
 source = { registry = "https://pypi.org/simple" }
@@ -2816,6 +2878,15 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/06/c1/cdc4f9b8cfd9130fbe6276db574f114541f4231fcc6fb29648289e6e3390/types_requests-2.32.0.20250515.tar.gz", hash = "sha256:09c8b63c11318cb2460813871aaa48b671002e59fda67ca909e9883777787581", size = 23012, upload-time = "2025-05-15T03:04:31.817Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fe/0f/68a997c73a129287785f418c1ebb6004f81e46b53b3caba88c0e03fcd04a/types_requests-2.32.0.20250515-py3-none-any.whl", hash = "sha256:f8eba93b3a892beee32643ff836993f15a785816acca21ea0ffa006f05ef0fb2", size = 20635, upload-time = "2025-05-15T03:04:30.5Z" },
+]
+
+[[package]]
+name = "types-s3transfer"
+version = "0.13.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/42/c1/45038f259d6741c252801044e184fec4dbaeff939a58f6160d7c32bf4975/types_s3transfer-0.13.0.tar.gz", hash = "sha256:203dadcb9865c2f68fb44bc0440e1dc05b79197ba4a641c0976c26c9af75ef52", size = 14175, upload-time = "2025-05-28T02:16:07.614Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c8/5d/6bbe4bf6a79fb727945291aef88b5ecbdba857a603f1bbcf1a6be0d3f442/types_s3transfer-0.13.0-py3-none-any.whl", hash = "sha256:79c8375cbf48a64bff7654c02df1ec4b20d74f8c5672fc13e382f593ca5565b3", size = 19588, upload-time = "2025-05-28T02:16:06.709Z" },
 ]
 
 [[package]]

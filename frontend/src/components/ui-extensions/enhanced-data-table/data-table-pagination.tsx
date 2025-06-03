@@ -10,9 +10,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  totalCount?: number;
 }
 type PageItem = number | "ellipsis";
 
@@ -42,11 +50,13 @@ function getPageItems(current0: number, total: number): PageItem[] {
 }
 
 export function DataTablePagination<TData>({
+  totalCount,
   table,
 }: DataTablePaginationProps<TData>) {
   const { pageIndex, pageSize } = table.getState().pagination;
   const pageCount = table.getPageCount();
   const rowsThisPage = table.getPaginationRowModel().rows.length;
+  const totalRows = table.getFilteredRowModel().rows.length;
 
   /* Row number range 41 – 50 / 2167 */
   const startRow = pageIndex * pageSize + 1;
@@ -82,9 +92,31 @@ export function DataTablePagination<TData>({
 
   return (
     <div className="flex flex-nowrap justify-between items-center px-3 py-1">
-      {/* Left: Total row number information */}
-      <div className="text-sm font-medium">
-        {startRow} – {endRow} / {table.getRowCount()}
+      {/* Left: Total row number information and page size selector */}
+      <div className="flex items-center gap-4">
+        <div className="text-sm font-medium">
+          {startRow} – {endRow} / {totalCount ?? totalRows}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Rows per page</span>
+          <Select
+            value={pageSize.toString()}
+            onValueChange={(value) => {
+              table.setPageSize(Number(value));
+            }}
+          >
+            <SelectTrigger className="h-8 w-[70px]">
+              <SelectValue placeholder={pageSize} />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {[10, 15, 20, 30, 50].map((size) => (
+                <SelectItem key={size} value={size.toString()}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Right: Pagination buttons + input box */}
