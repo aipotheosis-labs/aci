@@ -3,6 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, status
 from propelauth_fastapi import User
+from pydantic import BaseModel
 
 from aci.common.enums import OrganizationRole
 from aci.common.logging_setup import get_logger
@@ -13,13 +14,15 @@ logger = get_logger(__name__)
 
 auth = acl.get_propelauth()
 
+class InviteMemberRequest(BaseModel):
+    email: str
+    role: OrganizationRole = OrganizationRole.MEMBER
 
 @router.post("/invite", status_code=status.HTTP_204_NO_CONTENT)
 async def invite_member(
     user: Annotated[User, Depends(auth.require_user)],
     org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
-    email: str,
-    role: OrganizationRole = OrganizationRole.MEMBER,
+    body: InviteMemberRequest,
 ) -> None:
     """
     Invite a member to the organization.
@@ -30,8 +33,8 @@ async def invite_member(
         extra={
             "user_id": user.user_id,
             "org_id": org_id,
-            "invitee_email": email,
-            "role": role,
+            "invitee_email": body.email,
+            "role": body.role,
         },
     )
 
@@ -39,10 +42,10 @@ async def invite_member(
     acl.require_org_member_with_minimum_role(user, org_id, OrganizationRole.ADMIN)
 
     # Create the invitation
-    auth.create_org_invitation(
+    auth.invite_user_to_org(
         org_id=str(org_id),
-        email=email,
-        role=role,
+        email=body.email,
+        role=body.role,
     )
 
 
