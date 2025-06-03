@@ -440,6 +440,11 @@ class LinkedAccount(Base):
         ),
     )
 
+    # deleting linked account will delete all associated secrets
+    secrets: Mapped[list[Secret]] = relationship(
+        "Secret", lazy="select", cascade="all, delete-orphan", init=False
+    )
+
 
 class Secret(Base):
     __tablename__ = "secrets"

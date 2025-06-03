@@ -1,9 +1,14 @@
 from fastapi import status
 from fastapi.testclient import TestClient
 from pytest_subtests import SubTests
+from sqlalchemy.orm import Session
 
-from aci.common.db.sql_models import Agent, Function, LinkedAccount
+from aci.common.db import crud
+from aci.common.db.sql_models import Agent, App, Function, LinkedAccount
+from aci.common.enums import SecurityScheme
 from aci.common.schemas.function import FunctionExecute, FunctionExecutionResult
+from aci.common.schemas.secret import SecretCreate
+from aci.common.schemas.security_scheme import NoAuthSchemeCredentials
 from aci.server import config
 
 
@@ -141,3 +146,73 @@ def test_credentials_workflow(
         function_execution_response = FunctionExecutionResult.model_validate(response.json())
         assert function_execution_response.success
         assert function_execution_response.data == []
+
+
+def test_secrets_are_deleted_when_linked_account_is_deleted(
+    test_client: TestClient,
+    dummy_app_agent_secrets_manager: App,
+    dummy_agent_1_with_all_apps_allowed: Agent,
+    db_session: Session,
+) -> None:
+    """Test that secrets are automatically deleted when their parent linked account is deleted."""
+    # Given: create a linked account for agent secrets manager
+    linked_account = crud.linked_accounts.create_linked_account(
+        db_session,
+        dummy_agent_1_with_all_apps_allowed.project_id,
+        dummy_app_agent_secrets_manager.name,
+        "test_secrets_cascading_deletion_owner",
+        SecurityScheme.NO_AUTH,
+        NoAuthSchemeCredentials(),
+        enabled=True,
+    )
+    db_session.commit()
+
+    # Given: create some secrets associated with the linked account
+    secret_create_1 = SecretCreate(
+        key="example.com",
+        value=b"encrypted_credential_data_1",
+    )
+    secret_1 = crud.secret.create_secret(
+        db_session,
+        linked_account.id,
+        secret_create_1,
+    )
+
+    secret_create_2 = SecretCreate(
+        key="github.com",
+        value=b"encrypted_credential_data_2",
+    )
+
+    secret_2 = crud.secret.create_secret(
+        db_session,
+        linked_account.id,
+        secret_create_2,
+    )
+    db_session.commit()
+
+    # Given: verify secrets exist before deletion
+    secrets_before = crud.secret.list_secrets(db_session, linked_account.id)
+    assert len(secrets_before) == 2, "Should have 2 secrets before deletion"
+
+    # When: delete the linked account via API
+    delete_response = test_client.delete(
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/{linked_account.id}",
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
+    )
+    assert delete_response.status_code == status.HTTP_204_NO_CONTENT
+
+    # Then: verify linked account is deleted from DB
+    deleted_linked_account = crud.linked_accounts.get_linked_account_by_id_under_project(
+        db_session, linked_account.id, dummy_agent_1_with_all_apps_allowed.project_id
+    )
+    assert deleted_linked_account is None, "Linked account should be deleted from database"
+
+    # Then: verify secrets are also deleted from DB (cascade delete)
+    secrets_after = crud.secret.list_secrets(db_session, linked_account.id)
+    assert len(secrets_after) == 0, "All secrets should be deleted when linked account is deleted"
+
+    # Then: verify individual secrets are gone
+    secret_1_after = crud.secret.get_secret(db_session, linked_account.id, secret_1.key)
+    secret_2_after = crud.secret.get_secret(db_session, linked_account.id, secret_2.key)
+    assert secret_1_after is None, "Secret 1 should be deleted"
+    assert secret_2_after is None, "Secret 2 should be deleted"
