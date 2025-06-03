@@ -70,7 +70,7 @@ const AppPage = () => {
             >
               <Button
                 className="bg-primary text-white hover:bg-primary/90"
-                disabled={isAppConfigLoading || appConfig !== null}
+                disabled={isAppConfigLoading || !!appConfig}
               >
                 {isAppConfigLoading ? (
                   <div className="flex items-center gap-2">
