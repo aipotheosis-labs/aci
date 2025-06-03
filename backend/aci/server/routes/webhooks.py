@@ -122,7 +122,8 @@ async def handle_user_created_webhook(
         },
     )
 
-    project = crud.projects.create_project(db_session, UUID(org.org_id), "Default Project")
+    org_id_uuid = _convert_org_id_to_uuid(org.org_id)
+    project = crud.projects.create_project(db_session, org_id_uuid, "Default Project")
 
     # Create a default Agent for the project
     agent = crud.projects.create_agent(
@@ -151,3 +152,12 @@ def _generate_secure_random_alphanumeric_string(length: int = 6) -> str:
 
     secure_random_base64 = "".join(secrets.choice(charset) for _ in range(length))
     return secure_random_base64
+
+
+def _convert_org_id_to_uuid(org_id: str | UUID) -> UUID:
+    if isinstance(org_id, str):
+        return UUID(org_id)
+    elif isinstance(org_id, UUID):
+        return org_id
+    else:
+        raise TypeError(f"org_id must be a str or UUID, got {type(org_id).__name__}")
