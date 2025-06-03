@@ -115,3 +115,33 @@ async def leave_organization(
         org_id=str(org_id),
         user_id=user.user_id,
     )
+
+
+@router.get("/members", response_model=list[dict], status_code=status.HTTP_200_OK)
+async def list_members(
+    user: Annotated[User, Depends(auth.require_user)],
+    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
+) -> list[dict]:
+    """
+    List all members of the organization.
+    Any org member can view the list.
+    """
+    users_paged = auth.fetch_users_in_org(
+        org_id=str(org_id),
+        include_orgs=True,
+    )
+    members = []
+    for member in users_paged.users:
+        # Get the role for this org from org_id_to_org_info
+        org_info = member.org_id_to_org_info.get(str(org_id), {})
+        role = org_info.get("user_role", None)
+        members.append(
+            {
+                "user_id": member.user_id,
+                "email": member.email,
+                "role": role,
+                "first_name": getattr(member, "first_name", None),
+                "last_name": getattr(member, "last_name", None),
+            }
+        )
+    return members
