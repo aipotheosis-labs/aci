@@ -10,7 +10,6 @@ from aci.common.db.sql_models import Agent, Project
 from aci.common.enums import OrganizationRole
 from aci.common.exceptions import (
     AgentNotFound,
-    OrgAccessDenied,
     ProjectIsLastInOrgError,
     ProjectNotFound,
 )
@@ -42,12 +41,7 @@ async def create_project(
         },
     )
 
-    try:
-        acl.validate_user_access_to_org(user, body.org_id, OrganizationRole.ADMIN)
-    except Exception as e:
-        raise OrgAccessDenied(
-            "You are not authorized to create projects with your role in this organization. "
-        ) from e
+    acl.validate_user_access_to_org(user, body.org_id, OrganizationRole.OWNER)
     quota_manager.enforce_project_creation_quota(db_session, body.org_id)
 
     project = crud.projects.create_project(db_session, body.org_id, body.name)
@@ -79,7 +73,7 @@ async def get_projects(
     """
     Get all projects that the user is the owner of
     """
-    acl.validate_user_access_to_org(user, org_id, OrganizationRole.MEMBER)
+    acl.validate_user_access_to_org(user, org_id, OrganizationRole.OWNER)
 
     logger.info(
         "get projects",
