@@ -13,7 +13,6 @@ import { SettingsItem } from "@/components/settings/settings-item";
 import { SubscriptionDisplay } from "@/components/settings/subscription-display";
 import { ProjectNameEditor } from "@/components/settings/project-name-editor";
 import { DangerZone } from "@/components/settings/danger-zone";
-import { OrganizationMembers } from "@/components/settings/organization-members";
 
 export default function SettingsPage() {
   const { user, activeOrg, accessToken, activeProject, reloadActiveProject } =
@@ -113,10 +112,6 @@ export default function SettingsPage() {
               window.location.href = url;
             }}
           />
-
-          <div className="mt-4">
-            <OrganizationMembers />
-          </div>
         </SettingsSection>
       </div>
     </div>

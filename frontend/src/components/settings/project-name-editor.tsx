@@ -2,6 +2,11 @@ import { useState } from "react";
 import { Edit2, Check } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { SettingsItem } from "./settings-item";
 
 interface ProjectNameEditorProps {
@@ -21,8 +26,17 @@ export function ProjectNameEditor({
       setIsEditing(false);
       return;
     }
-    await onSave(name);
+
     setIsEditing(false);
+    const newName = name;
+    setName(projectName); // Reset to current name immediately
+
+    try {
+      await onSave(newName);
+    } catch {
+      setName(newName); // Restore the new name if save failed
+      setIsEditing(true); // Reopen editing if save failed
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -39,25 +53,45 @@ export function ProjectNameEditor({
       icon={Edit2}
       label="Project Name"
       description={
-        <div className="flex items-center gap-2">
-          <Input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onFocus={() => setIsEditing(true)}
-            onBlur={handleSave}
-            onKeyDown={handleKeyDown}
-            className="w-96"
-            placeholder="Enter project name"
-          />
-          {isEditing && (
-            <Button
-              size="sm"
-              variant="ghost"
-              onClick={handleSave}
-              className="h-8 w-8 p-0"
-            >
-              <Check className="h-4 w-4" />
-            </Button>
+        <div className="flex items-center gap-2 mt-1">
+          {isEditing ? (
+            <>
+              <Input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="w-96"
+                onKeyDown={handleKeyDown}
+                autoFocus
+              />
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={handleSave}
+                className="h-8 w-8 p-0"
+              >
+                <Check className="h-4 w-4" />
+              </Button>
+            </>
+          ) : (
+            <>
+              <span className="text-sm text-muted-foreground">
+                {projectName}
+              </span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setIsEditing(true)}
+                    className="h-8 w-8 p-0"
+                  >
+                    <Edit2 className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Click to edit project name</p>
+                </TooltipContent>
+              </Tooltip>
+            </>
           )}
         </div>
       }
