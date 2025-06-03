@@ -513,7 +513,7 @@
                                     }
                                 }
                             },
-                            "required": [],
+                            "required": ["title"],
                             "visible": ["title"],
                             "additionalProperties": true
                         },
