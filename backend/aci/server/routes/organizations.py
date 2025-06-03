@@ -3,21 +3,16 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends, Header, status
 from propelauth_fastapi import User
-from pydantic import BaseModel
 
 from aci.common.enums import OrganizationRole
 from aci.common.logging_setup import get_logger
+from aci.common.schemas.organizations import InviteMemberRequest
 from aci.server import acl
 
 router = APIRouter()
 logger = get_logger(__name__)
 
 auth = acl.get_propelauth()
-
-
-class InviteMemberRequest(BaseModel):
-    email: str
-    role: OrganizationRole = OrganizationRole.MEMBER
 
 
 @router.post("/invite", status_code=status.HTTP_204_NO_CONTENT)
@@ -91,7 +86,6 @@ async def remove_member(
 
 @router.get("/members", response_model=list[dict], status_code=status.HTTP_200_OK)
 async def list_members(
-    user: Annotated[User, Depends(auth.require_user)],
     org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
 ) -> list[dict]:
     """
