@@ -29,9 +29,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useAuthInfo } from "@propelauth/react";
 
 export function OrgMembersTable() {
-  const { accessToken, activeOrg } = useMetaInfo();
+  const { accessToken, activeOrg, user } = useMetaInfo();
+  const { refreshAuthInfo } = useAuthInfo();
+  const router = useRouter();
   const [members, setMembers] = useState<OrganizationMember[]>([]);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<OrganizationRole>(
@@ -90,6 +94,14 @@ export function OrgMembersTable() {
       await removeMember(accessToken, activeOrg.orgId, userId);
       toast.success("Member removed");
       fetchMembers();
+
+      // If the current user is leaving the organization
+      if (userId === user.userId) {
+        // Refresh the auth info to update organization data
+        await refreshAuthInfo();
+        // Navigate to the app store
+        router.push("/apps");
+      }
     } catch {
       toast.error("Failed to remove member");
     }
