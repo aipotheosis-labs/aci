@@ -22,7 +22,6 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import { ProjectSelector } from "./project-selector";
 import { PiStorefront } from "react-icons/pi";
 import { RiSettings3Line, RiLinkUnlinkM } from "react-icons/ri";
 import { AiOutlineExperiment } from "react-icons/ai";
@@ -108,19 +107,6 @@ export function AppSidebar() {
           <SidebarTrigger />
         </div>
         <Separator />
-        <div
-          className={cn(
-            "transition-all duration-200 overflow-hidden",
-            isCollapsed
-              ? "max-h-0 opacity-0 scale-95"
-              : "max-h-[100px] opacity-100 scale-100",
-          )}
-        >
-          <div className="w-full p-4">
-            <ProjectSelector />
-          </div>
-          <Separator />
-        </div>
       </SidebarHeader>
 
       <SidebarContent>
