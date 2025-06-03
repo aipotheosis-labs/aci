@@ -90,7 +90,7 @@ export function ConfigureApp({
         <Stepper currentStep={currentStep} totalSteps={3} steps={STEPS} />
 
         {/* step content */}
-        <div className="max-h-[50vh] overflow-y-auto p-1">
+        <div className="max-h-[70vh] overflow-y-auto p-1">
           {currentStep === 1 && (
             <ConfigureAppStep
               supported_security_schemes={supported_security_schemes}

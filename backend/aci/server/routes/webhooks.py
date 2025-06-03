@@ -1,6 +1,7 @@
 import secrets
 import string
 from typing import Annotated
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, Request, Response, status
 from sqlalchemy.orm import Session
@@ -95,9 +96,6 @@ async def handle_user_created_webhook(
         name=f"Personal {_generate_secure_random_alphanumeric_string()}",
         max_users=1,
     )
-    auth.update_org_metadata(org_id=org.org_id, metadata={"personal": True})
-    auth.add_user_to_org(user_id=user.user_id, org_id=org.org_id, role=OrganizationRole.OWNER)
-
     logger.info(
         "created a default personal org for new user",
         extra={
@@ -106,10 +104,29 @@ async def handle_user_created_webhook(
         },
     )
 
-    project = crud.projects.create_project(db_session, org.org_id, "Default Project")
+    auth.update_org_metadata(org_id=org.org_id, metadata={"personal": True})
+    logger.info(
+        "updated org metadata (personal=True) for default personal org",
+        extra={
+            "user_id": user.user_id,
+            "org_id": org.org_id,
+        },
+    )
+
+    auth.add_user_to_org(user_id=user.user_id, org_id=org.org_id, role=OrganizationRole.OWNER)
+    logger.info(
+        "added new user to default personal org",
+        extra={
+            "user_id": user.user_id,
+            "org_id": org.org_id,
+        },
+    )
+
+    org_id_uuid = _convert_org_id_to_uuid(org.org_id)
+    project = crud.projects.create_project(db_session, org_id_uuid, "Default Project")
 
     # Create a default Agent for the project
-    crud.projects.create_agent(
+    agent = crud.projects.create_agent(
         db_session,
         project.id,
         name="Default Agent",
@@ -120,11 +137,12 @@ async def handle_user_created_webhook(
     db_session.commit()
 
     logger.info(
-        "created default project for new user",
+        "created default project and agent for new user",
         extra={
             "user_id": user.user_id,
             "org_id": org.org_id,
             "project_id": project.id,
+            "agent_id": agent.id,
         },
     )
 
@@ -134,3 +152,12 @@ def _generate_secure_random_alphanumeric_string(length: int = 6) -> str:
 
     secure_random_base64 = "".join(secrets.choice(charset) for _ in range(length))
     return secure_random_base64
+
+
+def _convert_org_id_to_uuid(org_id: str | UUID) -> UUID:
+    if isinstance(org_id, str):
+        return UUID(org_id)
+    elif isinstance(org_id, UUID):
+        return org_id
+    else:
+        raise TypeError(f"org_id must be a str or UUID, got {type(org_id).__name__}")
