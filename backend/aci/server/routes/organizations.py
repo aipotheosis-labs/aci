@@ -59,8 +59,7 @@ async def remove_member(
 ) -> None:
     """
     Remove a member from the organization.
-    Only organization owners can remove members.
-    Members cannot remove themselves - they should use the leave endpoint instead.
+    Only organization owners and admins can remove members.
     """
     logger.info(
         "removing member from organization",
@@ -71,54 +70,13 @@ async def remove_member(
         },
     )
 
-    # Only owners can remove members
-    acl.require_org_member_with_minimum_role(user, org_id, OrganizationRole.OWNER)
-
-    # Prevent removing yourself
-    if member_id == user.user_id:
-        raise ValueError(
-            "Cannot remove yourself from the organization. Use the leave endpoint instead."
-        )
+    # Only owners and admins can remove members
+    acl.require_org_member_with_minimum_role(user, org_id, OrganizationRole.ADMIN)
 
     # Remove the member
     auth.remove_user_from_org(
         org_id=str(org_id),
         user_id=member_id,
-    )
-
-
-@router.post("/leave", status_code=status.HTTP_204_NO_CONTENT)
-async def leave_organization(
-    user: Annotated[User, Depends(auth.require_user)],
-    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
-) -> None:
-    """
-    Leave the organization.
-    Members can leave organizations they are part of.
-    Organization owners cannot leave if they are the only owner.
-    """
-    logger.info(
-        "leaving organization",
-        extra={
-            "user_id": user.user_id,
-            "org_id": org_id,
-        },
-    )
-
-    # Check if user is the only owner
-    org = user.get_org(str(org_id))
-    if org.user_is_role(OrganizationRole.OWNER):
-        # Get all owners
-        owners = [member for member in org.members if member.role == OrganizationRole.OWNER]
-        if len(owners) <= 1:
-            raise ValueError(
-                "Cannot leave the organization as the only owner. Please transfer ownership or add another owner first."
-            )
-
-    # Leave the organization
-    auth.remove_user_from_org(
-        org_id=str(org_id),
-        user_id=user.user_id,
     )
 
 

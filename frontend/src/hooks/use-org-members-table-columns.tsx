@@ -20,25 +20,28 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreVertical } from "lucide-react";
 import { useMetaInfo } from "@/components/context/metainfo";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const columnHelper = createColumnHelper<OrganizationMember>();
 
 export function useOrgMembersTableColumns({
   onRemove,
-  onLeave,
 }: {
   onRemove: (userId: string) => void;
-  onLeave: () => void;
 }): ColumnDef<OrganizationMember, unknown>[] {
   const { user } = useMetaInfo();
   const [dialogState, setDialogState] = useState<{
-    type: "leave" | "remove" | null;
     memberId: string | null;
     email: string | null;
+    isCurrentUser: boolean;
   }>({
-    type: null,
     memberId: null,
     email: null,
+    isCurrentUser: false,
   });
 
   return useMemo(
@@ -60,6 +63,29 @@ export function useOrgMembersTableColumns({
           cell: (info) => {
             const member = info.row.original;
             const isCurrentUser = member.user_id === user.userId;
+            const isOwner = member.role === "Owner";
+            const isLastOwner =
+              isOwner &&
+              info.table
+                .getCoreRowModel()
+                .rows.filter((row) => row.original.role === "Owner").length ===
+                1;
+
+            const menuItem = (
+              <DropdownMenuItem
+                className="text-red-600 focus:text-red-600"
+                disabled={isLastOwner}
+                onSelect={() => {
+                  setDialogState({
+                    memberId: member.user_id,
+                    email: member.email,
+                    isCurrentUser,
+                  });
+                }}
+              >
+                {isCurrentUser ? "Leave" : "Remove"}
+              </DropdownMenuItem>
+            );
 
             return (
               <>
@@ -71,45 +97,29 @@ export function useOrgMembersTableColumns({
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    {isCurrentUser ? (
-                      <DropdownMenuItem
-                        className="text-red-600 focus:text-red-600"
-                        onSelect={() => {
-                          setDialogState({
-                            type: "leave",
-                            memberId: member.user_id,
-                            email: member.email,
-                          });
-                        }}
-                      >
-                        Leave
-                      </DropdownMenuItem>
+                    {isLastOwner ? (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div>{menuItem}</div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Cannot remove the last owner</p>
+                        </TooltipContent>
+                      </Tooltip>
                     ) : (
-                      <DropdownMenuItem
-                        className="text-red-600 focus:text-red-600"
-                        disabled={member.role === "Owner"}
-                        onSelect={() => {
-                          setDialogState({
-                            type: "remove",
-                            memberId: member.user_id,
-                            email: member.email,
-                          });
-                        }}
-                      >
-                        Remove
-                      </DropdownMenuItem>
+                      menuItem
                     )}
                   </DropdownMenuContent>
                 </DropdownMenu>
 
                 <AlertDialog
-                  open={dialogState.type !== null}
+                  open={dialogState.memberId !== null}
                   onOpenChange={(open) => {
                     if (!open) {
                       setDialogState({
-                        type: null,
                         memberId: null,
                         email: null,
+                        isCurrentUser: false,
                       });
                     }
                   }}
@@ -117,43 +127,34 @@ export function useOrgMembersTableColumns({
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        {dialogState.type === "leave"
+                        {dialogState.isCurrentUser
                           ? "Leave Organization"
                           : "Remove Member"}
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        {dialogState.type === "leave" ? (
-                          "Are you sure you want to leave this organization? This action cannot be undone."
-                        ) : (
-                          <>
-                            Are you sure you want to remove{" "}
-                            <b>{dialogState.email}</b> from the organization?
-                            This action cannot be undone.
-                          </>
-                        )}
+                        {dialogState.isCurrentUser
+                          ? "Are you sure you want to leave this organization? This action cannot be undone."
+                          : `Are you sure you want to remove ${dialogState.email} from the organization? This action cannot be undone.`}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => {
-                          if (dialogState.type === "leave") {
-                            onLeave();
-                          } else if (
-                            dialogState.type === "remove" &&
-                            dialogState.memberId
-                          ) {
+                          if (dialogState.isCurrentUser) {
+                            onRemove(user.userId);
+                          } else if (dialogState.memberId) {
                             onRemove(dialogState.memberId);
                           }
                           setDialogState({
-                            type: null,
                             memberId: null,
                             email: null,
+                            isCurrentUser: false,
                           });
                         }}
                         className="bg-red-600 hover:bg-red-700"
                       >
-                        {dialogState.type === "leave" ? "Leave" : "Remove"}
+                        {dialogState.isCurrentUser ? "Leave" : "Remove"}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -164,6 +165,6 @@ export function useOrgMembersTableColumns({
           enableGlobalFilter: false,
         }),
       ] as ColumnDef<OrganizationMember, unknown>[],
-    [onRemove, onLeave, user.userId, dialogState],
+    [onRemove, user.userId, dialogState],
   );
 }

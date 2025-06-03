@@ -65,23 +65,3 @@ export async function removeMember(
     throw new Error("Failed to remove member");
   }
 }
-
-export async function leaveOrganization(
-  accessToken: string,
-  orgId: string,
-): Promise<void> {
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/leave`,
-    {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "X-ACI-ORG-ID": orgId,
-      },
-    },
-  );
-
-  if (!response.ok) {
-    throw new Error("Failed to leave organization");
-  }
-}
