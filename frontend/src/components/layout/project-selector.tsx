@@ -25,14 +25,8 @@ import { GoPlus } from "react-icons/go";
 import { CreateProjectDialog } from "@/components/project/create-project-dialog";
 
 export const ProjectSelector = () => {
-  const {
-    projects,
-    activeProject,
-    setActiveProject,
-    accessToken,
-    reloadActiveProject,
-    activeOrg,
-  } = useMetaInfo();
+  const { projects, activeProject, setActiveProject, reloadActiveProject } =
+    useMetaInfo();
   const [open, setOpen] = useState(false);
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
 
@@ -106,8 +100,6 @@ export const ProjectSelector = () => {
       </Popover>
 
       <CreateProjectDialog
-        accessToken={accessToken}
-        orgId={activeOrg.orgId}
         onProjectCreated={reloadActiveProject}
         openDialog={openCreateDialog}
         setOpenDialog={setOpenCreateDialog}
