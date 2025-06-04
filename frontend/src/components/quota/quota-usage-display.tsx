@@ -1,0 +1,95 @@
+"use client";
+
+import { QuotaUsage } from "@/lib/types/quota";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+
+interface QuotaUsageDisplayProps {
+  quotaUsage: QuotaUsage;
+}
+
+interface QuotaItemProps {
+  title: string;
+  used: number;
+  limit: number;
+  remaining: number;
+}
+
+const QuotaItem: React.FC<QuotaItemProps> = ({
+  title,
+  used,
+  limit,
+  remaining,
+}) => {
+  const percentage = limit > 0 ? (used / limit) * 100 : 0;
+  const isNearLimit = percentage >= 80;
+  const isFull = percentage >= 100;
+
+  // Determine progress color based on usage
+  let progressClass = "text-chart-1"; // Default blue for normal usage
+  if (isFull) {
+    progressClass = "text-destructive"; // Red for full
+  } else if (isNearLimit) {
+    progressClass = "text-chart-3"; // Orange for near limit
+  }
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium">{title}</span>
+        <Badge
+          variant={
+            isFull ? "destructive" : isNearLimit ? "secondary" : "default"
+          }
+        >
+          {used}/{limit}
+        </Badge>
+      </div>
+      <div className={progressClass}>
+        <Progress value={percentage} className="h-2 [&>div]:bg-current" />
+      </div>
+      <div className="flex justify-between text-xs text-muted-foreground">
+        <span>Used: {used}</span>
+        <span>Remaining: {remaining}</span>
+      </div>
+    </div>
+  );
+};
+
+export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
+  quotaUsage,
+}) => {
+  return (
+    <Card className="flex flex-col h-full">
+      <CardHeader className="flex flex-row items-center justify-between p-4">
+        <CardTitle>Quota Usage</CardTitle>
+        <Badge variant="outline">{quotaUsage.plan.name} Plan</Badge>
+      </CardHeader>
+      <Separator />
+      <CardContent className="p-4 space-y-6">
+        <QuotaItem
+          title="Projects"
+          used={quotaUsage.projects.used}
+          limit={quotaUsage.projects.limit}
+          remaining={quotaUsage.projects.remaining}
+        />
+
+        <QuotaItem
+          title="Linked Accounts"
+          used={quotaUsage.linked_accounts.used}
+          limit={quotaUsage.linked_accounts.limit}
+          remaining={quotaUsage.linked_accounts.remaining}
+        />
+
+        <QuotaItem
+          title="Agent Credentials"
+          used={quotaUsage.agents_credentials.used}
+          limit={quotaUsage.agents_credentials.limit}
+          remaining={quotaUsage.agents_credentials.remaining}
+        />
+      </CardContent>
+    </Card>
+  );
+};

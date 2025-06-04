@@ -197,3 +197,21 @@ def linked_account_owner_id_exists_in_org(
         )
     )
     return db_session.execute(statement).scalar() or False
+
+
+def get_total_number_of_linked_accounts_in_org(db_session: Session, org_id: UUID) -> int:
+    """
+    Get the total number of linked accounts (agent credentials) for an organization.
+    Each linked account represents one app's credential storage for one user in one project.
+
+    Args:
+        db_session: Database session
+        org_id: ID of the organization
+
+    Returns:
+        int: Total number of linked accounts across all projects in the organization
+    """
+    statement = select(func.count(LinkedAccount.id)).where(
+        LinkedAccount.project_id.in_(select(Project.id).filter(Project.org_id == org_id))
+    )
+    return db_session.execute(statement).scalar_one()
