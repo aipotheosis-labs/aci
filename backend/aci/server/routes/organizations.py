@@ -86,12 +86,16 @@ async def remove_member(
 
 @router.get("/members", response_model=list[dict], status_code=status.HTTP_200_OK)
 async def list_members(
+    user: Annotated[User, Depends(auth.require_user)],
     org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
 ) -> list[dict]:
     """
     List all members of the organization.
     Any org member can view the list.
     """
+    # Verify user is a member of the organization
+    acl.require_org_member(user, org_id)
+
     users_paged = auth.fetch_users_in_org(
         org_id=str(org_id),
         include_orgs=True,
@@ -106,8 +110,8 @@ async def list_members(
                 "user_id": member.user_id,
                 "email": member.email,
                 "role": role,
-                "first_name": getattr(member, "first_name", None),
-                "last_name": getattr(member, "last_name", None),
+                "first_name": member.first_name,
+                "last_name": member.last_name,
             }
         )
     return members

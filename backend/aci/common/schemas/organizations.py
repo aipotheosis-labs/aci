@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 
 from aci.common.enums import OrganizationRole
 
 
 class InviteMemberRequest(BaseModel):
-    email: str
+    email: EmailStr
     role: OrganizationRole
