@@ -13,7 +13,7 @@ def test_invite_member(
     dummy_user: DummyUser,
 ) -> None:
     """Test that an admin can invite a member to the organization."""
-    with patch("aci.server.acl.get_propelauth") as mock_auth:
+    with patch("aci.server.routes.organizations.auth") as mock_auth:
         # Mock the required methods
         mock_auth.require_org_member_with_minimum_role.return_value = None
         mock_auth.invite_user_to_org.return_value = None
@@ -30,6 +30,11 @@ def test_invite_member(
             },
         )
         assert response.status_code == status.HTTP_204_NO_CONTENT
+        mock_auth.invite_user_to_org.assert_called_once_with(
+            org_id=str(dummy_user.org_id),
+            email="new_member@example.com",
+            role=OrganizationRole.MEMBER,
+        )
 
 
 def test_remove_member(
