@@ -19,9 +19,9 @@ def get_propelauth() -> FastAPIAuth:
     return _auth
 
 
-def validate_user_access_to_org(user: User, org_id: UUID, org_role: OrganizationRole) -> None:
+def validate_user_access_to_org(user: User, org_id: UUID) -> None:
     # Use PropelAuth's built-in method to validate organization role
-    get_propelauth().require_org_member_with_minimum_role(user, str(org_id), org_role)
+    get_propelauth().require_org_member(user, str(org_id))
 
 
 def validate_user_access_to_project(db_session: Session, user: User, project_id: UUID) -> None:
@@ -31,7 +31,7 @@ def validate_user_access_to_project(db_session: Session, user: User, project_id:
     if not project:
         raise ProjectNotFound(f"project={project_id} not found")
 
-    validate_user_access_to_org(user, project.org_id, OrganizationRole.OWNER)
+    validate_user_access_to_org(user, project.org_id)
 
 
 def require_org_member(user: User, org_id: UUID) -> None:
