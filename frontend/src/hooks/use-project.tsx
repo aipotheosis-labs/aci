@@ -66,8 +66,11 @@ export const useCreateProject = () => {
       toast.success("project created successfully");
     },
     onError: (error) => {
-      console.error("create project failed:", error);
-      toast.error("create project failed");
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("create project failed");
+      }
     },
   });
 };
