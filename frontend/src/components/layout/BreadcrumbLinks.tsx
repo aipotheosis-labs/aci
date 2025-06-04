@@ -8,7 +8,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { sidebarItems, settingsItems } from "./app-sidebar";
+import { sidebarItems, settingsItem } from "./app-sidebar";
 
 interface BreadcrumbLinksProps {
   pathname: string;
@@ -17,7 +17,7 @@ interface BreadcrumbLinksProps {
 export const BreadcrumbLinks = ({ pathname }: BreadcrumbLinksProps) => {
   const segments = pathname.split("/").filter(Boolean);
   let cumulativePath = "";
-  const allRoutes = [...sidebarItems, ...settingsItems];
+  const allRoutes = [...sidebarItems, settingsItem];
   const breadcrumbs = segments.map((segment, index) => {
     cumulativePath += "/" + segment;
 

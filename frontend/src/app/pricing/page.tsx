@@ -116,7 +116,7 @@ export default function PricingPage() {
         variant="ghost"
         size="icon"
         className="absolute top-6 right-6 text-muted-foreground hover:text-foreground"
-        onClick={() => router.push("/account")}
+        onClick={() => router.push("/settings")}
         aria-label="Close pricing page"
       >
         <X className="h-6 w-6" />

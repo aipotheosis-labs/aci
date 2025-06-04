@@ -35,7 +35,6 @@ export function DeleteProjectDialog({
   projectId,
   projectName,
 }: DeleteProjectDialogProps) {
-  console.log("projectName", projectName);
   const [isDeleting, setIsDeleting] = useState(false);
   const [confirmName, setConfirmName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
