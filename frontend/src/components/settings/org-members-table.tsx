@@ -39,18 +39,14 @@ export function OrgMembersTable() {
   const [members, setMembers] = useState<OrganizationMember[]>([]);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<OrganizationRole>(
-    OrganizationRole.Member,
+    OrganizationRole.Admin,
   );
   const [inviting, setInviting] = useState(false);
   const [open, setOpen] = useState(false);
 
   // Determine available roles for inviting
   const currentRole = activeOrg.userAssignedRole as OrganizationRole;
-  const roleHierarchy = [
-    OrganizationRole.Owner,
-    OrganizationRole.Admin,
-    OrganizationRole.Member,
-  ];
+  const roleHierarchy = [OrganizationRole.Owner, OrganizationRole.Admin];
   const currentRoleIndex = roleHierarchy.indexOf(currentRole);
   const availableRoles = roleHierarchy.slice(currentRoleIndex);
 
@@ -65,8 +61,7 @@ export function OrgMembersTable() {
 
   useEffect(() => {
     fetchMembers();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeOrg.orgId]);
+  }, [activeOrg.orgId, accessToken]);
 
   const handleInvite = async () => {
     if (!inviteEmail) return;
