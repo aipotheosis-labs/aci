@@ -3,7 +3,7 @@ from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from aci.common.db.sql_models import LinkedAccount, Secret
+from aci.common.db.sql_models import LinkedAccount, Project, Secret
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.secret import SecretCreate, SecretUpdate
 
@@ -70,20 +70,15 @@ def delete_secret(db_session: Session, secret: Secret) -> None:
     db_session.flush()
 
 
-def count_secrets_by_project(db_session: Session, project_id: UUID) -> int:
+def get_total_number_of_agent_secrets_for_org(db_session: Session, org_id: UUID) -> int:
     """
-    Count the number of secrets for a project.
-
-    Args:
-        db_session: Database session
-        project_id: ID of the project to count secrets for
-
-    Returns:
-        int: Number of secrets for the project
+    Get the total number of agent secrets for an organization across all its projects.
+    Uses JOINs for better performance compared to nested subqueries.
     """
     statement = (
         select(func.count(Secret.id))
         .join(LinkedAccount, Secret.linked_account_id == LinkedAccount.id)
-        .where(LinkedAccount.project_id == project_id)
+        .join(Project, LinkedAccount.project_id == Project.id)
+        .where(Project.org_id == org_id)
     )
     return db_session.execute(statement).scalar_one()

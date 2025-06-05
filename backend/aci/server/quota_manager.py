@@ -17,7 +17,6 @@ from aci.common.exceptions import (
     MaxProjectsReached,
     MaxUniqueLinkedAccountOwnerIdsReached,
     ProjectNotFound,
-    SubscriptionPlanNotFound,
 )
 from aci.common.logging_setup import get_logger
 from aci.server import billing, config
@@ -150,24 +149,16 @@ def enforce_agent_secrets_quota(db_session: Session, project_id: UUID) -> None:
     if not project:
         raise ProjectNotFound(f"Project {project_id} not found")
 
-    # Get the organization's subscription
-    subscription = crud.subscriptions.get_subscription_by_org_id(db_session, project.org_id)
-    if not subscription:
-        # If no subscription found, use the free plan
-        plan = crud.plans.get_by_name(db_session, "free")
-        if not plan:
-            raise SubscriptionPlanNotFound("Free plan not found")
-    else:
-        # Get the plan from the subscription
-        plan = crud.plans.get_by_id(db_session, subscription.plan_id)
-        if not plan:
-            raise SubscriptionPlanNotFound(f"Plan {subscription.plan_id} not found")
+    # Get the plan for the organization
+    subscription = billing.get_subscription_by_org_id(db_session, project.org_id)
 
     # Get the agent secrets quota from the plan's features
-    max_agent_secrets = plan.features.get("agent_credentials", 0)
+    max_agent_secrets = subscription.plan.features["agent_credentials"]
 
     # Count the number of agent secrets for the project
-    num_agent_secrets = crud.secret.count_secrets_by_project(db_session, project_id)
+    num_agent_secrets = crud.secret.get_total_number_of_agent_secrets_for_org(
+        db_session, project.org_id
+    )
     if num_agent_secrets >= max_agent_secrets:
         logger.error(
             "project has reached maximum agent secrets quota",
@@ -175,7 +166,7 @@ def enforce_agent_secrets_quota(db_session: Session, project_id: UUID) -> None:
                 "project_id": project_id,
                 "max_agent_secrets": max_agent_secrets,
                 "num_agent_secrets": num_agent_secrets,
-                "plan": plan.name,
+                "plan": subscription.plan.name,
             },
         )
         raise MaxAgentSecretsReached()
