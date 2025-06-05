@@ -3,8 +3,11 @@ import os
 
 import click
 import pandas as pd
+
 import wandb
 
+# Import after environment is loaded
+from evals.intent_prompts import PROMPTS
 from evals.search_evaluator import SearchEvaluator
 from evals.synthetic_intent_generator import SyntheticIntentGenerator
 
@@ -33,7 +36,7 @@ class EvaluationPipeline:
         openai_api_key: str,
         wandb_token: str,
         model: str = "gpt-4o-mini",
-        prompt_type: str = "task",
+        prompt_type: str = "prompt_easy",
     ):
         """
         Initialize the pipeline with configuration.
@@ -182,6 +185,8 @@ class EvaluationPipeline:
                 "evaluation_samples": evaluation_samples,
                 "dataset_artifact": dataset_artifact,
                 "dataset_filename": dataset_filename,
+                "prompt_type": self.prompt_type,
+                "generation_model": self.model,
             },
         )
 
@@ -214,7 +219,14 @@ class EvaluationPipeline:
     required=True,
 )
 @click.option(
-    "--dataset-artifact",
+    "--prompt-type",
+    type=click.Choice(list(PROMPTS.keys())),
+    default="prompt_easy",
+    help="Type of prompt to use for intent generation",
+    show_default=True,
+)
+@click.option(
+    "--dataset",
     default=DEFAULT_DATASET_ARTIFACT,
     help="Name of the W&B dataset artifact to use",
     show_default=True,
@@ -230,7 +242,8 @@ class EvaluationPipeline:
 @click.option("--evaluation-samples", type=int, help="Limit number of samples to evaluate")
 def main(
     mode: str,
-    dataset_artifact: str,
+    prompt_type: str,
+    dataset: str,
     generation_limit: int | None,
     evaluation_samples: int | None,
     dataset_filename: str,
@@ -247,12 +260,20 @@ def main(
             "EVALS_SERVER_URL, EVALS_ACI_API_KEY, EVALS_OPENAI_KEY, and EVALS_WANDB_KEY must be set in environment"
         )
 
+    # Automatically append prompt type to dataset name for better organization
+    if dataset == DEFAULT_DATASET_ARTIFACT:
+        dataset_with_prompt = f"{dataset}_{prompt_type}"
+    else:
+        # If user provided custom dataset name, still append prompt type
+        dataset_with_prompt = f"{dataset}_{prompt_type}"
+
     # Create pipeline
     pipeline = EvaluationPipeline(
         search_server_url=str(search_server_url),
         search_api_key=str(search_api_key),
         openai_api_key=str(openai_api_key),
         wandb_token=str(wandb_token),
+        prompt_type=prompt_type,
     )
 
     # Determine operation modes
@@ -261,7 +282,7 @@ def main(
 
     # Run pipeline
     pipeline.run(
-        dataset_artifact=dataset_artifact,
+        dataset_artifact=dataset_with_prompt,
         dataset_filename=dataset_filename,
         generate_data=generate_data,
         evaluate_data=evaluate_data,

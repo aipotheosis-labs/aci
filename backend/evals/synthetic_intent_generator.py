@@ -1,11 +1,11 @@
 import openai
 import pandas as pd
-import wandb
 from dotenv import load_dotenv
 from sqlalchemy import select
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 from tqdm import tqdm
 
+import wandb
 from aci.cli import config
 from aci.common import utils
 from aci.common.db.sql_models import App, Function
@@ -178,8 +178,10 @@ class SyntheticIntentGenerator:
             df = df[:limit]
 
         # Generate intents
-        df["prompt"] = df.apply(PROMPTS[self.prompt_type], axis=1)
-        df["synthetic_output"] = [self._generate_intent(prompt) for prompt in tqdm(df["prompt"])]
+        df[self.prompt_type] = df.apply(PROMPTS[self.prompt_type], axis=1)
+        df["synthetic_output"] = [
+            self._generate_intent(prompt) for prompt in tqdm(df[self.prompt_type])
+        ]
 
         # Log and save
         self._log_dataset_stats(df)

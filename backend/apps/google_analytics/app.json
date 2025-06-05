@@ -1,0 +1,28 @@
+{
+  "name": "GOOGLE_ANALYTICS",
+  "display_name": "Google Analytics",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/google_analytics.svg",
+  "provider": "Google",
+  "version": "4.0.0",
+  "description": "The Google Analytics API provides programmatic access to both GA4 and Universal Analytics data. Supports reporting, configuration management, and real-time data access.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_GOOGLE_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_GOOGLE_APP_CLIENT_SECRET }}",
+      "scope": "https://www.googleapis.com/auth/analytics.readonly https://www.googleapis.com/auth/analytics.edit",
+      "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth",
+      "access_token_url": "https://oauth2.googleapis.com/token",
+      "refresh_token_url": "https://oauth2.googleapis.com/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Data & Analytics",
+    "Marketing"
+  ],
+  "visibility": "public",
+  "active": true
+}
