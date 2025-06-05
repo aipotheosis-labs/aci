@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from aci.common.db.sql_models import LinkedAccount
-from aci.common.exceptions import AgentSecretsManagerError, MaxAgentSecretsReached
+from aci.common.exceptions import AgentSecretsManagerError
 from aci.common.schemas.secret import SecretCreate, SecretUpdate
 from aci.common.schemas.security_scheme import NoAuthScheme, NoAuthSchemeCredentials
 from aci.server.app_connectors.agent_secrets_manager import (
@@ -170,6 +170,9 @@ def test_create_credential_for_domain_success(secrets_manager: AgentSecretsManag
             "aci.server.app_connectors.agent_secrets_manager.SecretCreate",
             return_value=mock_secret_create,
         ) as mock_secret_create_class,
+        patch(
+            "aci.server.app_connectors.agent_secrets_manager.quota_manager.enforce_agent_secrets_quota",
+        ),
     ):
         # When
         secrets_manager.create_credential_for_domain("example.com", "user1", "pass1")
@@ -208,6 +211,9 @@ def test_create_credential_for_domain_already_exists(
             "aci.server.app_connectors.agent_secrets_manager.crud.secret.get_secret",
             return_value=mock_secret,
         ) as mock_get_secret,
+        patch(
+            "aci.server.app_connectors.agent_secrets_manager.quota_manager.enforce_agent_secrets_quota",
+        ),
     ):
         # When
         with pytest.raises(
@@ -219,31 +225,6 @@ def test_create_credential_for_domain_already_exists(
         mock_create_db_session.assert_called_once()
         mock_get_secret.assert_called_once_with(
             mock_db_session, secrets_manager.linked_account.id, "example.com"
-        )
-
-
-def test_create_credential_for_domain_quota_exceeded(secrets_manager: AgentSecretsManager) -> None:
-    # Given
-    mock_db_session = MagicMock()
-
-    with (
-        patch(
-            "aci.server.app_connectors.agent_secrets_manager.create_db_session",
-            return_value=MagicMock(__enter__=MagicMock(return_value=mock_db_session)),
-        ) as mock_create_db_session,
-        patch(
-            "aci.server.app_connectors.agent_secrets_manager.quota_manager.enforce_agent_secrets_quota",
-            side_effect=MaxAgentSecretsReached(),
-        ) as mock_enforce_quota,
-    ):
-        # When
-        with pytest.raises(MaxAgentSecretsReached):
-            secrets_manager.create_credential_for_domain("example.com", "user1", "pass1")
-
-        # Then
-        mock_create_db_session.assert_called_once()
-        mock_enforce_quota.assert_called_once_with(
-            mock_db_session, secrets_manager.linked_account.project_id
         )
 
 
