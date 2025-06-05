@@ -31,8 +31,7 @@ The Dev Portal enables developers to create and manage their projects efficientl
 ## Development Setup
 
 1. **Bring up backend in docker compose:**
-   Refer to the [backend README](../backend/README.md) to set it up. Make sure you
-   complete the [Webhooks](../backend/README.md#webhooks-for-local-end-to-end-development-with-frontend) section of the setup.
+   Refer to the [backend README](../backend/README.md) to set it up.
 
 1. Make sure you are in the **frontend** directory
 

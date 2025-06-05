@@ -298,6 +298,11 @@ To create a new app, run:
 docker compose exec runner python -m aci.cli create-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
 ```
 
+To create or update an app from a JSON file, run:
+```bash
+docker compose exec runner python -m aci.cli upsert-app --app-file ./apps/your-app-name/app.json --secrets-file ./apps/your-app-name/.app.secrets.json
+```
+
 ## Contributing
 
 Please refer to the [Contributing Guide](../CONTRIBUTING.md) for details on making contributions to this project.
