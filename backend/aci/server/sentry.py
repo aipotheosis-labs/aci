@@ -4,7 +4,9 @@ from aci.server import config
 
 
 def setup_sentry() -> None:
-    if config.ENVIRONMENT != "local":
+    if config.ENVIRONMENT != "local" and (
+        config.ENVIRONMENT == "staging" or config.ENVIRONMENT == "production"
+    ):
         sentry_sdk.init(
             environment=config.ENVIRONMENT,
             dsn="https://9cebb66f55b0782e37370b08be11f1f5@o4508859021459456.ingest.us.sentry.io/4508915251871744",
