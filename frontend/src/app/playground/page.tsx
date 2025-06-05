@@ -7,8 +7,9 @@ import { SettingsSidebar } from "./playground-settings";
 import { ChatInput } from "./chat-input";
 import { Messages } from "./messages";
 import { useShallow } from "zustand/react/shallow";
-import { BetaAlert } from "@/components/playground/beta-alert";
 import { useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
 
 const chatHistoryLocalStorageKey = `playground-chat-history`;
 const Page = () => {
@@ -45,6 +46,7 @@ const Page = () => {
     }
     return [];
   };
+
   const {
     messages,
     input,
@@ -89,6 +91,11 @@ const Page = () => {
     addToolResult({ toolCallId, result });
   };
 
+  const handleClearMessages = () => {
+    sessionStorage.removeItem(chatHistoryLocalStorageKey);
+    setMessages([]);
+  };
+
   if (!activeProject) {
     console.warn("No active project");
     return <div>No project selected</div>;
@@ -98,7 +105,18 @@ const Page = () => {
     <div className="flex flex-grow h-[calc(100vh-6rem)]">
       {/* Left part - Chat area */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <BetaAlert />
+        <div className="flex flex-col gap-4 mb-1 bg-transparent">
+          {messages.length > 0 && (
+            <Button
+              variant="outline"
+              onClick={handleClearMessages}
+              className="w-32 ml-3 mt-2 h-8 w-28"
+            >
+              <Trash2 className="h-4 w-4" />
+              Clear Chat
+            </Button>
+          )}
+        </div>
         <Messages
           messages={messages}
           status={status}
@@ -106,6 +124,7 @@ const Page = () => {
           apiKey={apiKey}
           addToolResult={handleAddToolResult}
         />
+
         <ChatInput
           input={input}
           setMessages={setMessages}
