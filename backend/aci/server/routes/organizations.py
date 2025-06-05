@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Header, status
 from propelauth_fastapi import User
 
 from aci.common.enums import OrganizationRole
+from aci.common.exceptions import OrgAccessDenied
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.organizations import InviteMemberRequest
 from aci.server import acl, config
@@ -55,7 +56,7 @@ async def remove_member(
     """
     Remove a member from the organization.
     Only organization owners and admins can remove other members.
-    Any member can remove themselves.
+    Any member can remove themselves, except owners cannot remove themselves.
     """
     logger.info(
         "removing member from organization",
@@ -66,8 +67,15 @@ async def remove_member(
         },
     )
 
-    # Allow users to remove themselves regardless of role
+    # Allow users to remove themselves regardless of role, except owners
     if member_id == user.user_id:
+        # Check if the user is an owner - owners cannot remove themselves
+        org_member_info = user.org_id_to_org_member_info.get(str(org_id))
+        if org_member_info and org_member_info.user_assigned_role == OrganizationRole.OWNER:
+            raise OrgAccessDenied(
+                "Organization owners cannot remove themselves from the organization"
+            )
+
         auth.remove_user_from_org(
             org_id=str(org_id),
             user_id=member_id,
@@ -93,6 +101,13 @@ async def list_members(
     List all members of the organization.
     Any org member can view the list.
     """
+    logger.info(
+        "listing organization members",
+        extra={
+            "user_id": user.user_id,
+            "org_id": org_id,
+        },
+    )
     # Verify user is a member of the organization
     acl.require_org_member(user, org_id)
 
