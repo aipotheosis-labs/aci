@@ -40,10 +40,12 @@ async def invite_member(
     acl.require_org_member_with_minimum_role(user, org_id, OrganizationRole.ADMIN)
 
     # Create the invitation
+    # TODO: Currently we are inviting all users to the organization as admins.
+    #       To be changed in the future to allow members aswell
     auth.invite_user_to_org(
         org_id=str(org_id),
         email=body.email,
-        role=body.role,
+        role=OrganizationRole.ADMIN,
     )
 
 

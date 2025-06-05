@@ -82,6 +82,26 @@ def test_remove_self(
         )
 
 
+def test_owner_cannot_remove_self(
+    test_client: TestClient,
+    dummy_user: DummyUser,
+) -> None:
+    """Test that an organization owner cannot remove themselves."""
+    # Note: dummy_user is already configured as an OWNER in conftest.py
+    response = test_client.delete(
+        f"{config.ROUTER_PREFIX_ORGANIZATIONS}/members/{dummy_user.propel_auth_user.user_id}",
+        headers={
+            "Authorization": f"Bearer {dummy_user.access_token}",
+            config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
+        },
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    response_data = response.json()
+    assert response_data["title"] == "Org access denied"
+    assert "Organization owners cannot remove themselves" in response_data["message"]
+
+
 def test_list_members(
     test_client: TestClient,
     dummy_user: DummyUser,
