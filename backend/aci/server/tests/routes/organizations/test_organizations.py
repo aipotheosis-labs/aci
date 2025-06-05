@@ -8,20 +8,20 @@ from aci.server import config
 from aci.server.tests.conftest import DummyUser
 
 
-def test_invite_member(
+def test_invite_user(
     test_client: TestClient,
     dummy_user: DummyUser,
 ) -> None:
-    """Test that an admin can invite a member to the organization."""
+    """Test that an admin can invite a user to the organization."""
     with patch("aci.server.routes.organizations.auth") as mock_auth:
         # Mock the required methods
         mock_auth.require_org_member_with_minimum_role.return_value = None
         mock_auth.invite_user_to_org.return_value = None
 
         response = test_client.post(
-            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/invite",
+            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/invite_user",
             json={
-                "email": "new_member@example.com",
+                "email": "new_user@example.com",
                 "role": OrganizationRole.MEMBER,
             },
             headers={
@@ -32,23 +32,23 @@ def test_invite_member(
         assert response.status_code == status.HTTP_204_NO_CONTENT
         mock_auth.invite_user_to_org.assert_called_once_with(
             org_id=str(dummy_user.org_id),
-            email="new_member@example.com",
+            email="new_user@example.com",
             role=OrganizationRole.MEMBER,
         )
 
 
-def test_cannot_invite_member_as_owner(
+def test_cannot_invite_user_as_owner(
     test_client: TestClient,
     dummy_user: DummyUser,
 ) -> None:
-    """Test that you cannot invite a member with the OWNER role."""
+    """Test that you cannot invite a user with the OWNER role."""
     with patch("aci.server.routes.organizations.auth") as mock_auth:
         # Mock the required methods
         mock_auth.require_org_member_with_minimum_role.return_value = None
         mock_auth.invite_user_to_org.return_value = None
 
         response = test_client.post(
-            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/invite",
+            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/invite_user",
             json={
                 "email": "new_owner@example.com",
                 "role": OrganizationRole.OWNER,
@@ -65,17 +65,17 @@ def test_cannot_invite_member_as_owner(
         mock_auth.invite_user_to_org.assert_not_called()
 
 
-def test_remove_member(
+def test_remove_user(
     test_client: TestClient,
     dummy_user: DummyUser,
 ) -> None:
-    """Test that an admin can remove a member from the organization."""
+    """Test that an admin can remove a user from the organization."""
     with patch("aci.server.routes.organizations.auth") as mock_auth:
         mock_auth.require_org_member_with_minimum_role.return_value = None
         mock_auth.remove_user_from_org.return_value = None
 
         response = test_client.delete(
-            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/members/some_member_id",
+            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/users/some_user_id",
             headers={
                 "Authorization": f"Bearer {dummy_user.access_token}",
                 config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
@@ -84,7 +84,7 @@ def test_remove_member(
         assert response.status_code == status.HTTP_204_NO_CONTENT
 
         mock_auth.remove_user_from_org.assert_called_once_with(
-            org_id=str(dummy_user.org_id), user_id="some_member_id"
+            org_id=str(dummy_user.org_id), user_id="some_user_id"
         )
 
 
@@ -92,7 +92,7 @@ def test_remove_self(
     test_client: TestClient,
     dummy_user: DummyUser,
 ) -> None:
-    """Test that a member can remove themselves."""
+    """Test that a user can remove themselves."""
     with patch("aci.server.routes.organizations.auth") as mock_auth:
         mock_auth.remove_user_from_org.return_value = None
         dummy_user.propel_auth_user.org_id_to_org_member_info[
@@ -100,7 +100,7 @@ def test_remove_self(
         ].user_assigned_role = OrganizationRole.MEMBER
 
         response = test_client.delete(
-            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/members/{dummy_user.propel_auth_user.user_id}",
+            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/users/{dummy_user.propel_auth_user.user_id}",
             headers={
                 "Authorization": f"Bearer {dummy_user.access_token}",
                 config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
@@ -120,7 +120,7 @@ def test_owner_cannot_remove_self(
     """Test that an organization owner cannot remove themselves."""
     # Note: dummy_user is already configured as an OWNER in conftest.py
     response = test_client.delete(
-        f"{config.ROUTER_PREFIX_ORGANIZATIONS}/members/{dummy_user.propel_auth_user.user_id}",
+        f"{config.ROUTER_PREFIX_ORGANIZATIONS}/users/{dummy_user.propel_auth_user.user_id}",
         headers={
             "Authorization": f"Bearer {dummy_user.access_token}",
             config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
@@ -129,11 +129,11 @@ def test_owner_cannot_remove_self(
     assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
-def test_list_members(
+def test_list_users(
     test_client: TestClient,
     dummy_user: DummyUser,
 ) -> None:
-    """Test listing organization members."""
+    """Test listing organization users."""
     with patch("aci.server.routes.organizations.auth") as mock_auth:
         # Mock the required methods
         mock_auth.require_org_member.return_value = None
@@ -165,14 +165,14 @@ def test_list_members(
         mock_auth.fetch_users_in_org.return_value = mock_response
 
         response = test_client.get(
-            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/members",
+            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/users",
             headers={
                 "Authorization": f"Bearer {dummy_user.access_token}",
                 config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
             },
         )
         assert response.status_code == status.HTTP_200_OK
-        members = response.json()
-        assert len(members) == 1
-        assert members[0]["user_id"] == "user1"
-        assert members[0]["role"] == OrganizationRole.MEMBER
+        users = response.json()
+        assert len(users) == 1
+        assert users[0]["user_id"] == "user1"
+        assert users[0]["role"] == OrganizationRole.MEMBER
