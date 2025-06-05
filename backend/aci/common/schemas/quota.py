@@ -23,5 +23,5 @@ class QuotaUsageResponse(BaseModel):
 
     projects: QuotaResourceUsage
     linked_accounts: QuotaResourceUsage  # unique account owner IDs across org
-    agents_credentials: QuotaResourceUsage  # total linked accounts (app credentials)
+    agents_credentials: QuotaResourceUsage  #  total org secrets in secrets table
     plan: PlanInfo

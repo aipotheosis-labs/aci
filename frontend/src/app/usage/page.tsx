@@ -107,7 +107,7 @@ export default function UsagePage() {
           <div className="p-4">Loading analytics data...</div>
         ) : (
           <>
-            {/* 配额使用情况 */}
+            {/* quota usage */}
             {quotaUsage && (
               <div className="w-full">
                 <QuotaUsageDisplay quotaUsage={quotaUsage} />
