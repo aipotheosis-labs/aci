@@ -25,6 +25,7 @@ async def invite_member(
     """
     Invite a member to the organization.
     Only organization owners and admins can invite new members.
+    Cannot invite users with the OWNER role.
     """
     logger.info(
         "inviting member to organization",
@@ -39,13 +40,17 @@ async def invite_member(
     # Only owners and admins can invite members
     acl.require_org_member_with_minimum_role(user, org_id, OrganizationRole.ADMIN)
 
+    # Prevent inviting users as owners
+    if body.role == OrganizationRole.OWNER:
+        raise OrgAccessDenied("Cannot invite users with the OWNER role")
+
     # Create the invitation
     # TODO: Currently we are inviting all users to the organization as admins.
     #       To be changed in the future to allow members aswell
     auth.invite_user_to_org(
         org_id=str(org_id),
         email=body.email,
-        role=OrganizationRole.ADMIN,
+        role=body.role,
     )
 
 

@@ -37,6 +37,38 @@ def test_invite_member(
         )
 
 
+def test_cannot_invite_member_as_owner(
+    test_client: TestClient,
+    dummy_user: DummyUser,
+) -> None:
+    """Test that you cannot invite a member with the OWNER role."""
+    with patch("aci.server.routes.organizations.auth") as mock_auth:
+        # Mock the required methods
+        mock_auth.require_org_member_with_minimum_role.return_value = None
+        mock_auth.invite_user_to_org.return_value = None
+
+        response = test_client.post(
+            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/invite",
+            json={
+                "email": "new_owner@example.com",
+                "role": OrganizationRole.OWNER,
+            },
+            headers={
+                "Authorization": f"Bearer {dummy_user.access_token}",
+                config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
+            },
+        )
+        # This should fail - we don't allow inviting owners
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+        response_data = response.json()
+        assert response_data["title"] == "Org access denied"
+        assert "Cannot invite users with the OWNER role" in response_data["message"]
+
+        # The auth method should not be called since validation should fail first
+        mock_auth.invite_user_to_org.assert_not_called()
+
+
 def test_remove_member(
     test_client: TestClient,
     dummy_user: DummyUser,
