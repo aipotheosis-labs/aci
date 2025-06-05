@@ -25,6 +25,7 @@ logger = get_logger(__name__)
 auth = acl.get_propelauth()
 
 
+# TODO: Once member has been introduced change the ACL to require_org_member_with_minimum_role
 @router.post("", response_model=ProjectPublic, include_in_schema=True)
 async def create_project(
     body: ProjectCreate,
@@ -70,7 +71,7 @@ async def get_projects(
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> list[Project]:
     """
-    Get all projects that the user is the owner of
+    Get all projects for the organization if the user is a member of the organization.
     """
     acl.validate_user_access_to_org(user, org_id)
 
