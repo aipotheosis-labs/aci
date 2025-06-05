@@ -45,12 +45,12 @@ async def invite_member(
         raise OrgAccessDenied("Cannot invite users with the OWNER role")
 
     # Create the invitation
-    # TODO: Currently we are inviting all users to the organization as admins.
-    #       To be changed in the future to allow members aswell
+    # TODO: Currently we are inviting all members to the organization as admins.
+    #       To be changed in the future to allow the MEMBER role aswell
     auth.invite_user_to_org(
         org_id=str(org_id),
         email=body.email,
-        role=body.role,
+        role=OrganizationRole.ADMIN,
     )
 
 
