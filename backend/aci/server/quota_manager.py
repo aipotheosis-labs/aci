@@ -151,10 +151,8 @@ def get_quota_usage(db_session: Session, org_id: UUID) -> QuotaUsageResponse:
     projects_limit = plan.features["projects"]
     projects_remaining = max(0, projects_limit - projects_used)
 
-    # get agent credentials usage (total linked accounts as each stores app credentials)
-    agent_credentials_used = crud.linked_accounts.get_total_number_of_linked_accounts_in_org(
-        db_session, org_id
-    )
+    # get agent credentials usage (total secrets as each stores app credentials)
+    agent_credentials_used = crud.secret.get_total_number_of_secrets_in_org(db_session, org_id)
     agent_credentials_limit = plan.features["agent_credentials"]
     agent_credentials_remaining = max(0, agent_credentials_limit - agent_credentials_used)
 
