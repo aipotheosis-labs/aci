@@ -15,7 +15,7 @@ from aci.common.exceptions import (
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.agent import AgentCreate, AgentPublic, AgentUpdate
 from aci.common.schemas.project import ProjectCreate, ProjectPublic, ProjectUpdate
-from aci.server import acl, quota_manager
+from aci.server import acl, config, quota_manager
 from aci.server import dependencies as deps
 
 # Create router instance
@@ -66,7 +66,7 @@ async def create_project(
 @router.get("", response_model=list[ProjectPublic], include_in_schema=True)
 async def get_projects(
     user: Annotated[User, Depends(auth.require_user)],
-    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
+    org_id: Annotated[UUID, Header(alias=config.ACI_ORG_ID_HEADER)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> list[Project]:
     """

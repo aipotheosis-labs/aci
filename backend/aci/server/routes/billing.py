@@ -38,7 +38,7 @@ auth = acl.get_propelauth()
 @router.get("/get-subscription", response_model=SubscriptionPublic)
 async def get_subscription(
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
+    org_id: Annotated[UUID, Header(alias=config.ACI_ORG_ID_HEADER)],
     user: Annotated[User, Depends(auth.require_user)],
 ) -> SubscriptionPublic:
     acl.require_org_member(user, org_id)
@@ -54,7 +54,7 @@ async def get_subscription(
 async def create_checkout_session(
     user: Annotated[User, Depends(auth.require_user)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
+    org_id: Annotated[UUID, Header(alias=config.ACI_ORG_ID_HEADER)],
     body: Annotated[StripeCheckoutSessionCreate, Body()],
 ) -> str:
     acl.require_org_member_with_minimum_role(user, org_id, OrganizationRole.ADMIN)
@@ -115,7 +115,7 @@ async def create_checkout_session(
 async def create_customer_portal_session(
     user: Annotated[User, Depends(auth.require_user)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
+    org_id: Annotated[UUID, Header(alias=config.ACI_ORG_ID_HEADER)],
 ) -> str:
     acl.require_org_member_with_minimum_role(user, org_id, OrganizationRole.ADMIN)
 

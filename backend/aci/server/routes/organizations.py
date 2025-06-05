@@ -7,7 +7,7 @@ from propelauth_fastapi import User
 from aci.common.enums import OrganizationRole
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.organizations import InviteMemberRequest
-from aci.server import acl
+from aci.server import acl, config
 
 router = APIRouter()
 logger = get_logger(__name__)
@@ -18,7 +18,7 @@ auth = acl.get_propelauth()
 @router.post("/invite", status_code=status.HTTP_204_NO_CONTENT)
 async def invite_member(
     user: Annotated[User, Depends(auth.require_user)],
-    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
+    org_id: Annotated[UUID, Header(alias=config.ACI_ORG_ID_HEADER)],
     body: InviteMemberRequest,
 ) -> None:
     """
@@ -49,7 +49,7 @@ async def invite_member(
 @router.delete("/members/{member_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def remove_member(
     user: Annotated[User, Depends(auth.require_user)],
-    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
+    org_id: Annotated[UUID, Header(alias=config.ACI_ORG_ID_HEADER)],
     member_id: str,
 ) -> None:
     """
@@ -87,7 +87,7 @@ async def remove_member(
 @router.get("/members", response_model=list[dict], status_code=status.HTTP_200_OK)
 async def list_members(
     user: Annotated[User, Depends(auth.require_user)],
-    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
+    org_id: Annotated[UUID, Header(alias=config.ACI_ORG_ID_HEADER)],
 ) -> list[dict]:
     """
     List all members of the organization.

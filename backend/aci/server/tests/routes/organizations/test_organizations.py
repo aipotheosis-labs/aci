@@ -26,7 +26,7 @@ def test_invite_member(
             },
             headers={
                 "Authorization": f"Bearer {dummy_user.access_token}",
-                "X-ACI-ORG-ID": str(dummy_user.org_id),
+                config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
             },
         )
         assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -50,7 +50,7 @@ def test_remove_member(
             f"{config.ROUTER_PREFIX_ORGANIZATIONS}/members/some_member_id",
             headers={
                 "Authorization": f"Bearer {dummy_user.access_token}",
-                "X-ACI-ORG-ID": str(dummy_user.org_id),
+                config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
             },
         )
         assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -72,7 +72,7 @@ def test_remove_self(
             f"{config.ROUTER_PREFIX_ORGANIZATIONS}/members/{dummy_user.propel_auth_user.user_id}",
             headers={
                 "Authorization": f"Bearer {dummy_user.access_token}",
-                "X-ACI-ORG-ID": str(dummy_user.org_id),
+                config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
             },
         )
         assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -121,7 +121,7 @@ def test_list_members(
             f"{config.ROUTER_PREFIX_ORGANIZATIONS}/members",
             headers={
                 "Authorization": f"Bearer {dummy_user.access_token}",
-                "X-ACI-ORG-ID": str(dummy_user.org_id),
+                config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
             },
         )
         assert response.status_code == status.HTTP_200_OK
