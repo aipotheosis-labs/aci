@@ -50,7 +50,7 @@ async def invite_member(
     auth.invite_user_to_org(
         org_id=str(org_id),
         email=body.email,
-        role=OrganizationRole.ADMIN,
+        role=body.role,
     )
 
 
