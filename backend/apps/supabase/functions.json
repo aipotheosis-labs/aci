@@ -505,7 +505,9 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "The project reference ID"
+                            "description": "Project ref",
+                            "minLength": 20,
+                            "maxLength": 20
                         }
                     },
                     "required": ["ref"],
@@ -668,7 +670,9 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref"
+                            "description": "Project ref",
+                            "minLength": 20,
+                            "maxLength": 20
                         }
                     },
                     "required": ["ref"],
@@ -738,7 +742,9 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref"
+                            "description": "Project ref",
+                            "minLength": 20,
+                            "maxLength": 20
                         }
                     },
                     "required": ["ref"],
@@ -828,7 +834,9 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref"
+                            "description": "Project ref",
+                            "minLength": 20,
+                            "maxLength": 20
                         }
                     },
                     "required": ["ref"],
@@ -875,7 +883,9 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref"
+                            "description": "Project ref",
+                            "minLength": 20,
+                            "maxLength": 20
                         }
                     },
                     "required": ["ref"],
