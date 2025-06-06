@@ -472,3 +472,16 @@ class ProjectIsLastInOrgError(ACIException):
             message=message,
             error_code=status.HTTP_409_CONFLICT,
         )
+
+
+class MaxAgentSecretsReached(ACIException):
+    """
+    Exception raised when a project has reached the maximum number of agent secrets allowed by their subscription plan
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Max agent secrets reached",
+            message=message,
+            error_code=status.HTTP_403_FORBIDDEN,
+        )
