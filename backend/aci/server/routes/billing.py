@@ -19,7 +19,8 @@ from aci.common.enums import (
 )
 from aci.common.exceptions import BillingError, SubscriptionPlanNotFound
 from aci.common.logging_setup import get_logger
-from aci.common.schemas.quota import QuotaUsageResponse
+from aci.common.schemas.plans import PlanFeatures
+from aci.common.schemas.quota import PlanInfo, QuotaResourceUsage, QuotaUsageResponse
 from aci.common.schemas.subscription import (
     StripeCheckoutSessionCreate,
     StripeSubscriptionDetails,
@@ -27,7 +28,7 @@ from aci.common.schemas.subscription import (
     SubscriptionPublic,
     SubscriptionUpdate,
 )
-from aci.server import acl, billing, config, quota_manager
+from aci.server import acl, billing, config
 from aci.server import dependencies as deps
 
 router = APIRouter()
@@ -59,7 +60,28 @@ async def get_quota_usage(
 ) -> QuotaUsageResponse:
     acl.require_org_member(user, org_id)
 
-    return quota_manager.get_quota_usage(db_session, org_id)
+    subscription = billing.get_subscription_by_org_id(db_session, org_id)
+    plan = subscription.plan
+    logger.info("getting quota usage", extra={"org_id": org_id, "plan": plan.name})
+
+    projects_used = len(crud.projects.get_projects_by_org(db_session, org_id))
+    agent_credentials_used = crud.secret.get_total_number_of_secrets_in_org(db_session, org_id)
+    linked_accounts_used = crud.linked_accounts.get_total_number_of_unique_linked_account_owner_ids(
+        db_session, org_id
+    )
+
+    return QuotaUsageResponse(
+        projects=QuotaResourceUsage(used=projects_used, limit=plan.features["projects"]),
+        linked_accounts=QuotaResourceUsage(
+            used=linked_accounts_used,
+            limit=plan.features["linked_accounts"],
+        ),
+        agent_credentials=QuotaResourceUsage(
+            used=agent_credentials_used,
+            limit=plan.features["agent_credentials"],
+        ),
+        plan=PlanInfo(name=plan.name, features=PlanFeatures(**plan.features)),
+    )
 
 
 @router.post("/create-checkout-session")

@@ -17,7 +17,6 @@ from aci.common.exceptions import (
     MaxUniqueLinkedAccountOwnerIdsReached,
 )
 from aci.common.logging_setup import get_logger
-from aci.common.schemas.quota import PlanFeatures, PlanInfo, QuotaResourceUsage, QuotaUsageResponse
 from aci.server import billing, config
 
 logger = get_logger(__name__)
@@ -127,38 +126,3 @@ def enforce_linked_accounts_creation_quota(
         raise MaxUniqueLinkedAccountOwnerIdsReached(
             message=f"Maximum number of unique linked account owner ids ({max_unique_linked_account_owner_ids}) reached for the {subscription.plan.name} plan"
         )
-
-
-def get_quota_usage(db_session: Session, org_id: UUID) -> QuotaUsageResponse:
-    # get subscription and plan
-    subscription = billing.get_subscription_by_org_id(db_session, org_id)
-    plan = subscription.plan
-    logger.info("get quota usage", extra={"org_id": org_id, "plan": plan.name})
-
-    # get project usage
-    projects = crud.projects.get_projects_by_org(db_session, org_id)
-    projects_used = len(projects)
-    projects_limit = plan.features["projects"]
-
-    # get agent credentials usage (total secrets as each stores app credentials)
-    agent_credentials_used = crud.secret.get_total_number_of_secrets_in_org(db_session, org_id)
-    agent_credentials_limit = plan.features["agent_credentials"]
-
-    # get linked accounts usage
-    linked_accounts_used = crud.linked_accounts.get_total_number_of_unique_linked_account_owner_ids(
-        db_session, org_id
-    )
-    linked_accounts_limit = plan.features["linked_accounts"]
-
-    return QuotaUsageResponse(
-        projects=QuotaResourceUsage(used=projects_used, limit=projects_limit),
-        linked_accounts=QuotaResourceUsage(
-            used=linked_accounts_used,
-            limit=linked_accounts_limit,
-        ),
-        agent_credentials=QuotaResourceUsage(
-            used=agent_credentials_used,
-            limit=agent_credentials_limit,
-        ),
-        plan=PlanInfo(name=plan.name, features=PlanFeatures(**plan.features)),
-    )
