@@ -17,7 +17,7 @@ interface QuotaItemProps {
 }
 
 const QuotaItem: React.FC<QuotaItemProps> = ({ title, used, limit }) => {
-  const percentage = limit > 0 ? (used / limit) * 100 : 0;
+  const percentage = limit > 0 ? Math.min((used / limit) * 100, 100) : 0;
   const isNearLimit = percentage >= 80;
   const isFull = percentage >= 100;
 
@@ -46,7 +46,7 @@ const QuotaItem: React.FC<QuotaItemProps> = ({ title, used, limit }) => {
       </div>
       <div className="flex justify-between text-xs text-muted-foreground">
         <span>Used: {used}</span>
-        <span>Remaining: {limit - used}</span>
+        <span>Remaining: {Math.max(limit - used, 0)}</span>
       </div>
     </div>
   );

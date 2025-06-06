@@ -12,7 +12,7 @@ export function useQuota() {
   return useQuery({
     queryKey: quotaKeys.all,
     queryFn: () => getQuotaUsage(accessToken, activeOrg.orgId),
-    enabled: !!activeOrg.orgId,
+    enabled: !!activeOrg.orgId && !!accessToken,
     refetchInterval: 1000 * 30,
   });
 }
