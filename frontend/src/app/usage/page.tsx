@@ -20,7 +20,7 @@ import { useMetaInfo } from "@/components/context/metainfo";
 import { useQuota } from "@/hooks/use-quota";
 
 export default function UsagePage() {
-  const { activeProject, accessToken, activeOrg } = useMetaInfo();
+  const { activeProject } = useMetaInfo();
   const [appDistributionData, setAppDistributionData] = useState<
     DistributionDatapoint[]
   >([]);
@@ -65,7 +65,7 @@ export default function UsagePage() {
     };
 
     fetchData();
-  }, [activeProject, accessToken, activeOrg]);
+  }, [activeProject]);
 
   return (
     <div>
