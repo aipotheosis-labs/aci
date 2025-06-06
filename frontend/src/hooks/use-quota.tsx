@@ -14,5 +14,6 @@ export function useQuota() {
     queryFn: () => getQuotaUsage(accessToken, activeOrg.orgId),
     enabled: !!activeOrg.orgId && !!accessToken,
     refetchInterval: 1000 * 30,
+    staleTime: 0,
   });
 }
