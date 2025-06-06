@@ -82,11 +82,11 @@ def get_total_number_of_secrets_in_org(db_session: Session, org_id: UUID) -> int
     Returns:
         int: Total number of secrets across all linked accounts in all projects of the organization
     """
-    statement = select(func.count(Secret.id)).where(
-        Secret.linked_account_id.in_(
-            select(LinkedAccount.id).where(
-                LinkedAccount.project_id.in_(select(Project.id).filter(Project.org_id == org_id))
-            )
-        )
+    statement = (
+        select(func.count(Secret.id))
+        .select_from(Secret)
+        .join(LinkedAccount, Secret.linked_account_id == LinkedAccount.id)
+        .join(Project, LinkedAccount.project_id == Project.id)
+        .where(Project.org_id == org_id)
     )
     return db_session.execute(statement).scalar_one()
