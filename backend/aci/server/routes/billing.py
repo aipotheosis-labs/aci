@@ -57,12 +57,6 @@ async def get_quota_usage(
     org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
     user: Annotated[User, Depends(auth.require_user)],
 ) -> QuotaUsageResponse:
-    """
-    get quota usage for an org
-
-    Returns:
-        QuotaUsageResponse: include all quota usage information
-    """
     acl.require_org_member(user, org_id)
 
     return quota_manager.get_quota_usage(db_session, org_id)
