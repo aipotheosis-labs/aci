@@ -482,7 +482,6 @@ class MaxAgentSecretsReached(ACIException):
     def __init__(self, message: str | None = None):
         super().__init__(
             title="Max agent secrets reached",
-            message=message
-            or "You have reached the maximum number of agent secrets allowed for your subscription plan",
+            message=message,
             error_code=status.HTTP_403_FORBIDDEN,
         )

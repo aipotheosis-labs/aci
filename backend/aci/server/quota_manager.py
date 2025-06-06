@@ -169,4 +169,6 @@ def enforce_agent_secrets_quota(db_session: Session, project_id: UUID) -> None:
                 "plan": subscription.plan.name,
             },
         )
-        raise MaxAgentSecretsReached()
+        raise MaxAgentSecretsReached(
+            message=f"Maximum number of agent secrets ({max_agent_secrets}) reached for the {subscription.plan.name} plan"
+        )

@@ -104,14 +104,14 @@ class AgentSecretsManager(AppConnectorBase):
             ProjectNotFound: If the project cannot be found
         """
         with create_db_session(config.DB_FULL_URL) as db_session:
-            # Check quota before creating new secret
-            quota_manager.enforce_agent_secrets_quota(db_session, self.linked_account.project_id)
-
             existing = crud.secret.get_secret(db_session, self.linked_account.id, domain)
             if existing:
                 raise AgentSecretsManagerError(
                     message=f"Credential for domain '{domain}' already exists"
                 )
+
+            # Check quota before creating new secret
+            quota_manager.enforce_agent_secrets_quota(db_session, self.linked_account.project_id)
 
             secret_value = SecretValue(username=username, password=password)
             encrypted_value = encryption.encrypt(secret_value.model_dump_json().encode())
