@@ -19,7 +19,6 @@ from aci.common.enums import (
 )
 from aci.common.exceptions import BillingError, SubscriptionPlanNotFound
 from aci.common.logging_setup import get_logger
-from aci.common.schemas.quota import QuotaUsageResponse
 from aci.common.schemas.subscription import (
     StripeCheckoutSessionCreate,
     StripeSubscriptionDetails,
@@ -27,7 +26,7 @@ from aci.common.schemas.subscription import (
     SubscriptionPublic,
     SubscriptionUpdate,
 )
-from aci.server import acl, billing, config, quota_manager
+from aci.server import acl, billing, config
 from aci.server import dependencies as deps
 
 router = APIRouter()
@@ -49,23 +48,6 @@ async def get_subscription(
         plan=subscription.plan.name,
         status=subscription.status,
     )
-
-
-@router.get("/quota-usage", response_model=QuotaUsageResponse)
-async def get_quota_usage(
-    db_session: Annotated[Session, Depends(deps.yield_db_session)],
-    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
-    user: Annotated[User, Depends(auth.require_user)],
-) -> QuotaUsageResponse:
-    """
-    get quota usage for an org
-
-    Returns:
-        QuotaUsageResponse: include all quota usage information
-    """
-    acl.require_org_member(user, org_id)
-
-    return quota_manager.get_quota_usage(db_session, org_id)
 
 
 @router.post("/create-checkout-session")
