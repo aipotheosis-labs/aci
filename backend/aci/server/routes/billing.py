@@ -20,7 +20,7 @@ from aci.common.enums import (
 from aci.common.exceptions import BillingError, SubscriptionPlanNotFound
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.plans import PlanFeatures
-from aci.common.schemas.quota import PlanInfo, QuotaResourceUsage, QuotaUsageResponse
+from aci.common.schemas.quota import PlanInfo, QuotaUsageResponse
 from aci.common.schemas.subscription import (
     StripeCheckoutSessionCreate,
     StripeSubscriptionDetails,
@@ -71,15 +71,9 @@ async def get_quota_usage(
     )
 
     return QuotaUsageResponse(
-        projects=QuotaResourceUsage(used=projects_used, limit=plan.features["projects"]),
-        linked_accounts=QuotaResourceUsage(
-            used=linked_accounts_used,
-            limit=plan.features["linked_accounts"],
-        ),
-        agent_credentials=QuotaResourceUsage(
-            used=agent_credentials_used,
-            limit=plan.features["agent_credentials"],
-        ),
+        projects_used=projects_used,
+        linked_accounts_used=linked_accounts_used,
+        agent_credentials_used=agent_credentials_used,
         plan=PlanInfo(name=plan.name, features=PlanFeatures(**plan.features)),
     )
 

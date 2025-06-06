@@ -3,13 +3,6 @@ from pydantic import BaseModel
 from aci.common.schemas.plans import PlanFeatures
 
 
-class QuotaResourceUsage(BaseModel):
-    """single resource quota usage"""
-
-    used: int
-    limit: int
-
-
 class PlanInfo(BaseModel):
     """plan info"""
 
@@ -20,7 +13,7 @@ class PlanInfo(BaseModel):
 class QuotaUsageResponse(BaseModel):
     """complete quota usage response"""
 
-    projects: QuotaResourceUsage
-    linked_accounts: QuotaResourceUsage  # unique account owner IDs across org
-    agent_credentials: QuotaResourceUsage  # total org secrets in secrets table
+    projects_used: int
+    linked_accounts_used: int  # unique account owner IDs across org
+    agent_credentials_used: int  # total org secrets in secrets table
     plan: PlanInfo
