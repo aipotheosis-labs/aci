@@ -70,21 +70,13 @@ def delete_secret(db_session: Session, secret: Secret) -> None:
     db_session.flush()
 
 
-def get_total_number_of_secrets_in_org(db_session: Session, org_id: UUID) -> int:
+def get_total_number_of_agent_secrets_for_org(db_session: Session, org_id: UUID) -> int:
     """
-    Get the total number of secrets for an organization.
-    Secrets are stored per linked account, and linked accounts belong to projects in the organization.
-
-    Args:
-        db_session: Database session
-        org_id: ID of the organization
-
-    Returns:
-        int: Total number of secrets across all linked accounts in all projects of the organization
+    Get the total number of agent secrets for an organization across all its projects.
+    Uses JOINs for better performance compared to nested subqueries.
     """
     statement = (
         select(func.count(Secret.id))
-        .select_from(Secret)
         .join(LinkedAccount, Secret.linked_account_id == LinkedAccount.id)
         .join(Project, LinkedAccount.project_id == Project.id)
         .where(Project.org_id == org_id)

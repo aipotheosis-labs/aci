@@ -65,7 +65,9 @@ async def get_quota_usage(
     logger.info("getting quota usage", extra={"org_id": org_id, "plan": plan.name})
 
     projects_used = len(crud.projects.get_projects_by_org(db_session, org_id))
-    agent_credentials_used = crud.secret.get_total_number_of_secrets_in_org(db_session, org_id)
+    agent_credentials_used = crud.secret.get_total_number_of_agent_secrets_for_org(
+        db_session, org_id
+    )
     linked_accounts_used = crud.linked_accounts.get_total_number_of_unique_linked_account_owner_ids(
         db_session, org_id
     )
