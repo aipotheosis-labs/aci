@@ -8,7 +8,6 @@ class QuotaResourceUsage(BaseModel):
 
     used: int
     limit: int
-    remaining: int
 
 
 class PlanInfo(BaseModel):

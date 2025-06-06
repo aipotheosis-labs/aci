@@ -14,15 +14,9 @@ interface QuotaItemProps {
   title: string;
   used: number;
   limit: number;
-  remaining: number;
 }
 
-const QuotaItem: React.FC<QuotaItemProps> = ({
-  title,
-  used,
-  limit,
-  remaining,
-}) => {
+const QuotaItem: React.FC<QuotaItemProps> = ({ title, used, limit }) => {
   const percentage = limit > 0 ? (used / limit) * 100 : 0;
   const isNearLimit = percentage >= 80;
   const isFull = percentage >= 100;
@@ -52,7 +46,7 @@ const QuotaItem: React.FC<QuotaItemProps> = ({
       </div>
       <div className="flex justify-between text-xs text-muted-foreground">
         <span>Used: {used}</span>
-        <span>Remaining: {remaining}</span>
+        <span>Remaining: {limit - used}</span>
       </div>
     </div>
   );
@@ -73,21 +67,18 @@ export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
           title="Projects"
           used={quotaUsage.projects.used}
           limit={quotaUsage.projects.limit}
-          remaining={quotaUsage.projects.remaining}
         />
 
         <QuotaItem
           title="Linked Accounts"
           used={quotaUsage.linked_accounts.used}
           limit={quotaUsage.linked_accounts.limit}
-          remaining={quotaUsage.linked_accounts.remaining}
         />
 
         <QuotaItem
           title="Agent Credentials"
           used={quotaUsage.agents_credentials.used}
           limit={quotaUsage.agents_credentials.limit}
-          remaining={quotaUsage.agents_credentials.remaining}
         />
       </CardContent>
     </Card>
