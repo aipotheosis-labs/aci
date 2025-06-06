@@ -1,19 +1,7 @@
 export interface QuotaUsage {
-  projects: {
-    used: number;
-    limit: number;
-  };
-
-  linked_accounts: {
-    used: number;
-    limit: number;
-  };
-
-  agent_credentials: {
-    used: number;
-    limit: number;
-  };
-
+  projects_used: number;
+  linked_accounts_used: number;
+  agent_credentials_used: number;
   plan: {
     name: string;
     features: {

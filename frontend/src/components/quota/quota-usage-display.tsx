@@ -65,20 +65,20 @@ export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
       <CardContent className="p-4 space-y-6">
         <QuotaItem
           title="Projects"
-          used={quotaUsage.projects.used}
-          limit={quotaUsage.projects.limit}
+          used={quotaUsage.projects_used}
+          limit={quotaUsage.plan.features.projects}
         />
 
         <QuotaItem
           title="Linked Accounts"
-          used={quotaUsage.linked_accounts.used}
-          limit={quotaUsage.linked_accounts.limit}
+          used={quotaUsage.linked_accounts_used}
+          limit={quotaUsage.plan.features.linked_accounts}
         />
 
         <QuotaItem
           title="Agent Credentials"
-          used={quotaUsage.agent_credentials.used}
-          limit={quotaUsage.agent_credentials.limit}
+          used={quotaUsage.agent_credentials_used}
+          limit={quotaUsage.plan.features.agent_credentials}
         />
       </CardContent>
     </Card>
