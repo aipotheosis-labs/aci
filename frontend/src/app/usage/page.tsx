@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import UsagePieChart from "@/components/charts/usage-pie-chart";
 import { UsageBarChart } from "@/components/charts/usage-bar-chart";
-import { QuotaUsageDisplay } from "@/components/quota/quota-usage-display";
 import { Separator } from "@/components/ui/separator";
 import {
   getAppDistributionData,
@@ -11,17 +10,15 @@ import {
   getAppTimeSeriesData,
   getFunctionTimeSeriesData,
 } from "@/lib/api/analytics";
-import { getQuotaUsage } from "@/lib/api/quota";
 import {
   DistributionDatapoint,
   TimeSeriesDatapoint,
 } from "@/lib/types/analytics";
-import { QuotaUsage } from "@/lib/types/quota";
 import { getApiKey } from "@/lib/api/util";
 import { useMetaInfo } from "@/components/context/metainfo";
 
 export default function UsagePage() {
-  const { activeProject, accessToken, activeOrg } = useMetaInfo();
+  const { activeProject } = useMetaInfo();
   const [appDistributionData, setAppDistributionData] = useState<
     DistributionDatapoint[]
   >([]);
@@ -34,7 +31,6 @@ export default function UsagePage() {
   const [functionTimeSeriesData, setFunctionTimeSeriesData] = useState<
     TimeSeriesDatapoint[]
   >([]);
-  const [quotaUsage, setQuotaUsage] = useState<QuotaUsage | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,25 +40,18 @@ export default function UsagePage() {
         setIsLoading(true);
         const apiKey = getApiKey(activeProject);
 
-        const [
-          appDistData,
-          funcDistData,
-          appTimeData,
-          funcTimeData,
-          quotaData,
-        ] = await Promise.all([
-          getAppDistributionData(apiKey),
-          getFunctionDistributionData(apiKey),
-          getAppTimeSeriesData(apiKey),
-          getFunctionTimeSeriesData(apiKey),
-          getQuotaUsage(accessToken, activeOrg.orgId),
-        ]);
+        const [appDistData, funcDistData, appTimeData, funcTimeData] =
+          await Promise.all([
+            getAppDistributionData(apiKey),
+            getFunctionDistributionData(apiKey),
+            getAppTimeSeriesData(apiKey),
+            getFunctionTimeSeriesData(apiKey),
+          ]);
 
         setAppDistributionData(appDistData);
         setFunctionDistributionData(funcDistData);
         setAppTimeSeriesData(appTimeData);
         setFunctionTimeSeriesData(funcTimeData);
-        setQuotaUsage(quotaData);
       } catch (err) {
         console.error("Error fetching analytics data:", err);
         setError("Failed to load analytics data. Please try again later.");
@@ -72,7 +61,7 @@ export default function UsagePage() {
     };
 
     fetchData();
-  }, [activeProject, accessToken, activeOrg]);
+  }, [activeProject]);
 
   return (
     <div>
@@ -107,12 +96,24 @@ export default function UsagePage() {
           <div className="p-4">Loading analytics data...</div>
         ) : (
           <>
-            {/* quota usage */}
-            {quotaUsage && (
-              <div className="w-full">
-                <QuotaUsageDisplay quotaUsage={quotaUsage} />
-              </div>
-            )}
+            {/* <StatsContainer>
+              <StatsCard title="APPS USED" value={1012} percentageChange={10} />
+              <StatsCard
+                title="FUNCTION USED"
+                value={456}
+                percentageChange={8}
+              />
+              <StatsCard
+                title="FUNCTION CALLS"
+                value={456}
+                percentageChange={-16}
+              />
+              <StatsCard
+                title="LINKED ACCOUNTS"
+                value={2124}
+                percentageChange={16}
+              />
+            </StatsContainer> */}
 
             <div className="grid gap-6 grid-cols-12">
               <div className="col-span-8">
