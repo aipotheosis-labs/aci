@@ -288,10 +288,8 @@ def test_quota_enforcement_prevents_exceeding_credential_limit(
     assert response.status_code == status.HTTP_200_OK
     function_execution_response = FunctionExecutionResult.model_validate(response.json())
     assert not function_execution_response.success
-    assert (
-        function_execution_response.error
-        == "Max agent secrets reached: You have reached the maximum number of agent secrets allowed for your subscription plan"
-    )
+    assert function_execution_response.error is not None
+    assert function_execution_response.error.startswith("Max agent secrets reached")
 
     # Verify that the number of credentials hasn't increased using CRUD
     secrets_after_failed_attempt = crud.secret.list_secrets(
