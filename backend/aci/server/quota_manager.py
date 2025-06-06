@@ -147,6 +147,10 @@ def enforce_agent_secrets_quota(db_session: Session, project_id: UUID) -> None:
     # Get the project
     project = crud.projects.get_project(db_session, project_id)
     if not project:
+        logger.error(
+            "Project not found during agent secrets quota enforcement",
+            extra={"project_id": project_id, "function": "enforce_agent_secrets_quota"},
+        )
         raise ProjectNotFound(f"Project {project_id} not found")
 
     # Get the plan for the organization
