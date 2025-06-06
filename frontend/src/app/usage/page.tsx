@@ -11,14 +11,13 @@ import {
   getAppTimeSeriesData,
   getFunctionTimeSeriesData,
 } from "@/lib/api/analytics";
-import { getQuotaUsage } from "@/lib/api/quota";
 import {
   DistributionDatapoint,
   TimeSeriesDatapoint,
 } from "@/lib/types/analytics";
-import { QuotaUsage } from "@/lib/types/quota";
 import { getApiKey } from "@/lib/api/util";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { useQuota } from "@/hooks/use-quota";
 
 export default function UsagePage() {
   const { activeProject, accessToken, activeOrg } = useMetaInfo();
@@ -34,9 +33,10 @@ export default function UsagePage() {
   const [functionTimeSeriesData, setFunctionTimeSeriesData] = useState<
     TimeSeriesDatapoint[]
   >([]);
-  const [quotaUsage, setQuotaUsage] = useState<QuotaUsage | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { data: quotaUsage } = useQuota();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -44,25 +44,18 @@ export default function UsagePage() {
         setIsLoading(true);
         const apiKey = getApiKey(activeProject);
 
-        const [
-          appDistData,
-          funcDistData,
-          appTimeData,
-          funcTimeData,
-          quotaData,
-        ] = await Promise.all([
-          getAppDistributionData(apiKey),
-          getFunctionDistributionData(apiKey),
-          getAppTimeSeriesData(apiKey),
-          getFunctionTimeSeriesData(apiKey),
-          getQuotaUsage(accessToken, activeOrg.orgId),
-        ]);
+        const [appDistData, funcDistData, appTimeData, funcTimeData] =
+          await Promise.all([
+            getAppDistributionData(apiKey),
+            getFunctionDistributionData(apiKey),
+            getAppTimeSeriesData(apiKey),
+            getFunctionTimeSeriesData(apiKey),
+          ]);
 
         setAppDistributionData(appDistData);
         setFunctionDistributionData(funcDistData);
         setAppTimeSeriesData(appTimeData);
         setFunctionTimeSeriesData(funcTimeData);
-        setQuotaUsage(quotaData);
       } catch (err) {
         console.error("Error fetching analytics data:", err);
         setError("Failed to load analytics data. Please try again later.");
