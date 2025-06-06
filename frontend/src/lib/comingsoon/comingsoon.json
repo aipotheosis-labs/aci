@@ -5,11 +5,6 @@
     "description": "Connect to Google Drive!"
   },
   {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/apaleo.png",
-    "title": "Apaleo",
-    "description": "Apaleo is a cloud-based property management platform handling reservations, billing, and daily operations for hospitality businesses"
-  },
-  {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/cal.png",
     "title": "Cal",
     "description": "Cal simplifies meeting coordination by providing shareable booking pages, calendar syncing, and availability management to streamline the scheduling process"
@@ -185,11 +180,6 @@
     "description": "Monday is a cloud-based work operating system where teams create\n    workflow apps in minutes to run their processes, projects, and\n    everyday work."
   },
   {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/wrike.png",
-    "title": "Wrike",
-    "description": "Wrike is a project management and collaboration tool offering customizable workflows, Gantt charts, reporting, and resource management to boost team productivity"
-  },
-  {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/d2lbrightspace.png",
     "title": "D2lbrightspace",
     "description": "D2L Brightspace provides APIs for building custom integrations and add-ons\n    for the D2L Brightspace platform."
@@ -203,11 +193,6 @@
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/microsoft_teams.jpg",
     "title": "Microsoft teams",
     "description": "Connect to Microsoft Teams to manage channels."
-  },
-  {
-    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/share_point.svg",
-    "title": "Share point",
-    "description": "SharePoint is a Microsoft platform for document management and intranets, enabling teams to collaborate, store, and organize content securely and effectively"
   },
   {
     "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/outlook.svg",
