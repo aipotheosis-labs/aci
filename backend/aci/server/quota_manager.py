@@ -149,7 +149,7 @@ def enforce_agent_secrets_quota(db_session: Session, project_id: UUID) -> None:
     if not project:
         logger.error(
             "Project not found during agent secrets quota enforcement",
-            extra={"project_id": project_id, "function": "enforce_agent_secrets_quota"},
+            extra={"project_id": project_id},
         )
         raise ProjectNotFound(f"Project {project_id} not found")
 
