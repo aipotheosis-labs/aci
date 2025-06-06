@@ -77,8 +77,8 @@ export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
 
         <QuotaItem
           title="Agent Credentials"
-          used={quotaUsage.agents_credentials.used}
-          limit={quotaUsage.agents_credentials.limit}
+          used={quotaUsage.agent_credentials.used}
+          limit={quotaUsage.agent_credentials.limit}
         />
       </CardContent>
     </Card>

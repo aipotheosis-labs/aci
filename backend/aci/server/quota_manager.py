@@ -130,16 +130,6 @@ def enforce_linked_accounts_creation_quota(
 
 
 def get_quota_usage(db_session: Session, org_id: UUID) -> QuotaUsageResponse:
-    """
-    Get quota usage for an organization
-
-    Args:
-        db_session: Database session
-        org_id: ID of the organization
-
-    Returns:
-        QuotaUsageResponse: include all quota usage information
-    """
     # get subscription and plan
     subscription = billing.get_subscription_by_org_id(db_session, org_id)
     plan = subscription.plan
@@ -166,7 +156,7 @@ def get_quota_usage(db_session: Session, org_id: UUID) -> QuotaUsageResponse:
             used=linked_accounts_used,
             limit=linked_accounts_limit,
         ),
-        agents_credentials=QuotaResourceUsage(
+        agent_credentials=QuotaResourceUsage(
             used=agent_credentials_used,
             limit=agent_credentials_limit,
         ),

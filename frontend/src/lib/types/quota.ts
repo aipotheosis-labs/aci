@@ -9,7 +9,7 @@ export interface QuotaUsage {
     limit: number;
   };
 
-  agents_credentials: {
+  agent_credentials: {
     used: number;
     limit: number;
   };
