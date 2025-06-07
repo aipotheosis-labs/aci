@@ -416,10 +416,10 @@ Additional flags:
 
 ```bash
 # Specify a custom dataset artifact name (default: "synthetic_intent_dataset")
-docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset_artifact my_custom_artifact
+docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset-artifact my_custom_artifact
 
 # Specify the filename saved on the dataset artifact
-docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset_filename my_custom_dataset.csv
+docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset-filename my_custom_dataset.csv
 
 # Limit the number of samples to generate
 docker compose exec runner python -m evals.evaluation_pipeline --mode generate-only --generation-limit 50
