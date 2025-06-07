@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 
 from aci.common.db import crud
 from aci.common.db.sql_models import Agent, Project
-from aci.common.enums import OrganizationRole
 from aci.common.exceptions import (
     AgentNotFound,
     ProjectIsLastInOrgError,
@@ -16,7 +15,7 @@ from aci.common.exceptions import (
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.agent import AgentCreate, AgentPublic, AgentUpdate
 from aci.common.schemas.project import ProjectCreate, ProjectPublic, ProjectUpdate
-from aci.server import acl, quota_manager
+from aci.server import acl, config, quota_manager
 from aci.server import dependencies as deps
 
 # Create router instance
@@ -26,6 +25,7 @@ logger = get_logger(__name__)
 auth = acl.get_propelauth()
 
 
+# TODO: Once member has been introduced change the ACL to require_org_member_with_minimum_role
 @router.post("", response_model=ProjectPublic, include_in_schema=True)
 async def create_project(
     body: ProjectCreate,
@@ -41,7 +41,7 @@ async def create_project(
         },
     )
 
-    acl.validate_user_access_to_org(user, body.org_id, OrganizationRole.OWNER)
+    acl.validate_user_access_to_org(user, body.org_id)
     quota_manager.enforce_project_creation_quota(db_session, body.org_id)
 
     project = crud.projects.create_project(db_session, body.org_id, body.name)
@@ -67,13 +67,13 @@ async def create_project(
 @router.get("", response_model=list[ProjectPublic], include_in_schema=True)
 async def get_projects(
     user: Annotated[User, Depends(auth.require_user)],
-    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
+    org_id: Annotated[UUID, Header(alias=config.ACI_ORG_ID_HEADER)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> list[Project]:
     """
-    Get all projects that the user is the owner of
+    Get all projects for the organization if the user is a member of the organization.
     """
-    acl.validate_user_access_to_org(user, org_id, OrganizationRole.OWNER)
+    acl.validate_user_access_to_org(user, org_id)
 
     logger.info(
         "get projects",

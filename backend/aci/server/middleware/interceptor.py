@@ -35,7 +35,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
         # TODO: Get request context from bearer token(propelauth)
 
         # Get request context from x-api-key header
-        api_key = request.headers.get(config.AIPOLABS_API_KEY_NAME)
+        api_key = request.headers.get(config.ACI_API_KEY_HEADER)
         api_key_id = agent_id = project_id = org_id = None
         if api_key:
             logger.info(

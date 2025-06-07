@@ -36,7 +36,7 @@ def test_get_projects_success(
         f"{config.ROUTER_PREFIX_PROJECTS}",
         headers={
             "Authorization": f"Bearer {dummy_user.access_token}",
-            "X-ACI-ORG-ID": str(dummy_user.org_id),
+            config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
         },
     )
     assert response.status_code == status.HTTP_200_OK
@@ -54,7 +54,7 @@ def test_get_projects_invalid_org_id(
     response = test_client.get(
         f"{config.ROUTER_PREFIX_PROJECTS}",
         headers={
-            "X-ACI-ORG-ID": str(uuid.uuid4()),
+            config.ACI_ORG_ID_HEADER: str(uuid.uuid4()),
         },
     )
     assert response.status_code == status.HTTP_403_FORBIDDEN
@@ -100,7 +100,7 @@ def test_create_project_empty_name(
         },
         headers={
             "Authorization": f"Bearer {dummy_user.access_token}",
-            "X-ACI-ORG-ID": str(dummy_user.org_id),
+            config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
         },
     )
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
@@ -159,7 +159,7 @@ def test_update_project_not_found(
         json=update_body,
         headers={
             "Authorization": f"Bearer {dummy_user.access_token}",
-            "X-ACI-ORG-ID": str(dummy_user.org_id),
+            config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
         },
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -201,7 +201,7 @@ def test_delete_project_success(
         f"{config.ROUTER_PREFIX_PROJECTS}/{project_id}",
         headers={
             "Authorization": f"Bearer {dummy_user.access_token}",
-            "X-ACI-ORG-ID": str(dummy_user.org_id),
+            config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
         },
     )
     assert response.status_code == status.HTTP_204_NO_CONTENT
@@ -223,7 +223,7 @@ def test_delete_last_project(
         f"{config.ROUTER_PREFIX_PROJECTS}/{dummy_project_1.id}",
         headers={
             "Authorization": f"Bearer {dummy_user.access_token}",
-            "X-ACI-ORG-ID": str(dummy_user.org_id),
+            config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
         },
     )
     assert response.status_code == status.HTTP_409_CONFLICT
@@ -242,7 +242,7 @@ def test_delete_project_not_found(
         f"{config.ROUTER_PREFIX_PROJECTS}/{uuid4()}",
         headers={
             "Authorization": f"Bearer {dummy_user.access_token}",
-            "X-ACI-ORG-ID": str(dummy_user.org_id),
+            config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
         },
     )
     assert response.status_code == status.HTTP_404_NOT_FOUND
@@ -308,7 +308,7 @@ def test_delete_project_cascading_deletion(
         f"{config.ROUTER_PREFIX_PROJECTS}/{project_id}",
         headers={
             "Authorization": f"Bearer {dummy_user.access_token}",
-            "X-ACI-ORG-ID": str(dummy_user.org_id),
+            config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
         },
     )
     assert delete_response.status_code == status.HTTP_204_NO_CONTENT
@@ -348,7 +348,7 @@ def test_cannot_access_project_from_other_org(
         f"{config.ROUTER_PREFIX_PROJECTS}",
         headers={
             "Authorization": f"Bearer {dummy_user.access_token}",
-            "X-ACI-ORG-ID": str(dummy_user.org_id),
+            config.ACI_ORG_ID_HEADER: str(dummy_user.org_id),
         },
     )
     assert response.status_code == status.HTTP_200_OK
