@@ -14,6 +14,7 @@ class SubscriptionBase(BaseModel):
     stripe_subscription_id: str
     status: StripeSubscriptionStatus
     interval: StripeSubscriptionInterval
+    current_period_start: datetime
     current_period_end: datetime
     cancel_at_period_end: bool
 
@@ -27,6 +28,7 @@ class SubscriptionUpdate(BaseModel):
     status: StripeSubscriptionStatus
     stripe_customer_id: str
     interval: StripeSubscriptionInterval
+    current_period_start: datetime
     current_period_end: datetime
     cancel_at_period_end: bool
 
@@ -45,6 +47,7 @@ class StripeSubscriptionDetails(BaseModel):
     stripe_subscription_id: str
     stripe_customer_id: str
     status: StripeSubscriptionStatus
+    current_period_start: datetime
     current_period_end: datetime
     cancel_at_period_end: bool
     stripe_price_id: str

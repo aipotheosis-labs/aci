@@ -88,6 +88,12 @@ class Project(Base):
     daily_quota_reset_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
     )
+    api_quota_monthly_used: Mapped[int] = mapped_column(
+        Integer, default=0, nullable=False, init=False
+    )
+    api_quota_last_reset: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
+    )
     total_quota_used: Mapped[int] = mapped_column(Integer, default=0, nullable=False, init=False)
 
     created_at: Mapped[datetime] = mapped_column(
@@ -525,6 +531,7 @@ class Subscription(Base):
     interval: Mapped[StripeSubscriptionInterval] = mapped_column(
         SqlEnum(StripeSubscriptionInterval), nullable=False
     )
+    current_period_start: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False)
     current_period_end: Mapped[datetime] = mapped_column(DateTime(timezone=False), nullable=False)
     cancel_at_period_end: Mapped[bool] = mapped_column(Boolean, nullable=False)
     created_at: Mapped[datetime] = mapped_column(
