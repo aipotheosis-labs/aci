@@ -119,18 +119,25 @@ def validate_project_quota(
 
         # Check monthly quota for free plans
         monthly_quota_limit = subscription.plan.features["api_calls_monthly"]
-        if project.api_quota_monthly_used >= monthly_quota_limit:
+
+        # Aggregate monthly usage across all projects in the org
+        total_monthly_usage = crud.projects.get_total_monthly_quota_usage_for_org(
+            db_session, project.org_id
+        )
+
+        if total_monthly_usage >= monthly_quota_limit:
             logger.warning(
                 "monthly quota exceeded",
                 extra={
                     "project_id": project.id,
-                    "monthly_quota_used": project.api_quota_monthly_used,
+                    "org_id": project.org_id,
+                    "total_monthly_usage": total_monthly_usage,
                     "monthly_quota_limit": monthly_quota_limit,
                     "plan": subscription.plan.name,
                 },
             )
             raise MonthlyQuotaExceeded(
-                f"monthly quota exceeded for project={project.id}, monthly quota used={project.api_quota_monthly_used}, "
+                f"monthly quota exceeded for org={project.org_id}, total monthly usage={total_monthly_usage}, "
                 f"monthly quota limit={monthly_quota_limit}"
             )
 
