@@ -124,6 +124,37 @@ def increase_project_quota_usage(db_session: Session, project: Project) -> None:
     db_session.execute(statement)
 
 
+def increase_api_monthly_quota_usage(db_session: Session, project: Project) -> None:
+    """Increase api monthly quota usage for a project"""
+    statement = (
+        update(Project)
+        .where(Project.id == project.id)
+        .values(
+            {
+                Project.api_quota_monthly_used: project.api_quota_monthly_used + 1,
+            }
+        )
+    )
+    db_session.execute(statement)
+
+
+def reset_api_monthly_quota_for_org(
+    db_session: Session, org_id: UUID, reset_date: datetime
+) -> None:
+    """Reset api monthly quota for all projects in an organization"""
+    statement = (
+        update(Project)
+        .where(Project.org_id == org_id)
+        .values(
+            {
+                Project.api_quota_monthly_used: 0,
+                Project.api_quota_last_reset: reset_date,
+            }
+        )
+    )
+    db_session.execute(statement)
+
+
 def create_agent(
     db_session: Session,
     project_id: UUID,

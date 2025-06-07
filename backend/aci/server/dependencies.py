@@ -15,10 +15,11 @@ from aci.common.exceptions import (
     AgentNotFound,
     DailyQuotaExceeded,
     InvalidAPIKey,
+    MonthlyQuotaExceeded,
     ProjectNotFound,
 )
 from aci.common.logging_setup import get_logger
-from aci.server import config
+from aci.server import billing, config
 
 logger = get_logger(__name__)
 http_bearer = HTTPBearer(auto_error=True, description="login to receive a JWT token")
@@ -97,24 +98,64 @@ def validate_project_quota(
         logger.error("project not found", extra={"api_key_id": api_key_id})
         raise ProjectNotFound(f"project not found for api_key_id={api_key_id}")
 
+    # Get subscription to check plan type
+    subscription = billing.get_subscription_by_org_id(db_session, project.org_id)
+
     now: datetime = datetime.now(UTC)
-    need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=UTC) + timedelta(days=1)
 
-    if not need_reset and project.daily_quota_used >= config.PROJECT_DAILY_QUOTA:
-        logger.warning(
-            "daily quota exceeded",
-            extra={
-                "project_id": project.id,
-                "daily_quota_used": project.daily_quota_used,
-                "daily_quota": config.PROJECT_DAILY_QUOTA,
-            },
-        )
-        raise DailyQuotaExceeded(
-            f"daily quota exceeded for project={project.id}, daily quota used={project.daily_quota_used}, "
-            f"daily quota={config.PROJECT_DAILY_QUOTA}"
-        )
+    # Check if we need to reset monthly quota for free plans
+    if subscription.plan.name == "free":
+        # Check if we're in a new month since last reset
+        last_reset = project.api_quota_last_reset.replace(tzinfo=UTC)
+        current_month = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        last_reset_month = last_reset.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
 
-    crud.projects.increase_project_quota_usage(db_session, project)
+        if current_month > last_reset_month:
+            # Reset monthly quota for all projects in the org
+            crud.projects.reset_api_monthly_quota_for_org(db_session, project.org_id, now)
+            db_session.commit()
+            # Refresh project to get updated quota
+            db_session.refresh(project)
+
+        # Check monthly quota for free plans
+        monthly_quota_limit = subscription.plan.features["api_calls_monthly"]
+        if project.api_quota_monthly_used >= monthly_quota_limit:
+            logger.warning(
+                "monthly quota exceeded",
+                extra={
+                    "project_id": project.id,
+                    "monthly_quota_used": project.api_quota_monthly_used,
+                    "monthly_quota_limit": monthly_quota_limit,
+                    "plan": subscription.plan.name,
+                },
+            )
+            raise MonthlyQuotaExceeded(
+                f"monthly quota exceeded for project={project.id}, monthly quota used={project.api_quota_monthly_used}, "
+                f"monthly quota limit={monthly_quota_limit}"
+            )
+
+        # Increase monthly quota usage for free plans
+        crud.projects.increase_api_monthly_quota_usage(db_session, project)
+    else:
+        # For paid plans, use the existing daily quota logic
+        need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=UTC) + timedelta(days=1)
+
+        if not need_reset and project.daily_quota_used >= config.PROJECT_DAILY_QUOTA:
+            logger.warning(
+                "daily quota exceeded",
+                extra={
+                    "project_id": project.id,
+                    "daily_quota_used": project.daily_quota_used,
+                    "daily_quota": config.PROJECT_DAILY_QUOTA,
+                },
+            )
+            raise DailyQuotaExceeded(
+                f"daily quota exceeded for project={project.id}, daily quota used={project.daily_quota_used}, "
+                f"daily quota={config.PROJECT_DAILY_QUOTA}"
+            )
+
+        crud.projects.increase_project_quota_usage(db_session, project)
+
     # TODO: commit here with the same db_session or should create a separate db_session?
     db_session.commit()
 
