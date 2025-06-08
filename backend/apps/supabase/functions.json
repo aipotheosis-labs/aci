@@ -20,9 +20,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         }
                     },
                     "required": ["ref"],
@@ -126,9 +124,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         },
                         "provider_id": {
                             "type": "string",
@@ -166,9 +162,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         },
                         "provider_id": {
                             "type": "string",
@@ -206,9 +200,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         }
                     },
                     "required": ["ref"],
@@ -242,9 +234,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         }
                     },
                     "required": ["ref"],
@@ -278,9 +268,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         }
                     },
                     "required": ["ref"],
@@ -314,9 +302,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         }
                     },
                     "required": ["ref"],
@@ -505,9 +491,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         }
                     },
                     "required": ["ref"],
@@ -634,9 +618,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         }
                     },
                     "required": ["ref"],
@@ -670,9 +652,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         }
                     },
                     "required": ["ref"],
@@ -706,9 +686,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         }
                     },
                     "required": ["ref"],
@@ -742,9 +720,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         }
                     },
                     "required": ["ref"],
@@ -778,9 +754,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         }
                     },
                     "required": ["ref"],
@@ -834,9 +808,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         }
                     },
                     "required": ["ref"],
@@ -883,9 +855,7 @@
                     "properties": {
                         "ref": {
                             "type": "string",
-                            "description": "Project ref",
-                            "minLength": 20,
-                            "maxLength": 20
+                            "description": "Project ref"
                         }
                     },
                     "required": ["ref"],
@@ -898,8 +868,7 @@
                     "properties": {
                         "query": {
                             "type": "string",
-                            "description": "SQL query to execute",
-                            "minLength": 1
+                            "description": "SQL query to execute"
                         }
                     },
                     "required": ["query"],
