@@ -62,7 +62,7 @@ def increase_quota_usage(db_session: Session, project: Project) -> None:
     _check_monthly_quota_limit(db_session, project, subscription)
 
     # Increase monthly quota usage
-    crud.projects.increase_api_monthly_quota_usage(db_session, project)
+    crud.projects.increment_api_monthly_quota_usage(db_session, project)
 
 
 def _handle_quota_reset(
@@ -89,8 +89,6 @@ def _reset_monthly_quota(
         },
     )
     crud.projects.reset_api_monthly_quota_for_org(db_session, project.org_id, reset_time)
-    # Refresh project to get updated quota values
-    db_session.refresh(project)
 
 
 def _check_monthly_quota_limit(

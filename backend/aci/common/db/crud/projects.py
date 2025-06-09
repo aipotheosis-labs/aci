@@ -124,7 +124,7 @@ def increase_project_quota_usage(db_session: Session, project: Project) -> None:
     db_session.execute(statement)
 
 
-def increase_api_monthly_quota_usage(db_session: Session, project: Project) -> None:
+def increment_api_monthly_quota_usage(db_session: Session, project: Project) -> None:
     """Increase api monthly quota usage for a project"""
     statement = (
         update(Project)
@@ -136,6 +136,7 @@ def increase_api_monthly_quota_usage(db_session: Session, project: Project) -> N
         )
     )
     db_session.execute(statement)
+    db_session.refresh(project)
 
 
 def reset_api_monthly_quota_for_org(

@@ -38,7 +38,6 @@ class TestQuotaIncrease:
 
         assert response.status_code == status.HTTP_200_OK
 
-        # Refresh project and check quota increased
         db_session.refresh(dummy_project_1)
         assert dummy_project_1.api_quota_monthly_used == initial_usage + 1
 
