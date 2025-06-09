@@ -48,7 +48,7 @@ def check_for_violation(
         return
 
     logger.info(
-        f"Checking for violation of custom instruction function_name={function.name} \n"
+        f"Checking for violation of custom instruction function_name={function.name} "
         f"custom_instruction={custom_instruction}"
     )
 
@@ -94,16 +94,16 @@ def check_for_violation(
 
     if result and result.is_violated:
         logger.error(
-            f"custom instruction violated function_name={function.name} \n"
+            f"custom instruction violated function_name={function.name} "
             f"justification={result.justification}"
         )
         raise CustomInstructionViolation(
-            f"{function.name} execution has been rejected by: \n"
-            f"custom instruction: {custom_instructions[function.name]} \n"
+            f"{function.name} execution has been rejected by: "
+            f"custom instruction: {custom_instructions[function.name]} "
             f"justification: {result.justification}"
         )
     else:
         logger.info(
-            f"custom instruction not violated function_name={function.name} \n"
+            f"custom instruction not violated function_name={function.name} "
             f"justification={result.justification if result else 'unknown'}"
         )

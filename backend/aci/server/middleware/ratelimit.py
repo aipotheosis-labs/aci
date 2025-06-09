@@ -33,8 +33,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             if not await self.limiter.hit(rate_limit, rate_limit_key):
                 # NOTE: raising a custom ACIException here doesn't work as expected
                 logger.warning(
-                    f"rate limit exceeded \n"
-                    f"rate_limit_name={rate_limit_name} \n"
+                    f"rate limit exceeded "
+                    f"rate_limit_name={rate_limit_name} "
                     f"rate_limit_key={rate_limit_key}"
                 )
                 return Response(

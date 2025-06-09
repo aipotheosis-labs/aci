@@ -222,15 +222,14 @@ async def handle_stripe_webhook(
         db_session.commit()
     except IntegrityError as e:
         logger.warning(
-            f"The event has already been processed and inserted into the processed_stripe_event table \n"
+            f"The event has already been processed and inserted into the processed_stripe_event table "
             f"event_id={event.id} error={e}"
         )
         return
 
     processing_time = time.time() - start_time
     logger.info(
-        f"Successfully processed and recorded event \n"
-        f"event_id={event.id} event_type={event.type} processing_time={processing_time}"
+        f"Successfully processed and recorded event event_id={event.id} event_type={event.type} processing_time={processing_time}"
     )
 
 
@@ -256,7 +255,7 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
 
     if not client_reference_id or not stripe_customer_id or not stripe_subscription_id:
         logger.error(
-            f"Missing critical data in checkout.session.completed event payload. \n"
+            f"Missing critical data in checkout.session.completed event payload. "
             f"session_data={session_data}"
         )
         raise BillingError(
@@ -270,8 +269,7 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
         logger.info(f"Retrieved subscription stripe_subscription_id={stripe_subscription_id}")
     except stripe.StripeError as e:
         logger.error(
-            f"Failed to retrieve subscription \n"
-            f"stripe_subscription_id={stripe_subscription_id} error={e}"
+            f"Failed to retrieve subscription stripe_subscription_id={stripe_subscription_id} error={e}"
         )
         raise BillingError() from e
 
@@ -296,8 +294,7 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
     )
     if existing_sub:
         logger.info(
-            f"Subscription record already exists, updating org_id={client_reference_id} \n"
-            f"stripe_subscription_id={stripe_subscription_id}"
+            f"Subscription record already exists, updating org_id={client_reference_id} stripe_subscription_id={stripe_subscription_id}"
         )
 
         if existing_sub.stripe_subscription_id == subscription_details.stripe_subscription_id:
@@ -305,16 +302,13 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
             # have already been updated after creation. This handler only needs to
             # ensure the subscription record is created.
             logger.info(
-                f"Subscription record already created for this org, no-op \n"
-                f"org_id={client_reference_id} \n"
-                f"stripe_subscription_id={stripe_subscription_id}"
+                f"Subscription record already created for this org, no-op org_id={client_reference_id} stripe_subscription_id={stripe_subscription_id}"
             )
             return
         else:
             logger.error(
-                f"Subscription record already exists for this org, but stripe_subscription_id does not match \n"
-                f"org_id={client_reference_id} \n"
-                f"existing_stripe_subscription_id={existing_sub.stripe_subscription_id} \n"
+                f"Subscription record already exists for this org, but stripe_subscription_id does not match "
+                f"org_id={client_reference_id} existing_stripe_subscription_id={existing_sub.stripe_subscription_id} "
                 f"new_stripe_subscription_id={stripe_subscription_id}"
             )
             raise BillingError(
@@ -323,8 +317,7 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
             )
     else:  # 5. Create the new Subscription record
         logger.info(
-            f"Creating new subscription record \n"
-            f"org_id={client_reference_id} \n"
+            f"Creating new subscription record org_id={client_reference_id} "
             f"stripe_subscription_id={stripe_subscription_id}"
         )
         new_subscription = Subscription(
@@ -341,9 +334,7 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
 
     db_session.commit()
     logger.info(
-        f"Successfully created/updated subscription record \n"
-        f"org_id={client_reference_id} \n"
-        f"stripe_subscription_id={stripe_subscription_id}"
+        f"Successfully created/updated subscription record org_id={client_reference_id} stripe_subscription_id={stripe_subscription_id}"
     )
 
     # 6. Update subscription metadata with org_id
@@ -352,9 +343,7 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
         subscription_metadata = StripeSubscriptionMetadata.model_validate(metadata)
     except ValidationError as e:
         logger.error(
-            f"Invalid metadata in checkout.session.completed event \n"
-            f"error={e} \n"
-            f"metadata={metadata}"
+            f"Invalid metadata in checkout.session.completed event error={e} metadata={metadata}"
         )
         return
 
@@ -405,35 +394,29 @@ async def handle_customer_subscription_updated(
         latest_subscription_data = stripe.Subscription.retrieve(stripe_subscription_id)
         latest_subscription_details = _parse_stripe_subscription_details(latest_subscription_data)
         logger.info(
-            f"Retrieved latest subscription details from Stripe \n"
-            f"latest_subscription_details={latest_subscription_details}"
+            f"Retrieved latest subscription details from Stripe latest_subscription_details={latest_subscription_details}"
         )
     except stripe.StripeError as e:
         logger.error(
-            f"Failed to retrieve subscription \n"
-            f"stripe_subscription_id={stripe_subscription_id} \n"
-            f"error={e}"
+            f"Failed to retrieve subscription stripe_subscription_id={stripe_subscription_id} error={e}"
         )
         raise BillingError() from e
 
     if not subscription:
         # 2. Handle out of order delivery
         logger.error(
-            f"Could not find existing Subscription record to update \n"
-            f"stripe_subscription_id={latest_subscription_details.stripe_subscription_id}"
+            f"Could not find existing Subscription record to update stripe_subscription_id={latest_subscription_details.stripe_subscription_id}"
         )
         if latest_subscription_details.status != StripeSubscriptionStatus.CANCELED:
             # case a: subscription has yet to be created, need to retry
             raise BillingError(
-                f"Could not find existing Subscription record to update \n"
-                f"stripe_subscription_id={latest_subscription_details.stripe_subscription_id}",
+                f"Could not find existing Subscription record to update stripe_subscription_id={latest_subscription_details.stripe_subscription_id}",
                 error_code=status.HTTP_404_NOT_FOUND,
             )
         else:
             # case b: subscription has already been deleted, don't need to retry
             logger.info(
-                f"Subscription has already been deleted, no-op \n"
-                f"stripe_subscription_id={latest_subscription_details.stripe_subscription_id}"
+                f"Subscription has already been deleted, no-op stripe_subscription_id={latest_subscription_details.stripe_subscription_id}"
             )
             return
 
@@ -444,7 +427,7 @@ async def handle_customer_subscription_updated(
     )
     if not plan:
         logger.error(
-            f"Could not find internal Plan matching Stripe Price ID \n"
+            f"Could not find internal Plan matching Stripe Price ID "
             f"stripe_price_id={latest_subscription_details.stripe_price_id}"
         )
         raise BillingError(
@@ -469,7 +452,7 @@ async def handle_customer_subscription_updated(
     )
     if not subscription:
         logger.error(
-            f"Could not find existing Subscription record to update \n"
+            f"Could not find existing Subscription record to update "
             f"stripe_subscription_id={latest_subscription_details.stripe_subscription_id}"
         )
         raise BillingError(
@@ -479,8 +462,7 @@ async def handle_customer_subscription_updated(
     db_session.commit()
 
     logger.info(
-        f"Successfully updated subscription record \n"
-        f"stripe_subscription_id={latest_subscription_details.stripe_subscription_id}"
+        f"Successfully updated subscription record stripe_subscription_id={latest_subscription_details.stripe_subscription_id}"
     )
 
 
@@ -512,10 +494,8 @@ async def handle_customer_subscription_deleted(
     if subscription:
         # 2. Delete the subscription record
         logger.info(
-            f"Deleting subscription record \n"
-            f"stripe_subscription_id={stripe_subscription_id} \n"
-            f"org_id={subscription.org_id} \n"
-            f"plan_id={subscription.plan_id}"
+            f"Deleting subscription record stripe_subscription_id={stripe_subscription_id} "
+            f"org_id={subscription.org_id} plan_id={subscription.plan_id}"
         )
         crud.subscriptions.delete_subscription_by_stripe_id(db_session, stripe_subscription_id)
         db_session.commit()

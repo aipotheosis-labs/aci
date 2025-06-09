@@ -28,8 +28,8 @@ async def invite_user(
     Cannot invite users with the OWNER role.
     """
     logger.info(
-        f"inviting user with email={body.email} and role={body.role} \n"
-        f"to organization with org_id={org_id} \n"
+        f"inviting user with email={body.email} and role={body.role} "
+        f"to organization with org_id={org_id} "
         f"user_id={user.user_id}"
     )
 
@@ -62,8 +62,8 @@ async def remove_user(
     Any user can remove themselves, except owners cannot remove themselves.
     """
     logger.info(
-        f"removing user with user_id={user_id} \n"
-        f"from organization with org_id={org_id} \n"
+        f"removing user with user_id={user_id} "
+        f"from organization with org_id={org_id} "
         f"user_id={user.user_id}"
     )
 
