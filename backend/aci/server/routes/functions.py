@@ -32,7 +32,7 @@ from aci.common.schemas.function import (
     OpenAIFunctionDefinition,
     OpenAIResponsesFunctionDefinition,
 )
-from aci.server import config, custom_instructions
+from aci.server import billing, config, custom_instructions
 from aci.server import dependencies as deps
 from aci.server import security_credentials_manager as scm
 from aci.server.function_executors import get_executor
@@ -128,6 +128,9 @@ async def search_functions(
         format_function_definition(function, query_params.format) for function in functions
     ]
 
+    # Increase quota usage using common function
+    billing.increase_quota_usage(context.db_session, context.project)
+
     return function_definitions
 
 
@@ -222,6 +225,10 @@ async def execute(
         linked_account_owner_id=body.linked_account_owner_id,
         openai_client=openai_client,
     )
+
+    # Increase quota usage using common function
+    billing.increase_quota_usage(context.db_session, context.project)
+
     return result
 
 

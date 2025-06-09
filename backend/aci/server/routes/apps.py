@@ -16,7 +16,7 @@ from aci.common.schemas.app import (
 )
 from aci.common.schemas.function import BasicFunctionDefinition, FunctionDetails
 from aci.common.schemas.security_scheme import SecuritySchemesPublic
-from aci.server import config
+from aci.server import billing, config
 from aci.server import dependencies as deps
 
 logger = get_logger(__name__)
@@ -133,6 +133,8 @@ async def search_apps(
             apps.append(AppBasic(name=app.name, description=app.description))
 
     logger.info("search apps response", extra={"app_names": [app.name for app in apps]})
+
+    billing.increase_quota_usage(context.db_session, context.project)
 
     return apps
 

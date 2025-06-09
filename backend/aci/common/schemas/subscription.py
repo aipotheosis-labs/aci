@@ -35,6 +35,7 @@ class SubscriptionUpdate(BaseModel):
 
 class SubscriptionFiltered(BaseModel):
     plan: Plan
+    current_period_start: datetime
     status: StripeSubscriptionStatus
 
 
