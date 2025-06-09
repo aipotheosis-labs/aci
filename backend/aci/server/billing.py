@@ -58,11 +58,34 @@ def increase_quota_usage(db_session: Session, project: Project) -> None:
     # Handle quota reset based on plan type
     _handle_quota_reset(db_session, project, subscription, now)
 
-    # Check monthly quota limits
-    _check_monthly_quota_limit(db_session, project, subscription)
+    # Get monthly quota limit
+    monthly_quota_limit = subscription.plan.features["api_calls_monthly"]
 
-    # Increase monthly quota usage
-    crud.projects.increment_api_monthly_quota_usage(db_session, project)
+    # Atomically increment usage only if within quota limit
+    success = crud.projects.increment_api_monthly_quota_usage(
+        db_session, project, monthly_quota_limit
+    )
+
+    if not success:
+        # Get current usage for logging
+        total_monthly_usage = crud.projects.get_total_monthly_quota_usage_for_org(
+            db_session, project.org_id
+        )
+
+        logger.warning(
+            "monthly quota exceeded",
+            extra={
+                "project_id": project.id,
+                "org_id": project.org_id,
+                "total_monthly_usage": total_monthly_usage,
+                "monthly_quota_limit": monthly_quota_limit,
+                "plan": subscription.plan.name,
+            },
+        )
+        raise MonthlyQuotaExceeded(
+            f"monthly quota exceeded for org={project.org_id}, total monthly usage={total_monthly_usage}, "
+            f"monthly quota limit={monthly_quota_limit}"
+        )
 
 
 def _handle_quota_reset(
@@ -89,31 +112,3 @@ def _reset_monthly_quota(
         },
     )
     crud.projects.reset_api_monthly_quota_for_org(db_session, project.org_id, reset_time)
-
-
-def _check_monthly_quota_limit(
-    db_session: Session, project: Project, subscription: SubscriptionFiltered
-) -> None:
-    """Check if monthly quota limit is exceeded and raise exception if so."""
-    monthly_quota_limit = subscription.plan.features["api_calls_monthly"]
-
-    # Aggregate monthly usage across all projects in the org
-    total_monthly_usage = crud.projects.get_total_monthly_quota_usage_for_org(
-        db_session, project.org_id
-    )
-
-    if total_monthly_usage >= monthly_quota_limit:
-        logger.warning(
-            "monthly quota exceeded",
-            extra={
-                "project_id": project.id,
-                "org_id": project.org_id,
-                "total_monthly_usage": total_monthly_usage,
-                "monthly_quota_limit": monthly_quota_limit,
-                "plan": subscription.plan.name,
-            },
-        )
-        raise MonthlyQuotaExceeded(
-            f"monthly quota exceeded for org={project.org_id}, total monthly usage={total_monthly_usage}, "
-            f"monthly quota limit={monthly_quota_limit}"
-        )

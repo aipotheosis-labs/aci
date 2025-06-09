@@ -124,19 +124,47 @@ def increase_project_quota_usage(db_session: Session, project: Project) -> None:
     db_session.execute(statement)
 
 
-def increment_api_monthly_quota_usage(db_session: Session, project: Project) -> None:
-    """Increase api monthly quota usage for a project"""
+def increment_api_monthly_quota_usage(
+    db_session: Session, project: Project, monthly_quota_limit: int
+) -> bool:
+    """
+    Atomically increment API monthly quota usage for a project only if the total org usage
+    stays within the limit. This prevents race conditions.
+
+    Args:
+        db_session: Database session
+        project: Project to increment usage for
+        monthly_quota_limit: Maximum allowed monthly quota for the org
+
+    Returns:
+        bool: True if increment was successful, False if quota would be exceeded
+    """
+    # Use a subquery to get current total usage for the org
+    current_total_subquery = (
+        select(func.coalesce(func.sum(Project.api_quota_monthly_used), 0))
+        .where(Project.org_id == project.org_id)
+        .scalar_subquery()
+    )
+
+    # Atomically increment only if total usage + 1 <= limit
     statement = (
         update(Project)
-        .where(Project.id == project.id)
+        .where((Project.id == project.id) & (current_total_subquery < monthly_quota_limit))
         .values(
             {
-                Project.api_quota_monthly_used: project.api_quota_monthly_used + 1,
+                Project.api_quota_monthly_used: Project.api_quota_monthly_used + 1,
             }
         )
     )
-    db_session.execute(statement)
+
+    result = db_session.execute(statement)
+
+    # If rowcount is 0, the update didn't happen (quota would be exceeded)
+    if result.rowcount == 0:
+        return False
+
     db_session.refresh(project)
+    return True
 
 
 def reset_api_monthly_quota_for_org(
