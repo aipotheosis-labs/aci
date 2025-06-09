@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { useOrgMembersTableColumns } from "../../hooks/use-org-members-table-columns";
-import { OrganizationMember, OrganizationRole } from "@/lib/types/organization";
+import { OrganizationUser, OrganizationRole } from "@/lib/types/organization";
 import {
-  listOrganizationMembers,
+  listOrganizationUsers,
   inviteToOrganization,
-  removeMember,
+  removeUser,
 } from "@/lib/api/organization";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ export function OrgMembersTable() {
   const { accessToken, activeOrg, user } = useMetaInfo();
   const { refreshAuthInfo } = useAuthInfo();
   const router = useRouter();
-  const [members, setMembers] = useState<OrganizationMember[]>([]);
+  const [members, setMembers] = useState<OrganizationUser[]>([]);
   const [inviteEmail, setInviteEmail] = useState("");
   const [inviteRole, setInviteRole] = useState<OrganizationRole>(
     OrganizationRole.Admin,
@@ -45,14 +45,14 @@ export function OrgMembersTable() {
   const [open, setOpen] = useState(false);
 
   // Determine available roles for inviting
-  const currentRole = activeOrg.userAssignedRole as OrganizationRole;
-  const roleHierarchy = [OrganizationRole.Owner, OrganizationRole.Admin];
-  const currentRoleIndex = roleHierarchy.indexOf(currentRole);
-  const availableRoles = roleHierarchy.slice(currentRoleIndex);
+  // const currentRole = activeOrg.userAssignedRole as OrganizationRole;
+  // const roleHierarchy = [OrganizationRole.Owner, OrganizationRole.Admin];
+  // const currentRoleIndex = roleHierarchy.indexOf(currentRole);
+  // const availableRoles = roleHierarchy.slice(currentRoleIndex);
 
   const fetchMembers = async () => {
     try {
-      const data = await listOrganizationMembers(accessToken, activeOrg.orgId);
+      const data = await listOrganizationUsers(accessToken, activeOrg.orgId);
       setMembers(data);
     } catch {
       toast.error("Failed to load organization members");
@@ -86,7 +86,7 @@ export function OrgMembersTable() {
 
   const handleRemove = async (userId: string) => {
     try {
-      await removeMember(accessToken, activeOrg.orgId, userId);
+      await removeUser(accessToken, activeOrg.orgId, userId);
       toast.success("Member removed");
       fetchMembers();
 
@@ -140,11 +140,9 @@ export function OrgMembersTable() {
                   <SelectValue placeholder="Select role" />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableRoles.map((role) => (
-                    <SelectItem key={role} value={role}>
-                      {role}
-                    </SelectItem>
-                  ))}
+                  <SelectItem value={OrganizationRole.Admin}>
+                    {OrganizationRole.Admin}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>

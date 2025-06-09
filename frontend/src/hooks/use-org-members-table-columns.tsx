@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
-import { OrganizationMember } from "@/lib/types/organization";
+import { OrganizationUser } from "@/lib/types/organization";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -26,13 +26,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-const columnHelper = createColumnHelper<OrganizationMember>();
+const columnHelper = createColumnHelper<OrganizationUser>();
 
 export function useOrgMembersTableColumns({
   onRemove,
 }: {
   onRemove: (userId: string) => void;
-}): ColumnDef<OrganizationMember, unknown>[] {
+}): ColumnDef<OrganizationUser, unknown>[] {
   const { user } = useMetaInfo();
   const [dialogState, setDialogState] = useState<{
     memberId: string | null;
@@ -164,7 +164,7 @@ export function useOrgMembersTableColumns({
           },
           enableGlobalFilter: false,
         }),
-      ] as ColumnDef<OrganizationMember, unknown>[],
+      ] as ColumnDef<OrganizationUser, unknown>[],
     [onRemove, user.userId, dialogState],
   );
 }

@@ -3,7 +3,7 @@ export enum OrganizationRole {
   Admin = "Admin",
 }
 
-export interface OrganizationMember {
+export interface OrganizationUser {
   user_id: string;
   email: string;
   role: OrganizationRole;

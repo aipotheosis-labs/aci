@@ -1,11 +1,11 @@
-import { OrganizationMember } from "../types/organization";
+import { OrganizationUser } from "../types/organization";
 
-export async function listOrganizationMembers(
+export async function listOrganizationUsers(
   accessToken: string,
   orgId: string,
-): Promise<OrganizationMember[]> {
+): Promise<OrganizationUser[]> {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/members`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/users`,
     {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -15,7 +15,7 @@ export async function listOrganizationMembers(
   );
 
   if (!response.ok) {
-    throw new Error("Failed to fetch organization members");
+    throw new Error("Failed to fetch organization users");
   }
 
   return response.json();
@@ -28,7 +28,7 @@ export async function inviteToOrganization(
   role: string,
 ): Promise<void> {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/invite`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/invite_user`,
     {
       method: "POST",
       headers: {
@@ -45,13 +45,13 @@ export async function inviteToOrganization(
   }
 }
 
-export async function removeMember(
+export async function removeUser(
   accessToken: string,
   orgId: string,
   userId: string,
 ): Promise<void> {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/members/${userId}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/users/${userId}`,
     {
       method: "DELETE",
       headers: {
@@ -62,6 +62,6 @@ export async function removeMember(
   );
 
   if (!response.ok) {
-    throw new Error("Failed to remove member");
+    throw new Error("Failed to remove user from organization");
   }
 }
