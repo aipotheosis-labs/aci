@@ -86,6 +86,7 @@ async def search_functions(
     )
     # Increase quota usage using common function
     billing.increase_quota_usage(context.db_session, context.project)
+    context.db_session.commit()
 
     intent_embedding = (
         generate_embedding(
@@ -217,6 +218,7 @@ async def execute(
 
     # Increase quota usage using common function
     billing.increase_quota_usage(context.db_session, context.project)
+    context.db_session.commit()
 
     # Use the service method to execute the function
     result = await execute_function(

@@ -752,7 +752,7 @@ def free_plan(db_session: Session) -> Plan:
     return plan
 
 
-@pytest.fixture
+@pytest.fixture(scope="function")
 def starter_plan(db_session: Session) -> Plan:
     """Create a starter plan for testing paid subscriptions."""
     plan = crud.plans.create(

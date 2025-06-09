@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'add_monthly_quota_fields'
+revision: str = '2025_01_15_1200_add_monthly_quota_fields'
 down_revision: Union[str, None] = '068b47f44d83'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

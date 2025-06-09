@@ -93,6 +93,7 @@ async def search_apps(
     )
 
     billing.increase_quota_usage(context.db_session, context.project)
+    context.db_session.commit()
 
     intent_embedding = (
         generate_embedding(
