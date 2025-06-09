@@ -70,7 +70,7 @@ export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
         />
 
         <QuotaItem
-          title="Linked Accounts"
+          title="Unique Linked Account Owner Ids"
           used={quotaUsage.linked_accounts_used}
           limit={quotaUsage.plan.features.linked_accounts}
         />

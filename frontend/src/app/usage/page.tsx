@@ -1,71 +1,41 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import UsagePieChart from "@/components/charts/usage-pie-chart";
 import { UsageBarChart } from "@/components/charts/usage-bar-chart";
 import { QuotaUsageDisplay } from "@/components/quota/quota-usage-display";
 import { Separator } from "@/components/ui/separator";
-import {
-  getAppDistributionData,
-  getFunctionDistributionData,
-  getAppTimeSeriesData,
-  getFunctionTimeSeriesData,
-} from "@/lib/api/analytics";
-import {
-  DistributionDatapoint,
-  TimeSeriesDatapoint,
-} from "@/lib/types/analytics";
-import { getApiKey } from "@/lib/api/util";
-import { useMetaInfo } from "@/components/context/metainfo";
 import { useQuota } from "@/hooks/use-quota";
+import {
+  useAppDistribution,
+  useFunctionDistribution,
+  useAppTimeSeries,
+  useFunctionTimeSeries,
+} from "@/hooks/use-analytics";
 
 export default function UsagePage() {
-  const { activeProject } = useMetaInfo();
-  const [appDistributionData, setAppDistributionData] = useState<
-    DistributionDatapoint[]
-  >([]);
-  const [functionDistributionData, setFunctionDistributionData] = useState<
-    DistributionDatapoint[]
-  >([]);
-  const [appTimeSeriesData, setAppTimeSeriesData] = useState<
-    TimeSeriesDatapoint[]
-  >([]);
-  const [functionTimeSeriesData, setFunctionTimeSeriesData] = useState<
-    TimeSeriesDatapoint[]
-  >([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data: quotaUsage, isLoading: isQuotaLoading } = useQuota();
 
-  const { data: quotaUsage } = useQuota();
+  const {
+    data: appDistributionData = [],
+    isLoading: isAppDistributionLoading,
+  } = useAppDistribution();
+  const {
+    data: functionDistributionData = [],
+    isLoading: isFunctionDistributionLoading,
+  } = useFunctionDistribution();
+  const { data: appTimeSeriesData = [], isLoading: isAppTimeSeriesLoading } =
+    useAppTimeSeries();
+  const {
+    data: functionTimeSeriesData = [],
+    isLoading: isFunctionTimeSeriesLoading,
+  } = useFunctionTimeSeries();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const apiKey = getApiKey(activeProject);
-
-        const [appDistData, funcDistData, appTimeData, funcTimeData] =
-          await Promise.all([
-            getAppDistributionData(apiKey),
-            getFunctionDistributionData(apiKey),
-            getAppTimeSeriesData(apiKey),
-            getFunctionTimeSeriesData(apiKey),
-          ]);
-
-        setAppDistributionData(appDistData);
-        setFunctionDistributionData(funcDistData);
-        setAppTimeSeriesData(appTimeData);
-        setFunctionTimeSeriesData(funcTimeData);
-      } catch (err) {
-        console.error("Error fetching analytics data:", err);
-        setError("Failed to load analytics data. Please try again later.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [activeProject]);
+  const isInitialLoading =
+    isAppDistributionLoading ||
+    isFunctionDistributionLoading ||
+    isAppTimeSeriesLoading ||
+    isFunctionTimeSeriesLoading ||
+    isQuotaLoading;
 
   return (
     <div>
@@ -94,9 +64,7 @@ export default function UsagePage() {
       <Separator />
 
       <div className="flex flex-col gap-6 p-6">
-        {error ? (
-          <div className="p-4 text-red-500">{error}</div>
-        ) : isLoading ? (
+        {isInitialLoading ? (
           <div className="p-4">Loading analytics data...</div>
         ) : (
           <>
