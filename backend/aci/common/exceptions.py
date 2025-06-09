@@ -220,7 +220,7 @@ class MonthlyQuotaExceeded(ACIException):
         super().__init__(
             title="Monthly quota exceeded",
             message=message,
-            error_code=status.HTTP_401_UNAUTHORIZED,
+            error_code=status.HTTP_402_PAYMENT_REQUIRED,
         )
 
 

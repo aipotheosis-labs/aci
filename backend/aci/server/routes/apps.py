@@ -91,6 +91,9 @@ async def search_apps(
             "apps_search": query_params.model_dump(exclude_none=True),
         },
     )
+
+    billing.increase_quota_usage(context.db_session, context.project)
+
     intent_embedding = (
         generate_embedding(
             openai_client,
@@ -133,8 +136,6 @@ async def search_apps(
             apps.append(AppBasic(name=app.name, description=app.description))
 
     logger.info("search apps response", extra={"app_names": [app.name for app in apps]})
-
-    billing.increase_quota_usage(context.db_session, context.project)
 
     return apps
 

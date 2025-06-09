@@ -84,6 +84,9 @@ async def search_functions(
         "search functions",
         extra={"function_search": query_params.model_dump(exclude_none=True)},
     )
+    # Increase quota usage using common function
+    billing.increase_quota_usage(context.db_session, context.project)
+
     intent_embedding = (
         generate_embedding(
             openai_client,
@@ -127,9 +130,6 @@ async def search_functions(
     function_definitions = [
         format_function_definition(function, query_params.format) for function in functions
     ]
-
-    # Increase quota usage using common function
-    billing.increase_quota_usage(context.db_session, context.project)
 
     return function_definitions
 
@@ -215,6 +215,9 @@ async def execute(
         },
     )
 
+    # Increase quota usage using common function
+    billing.increase_quota_usage(context.db_session, context.project)
+
     # Use the service method to execute the function
     result = await execute_function(
         db_session=context.db_session,
@@ -225,9 +228,6 @@ async def execute(
         linked_account_owner_id=body.linked_account_owner_id,
         openai_client=openai_client,
     )
-
-    # Increase quota usage using common function
-    billing.increase_quota_usage(context.db_session, context.project)
 
     return result
 

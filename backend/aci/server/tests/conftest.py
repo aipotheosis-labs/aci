@@ -750,3 +750,27 @@ def free_plan(db_session: Session) -> Plan:
     )
     db_session.commit()
     return plan
+
+
+@pytest.fixture
+def starter_plan(db_session: Session) -> Plan:
+    """Create a starter plan for testing paid subscriptions."""
+    plan = crud.plans.create(
+        db=db_session,
+        name="starter",
+        stripe_product_id="prod_STARTER_test",
+        stripe_monthly_price_id="price_STARTER_monthly_test",
+        stripe_yearly_price_id="price_STARTER_yearly_test",
+        features=PlanFeatures(
+            linked_accounts=250,
+            api_calls_monthly=100000,
+            agent_credentials=2500,
+            developer_seats=5,
+            custom_oauth=True,
+            log_retention_days=30,
+            projects=5,
+        ),
+        is_public=True,
+    )
+    db_session.commit()
+    return plan
