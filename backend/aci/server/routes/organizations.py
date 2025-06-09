@@ -28,13 +28,9 @@ async def invite_user(
     Cannot invite users with the OWNER role.
     """
     logger.info(
-        "inviting user to organization",
-        extra={
-            "user_id": user.user_id,
-            "org_id": org_id,
-            "invitee_email": body.email,
-            "role": body.role,
-        },
+        f"inviting user with email={body.email} and role={body.role} \n"
+        f"to organization with org_id={org_id} \n"
+        f"user_id={user.user_id}"
     )
 
     # Only owners and admins can invite users
@@ -66,12 +62,9 @@ async def remove_user(
     Any user can remove themselves, except owners cannot remove themselves.
     """
     logger.info(
-        "removing user from organization",
-        extra={
-            "user_id": user.user_id,
-            "org_id": org_id,
-            "target_user_id": user_id,
-        },
+        f"removing user with user_id={user_id} \n"
+        f"from organization with org_id={org_id} \n"
+        f"user_id={user.user_id}"
     )
 
     # Allow users to remove themselves regardless of role, except owners
@@ -108,13 +101,7 @@ async def list_users(
     List all users of the organization.
     Any org user can view the list.
     """
-    logger.info(
-        "listing organization users",
-        extra={
-            "user_id": user.user_id,
-            "org_id": org_id,
-        },
-    )
+    logger.info(f"listing organization users with org_id={org_id} user_id={user.user_id}")
     # Verify user is a member of the organization
     acl.require_org_member(user, org_id)
 

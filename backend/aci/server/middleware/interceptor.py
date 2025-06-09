@@ -38,9 +38,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
         api_key = request.headers.get(config.ACI_API_KEY_HEADER)
         api_key_id = agent_id = project_id = org_id = None
         if api_key:
-            logger.info(
-                "api key found in header", extra={"api_key": api_key[:4] + "..." + api_key[-4:]}
-            )
+            logger.info(f"api key found in header api_key={api_key[:4] + '...' + api_key[-4:]}")
             try:
                 with utils.create_db_session(config.DB_FULL_URL) as db_session:
                     api_key_id, agent_id, project_id, org_id = (
@@ -48,8 +46,8 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
                     )
                     if not api_key_id and not agent_id and not project_id and not org_id:
                         logger.warning(
-                            "api key not found in db",
-                            extra={"api_key": api_key[:4] + "..." + api_key[-4:]},
+                            f"api key not found in db \n"
+                            f"api_key={api_key[:4] + '...' + api_key[-4:]}"
                         )
                         return JSONResponse(
                             status_code=401,
@@ -79,6 +77,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
                 "http_method": request.method,
                 "url": str(request.url),
                 "query_params": dict(request.query_params),
+                "body": request.body,
                 "client_ip": self._get_client_ip(
                     request
                 ),  # TODO: get from request.client.host if request.client else "unknown"
@@ -91,8 +90,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
             response = await call_next(request)
         except Exception as e:
             logger.exception(
-                e,
-                extra={"duration": (datetime.now(UTC) - start_time).total_seconds()},
+                f"error processing request {e} duration={(datetime.now(UTC) - start_time).total_seconds()}"
             )
             return JSONResponse(
                 status_code=500,
@@ -103,7 +101,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
             response_log_data = {
                 "status_code": response.status_code,
                 "duration": (datetime.now(UTC) - start_time).total_seconds(),
-                "content_length": response.headers.get("content-length"),
+                "content_length": response.headers.get("content-length"),  # type is str
             }
             logger.info("response sent", extra=response_log_data)
 

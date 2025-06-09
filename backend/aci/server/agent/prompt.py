@@ -70,7 +70,6 @@ async def openai_chat_stream(
         messages: List of chat messages
         tools: List of tools to use
     """
-    logger.info("Messages", extra={"messages": json.dumps(messages)})
     client = OpenAI(api_key=config.OPENAI_API_KEY)
 
     # TODO: support different meta function mode ACI_META_FUNCTIONS_SCHEMA_LIST
@@ -100,9 +99,6 @@ async def openai_chat_stream(
                     tool_call = final_tool_calls[index]
 
                     yield f'9:{{"toolCallId":"{tool_call.call_id}","toolName":"{tool_call.name}","args":{tool_call.arguments}}}\n'
-                    logger.info("Tool_call_id", extra={"tool_call_id": tool_call.call_id})
-                    logger.info("Tool_id", extra={"tool_id": tool_call.id})
-
             elif event.type == "response.completed":
                 if hasattr(event, "usage"):
                     yield 'd:{{"finishReason":"{reason}","usage":{{"promptTokens":{prompt},"completionTokens":{completion}}}}}\n'.format(

@@ -70,12 +70,8 @@ class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TC
         )
 
         logger.info(
-            "executing function via raw http request",
-            extra={
-                "function_name": function.name,
-                "method": request.method,
-                "url": str(request.url),
-            },
+            f"executing function via raw http request function_name={function.name} \n"
+            f"method={request.method} url={request.url} \n"
         )
 
         return self._send_request(request)

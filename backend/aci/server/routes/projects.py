@@ -32,14 +32,7 @@ async def create_project(
     user: Annotated[User, Depends(auth.require_user)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Project:
-    logger.info(
-        "create project",
-        extra={
-            "project_create": body.model_dump(exclude_none=True),
-            "user_id": user.user_id,
-            "org_id": body.org_id,
-        },
-    )
+    logger.info(f"create project user_id={user.user_id} org_id={body.org_id}")
 
     acl.validate_user_access_to_org(user, body.org_id)
     quota_manager.enforce_project_creation_quota(db_session, body.org_id)
@@ -58,8 +51,7 @@ async def create_project(
     db_session.commit()
 
     logger.info(
-        "created project",
-        extra={"project_id": project.id, "user_id": user.user_id, "org_id": body.org_id},
+        f"created project project_id={project.id} user_id={user.user_id} org_id={body.org_id}"
     )
     return project
 
@@ -75,13 +67,7 @@ async def get_projects(
     """
     acl.validate_user_access_to_org(user, org_id)
 
-    logger.info(
-        "get projects",
-        extra={
-            "user_id": user.user_id,
-            "org_id": org_id,
-        },
-    )
+    logger.info(f"get projects user_id={user.user_id} org_id={org_id}")
 
     projects = crud.projects.get_projects_by_org(db_session, org_id)
 
@@ -104,29 +90,20 @@ async def delete_project(
 
     All associations to the project will be removed from the database.
     """
-    logger.info(
-        "delete project",
-        extra={"project_id": project_id, "user_id": user.user_id},
-    )
+    logger.info(f"delete project project_id={project_id} user_id={user.user_id}")
 
     acl.validate_user_access_to_project(db_session, user, project_id)
 
     # Get the project to check its organization
     project = crud.projects.get_project(db_session, project_id)
     if not project:
-        logger.error(
-            "project not found",
-            extra={"project_id": project_id},
-        )
+        logger.error(f"project not found project_id={project_id}")
         raise ProjectNotFound(f"project={project_id} not found")
 
     # Check if this is the last project in the organization
     org_projects = crud.projects.get_projects_by_org(db_session, project.org_id)
     if len(org_projects) <= 1:
-        logger.error(
-            "cannot delete last project",
-            extra={"project_id": project_id, "org_id": project.org_id},
-        )
+        logger.error(f"cannot delete last project project_id={project_id} org_id={project.org_id}")
         raise ProjectIsLastInOrgError()
 
     crud.projects.delete_project(db_session, project_id)
@@ -144,23 +121,13 @@ async def update_project(
     Update a project by project id.
     Currently supports updating the project name.
     """
-    logger.info(
-        "update project",
-        extra={
-            "project_id": project_id,
-            "project_update": body.model_dump(exclude_none=True),
-            "user_id": user.user_id,
-        },
-    )
+    logger.info(f"update project project_id={project_id} user_id={user.user_id}")
 
     acl.validate_user_access_to_project(db_session, user, project_id)
 
     project = crud.projects.get_project(db_session, project_id)
     if not project:
-        logger.error(
-            "project not found",
-            extra={"project_id": project_id},
-        )
+        logger.error(f"project not found project_id={project_id}")
         raise ProjectNotFound(f"project={project_id} not found")
 
     updated_project = crud.projects.update_project(db_session, project, body)
@@ -176,14 +143,7 @@ async def create_agent(
     user: Annotated[User, Depends(auth.require_user)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Agent:
-    logger.info(
-        "create agent",
-        extra={
-            "agent_create": body.model_dump(exclude_none=True),
-            "project_id": project_id,
-            "user_id": user.user_id,
-        },
-    )
+    logger.info(f"create agent project_id={project_id} user_id={user.user_id}")
 
     acl.validate_user_access_to_project(db_session, user, project_id)
     quota_manager.enforce_agent_creation_quota(db_session, project_id)
@@ -197,10 +157,7 @@ async def create_agent(
         body.custom_instructions,
     )
     db_session.commit()
-    logger.info(
-        "created agent",
-        extra={"agent_id": agent.id},
-    )
+    logger.info(f"created agent agent_id={agent.id}")
     return agent
 
 
@@ -216,45 +173,23 @@ async def update_agent(
     user: Annotated[User, Depends(auth.require_user)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
 ) -> Agent:
-    logger.info(
-        "update agent",
-        extra={
-            "agent_id": agent_id,
-            "project_id": project_id,
-            "agent_update": body.model_dump(exclude_none=True),
-            "user_id": user.user_id,
-        },
-    )
+    logger.info(f"update agent agent_id={agent_id} project_id={project_id} user_id={user.user_id}")
 
     acl.validate_user_access_to_project(db_session, user, project_id)
 
     agent = crud.projects.get_agent_by_id(db_session, agent_id)
     if not agent:
-        logger.error(
-            "agent not found",
-            extra={
-                "agent_id": agent_id,
-                "project_id": project_id,
-            },
-        )
+        logger.error(f"agent not found agent_id={agent_id} project_id={project_id}")
         raise AgentNotFound(f"agent={agent_id} not found in project={project_id}")
     # TODO: get project direct from agent through relationship
     project = crud.projects.get_project(db_session, project_id)
     if not project:
-        logger.error(
-            "project not found",
-            extra={"project_id": project_id},
-        )
+        logger.error(f"project not found project_id={project_id}")
         raise ProjectNotFound(f"project={project_id} not found")
 
     if agent.project_id != project_id:
         logger.error(
-            "agent does not belong to project",
-            extra={
-                "agent_id": agent_id,
-                "agent_project_id": agent.project_id,
-                "project_id": project_id,
-            },
+            f"agent with project_id={agent.project_id} does not belong to project with project_id={project_id}"
         )
         raise AgentNotFound(f"agent={agent_id} not found in project={project_id}")
 
@@ -274,29 +209,18 @@ async def delete_agent(
     """
     Delete an agent by agent id
     """
-    logger.info(
-        "delete agent",
-        extra={
-            "agent_id": agent_id,
-            "project_id": project_id,
-            "user_id": user.user_id,
-        },
-    )
+    logger.info(f"delete agent agent_id={agent_id} project_id={project_id} user_id={user.user_id}")
 
     acl.validate_user_access_to_project(db_session, user, project_id)
 
     agent = crud.projects.get_agent_by_id(db_session, agent_id)
     if not agent:
-        logger.error(
-            "agent not found",
-            extra={"agent_id": agent_id, "project_id": project_id},
-        )
+        logger.error(f"agent not found agent_id={agent_id} project_id={project_id}")
         raise AgentNotFound(f"agent={agent_id} not found")
 
     if agent.project_id != project_id:
         logger.error(
-            "agent does not belong to project",
-            extra={"agent_id": agent_id, "project_id": project_id},
+            f"agent does not belong to project agent_id={agent_id} project_id={project_id}"
         )
         # raise 404 instead of 403 to avoid leaking information about the existence of the agent
         raise AgentNotFound(f"agent={agent_id} not found")
