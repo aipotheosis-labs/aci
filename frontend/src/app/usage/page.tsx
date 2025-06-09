@@ -13,21 +13,31 @@ import {
 } from "@/hooks/use-analytics";
 
 export default function UsagePage() {
-  const { data: quotaUsage, isLoading: isQuotaLoading } = useQuota();
+  const {
+    data: quotaUsage,
+    isLoading: isQuotaLoading,
+    error: quotaError,
+  } = useQuota();
 
   const {
     data: appDistributionData = [],
     isLoading: isAppDistributionLoading,
+    error: appDistributionError,
   } = useAppDistribution();
   const {
     data: functionDistributionData = [],
     isLoading: isFunctionDistributionLoading,
+    error: functionDistributionError,
   } = useFunctionDistribution();
-  const { data: appTimeSeriesData = [], isLoading: isAppTimeSeriesLoading } =
-    useAppTimeSeries();
+  const {
+    data: appTimeSeriesData = [],
+    isLoading: isAppTimeSeriesLoading,
+    error: appTimeSeriesError,
+  } = useAppTimeSeries();
   const {
     data: functionTimeSeriesData = [],
     isLoading: isFunctionTimeSeriesLoading,
+    error: functionTimeSeriesError,
   } = useFunctionTimeSeries();
 
   const isInitialLoading =
@@ -36,6 +46,17 @@ export default function UsagePage() {
     isAppTimeSeriesLoading ||
     isFunctionTimeSeriesLoading ||
     isQuotaLoading;
+
+  const hasError =
+    quotaError ||
+    appDistributionError ||
+    functionDistributionError ||
+    appTimeSeriesError ||
+    functionTimeSeriesError;
+
+  const errorMessage = hasError
+    ? "Failed to load analytics data. Please try again later."
+    : null;
 
   return (
     <div>
@@ -64,7 +85,9 @@ export default function UsagePage() {
       <Separator />
 
       <div className="flex flex-col gap-6 p-6">
-        {isInitialLoading ? (
+        {errorMessage ? (
+          <div className="p-4 text-red-500">{errorMessage}</div>
+        ) : isInitialLoading ? (
           <div className="p-4">Loading analytics data...</div>
         ) : (
           <>
