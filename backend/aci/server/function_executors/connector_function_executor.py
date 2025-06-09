@@ -44,25 +44,14 @@ class ConnectorFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TSchem
         """
         Execute a function by importing the connector module and calling the function.
         """
-        logger.info(
-            "executing connector function",
-            extra={"function_name": function.name},
-        )
+        logger.info(f"executing connector function function_name={function.name}")
         module_name, class_name, method_name = parse_function_name(function.name)
         logger.info(
-            "parsed function name",
-            extra={
-                "module_name": module_name,
-                "class_name": class_name,
-                "method_name": method_name,
-            },
+            f"parsed function name module_name={module_name} class_name={class_name} method_name={method_name}",
         )
 
         app_connector_class = self._get_app_connector_class(module_name, class_name)
-        logger.info(
-            "got app connector class",
-            extra={"app_connector_class": app_connector_class},
-        )
+        logger.info(f"got app connector class app_connector_class={app_connector_class}")
         # TODO: caching? singleton per app per enduser account? executing in a thread pool?
         # another tricky thing is the access token expiration if using long-live cached objects
         app_connector_instance = app_connector_class(
@@ -96,7 +85,6 @@ class ConnectorFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TSchem
             return app_connector_class
         except (ImportError, AttributeError) as e:
             logger.exception(
-                "failed to find app connector class",
-                extra={"module_name": module_name, "class_name": class_name},
+                f"failed to find app connector class module_name={module_name} class_name={class_name}"
             )
             raise NoImplementationFound("no app connector class found") from e

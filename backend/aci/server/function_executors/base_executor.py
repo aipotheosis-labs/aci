@@ -39,10 +39,6 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
         Execute the function based on end-user input and security credentials.
         Input validation, default values injection, and security credentials injection are done here.
         """
-        logger.info(
-            "executing function",
-            extra={"function_name": function.name, "function_input": function_input},
-        )
         function_input = self._preprocess_function_input(function, function_input)
 
         return self._execute(function, function_input, security_scheme, security_credentials)
@@ -56,26 +52,19 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
             )
         except jsonschema.ValidationError as e:
             logger.exception(
-                f"failed to validate function input, {e}",
-                extra={"function_name": function.name},
+                f"failed to validate function input, {e} function_name={function.name}"
             )
             raise InvalidFunctionInput(
                 f"invalid function input for function={function.name}, error={e.message}"
             ) from e
 
-        logger.debug(
-            "function_input before injecting defaults",
-            extra={"function_name": function.name, "function_input": function_input},
-        )
+        logger.debug(f"function_input before injecting defaults function_name={function.name}")
 
         # inject non-visible defaults, note that should pass the original parameters schema not just visible ones
         function_input = processor.inject_required_but_invisible_defaults(
             function.parameters, function_input
         )
-        logger.debug(
-            "function_input after injecting defaults",
-            extra={"function_name": function.name, "function_input": function_input},
-        )
+        logger.debug(f"function_input after injecting defaults function_name={function.name}")
 
         # remove None values from the input
         # TODO: better way to remove None values? and if it's ok to remove all of them?

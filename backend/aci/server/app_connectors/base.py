@@ -48,18 +48,13 @@ class AppConnectorBase(ABC):
         This method is the main entry point for executing a function.
         """
         logger.info(
-            "executing via connector",
-            extra={"method_name": method_name, "class_name": self.__class__.__name__},
+            f"executing via connector method_name={method_name} class_name={self.__class__.__name__}"
         )
         self._before_execute()
         method = getattr(self, method_name, None)
         if not method:
             logger.error(
-                "method not found",
-                extra={
-                    "method_name": method_name,
-                    "class_name": self.__class__.__name__,
-                },
+                f"method not found method_name={method_name} class_name={self.__class__.__name__}"
             )
             raise NoImplementationFound(
                 f"method={method_name} not found in class={self.__class__.__name__}"
@@ -67,25 +62,12 @@ class AppConnectorBase(ABC):
 
         try:
             logger.info(
-                "executing method",
-                extra={
-                    "method_name": method_name,
-                    "class_name": self.__class__.__name__,
-                    "function_input": function_input,
-                },
+                f"executing method method_name={method_name} class_name={self.__class__.__name__}"
             )
             result = method(**function_input)
-            logger.info(
-                "execution result",
-                extra={"result": result},
-            )
             return FunctionExecutionResult(success=True, data=result)
         except Exception as e:
             logger.exception(
-                f"error executing method, {e}",
-                extra={
-                    "method_name": method_name,
-                    "class_name": self.__class__.__name__,
-                },
+                f"error executing method, {e} method_name={method_name} class_name={self.__class__.__name__}"
             )
             return FunctionExecutionResult(success=False, error=str(e))
