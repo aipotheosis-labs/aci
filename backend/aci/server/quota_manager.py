@@ -45,7 +45,7 @@ def enforce_project_creation_quota(db_session: Session, org_id: UUID) -> None:
     projects = crud.projects.get_projects_by_org(db_session, org_id)
     if len(projects) >= max_projects:
         logger.error(
-            f"user/organization has reached maximum projects quota for their plan org_id={org_id} \n"
+            f"user/organization has reached maximum projects quota for their plan org_id={org_id} "
             f"max_projects={max_projects} num_projects={len(projects)} plan={subscription.plan.name}"
         )
         raise MaxProjectsReached(
@@ -67,7 +67,7 @@ def enforce_agent_creation_quota(db_session: Session, project_id: UUID) -> None:
     agents = crud.projects.get_agents_by_project(db_session, project_id)
     if len(agents) >= config.MAX_AGENTS_PER_PROJECT:
         logger.error(
-            f"project has reached maximum agents quota project_id={project_id} \n"
+            f"project has reached maximum agents quota project_id={project_id} "
             f"max_agents={config.MAX_AGENTS_PER_PROJECT} num_agents={len(agents)}"
         )
         raise MaxAgentsReached()
@@ -108,9 +108,9 @@ def enforce_linked_accounts_creation_quota(
     )
     if num_unique_linked_account_owner_ids >= max_unique_linked_account_owner_ids:
         logger.error(
-            f"organization has reached maximum unique linked account owner ids quota for the current plan org_id={org_id} \n"
-            f"max_unique_linked_account_owner_ids={max_unique_linked_account_owner_ids} \n"
-            f"num_unique_linked_account_owner_ids={num_unique_linked_account_owner_ids} \n"
+            f"organization has reached maximum unique linked account owner ids quota for the current plan org_id={org_id} "
+            f"max_unique_linked_account_owner_ids={max_unique_linked_account_owner_ids} "
+            f"num_unique_linked_account_owner_ids={num_unique_linked_account_owner_ids} "
             f"plan={subscription.plan.name}"
         )
         raise MaxUniqueLinkedAccountOwnerIdsReached(
@@ -152,8 +152,8 @@ def enforce_agent_secrets_quota(db_session: Session, project_id: UUID) -> None:
     )
     if num_agent_secrets >= max_agent_secrets:
         logger.error(
-            f"project has reached maximum agent secrets quota project_id={project_id} \n"
-            f"max_agent_secrets={max_agent_secrets} num_agent_secrets={num_agent_secrets} \n"
+            f"project has reached maximum agent secrets quota project_id={project_id} "
+            f"max_agent_secrets={max_agent_secrets} num_agent_secrets={num_agent_secrets} "
             f"plan={subscription.plan.name}"
         )
         raise MaxAgentSecretsReached(

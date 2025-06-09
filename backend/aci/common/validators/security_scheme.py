@@ -24,16 +24,17 @@ def validate_scheme_and_credentials_type_match(
     expected_type = scheme_to_credentials.get(security_scheme)
     if expected_type is None:
         logger.error(
-            f"Unsupported security scheme scheme={security_scheme} \n"
+            f"Unsupported security scheme scheme={security_scheme} "
             f"credentials_type={type(security_credentials)}"
         )
         raise ValueError(f"Unsupported security scheme: {security_scheme}")
 
     if not isinstance(security_credentials, expected_type):
         logger.error(
-            f"Scheme and credentials type mismatch scheme={security_scheme} \n"
+            f"Scheme and credentials type mismatch scheme={security_scheme} "
             f"credentials_type={type(security_credentials)}"
         )
         raise ValueError(
-            f"Invalid security credentials type: {type(security_credentials)} for scheme: {security_scheme}"
+            f"Invalid security credentials type: {type(security_credentials)} "
+            f"for scheme: {security_scheme}"
         )

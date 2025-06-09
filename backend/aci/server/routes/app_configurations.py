@@ -54,7 +54,7 @@ async def create_app_configuration(
 
     if app.security_schemes.get(body.security_scheme) is None:
         logger.error(
-            f"app does not support specified security scheme app_name={body.app_name} \n"
+            f"app does not support specified security scheme app_name={body.app_name} "
             f"security_scheme={body.security_scheme}"
         )
         raise AppSecuritySchemeNotSupported(
@@ -130,9 +130,7 @@ async def delete_app_configuration(
         context.db_session, context.project.id, app_name
     )
     logger.warning(
-        f"deleted linked accounts \n"
-        f"number_of_linked_accounts_deleted={number_of_linked_accounts_deleted} \n"
-        f"app_name={app_name}"
+        f"deleted linked accounts number_of_linked_accounts_deleted={number_of_linked_accounts_deleted} app_name={app_name}"
     )
     # 2. Delete the app configuration record
     crud.app_configurations.delete_app_configuration(

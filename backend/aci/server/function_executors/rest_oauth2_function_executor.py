@@ -47,7 +47,7 @@ class RestOAuth2FunctionExecutor(RestFunctionExecutor[OAuth2Scheme, OAuth2Scheme
             case _:
                 # should never happen
                 logger.error(
-                    f"unsupported oauth2 location={security_scheme.location} \n"
+                    f"unsupported oauth2 location={security_scheme.location} "
                     f"security_scheme={security_scheme}"
                 )
                 raise NoImplementationFound(

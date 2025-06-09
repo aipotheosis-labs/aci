@@ -99,9 +99,9 @@ def validate_project_quota(
 
     if not need_reset and project.daily_quota_used >= config.PROJECT_DAILY_QUOTA:
         logger.warning(
-            f"daily quota exceeded \n"
-            f"project_id={project.id} \n"
-            f"daily_quota_used={project.daily_quota_used} \n"
+            f"daily quota exceeded "
+            f"project_id={project.id} "
+            f"daily_quota_used={project.daily_quota_used} "
             f"daily_quota={config.PROJECT_DAILY_QUOTA}"
         )
         raise DailyQuotaExceeded(

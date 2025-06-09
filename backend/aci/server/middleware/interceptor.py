@@ -46,8 +46,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
                     )
                     if not api_key_id and not agent_id and not project_id and not org_id:
                         logger.warning(
-                            f"api key not found in db \n"
-                            f"api_key={api_key[:4] + '...' + api_key[-4:]}"
+                            f"api key not found in db api_key={api_key[:4] + '...' + api_key[-4:]}"
                         )
                         return JSONResponse(
                             status_code=401,

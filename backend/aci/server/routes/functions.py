@@ -332,9 +332,8 @@ async def execute_function(
     )
     if not app_configuration:
         logger.error(
-            f"failed to execute function, app configuration not found \n"
-            f"function_name={function_name} \n"
-            f"app_name={function.app.name}"
+            f"failed to execute function, app configuration not found "
+            f"function_name={function_name} app_name={function.app.name}"
         )
         raise AppConfigurationNotFound(
             f"configuration for app={function.app.name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{function.app.name}"
@@ -342,10 +341,8 @@ async def execute_function(
     # Check if user has disabled the app configuration
     if not app_configuration.enabled:
         logger.error(
-            f"failed to execute function, app configuration is disabled \n"
-            f"function_name={function_name} \n"
-            f"app_name={function.app.name} \n"
-            f"app_configuration_id={app_configuration.id}"
+            f"failed to execute function, app configuration is disabled "
+            f"function_name={function_name} app_name={function.app.name} app_configuration_id={app_configuration.id}"
         )
         raise AppConfigurationDisabled(
             f"configuration for app={function.app.name} is disabled, please enable the app first {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
@@ -354,10 +351,8 @@ async def execute_function(
     # Check if the function is allowed to be executed by the agent
     if function.app.name not in agent.allowed_apps:
         logger.error(
-            f"failed to execute function, App not allowed to be used by this agent \n"
-            f"function_name={function_name} \n"
-            f"app_name={function.app.name} \n"
-            f"agent_id={agent.id}"
+            f"failed to execute function, App not allowed to be used by this agent "
+            f"function_name={function_name} app_name={function.app.name} agent_id={agent.id}"
         )
         raise AppNotAllowedForThisAgent(
             f"App={function.app.name} that this function belongs to is not allowed to be used by agent={agent.name}"
@@ -372,10 +367,8 @@ async def execute_function(
     )
     if not linked_account:
         logger.error(
-            f"failed to execute function, linked account not found \n"
-            f"function_name={function_name} \n"
-            f"app_name={function.app.name} \n"
-            f"linked_account_owner_id={linked_account_owner_id}"
+            f"failed to execute function, linked account not found "
+            f"function_name={function_name} app_name={function.app.name} linked_account_owner_id={linked_account_owner_id}"
         )
         raise LinkedAccountNotFound(
             f"linked account with linked_account_owner_id={linked_account_owner_id} not found for app={function.app.name},"
@@ -384,11 +377,8 @@ async def execute_function(
 
     if not linked_account.enabled:
         logger.error(
-            f"failed to execute function, linked account is disabled \n"
-            f"function_name={function_name} \n"
-            f"app_name={function.app.name} \n"
-            f"linked_account_owner_id={linked_account_owner_id} \n"
-            f"linked_account_id={linked_account.id}"
+            f"failed to execute function, linked account is disabled "
+            f"function_name={function_name} app_name={function.app.name} linked_account_owner_id={linked_account_owner_id} linked_account_id={linked_account.id}"
         )
         raise LinkedAccountDisabled(
             f"linked account with linked_account_owner_id={linked_account_owner_id} is disabled for app={function.app.name},"

@@ -37,11 +37,11 @@ async def handle_user_created_webhook(
     except WebhookVerificationError as e:
         response.status_code = status.HTTP_400_BAD_REQUEST
         logger.error(
-            f"webhook verification error \n"
-            f"error={e!s} \n"
-            f"error_type={type(e).__name__} \n"
-            f"svix_id={headers.get('svix-id')} \n"
-            f"svix_timestamp={headers.get('svix-timestamp')} \n"
+            f"webhook verification error "
+            f"error={e!s} "
+            f"error_type={type(e).__name__} "
+            f"svix_id={headers.get('svix-id')} "
+            f"svix_timestamp={headers.get('svix-timestamp')} "
             f"svix_signature={headers.get('svix-signature')}"
         )
         return
@@ -75,8 +75,8 @@ async def handle_user_created_webhook(
             if org_metadata["personal"] is True:
                 response.status_code = status.HTTP_409_CONFLICT
                 logger.error(
-                    f"user already has a personal organization \n"
-                    f"user_id={user.user_id} \n"
+                    f"user already has a personal organization "
+                    f"user_id={user.user_id} "
                     f"org_id={org_id}"
                 )
                 return
@@ -86,15 +86,13 @@ async def handle_user_created_webhook(
         max_users=1,
     )
     logger.info(
-        f"created a default personal org for new user \n"
-        f"user_id={user.user_id} \n"
-        f"org_id={org.org_id}"
+        f"created a default personal org for new user user_id={user.user_id} org_id={org.org_id}"
     )
 
     auth.update_org_metadata(org_id=org.org_id, metadata={"personal": True})
     logger.info(
-        f"updated org metadata (personal=True) for default personal org \n"
-        f"user_id={user.user_id} \n"
+        f"updated org metadata (personal=True) for default personal org "
+        f"user_id={user.user_id} "
         f"org_id={org.org_id}"
     )
 
@@ -118,10 +116,10 @@ async def handle_user_created_webhook(
     db_session.commit()
 
     logger.info(
-        f"created default project and agent for new user \n"
-        f"user_id={user.user_id} \n"
-        f"org_id={org.org_id} \n"
-        f"project_id={project.id} \n"
+        f"created default project and agent for new user "
+        f"user_id={user.user_id} "
+        f"org_id={org.org_id} "
+        f"project_id={project.id} "
         f"agent_id={agent.id}"
     )
 
