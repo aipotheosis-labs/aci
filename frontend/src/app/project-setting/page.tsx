@@ -13,7 +13,7 @@ import {
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useMetaInfo } from "@/components/context/metainfo";
-import { updateProject } from "@/lib/api/project";
+import { useUpdateProject } from "@/hooks/use-project";
 import { Button } from "@/components/ui/button";
 import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 
@@ -21,7 +21,8 @@ export default function ProjectSettingPage() {
   const { activeProject } = useMetaInfo();
   const [projectName, setProjectName] = useState(activeProject.name);
   const [isEditingName, setIsEditingName] = useState(false);
-  const { accessToken, reloadActiveProject } = useMetaInfo();
+  const { mutateAsync: updateProject, isPending: isProjectUpdating } =
+    useUpdateProject();
 
   // Update state when active project changes
   useEffect(() => {
@@ -42,8 +43,9 @@ export default function ProjectSettingPage() {
     }
 
     try {
-      await updateProject(accessToken, activeProject.id, projectName);
-      await reloadActiveProject();
+      await updateProject({
+        name: projectName,
+      });
       setIsEditingName(false);
       toast.success("Project name updated");
     } catch (error) {
@@ -74,7 +76,7 @@ export default function ProjectSettingPage() {
                 value={projectName}
                 onChange={(e) => setProjectName(e.target.value)}
                 className="w-96"
-                disabled={!isEditingName}
+                disabled={!isEditingName || isProjectUpdating}
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     handleSaveProjectName();
@@ -91,6 +93,7 @@ export default function ProjectSettingPage() {
                 variant="ghost"
                 onClick={handleSaveProjectName}
                 className="h-8 w-8 p-0"
+                disabled={isProjectUpdating}
               >
                 <Check className="h-4 w-4" />
               </Button>
@@ -148,11 +151,7 @@ export default function ProjectSettingPage() {
                   permanently deletes the project and all related data.
                 </p>
               </div>
-              <DeleteProjectDialog
-                accessToken={accessToken}
-                projectId={activeProject.id}
-                projectName={activeProject.name}
-              />
+              <DeleteProjectDialog projectName={activeProject.name} />
             </div>
           </div>
         </div>

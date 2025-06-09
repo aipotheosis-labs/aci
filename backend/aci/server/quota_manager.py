@@ -12,9 +12,11 @@ from sqlalchemy.orm import Session
 
 from aci.common.db import crud
 from aci.common.exceptions import (
+    MaxAgentSecretsReached,
     MaxAgentsReached,
     MaxProjectsReached,
     MaxUniqueLinkedAccountOwnerIdsReached,
+    ProjectNotFound,
 )
 from aci.common.logging_setup import get_logger
 from aci.server import billing, config
@@ -125,4 +127,52 @@ def enforce_linked_accounts_creation_quota(
         )
         raise MaxUniqueLinkedAccountOwnerIdsReached(
             message=f"Maximum number of unique linked account owner ids ({max_unique_linked_account_owner_ids}) reached for the {subscription.plan.name} plan"
+        )
+
+
+def enforce_agent_secrets_quota(db_session: Session, project_id: UUID) -> None:
+    """
+    Check and enforce that the project hasn't exceeded its agent secrets quota.
+    The quota is determined by the organization's current subscription plan.
+
+    Args:
+        db_session: Database session
+        project_id: ID of the project to check
+
+    Raises:
+        MaxAgentSecretsReached: If the project has reached its maximum allowed agent secrets
+        SubscriptionPlanNotFound: If the organization's subscription plan cannot be found
+        ProjectNotFound: If the project cannot be found
+    """
+    # Get the project
+    project = crud.projects.get_project(db_session, project_id)
+    if not project:
+        logger.error(
+            "Project not found during agent secrets quota enforcement",
+            extra={"project_id": project_id},
+        )
+        raise ProjectNotFound(f"Project {project_id} not found")
+
+    # Get the plan for the organization
+    subscription = billing.get_subscription_by_org_id(db_session, project.org_id)
+
+    # Get the agent secrets quota from the plan's features
+    max_agent_secrets = subscription.plan.features["agent_credentials"]
+
+    # Count the number of agent secrets for the project
+    num_agent_secrets = crud.secret.get_total_number_of_agent_secrets_for_org(
+        db_session, project.org_id
+    )
+    if num_agent_secrets >= max_agent_secrets:
+        logger.error(
+            "project has reached maximum agent secrets quota",
+            extra={
+                "project_id": project_id,
+                "max_agent_secrets": max_agent_secrets,
+                "num_agent_secrets": num_agent_secrets,
+                "plan": subscription.plan.name,
+            },
+        )
+        raise MaxAgentSecretsReached(
+            message=f"Maximum number of agent secrets ({max_agent_secrets}) reached for the {subscription.plan.name} plan"
         )

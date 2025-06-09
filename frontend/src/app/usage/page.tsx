@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import UsagePieChart from "@/components/charts/usage-pie-chart";
 import { UsageBarChart } from "@/components/charts/usage-bar-chart";
+import { QuotaUsageDisplay } from "@/components/quota/quota-usage-display";
 import { Separator } from "@/components/ui/separator";
 import {
   getAppDistributionData,
@@ -16,6 +17,7 @@ import {
 } from "@/lib/types/analytics";
 import { getApiKey } from "@/lib/api/util";
 import { useMetaInfo } from "@/components/context/metainfo";
+import { useQuota } from "@/hooks/use-quota";
 
 export default function UsagePage() {
   const { activeProject } = useMetaInfo();
@@ -33,6 +35,8 @@ export default function UsagePage() {
   >([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { data: quotaUsage } = useQuota();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -96,24 +100,12 @@ export default function UsagePage() {
           <div className="p-4">Loading analytics data...</div>
         ) : (
           <>
-            {/* <StatsContainer>
-              <StatsCard title="APPS USED" value={1012} percentageChange={10} />
-              <StatsCard
-                title="FUNCTION USED"
-                value={456}
-                percentageChange={8}
-              />
-              <StatsCard
-                title="FUNCTION CALLS"
-                value={456}
-                percentageChange={-16}
-              />
-              <StatsCard
-                title="LINKED ACCOUNTS"
-                value={2124}
-                percentageChange={16}
-              />
-            </StatsContainer> */}
+            {/* quota usage */}
+            {quotaUsage && (
+              <div className="w-full">
+                <QuotaUsageDisplay quotaUsage={quotaUsage} />
+              </div>
+            )}
 
             <div className="grid gap-6 grid-cols-12">
               <div className="col-span-8">

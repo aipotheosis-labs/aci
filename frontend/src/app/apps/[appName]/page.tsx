@@ -18,12 +18,14 @@ import Image from "next/image";
 import { ConfigureApp } from "@/components/apps/configure-app";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { useAppConfig } from "@/hooks/use-app-config";
+import { Loader2 } from "lucide-react";
 
 const AppPage = () => {
   const { appName } = useParams<{ appName: string }>();
   const [functions, setFunctions] = useState<AppFunction[]>([]);
   const { app } = useApp(appName);
-  const { data: appConfig } = useAppConfig(appName);
+  const { data: appConfig, isPending: isAppConfigLoading } =
+    useAppConfig(appName);
 
   const columns = useAppFunctionsColumns();
 
@@ -68,9 +70,18 @@ const AppPage = () => {
             >
               <Button
                 className="bg-primary text-white hover:bg-primary/90"
-                disabled={appConfig !== null}
+                disabled={isAppConfigLoading || !!appConfig}
               >
-                {appConfig ? "Configured" : "Configure App"}
+                {isAppConfigLoading ? (
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Loading...
+                  </div>
+                ) : appConfig ? (
+                  "Configured"
+                ) : (
+                  "Configure App"
+                )}
               </Button>
             </ConfigureApp>
           )}

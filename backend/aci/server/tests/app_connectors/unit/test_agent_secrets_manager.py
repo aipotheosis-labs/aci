@@ -170,6 +170,9 @@ def test_create_credential_for_domain_success(secrets_manager: AgentSecretsManag
             "aci.server.app_connectors.agent_secrets_manager.SecretCreate",
             return_value=mock_secret_create,
         ) as mock_secret_create_class,
+        patch(
+            "aci.server.app_connectors.agent_secrets_manager.quota_manager.enforce_agent_secrets_quota",
+        ),
     ):
         # When
         secrets_manager.create_credential_for_domain("example.com", "user1", "pass1")
@@ -208,6 +211,9 @@ def test_create_credential_for_domain_already_exists(
             "aci.server.app_connectors.agent_secrets_manager.crud.secret.get_secret",
             return_value=mock_secret,
         ) as mock_get_secret,
+        patch(
+            "aci.server.app_connectors.agent_secrets_manager.quota_manager.enforce_agent_secrets_quota",
+        ),
     ):
         # When
         with pytest.raises(
