@@ -1,6 +1,6 @@
 """add monthly quota and period start fields
 
-Revision ID: add_monthly_quota_fields
+Revision ID: 23b947f44d83
 Revises: 068b47f44d83
 Create Date: 2025-01-15 12:00:00.000000
 
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '2025_01_15_1200_add_monthly_quota_fields'
+revision: str = '23b947f44d83'
 down_revision: Union[str, None] = '068b47f44d83'
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
