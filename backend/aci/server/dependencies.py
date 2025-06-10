@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import Depends, Security
+from fastapi import Depends, Request, Security
 from fastapi.security import APIKeyHeader, HTTPBearer
 from sqlalchemy.orm import Session
 
@@ -18,7 +18,7 @@ from aci.common.exceptions import (
     ProjectNotFound,
 )
 from aci.common.logging_setup import get_logger
-from aci.server import config
+from aci.server import billing, config
 
 logger = get_logger(__name__)
 http_bearer = HTTPBearer(auto_error=True, description="login to receive a JWT token")
@@ -123,6 +123,7 @@ def validate_project_quota(
 
 
 def get_request_context(
+    request: Request,
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
     agent: Annotated[Agent, Depends(validate_agent)],
@@ -132,6 +133,11 @@ def get_request_context(
     Returns a RequestContext object containing the DB session,
     the validated API key ID, and the project ID.
     """
+    # Handle quota for execute and search operations
+    if "/search" in request.url.path or "/execute" in request.url.path:
+        billing.increase_quota_usage(db_session, project)
+        db_session.commit()
+
     logger.info(
         "populating request context",
         extra={"api_key_id": api_key_id, "project_id": project.id, "agent_id": agent.id},

@@ -16,7 +16,7 @@ from aci.common.schemas.app import (
 )
 from aci.common.schemas.function import BasicFunctionDefinition, FunctionDetails
 from aci.common.schemas.security_scheme import SecuritySchemesPublic
-from aci.server import billing, config
+from aci.server import config
 from aci.server import dependencies as deps
 
 logger = get_logger(__name__)
@@ -91,9 +91,6 @@ async def search_apps(
             "apps_search": query_params.model_dump(exclude_none=True),
         },
     )
-
-    billing.increase_quota_usage(context.db_session, context.project)
-    context.db_session.commit()
 
     intent_embedding = (
         generate_embedding(

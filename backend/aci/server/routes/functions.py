@@ -32,7 +32,7 @@ from aci.common.schemas.function import (
     OpenAIFunctionDefinition,
     OpenAIResponsesFunctionDefinition,
 )
-from aci.server import billing, config, custom_instructions
+from aci.server import config, custom_instructions
 from aci.server import dependencies as deps
 from aci.server import security_credentials_manager as scm
 from aci.server.function_executors import get_executor
@@ -84,9 +84,6 @@ async def search_functions(
         "search functions",
         extra={"function_search": query_params.model_dump(exclude_none=True)},
     )
-    # Increase quota usage using common function
-    billing.increase_quota_usage(context.db_session, context.project)
-    context.db_session.commit()
 
     intent_embedding = (
         generate_embedding(
@@ -215,10 +212,6 @@ async def execute(
             "function_execute": body.model_dump(exclude_none=True),
         },
     )
-
-    # Increase quota usage using common function
-    billing.increase_quota_usage(context.db_session, context.project)
-    context.db_session.commit()
 
     # Use the service method to execute the function
     result = await execute_function(

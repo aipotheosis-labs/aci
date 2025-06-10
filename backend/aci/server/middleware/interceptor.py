@@ -55,6 +55,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
                             status_code=401,
                             content={"error": "Unauthorized"},
                         )
+
                     context_vars = {
                         api_key_id_ctx_var: api_key_id,
                         agent_id_ctx_var: agent_id,
