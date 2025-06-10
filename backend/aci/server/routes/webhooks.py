@@ -37,7 +37,7 @@ async def handle_user_created_webhook(
     except WebhookVerificationError as e:
         response.status_code = status.HTTP_400_BAD_REQUEST
         logger.error(
-            f"webhook verification error "
+            f"Webhook verification error, "
             f"error={e!s} "
             f"error_type={type(e).__name__} "
             f"svix_id={headers.get('svix-id')} "
@@ -48,16 +48,16 @@ async def handle_user_created_webhook(
 
     if msg["event_type"] != "user.created":
         response.status_code = status.HTTP_400_BAD_REQUEST
-        logger.error(f"webhook event is not user.created, event={msg['event']}")
+        logger.error(f"Webhook event is not user.created, event={msg['event']}")
         return
 
     user = auth.fetch_user_metadata_by_user_id(msg["user_id"], include_orgs=True)
     if user is None:
         response.status_code = status.HTTP_404_NOT_FOUND
-        logger.error(f"user not found user_id={msg['user_id']}")
+        logger.error(f"User not found, user_id={msg['user_id']}")
         return
 
-    logger.info(f"a new user has signed up user_id={user.user_id}")
+    logger.info(f"New user has signed up, user_id={user.user_id}")
 
     # No-Op if user already has a Personal Organization
     # This shouldn't happen because each user can only be created once
@@ -67,7 +67,7 @@ async def handle_user_created_webhook(
             org_metadata = org_info["org_metadata"]
             if not isinstance(org_metadata, dict):
                 logger.error(
-                    f"org_metadata is not a dict org_id={org_id} org_metadata={org_metadata}"
+                    f"Org metadata is not a dict, org_id={org_id}, org_metadata={org_metadata}"
                 )
                 response.status_code = status.HTTP_422_UNPROCESSABLE_ENTITY
                 return
@@ -75,7 +75,7 @@ async def handle_user_created_webhook(
             if org_metadata["personal"] is True:
                 response.status_code = status.HTTP_409_CONFLICT
                 logger.error(
-                    f"user already has a personal organization "
+                    f"User already has a personal organization, "
                     f"user_id={user.user_id} "
                     f"org_id={org_id}"
                 )
@@ -86,19 +86,19 @@ async def handle_user_created_webhook(
         max_users=1,
     )
     logger.info(
-        f"created a default personal org for new user user_id={user.user_id} org_id={org.org_id}"
+        f"Created a default personal org for new user, user_id={user.user_id}, org_id={org.org_id}"
     )
 
     auth.update_org_metadata(org_id=org.org_id, metadata={"personal": True})
     logger.info(
-        f"updated org metadata (personal=True) for default personal org "
-        f"user_id={user.user_id} "
+        f"Updated org metadata (personal=True) for default personal org, "
+        f"user_id={user.user_id}, "
         f"org_id={org.org_id}"
     )
 
     auth.add_user_to_org(user_id=user.user_id, org_id=org.org_id, role=OrganizationRole.OWNER)
     logger.info(
-        f"added new user to default personal org user_id={user.user_id} org_id={org.org_id}"
+        f"Added new user to default personal org, user_id={user.user_id}, org_id={org.org_id}"
     )
 
     org_id_uuid = _convert_org_id_to_uuid(org.org_id)
@@ -116,8 +116,8 @@ async def handle_user_created_webhook(
     db_session.commit()
 
     logger.info(
-        f"created default project and agent for new user "
-        f"user_id={user.user_id} "
+        f"Created default project and agent for new user, "
+        f"user_id={user.user_id}, "
         f"org_id={org.org_id} "
         f"project_id={project.id} "
         f"agent_id={agent.id}"

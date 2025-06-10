@@ -65,7 +65,7 @@ class RestAPIKeyFunctionExecutor(RestFunctionExecutor[APIKeyScheme, APIKeyScheme
                 cookies[security_scheme.name] = security_key
             case _:
                 # should never happen
-                logger.error(f"unsupported api key location location={security_scheme.location}")
+                logger.error(f"Unsupported API key location, location={security_scheme.location}")
                 raise NoImplementationFound(
-                    f"unsupported api key location={security_scheme.location}"
+                    f"Unsupported API key location, location={security_scheme.location}"
                 )

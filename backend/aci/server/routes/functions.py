@@ -89,8 +89,7 @@ async def search_functions(
         else None
     )
     logger.debug(
-        "generated intent embedding",
-        extra={"intent": query_params.intent, "intent_embedding": intent_embedding},
+        f"Generated intent embedding, intent={query_params.intent}, intent_embedding={intent_embedding}"
     )
 
     # get the apps to filter (or not) based on the allowed_apps_only and app_names query params
@@ -115,10 +114,11 @@ async def search_functions(
         query_params.offset,
     )
     logger.info(
-        "search functions result",
+        "Search functions result",
         extra={
             "search_functions": {
                 "intent": query_params.intent,
+                "query_params": query_params,
                 "function_names": [function.name for function in functions],
             }
         },
@@ -165,7 +165,7 @@ async def get_function_definition(
     )
     if not function:
         logger.error(
-            f"failed to get function definition, function not found function_name={function_name}"
+            f"Failed to get function definition, function not found, function_name={function_name}"
         )
         raise FunctionNotFound(f"function={function_name} not found")
 
@@ -195,11 +195,8 @@ async def execute(
     function_name: str,
     body: FunctionExecute,
 ) -> FunctionExecutionResult:
-    # Log the execution request
-
     start_time = datetime.now(UTC)
 
-    # Use the service method to execute the function
     result = await execute_function(
         db_session=context.db_session,
         project=context.project,
@@ -209,13 +206,16 @@ async def execute(
         linked_account_owner_id=body.linked_account_owner_id,
         openai_client=openai_client,
     )
+
     end_time = datetime.now(UTC)
 
     try:
         execute_result_data = json.dumps(result.data, default=str)
-        # check size of execute_result_data, 15K
+        # TODO: might need to check size of execute_result_data
+        # fluentbit has a limit of 16K for the log message,
+        # need to check recent aws fluentbit logs to see if they've solved this issue
     except Exception as e:
-        logger.exception(f"failed to dump execute_result_data, error={e!s}")
+        logger.exception(f"Failed to dump execute_result_data, error={e}")
         execute_result_data = "failed to dump execute_result_data"
 
     logger.info(
@@ -322,7 +322,7 @@ async def execute_function(
     )
     if not function:
         logger.error(
-            f"failed to execute function, function not found function_name={function_name}"
+            f"Failed to execute function, function not found, function_name={function_name}"
         )
         raise FunctionNotFound(f"function={function_name} not found")
 
@@ -332,26 +332,26 @@ async def execute_function(
     )
     if not app_configuration:
         logger.error(
-            f"failed to execute function, app configuration not found "
+            f"Failed to execute function, app configuration not found, "
             f"function_name={function_name} app_name={function.app.name}"
         )
         raise AppConfigurationNotFound(
-            f"configuration for app={function.app.name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{function.app.name}"
+            f"Configuration for app={function.app.name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{function.app.name}"
         )
     # Check if user has disabled the app configuration
     if not app_configuration.enabled:
         logger.error(
-            f"failed to execute function, app configuration is disabled "
+            f"Failed to execute function, app configuration is disabled, "
             f"function_name={function_name} app_name={function.app.name} app_configuration_id={app_configuration.id}"
         )
         raise AppConfigurationDisabled(
-            f"configuration for app={function.app.name} is disabled, please enable the app first {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
+            f"Configuration for app={function.app.name} is disabled, please enable the app first {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
         )
 
     # Check if the function is allowed to be executed by the agent
     if function.app.name not in agent.allowed_apps:
         logger.error(
-            f"failed to execute function, App not allowed to be used by this agent "
+            f"Failed to execute function, App not allowed to be used by this agent, "
             f"function_name={function_name} app_name={function.app.name} agent_id={agent.id}"
         )
         raise AppNotAllowedForThisAgent(
@@ -367,26 +367,33 @@ async def execute_function(
     )
     if not linked_account:
         logger.error(
-            f"failed to execute function, linked account not found "
+            f"Failed to execute function, linked account not found, "
             f"function_name={function_name} app_name={function.app.name} linked_account_owner_id={linked_account_owner_id}"
         )
         raise LinkedAccountNotFound(
-            f"linked account with linked_account_owner_id={linked_account_owner_id} not found for app={function.app.name},"
+            f"Linked account with linked_account_owner_id={linked_account_owner_id} not found for app={function.app.name},"
             f"please link the account for this app here: {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
         )
 
     if not linked_account.enabled:
         logger.error(
-            f"failed to execute function, linked account is disabled "
+            f"Failed to execute function, linked account is disabled, "
             f"function_name={function_name} app_name={function.app.name} linked_account_owner_id={linked_account_owner_id} linked_account_id={linked_account.id}"
         )
         raise LinkedAccountDisabled(
-            f"linked account with linked_account_owner_id={linked_account_owner_id} is disabled for app={function.app.name},"
+            f"Linked account with linked_account_owner_id={linked_account_owner_id} is disabled for app={function.app.name},"
             f"please enable the account for this app here: {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
         )
 
     security_credentials_response: SecurityCredentialsResponse = await scm.get_security_credentials(
         app_configuration.app, app_configuration, linked_account
+    )
+
+    logger.info(
+        f"Fetched security credentials for function execution, function_name={function_name}, "
+        f"app_name={function.app.name}, linked_account_owner_id={linked_account_owner_id}, "
+        f"linked_account_id={linked_account.id}, is_updated={security_credentials_response.is_updated}, "
+        f"is_app_default_credentials={security_credentials_response.is_app_default_credentials}"
     )
 
     if security_credentials_response.is_updated:
@@ -414,7 +421,8 @@ async def execute_function(
 
     function_executor = get_executor(function.protocol, linked_account)
     logger.info(
-        f"instantiated function executor={type(function_executor)} for function={function_name}"
+        f"Instantiated function executor, function_executor={type(function_executor)}, "
+        f"function={function_name}"
     )
 
     # Execute the function
@@ -435,7 +443,8 @@ async def execute_function(
 
     if not execution_result.success:
         logger.error(
-            f"function execution result error={execution_result.error} for function={function_name}"
+            f"Function execution result error, function_name={function_name}, "
+            f"error={execution_result.error}"
         )
 
     return execution_result

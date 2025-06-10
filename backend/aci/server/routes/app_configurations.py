@@ -41,20 +41,20 @@ async def create_app_configuration(
         True,
     )
     if not app:
-        logger.error(f"app not found app_name={body.app_name}")
+        logger.error(f"App not found, app_name={body.app_name}")
         raise AppNotFound(f"app={body.app_name} not found")
 
     if crud.app_configurations.app_configuration_exists(
         context.db_session, context.project.id, body.app_name
     ):
-        logger.error(f"app configuration already exists app_name={body.app_name}")
+        logger.error(f"App configuration already exists, app_name={body.app_name}")
         raise AppConfigurationAlreadyExists(
             f"app={body.app_name} already configured for project={context.project.id}"
         )
 
     if app.security_schemes.get(body.security_scheme) is None:
         logger.error(
-            f"app does not support specified security scheme app_name={body.app_name} "
+            f"App does not support specified security scheme, app_name={body.app_name}, "
             f"security_scheme={body.security_scheme}"
         )
         raise AppSecuritySchemeNotSupported(
@@ -97,9 +97,9 @@ async def get_app_configuration(
         context.db_session, context.project.id, app_name
     )
     if not app_configuration:
-        logger.error(f"app configuration not found app_name={app_name}")
+        logger.error(f"App configuration not found, app_name={app_name}")
         raise AppConfigurationNotFound(
-            f"configuration for app={app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{app_name}"
+            f"Configuration for app={app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{app_name}"
         )
     return app_configuration
 
@@ -119,9 +119,9 @@ async def delete_app_configuration(
         context.db_session, context.project.id, app_name
     )
     if not app_configuration:
-        logger.error(f"app configuration not found app_name={app_name}")
+        logger.error(f"App configuration not found, app_name={app_name}")
         raise AppConfigurationNotFound(
-            f"configuration for app={app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{app_name}"
+            f"Configuration for app={app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{app_name}"
         )
 
     # TODO: double check atomic operations like below in other api endpoints
@@ -130,7 +130,8 @@ async def delete_app_configuration(
         context.db_session, context.project.id, app_name
     )
     logger.warning(
-        f"deleted linked accounts number_of_linked_accounts_deleted={number_of_linked_accounts_deleted} app_name={app_name}"
+        f"Deleted linked accounts, number_of_linked_accounts_deleted={number_of_linked_accounts_deleted}, "
+        f"app_name={app_name}"
     )
     # 2. Delete the app configuration record
     crud.app_configurations.delete_app_configuration(
@@ -162,9 +163,9 @@ async def update_app_configuration(
         context.db_session, context.project.id, app_name
     )
     if not app_configuration:
-        logger.error(f"app configuration not found app_name={app_name}")
+        logger.error(f"App configuration not found, app_name={app_name}")
         raise AppConfigurationNotFound(
-            f"configuration for app={app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{app_name}"
+            f"Configuration for app={app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{app_name}"
         )
 
     crud.app_configurations.update_app_configuration(context.db_session, app_configuration, body)

@@ -80,8 +80,8 @@ async def link_account_with_aci_default_credentials(
     and an error will be returned.
     """
     logger.info(
-        f"Linking account with ACI default credentials "
-        f"app_name={body.app_name} "
+        f"Linking account with ACI default credentials, "
+        f"app_name={body.app_name}, "
         f"linked_account_owner_id={body.linked_account_owner_id}"
     )
     # TODO: some duplicate code with other linked account creation routes
@@ -90,7 +90,7 @@ async def link_account_with_aci_default_credentials(
     )
     if not app_configuration:
         logger.error(
-            f"failed to link account with ACI default credentials, app configuration not found "
+            f"Failed to link account with ACI default credentials, app configuration not found, "
             f"app_name={body.app_name}"
         )
         raise AppConfigurationNotFound(
@@ -103,13 +103,13 @@ async def link_account_with_aci_default_credentials(
     )
     if not app_default_credentials:
         logger.error(
-            f"failed to link account with ACI default credentials, no default credentials provided by ACI "
+            f"Failed to link account with ACI default credentials, no default credentials provided by ACI, "
             f"app_name={body.app_name} "
             f"security_scheme={app_configuration.security_scheme}"
         )
         # TODO: consider choosing a different exception type?
         raise NoImplementationFound(
-            f"no default credentials provided by ACI for app={body.app_name}, "
+            f"No default credentials provided by ACI for app={body.app_name}, "
             f"security_scheme={app_configuration.security_scheme}"
         )
 
@@ -124,7 +124,7 @@ async def link_account_with_aci_default_credentials(
     if linked_account:
         # TODO: support updating any type of linked account to use ACI default credentials
         logger.error(
-            f"failed to link account with ACI default credentials, linked account already exists "
+            f"Failed to link account with ACI default credentials, linked account already exists, "
             f"linked_account_owner_id={body.linked_account_owner_id} "
             f"app_name={body.app_name}"
         )
@@ -138,8 +138,8 @@ async def link_account_with_aci_default_credentials(
         )
 
         logger.info(
-            f"creating linked account with ACI default credentials "
-            f"linked_account_owner_id={body.linked_account_owner_id} "
+            f"Creating linked account with ACI default credentials, "
+            f"linked_account_owner_id={body.linked_account_owner_id}, "
             f"app_name={body.app_name}"
         )
         linked_account = crud.linked_accounts.create_linked_account(
@@ -164,7 +164,8 @@ async def link_account_with_no_auth(
     Create a linked account under an App that requires no authentication.
     """
     logger.info(
-        f"linking no_auth account app_name={body.app_name} linked_account_owner_id={body.linked_account_owner_id}"
+        f"Linking no_auth account, app_name={body.app_name}, "
+        f"linked_account_owner_id={body.linked_account_owner_id}"
     )
     # TODO: duplicate code with other linked account creation routes, refactor later
     app_configuration = crud.app_configurations.get_app_configuration(
@@ -172,14 +173,14 @@ async def link_account_with_no_auth(
     )
     if not app_configuration:
         logger.error(
-            f"failed to link no_auth account, app configuration not found app_name={body.app_name}"
+            f"Failed to link no_auth account, app configuration not found, app_name={body.app_name}"
         )
         raise AppConfigurationNotFound(
             f"configuration for app={body.app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{body.app_name}"
         )
     if app_configuration.security_scheme != SecurityScheme.NO_AUTH:
         logger.error(
-            f"failed to link no_auth account, app configuration security scheme is not no_auth "
+            f"Failed to link no_auth account, app configuration security scheme is not no_auth, "
             f"app_name={body.app_name} security_scheme={app_configuration.security_scheme}"
         )
         raise NoImplementationFound(
@@ -194,7 +195,7 @@ async def link_account_with_no_auth(
     )
     if linked_account:
         logger.error(
-            f"failed to link no_auth account, linked account already exists "
+            f"Failed to link no_auth account, linked account already exists, "
             f"linked_account_owner_id={body.linked_account_owner_id} app_name={body.app_name}"
         )
         raise LinkedAccountAlreadyExists(
@@ -207,8 +208,9 @@ async def link_account_with_no_auth(
         )
 
         logger.info(
-            f"creating no_auth linked account "
-            f"linked_account_owner_id={body.linked_account_owner_id} app_name={body.app_name}"
+            f"Creating no_auth linked account, "
+            f"linked_account_owner_id={body.linked_account_owner_id}, "
+            f"app_name={body.app_name}"
         )
         linked_account = crud.linked_accounts.create_linked_account(
             context.db_session,
@@ -234,14 +236,15 @@ async def link_account_with_api_key(
     Create a linked account under an API key based App.
     """
     logger.info(
-        f"linking api_key account app_name={body.app_name} linked_account_owner_id={body.linked_account_owner_id}"
+        f"Linking api_key account, app_name={body.app_name}, "
+        f"linked_account_owner_id={body.linked_account_owner_id}"
     )
     app_configuration = crud.app_configurations.get_app_configuration(
         context.db_session, context.project.id, body.app_name
     )
     if not app_configuration:
         logger.error(
-            f"failed to link api_key account, app configuration not found app_name={body.app_name}"
+            f"Failed to link api_key account, app configuration not found, app_name={body.app_name}"
         )
         raise AppConfigurationNotFound(
             f"configuration for app={body.app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{body.app_name}"
@@ -250,7 +253,7 @@ async def link_account_with_api_key(
     # configuration. But in the future, we might lift this restriction and allow any security_schema as long as the App supports it.
     if app_configuration.security_scheme != SecurityScheme.API_KEY:
         logger.error(
-            f"failed to link api_key account, app configuration security scheme is "
+            f"Failed to link api_key account, app configuration security scheme is, "
             f"{app_configuration.security_scheme} instead of api_key "
             f"app_name={body.app_name} security_scheme={app_configuration.security_scheme}"
         )
@@ -273,7 +276,7 @@ async def link_account_with_api_key(
     if linked_account:
         # TODO: support updating api_key linked account
         logger.error(
-            f"failed to link api_key account, linked account already exists "
+            f"Failed to link api_key account, linked account already exists, "
             f"linked_account_owner_id={body.linked_account_owner_id} app_name={body.app_name}"
         )
         raise LinkedAccountAlreadyExists(
@@ -286,8 +289,9 @@ async def link_account_with_api_key(
         )
 
         logger.info(
-            f"creating api_key linked account "
-            f"linked_account_owner_id={body.linked_account_owner_id} app_name={body.app_name}"
+            f"Creating api_key linked account, "
+            f"linked_account_owner_id={body.linked_account_owner_id}, "
+            f"app_name={body.app_name}"
         )
         linked_account = crud.linked_accounts.create_linked_account(
             context.db_session,
@@ -319,7 +323,8 @@ async def link_oauth2_account(
     )
     if not app_configuration:
         logger.error(
-            f"failed to link OAuth2 account, app configuration not found app_name={query_params.app_name}"
+            f"Failed to link OAuth2 account, app configuration not found, "
+            f"app_name={query_params.app_name}"
         )
         raise AppConfigurationNotFound(
             f"configuration for app={query_params.app_name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{query_params.app_name}"
@@ -328,11 +333,11 @@ async def link_oauth2_account(
     # configuration. But in the future, we might lift this restriction and allow any security_schema as long the App supports it.
     if app_configuration.security_scheme != SecurityScheme.OAUTH2:
         logger.error(
-            f"failed to link OAuth2 account, app configuration security scheme is not OAuth2 "
+            f"Failed to link OAuth2 account, app configuration security scheme is not OAuth2, "
             f"app_name={query_params.app_name} security_scheme={app_configuration.security_scheme}"
         )
         raise NoImplementationFound(
-            f"the security_scheme configured in app={query_params.app_name} is "
+            f"The security_scheme configured in app={query_params.app_name} is "
             f"{app_configuration.security_scheme}, not OAuth2"
         )
 
@@ -389,7 +394,7 @@ async def link_oauth2_account(
         query_params.app_name, authorization_url
     )
 
-    logger.info(f"linking oauth2 account with authorization_url={authorization_url}")
+    logger.info(f"Linking oauth2 account with authorization_url={authorization_url}")
     return {"url": authorization_url}
 
 
@@ -411,7 +416,8 @@ async def linked_accounts_oauth2_callback(
     error_description = request.query_params.get("error_description")
     if error:
         logger.error(
-            f"oauth2 account linking callback received, error error={error} error_description={error_description}"
+            f"OAuth2 account linking callback received, error={error}, "
+            f"error_description={error_description}"
         )
         raise OAuth2Error(
             f"oauth2 account linking callback error: {error}, error_description: {error_description}"
@@ -420,14 +426,14 @@ async def linked_accounts_oauth2_callback(
     # check for code
     code = request.query_params.get("code")
     if not code:
-        logger.error("oauth2 account linking callback received, missing code")
+        logger.error("OAuth2 account linking callback received, missing code")
         raise OAuth2Error("missing code parameter during account linking")
 
     # check for state
     state_jwt = request.query_params.get("state")
     if not state_jwt:
         logger.error(
-            "oauth2 account linking callback received, missing state",
+            "OAuth2 account linking callback received, missing state",
         )
         raise OAuth2Error("missing state parameter during account linking")
 
@@ -437,17 +443,17 @@ async def linked_accounts_oauth2_callback(
             jwt.decode(state_jwt, config.SIGNING_KEY)
         )
         logger.info(
-            f"oauth2 account linking callback received, decoded state={state.model_dump(exclude_none=True)}",
+            f"OAuth2 account linking callback received, decoded state={state.model_dump(exclude_none=True)}",
         )
     except Exception as e:
-        logger.exception(f"failed to decode oauth2 state, error={e!s}")
+        logger.exception(f"Failed to decode OAuth2 state, error={e}")
         raise AuthenticationError("invalid state parameter during account linking") from e
 
     # check if the app exists
     app = crud.apps.get_app(db_session, state.app_name, False, False)
     if not app:
         logger.error(
-            f"unable to continue with account linking, app not found app_name={state.app_name}"
+            f"Unable to continue with account linking, app not found app_name={state.app_name}"
         )
         raise AppNotFound(f"app={state.app_name} not found")
 
@@ -460,13 +466,13 @@ async def linked_accounts_oauth2_callback(
     )
     if not app_configuration:
         logger.error(
-            f"unable to continue with account linking, app configuration not found "
+            f"Unable to continue with account linking, app configuration not found "
             f"app_name={state.app_name}"
         )
         raise AppConfigurationNotFound(f"app configuration for app={state.app_name} not found")
     if app_configuration.security_scheme != SecurityScheme.OAUTH2:
         logger.error(
-            f"unable to continue with account linking, app configuration is not OAuth2 "
+            f"Unable to continue with account linking, app configuration is not OAuth2 "
             f"app_name={state.app_name}"
         )
         raise NoImplementationFound(f"app configuration for app={state.app_name} is not OAuth2")
@@ -477,7 +483,7 @@ async def linked_accounts_oauth2_callback(
     )
     if oauth2_scheme.client_id != state.client_id:
         logger.error(
-            f"unable to continue with account linking, client_id of state doesn't match client_id of app configuration "
+            f"Unable to continue with account linking, client_id of state doesn't match client_id of app configuration "
             f"app_name={state.app_name} "
             f"client_id={oauth2_scheme.client_id} "
             f"state_client_id={state.client_id}"
@@ -514,7 +520,7 @@ async def linked_accounts_oauth2_callback(
     )
     if linked_account:
         logger.info(
-            f"updating oauth2 credentials for linked account linked_account_id={linked_account.id}"
+            f"Updating oauth2 credentials for linked account, linked_account_id={linked_account.id}"
         )
         linked_account = crud.linked_accounts.update_linked_account_credentials(
             db_session, linked_account, security_credentials
@@ -534,8 +540,8 @@ async def linked_accounts_oauth2_callback(
         )
 
         logger.info(
-            f"creating oauth2 linked account "
-            f"app_name={state.app_name} "
+            f"Creating oauth2 linked account, "
+            f"app_name={state.app_name}, "
             f"linked_account_owner_id={state.linked_account_owner_id}"
         )
         linked_account = crud.linked_accounts.create_linked_account(
@@ -589,13 +595,13 @@ async def get_linked_account(
     Get a linked account by its id.
     - linked_account_id uniquely identifies a linked account across the platform.
     """
-    logger.info(f"get linked account linked_account_id={linked_account_id}")
+    logger.info(f"Get linked account, linked_account_id={linked_account_id}")
     # validations
     linked_account = crud.linked_accounts.get_linked_account_by_id_under_project(
         context.db_session, linked_account_id, context.project.id
     )
     if not linked_account:
-        logger.error(f"linked account not found linked_account_id={linked_account_id}")
+        logger.error(f"Linked account not found, linked_account_id={linked_account_id}")
         raise LinkedAccountNotFound(f"linked account={linked_account_id} not found")
 
     return linked_account
@@ -609,12 +615,12 @@ async def delete_linked_account(
     """
     Delete a linked account by its id.
     """
-    logger.info(f"delete linked account linked_account_id={linked_account_id}")
+    logger.info(f"Delete linked account, linked_account_id={linked_account_id}")
     linked_account = crud.linked_accounts.get_linked_account_by_id_under_project(
         context.db_session, linked_account_id, context.project.id
     )
     if not linked_account:
-        logger.error(f"linked account not found linked_account_id={linked_account_id}")
+        logger.error(f"Linked account not found, linked_account_id={linked_account_id}")
         raise LinkedAccountNotFound(f"linked account={linked_account_id} not found")
 
     crud.linked_accounts.delete_linked_account(context.db_session, linked_account)
@@ -631,13 +637,13 @@ async def update_linked_account(
     """
     Update a linked account.
     """
-    logger.info(f"update linked account linked_account_id={linked_account_id}")
+    logger.info(f"Update linked account, linked_account_id={linked_account_id}")
     linked_account = crud.linked_accounts.get_linked_account_by_id_under_project(
         context.db_session, linked_account_id, context.project.id
     )
     if not linked_account:
-        logger.error(f"linked account not found linked_account_id={linked_account_id}")
-        raise LinkedAccountNotFound(f"linked account={linked_account_id} not found")
+        logger.error(f"Linked account not found, linked_account_id={linked_account_id}")
+        raise LinkedAccountNotFound(f"Linked account={linked_account_id} not found")
 
     linked_account = crud.linked_accounts.update_linked_account(
         context.db_session, linked_account, body
