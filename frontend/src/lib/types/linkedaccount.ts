@@ -8,4 +8,7 @@ export type LinkedAccount = {
   created_at: string;
   updated_at: string;
   last_used_at?: string | null;
+  security_credentials: {
+    access_token: string | null;
+  };
 };

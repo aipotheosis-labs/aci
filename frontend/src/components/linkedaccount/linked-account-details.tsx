@@ -19,8 +19,11 @@ import {
 } from "@/components/ui/table";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/ui/button";
 import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhanced-switch";
 import { formatToLocalTime } from "@/utils/time";
+import { Copy, Check } from "lucide-react";
+
 interface LinkedAccountDetailsProps {
   account: LinkedAccount;
   toggleAccountStatus?: (
@@ -36,6 +39,26 @@ export function LinkedAccountDetails({
   children,
 }: LinkedAccountDetailsProps) {
   const [open, setOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyToken = async () => {
+    if (account.security_credentials?.access_token) {
+      try {
+        await navigator.clipboard.writeText(
+          account.security_credentials.access_token,
+        );
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch (err) {
+        console.error("Failed to copy token:", err);
+      }
+    }
+  };
+
+  const maskToken = (token: string) => {
+    if (token.length <= 8) return "••••••••";
+    return token.slice(0, 4) + "••••••••" + token.slice(-4);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -133,6 +156,34 @@ export function LinkedAccountDetails({
                           : "Never"}
                       </TableCell>
                     </TableRow>
+                    {account.security_credentials?.access_token && (
+                      <TableRow>
+                        <TableCell className="font-medium text-left">
+                          Access Token
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <code className="text-xs bg-gray-100 px-2 py-1 rounded font-mono">
+                              {maskToken(
+                                account.security_credentials.access_token,
+                              )}
+                            </code>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={handleCopyToken}
+                              className="h-6 w-6 p-0"
+                            >
+                              {copied ? (
+                                <Check className="h-3 w-3 text-green-600" />
+                              ) : (
+                                <Copy className="h-3 w-3" />
+                              )}
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </Card>
