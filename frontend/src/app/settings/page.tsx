@@ -84,11 +84,7 @@ export default function SettingsPage() {
             onSave={handleSaveProjectName}
           />
 
-          <DangerZone
-            accessToken={accessToken}
-            projectId={activeProject.id}
-            projectName={activeProject.name}
-          />
+          <DangerZone projectName={activeProject.name} />
         </SettingsSection>
 
         {/* Organization Settings Section */}

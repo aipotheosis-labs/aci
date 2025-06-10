@@ -2,17 +2,7 @@ import { AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { DeleteProjectDialog } from "@/components/project/delete-project-dialog";
 
-interface DangerZoneProps {
-  accessToken: string;
-  projectId: string;
-  projectName: string;
-}
-
-export function DangerZone({
-  accessToken,
-  projectId,
-  projectName,
-}: DangerZoneProps) {
+export function DangerZone({ projectName }: { projectName: string }) {
   return (
     <div className="mt-4">
       <h2 className="text-lg font-semibold mb-4">Danger Zone</h2>
@@ -24,11 +14,7 @@ export function DangerZone({
             Once you delete a project, there is no going back. This action
             permanently deletes the project and all related data.
           </span>
-          <DeleteProjectDialog
-            accessToken={accessToken}
-            projectId={projectId}
-            projectName={projectName}
-          />
+          <DeleteProjectDialog projectName={projectName} />
         </AlertDescription>
       </Alert>
     </div>
