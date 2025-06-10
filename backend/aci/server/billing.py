@@ -43,6 +43,8 @@ def reset_quota_if_period_changed(
     db_session: Session, project: Project, subscription: SubscriptionFiltered
 ) -> None:
     """Reset quota if billing period has changed."""
+    """When the billing period has changed, we need to reset the quota and also change the current period start to the new period start"""
+    """Stripe will automatically change the current period start to the new period start"""
     last_reset = project.api_quota_last_reset.replace(tzinfo=UTC)
     current_period_start = subscription.current_period_start.replace(tzinfo=UTC)
 
@@ -86,7 +88,7 @@ def increment_quota(db_session: Session, project: Project, monthly_quota_limit: 
         )
 
 
-def increment_quota_or_reset_limit(db_session: Session, project: Project) -> None:
+def increment_quota_or_reset(db_session: Session, project: Project) -> None:
     """
     Use quota for a project operation.
 

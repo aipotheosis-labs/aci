@@ -134,7 +134,7 @@ def get_request_context(
     the validated API key ID, and the project ID.
     """
     if "/search" in request.url.path or "/execute" in request.url.path:
-        billing.increment_quota_or_reset_limit(db_session, project)
+        billing.increment_quota_or_reset(db_session, project)
 
     logger.info(
         "populating request context",
