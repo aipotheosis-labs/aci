@@ -27,7 +27,7 @@ def test_validate_project_quota_valid(test_client: TestClient, dummy_api_key_1: 
             return_value=project,
         ),
         patch("aci.server.dependencies.crud.projects.increase_project_quota_usage"),
-        patch("aci.server.billing.increase_quota_usage"),
+        patch("aci.server.billing.increment_quota_or_reset"),
     ):
         response = test_client.get(
             f"{config.ROUTER_PREFIX_APPS}/search",
