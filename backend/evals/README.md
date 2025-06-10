@@ -33,6 +33,8 @@ The system supports three different prompt difficulty levels:
 
 ### Command Line Interface
 
+#### Basic Commands
+
 Run the evaluation pipeline with different prompt types:
 
 ```bash
@@ -48,6 +50,78 @@ python evaluation_pipeline.py --mode evaluate-only --dataset my_dataset --evalua
 # Generate hard prompts with custom dataset name
 python evaluation_pipeline.py --mode generate-and-evaluate --prompt-type prompt_hard --dataset hard_intent_dataset
 ```
+
+#### Dataset Filename Parameter (`--dataset-filename`)
+
+The `--dataset-filename` parameter allows you to specify custom filenames for your datasets. This is useful for organizing different evaluation runs and file formats.
+
+**Default**: `synthetic_intents.json`
+
+**Supported formats**: `.json` and `.csv`
+
+##### Examples:
+
+```bash
+# Use custom JSON filename for generation
+python evaluation_pipeline.py \
+  --mode generate-only \
+  --prompt-type prompt_medium \
+  --dataset-filename synthetic_intent_med.json
+
+# Use custom CSV filename
+python evaluation_pipeline.py \
+  --mode generate-only \
+  --prompt-type prompt_easy \
+  --dataset-filename easy_intents.csv
+
+# Evaluate using specific dataset filename
+python evaluation_pipeline.py \
+  --mode evaluate-only \
+  --dataset synthetic_intent_dataset_prompt_medium_evaluation_20250609_135609 \
+  --dataset-filename synthetic_intent_med.json
+
+# Generate and evaluate with custom filename
+python evaluation_pipeline.py \
+  --mode generate-and-evaluate \
+  --prompt-type prompt_hard \
+  --dataset-filename hard_evaluation_dataset.json \
+  --generation-limit 50
+```
+
+##### Use Cases:
+
+1. **Organizing by difficulty**:
+   ```bash
+   --dataset-filename easy_intents.json
+   --dataset-filename medium_intents.json
+   --dataset-filename hard_intents.json
+   ```
+
+2. **Organizing by date/version**:
+   ```bash
+   --dataset-filename intents_v2_20250609.json
+   --dataset-filename baseline_eval.json
+   ```
+
+3. **Organizing by app focus**:
+   ```bash
+   --dataset-filename github_specific_intents.json
+   --dataset-filename slack_evaluation.json
+   ```
+
+4. **Different file formats**:
+   ```bash
+   --dataset-filename results.csv  # For Excel compatibility
+   --dataset-filename data.json    # For programmatic access
+   ```
+
+##### Important Notes:
+
+- **File format detection**: The system automatically detects format based on file extension (`.json` or `.csv`)
+- **Artifact naming**: The dataset filename doesn't affect W&B artifact names, only the internal file naming
+- **Evaluation artifacts**: When evaluating, the system looks for `dataset_<filename>` in evaluation artifacts
+- **Backward compatibility**: Existing datasets without custom filenames will continue to work
+- **Case sensitivity**: Filenames are case-sensitive
 
 ### Programmatic Usage
 
@@ -94,8 +168,7 @@ export EVALS_WANDB_KEY="your-wandb-key"
 - `synthetic_intent_generator.py` - Generate synthetic intents using OpenAI
 - `search_evaluator.py` - Evaluate search performance
 - `evaluation_pipeline.py` - Main pipeline orchestrator with CLI
-- `example_usage.py` - Demo script showing prompt types
-- `prompt.md` - Original prompt templates documentation
+
 
 ## Metrics
 
