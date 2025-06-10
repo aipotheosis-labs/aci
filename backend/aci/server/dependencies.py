@@ -133,10 +133,8 @@ def get_request_context(
     Returns a RequestContext object containing the DB session,
     the validated API key ID, and the project ID.
     """
-    # Handle quota for execute and search operations
     if "/search" in request.url.path or "/execute" in request.url.path:
-        billing.increase_quota_usage(db_session, project)
-        db_session.commit()
+        billing.increment_quota_or_reset_limit(db_session, project)
 
     logger.info(
         "populating request context",

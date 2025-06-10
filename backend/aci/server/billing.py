@@ -24,7 +24,7 @@ def get_subscription_by_org_id(db_session: Session, org_id: UUID) -> Subscriptio
             plan=plan,
             current_period_start=datetime.now(UTC).replace(
                 day=1, hour=0, minute=0, second=0, microsecond=0
-            ),
+            ),  # For the free plan, the current period start is the first day of the month
             status=StripeSubscriptionStatus.ACTIVE,
         )
 
@@ -39,35 +39,34 @@ def get_subscription_by_org_id(db_session: Session, org_id: UUID) -> Subscriptio
     )
 
 
-def increase_quota_usage(db_session: Session, project: Project) -> None:
-    """
-    Common function to handle quota increases with monthly quota reset logic for both free and paid plans.
+def reset_quota_if_period_changed(
+    db_session: Session, project: Project, subscription: SubscriptionFiltered
+) -> None:
+    """Reset quota if billing period has changed."""
+    last_reset = project.api_quota_last_reset.replace(tzinfo=UTC)
+    current_period_start = subscription.current_period_start.replace(tzinfo=UTC)
 
-    Args:
-        db_session: Database session
-        project: Project object
+    if current_period_start > last_reset:
+        logger.info(
+            "resetting monthly quota due to billing period change",
+            extra={
+                "project_id": project.id,
+                "org_id": project.org_id,
+                "reset_time": current_period_start,
+            },
+        )
+        crud.projects.reset_api_monthly_quota_for_org(
+            db_session, project.org_id, current_period_start
+        )
 
-    Raises:
-        MonthlyQuotaExceeded: If monthly quota is exceeded
-    """
-    now: datetime = datetime.now(UTC)
 
-    # Get subscription to check plan type
-    subscription = get_subscription_by_org_id(db_session, project.org_id)
-
-    # Handle quota reset based on plan type
-    _handle_quota_reset(db_session, project, subscription, now)
-
-    # Get monthly quota limit
-    monthly_quota_limit = subscription.plan.features["api_calls_monthly"]
-
-    # Atomically increment usage only if within quota limit
+def increment_quota(db_session: Session, project: Project, monthly_quota_limit: int) -> None:
+    """Increment quota usage or raise error if limit exceeded."""
     success = crud.projects.increment_api_monthly_quota_usage(
         db_session, project, monthly_quota_limit
     )
 
     if not success:
-        # Get current usage for logging
         total_monthly_usage = crud.projects.get_total_monthly_quota_usage_for_org(
             db_session, project.org_id
         )
@@ -79,36 +78,25 @@ def increase_quota_usage(db_session: Session, project: Project) -> None:
                 "org_id": project.org_id,
                 "total_monthly_usage": total_monthly_usage,
                 "monthly_quota_limit": monthly_quota_limit,
-                "plan": subscription.plan.name,
             },
         )
         raise MonthlyQuotaExceeded(
-            f"monthly quota exceeded for org={project.org_id}, total monthly usage={total_monthly_usage}, "
-            f"monthly quota limit={monthly_quota_limit}"
+            f"monthly quota exceeded for org={project.org_id}, "
+            f"usage={total_monthly_usage}, limit={monthly_quota_limit}"
         )
 
 
-def _handle_quota_reset(
-    db_session: Session, project: Project, subscription: SubscriptionFiltered, now: datetime
-) -> None:
-    """Handle quota reset logic for both free and paid plans."""
-    last_reset = project.api_quota_last_reset.replace(tzinfo=UTC)
-    current_period_start = subscription.current_period_start.replace(tzinfo=UTC)
+def increment_quota_or_reset_limit(db_session: Session, project: Project) -> None:
+    """
+    Use quota for a project operation.
 
-    if current_period_start > last_reset:
-        _reset_monthly_quota(db_session, project, current_period_start, "billing period reset")
+    1. Get subscription and quota limit
+    2. Reset quota if billing period changed
+    3. Increment usage or raise error if exceeded
+    """
+    subscription = get_subscription_by_org_id(db_session, project.org_id)
+    monthly_quota_limit = subscription.plan.features["api_calls_monthly"]
 
-
-def _reset_monthly_quota(
-    db_session: Session, project: Project, reset_time: datetime, reason: str
-) -> None:
-    """Reset monthly quota for all projects in the org."""
-    logger.info(
-        f"resetting monthly quota due to {reason}",
-        extra={
-            "project_id": project.id,
-            "org_id": project.org_id,
-            "reset_time": reset_time,
-        },
-    )
-    crud.projects.reset_api_monthly_quota_for_org(db_session, project.org_id, reset_time)
+    reset_quota_if_period_changed(db_session, project, subscription)
+    increment_quota(db_session, project, monthly_quota_limit)
+    db_session.commit()
