@@ -52,20 +52,20 @@ def validate_api_key(
     """Validate API key and return the API key ID. (not the actual API key string)"""
     api_key = crud.projects.get_api_key(db_session, api_key_key)
     if api_key is None:
-        logger.error(f"api key not found partial_api_key={api_key_key[:4]}****{api_key_key[-4:]}")
+        logger.error(f"API key not found, partial_api_key={api_key_key[:4]}****{api_key_key[-4:]}")
         raise InvalidAPIKey("api key not found")
 
     elif api_key.status == APIKeyStatus.DISABLED:
-        logger.error(f"api key is disabled api_key_id={api_key.id}")
+        logger.error(f"API key is disabled, api_key_id={api_key.id}")
         raise InvalidAPIKey("API key is disabled")
 
     elif api_key.status == APIKeyStatus.DELETED:
-        logger.error(f"api key is deleted api_key_id={api_key.id}")
+        logger.error(f"API key is deleted, api_key_id={api_key.id}")
         raise InvalidAPIKey("API key is deleted")
 
     else:
         api_key_id: UUID = api_key.id
-        logger.info(f"api key validation successful api_key_id={api_key_id}")
+        logger.info(f"API key validation successful, api_key_id={api_key_id}")
         return api_key_id
 
 
@@ -75,7 +75,7 @@ def validate_agent(
 ) -> Agent:
     agent = crud.projects.get_agent_by_api_key_id(db_session, api_key_id)
     if not agent:
-        raise AgentNotFound(f"agent not found for api_key_id={api_key_id}")
+        raise AgentNotFound(f"Agent not found, api_key_id={api_key_id}")
 
     return agent
 
@@ -87,25 +87,25 @@ def validate_project_quota(
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> Project:
-    logger.debug(f"validating project quota api_key_id={api_key_id}")
+    logger.debug(f"Validating project quota, api_key_id={api_key_id}")
 
     project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
     if not project:
-        logger.error(f"project not found api_key_id={api_key_id}")
-        raise ProjectNotFound(f"project not found for api_key_id={api_key_id}")
+        logger.error(f"Project not found, api_key_id={api_key_id}")
+        raise ProjectNotFound(f"Project not found, api_key_id={api_key_id}")
 
     now: datetime = datetime.now(UTC)
     need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=UTC) + timedelta(days=1)
 
     if not need_reset and project.daily_quota_used >= config.PROJECT_DAILY_QUOTA:
         logger.warning(
-            f"daily quota exceeded "
+            f"Daily quota exceeded, "
             f"project_id={project.id} "
             f"daily_quota_used={project.daily_quota_used} "
             f"daily_quota={config.PROJECT_DAILY_QUOTA}"
         )
         raise DailyQuotaExceeded(
-            f"daily quota exceeded for project={project.id}, daily quota used={project.daily_quota_used}, "
+            f"Daily quota exceeded for project={project.id}, daily quota used={project.daily_quota_used}, "
             f"daily quota={config.PROJECT_DAILY_QUOTA}"
         )
 
@@ -113,7 +113,7 @@ def validate_project_quota(
     # TODO: commit here with the same db_session or should create a separate db_session?
     db_session.commit()
 
-    logger.info(f"project quota validation successful project_id={project.id}")
+    logger.info(f"Project quota validation successful, project_id={project.id}")
     return project
 
 
@@ -128,7 +128,8 @@ def get_request_context(
     the validated API key ID, and the project ID.
     """
     logger.info(
-        f"populating request context api_key_id={api_key_id} project_id={project.id} agent_id={agent.id}"
+        f"Populating request context, api_key_id={api_key_id}, "
+        f"project_id={project.id}, agent_id={agent.id}"
     )
     return RequestContext(
         db_session=db_session,

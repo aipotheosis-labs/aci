@@ -39,6 +39,9 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
         Execute the function based on end-user input and security credentials.
         Input validation, default values injection, and security credentials injection are done here.
         """
+        logger.info(
+            f"Executing function, function_name={function.name}, function_input={function_input}"
+        )
         function_input = self._preprocess_function_input(function, function_input)
 
         return self._execute(function, function_input, security_scheme, security_credentials)
@@ -52,19 +55,25 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
             )
         except jsonschema.ValidationError as e:
             logger.exception(
-                f"failed to validate function input, {e} function_name={function.name}"
+                f"Failed to validate function input, function_name={function.name}, error={e}"
             )
             raise InvalidFunctionInput(
-                f"invalid function input for function={function.name}, error={e.message}"
+                f"Invalid function input for function={function.name}, error={e.message}"
             ) from e
 
-        logger.debug(f"function_input before injecting defaults function_name={function.name}")
+        logger.debug(
+            f"Function input before injecting defaults, function_name={function.name}, "
+            f"function_input={function_input}"
+        )
 
         # inject non-visible defaults, note that should pass the original parameters schema not just visible ones
         function_input = processor.inject_required_but_invisible_defaults(
             function.parameters, function_input
         )
-        logger.debug(f"function_input after injecting defaults function_name={function.name}")
+        logger.debug(
+            f"Function_input after injecting defaults, function_name={function.name}, "
+            f"function_input={function_input}"
+        )
 
         # remove None values from the input
         # TODO: better way to remove None values? and if it's ok to remove all of them?

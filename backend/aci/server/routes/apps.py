@@ -89,8 +89,7 @@ async def search_apps(
         else None
     )
     logger.debug(
-        "generated intent embedding",
-        extra={"intent": query_params.intent, "intent_embedding": intent_embedding},
+        f"Generated intent embedding, intent={query_params.intent}, intent_embedding={intent_embedding}"
     )
     # if the search is restricted to allowed apps, we need to filter the apps by the agent's allowed apps.
     # None means no filtering
@@ -120,10 +119,11 @@ async def search_apps(
             apps.append(AppBasic(name=app.name, description=app.description))
 
     logger.info(
-        "search apps",
+        "Search apps result",
         extra={
             "search_apps": {
                 "intent": query_params.intent,
+                "query_params": query_params,
                 "apps_names": [app.name for app, _ in apps_with_scores],
             },
         },
@@ -148,9 +148,9 @@ async def get_app_details(
     )
 
     if not app:
-        logger.error(f"app not found app_name={app_name}")
+        logger.error(f"App not found, app_name={app_name}")
 
-        raise AppNotFound(f"app={app_name} not found")
+        raise AppNotFound(f"App={app_name} not found")
 
     # filter functions by project visibility and active status
     # TODO: better way and place for crud filtering/acl logic like this?

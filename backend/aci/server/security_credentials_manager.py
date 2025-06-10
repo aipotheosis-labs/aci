@@ -39,8 +39,8 @@ async def get_security_credentials(
         return _get_no_auth_credentials(app, linked_account)
     else:
         logger.error(
-            f"unsupported security scheme linked_account_id={linked_account.id} "
-            f"security_scheme={linked_account.security_scheme} app={app.name}"
+            f"Unsupported security scheme, linked_account_id={linked_account.id}, "
+            f"security_scheme={linked_account.security_scheme}, app={app.name}"
         )
         raise NoImplementationFound(
             f"unsupported security scheme={linked_account.security_scheme}, app={app.name}"
@@ -60,8 +60,8 @@ async def _get_oauth2_credentials(
     )
     if _access_token_is_expired(oauth2_scheme_credentials):
         logger.warning(
-            f"access token expired, trying to refresh linked_account_id={linked_account.id} "
-            f"security_scheme={linked_account.security_scheme} app={app.name}"
+            f"Access token expired, trying to refresh linked_account_id={linked_account.id}, "
+            f"security_scheme={linked_account.security_scheme}, app={app.name}"
         )
         token_response = await _refresh_oauth2_access_token(
             app.name, oauth2_scheme, oauth2_scheme_credentials
@@ -75,8 +75,8 @@ async def _get_oauth2_credentials(
 
         if not token_response.get("access_token") or not expires_at:
             logger.error(
-                f"failed to refresh access token token_response={token_response} "
-                f"app={app.name} linked_account_id={linked_account.id} "
+                f"Failed to refresh access token, token_response={token_response}, "
+                f"app={app.name}, linked_account_id={linked_account.id}, "
                 f"security_scheme={linked_account.security_scheme}"
             )
             raise OAuth2Error("failed to refresh access token")
@@ -140,12 +140,12 @@ def _get_api_key_credentials(
     # use "not" to cover empty dict case
     if not security_credentials:
         logger.error(
-            f"no api key credentials usable app={app.name} "
-            f"security_scheme={linked_account.security_scheme} "
+            f"No API key credentials usable, app={app.name}, "
+            f"security_scheme={linked_account.security_scheme}, "
             f"linked_account_id={linked_account.id}"
         )
         raise NoImplementationFound(
-            f"no api key credentials usable for app={app.name}, "
+            f"No API key credentials usable for app={app.name}, "
             f"security_scheme={linked_account.security_scheme}, "
             f"linked_account_owner_id={linked_account.linked_account_owner_id}"
         )

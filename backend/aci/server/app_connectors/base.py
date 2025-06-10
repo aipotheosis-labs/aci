@@ -48,26 +48,28 @@ class AppConnectorBase(ABC):
         This method is the main entry point for executing a function.
         """
         logger.info(
-            f"executing via connector method_name={method_name} class_name={self.__class__.__name__}"
+            f"Executing via connector, method_name={method_name}, "
+            f"class_name={self.__class__.__name__}"
         )
         self._before_execute()
         method = getattr(self, method_name, None)
         if not method:
             logger.error(
-                f"method not found method_name={method_name} class_name={self.__class__.__name__}"
+                f"Method not found, method_name={method_name}, class_name={self.__class__.__name__}"
             )
             raise NoImplementationFound(
-                f"method={method_name} not found in class={self.__class__.__name__}"
+                f"Method={method_name} not found in class={self.__class__.__name__}"
             )
 
         try:
             logger.info(
-                f"executing method method_name={method_name} class_name={self.__class__.__name__}"
+                f"Executing method, method_name={method_name}, class_name={self.__class__.__name__}"
             )
             result = method(**function_input)
             return FunctionExecutionResult(success=True, data=result)
         except Exception as e:
             logger.exception(
-                f"error executing method, {e} method_name={method_name} class_name={self.__class__.__name__}"
+                f"Error executing method, method_name={method_name}, "
+                f"class_name={self.__class__.__name__}, error={e}"
             )
             return FunctionExecutionResult(success=False, error=str(e))

@@ -33,8 +33,8 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
             if not await self.limiter.hit(rate_limit, rate_limit_key):
                 # NOTE: raising a custom ACIException here doesn't work as expected
                 logger.warning(
-                    f"rate limit exceeded "
-                    f"rate_limit_name={rate_limit_name} "
+                    f"Rate limit exceeded, "
+                    f"rate_limit_name={rate_limit_name}, "
                     f"rate_limit_key={rate_limit_key}"
                 )
                 return Response(
@@ -58,7 +58,7 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if request.client and request.client.host:
             return f"ip:{request.client.host}"
         else:
-            logger.error("failed to generate rate limit key, request.client.host not set")
+            logger.error("Failed to generate rate limit key, request.client.host not set")
             return "ip:127.0.0.1"
 
     async def _get_rate_limit_headers(self, key: str) -> dict:

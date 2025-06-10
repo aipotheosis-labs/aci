@@ -41,14 +41,11 @@ def check_for_violation(
     """
     custom_instruction = custom_instructions.get(function.name)
     if not custom_instruction:
-        logger.debug(
-            "No custom instruction for the function",
-            extra={"function_name": function.name},
-        )
+        logger.debug(f"No custom instruction for the function, function_name={function.name}")
         return
 
     logger.info(
-        f"Checking for violation of custom instruction function_name={function.name} "
+        f"Checking for violation of custom instruction, function_name={function.name} "
         f"custom_instruction={custom_instruction}"
     )
 
@@ -86,15 +83,17 @@ def check_for_violation(
             response_format=ViolationCheckResult,
             temperature=temperature,
         )
-    except Exception:
+    except Exception as e:
         # for inference failure, we should let the request pass
-        logger.exception("failed inference for violation check, letting the request pass")
+        logger.exception(
+            f"Failed inference for violation check, letting the request pass, error={e}"
+        )
 
     result = response.choices[0].message.parsed
 
     if result and result.is_violated:
         logger.error(
-            f"custom instruction violated function_name={function.name} "
+            f"Custom instruction violated, function_name={function.name}, "
             f"justification={result.justification}"
         )
         raise CustomInstructionViolation(
@@ -104,6 +103,6 @@ def check_for_violation(
         )
     else:
         logger.info(
-            f"custom instruction not violated function_name={function.name} "
+            f"Custom instruction not violated, function_name={function.name}, "
             f"justification={result.justification if result else 'unknown'}"
         )
