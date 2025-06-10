@@ -3,7 +3,9 @@ from typing import override
 from aci.common import encryption
 from aci.common.db import crud
 from aci.common.db.sql_models import LinkedAccount
-from aci.common.exceptions import AgentSecretsManagerError
+from aci.common.exceptions import (
+    AgentSecretsManagerError,
+)
 from aci.common.schemas.app_connectors.agent_secrets_manager import (
     DomainCredential,
     SecretValue,
@@ -11,7 +13,7 @@ from aci.common.schemas.app_connectors.agent_secrets_manager import (
 from aci.common.schemas.secret import SecretCreate, SecretUpdate
 from aci.common.schemas.security_scheme import NoAuthScheme, NoAuthSchemeCredentials
 from aci.common.utils import create_db_session
-from aci.server import config
+from aci.server import config, quota_manager
 from aci.server.app_connectors.base import AppConnectorBase
 
 
@@ -96,7 +98,10 @@ class AgentSecretsManager(AppConnectorBase):
             password (str): Password for the credential.
 
         Raises:
-            ValueError: If a credential for the domain already exists.
+            AgentSecretsManagerError: If a credential for the domain already exists.
+            MaxAgentSecretsReached: If the project has reached its maximum allowed agent secrets
+            SubscriptionPlanNotFound: If the organization's subscription plan cannot be found
+            ProjectNotFound: If the project cannot be found
         """
         with create_db_session(config.DB_FULL_URL) as db_session:
             existing = crud.secret.get_secret(db_session, self.linked_account.id, domain)
@@ -104,6 +109,9 @@ class AgentSecretsManager(AppConnectorBase):
                 raise AgentSecretsManagerError(
                     message=f"Credential for domain '{domain}' already exists"
                 )
+
+            # Check quota before creating new secret
+            quota_manager.enforce_agent_secrets_quota(db_session, self.linked_account.project_id)
 
             secret_value = SecretValue(username=username, password=password)
             encrypted_value = encryption.encrypt(secret_value.model_dump_json().encode())

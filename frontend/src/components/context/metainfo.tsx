@@ -1,6 +1,5 @@
 "use client";
 
-import { getProjects } from "@/lib/api/project";
 import { Project } from "@/lib/types/project";
 import {
   OrgMemberInfoClass,
@@ -17,11 +16,7 @@ import {
 } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { UserClass } from "@propelauth/javascript";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-
-export const metaKeys = {
-  projects: (orgId: string) => ["projects", orgId] as const,
-};
+import { useProjects, useReloadProjects } from "@/hooks/use-project";
 
 interface MetaInfoContextType {
   user: UserClass;
@@ -47,8 +42,13 @@ export const MetaInfoProvider = withRequiredAuthInfo<MetaInfoProviderProps>(
   ({ children, userClass, accessToken, refreshAuthInfo }) => {
     const [orgs, setOrgs] = useState<OrgMemberInfoClass[]>([]);
     const [activeOrg, setActiveOrg] = useState<OrgMemberInfoClass | null>(null);
-    const queryClient = useQueryClient();
     const [activeProject, setActiveProject] = useState<Project | null>(null);
+
+    const { data: projects = [], isLoading: projectsLoading } = useProjects(
+      activeOrg?.orgId,
+      accessToken,
+    );
+    const reloadProjectsFunc = useReloadProjects();
 
     useEffect(() => {
       async function getOrgs() {
@@ -79,27 +79,6 @@ export const MetaInfoProvider = withRequiredAuthInfo<MetaInfoProviderProps>(
       }
     }, [orgs]);
 
-    const { data: projects = [] } = useQuery<Project[], Error>({
-      queryKey:
-        activeOrg && accessToken
-          ? metaKeys.projects(activeOrg.orgId)
-          : ["projects"],
-      queryFn: async () => {
-        const fetchedProjects = await getProjects(
-          accessToken,
-          activeOrg!.orgId,
-        );
-        // Sort projects by creation date (oldest first)
-        return [...fetchedProjects].sort(
-          (a, b) =>
-            new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
-        );
-      },
-      enabled: !!activeOrg && !!accessToken,
-      retry: 2,
-      retryDelay: 1000,
-    });
-
     useEffect(() => {
       if (projects.length > 0) {
         const savedProjectId = localStorage.getItem(
@@ -124,15 +103,13 @@ export const MetaInfoProvider = withRequiredAuthInfo<MetaInfoProviderProps>(
 
     const reloadActiveProject = useCallback(async () => {
       if (activeOrg && accessToken) {
-        await queryClient.invalidateQueries({
-          queryKey: metaKeys.projects(activeOrg.orgId),
-        });
+        await reloadProjectsFunc(activeOrg.orgId);
       }
-    }, [queryClient, activeOrg, accessToken]);
+    }, [reloadProjectsFunc, activeOrg, accessToken]);
 
     return (
       <div>
-        {activeOrg && activeProject && accessToken ? (
+        {activeOrg && activeProject && accessToken && !projectsLoading ? (
           <MetaInfoContext.Provider
             value={{
               user: userClass,

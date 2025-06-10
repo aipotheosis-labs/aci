@@ -79,7 +79,11 @@ def dummy_user(database_setup_and_cleanup: None) -> DummyUser:
                     org_name="dummy_org",
                     user_assigned_role=OrganizationRole.OWNER,
                     org_metadata={},
-                    user_inherited_roles_plus_current_role=[],
+                    user_inherited_roles_plus_current_role=[
+                        OrganizationRole.OWNER,
+                        OrganizationRole.ADMIN,
+                        OrganizationRole.MEMBER,
+                    ],
                     user_permissions=[],
                 ),
             },

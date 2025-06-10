@@ -19,6 +19,8 @@ from aci.common.enums import (
 )
 from aci.common.exceptions import BillingError, SubscriptionPlanNotFound
 from aci.common.logging_setup import get_logger
+from aci.common.schemas.plans import PlanFeatures
+from aci.common.schemas.quota import PlanInfo, QuotaUsageResponse
 from aci.common.schemas.subscription import (
     StripeCheckoutSessionCreate,
     StripeSubscriptionDetails,
@@ -38,7 +40,7 @@ auth = acl.get_propelauth()
 @router.get("/get-subscription", response_model=SubscriptionPublic)
 async def get_subscription(
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
+    org_id: Annotated[UUID, Header(alias=config.ACI_ORG_ID_HEADER)],
     user: Annotated[User, Depends(auth.require_user)],
 ) -> SubscriptionPublic:
     acl.require_org_member(user, org_id)
@@ -50,11 +52,39 @@ async def get_subscription(
     )
 
 
+@router.get("/quota-usage", response_model=QuotaUsageResponse)
+async def get_quota_usage(
+    db_session: Annotated[Session, Depends(deps.yield_db_session)],
+    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
+    user: Annotated[User, Depends(auth.require_user)],
+) -> QuotaUsageResponse:
+    acl.require_org_member(user, org_id)
+
+    subscription = billing.get_subscription_by_org_id(db_session, org_id)
+    plan = subscription.plan
+    logger.info("getting quota usage", extra={"org_id": org_id, "plan": plan.name})
+
+    projects_used = len(crud.projects.get_projects_by_org(db_session, org_id))
+    agent_credentials_used = crud.secret.get_total_number_of_agent_secrets_for_org(
+        db_session, org_id
+    )
+    linked_accounts_used = crud.linked_accounts.get_total_number_of_unique_linked_account_owner_ids(
+        db_session, org_id
+    )
+
+    return QuotaUsageResponse(
+        projects_used=projects_used,
+        linked_accounts_used=linked_accounts_used,
+        agent_credentials_used=agent_credentials_used,
+        plan=PlanInfo(name=plan.name, features=PlanFeatures(**plan.features)),
+    )
+
+
 @router.post("/create-checkout-session")
 async def create_checkout_session(
     user: Annotated[User, Depends(auth.require_user)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
+    org_id: Annotated[UUID, Header(alias=config.ACI_ORG_ID_HEADER)],
     body: Annotated[StripeCheckoutSessionCreate, Body()],
 ) -> str:
     acl.require_org_member_with_minimum_role(user, org_id, OrganizationRole.ADMIN)
@@ -115,7 +145,7 @@ async def create_checkout_session(
 async def create_customer_portal_session(
     user: Annotated[User, Depends(auth.require_user)],
     db_session: Annotated[Session, Depends(deps.yield_db_session)],
-    org_id: Annotated[UUID, Header(alias="X-ACI-ORG-ID")],
+    org_id: Annotated[UUID, Header(alias=config.ACI_ORG_ID_HEADER)],
 ) -> str:
     acl.require_org_member_with_minimum_role(user, org_id, OrganizationRole.ADMIN)
 

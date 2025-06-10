@@ -6,9 +6,7 @@ This will:
 - create a new dummy agent in the project
 """
 
-import json
 import uuid
-from pathlib import Path
 
 import click
 from rich.console import Console
@@ -55,18 +53,12 @@ def create_random_api_key_helper(visibility_access: Visibility, org_id: uuid.UUI
         visibility_access=visibility_access,
         skip_dry_run=skip_dry_run,
     )
-    # Load app names from app.json files
-    allowed_apps = []
-    for app_file in Path("./apps").glob("*/app.json"):
-        with open(app_file) as f:
-            app_data = json.load(f)
-            allowed_apps.append(app_data["name"])
 
     agent_id = create_agent.create_agent_helper(
         project_id=project_id,
         name=f"Test Agent {random_id}",
-        description=f"Test Agent {random_id}",
-        allowed_apps=allowed_apps,
+        description="This agent is created by the create-random-api-key CLI command",
+        allowed_apps=[],
         custom_instructions={},
         skip_dry_run=skip_dry_run,
     )
