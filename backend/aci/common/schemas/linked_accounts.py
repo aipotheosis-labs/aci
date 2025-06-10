@@ -44,10 +44,6 @@ class LinkedAccountOAuth2CreateState(BaseModel):
     after_oauth2_link_redirect_url: str | None = None
 
 
-class LinkedAccountSecurityCredentials(BaseModel):
-    access_token: str | None = None
-
-
 class LinkedAccountPublic(BaseModel):
     id: UUID
     project_id: UUID
@@ -58,7 +54,7 @@ class LinkedAccountPublic(BaseModel):
     created_at: datetime
     updated_at: datetime
     last_used_at: datetime | None
-    security_credentials: LinkedAccountSecurityCredentials
+    access_token: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 

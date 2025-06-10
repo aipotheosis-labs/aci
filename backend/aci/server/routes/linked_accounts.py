@@ -1,3 +1,4 @@
+import asyncio
 from typing import Annotated
 from uuid import UUID
 
@@ -33,6 +34,7 @@ from aci.common.schemas.linked_accounts import (
 from aci.common.schemas.security_scheme import (
     APIKeySchemeCredentials,
     NoAuthSchemeCredentials,
+    OAuth2SchemeCredentials,
 )
 from aci.server import config, quota_manager
 from aci.server import dependencies as deps
@@ -627,7 +629,7 @@ async def linked_accounts_oauth2_callback(
 async def list_linked_accounts(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     query_params: Annotated[LinkedAccountsList, Query()],
-) -> list[LinkedAccount]:
+) -> list[LinkedAccountPublic]:
     """
     List all linked accounts.
     - Optionally filter by app_name and linked_account_owner_id.
@@ -648,14 +650,19 @@ async def list_linked_accounts(
         query_params.linked_account_owner_id,
     )
 
-    return linked_accounts
+    # Refresh OAuth2 tokens if needed
+    linked_accounts_public = await asyncio.gather(
+        *(_refresh_oauth2_if_needed(account, context.db_session) for account in linked_accounts)
+    )
+
+    return linked_accounts_public
 
 
 @router.get("/{linked_account_id}", response_model=LinkedAccountPublic)
 async def get_linked_account(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     linked_account_id: UUID,
-) -> LinkedAccount:
+) -> LinkedAccountPublic:
     """
     Get a linked account by its id.
     - linked_account_id uniquely identifies a linked account across the platform.
@@ -675,7 +682,9 @@ async def get_linked_account(
         )
         raise LinkedAccountNotFound(f"linked account={linked_account_id} not found")
 
-    return linked_account
+    linked_account_public = await _refresh_oauth2_if_needed(linked_account, context.db_session)
+
+    return linked_account_public
 
 
 @router.delete("/{linked_account_id}", status_code=status.HTTP_204_NO_CONTENT)
@@ -734,3 +743,27 @@ async def update_linked_account(
     context.db_session.commit()
 
     return linked_account
+
+
+async def _refresh_oauth2_if_needed(
+    linked_account: LinkedAccount, db_session: Session
+) -> LinkedAccountPublic:
+    """Refresh OAuth2 token if needed and return updated account."""
+    linked_account_public = LinkedAccountPublic.model_validate(linked_account)
+    if linked_account.security_scheme == SecurityScheme.OAUTH2:
+        # Get the app configuration for this linked account
+        app_configuration = crud.app_configurations.get_app_configuration(
+            db_session, linked_account.project_id, linked_account.app_name
+        )
+        if app_configuration:
+            security_credentials_response = await scm.get_security_credentials(
+                linked_account.app, app_configuration, linked_account
+            )
+
+            # Only access access_token if credentials are OAuth2SchemeCredentials
+            if isinstance(security_credentials_response.credentials, OAuth2SchemeCredentials):
+                if security_credentials_response.credentials.access_token:
+                    linked_account_public.access_token = (
+                        security_credentials_response.credentials.access_token
+                    )
+    return linked_account_public

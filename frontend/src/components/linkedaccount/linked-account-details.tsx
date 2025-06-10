@@ -42,11 +42,9 @@ export function LinkedAccountDetails({
   const [copied, setCopied] = useState(false);
 
   const handleCopyToken = async () => {
-    if (account.security_credentials?.access_token) {
+    if (account.access_token) {
       try {
-        await navigator.clipboard.writeText(
-          account.security_credentials.access_token,
-        );
+        await navigator.clipboard.writeText(account.access_token);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       } catch (err) {
@@ -156,7 +154,7 @@ export function LinkedAccountDetails({
                           : "Never"}
                       </TableCell>
                     </TableRow>
-                    {account.security_credentials?.access_token && (
+                    {account.access_token && (
                       <TableRow>
                         <TableCell className="font-medium text-left">
                           Access Token
@@ -164,9 +162,7 @@ export function LinkedAccountDetails({
                         <TableCell className="text-right">
                           <div className="flex items-center justify-end gap-2">
                             <code className="text-xs bg-gray-100 px-2 py-1 rounded font-mono">
-                              {maskToken(
-                                account.security_credentials.access_token,
-                              )}
+                              {maskToken(account.access_token)}
                             </code>
                             <Button
                               variant="ghost"
