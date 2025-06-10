@@ -140,8 +140,13 @@ class SyntheticIntentGenerator:
             },
         )
 
-        # Write dataframe to the temporary file
-        df.to_csv(dataset_filename, index=False)
+        # Save dataframe in the appropriate format based on file extension
+        if dataset_filename.endswith(".json"):
+            df.to_json(dataset_filename, orient="records", indent=2)
+        else:
+            # Default to CSV for backward compatibility
+            df.to_csv(dataset_filename, index=False)
+
         # Add the file to the artifact
         artifact.add_file(dataset_filename)
         # Log the artifact
