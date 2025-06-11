@@ -3962,17 +3962,6 @@
                             ],
                             "default": "all"
                         },
-                        "permission": {
-                            "type": "string",
-                            "description": "Filter collaborators by the permissions they have on the repository",
-                            "enum": [
-                                "pull",
-                                "triage",
-                                "push",
-                                "maintain",
-                                "admin"
-                            ]
-                        },
                         "per_page": {
                             "type": "integer",
                             "description": "The number of results per page (max 100)",
@@ -3987,7 +3976,6 @@
                     "required": [],
                     "visible": [
                         "affiliation",
-                        "permission",
                         "per_page",
                         "page"
                     ],
