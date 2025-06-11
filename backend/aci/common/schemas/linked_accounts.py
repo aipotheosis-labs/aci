@@ -50,13 +50,17 @@ class LinkedAccountPublic(BaseModel):
     app_name: str
     linked_account_owner_id: str
     security_scheme: SecurityScheme
+    # NOTE: unnecessary to expose the security credentials
     enabled: bool
     created_at: datetime
     updated_at: datetime
     last_used_at: datetime | None
-    access_token: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class LinkedAccountWithCredentials(LinkedAccountPublic):
+    security_credentials: dict
 
 
 class LinkedAccountsList(BaseModel):
