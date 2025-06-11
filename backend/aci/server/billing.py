@@ -86,19 +86,3 @@ def increment_quota(db_session: Session, project: Project, monthly_quota_limit: 
             f"monthly quota exceeded for org={project.org_id}, "
             f"usage={total_monthly_usage}, limit={monthly_quota_limit}"
         )
-
-
-def increment_quota_or_reset(db_session: Session, project: Project) -> None:
-    """
-    Use quota for a project operation.
-
-    1. Get subscription and quota limit
-    2. Reset quota if billing period changed
-    3. Increment usage or raise error if exceeded
-    """
-    subscription = get_subscription_by_org_id(db_session, project.org_id)
-    monthly_quota_limit = subscription.plan.features["api_calls_monthly"]
-
-    reset_quota_if_period_changed(db_session, project, subscription)
-    increment_quota(db_session, project, monthly_quota_limit)
-    db_session.commit()
