@@ -105,7 +105,8 @@ def validate_project_quota(
             f"daily_quota={config.PROJECT_DAILY_QUOTA}"
         )
         raise DailyQuotaExceeded(
-            f"Daily quota exceeded for project={project.id}, daily quota used={project.daily_quota_used}, "
+            f"Daily quota exceeded for project={project.id}, "
+            f"daily_quota_used={project.daily_quota_used} "
             f"daily quota={config.PROJECT_DAILY_QUOTA}"
         )
 

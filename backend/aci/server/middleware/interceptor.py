@@ -20,13 +20,6 @@ from aci.server.context import (
 
 logger = get_logger(__name__)
 
-_LOG_REQUEST_BODY_ENDPOINTS = [
-    ("POST", "/v1/linked_accounts/default"),
-    ("POST", "/v1/linked_accounts/no-auth"),
-    ("POST", "/v1/linked_accounts/api-key"),
-    ("POST", "/v1/app_configurations"),
-]
-
 
 class InterceptorMiddleware(BaseHTTPMiddleware):
     """
@@ -75,22 +68,22 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
 
         # Skip logging for health check endpoints
         is_health_check = request.url.path == config.ROUTER_PREFIX_HEALTH
-        request_body = await self._get_request_body(request)
 
         if not is_health_check or config.ENVIRONMENT != "local":
             request_log_data = {
-                "schema": request.url.scheme,
                 "http_version": request.scope.get("http_version", "unknown"),
                 "http_method": request.method,
                 "http_path": request.url.path,
                 "url": str(request.url),
+                "url_scheme": request.url.scheme,
                 "query_params": dict(request.query_params),
                 "client_ip": self._get_client_ip(
                     request
                 ),  # TODO: get from request.client.host if request.client else "unknown"
                 "user_agent": request.headers.get("User-Agent", "unknown"),
-                "x-forwarded-proto": request.headers.get("X-Forwarded-Proto", "unknown"),
+                "x_forwarded_proto": request.headers.get("X-Forwarded-Proto", "unknown"),
             }
+            request_body = await self._get_request_body(request)
             if request_body:
                 request_log_data["request_body"] = request_body
             logger.info("Received request", extra=request_log_data)
