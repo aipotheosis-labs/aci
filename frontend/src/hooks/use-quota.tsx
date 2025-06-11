@@ -13,5 +13,6 @@ export function useQuota() {
     queryKey: quotaKeys.all,
     queryFn: () => getQuotaUsage(accessToken, activeOrg.orgId),
     enabled: !!activeOrg.orgId && !!accessToken,
+    staleTime: 0,
   });
 }

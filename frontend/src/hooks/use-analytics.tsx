@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useQueries, UseQueryResult } from "@tanstack/react-query";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { getApiKey } from "@/lib/api/util";
 import {
@@ -27,46 +27,58 @@ export const analyticsKeys = {
     [...analyticsKeys.base(projectId), "function-time-series"] as const,
 };
 
-export function useAppDistribution() {
+export function useAnalyticsQueries() {
   const { activeProject } = useMetaInfo();
   const apiKey = getApiKey(activeProject);
 
-  return useQuery<DistributionDatapoint[], Error>({
-    queryKey: analyticsKeys.appDistribution(activeProject.id),
-    queryFn: () => getAppDistributionData(apiKey),
-    enabled: !!activeProject && !!apiKey,
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: analyticsKeys.appDistribution(activeProject.id),
+        queryFn: () => getAppDistributionData(apiKey),
+        enabled: !!activeProject && !!apiKey,
+        staleTime: 0,
+      },
+      {
+        queryKey: analyticsKeys.functionDistribution(activeProject.id),
+        queryFn: () => getFunctionDistributionData(apiKey),
+        enabled: !!activeProject && !!apiKey,
+        staleTime: 0,
+      },
+      {
+        queryKey: analyticsKeys.appTimeSeries(activeProject.id),
+        queryFn: () => getAppTimeSeriesData(apiKey),
+        enabled: !!activeProject && !!apiKey,
+        staleTime: 0,
+      },
+      {
+        queryKey: analyticsKeys.functionTimeSeries(activeProject.id),
+        queryFn: () => getFunctionTimeSeriesData(apiKey),
+        enabled: !!activeProject && !!apiKey,
+        staleTime: 0,
+      },
+    ],
   });
-}
 
-export function useFunctionDistribution() {
-  const { activeProject } = useMetaInfo();
-  const apiKey = getApiKey(activeProject);
+  const [
+    appDistributionQuery,
+    functionDistributionQuery,
+    appTimeSeriesQuery,
+    functionTimeSeriesQuery,
+  ] = results as [
+    UseQueryResult<DistributionDatapoint[], Error>,
+    UseQueryResult<DistributionDatapoint[], Error>,
+    UseQueryResult<TimeSeriesDatapoint[], Error>,
+    UseQueryResult<TimeSeriesDatapoint[], Error>,
+  ];
 
-  return useQuery<DistributionDatapoint[], Error>({
-    queryKey: analyticsKeys.functionDistribution(activeProject.id),
-    queryFn: () => getFunctionDistributionData(apiKey),
-    enabled: !!activeProject && !!apiKey,
-  });
-}
-
-export function useAppTimeSeries() {
-  const { activeProject } = useMetaInfo();
-  const apiKey = getApiKey(activeProject);
-
-  return useQuery<TimeSeriesDatapoint[], Error>({
-    queryKey: analyticsKeys.appTimeSeries(activeProject.id),
-    queryFn: () => getAppTimeSeriesData(apiKey),
-    enabled: !!activeProject && !!apiKey,
-  });
-}
-
-export function useFunctionTimeSeries() {
-  const { activeProject } = useMetaInfo();
-  const apiKey = getApiKey(activeProject);
-
-  return useQuery<TimeSeriesDatapoint[], Error>({
-    queryKey: analyticsKeys.functionTimeSeries(activeProject.id),
-    queryFn: () => getFunctionTimeSeriesData(apiKey),
-    enabled: !!activeProject && !!apiKey,
-  });
+  return {
+    appDistributionData: appDistributionQuery.data ?? [],
+    functionDistributionData: functionDistributionQuery.data ?? [],
+    appTimeSeriesData: appTimeSeriesQuery.data ?? [],
+    functionTimeSeriesData: functionTimeSeriesQuery.data ?? [],
+    isLoading: results.some((query) => query.isLoading),
+    error: results.find((query) => query.error)?.error || null,
+    refetchAll: () => Promise.all(results.map((query) => query.refetch())),
+  };
 }

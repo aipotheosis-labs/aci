@@ -5,12 +5,7 @@ import { UsageBarChart } from "@/components/charts/usage-bar-chart";
 import { QuotaUsageDisplay } from "@/components/quota/quota-usage-display";
 import { Separator } from "@/components/ui/separator";
 import { useQuota } from "@/hooks/use-quota";
-import {
-  useAppDistribution,
-  useFunctionDistribution,
-  useAppTimeSeries,
-  useFunctionTimeSeries,
-} from "@/hooks/use-analytics";
+import { useAnalyticsQueries } from "@/hooks/use-analytics";
 
 export default function UsagePage() {
   const {
@@ -20,39 +15,17 @@ export default function UsagePage() {
   } = useQuota();
 
   const {
-    data: appDistributionData = [],
-    isLoading: isAppDistributionLoading,
-    error: appDistributionError,
-  } = useAppDistribution();
-  const {
-    data: functionDistributionData = [],
-    isLoading: isFunctionDistributionLoading,
-    error: functionDistributionError,
-  } = useFunctionDistribution();
-  const {
-    data: appTimeSeriesData = [],
-    isLoading: isAppTimeSeriesLoading,
-    error: appTimeSeriesError,
-  } = useAppTimeSeries();
-  const {
-    data: functionTimeSeriesData = [],
-    isLoading: isFunctionTimeSeriesLoading,
-    error: functionTimeSeriesError,
-  } = useFunctionTimeSeries();
+    appDistributionData,
+    functionDistributionData,
+    appTimeSeriesData,
+    functionTimeSeriesData,
+    isLoading: isAnalyticsLoading,
+    error: AnalyticsError,
+  } = useAnalyticsQueries();
 
-  const isInitialLoading =
-    isAppDistributionLoading ||
-    isFunctionDistributionLoading ||
-    isAppTimeSeriesLoading ||
-    isFunctionTimeSeriesLoading ||
-    isQuotaLoading;
+  const isInitialLoading = isQuotaLoading || isAnalyticsLoading;
 
-  const hasError =
-    quotaError ||
-    appDistributionError ||
-    functionDistributionError ||
-    appTimeSeriesError ||
-    functionTimeSeriesError;
+  const hasError = quotaError || AnalyticsError;
 
   const errorMessage = hasError
     ? "Failed to load analytics data. Please try again later."
