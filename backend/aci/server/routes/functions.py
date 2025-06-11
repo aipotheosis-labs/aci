@@ -113,12 +113,12 @@ async def search_functions(
         query_params.limit,
         query_params.offset,
     )
+
     logger.info(
         "Search functions result",
         extra={
             "search_functions": {
-                "intent": query_params.intent,
-                "query_params": query_params,
+                "query_params_json": query_params.model_dump_json(),
                 "function_names": [function.name for function in functions],
             }
         },

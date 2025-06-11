@@ -122,8 +122,7 @@ async def search_apps(
         "Search apps result",
         extra={
             "search_apps": {
-                "intent": query_params.intent,
-                "query_params": query_params,
+                "query_params_json": query_params.model_dump_json(),
                 "apps_names": [app.name for app, _ in apps_with_scores],
             },
         },
