@@ -28,7 +28,7 @@ def test_validate_project_quota_valid(test_client: TestClient, dummy_api_key_1: 
         ),
         patch("aci.server.dependencies.crud.projects.increase_project_quota_usage"),
         patch("aci.server.dependencies.billing.get_subscription_by_org_id"),
-        patch("aci.server.dependencies.billing.reset_quota_if_period_changed"),
+        patch("aci.server.dependencies.billing.reset_quota_if_new_billing_cycle"),
         patch("aci.server.dependencies.billing.increment_quota"),
     ):
         response = test_client.get(

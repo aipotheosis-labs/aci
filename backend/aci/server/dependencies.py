@@ -130,13 +130,13 @@ def validate_monthly_api_quota(
     Use quota for a project operation.
 
     1. Get subscription and quota limit
-    2. Reset quota if billing period changed
+    2. Reset quota if new billing cycle has started
     3. Increment usage or raise error if exceeded
     """
     subscription = billing.get_subscription_by_org_id(db_session, project.org_id)
     monthly_quota_limit = subscription.plan.features["api_calls_monthly"]
 
-    billing.reset_quota_if_period_changed(db_session, project, subscription)
+    billing.reset_quota_if_new_billing_cycle(db_session, project, subscription)
     billing.increment_quota(db_session, project, monthly_quota_limit)
     db_session.commit()
 
