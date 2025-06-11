@@ -32,6 +32,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ProjectSelector } from "./project-selector";
+import { OrgSelector } from "./org-selector";
 
 // Export sidebar items so they can be used in header
 export const sidebarItems = [
@@ -107,6 +109,22 @@ export function AppSidebar() {
           <SidebarTrigger />
         </div>
         <Separator />
+        <div
+          className={cn(
+            "transition-all duration-200 overflow-hidden",
+            isCollapsed
+              ? "max-h-0 opacity-0 scale-95"
+              : "max-h-[100px] opacity-100 scale-100",
+          )}
+        >
+          <div className="w-full p-4">
+            <OrgSelector />
+            <div className="mt-3">
+              <ProjectSelector />
+            </div>
+          </div>
+          <Separator />
+        </div>
       </SidebarHeader>
 
       <SidebarContent>

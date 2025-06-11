@@ -4,7 +4,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { MetaInfoProvider } from "@/components/context/metainfo";
 import { Toaster } from "@/components/ui/sonner";
@@ -12,7 +12,6 @@ import { Analytics } from "@vercel/analytics/next";
 import { RequiredAuthProvider } from "@propelauth/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { SelectorsBar } from "@/components/layout/selectors-bar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -103,20 +102,17 @@ export default function RootLayout({
           <RequiredAuthProvider authUrl={process.env.NEXT_PUBLIC_AUTH_URL!}>
             <MetaInfoProvider>
               <SidebarProvider>
-                <div className="flex min-h-screen w-full">
-                  <AppSidebar />
-                  <div className="w-full">
-                    <SelectorsBar />
-                    <div className="flex-1 bg-white">
-                      <Header />
-                      <main className="p-4">{children}</main>
-                    </div>
-                    <Footer />
-                  </div>
-                </div>
-                <Analytics />
+                <AppSidebar />
+                <SidebarInset>
+                  <main className="w-full h-full mr-2 border rounded-lg border-gray-400 border-opacity-30 bg-white">
+                    <Header />
+                    {children}
+                    <Analytics />
+                  </main>
+                </SidebarInset>
               </SidebarProvider>
             </MetaInfoProvider>
+            <Footer />
           </RequiredAuthProvider>
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
