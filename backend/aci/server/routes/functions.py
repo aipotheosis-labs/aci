@@ -395,37 +395,11 @@ async def execute_function(
             f"please enable the account for this app here: {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
         )
 
-    security_credentials_response: SecurityCredentialsResponse = await scm.get_security_credentials(
-        app_configuration.app, app_configuration, linked_account
+    security_credentials_response: SecurityCredentialsResponse = (
+        await scm.get_and_update_security_credentials(
+            db_session, function.app, app_configuration, linked_account, commit=False
+        )
     )
-
-    logger.info(
-        "fetched security credentials for function execution",
-        extra={
-            "function_name": function_name,
-            "app_name": function.app.name,
-            "linked_account_owner_id": linked_account_owner_id,
-            "linked_account_id": linked_account.id,
-            "is_app_default_credentials": security_credentials_response.is_app_default_credentials,
-            "is_updated": security_credentials_response.is_updated,
-        },
-    )
-
-    if security_credentials_response.is_updated:
-        if security_credentials_response.is_app_default_credentials:
-            crud.apps.update_app_default_security_credentials(
-                db_session,
-                function.app,
-                linked_account.security_scheme,
-                security_credentials_response.credentials.model_dump(),
-            )
-        else:
-            crud.linked_accounts.update_linked_account_credentials(
-                db_session,
-                linked_account,
-                security_credentials=security_credentials_response.credentials,
-            )
-        db_session.commit()
 
     custom_instructions.check_for_violation(
         openai_client,

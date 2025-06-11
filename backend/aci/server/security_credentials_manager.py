@@ -1,7 +1,9 @@
 import time
 
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
+from aci.common.db import crud
 from aci.common.db.sql_models import App, AppConfiguration, LinkedAccount
 from aci.common.enums import SecurityScheme
 from aci.common.exceptions import NoImplementationFound, OAuth2Error
@@ -49,6 +51,61 @@ async def get_security_credentials(
         raise NoImplementationFound(
             f"unsupported security scheme={linked_account.security_scheme}, app={app.name}"
         )
+
+
+async def get_and_update_security_credentials(
+    db_session: Session,
+    app: App,
+    app_configuration: AppConfiguration,
+    linked_account: LinkedAccount,
+    commit: bool = True,
+) -> SecurityCredentialsResponse:
+    """
+    Get security credentials and update them in the database if they were refreshed.
+
+    Args:
+        db_session: Database session
+        app: App object
+        app_configuration: App configuration object
+        linked_account: Linked account object
+        commit: Whether to commit the database transaction (default: True)
+
+    Returns:
+        SecurityCredentialsResponse: The security credentials response
+    """
+    security_credentials_response = await get_security_credentials(
+        app, app_configuration, linked_account
+    )
+
+    logger.info(
+        "fetched security credentials",
+        extra={
+            "app_name": app.name,
+            "linked_account_id": linked_account.id,
+            "is_app_default_credentials": security_credentials_response.is_app_default_credentials,
+            "is_updated": security_credentials_response.is_updated,
+        },
+    )
+
+    if security_credentials_response.is_updated:
+        if security_credentials_response.is_app_default_credentials:
+            crud.apps.update_app_default_security_credentials(
+                db_session,
+                app,
+                linked_account.security_scheme,
+                security_credentials_response.credentials.model_dump(),
+            )
+        else:
+            crud.linked_accounts.update_linked_account_credentials(
+                db_session,
+                linked_account,
+                security_credentials=security_credentials_response.credentials,
+            )
+
+        if commit:
+            db_session.commit()
+
+    return security_credentials_response
 
 
 async def _get_oauth2_credentials(
