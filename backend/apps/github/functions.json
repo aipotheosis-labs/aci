@@ -3853,23 +3853,9 @@
                 "query": {
                     "type": "object",
                     "description": "Optional query parameters for the http request",
-                    "properties": {
-                        "page": {
-                            "type": "integer",
-                            "description": "The page number of the results to fetch",
-                            "default": 1
-                        },
-                        "per_page": {
-                            "type": "integer",
-                            "description": "The number of results per page (max 100)",
-                            "default": 30
-                        }
-                    },
+                    "properties": {},
                     "required": [],
-                    "visible": [
-                        "page",
-                        "per_page"
-                    ],
+                    "visible": [],
                     "additionalProperties": false
                 }
             },
@@ -3878,8 +3864,7 @@
                 "path"
             ],
             "visible": [
-                "path",
-                "query"
+                "path"
             ],
             "additionalProperties": false
         }
