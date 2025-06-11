@@ -682,15 +682,10 @@ async def get_linked_account(
     )
     if app_configuration:
         # Use the security credentials manager to get and update credentials if needed
-        # This will refresh OAuth2 tokens if they're expired
-        security_credentials_response = await scm.get_and_update_security_credentials(
+        # This will refresh OAuth2 tokens if they're expired and automatically refresh the linked_account object
+        await scm.get_and_update_security_credentials(
             context.db_session, linked_account.app, app_configuration, linked_account
         )
-
-        # If credentials were updated, refresh the linked account object from the database
-        # to ensure we return the latest credentials
-        if security_credentials_response.is_updated:
-            context.db_session.refresh(linked_account)
 
     return linked_account
 

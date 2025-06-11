@@ -102,6 +102,9 @@ async def get_and_update_security_credentials(
                 security_credentials=security_credentials_response.credentials,
             )
 
+        # Refresh the linked account object to ensure it has the latest credentials
+        db_session.refresh(linked_account)
+
         if commit:
             db_session.commit()
 
