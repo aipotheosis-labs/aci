@@ -16,7 +16,7 @@ logger = get_logger(__name__)
 auth = acl.get_propelauth()
 
 
-@router.post("/invite_user", status_code=status.HTTP_204_NO_CONTENT)
+@router.post("/invite-user", status_code=status.HTTP_204_NO_CONTENT)
 async def invite_user(
     user: Annotated[User, Depends(auth.require_user)],
     org_id: Annotated[UUID, Header(alias=config.ACI_ORG_ID_HEADER)],

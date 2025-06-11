@@ -28,7 +28,7 @@ export async function inviteToOrganization(
   role: string,
 ): Promise<void> {
   const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/invite_user`,
+    `${process.env.NEXT_PUBLIC_API_URL}/v1/organizations/invite-user`,
     {
       method: "POST",
       headers: {
