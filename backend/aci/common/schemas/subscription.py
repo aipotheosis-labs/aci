@@ -1,7 +1,8 @@
-from datetime import UTC, datetime
+from datetime import datetime
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, PrivateAttr
+from pytz import UTC
 
 from aci.common.db.sql_models import Plan
 from aci.common.enums import StripeSubscriptionInterval, StripeSubscriptionStatus
@@ -36,7 +37,9 @@ class SubscriptionUpdate(BaseModel):
 class SubscriptionFiltered(BaseModel):
     plan: Plan
     status: StripeSubscriptionStatus
-    _stripe_current_period_start: datetime | None = None  # Private field to store Stripe data
+    _stripe_current_period_start: datetime | None = PrivateAttr(
+        default=None
+    )  # Private field to store Stripe data
 
     @property
     def current_period_start(self) -> datetime:

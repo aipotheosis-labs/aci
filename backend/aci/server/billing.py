@@ -31,7 +31,6 @@ def get_subscription_by_org_id(db_session: Session, org_id: UUID) -> Subscriptio
         raise SubscriptionPlanNotFound(f"Plan {subscription.plan_id} not found")
     return SubscriptionFiltered(
         plan=plan,
-        _stripe_current_period_start=subscription.current_period_start,
         status=subscription.status,
     )
 

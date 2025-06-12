@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import Depends, Security
+from fastapi import Depends, Request, Security
 from fastapi.security import APIKeyHeader, HTTPBearer
 from sqlalchemy.orm import Session
 
@@ -123,6 +123,7 @@ def validate_project_quota(
 
 
 def validate_monthly_api_quota(
+    request: Request,
     db_session: Annotated[Session, Depends(yield_db_session)],
     project: Annotated[Project, Depends(validate_project_quota)],
 ) -> None:
@@ -133,6 +134,15 @@ def validate_monthly_api_quota(
     2. Reset quota if new billing cycle has started
     3. Increment usage or raise error if exceeded
     """
+    # Only check quota for app search and function search/execute endpoints
+    path = request.url.path
+    is_valid_endpoint = path.startswith(f"{config.ROUTER_PREFIX_APPS}/search") or (
+        path.startswith(f"{config.ROUTER_PREFIX_FUNCTIONS}/")
+        and (path.endswith("/execute") or path.endswith("/search"))
+    )
+    if not is_valid_endpoint:
+        return
+
     subscription = billing.get_subscription_by_org_id(db_session, project.org_id)
     monthly_quota_limit = subscription.plan.features["api_calls_monthly"]
 

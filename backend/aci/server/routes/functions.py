@@ -84,7 +84,6 @@ async def search_functions(
         "search functions",
         extra={"function_search": query_params.model_dump(exclude_none=True)},
     )
-
     intent_embedding = (
         generate_embedding(
             openai_client,
@@ -223,7 +222,6 @@ async def execute(
         linked_account_owner_id=body.linked_account_owner_id,
         openai_client=openai_client,
     )
-
     return result
 
 
