@@ -2,7 +2,11 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from aci.common.db.sql_models import LinkedAccount
-from aci.common.schemas.linked_accounts import LinkedAccountPublic
+from aci.common.schemas.linked_accounts import (
+    APIKeySchemeCredentialsLimited,
+    LinkedAccountPublic,
+    OAuth2SchemeCredentialsLimited,
+)
 from aci.server import config
 
 NON_EXISTENT_LINKED_ACCOUNT_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
@@ -59,3 +63,49 @@ def test_get_linked_account_not_belong_to_project(
 
     response = test_client.get(ENDPOINT, headers={"x-api-key": dummy_api_key_1})
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_get_linked_account_with_api_key_credentials(
+    test_client: TestClient,
+    dummy_api_key_1: str,
+    dummy_linked_account_api_key_github_project_1: LinkedAccount,
+) -> None:
+    """Test that getting a linked account with API key credentials returns only the API key."""
+    ENDPOINT = (
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/{dummy_linked_account_api_key_github_project_1.id}"
+    )
+
+    response = test_client.get(ENDPOINT, headers={"x-api-key": dummy_api_key_1})
+    assert response.status_code == status.HTTP_200_OK
+
+    linked_account = response.json()
+    security_credentials = APIKeySchemeCredentialsLimited.model_validate(
+        linked_account["security_credentials"]
+    )
+    credentials_dict = security_credentials.model_dump()
+    assert list(credentials_dict.keys()) == ["secret_key"], (
+        "API key credentials should only contain secret_key"
+    )
+
+
+def test_get_linked_account_with_oauth2_credentials(
+    test_client: TestClient,
+    dummy_api_key_1: str,
+    dummy_linked_account_oauth2_google_project_1: LinkedAccount,
+) -> None:
+    """Test that getting a linked account with OAuth2 credentials returns only the access token."""
+    ENDPOINT = (
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/{dummy_linked_account_oauth2_google_project_1.id}"
+    )
+
+    response = test_client.get(ENDPOINT, headers={"x-api-key": dummy_api_key_1})
+    assert response.status_code == status.HTTP_200_OK
+
+    linked_account = response.json()
+    security_credentials = OAuth2SchemeCredentialsLimited.model_validate(
+        linked_account["security_credentials"]
+    )
+    credentials_dict = security_credentials.model_dump()
+    assert list(credentials_dict.keys()) == ["access_token"], (
+        "OAuth2 credentials should only contain access_token"
+    )
