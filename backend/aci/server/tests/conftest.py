@@ -8,6 +8,7 @@ from typing import cast
 from unittest.mock import patch
 
 import pytest
+from dateutil.relativedelta import relativedelta
 from fastapi.testclient import TestClient
 from propelauth_fastapi import User
 from propelauth_py.types.login_method import SocialLoginProvider, SocialSsoLoginMethod
@@ -814,7 +815,7 @@ def dummy_subscription(
     current_period_start = datetime.now(UTC).replace(
         day=1, hour=0, minute=0, second=0, microsecond=0
     )
-    current_period_end = current_period_start.replace(month=current_period_start.month + 1)
+    current_period_end = current_period_start + relativedelta(months=1)
 
     # Create and save subscription
     subscription = Subscription(

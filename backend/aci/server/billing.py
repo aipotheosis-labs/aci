@@ -1,6 +1,6 @@
-from datetime import UTC
 from uuid import UUID
 
+from pytz import UTC
 from sqlalchemy.orm import Session
 
 from aci.common.db import crud
