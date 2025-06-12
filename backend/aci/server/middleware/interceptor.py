@@ -134,9 +134,14 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
             return None
         try:
             request_body_bytes = await request.body()
-            # log max 16kb of request body
-            if len(request_body_bytes) > 16 * 1024:
-                return f"body too large, size={len(request_body_bytes)}"
+            # TODO: reconsider size limit
+            if len(request_body_bytes) > config.MAX_LOG_FIELD_SIZE:
+                return (
+                    request_body_bytes[: config.MAX_LOG_FIELD_SIZE - 100].decode(
+                        "utf-8", errors="replace"
+                    )
+                    + f"... [truncated, size={len(request_body_bytes)}]"
+                )
             return request_body_bytes.decode("utf-8", errors="replace")
         except Exception:
             logger.exception("Error decoding request body")

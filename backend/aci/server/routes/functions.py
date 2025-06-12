@@ -211,9 +211,15 @@ async def execute(
 
     try:
         execute_result_data = json.dumps(result.data, default=str)
-        # TODO: might need to check size of execute_result_data
-        # fluentbit has a limit of 16K for the log message,
-        # need to check recent aws fluentbit logs to see if they've solved this issue
+        result_data_size = len(execute_result_data.encode("utf-8"))
+        # TODO: reconsider size limit
+        if result_data_size > config.MAX_LOG_FIELD_SIZE:
+            execute_result_data = (
+                execute_result_data.encode("utf-8")[: config.MAX_LOG_FIELD_SIZE - 100].decode(
+                    "utf-8", errors="replace"
+                )
+                + f"... [truncated, size={result_data_size}]"
+            )
     except Exception as e:
         logger.exception(f"Failed to dump execute_result_data, error={e}")
         execute_result_data = "failed to dump execute_result_data"
