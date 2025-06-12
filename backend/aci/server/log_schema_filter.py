@@ -1,7 +1,8 @@
 import logging
+from enum import StrEnum
 from typing import Any
 
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
 
@@ -66,100 +67,89 @@ class NormalLogFieldsSchema(BaseModel):
     user_id: str | None = None
 
 
-class LogFieldSchemas:
-    """Centralized schema definitions for log field validation."""
+class TelemetryFieldsSchema(BaseModel):
+    """Schema for telemetry fields."""
 
-    # Default python logging attributes will be ignored and not validated
-    # https://docs.python.org/3/library/logging.html#logrecord-attributes
-    DEFAULT_FIELDS = {
-        "args",
-        "asctime",
-        "created",
-        "exc_info",
-        "exc_text",
-        "filename",
-        "funcName",
-        "levelname",
-        "levelno",
-        "lineno",
-        "message",
-        "module",
-        "msg",
-        "msecs",
-        "name",
-        "pathname",
-        "process",
-        "processName",
-        "relativeCreated",
-        "stack_info",
-        "taskName",
-        "thread",
-        "threadName",
-    }
+    function_execution: FunctionExecutionSchema
+    search_functions: SearchFunctionsSchema
+    search_apps: SearchAppsSchema
+    get_function_definition: GetFunctionDefinitionSchema
 
-    # Normal log fields
-    NORMAL_FIELDS = {
-        "url",
-        "url_scheme",
-        "http_version",
-        "http_method",
-        "http_path",
-        "query_params",
-        "request_body",
-        "status_code",
-        "content_length",
-        "duration",
-        "client_ip",
-        "user_agent",
-        "x_forwarded_proto",
-        "request_id",
-        "agent_id",
-        "org_id",
-        "api_key_id",
-        "project_id",
-        "user_id",
-    }
 
-    # Telemetry field schemas with their corresponding Pydantic models
-    TELEMETRY_FIELDS = {
-        "function_execution": FunctionExecutionSchema,
-        "search_functions": SearchFunctionsSchema,
-        "search_apps": SearchAppsSchema,
-        "get_function_definition": GetFunctionDefinitionSchema,
-    }
+_DEFAULT_FIELDS = [
+    "args",
+    "asctime",
+    "created",
+    "exc_info",
+    "exc_text",
+    "file",
+    "filename",
+    "funcName",
+    "level",
+    "levelname",
+    "levelno",
+    "lineno",
+    "message",
+    "module",
+    "msg",
+    "msecs",
+    "name",
+    "pathname",
+    "process",
+    "processName",
+    "relativeCreated",
+    "stack_info",
+    "taskName",
+    "timestamp",
+    "thread",
+    "threadName",
+]
+
+_NORMAL_FIELDS = list(NormalLogFieldsSchema.model_fields.keys())
+
+_TELEMETRY_FIELDS = list(TelemetryFieldsSchema.model_fields.keys())
+
+
+class FieldType(StrEnum):
+    """Enumeration for log field types."""
+
+    DEFAULT = "default"  # https://docs.python.org/3/library/logging.html#logrecord-attributes logging attribute with format rename
+    NORMAL = "normal"  # fields that are not telemetry(http and request context)
+    TELEMETRY = "telemetry"  # fields that are telemetry(search_apps, search_functions, get_function_definition, function_execution)
+    EXTRA_ATTRIBUTES = "extra_attributes"  # all other fields
 
 
 class PydanticFieldValidator:
     """Handles Pydantic-based validation for different field types."""
 
-    def __init__(self) -> None:
-        self.schemas: LogFieldSchemas = LogFieldSchemas()
-        # Create single instances for context and HTTP validation
-        self.normal_log_fields_validator: type[NormalLogFieldsSchema] = NormalLogFieldsSchema
+    @staticmethod
+    def get_field_type(field_name: str) -> FieldType:
+        """Determine the type category of a field."""
+        if field_name in _DEFAULT_FIELDS:
+            return FieldType.DEFAULT
+        elif field_name in _NORMAL_FIELDS:
+            return FieldType.NORMAL
+        elif field_name in _TELEMETRY_FIELDS:
+            return FieldType.TELEMETRY
+        else:
+            return FieldType.EXTRA_ATTRIBUTES
 
-    def validate_normal_field(self, field_name: str, value: Any) -> bool:
-        """Validate a single normal field."""
+    @staticmethod
+    def validate_field(field_name: str, value: Any, field_type: FieldType) -> None:
+        """Validate a field based on its type category using Pydantic."""
         try:
-            # Create a partial model with just this field
-            field_data = {field_name: value}
-            self.normal_log_fields_validator(**field_data)
-            return True
-        except ValidationError as e:
-            logger.exception(f"Normal field '{field_name}' validation failed: {e}")
-            return False
+            if field_type is FieldType.NORMAL:
+                NormalLogFieldsSchema.model_validate({field_name: value})
 
-    def validate_telemetry_field(self, field_name: str, value: Any) -> bool:
-        """Validate a telemetry schema using its Pydantic model."""
-        try:
-            schema_class = self.schemas.TELEMETRY_FIELDS[field_name]
-            schema_class(**value)
-            return True
-        except ValidationError as e:
-            logger.exception(f"Telemetry field '{field_name}' validation failed: {e}")
-            return False
-        except TypeError as e:
-            logger.exception(f"Telemetry field '{field_name}' type error: {e}")
-            return False
+            elif field_type is FieldType.TELEMETRY:
+                telemetry_field = TelemetryFieldsSchema.model_fields.get(field_name)
+                if telemetry_field is not None and telemetry_field.annotation is not None:
+                    # Validate the value directly against the field's schema type
+                    telemetry_field.annotation.model_validate({field_name: value})
+                else:
+                    raise ValueError(f"Telemetry field '{field_name}' not found in schema")
+        except Exception:
+            raise
 
 
 class LogSchemaFilter(logging.Filter):
@@ -172,56 +162,35 @@ class LogSchemaFilter(logging.Filter):
 
     def __init__(self) -> None:
         super().__init__()
-        self.schemas: LogFieldSchemas = LogFieldSchemas()
-        self.validator: PydanticFieldValidator = PydanticFieldValidator()
 
     def filter(self, record: logging.LogRecord) -> bool:
         """Filter and organize log record fields with Pydantic validation."""
-        extra_attributes = {}
+        try:
+            extra_attributes = {}
+            # Process all fields in the record
+            for field, value in list(record.__dict__.items()):
+                if field == FieldType.EXTRA_ATTRIBUTES:
+                    continue
 
-        # Process all fields in the record
-        for key, value in list(record.__dict__.items()):
-            if key == "extra_attributes":
-                continue
+                expected_type = PydanticFieldValidator.get_field_type(field)
 
-            field_type = self._get_field_type(key)
-            if field_type == "default":
-                continue
-            elif field_type == "extra_attributes":
-                extra_attributes[key] = value
-                delattr(record, key)
-            elif not self._validate_field(key, value, field_type):
-                # Field failed validation, but we keep it in the record
-                # The validation error was already logged
-                pass
+                if expected_type is FieldType.DEFAULT:
+                    continue
+                elif expected_type in (FieldType.NORMAL, FieldType.TELEMETRY):
+                    try:
+                        PydanticFieldValidator.validate_field(field, value, expected_type)
+                    except Exception:
+                        raise
+                elif expected_type is FieldType.EXTRA_ATTRIBUTES:
+                    extra_attributes[field] = value
+                    delattr(record, field)
 
-        # Add extra attributes if any exist
-        if extra_attributes:
-            record.extra_attributes = extra_attributes
+            # Add all fields that are not normal or telemetry to extra_attributes
+            if extra_attributes:
+                record.extra_attributes = extra_attributes
+
+        except Exception:
+            logger.exception("Unexpected error in LogSchemaFilter.filter")
+            return False
 
         return True
-
-    def _get_field_type(self, field_name: str) -> str:
-        """Determine the type category of a field."""
-        if field_name in self.schemas.DEFAULT_FIELDS:
-            return "default"
-        elif field_name in self.schemas.NORMAL_FIELDS:
-            return "normal"
-        elif field_name in self.schemas.TELEMETRY_FIELDS:
-            return "telemetry"
-        else:
-            return "extra_attributes"
-
-    def _validate_field(self, field_name: str, value: Any, field_type: str) -> bool:
-        """Validate a field based on its type category using Pydantic."""
-        try:
-            if field_type == "normal":
-                return self.validator.validate_normal_field(field_name, value)
-            elif field_type == "telemetry":
-                return self.validator.validate_telemetry_field(field_name, value)
-
-            return True
-
-        except Exception as e:
-            logger.exception(f"Unexpected validation error for field '{field_name}': {e}")
-            return False
