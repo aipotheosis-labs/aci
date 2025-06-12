@@ -46,7 +46,7 @@ class NormalLogFieldsSchema(BaseModel):
     """Schema for HTTP-related fields."""
 
     url: str | None = None
-    http_scheme: str | None = None
+    url_scheme: str | None = None
     http_version: str | None = None
     http_method: str | None = None
     http_path: str | None = None
