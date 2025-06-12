@@ -123,7 +123,7 @@ async def search_apps(
         extra={
             "search_apps": {
                 "query_params_json": query_params.model_dump_json(),
-                "apps_names": [app.name for app, _ in apps_with_scores],
+                "app_names": [app.name for app, _ in apps_with_scores],
             },
         },
     )

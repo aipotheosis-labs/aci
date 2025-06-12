@@ -133,12 +133,14 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
         if request.method != "POST":
             return None
         try:
-            request_body = await request.json()
-            if len(request_body) > 4096:
-                return None
-            return str(request_body)
+            request_body_bytes = await request.body()
+            # log max 16kb of request body
+            if len(request_body_bytes) > 16 * 1024:
+                return f"body too large, size={len(request_body_bytes)}"
+            return request_body_bytes.decode("utf-8", errors="replace")
         except Exception:
-            return None
+            logger.exception("Error decoding request body")
+            return "error decoding request body"
 
 
 class RequestContextFilter(logging.Filter):
