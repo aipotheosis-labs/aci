@@ -395,10 +395,12 @@ async def execute_function(
             f"please enable the account for this app here: {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
         )
 
-    security_credentials_response: SecurityCredentialsResponse = (
-        await scm.get_and_update_security_credentials(
-            db_session, function.app, app_configuration, linked_account, commit=False
-        )
+    security_credentials_response: SecurityCredentialsResponse = await scm.get_security_credentials(
+        function.app, app_configuration, linked_account
+    )
+
+    scm.update_security_credentials(
+        db_session, function.app, linked_account, security_credentials_response
     )
 
     custom_instructions.check_for_violation(
