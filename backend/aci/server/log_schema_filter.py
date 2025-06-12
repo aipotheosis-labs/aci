@@ -113,10 +113,10 @@ _TELEMETRY_FIELDS = list(TelemetryFieldsSchema.model_fields.keys())
 class FieldType(StrEnum):
     """Enumeration for log field types."""
 
-    DEFAULT = "default"  # https://docs.python.org/3/library/logging.html#logrecord-attributes logging attribute with format rename
-    NORMAL = "normal"  # fields that are not telemetry(http and request context)
-    TELEMETRY = "telemetry"  # fields that are telemetry(search_apps, search_functions, get_function_definition, function_execution)
-    EXTRA_ATTRIBUTES = "extra_attributes"  # all other fields
+    DEFAULT = "default"  # Standard Python logging attributes (timestamp, level, message, etc.) with rename fields
+    NORMAL = "normal"  # HTTP fields (URL, method, status, headers, etc.) and context fields (user_id, project_id, org_id, api_key_id, agent_id)
+    TELEMETRY = "telemetry"  # Telemetry fields (function_execution, search_functions, search_apps, get_function_definition)
+    EXTRA_ATTRIBUTES = "extra_attributes"  # Custom/unknown fields in extra of log record moved to extra_attributes dict
 
 
 class PydanticFieldValidator:
