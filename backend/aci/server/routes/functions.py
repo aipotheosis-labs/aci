@@ -396,12 +396,13 @@ async def execute_function(
         )
 
     security_credentials_response: SecurityCredentialsResponse = await scm.get_security_credentials(
-        function.app, app_configuration, linked_account
+        app_configuration.app, app_configuration, linked_account
     )
 
     scm.update_security_credentials(
         db_session, function.app, linked_account, security_credentials_response
     )
+    db_session.commit()
 
     custom_instructions.check_for_violation(
         openai_client,

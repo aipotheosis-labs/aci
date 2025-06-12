@@ -85,16 +85,10 @@ def update_security_credentials(
             security_credentials=security_credentials_response.credentials,
         )
 
-    # Refresh the linked account object to ensure it has the latest credentials
     db_session.refresh(linked_account)
 
     logger.info(
         "updated security credentials",
-        extra={
-            "app_name": app.name,
-            "linked_account_id": linked_account.id,
-            "is_app_default_credentials": security_credentials_response.is_app_default_credentials,
-        },
     )
 
 

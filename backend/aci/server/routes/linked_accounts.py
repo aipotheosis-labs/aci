@@ -688,14 +688,13 @@ async def get_linked_account(
             f"app configuration for app={linked_account.app.name} not found"
         )
 
-    # Use the security credentials manager to get and update credentials if needed
-    # This will refresh OAuth2 tokens if they're expired and automatically refresh the linked_account object
     security_credentials_response = await scm.get_security_credentials(
         linked_account.app, app_configuration, linked_account
     )
     scm.update_security_credentials(
         context.db_session, linked_account.app, linked_account, security_credentials_response
     )
+    context.db_session.commit()
 
     return linked_account
 
