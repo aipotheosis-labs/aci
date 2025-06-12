@@ -62,7 +62,7 @@ async def get_quota_usage(
 
     subscription = billing.get_subscription_by_org_id(db_session, org_id)
     plan = subscription.plan
-    logger.info("getting quota usage", extra={"org_id": org_id, "plan": plan.name})
+    logger.info(f"Getting quota usage, org_id={org_id}, plan={plan.name}")
 
     projects_used = len(crud.projects.get_projects_by_org(db_session, org_id))
     agent_credentials_used = crud.secret.get_total_number_of_agent_secrets_for_org(
@@ -91,11 +91,8 @@ async def create_checkout_session(
 
     plan = crud.plans.get_by_name(db_session, body.plan_name)
     if not plan:
-        logger.error(
-            "plan not found",
-            extra={"plan_name": body.plan_name},
-        )
-        raise SubscriptionPlanNotFound(f"plan={body.plan_name} not found")
+        logger.error(f"Plan not found, plan_name={body.plan_name}")
+        raise SubscriptionPlanNotFound(f"Plan={body.plan_name} not found")
 
     price_id = (
         plan.stripe_monthly_price_id
@@ -125,18 +122,12 @@ async def create_checkout_session(
             ).model_dump(),
         )
     except stripe.StripeError as e:
-        logger.error(
-            "error creating checkout session",
-            extra={"error": e},
-        )
+        logger.error(f"Error creating checkout session, error={e}")
         raise BillingError() from e
 
     if not session.url:
-        logger.error(
-            "checkout session url not found",
-            extra={"session": session},
-        )
-        raise BillingError("checkout session url not found")
+        logger.error(f"Checkout session url not found, session={session}")
+        raise BillingError("Checkout session url not found")
 
     return session.url
 
@@ -151,12 +142,9 @@ async def create_customer_portal_session(
 
     active_subscription = crud.subscriptions.get_subscription_by_org_id(db_session, org_id)
     if not active_subscription:
-        logger.error(
-            "subscription not found, the org is on the free plan",
-            extra={"org_id": org_id},
-        )
+        logger.error(f"Subscription not found, the org is on the free plan, org_id={org_id}")
         raise BillingError(
-            "subscription not found, the org is on the free plan",
+            "Subscription not found, the org is on the free plan",
             error_code=status.HTTP_404_NOT_FOUND,
         )
 
@@ -166,10 +154,7 @@ async def create_customer_portal_session(
             return_url=f"{config.DEV_PORTAL_URL}/account",
         )
     except stripe.StripeError as e:
-        logger.error(
-            "error creating customer portal session",
-            extra={"error": e},
-        )
+        logger.error(f"Error creating customer portal session, error={e}")
         raise BillingError() from e
 
     return session.url
@@ -189,31 +174,19 @@ async def handle_stripe_webhook(
         event = stripe.Webhook.construct_event(  # type: ignore
             payload, stripe_signature, config.STRIPE_WEBHOOK_SIGNING_SECRET
         )
-        logger.info(
-            "Received valid Stripe event",
-            extra={"event_id": event.id, "event_type": event.type},
-        )
+        logger.info(f"Received valid Stripe event, event_id={event.id}, event_type={event.type}")
     except stripe.InvalidRequestError as e:
-        logger.error(
-            "Webhook error: Invalid payload",
-            extra={"error": e},
-        )
+        logger.error(f"Webhook error: Invalid payload error={e}")
         raise BillingError(
             error_code=status.HTTP_400_BAD_REQUEST,
         ) from e
     except stripe.SignatureVerificationError as e:
-        logger.error(
-            "Webhook error: Invalid signature",
-            extra={"error": e},
-        )
+        logger.error(f"Webhook error: Invalid signature error={e}")
         raise BillingError(
             error_code=status.HTTP_400_BAD_REQUEST,
         ) from e
     except stripe.StripeError as e:
-        logger.error(
-            "Webhook error: Unexpected error during event construction",
-            extra={"error": e},
-        )
+        logger.error(f"Webhook error: Unexpected error during event construction error={e}")
         raise BillingError() from e
 
     # 2. Idempotency Check: if event has already been processed, return directly
@@ -221,18 +194,12 @@ async def handle_stripe_webhook(
     # handlers are idempotent. The worst case is just the event is processed twice,
     # but only one of the two inserted into the processed_stripe_event table.
     if crud.processed_stripe_event.is_event_processed(db_session, event.id):
-        logger.info(
-            "Event already processed. Skipping.",
-            extra={"event_id": event.id},
-        )
+        logger.info(f"Event already processed, skipping, event_id={event.id}")
         return
 
     # 3. Handle the event
     start_time = time.time()
-    logger.info(
-        "Processing event",
-        extra={"event_id": event.id, "event_type": event.type},
-    )
+    logger.info(f"Processing event, event_id={event.id}, event_type={event.type}")
 
     match event.type:
         case "checkout.session.completed":
@@ -242,10 +209,7 @@ async def handle_stripe_webhook(
         case "customer.subscription.deleted":
             await handle_customer_subscription_deleted(event.data.object, db_session)
         case _:
-            logger.warning(
-                "Unhandled event",
-                extra={"event_id": event.id, "event_type": event.type},
-            )
+            logger.warning(f"Unhandled event, event_id={event.id}, event_type={event.type}")
             return
 
     # 4. Record Processed Event
@@ -253,20 +217,16 @@ async def handle_stripe_webhook(
         crud.processed_stripe_event.record_processed_event(db_session, event.id)
         db_session.commit()
     except IntegrityError as e:
-        logger.warn(
-            "The event has already been processed and inserted into the processed_stripe_event table",
-            extra={"event_id": event.id, "error": e},
+        logger.warning(
+            f"The event has already been processed and inserted into the processed_stripe_event table, "
+            f"event_id={event.id}, error={e}"
         )
         return
 
     processing_time = time.time() - start_time
     logger.info(
-        "Successfully processed and recorded event",
-        extra={
-            "event_id": event.id,
-            "event_type": event.type,
-            "processing_time": processing_time,
-        },
+        f"Successfully processed and recorded event, event_id={event.id}, event_type={event.type}, "
+        f"processing_time={processing_time}"
     )
 
 
@@ -281,10 +241,7 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
     error and return an error code. If it does match, no-op.
     5. Create the new Subscription record
     """
-    logger.info(
-        "Handling checkout.session.completed event",
-        extra={"session_data": session_data},
-    )
+    logger.info(f"Handling checkout.session.completed event, session_data={session_data}")
     # TODO: find out how to use the construct_from method
     # session = stripe.checkout.Session.construct_from(session_data, None)
 
@@ -295,8 +252,8 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
 
     if not client_reference_id or not stripe_customer_id or not stripe_subscription_id:
         logger.error(
-            "Missing critical data in checkout.session.completed event payload.",
-            extra={"session_data": session_data},
+            f"Missing critical data in checkout.session.completed event payload, "
+            f"session_data={session_data}"
         )
         raise BillingError(
             "Missing critical data in checkout.session.completed event payload.",
@@ -306,14 +263,10 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
     # 2. Retrieve the subscription details from Stripe
     try:
         stripe_subscription = stripe.Subscription.retrieve(stripe_subscription_id)
-        logger.info(
-            "Retrieved subscription",
-            extra={"stripe_subscription_id": stripe_subscription_id},
-        )
+        logger.info(f"Retrieved subscription, stripe_subscription_id={stripe_subscription_id}")
     except stripe.StripeError as e:
         logger.error(
-            "Failed to retrieve subscription",
-            extra={"stripe_subscription_id": stripe_subscription_id, "error": e},
+            f"Failed to retrieve subscription, stripe_subscription_id={stripe_subscription_id}, error={e}"
         )
         raise BillingError() from e
 
@@ -323,10 +276,10 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
     plan = crud.plans.get_by_stripe_price_id(db_session, subscription_details.stripe_price_id)
     if not plan:
         logger.error(
-            f"Could not find internal Plan matching Stripe Price ID: {subscription_details.stripe_price_id}"
+            f"Could not find internal plan matching stripe price id, stripe_price_id={subscription_details.stripe_price_id}"
         )
         raise BillingError(
-            f"Could not find internal Plan matching Stripe Price ID: {subscription_details.stripe_price_id}",
+            f"Could not find internal plan matching stripe price id, stripe_price_id={subscription_details.stripe_price_id}",
             error_code=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -338,11 +291,7 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
     )
     if existing_sub:
         logger.info(
-            "Subscription record already exists, updating",
-            extra={
-                "org_id": client_reference_id,
-                "stripe_subscription_id": stripe_subscription_id,
-            },
+            f"Subscription record already exists, updating org_id={client_reference_id}, stripe_subscription_id={stripe_subscription_id}"
         )
 
         if existing_sub.stripe_subscription_id == subscription_details.stripe_subscription_id:
@@ -350,21 +299,14 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
             # have already been updated after creation. This handler only needs to
             # ensure the subscription record is created.
             logger.info(
-                "Subscription record already created for this org, no-op",
-                extra={
-                    "org_id": client_reference_id,
-                    "stripe_subscription_id": stripe_subscription_id,
-                },
+                f"Subscription record already created for this org, no-op org_id={client_reference_id}, stripe_subscription_id={stripe_subscription_id}"
             )
             return
         else:
             logger.error(
-                "Subscription record already exists for this org, but stripe_subscription_id does not match",
-                extra={
-                    "org_id": client_reference_id,
-                    "existing_stripe_subscription_id": existing_sub.stripe_subscription_id,
-                    "new_stripe_subscription_id": stripe_subscription_id,
-                },
+                f"Subscription record already exists for this org, but stripe_subscription_id does not match, "
+                f"org_id={client_reference_id}, existing_stripe_subscription_id={existing_sub.stripe_subscription_id}, "
+                f"new_stripe_subscription_id={stripe_subscription_id}"
             )
             raise BillingError(
                 "Subscription record already exists for this org, but stripe_subscription_id does not match",
@@ -372,11 +314,8 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
             )
     else:  # 5. Create the new Subscription record
         logger.info(
-            "Creating new subscription record",
-            extra={
-                "org_id": client_reference_id,
-                "stripe_subscription_id": stripe_subscription_id,
-            },
+            f"Creating new subscription record, org_id={client_reference_id}, "
+            f"stripe_subscription_id={stripe_subscription_id}"
         )
         new_subscription = Subscription(
             org_id=client_reference_id,
@@ -392,7 +331,7 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
 
     db_session.commit()
     logger.info(
-        f"Successfully created/updated subscription record for Org ID: {client_reference_id}"
+        f"Successfully created/updated subscription record, org_id={client_reference_id}, stripe_subscription_id={stripe_subscription_id}"
     )
 
     # 6. Update subscription metadata with org_id
@@ -401,8 +340,7 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
         subscription_metadata = StripeSubscriptionMetadata.model_validate(metadata)
     except ValidationError as e:
         logger.error(
-            "Invalid metadata in checkout.session.completed event",
-            extra={"error": e, "metadata": metadata},
+            f"Invalid metadata in checkout.session.completed event, metadata={metadata}, error={e}"
         )
         return
 
@@ -433,13 +371,12 @@ async def handle_customer_subscription_updated(
     the details from the latest subscription object from Stripe.
     """
     logger.info(
-        "Handling customer.subscription.updated event",
-        extra={"subscription_data": subscription_data},
+        f"Handling customer.subscription.updated event, subscription_data={subscription_data}"
     )
 
     stripe_subscription_id = subscription_data.get("id")
     if not stripe_subscription_id:
-        logger.error(f"Subscription updated event missing ID. Payload: {subscription_data}")
+        logger.error(f"Subscription updated event missing ID, payload={subscription_data}")
         raise BillingError(
             "Subscription updated event missing ID",
             error_code=status.HTTP_400_BAD_REQUEST,
@@ -454,32 +391,31 @@ async def handle_customer_subscription_updated(
         latest_subscription_data = stripe.Subscription.retrieve(stripe_subscription_id)
         latest_subscription_details = _parse_stripe_subscription_details(latest_subscription_data)
         logger.info(
-            "Retrieved latest subscription details from Stripe",
-            extra={"latest_subscription_details": latest_subscription_details},
+            f"Retrieved latest subscription details from Stripe, latest_subscription_details={latest_subscription_details}"
         )
     except stripe.StripeError as e:
-        logger.error(f"Failed to retrieve subscription {stripe_subscription_id}: {e}")
+        logger.error(
+            f"Failed to retrieve subscription, stripe_subscription_id={stripe_subscription_id}, error={e}"
+        )
         raise BillingError() from e
 
     if not subscription:
         # 2. Handle out of order delivery
         logger.error(
-            "Could not find existing Subscription record to update",
-            extra={"stripe_subscription_id": latest_subscription_details.stripe_subscription_id},
+            f"Could not find existing Subscription record to update, "
+            f"stripe_subscription_id={latest_subscription_details.stripe_subscription_id}"
         )
         if latest_subscription_details.status != StripeSubscriptionStatus.CANCELED:
             # case a: subscription has yet to be created, need to retry
             raise BillingError(
-                "Could not find existing Subscription record to update",
+                f"Could not find existing subscription record to update, "
+                f"stripe_subscription_id={latest_subscription_details.stripe_subscription_id}",
                 error_code=status.HTTP_404_NOT_FOUND,
             )
         else:
             # case b: subscription has already been deleted, don't need to retry
             logger.info(
-                "Subscription has already been deleted, no-op",
-                extra={
-                    "stripe_subscription_id": latest_subscription_details.stripe_subscription_id
-                },
+                f"Subscription has already been deleted, no-op stripe_subscription_id={latest_subscription_details.stripe_subscription_id}"
             )
             return
 
@@ -490,11 +426,12 @@ async def handle_customer_subscription_updated(
     )
     if not plan:
         logger.error(
-            "Could not find internal Plan matching Stripe Price ID",
-            extra={"stripe_price_id": latest_subscription_details.stripe_price_id},
+            f"Could not find internal plan matching stripe price id, "
+            f"stripe_price_id={latest_subscription_details.stripe_price_id}"
         )
         raise BillingError(
-            f"Could not find internal Plan matching Stripe Price ID: {latest_subscription_details.stripe_price_id}",
+            f"Could not find internal plan matching stripe price id, "
+            f"stripe_price_id={latest_subscription_details.stripe_price_id}",
             error_code=status.HTTP_400_BAD_REQUEST,
         )
 
@@ -515,8 +452,8 @@ async def handle_customer_subscription_updated(
     )
     if not subscription:
         logger.error(
-            "Could not find existing Subscription record to update",
-            extra={"stripe_subscription_id": latest_subscription_details.stripe_subscription_id},
+            f"Could not find existing Subscription record to update "
+            f"stripe_subscription_id={latest_subscription_details.stripe_subscription_id}"
         )
         raise BillingError(
             "Could not find existing Subscription record to update",
@@ -525,8 +462,7 @@ async def handle_customer_subscription_updated(
     db_session.commit()
 
     logger.info(
-        "Successfully updated subscription record",
-        extra={"stripe_subscription_id": latest_subscription_details.stripe_subscription_id},
+        f"Successfully updated subscription record, stripe_subscription_id={latest_subscription_details.stripe_subscription_id}"
     )
 
 
@@ -539,13 +475,12 @@ async def handle_customer_subscription_deleted(
     2. Delete the subscription record
     """
     logger.info(
-        "Handling customer.subscription.deleted event",
-        extra={"subscription_data": subscription_data},
+        f"Handling customer.subscription.deleted event, subscription_data={subscription_data}"
     )
     stripe_subscription_id = subscription_data.get("id")
 
     if not stripe_subscription_id:
-        logger.error(f"Subscription deleted event missing ID. Payload: {subscription_data}")
+        logger.error(f"Subscription deleted event missing ID, payload={subscription_data}")
         raise BillingError(
             "Subscription deleted event missing ID",
             error_code=status.HTTP_400_BAD_REQUEST,
@@ -559,19 +494,14 @@ async def handle_customer_subscription_deleted(
     if subscription:
         # 2. Delete the subscription record
         logger.info(
-            "Deleting subscription record",
-            extra={
-                "stripe_subscription_id": stripe_subscription_id,
-                "org_id": subscription.org_id,
-                "plan_id": subscription.plan_id,
-            },
+            f"Deleting subscription record, stripe_subscription_id={stripe_subscription_id}, "
+            f"org_id={subscription.org_id}, plan_id={subscription.plan_id}"
         )
         crud.subscriptions.delete_subscription_by_stripe_id(db_session, stripe_subscription_id)
         db_session.commit()
     else:
         logger.error(
-            "Subscription record not found",
-            extra={"stripe_subscription_id": stripe_subscription_id},
+            f"Subscription record not found, stripe_subscription_id={stripe_subscription_id}"
         )
         raise BillingError(
             "Subscription record not found",
@@ -586,10 +516,7 @@ def _parse_stripe_subscription_details(
     Parse the Stripe subscription details from a Stripe subscription dict based on the
     schema: https://docs.stripe.com/api/subscriptions/retrieve?lang=python
     """
-    logger.info(
-        "Parsing Stripe subscription details",
-        extra={"subscription_data": subscription_data},
-    )
+    logger.info(f"Parsing Stripe subscription details, subscription_data={subscription_data}")
     stripe_subscription_id = subscription_data.get("id")
     stripe_customer_id = subscription_data.get("customer")
     status = subscription_data.get("status")

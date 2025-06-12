@@ -91,8 +91,8 @@ class OAuth2Manager:
                 "duration": "permanent",
             }
             logger.info(
-                "adding app specific params",
-                extra={"app_name": self.app_name, "params": app_specific_params},
+                f"Adding app specific params, app_name={self.app_name}, "
+                f"params={app_specific_params}"
             )
         # NOTE:
         # - "scope" can be specified here
@@ -142,10 +142,7 @@ class OAuth2Manager:
             )
             return token
         except Exception as e:
-            logger.error(
-                "failed to fetch access token",
-                extra={"error": e, "app_name": self.app_name},
-            )
+            logger.error(f"Failed to fetch access token, app_name={self.app_name}, error={e}")
             raise OAuth2Error("failed to fetch access token") from e
 
     async def refresh_token(
@@ -161,11 +158,8 @@ class OAuth2Manager:
             )
             return token
         except Exception as e:
-            logger.error(
-                "failed to refresh access token",
-                extra={"error": e, "app_name": self.app_name},
-            )
-            raise OAuth2Error("failed to refresh access token") from e
+            logger.error(f"Failed to refresh access token, app_name={self.app_name}, error={e}")
+            raise OAuth2Error("Failed to refresh access token") from e
 
     def parse_fetch_token_response(self, token: dict) -> OAuth2SchemeCredentials:
         """
@@ -184,17 +178,11 @@ class OAuth2Manager:
             if "authed_user" in data:
                 data = cast(dict, data["authed_user"])
             else:
-                logger.error(
-                    "Missing authed_user in Slack OAuth response",
-                    extra={"token": token, "app": self.app_name},
-                )
+                logger.error(f"Missing authed_user in Slack OAuth response, app={self.app_name}")
                 raise OAuth2Error("Missing access_token in Slack OAuth response")
 
         if "access_token" not in data:
-            logger.error(
-                "Missing access_token in OAuth response",
-                extra={"token": token, "app": self.app_name},
-            )
+            logger.error(f"Missing access_token in OAuth response, app={self.app_name}")
             raise OAuth2Error("Missing access_token in OAuth response")
 
         # some apps have long live access token so expiration time may not be present

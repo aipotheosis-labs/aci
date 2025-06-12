@@ -20,6 +20,13 @@ from aci.server.context import (
 
 logger = get_logger(__name__)
 
+_LOG_REQUEST_BODY_ENDPOINTS = [
+    ("POST", "/v1/linked_accounts/default"),
+    ("POST", "/v1/linked_accounts/no-auth"),
+    ("POST", "/v1/linked_accounts/api-key"),
+    ("POST", "/v1/app_configurations"),
+]
+
 
 class InterceptorMiddleware(BaseHTTPMiddleware):
     """
@@ -38,9 +45,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
         api_key = request.headers.get(config.ACI_API_KEY_HEADER)
         api_key_id = agent_id = project_id = org_id = None
         if api_key:
-            logger.info(
-                "api key found in header", extra={"api_key": api_key[:4] + "..." + api_key[-4:]}
-            )
+            logger.info(f"API key found in header, api_key={api_key[:4] + '...' + api_key[-4:]}")
             try:
                 with utils.create_db_session(config.DB_FULL_URL) as db_session:
                     api_key_id, agent_id, project_id, org_id = (
@@ -48,8 +53,7 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
                     )
                     if not api_key_id and not agent_id and not project_id and not org_id:
                         logger.warning(
-                            "api key not found in db",
-                            extra={"api_key": api_key[:4] + "..." + api_key[-4:]},
+                            f"API key not found in db, api_key={api_key[:4] + '...' + api_key[-4:]}"
                         )
                         return JSONResponse(
                             status_code=401,
@@ -66,17 +70,19 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
 
             except Exception as e:
                 logger.exception(
-                    f"Can't access database to query request context for API key: {e!s}"
+                    f"Can't access database to query request context for API key, error={e}"
                 )
 
         # Skip logging for health check endpoints
         is_health_check = request.url.path == config.ROUTER_PREFIX_HEALTH
+        request_body = await self._get_request_body(request)
 
         if not is_health_check or config.ENVIRONMENT != "local":
             request_log_data = {
                 "schema": request.url.scheme,
                 "http_version": request.scope.get("http_version", "unknown"),
                 "http_method": request.method,
+                "http_path": request.url.path,
                 "url": str(request.url),
                 "query_params": dict(request.query_params),
                 "client_ip": self._get_client_ip(
@@ -85,13 +91,15 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
                 "user_agent": request.headers.get("User-Agent", "unknown"),
                 "x-forwarded-proto": request.headers.get("X-Forwarded-Proto", "unknown"),
             }
-            logger.info("received request", extra=request_log_data)
+            if request_body:
+                request_log_data["request_body"] = request_body
+            logger.info("Received request", extra=request_log_data)
 
         try:
             response = await call_next(request)
         except Exception as e:
             logger.exception(
-                e,
+                f"Error processing request, error={e}",
                 extra={"duration": (datetime.now(UTC) - start_time).total_seconds()},
             )
             return JSONResponse(
@@ -101,11 +109,14 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
 
         if not is_health_check or config.ENVIRONMENT != "local":
             response_log_data = {
+                "http_method": request.method,
+                "http_path": request.url.path,
+                "url": str(request.url),
                 "status_code": response.status_code,
                 "duration": (datetime.now(UTC) - start_time).total_seconds(),
-                "content_length": response.headers.get("content-length"),
+                "content_length": response.headers.get("content-length"),  # type is str
             }
-            logger.info("response sent", extra=response_log_data)
+            logger.info("Response sent", extra=response_log_data)
 
         response.headers["X-Request-ID"] = request_id
 
@@ -123,6 +134,18 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
 
         else:
             return request.client.host if request.client else "unknown"
+
+    # TODO: move to a separate file and refactor in more elegant/reliable way
+    async def _get_request_body(self, request: Request) -> str | None:
+        if request.method != "POST":
+            return None
+        try:
+            request_body = await request.json()
+            if len(request_body) > 4096:
+                return None
+            return str(request_body)
+        except Exception:
+            return None
 
 
 class RequestContextFilter(logging.Filter):

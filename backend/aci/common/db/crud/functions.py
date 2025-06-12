@@ -22,7 +22,7 @@ def create_functions(
     Create functions.
     Note: each function might be of different app.
     """
-    logger.debug(f"creating functions: {functions_upsert}")
+    logger.debug(f"Creating functions, functions_upsert={functions_upsert}")
 
     functions = []
     for i, function_upsert in enumerate(functions_upsert):
@@ -55,7 +55,7 @@ def update_functions(
     Note: each function might be of different app.
     With the option to update the function embedding. (needed if FunctionEmbeddingFields are updated)
     """
-    logger.debug(f"updating functions: {functions_upsert}")
+    logger.debug(f"Updating functions, functions_upsert={functions_upsert}")
     functions = []
     for i, function_upsert in enumerate(functions_upsert):
         function = crud.functions.get_function(db_session, function_upsert.name, False, False)
@@ -106,7 +106,7 @@ def search_functions(
         statement = statement.order_by(similarity_score)
 
     statement = statement.offset(offset).limit(limit)
-    logger.debug(f"Executing statement: {statement}")
+    logger.debug(f"Executing statement, statement={statement}")
 
     return list(db_session.execute(statement).scalars().all())
 

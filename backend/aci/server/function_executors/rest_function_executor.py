@@ -70,12 +70,8 @@ class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TC
         )
 
         logger.info(
-            "executing function via raw http request",
-            extra={
-                "function_name": function.name,
-                "method": request.method,
-                "url": str(request.url),
-            },
+            f"Executing function via raw http request, function_name={function.name}, "
+            f"method={request.method} url={request.url} "
         )
 
         return self._send_request(request)
@@ -88,13 +84,13 @@ class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TC
             try:
                 response = client.send(request)
             except Exception as e:
-                logger.exception(f"failed to send function execution http request, {e}")
+                logger.exception(f"Failed to send function execution http request, error={e}")
                 return FunctionExecutionResult(success=False, error=str(e))
 
             try:
                 response.raise_for_status()
             except httpx.HTTPStatusError as e:
-                logger.exception(f"http error occurred for function execution, {e}")
+                logger.exception(f"HTTP error occurred for function execution, error={e}")
                 return FunctionExecutionResult(
                     success=False, error=self._get_error_message(response, e)
                 )
@@ -108,7 +104,7 @@ class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TC
         try:
             response_data = response.json() if response.content else {}
         except Exception as e:
-            logger.exception(f"error parsing function execution http response, {e}")
+            logger.exception(f"Error parsing function execution http response, error={e}")
             response_data = response.text
 
         return response_data

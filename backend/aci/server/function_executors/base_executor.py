@@ -40,8 +40,7 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
         Input validation, default values injection, and security credentials injection are done here.
         """
         logger.info(
-            "executing function",
-            extra={"function_name": function.name, "function_input": function_input},
+            f"Executing function, function_name={function.name}, function_input={function_input}"
         )
         function_input = self._preprocess_function_input(function, function_input)
 
@@ -56,16 +55,15 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
             )
         except jsonschema.ValidationError as e:
             logger.exception(
-                f"failed to validate function input, {e}",
-                extra={"function_name": function.name},
+                f"Failed to validate function input, function_name={function.name}, error={e}"
             )
             raise InvalidFunctionInput(
-                f"invalid function input for function={function.name}, error={e.message}"
+                f"Invalid function input for function={function.name}, error={e.message}"
             ) from e
 
         logger.debug(
-            "function_input before injecting defaults",
-            extra={"function_name": function.name, "function_input": function_input},
+            f"Function input before injecting defaults, function_name={function.name}, "
+            f"function_input={function_input}"
         )
 
         # inject non-visible defaults, note that should pass the original parameters schema not just visible ones
@@ -73,8 +71,8 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
             function.parameters, function_input
         )
         logger.debug(
-            "function_input after injecting defaults",
-            extra={"function_name": function.name, "function_input": function_input},
+            f"Function_input after injecting defaults, function_name={function.name}, "
+            f"function_input={function_input}"
         )
 
         # remove None values from the input

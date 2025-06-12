@@ -33,13 +33,6 @@ async def list_apps(
     """
     Get a list of Apps and their details. Sorted by App name.
     """
-    logger.info(
-        "list apps",
-        extra={
-            "apps_list": query_params.model_dump(exclude_none=True),
-        },
-    )
-
     apps = crud.apps.get_apps(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
@@ -85,12 +78,6 @@ async def search_apps(
     """
     # TODO: currently the search is done across all apps, we might want to add flags to account for below scenarios:
     # - when clients search for apps, if an app is configured but disabled by client, should it be discoverable?
-    logger.info(
-        "search apps",
-        extra={
-            "apps_search": query_params.model_dump(exclude_none=True),
-        },
-    )
     intent_embedding = (
         generate_embedding(
             openai_client,
@@ -102,8 +89,7 @@ async def search_apps(
         else None
     )
     logger.debug(
-        "generated intent embedding",
-        extra={"intent": query_params.intent, "intent_embedding": intent_embedding},
+        f"Generated intent embedding, intent={query_params.intent}, intent_embedding={intent_embedding}"
     )
     # if the search is restricted to allowed apps, we need to filter the apps by the agent's allowed apps.
     # None means no filtering
@@ -132,7 +118,15 @@ async def search_apps(
         else:
             apps.append(AppBasic(name=app.name, description=app.description))
 
-    logger.info("search apps response", extra={"app_names": [app.name for app in apps]})
+    logger.info(
+        "Search apps result",
+        extra={
+            "search_apps": {
+                "query_params_json": query_params.model_dump_json(),
+                "apps_names": [app.name for app, _ in apps_with_scores],
+            },
+        },
+    )
 
     return apps
 
@@ -145,8 +139,6 @@ async def get_app_details(
     """
     Returns an application (name, description, and functions).
     """
-    logger.info("get app details", extra={"app_name": app_name})
-
     app = crud.apps.get_app(
         context.db_session,
         app_name,
@@ -155,9 +147,9 @@ async def get_app_details(
     )
 
     if not app:
-        logger.error("app not found", extra={"app_name": app_name})
+        logger.error(f"App not found, app_name={app_name}")
 
-        raise AppNotFound(f"app={app_name} not found")
+        raise AppNotFound(f"App={app_name} not found")
 
     # filter functions by project visibility and active status
     # TODO: better way and place for crud filtering/acl logic like this?

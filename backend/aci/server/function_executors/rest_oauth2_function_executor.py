@@ -23,11 +23,8 @@ class RestOAuth2FunctionExecutor(RestFunctionExecutor[OAuth2Scheme, OAuth2Scheme
     ) -> None:
         """Injects oauth2 access token into the request"""
         logger.debug(
-            "injecting oauth2 access token into the request",
-            extra={
-                "security_scheme": security_scheme,
-                "security_credentials": security_credentials,
-            },
+            f"Injecting oauth2 access token into the request, "
+            f"security_scheme={security_scheme}, security_credentials={security_credentials}"
         )
         access_token = (
             security_credentials.access_token
@@ -47,12 +44,9 @@ class RestOAuth2FunctionExecutor(RestFunctionExecutor[OAuth2Scheme, OAuth2Scheme
             case _:
                 # should never happen
                 logger.error(
-                    "unsupported oauth2 credentials location",
-                    extra={
-                        "security_scheme": security_scheme,
-                        "location": security_scheme.location,
-                    },
+                    f"Unsupported OAuth2 location, location={security_scheme.location}, "
+                    f"security_scheme={security_scheme}"
                 )
                 raise NoImplementationFound(
-                    f"unsupported oauth2 location={security_scheme.location}"
+                    f"Unsupported OAuth2 location, location={security_scheme.location}"
                 )
