@@ -10,7 +10,7 @@ from aci.common.schemas.linked_accounts import (
     LinkedAccountPublic,
     OAuth2SchemeCredentialsLimited,
 )
-from aci.server import config
+from aci.server import config, security_credentials_manager
 
 NON_EXISTENT_LINKED_ACCOUNT_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
 
@@ -136,10 +136,11 @@ def test_get_linked_account_with_expired_oauth2_credentials(
     mock_current_time = int(time.time()) + 7200  # 2 hours in the future
 
     with (
-        patch(
-            "aci.server.security_credentials_manager._refresh_oauth2_access_token",
+        patch.object(
+            security_credentials_manager,
+            "_refresh_oauth2_access_token",
             return_value=mock_refresh_response,
-        ),
+        ) as mock_refresh,
         patch("time.time", return_value=mock_current_time),
     ):
         response = test_client.get(ENDPOINT, headers={"x-api-key": dummy_api_key_1})
@@ -154,3 +155,4 @@ def test_get_linked_account_with_expired_oauth2_credentials(
             "OAuth2 credentials should only contain access_token"
         )
         assert credentials_dict["access_token"] == mock_refresh_response["access_token"]
+        mock_refresh.assert_called_once()
