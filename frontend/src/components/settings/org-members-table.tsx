@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { useOrgMembersTableColumns } from "../../hooks/use-org-members-table-columns";
 import { OrganizationUser, OrganizationRole } from "@/lib/types/organization";
@@ -50,18 +50,21 @@ export function OrgMembersTable() {
   // const currentRoleIndex = roleHierarchy.indexOf(currentRole);
   // const availableRoles = roleHierarchy.slice(currentRoleIndex);
 
-  const fetchMembers = async () => {
-    try {
-      const data = await listOrganizationUsers(accessToken, activeOrg.orgId);
-      setMembers(data);
-    } catch {
-      toast.error("Failed to load organization members");
-    }
-  };
+  const fetchMembers = useMemo(
+    () => async () => {
+      try {
+        const data = await listOrganizationUsers(accessToken, activeOrg.orgId);
+        setMembers(data);
+      } catch {
+        toast.error("Failed to load organization members");
+      }
+    },
+    [accessToken, activeOrg.orgId],
+  );
 
   useEffect(() => {
     fetchMembers();
-  }, [activeOrg.orgId, accessToken]);
+  }, [fetchMembers]);
 
   const handleInvite = async () => {
     if (!inviteEmail) return;
