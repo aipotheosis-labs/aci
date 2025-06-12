@@ -680,12 +680,20 @@ async def get_linked_account(
     app_configuration = crud.app_configurations.get_app_configuration(
         context.db_session, context.project.id, linked_account.app.name
     )
-    if app_configuration:
-        # Use the security credentials manager to get and update credentials if needed
-        # This will refresh OAuth2 tokens if they're expired and automatically refresh the linked_account object
-        await scm.get_and_update_security_credentials(
-            context.db_session, linked_account.app, app_configuration, linked_account
+    if not app_configuration:
+        logger.error(
+            "app configuration not found",
+            extra={"app_name": linked_account.app.name},
         )
+        raise AppConfigurationNotFound(
+            f"app configuration for app={linked_account.app.name} not found"
+        )
+
+    # Use the security credentials manager to get and update credentials if needed
+    # This will refresh OAuth2 tokens if they're expired and automatically refresh the linked_account object
+    await scm.get_and_update_security_credentials(
+        context.db_session, linked_account.app, app_configuration, linked_account
+    )
 
     return linked_account
 
