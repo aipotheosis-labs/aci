@@ -1,3 +1,6 @@
+import time
+from unittest.mock import patch
+
 from fastapi import status
 from fastapi.testclient import TestClient
 
@@ -109,3 +112,45 @@ def test_get_linked_account_with_oauth2_credentials(
     assert list(credentials_dict.keys()) == ["access_token"], (
         "OAuth2 credentials should only contain access_token"
     )
+
+
+def test_get_linked_account_with_expired_oauth2_credentials(
+    test_client: TestClient,
+    dummy_api_key_1: str,
+    dummy_linked_account_oauth2_google_project_1: LinkedAccount,
+) -> None:
+    """Test that getting a linked account with expired OAuth2 credentials triggers a refresh."""
+    ENDPOINT = (
+        f"{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/{dummy_linked_account_oauth2_google_project_1.id}"
+    )
+
+    # Mock the token refresh response
+    mock_refresh_response = {
+        "access_token": "new_mock_access_token",
+        "token_type": "Bearer",
+        "expires_in": 3600,
+        "refresh_token": "new_mock_refresh_token",
+    }
+
+    # Mock time.time() to return a time after the token has expired
+    mock_current_time = int(time.time()) + 7200  # 2 hours in the future
+
+    with (
+        patch(
+            "aci.server.security_credentials_manager._refresh_oauth2_access_token",
+            return_value=mock_refresh_response,
+        ),
+        patch("time.time", return_value=mock_current_time),
+    ):
+        response = test_client.get(ENDPOINT, headers={"x-api-key": dummy_api_key_1})
+        assert response.status_code == status.HTTP_200_OK
+
+        linked_account = response.json()
+        security_credentials = OAuth2SchemeCredentialsLimited.model_validate(
+            linked_account["security_credentials"]
+        )
+        credentials_dict = security_credentials.model_dump()
+        assert list(credentials_dict.keys()) == ["access_token"], (
+            "OAuth2 credentials should only contain access_token"
+        )
+        assert credentials_dict["access_token"] == mock_refresh_response["access_token"]
