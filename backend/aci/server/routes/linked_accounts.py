@@ -623,6 +623,10 @@ async def get_linked_account(
     scm.update_security_credentials(
         context.db_session, linked_account.app, linked_account, security_credentials_response
     )
+    logger.info(
+        f"Fetched security credentials for linked account, linked_account_id={linked_account.id}, "
+        f"is_updated={security_credentials_response.is_updated}"
+    )
     context.db_session.commit()
 
     return linked_account

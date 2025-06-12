@@ -83,10 +83,6 @@ def update_security_credentials(
 
     db_session.refresh(linked_account)
 
-    logger.info(
-        "updated security credentials",
-    )
-
 
 async def _get_oauth2_credentials(
     app: App, app_configuration: AppConfiguration, linked_account: LinkedAccount
