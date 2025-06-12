@@ -33,7 +33,7 @@ from aci.common.schemas.function import (
     OpenAIFunctionDefinition,
     OpenAIResponsesFunctionDefinition,
 )
-from aci.server import config, custom_instructions
+from aci.server import config, custom_instructions, utils
 from aci.server import dependencies as deps
 from aci.server import security_credentials_manager as scm
 from aci.server.function_executors import get_executor
@@ -209,20 +209,22 @@ async def execute(
 
     end_time = datetime.now(UTC)
 
+    # TODO: reconsider the implementation handling large log fields
     try:
-        execute_result_data = json.dumps(result.data, default=str)
-        result_data_size = len(execute_result_data.encode("utf-8"))
-        # TODO: reconsider size limit
-        if result_data_size > config.MAX_LOG_FIELD_SIZE:
-            execute_result_data = (
-                execute_result_data.encode("utf-8")[: config.MAX_LOG_FIELD_SIZE - 100].decode(
-                    "utf-8", errors="replace"
-                )
-                + f"... [truncated, size={result_data_size}]"
-            )
-    except Exception as e:
-        logger.exception(f"Failed to dump execute_result_data, error={e}")
+        execute_result_data = utils.truncate_if_too_large(
+            json.dumps(result.data, default=str), config.MAX_LOG_FIELD_SIZE
+        )
+    except Exception:
+        logger.exception("Failed to dump execute_result_data")
         execute_result_data = "failed to dump execute_result_data"
+
+    try:
+        function_input_data = utils.truncate_if_too_large(
+            json.dumps(body.function_input, default=str), config.MAX_LOG_FIELD_SIZE
+        )
+    except Exception:
+        logger.exception("Failed to dump function_input_data")
+        function_input_data = "failed to dump function_input_data"
 
     logger.info(
         "function execution result",
@@ -234,7 +236,7 @@ async def execute(
                 "function_execution_start_time": start_time,
                 "function_execution_end_time": end_time,
                 "function_execution_duration": (end_time - start_time).total_seconds(),
-                "function_input": json.dumps(body.function_input, default=str),
+                "function_input": function_input_data,
                 "function_execution_result_success": result.success,
                 "function_execution_result_error": result.error,
                 "function_execution_result_data": execute_result_data,
