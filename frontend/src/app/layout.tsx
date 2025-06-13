@@ -6,7 +6,8 @@ import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/layout/app-sidebar";
-import { MetaInfoProvider } from "@/components/context/metainfo";
+import { OrgProvider } from "@/components/context/org-context";
+import { ProjectProvider } from "@/components/context/project-context";
 import { Toaster } from "@/components/ui/sonner";
 import { Analytics } from "@vercel/analytics/next";
 import { RequiredAuthProvider } from "@propelauth/react";
@@ -100,18 +101,20 @@ export default function RootLayout({
       >
         <QueryClientProvider client={queryClient}>
           <RequiredAuthProvider authUrl={process.env.NEXT_PUBLIC_AUTH_URL!}>
-            <MetaInfoProvider>
-              <SidebarProvider>
-                <AppSidebar />
-                <SidebarInset>
-                  <main className="w-full h-full mr-2 border rounded-lg border-gray-400 border-opacity-30 bg-white">
-                    <Header />
-                    {children}
-                    <Analytics />
-                  </main>
-                </SidebarInset>
-              </SidebarProvider>
-            </MetaInfoProvider>
+            <OrgProvider>
+              <ProjectProvider>
+                <SidebarProvider>
+                  <AppSidebar />
+                  <SidebarInset>
+                    <main className="w-full h-full mr-2 border rounded-lg border-gray-400 border-opacity-30 bg-white">
+                      <Header />
+                      {children}
+                      <Analytics />
+                    </main>
+                  </SidebarInset>
+                </SidebarProvider>
+              </ProjectProvider>
+            </OrgProvider>
             <Footer />
           </RequiredAuthProvider>
           <ReactQueryDevtools initialIsOpen={false} />
