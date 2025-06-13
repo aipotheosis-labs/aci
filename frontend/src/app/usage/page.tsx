@@ -1,71 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import UsagePieChart from "@/components/charts/usage-pie-chart";
 import { UsageBarChart } from "@/components/charts/usage-bar-chart";
 import { QuotaUsageDisplay } from "@/components/quota/quota-usage-display";
 import { Separator } from "@/components/ui/separator";
-import {
-  getAppDistributionData,
-  getFunctionDistributionData,
-  getAppTimeSeriesData,
-  getFunctionTimeSeriesData,
-} from "@/lib/api/analytics";
-import {
-  DistributionDatapoint,
-  TimeSeriesDatapoint,
-} from "@/lib/types/analytics";
-import { getApiKey } from "@/lib/api/util";
-import { useMetaInfo } from "@/components/context/metainfo";
 import { useQuota } from "@/hooks/use-quota";
+import { useAnalyticsQueries } from "@/hooks/use-analytics";
 
 export default function UsagePage() {
-  const { activeProject } = useMetaInfo();
-  const [appDistributionData, setAppDistributionData] = useState<
-    DistributionDatapoint[]
-  >([]);
-  const [functionDistributionData, setFunctionDistributionData] = useState<
-    DistributionDatapoint[]
-  >([]);
-  const [appTimeSeriesData, setAppTimeSeriesData] = useState<
-    TimeSeriesDatapoint[]
-  >([]);
-  const [functionTimeSeriesData, setFunctionTimeSeriesData] = useState<
-    TimeSeriesDatapoint[]
-  >([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: quotaUsage,
+    isLoading: isQuotaLoading,
+    error: quotaError,
+  } = useQuota();
 
-  const { data: quotaUsage } = useQuota();
+  const {
+    appDistributionData,
+    functionDistributionData,
+    appTimeSeriesData,
+    functionTimeSeriesData,
+    isLoading: isAnalyticsLoading,
+    error: AnalyticsError,
+  } = useAnalyticsQueries();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const apiKey = getApiKey(activeProject);
+  const isInitialLoading = isQuotaLoading || isAnalyticsLoading;
 
-        const [appDistData, funcDistData, appTimeData, funcTimeData] =
-          await Promise.all([
-            getAppDistributionData(apiKey),
-            getFunctionDistributionData(apiKey),
-            getAppTimeSeriesData(apiKey),
-            getFunctionTimeSeriesData(apiKey),
-          ]);
+  const hasError = quotaError || AnalyticsError;
 
-        setAppDistributionData(appDistData);
-        setFunctionDistributionData(funcDistData);
-        setAppTimeSeriesData(appTimeData);
-        setFunctionTimeSeriesData(funcTimeData);
-      } catch (err) {
-        console.error("Error fetching analytics data:", err);
-        setError("Failed to load analytics data. Please try again later.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [activeProject]);
+  const errorMessage = hasError
+    ? "Failed to load analytics data. Please try again later."
+    : null;
 
   return (
     <div>
@@ -94,9 +58,9 @@ export default function UsagePage() {
       <Separator />
 
       <div className="flex flex-col gap-6 p-6">
-        {error ? (
-          <div className="p-4 text-red-500">{error}</div>
-        ) : isLoading ? (
+        {errorMessage ? (
+          <div className="p-4 text-red-500">{errorMessage}</div>
+        ) : isInitialLoading ? (
           <div className="p-4">Loading analytics data...</div>
         ) : (
           <>

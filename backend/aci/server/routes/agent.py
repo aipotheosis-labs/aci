@@ -51,16 +51,11 @@ async def handle_chat(
     Returns:
         StreamingResponse: Streamed chat completion responses
     """
-    logger.info("Processing chat request", extra={"project_id": context.project.id})
 
     openai_messages = convert_to_openai_messages(agent_chat.messages)
     # TODO: support different meta function mode.
     selected_functions = await get_functions_definitions(
         context.db_session, agent_chat.selected_functions, FunctionDefinitionFormat.OPENAI_RESPONSES
-    )
-    logger.info(
-        "Selected functions",
-        extra={"functions": [func.model_dump() for func in selected_functions]},
     )
 
     tools = [

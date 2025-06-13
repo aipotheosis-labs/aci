@@ -2,7 +2,7 @@
   <img src="frontend/public/aci-dev-full-logo.svg" alt="ACI.dev Logo" width="100%">
 </p>
 
-# ACI: Open-Source Infra to Power Unified MCP Servers
+# ACI: Open-Source Infra to Power Unified MCP Servers and VibeOps
 
 <p align="center">
   <a href="https://trendshift.io/repositories/13645" target="_blank">
@@ -21,16 +21,16 @@
 > [!NOTE]
 > This repo is for the ACI.dev platform. If you're looking for the **Unified MCP** server built with ACI.dev, see [aci-mcp](https://github.com/aipotheosis-labs/aci-mcp).
 
-ACI.dev is the open-source infrastructure layer for AI-agent tool-use. It gives your agents intent-aware access to 600+ tools with multi-tenant auth, granular permissions, and dynamic tool discovery—exposed as either direct function calls or through a **Unified Model-Context-Protocol (MCP) server**.
+ACI.dev is the open-source infrastructure layer for AI-agent tool-use and VibeOps. It gives AI agents intent-aware access to 600+ tools with multi-tenant auth, granular permissions, and dynamic tool discovery—exposed as either direct function calls or through a **Unified Model-Context-Protocol (MCP) server**.
 
-**Example:** Instead of writing separate OAuth flows and API clients for Google Calendar, Slack, and more, use ACI.dev to manage authentication and provide your AI agents with unified, secure function calls. Access these capabilities through our **Unified** [MCP server](https://github.com/aipotheosis-labs/aci-mcp) or via our lightweight [Python SDK](https://github.com/aipotheosis-labs/aci-python-sdk), compatible with any LLM framework.
+**Example:** Instead of writing separate OAuth flows and API clients for Google Calendar, Slack, and more, use ACI.dev to manage authentication and provide AI agents with unified, secure function calls. Access these capabilities through our **Unified** [MCP server](https://github.com/aipotheosis-labs/aci-mcp) or via our lightweight [Python SDK](https://github.com/aipotheosis-labs/aci-python-sdk), compatible with any LLM framework.
 
-Build production-ready AI agents without the infrastructure headaches.
+Supercharge vibe coding by automating devOps through our unified MCP server (VibeOps) or build production-ready AI agents without the infrastructure headaches.
 
 ![ACI.dev Architecture](frontend/public/aci-architecture-intro.svg)
 
 <p align="center">
-  Join us on <a href="https://discord.com/invite/UU2XAnfHJh">Discord</a> to help shape the future of Open Source AI Infrastructure.<br/><br/>
+  Join us on <a href="https://discord.com/invite/UU2XAnfHJh">Discord</a> to help shape the future of Open Source AI Infrastructure and VibeOps.<br/><br/>
   🌟 <strong>Star ACI.dev to stay updated on new releases!</strong><br/><br/>
   <a href="https://github.com/aipotheosis-labs/aci/stargazers">
     <img src="https://img.shields.io/github/stars/aipotheosis-labs/aci?style=social" alt="GitHub Stars">
@@ -42,6 +42,10 @@ Build production-ready AI agents without the infrastructure headaches.
 [ACI.dev **Unified MCP Server** Demo](https://youtu.be/GSR9P53-_7E?feature=shared)
 
 [![ACI.dev Unified MCP Server Demo](frontend/public/umcp-demo-thumbnail.png)](https://youtu.be/GSR9P53-_7E?feature=shared)
+
+[ACI.dev **VibeOps** Demo](https://youtu.be/SfEtNqB6yqI?feature=shared)
+
+[![ACI.dev VibeOps Demo](frontend/public/vibeops-thumbnail.jpg)](https://youtu.be/SfEtNqB6yqI?feature=shared)
 
 ## ✨ Key Features
 
@@ -63,6 +67,7 @@ ACI.dev solves your critical infrastructure challenges for production-ready AI a
 
 ## 🧰 Common Use Cases
 
+- **VibeOps:** Automate your devOps with our unified MCP server while vibe coding.
 - **Personal Assistant Chatbots:** Build chatbots that can search the web, manage calendars, send emails, interact with SaaS tools, etc.
 - **Research Agent:** Conducts research on specific topics and syncs results to other apps (e.g., Notion, Google Sheets).
 - **Outbound Sales Agent:** Automates lead generation, email outreach, and CRM updates.

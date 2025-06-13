@@ -45,8 +45,7 @@ def update_subscription_by_stripe_id(
     update_data = subscription_update.model_dump(exclude_unset=True)
     if not update_data:
         logger.info(
-            "No fields to update for subscription",
-            extra={"stripe_subscription_id": stripe_subscription_id},
+            f"No fields to update for subscription, stripe_subscription_id={stripe_subscription_id}"
         )
         # Need to fetch the subscription to return it
         return get_subscription_by_stripe_id(db_session, stripe_subscription_id)
@@ -63,14 +62,11 @@ def update_subscription_by_stripe_id(
 
     if updated_subscription:
         # No need to refresh as returning() fetches the updated state
-        logger.info(
-            "Updated subscription",
-            extra={"stripe_subscription_id": stripe_subscription_id},
-        )
+        logger.info(f"Updated subscription, stripe_subscription_id={stripe_subscription_id}")
     else:
         logger.warning(
-            "Subscription not found for stripe_subscription_id during update attempt.",
-            extra={"stripe_subscription_id": stripe_subscription_id},
+            f"Subscription not found during update attempt. "
+            f"stripe_subscription_id={stripe_subscription_id}"
         )
     return updated_subscription
 
@@ -82,13 +78,11 @@ def delete_subscription_by_stripe_id(db_session: Session, stripe_subscription_id
     subscription = get_subscription_by_stripe_id(db_session, stripe_subscription_id)
     if not subscription:
         logger.warning(
-            f"Subscription not found for stripe_subscription_id={stripe_subscription_id} during delete attempt."
+            f"Subscription not found during delete attempt, "
+            f"stripe_subscription_id={stripe_subscription_id}"
         )
         return
 
     db_session.delete(subscription)
     db_session.flush()
-    logger.info(
-        "Deleted subscription",
-        extra={"stripe_subscription_id": stripe_subscription_id},
-    )
+    logger.info(f"Deleted subscription, stripe_subscription_id={stripe_subscription_id}")

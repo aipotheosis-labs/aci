@@ -1,7 +1,9 @@
 import time
 
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
+from aci.common.db import crud
 from aci.common.db.sql_models import App, AppConfiguration, LinkedAccount
 from aci.common.enums import SecurityScheme
 from aci.common.exceptions import NoImplementationFound, OAuth2Error
@@ -39,16 +41,47 @@ async def get_security_credentials(
         return _get_no_auth_credentials(app, linked_account)
     else:
         logger.error(
-            "unsupported security scheme",
-            extra={
-                "linked_account": linked_account.id,
-                "security_scheme": linked_account.security_scheme,
-                "app": app.name,
-            },
+            f"Unsupported security scheme, linked_account_id={linked_account.id}, "
+            f"security_scheme={linked_account.security_scheme}, app={app.name}"
         )
         raise NoImplementationFound(
             f"unsupported security scheme={linked_account.security_scheme}, app={app.name}"
         )
+
+
+def update_security_credentials(
+    db_session: Session,
+    app: App,
+    linked_account: LinkedAccount,
+    security_credentials_response: SecurityCredentialsResponse,
+) -> None:
+    """
+    Update security credentials in the database.
+
+    Args:
+        db_session: Database session
+        app: App object
+        linked_account: Linked account object
+        security_credentials_response: The security credentials response to update
+    """
+    if not security_credentials_response.is_updated:
+        return
+
+    if security_credentials_response.is_app_default_credentials:
+        crud.apps.update_app_default_security_credentials(
+            db_session,
+            app,
+            linked_account.security_scheme,
+            security_credentials_response.credentials.model_dump(),
+        )
+    else:
+        crud.linked_accounts.update_linked_account_credentials(
+            db_session,
+            linked_account,
+            security_credentials=security_credentials_response.credentials,
+        )
+
+    db_session.refresh(linked_account)
 
 
 async def _get_oauth2_credentials(
@@ -64,12 +97,8 @@ async def _get_oauth2_credentials(
     )
     if _access_token_is_expired(oauth2_scheme_credentials):
         logger.warning(
-            "access token expired, trying to refresh",
-            extra={
-                "linked_account": linked_account.id,
-                "security_scheme": linked_account.security_scheme,
-                "app": app.name,
-            },
+            f"Access token expired, trying to refresh linked_account_id={linked_account.id}, "
+            f"security_scheme={linked_account.security_scheme}, app={app.name}"
         )
         token_response = await _refresh_oauth2_access_token(
             app.name, oauth2_scheme, oauth2_scheme_credentials
@@ -83,13 +112,9 @@ async def _get_oauth2_credentials(
 
         if not token_response.get("access_token") or not expires_at:
             logger.error(
-                "failed to refresh access token",
-                extra={
-                    "token_response": token_response,
-                    "app": app.name,
-                    "linked_account": linked_account.id,
-                    "security_scheme": linked_account.security_scheme,
-                },
+                f"Failed to refresh access token, token_response={token_response}, "
+                f"app={app.name}, linked_account_id={linked_account.id}, "
+                f"security_scheme={linked_account.security_scheme}"
             )
             raise OAuth2Error("failed to refresh access token")
 
@@ -152,15 +177,12 @@ def _get_api_key_credentials(
     # use "not" to cover empty dict case
     if not security_credentials:
         logger.error(
-            "no api key credentials usable",
-            extra={
-                "app": app.name,
-                "security_scheme": linked_account.security_scheme,
-                "linked_account": linked_account.id,
-            },
+            f"No API key credentials usable, app={app.name}, "
+            f"security_scheme={linked_account.security_scheme}, "
+            f"linked_account_id={linked_account.id}"
         )
         raise NoImplementationFound(
-            f"no api key credentials usable for app={app.name}, "
+            f"No API key credentials usable for app={app.name}, "
             f"security_scheme={linked_account.security_scheme}, "
             f"linked_account_owner_id={linked_account.linked_account_owner_id}"
         )

@@ -175,7 +175,7 @@ export function FunctionDetail({ func }: FunctionDetailProps) {
           See Details
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[625px] max-h-[95vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-[60vw] max-h-[95vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Function Details</DialogTitle>
         </DialogHeader>
