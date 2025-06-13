@@ -340,5 +340,42 @@
             "additionalProperties": false
         },
         "response": {}
+    },
+    {
+        "name": "CALENDLY__GET_CURRENT_USER",
+        "description": "Get basic information about your user account",
+        "tags": ["calendar", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users/me",
+            "server_url": "https://api.calendly.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "HTTP request headers",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": ["accept"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header"],
+            "visible": ["header"],
+            "additionalProperties": false
+        },
+        "response": {}
     }
 ]
