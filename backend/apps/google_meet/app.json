@@ -1,0 +1,27 @@
+{
+    "name": "GOOGLE_MEET",
+    "display_name": "Google Meet",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/google_meet.svg",
+    "provider": "Google",
+    "version": "1.0.0",
+    "description": "The Google Meet API allows developers to access and manage Google Meet resources programmatically. It provides information about meetings, participants, and recordings through RESTful HTTP calls including listing conference records, participants, and meeting spaces.",
+    "security_schemes": {
+      "oauth2": {
+        "location": "header",
+        "name": "Authorization",
+        "prefix": "Bearer",
+        "client_id": "{{ AIPOLABS_GOOGLE_APP_CLIENT_ID }}",
+        "client_secret": "{{ AIPOLABS_GOOGLE_APP_CLIENT_SECRET }}",
+        "scope": "https://www.googleapis.com/auth/meetings.space.readonly https://www.googleapis.com/auth/meetings.space.created https://www.googleapis.com/auth/drive.readonly",
+        "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth",
+        "access_token_url": "https://oauth2.googleapis.com/token",
+        "refresh_token_url": "https://oauth2.googleapis.com/token"
+      }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+      "Video Conferencing"
+    ],
+    "visibility": "public",
+    "active": true
+  }
