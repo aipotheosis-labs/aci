@@ -3,7 +3,7 @@ import time
 import uuid
 from collections.abc import Generator
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime
 from typing import cast
 from unittest.mock import patch
 
@@ -13,7 +13,6 @@ from fastapi.testclient import TestClient
 from propelauth_fastapi import User
 from propelauth_py.types.login_method import SocialLoginProvider, SocialSsoLoginMethod
 from propelauth_py.types.user import OrgMemberInfo
-from pytz import UTC
 from sqlalchemy import inspect
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import Session

@@ -1,8 +1,7 @@
-from datetime import datetime
+from datetime import UTC, datetime
 from uuid import UUID
 
 from pydantic import BaseModel, PrivateAttr
-from pytz import UTC
 
 from aci.common.db.sql_models import Plan
 from aci.common.enums import StripeSubscriptionInterval, StripeSubscriptionStatus

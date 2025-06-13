@@ -1,11 +1,10 @@
 import logging
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
-from pytz import UTC
 from sqlalchemy.orm import Session
 
 from aci.common.db import crud

@@ -136,11 +136,11 @@ def validate_monthly_api_quota(
     """
     # Only check quota for app search and function search/execute endpoints
     path = request.url.path
-    is_valid_endpoint = path.startswith(f"{config.ROUTER_PREFIX_APPS}/search") or (
+    is_quota_limited_endpoint = path.startswith(f"{config.ROUTER_PREFIX_APPS}/search") or (
         path.startswith(f"{config.ROUTER_PREFIX_FUNCTIONS}/")
         and (path.endswith("/execute") or path.endswith("/search"))
     )
-    if not is_valid_endpoint:
+    if not is_quota_limited_endpoint:
         return
 
     subscription = billing.get_subscription_by_org_id(db_session, project.org_id)
