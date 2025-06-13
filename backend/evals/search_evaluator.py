@@ -13,6 +13,9 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Suppress verbose httpx logging
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
 
 class SearchEvaluator:
     """
@@ -49,7 +52,9 @@ class SearchEvaluator:
         """
         try:
             start_time = time.time()
-            with httpx.Client() as client:
+            # Set a longer timeout for search requests (120 seconds)
+            timeout = httpx.Timeout(120.0)
+            with httpx.Client(timeout=timeout) as client:
                 response = client.get(
                     f"{self.api_url}/v1/functions/search",
                     params={"intent": intent, "limit": str(limit), "format": "basic"},
@@ -140,38 +145,40 @@ class SearchEvaluator:
         metrics = {"correct": 0, "mrr": 0.0, "response_time": 0.0, "top_k": {1: 0, 3: 0, 5: 0}}
         incorrect_results = []
 
-        # Evaluate each sample
-        for _, row in tqdm(
-            dataset.head(num_samples).iterrows(),
-            desc="Evaluating intents",
-            total=num_samples,
-        ):
-            # Get search results
-            results, response_time = self._search(row["synthetic_output"])
+        # Get the subset of data to evaluate
+        data_to_evaluate = dataset.head(num_samples)
 
-            # Process results
-            found = False
-            results = [
-                {
-                    "rank": idx + 1,
-                    **r,
-                    "found": found or (found := r["name"].lower() == row["function_name"].lower()),
-                }
-                for idx, r in enumerate(results)
-            ]
-            rank = self._find_rank(results, row["function_name"])
+        with tqdm(total=len(data_to_evaluate), desc="Evaluating intents") as pbar:
+            for _, row in data_to_evaluate.iterrows():
+                # Get search results
+                results, response_time = self._search(row["synthetic_output"])
 
-            # Update metrics
-            self._update_metrics(metrics, rank, response_time)
-
-            # Track incorrect results
-            if rank is None or rank > 1:
-                incorrect_results.append(
+                # Process results
+                found = False
+                results = [
                     {
-                        "intent": row["synthetic_output"],
-                        "expected": row["function_name"],
-                        "results": results,
+                        "rank": idx + 1,
+                        **r,
+                        "found": found
+                        or (found := r["name"].lower() == row["function_name"].lower()),
                     }
-                )
+                    for idx, r in enumerate(results)
+                ]
+                rank = self._find_rank(results, row["function_name"])
+
+                # Update metrics
+                self._update_metrics(metrics, rank, response_time)
+
+                # Track incorrect results
+                if rank is None or rank > 1:
+                    incorrect_results.append(
+                        {
+                            "intent": row["synthetic_output"],
+                            "expected": row["function_name"],
+                            "results": results,
+                        }
+                    )
+
+                pbar.update(1)
 
         return self._calculate_final_metrics(metrics, num_samples, incorrect_results)
