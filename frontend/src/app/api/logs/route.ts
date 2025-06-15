@@ -6,8 +6,6 @@ export async function GET(request: NextRequest) {
   // Never set Telemetry API Test Project ID in production
   const testProjectId = process.env.TELEMETRY_API_TEST_PROJECT_ID;
   const searchParams = request.nextUrl.searchParams;
-  console.log("isLocal", isLocal);
-  console.log("testProjectId", testProjectId);
   if (isLocal && testProjectId) {
     console.log("Setting project_id to", testProjectId);
     searchParams.set("project_id", testProjectId);
