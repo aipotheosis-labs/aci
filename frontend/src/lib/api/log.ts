@@ -1,37 +1,20 @@
-import { LogSearchResponse } from "@/lib/types/log";
+import { LogSearchResponse, LogSearchParams } from "@/lib/types/log";
 
 export async function searchFunctionExecutionLogs(
-  apiKey: string,
-  page: number = 1,
-  pageSize: number = 20,
-  appName?: string,
-  functionName?: string,
-  success?: boolean,
+  params: LogSearchParams = {},
 ): Promise<LogSearchResponse> {
-  const params = new URLSearchParams({
-    page: page.toString(),
-    page_size: pageSize.toString(),
+  const queryParams = new URLSearchParams();
+
+  // Add all non-undefined parameters to the query
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) {
+      queryParams.append(key, value.toString());
+    }
   });
 
-  if (appName) {
-    params.append("app_name", appName);
-  }
-  if (functionName) {
-    params.append("function_name", functionName);
-  }
-  if (success !== undefined) {
-    params.append("success", success.toString());
-  }
-
-  const response = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/v1/logs/search?${params.toString()}`,
-    {
-      method: "GET",
-      headers: {
-        "X-API-KEY": apiKey,
-      },
-    },
-  );
+  const response = await fetch(`/api/logs?${queryParams.toString()}`, {
+    method: "GET",
+  });
 
   if (!response.ok) {
     throw new Error(

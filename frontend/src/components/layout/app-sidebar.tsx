@@ -70,7 +70,7 @@ export const sidebarItems = [
     ? [
         {
           title: "Log Dashboard",
-          url: `/log`,
+          url: `/logs`,
           icon: RiFileList3Line,
         },
       ]
