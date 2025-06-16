@@ -31,7 +31,7 @@ runs:
       shell: bash
       working-directory: ${{ inputs.working-directory }}
       run: |
-        docker compose -f compose.yml compose.ci.yml run ${{ inputs.test-service }}
+        docker compose -f compose.yml -f compose.ci.yml run ${{ inputs.test-service }}
 
     - name: Get service names
       id: service_names
