@@ -5,12 +5,11 @@ export async function searchFunctionExecutionLogs(
 ): Promise<LogSearchResponse> {
   const queryParams = new URLSearchParams();
 
-  // Add all non-undefined parameters to the query
-  Object.entries(params).forEach(([key, value]) => {
+  for (const [key, value] of Object.entries(params)) {
     if (value !== undefined) {
-      queryParams.append(key, value.toString());
+      queryParams.set(key, value.toString());
     }
-  });
+  }
 
   const response = await fetch(`/api/logs?${queryParams.toString()}`, {
     method: "GET",
