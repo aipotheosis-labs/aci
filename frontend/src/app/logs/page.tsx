@@ -43,17 +43,25 @@ const useLogsTable = () => {
 
   const { data, isLoading, error, refetch } = useQuery<LogSearchResponse>({
     queryKey: ["logs", nextPageCursor],
-    queryFn: () =>
-      searchFunctionExecutionLogs(
+    queryFn: () => {
+      // Calculate start time as 3 days ago
+      // TODO: Make this configurable, for enterprise customers
+      // We support more than 3 days log retention
+      const threeDaysAgo = new Date();
+      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+
+      return searchFunctionExecutionLogs(
         {
           log_type: "function_execution",
           limit: pageSize,
+          start_time: threeDaysAgo.toISOString(),
           ...(nextPageCursor && { cursor: nextPageCursor }),
           ...(activeProject && { project_id: activeProject.id }),
         },
         activeOrg?.orgId,
         accessToken,
-      ),
+      );
+    },
     refetchOnWindowFocus: false,
   });
 
@@ -513,6 +521,20 @@ export default function LogsPage() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="function-executions" className="px-4">
+          <p className="mb-4 pl-4 text-sm text-muted-foreground">
+            Showing function execution logs from the past 3 days
+          </p>
+          <p className="mb-4 pl-4 text-sm text-muted-foreground">
+            We will support log retention more than 3 days (Coming soon), please
+            see{" "}
+            <a
+              href="https://platform.aci.dev/pricing"
+              className="text-blue-500"
+            >
+              https://platform.aci.dev/pricing
+            </a>{" "}
+            for more details.
+          </p>
           <LogsTableView
             logs={logs}
             columns={columns}
