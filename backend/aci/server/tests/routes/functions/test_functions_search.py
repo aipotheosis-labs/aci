@@ -1,3 +1,5 @@
+from unittest.mock import patch
+
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
@@ -547,6 +549,43 @@ def test_search_functions_with_app_names_and_allowed_apps_only(
     assert len(functions) == len(dummy_app_google.functions) + len(dummy_app_github.functions), (
         "should return functions from both allowed apps"
     )
+
+
+@pytest.mark.parametrize(
+    "format",
+    [
+        FunctionDefinitionFormat.BASIC,
+        FunctionDefinitionFormat.OPENAI,
+        FunctionDefinitionFormat.ANTHROPIC,
+    ],
+)
+def test_search_functions_limit_cap(
+    test_client: TestClient,
+    dummy_functions: list[Function],
+    dummy_api_key_1: str,
+    format: FunctionDefinitionFormat,
+) -> None:
+    # Mock MAX_FUNCTIONS_SEARCH_LIMIT to be 5
+    with patch("aci.server.config.MAX_FUNCTIONS_SEARCH_LIMIT", 5):
+        # Test that providing a limit > 5 doesn't fail and caps at 5
+        function_search = FunctionsSearch(
+            limit=6,  # Try to request more than the cap
+            offset=0,
+            format=format,
+        )
+
+        response = test_client.get(
+            f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+            params=function_search.model_dump(exclude_none=True),
+            headers={"x-api-key": dummy_api_key_1},
+        )
+        assert response.status_code == status.HTTP_200_OK
+        functions = [
+            _validate_function_definition(response_function, format)
+            for response_function in response.json()
+        ]
+        # Verify that the response was capped at 5
+        assert len(functions) == 5, "Response should be capped at 5 results"
 
 
 def _validate_function_definition(
