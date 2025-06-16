@@ -10,7 +10,7 @@ on:
 
 jobs:
   code-quality:
-    name: Format & Lint
+    name: Code Quality Checks
     runs-on: ubuntu-latest
     if: github.event.pull_request.head.repo.full_name == github.repository
 
