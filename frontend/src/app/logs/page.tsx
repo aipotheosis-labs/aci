@@ -9,13 +9,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Eye,
-  ArrowUpDown,
-  RefreshCw,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
+import { Eye, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { useQuery } from "@tanstack/react-query";
@@ -126,56 +120,12 @@ const useTableColumns = (
   return useMemo(() => {
     return [
       columnHelper.accessor("@timestamp", {
-        header: ({ column }) => (
-          <div className="flex items-center justify-start">
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-              className="p-0 h-auto text-left font-normal bg-transparent hover:bg-transparent focus:ring-0"
-            >
-              TIMESTAMP
-              <ArrowUpDown className="h-4 w-4" />
-            </Button>
-          </div>
-        ),
+        header: "TIMESTAMP",
         cell: (info) => info.getValue(),
         enableGlobalFilter: true,
       }),
-      columnHelper.accessor("function_execution.app_name", {
-        header: ({ column }) => (
-          <div className="flex items-center justify-start">
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-              className="p-0 h-auto text-left font-normal bg-transparent hover:bg-transparent focus:ring-0"
-            >
-              APP
-              <ArrowUpDown className="h-4 w-4" />
-            </Button>
-          </div>
-        ),
-        cell: (info) => info.getValue() || "-",
-        enableGlobalFilter: true,
-      }),
       columnHelper.accessor("function_execution.function_name", {
-        header: ({ column }) => (
-          <div className="flex items-center justify-start">
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-              className="p-0 h-auto text-left font-normal bg-transparent hover:bg-transparent focus:ring-0"
-            >
-              FUNCTION
-              <ArrowUpDown className="h-4 w-4" />
-            </Button>
-          </div>
-        ),
+        header: "FUNCTION",
         cell: (info) => info.getValue() || "-",
         enableGlobalFilter: true,
       }),
@@ -316,7 +266,7 @@ const LogsTableView = ({
     <div className="rounded-md p-4">
       <div className="flex justify-between items-center mb-4">
         <p className="text-sm text-muted-foreground">
-          Showing {startRow} – {endRow} of {totalCount} logs
+          Showing {startRow} – {endRow} of {totalCount} logs in the past 3 days
         </p>
         <Button
           onClick={onRefresh}
