@@ -1,0 +1,59 @@
+name: 'Docker Compose Test'
+description: 'Runs tests using Docker Compose and handles logging'
+inputs:
+  working-directory:
+    description: 'Working directory for the action'
+    required: false
+    default: '.'
+  env-file:
+    description: 'Path to .env file to copy from .env.example'
+    required: false
+    default: '.env.local'
+  compose-files:
+    description: 'Compose files to use (space-separated)'
+    required: false
+    default: 'compose.yml compose.ci.yml'
+  test-service:
+    description: 'Service name to run tests'
+    required: false
+    default: 'test-runner'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Docker Compose
+      uses: docker/setup-compose-action@v1
+
+    - name: Copy .env.example to env file
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        cp .env.example ${{ inputs.env-file }}
+
+    - name: Run compose test
+      id: run_tests
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        docker compose -f ${{ inputs.compose-files }} run ${{ inputs.test-service }}
+
+    - name: Get service names
+      id: service_names
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      if: always()
+      run: |
+        SERVICE_NAMES=$(docker compose config --services)
+        echo "names<<EOF" >> $GITHUB_OUTPUT
+        echo "$SERVICE_NAMES" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Print logs for each service
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      if: always()
+      run: |
+        echo "${{ steps.service_names.outputs.names }}" | while read -r service; do
+          echo "Logs for service: $service"
+          docker compose logs "$service"
+        done

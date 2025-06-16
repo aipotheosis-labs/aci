@@ -1,0 +1,27 @@
+name: 'Setup Python with uv'
+description: 'Sets up Python environment with uv package manager'
+inputs:
+  python-version-file:
+    description: 'Path to .python-version file'
+    required: true
+  working-directory:
+    description: 'Working directory for the action'
+    required: false
+    default: '.'
+
+runs:
+  using: "composite"
+  steps:
+    - name: Install uv
+      uses: astral-sh/setup-uv@v5
+
+    - name: "Set up Python"
+      uses: actions/setup-python@v5
+      with:
+        python-version-file: ${{ inputs.python-version-file }}
+
+    - name: Install Dependencies with uv
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        uv sync

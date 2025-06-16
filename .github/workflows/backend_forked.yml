@@ -1,18 +1,14 @@
-name: Backend Checks
+name: Backend Checks for Forked Repos
 
 on:
-  push:
+  pull_request_target:
     branches: [main]
-  pull_request:
-    branches: [main]
-  schedule:
-    - cron: "0 9 * * *"
 
 jobs:
   code-quality:
-    name: Format & Lint
+    name: Code Quality Checks
     runs-on: ubuntu-latest
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    environment: contributors
 
     steps:
       - name: Checkout code
@@ -33,7 +29,8 @@ jobs:
     name: Compose Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    environment: contributors
+
     env:
       SERVER_OPENAI_API_KEY: ${{ secrets.SERVER_OPENAI_API_KEY }}
       CLI_OPENAI_API_KEY: ${{ secrets.CLI_OPENAI_API_KEY }}
