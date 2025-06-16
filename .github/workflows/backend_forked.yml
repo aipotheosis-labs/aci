@@ -8,7 +8,7 @@ jobs:
   code-quality:
     name: Code Quality Checks
     runs-on: ubuntu-latest
-    environment: contributors
+    environment: Contributors
 
     steps:
       - name: Checkout code
@@ -29,7 +29,7 @@ jobs:
     name: Compose Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    environment: contributors
+    environment: Contributors
 
     env:
       SERVER_OPENAI_API_KEY: ${{ secrets.SERVER_OPENAI_API_KEY }}
