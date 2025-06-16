@@ -9,6 +9,7 @@ jobs:
     name: Code Quality Checks
     runs-on: ubuntu-latest
     environment: Contributors
+    if: github.event.pull_request.head.repo.full_name != github.repository
 
     steps:
       - name: Checkout code
@@ -32,6 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     environment: Contributors
+    if: github.event.pull_request.head.repo.full_name != github.repository
 
     env:
       SERVER_OPENAI_API_KEY: ${{ secrets.SERVER_OPENAI_API_KEY }}
