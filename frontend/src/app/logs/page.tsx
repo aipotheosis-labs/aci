@@ -39,17 +39,21 @@ const useLogsTable = () => {
   const [currentPageNumber, setCurrentPageNumber] = useState(0);
   const pageSize = PAGE_SIZE;
 
-  const { activeProject } = useMetaInfo();
+  const { activeProject, accessToken, activeOrg } = useMetaInfo();
 
   const { data, isLoading, error, refetch } = useQuery<LogSearchResponse>({
     queryKey: ["logs", nextPageCursor],
     queryFn: () =>
-      searchFunctionExecutionLogs({
-        log_type: "function_execution",
-        limit: pageSize,
-        ...(nextPageCursor && { cursor: nextPageCursor }),
-        ...(activeProject && { project_id: activeProject.id }),
-      }),
+      searchFunctionExecutionLogs(
+        {
+          log_type: "function_execution",
+          limit: pageSize,
+          ...(nextPageCursor && { cursor: nextPageCursor }),
+          ...(activeProject && { project_id: activeProject.id }),
+        },
+        activeOrg?.orgId,
+        accessToken,
+      ),
     refetchOnWindowFocus: false,
   });
 
