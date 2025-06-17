@@ -87,11 +87,15 @@ async def get_quota_usage(
     linked_accounts_used = crud.linked_accounts.get_total_number_of_unique_linked_account_owner_ids(
         db_session, org_id
     )
+    total_monthly_api_calls_used_of_org = crud.projects.get_total_monthly_quota_usage_for_org(
+        db_session, org_id
+    )
 
     return QuotaUsageResponse(
         projects_used=projects_used,
         linked_accounts_used=linked_accounts_used,
         agent_credentials_used=agent_credentials_used,
+        api_calls_used=total_monthly_api_calls_used_of_org,
         plan=PlanInfo(name=active_plan.name, features=PlanFeatures(**active_plan.features)),
     )
 
