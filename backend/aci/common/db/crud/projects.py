@@ -4,7 +4,7 @@ TODO: function todelete project and all related data (app_configurations, agents
 """
 
 import secrets
-from datetime import UTC, datetime, timedelta
+from datetime import datetime
 from uuid import UUID
 
 from sqlalchemy import func, select, update
@@ -90,40 +90,6 @@ def set_project_visibility_access(
     db_session.execute(statement)
 
 
-# TODO: TBD by business model
-def increase_project_quota_usage(db_session: Session, project: Project) -> None:
-    now: datetime = datetime.now(UTC)
-    need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=UTC) + timedelta(days=1)
-
-    if need_reset:
-        # Reset the daily quota
-        statement = (
-            update(Project)
-            .where(Project.id == project.id)
-            .values(
-                {
-                    Project.daily_quota_used: 1,
-                    Project.daily_quota_reset_at: now,
-                    Project.total_quota_used: project.total_quota_used + 1,
-                }
-            )
-        )
-    else:
-        # Increment the daily quota
-        statement = (
-            update(Project)
-            .where(Project.id == project.id)
-            .values(
-                {
-                    Project.daily_quota_used: project.daily_quota_used + 1,
-                    Project.total_quota_used: project.total_quota_used + 1,
-                }
-            )
-        )
-
-    db_session.execute(statement)
-
-
 def increment_api_monthly_quota_usage(
     db_session: Session, project: Project, monthly_quota_limit: int
 ) -> bool:
@@ -184,7 +150,7 @@ def reset_api_monthly_quota_for_org(
     db_session.execute(statement)
 
 
-def get_total_monthly_quota_usage_for_org(db_session: Session, org_id: UUID) -> int:
+def get_total_api_monthly_quota_usage_for_org(db_session: Session, org_id: UUID) -> int:
     """Get the total monthly quota usage across all projects in an organization"""
     result = db_session.execute(
         select(func.sum(Project.api_quota_monthly_used)).where(Project.org_id == org_id)

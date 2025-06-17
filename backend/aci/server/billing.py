@@ -29,7 +29,7 @@ def increment_quota(db_session: Session, project: Project, monthly_quota_limit: 
     )
 
     if not success:
-        total_monthly_usage = crud.projects.get_total_monthly_quota_usage_for_org(
+        total_monthly_usage = crud.projects.get_total_api_monthly_quota_usage_for_org(
             db_session, project.org_id
         )
 
