@@ -110,7 +110,7 @@ async def search_functions(
         True,
         apps_to_filter,
         intent_embedding,
-        query_params.limit,
+        min(query_params.limit, config.MAX_FUNCTIONS_SEARCH_LIMIT),
         query_params.offset,
     )
 
