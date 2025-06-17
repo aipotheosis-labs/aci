@@ -3,6 +3,7 @@ from datetime import UTC, datetime, timedelta
 from unittest.mock import MagicMock, patch
 
 import pytest
+from dateutil.relativedelta import relativedelta
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
@@ -30,7 +31,9 @@ class TestQuotaIncrease:
     ) -> None:
         """Test that search apps route increases quota usage."""
         # Get initial quota usage
-        initial_usage = dummy_project_1.api_quota_monthly_used
+        dummy_project_1.api_quota_monthly_used = 1
+        db_session.commit()
+        db_session.refresh(dummy_project_1)
 
         # Make search request
         response = test_client.get(
@@ -42,7 +45,7 @@ class TestQuotaIncrease:
         assert response.status_code == status.HTTP_200_OK
 
         db_session.refresh(dummy_project_1)
-        assert dummy_project_1.api_quota_monthly_used == initial_usage + 1
+        assert dummy_project_1.api_quota_monthly_used == 2
 
     def test_search_functions_increases_quota(
         self,
@@ -54,7 +57,9 @@ class TestQuotaIncrease:
     ) -> None:
         """Test that search functions route increases quota usage."""
         # Get initial quota usage
-        initial_usage = dummy_project_1.api_quota_monthly_used
+        dummy_project_1.api_quota_monthly_used = 1
+        db_session.commit()
+        db_session.refresh(dummy_project_1)
 
         # Make search request
         response = test_client.get(
@@ -67,7 +72,7 @@ class TestQuotaIncrease:
 
         # Refresh project and check quota increased
         db_session.refresh(dummy_project_1)
-        assert dummy_project_1.api_quota_monthly_used == initial_usage + 1
+        assert dummy_project_1.api_quota_monthly_used == 2
 
     def test_execute_function_increases_quota(
         self,
@@ -84,7 +89,9 @@ class TestQuotaIncrease:
             db_session, dummy_agent_1_with_all_apps_allowed.project_id
         )
         assert project is not None  # Added for type checking
-        initial_usage = project.api_quota_monthly_used
+        project.api_quota_monthly_used = 1
+        db_session.commit()
+        db_session.refresh(project)
 
         # Mock the function execution to avoid actual HTTP calls
         with patch("aci.server.function_executors.get_executor") as mock_get_executor:
@@ -106,7 +113,7 @@ class TestQuotaIncrease:
 
             # Refresh project and check quota increased
             db_session.refresh(project)
-            assert project.api_quota_monthly_used == initial_usage + 1
+            assert project.api_quota_monthly_used == 2
 
 
 @pytest.mark.parametrize("dummy_subscription", [PlanType.FREE, PlanType.STARTER], indirect=True)
@@ -123,13 +130,14 @@ class TestQuotaExceeded:
     ) -> None:
         """Test that search apps route raises error when quota is exceeded."""
         # Get the subscription if it exists
-        subscription = billing.get_subscription_by_org_id(db_session, dummy_project_1.org_id)
-        quota_limit = subscription.plan.features["api_calls_monthly"]
+        active_plan = billing.get_active_plan_by_org_id(db_session, dummy_project_1.org_id)
 
         # Set quota usage to the limit
-        fake_time = datetime.now(UTC)
-        dummy_project_1.api_quota_monthly_used = quota_limit
-        dummy_project_1.api_quota_last_reset = fake_time
+        first_day_of_this_month = datetime.now(UTC).replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0
+        )
+        dummy_project_1.api_quota_monthly_used = active_plan.features["api_calls_monthly"]
+        dummy_project_1.api_quota_last_reset = first_day_of_this_month
         db_session.commit()
         db_session.refresh(dummy_project_1)
 
@@ -151,13 +159,14 @@ class TestQuotaExceeded:
     ) -> None:
         """Test that search functions route raises error when quota is exceeded."""
         # Get the subscription if it exists
-        subscription = billing.get_subscription_by_org_id(db_session, dummy_project_1.org_id)
-        quota_limit = subscription.plan.features["api_calls_monthly"]
+        active_plan = billing.get_active_plan_by_org_id(db_session, dummy_project_1.org_id)
 
         # Set quota usage to the limit
-        fake_time = datetime.now(UTC)
-        dummy_project_1.api_quota_monthly_used = quota_limit
-        dummy_project_1.api_quota_last_reset = fake_time
+        first_day_of_this_month = datetime.now(UTC).replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0
+        )
+        dummy_project_1.api_quota_monthly_used = active_plan.features["api_calls_monthly"]
+        dummy_project_1.api_quota_last_reset = first_day_of_this_month
         db_session.commit()
         db_session.refresh(dummy_project_1)
 
@@ -185,12 +194,13 @@ class TestQuotaExceeded:
             db_session, dummy_agent_1_with_all_apps_allowed.project_id
         )
         assert project is not None  # Added for type checking
-
+        active_plan = billing.get_active_plan_by_org_id(db_session, dummy_project_1.org_id)
         # Set quota usage to the free plan limit (1000)
-        fake_time = datetime.now(UTC)
-        subscription = billing.get_subscription_by_org_id(db_session, dummy_project_1.org_id)
-        project.api_quota_monthly_used = subscription.plan.features["api_calls_monthly"]
-        project.api_quota_last_reset = fake_time
+        first_day_of_this_month = datetime.now(UTC).replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0
+        )
+        project.api_quota_monthly_used = active_plan.features["api_calls_monthly"]
+        project.api_quota_last_reset = first_day_of_this_month
         db_session.commit()
         db_session.refresh(project)
 
@@ -216,7 +226,7 @@ class TestQuotaExceeded:
 class TestQuotaReset:
     """Test that quota reset works as expected."""
 
-    def test_quota_reset_on_billing_period_change(
+    def test_quota_reset_on_new_month(
         self,
         test_client: TestClient,
         dummy_api_key_1: str,
@@ -224,24 +234,21 @@ class TestQuotaReset:
         db_session: Session,
         dummy_subscription: Subscription | None,
     ) -> None:
-        """Test that quota resets when billing period changes."""
-        # Get the subscription if it exists
-        subscription = dummy_subscription
-
+        """Test that quota resets when new month starts."""
         # Set some initial quota usage
-        fake_time = datetime.now(UTC)
-        if subscription:
-            # For paid plans, set the last reset to before the current period
-            dummy_project_1.api_quota_last_reset = subscription.current_period_start - timedelta(
-                days=1
-            )
-        else:
-            # For free plans, set the last reset to before the current month
-            dummy_project_1.api_quota_last_reset = fake_time - timedelta(days=32)
-
+        first_day_of_this_month = datetime.now(UTC).replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0
+        )
+        # set the last reset to first day of last month
+        dummy_project_1.api_quota_last_reset = (
+            first_day_of_this_month - timedelta(days=1)
+        ).replace(day=1)
         dummy_project_1.api_quota_monthly_used = 2
         db_session.commit()
         db_session.refresh(dummy_project_1)
+        assert (
+            first_day_of_this_month - relativedelta(months=1)
+        ) == dummy_project_1.api_quota_last_reset.replace(tzinfo=UTC)
         assert dummy_project_1.api_quota_monthly_used == 2
 
         # Make a request which should trigger quota reset
@@ -256,6 +263,7 @@ class TestQuotaReset:
         # Quota should be reset and then incremented by 1 for this request
         db_session.refresh(dummy_project_1)
         assert dummy_project_1.api_quota_monthly_used == 1
+        assert dummy_project_1.api_quota_last_reset.replace(tzinfo=UTC) == first_day_of_this_month
 
     def test_quota_aggregation_across_org_projects(
         self,
@@ -267,15 +275,16 @@ class TestQuotaReset:
         dummy_subscription: Subscription | None,
     ) -> None:
         """Test that quota is aggregated across all projects in an org."""
-        subscription = billing.get_subscription_by_org_id(db_session, dummy_project_1.org_id)
-        quota_limit = subscription.plan.features["api_calls_monthly"]
+        active_plan = billing.get_active_plan_by_org_id(db_session, dummy_project_1.org_id)
 
         # Set quota usage on both projects
-        fake_time = datetime.now(UTC)
-        dummy_project_1.api_quota_monthly_used = quota_limit // 2
-        dummy_project_1.api_quota_last_reset = fake_time
-        dummy_project_2.api_quota_monthly_used = quota_limit // 2
-        dummy_project_2.api_quota_last_reset = fake_time
+        first_day_of_this_month = datetime.now(UTC).replace(
+            day=1, hour=0, minute=0, second=0, microsecond=0
+        )
+        dummy_project_1.api_quota_monthly_used = active_plan.features["api_calls_monthly"] // 2
+        dummy_project_1.api_quota_last_reset = first_day_of_this_month
+        dummy_project_2.api_quota_monthly_used = active_plan.features["api_calls_monthly"] // 2
+        dummy_project_2.api_quota_last_reset = first_day_of_this_month
         db_session.commit()
 
         # Make a request which should exceed the total quota
