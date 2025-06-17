@@ -64,14 +64,6 @@ export function SubscriptionDisplay({
                 </Button>
               )}
             </div>
-            {subscription.plan !== Plan.Free && (
-              <p className="text-sm text-muted-foreground mt-2">
-                Need help with your subscription?{" "}
-                <Link href="/support" className="text-primary hover:underline">
-                  Contact support
-                </Link>
-              </p>
-            )}
           </div>
         ) : null
       }
