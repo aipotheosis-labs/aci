@@ -139,13 +139,13 @@ app.include_router(
     apps.router,
     prefix=config.ROUTER_PREFIX_APPS,
     tags=[config.ROUTER_PREFIX_APPS.split("/")[-1]],
-    dependencies=[Depends(deps.validate_api_key), Depends(deps.validate_project_quota)],
+    dependencies=[Depends(deps.validate_api_key)],
 )
 app.include_router(
     functions.router,
     prefix=config.ROUTER_PREFIX_FUNCTIONS,
     tags=[config.ROUTER_PREFIX_FUNCTIONS.split("/")[-1]],
-    dependencies=[Depends(deps.validate_api_key), Depends(deps.validate_project_quota)],
+    dependencies=[Depends(deps.validate_api_key)],
 )
 app.include_router(
     app_configurations.router,
