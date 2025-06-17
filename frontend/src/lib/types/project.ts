@@ -3,9 +3,6 @@ export interface Project {
   owner_id: string;
   name: string;
   visibility_access: string;
-  daily_quota_used: number;
-  daily_quota_reset_at: string;
-  total_quota_used: number;
   created_at: string;
   updated_at: string;
   agents: Agent[];
