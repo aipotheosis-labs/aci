@@ -95,6 +95,7 @@ class Project(Base):
     api_quota_last_reset: Mapped[datetime] = mapped_column(
         DateTime(timezone=False),
         # set default to first day of the current month
+        # TODO: date_trunc('month', now()) breaks on SQLite & MySQL
         server_default=text("date_trunc('month', now())"),
         nullable=False,
         init=False,

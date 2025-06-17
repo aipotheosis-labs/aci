@@ -143,7 +143,7 @@ def validate_monthly_api_quota(
     cur_first_day_of_month = datetime.now(UTC).replace(
         day=1, hour=0, minute=0, second=0, microsecond=0
     )
-    if cur_first_day_of_month != last_reset:
+    if cur_first_day_of_month > last_reset:
         logger.info(
             f"resetting monthly quota, last_reset={last_reset}, cur_first_day_of_month={cur_first_day_of_month}",
         )
