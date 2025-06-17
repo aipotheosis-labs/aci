@@ -17,7 +17,7 @@ from aci.common.exceptions import (
     ProjectNotFound,
 )
 from aci.common.logging_setup import get_logger
-from aci.server import billing, config
+from aci.server import billing, config, quota_manager
 
 logger = get_logger(__name__)
 http_bearer = HTTPBearer(auto_error=True, description="login to receive a JWT token")
@@ -127,7 +127,10 @@ def validate_monthly_api_quota(
         )
 
     plan = billing.get_active_plan_by_org_id(db_session, project.org_id)
-    billing.increment_quota(db_session, project, plan.features["api_calls_monthly"])
+    quota_manager.increment_monthly_api_quota(
+        db_session, project, plan.features["api_calls_monthly"]
+    )
+    quota_manager.increment_total_api_quota(db_session, project)
     db_session.commit()
 
     logger.info("monthly api quota validation successful", extra={"project_id": project.id})

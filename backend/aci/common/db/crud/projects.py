@@ -160,6 +160,20 @@ def get_total_api_monthly_quota_usage_for_org(db_session: Session, org_id: UUID)
     return result or 0
 
 
+def increment_api_total_quota_usage(db_session: Session, project: Project) -> None:
+    """Increment quota usage or raise error if limit exceeded."""
+    statement = (
+        update(Project)
+        .where(Project.id == project.id)
+        .values(
+            {
+                Project.total_quota_used: Project.total_quota_used + 1,
+            }
+        )
+    )
+    db_session.execute(statement)
+
+
 def create_agent(
     db_session: Session,
     project_id: UUID,

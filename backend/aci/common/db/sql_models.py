@@ -95,6 +95,7 @@ class Project(Base):
         nullable=False,
         init=False,
     )
+    total_quota_used: Mapped[int] = mapped_column(Integer, default=0, nullable=False, init=False)
 
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False

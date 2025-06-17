@@ -29,6 +29,7 @@ class ProjectPublic(BaseModel):
     visibility_access: Visibility
     api_quota_monthly_used: int
     api_quota_last_reset: datetime
+    total_quota_used: int
 
     created_at: datetime
     updated_at: datetime
