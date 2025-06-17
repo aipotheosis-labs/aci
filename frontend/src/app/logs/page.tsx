@@ -124,8 +124,13 @@ const useTableColumns = (
         cell: (info) => info.getValue(),
         enableGlobalFilter: true,
       }),
+      columnHelper.accessor("function_execution.app_name", {
+        header: "APP NAME",
+        cell: (info) => info.getValue() || "-",
+        enableGlobalFilter: true,
+      }),
       columnHelper.accessor("function_execution.function_name", {
-        header: "FUNCTION",
+        header: "FUNCTION NAME",
         cell: (info) => info.getValue() || "-",
         enableGlobalFilter: true,
       }),
@@ -240,33 +245,15 @@ const LogsTableView = ({
     );
   }
 
-  if (logs.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-[400px]">
-        <div className="text-center space-y-2">
-          <p className="text-muted-foreground">No logs found</p>
-          <Button
-            onClick={onRefresh}
-            variant="default"
-            size="sm"
-            className="gap-2"
-          >
-            <RefreshCw className="h-4 w-4" />
-            Refresh
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   const startRow = currentPageNumber * PAGE_SIZE + 1;
   const endRow = Math.min(startRow + logs.length - 1, totalCount);
 
   return (
-    <div className="rounded-md p-4">
+    <div className="rounded-md py-4">
       <div className="flex justify-between items-center mb-4">
         <p className="text-sm text-muted-foreground">
-          Showing {startRow} – {endRow} of {totalCount} logs in the past 3 days
+          Showing {totalCount > 0 ? startRow : 0} – {endRow} of {totalCount}{" "}
+          logs in the past 3 days
         </p>
         <Button
           onClick={onRefresh}
@@ -463,18 +450,18 @@ export default function LogsPage() {
   );
 
   return (
-    <div className="container mx-auto">
-      <Tabs defaultValue="function-executions" className="w-full pt-4">
-        <TabsList className="px-2 ml-8 pl-2">
+    <div className="w-full">
+      <Tabs defaultValue="function-executions" className="w-full pt-4 px-4">
+        <TabsList className="px-2 ">
           <TabsTrigger value="function-executions">
             Function Executions
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="function-executions" className="px-4">
-          <p className="mb-4 pl-4 text-sm text-muted-foreground">
+        <TabsContent value="function-executions" className="">
+          <p className="mt-4 text-sm text-muted-foreground">
             Showing function execution logs from the past 3 days
           </p>
-          <p className="mb-4 pl-4 text-sm text-muted-foreground">
+          <p className="text-sm text-muted-foreground">
             We will support log retention more than 3 days (Coming soon), please
             see{" "}
             <a
