@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import Depends, Security
+from fastapi import Depends, Request, Security
 from fastapi.security import APIKeyHeader, HTTPBearer
 from sqlalchemy.orm import Session
 
@@ -18,7 +18,7 @@ from aci.common.exceptions import (
     ProjectNotFound,
 )
 from aci.common.logging_setup import get_logger
-from aci.server import config
+from aci.server import billing, config
 
 logger = get_logger(__name__)
 http_bearer = HTTPBearer(auto_error=True, description="login to receive a JWT token")
@@ -118,11 +118,43 @@ def validate_project_quota(
     return project
 
 
+def validate_monthly_api_quota(
+    request: Request,
+    db_session: Annotated[Session, Depends(yield_db_session)],
+    project: Annotated[Project, Depends(validate_project_quota)],
+) -> None:
+    """
+    Use quota for a project operation.
+
+    1. Get subscription and quota limit
+    2. Reset quota if new billing cycle has started
+    3. Increment usage or raise error if exceeded
+    """
+    # Only check quota for app search and function search/execute endpoints
+    path = request.url.path
+    is_quota_limited_endpoint = path.startswith(f"{config.ROUTER_PREFIX_APPS}/search") or (
+        path.startswith(f"{config.ROUTER_PREFIX_FUNCTIONS}/")
+        and (path.endswith("/execute") or path.endswith("/search"))
+    )
+    if not is_quota_limited_endpoint:
+        return
+
+    subscription = billing.get_subscription_by_org_id(db_session, project.org_id)
+    monthly_quota_limit = subscription.plan.features["api_calls_monthly"]
+
+    billing.reset_quota_if_new_billing_cycle(db_session, project, subscription)
+    billing.increment_quota(db_session, project, monthly_quota_limit)
+    db_session.commit()
+
+    logger.info("monthly api quota validation successful", extra={"project_id": project.id})
+
+
 def get_request_context(
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
     agent: Annotated[Agent, Depends(validate_agent)],
     project: Annotated[Project, Depends(validate_project_quota)],
+    _: Annotated[None, Depends(validate_monthly_api_quota)],
 ) -> RequestContext:
     """
     Returns a RequestContext object containing the DB session,

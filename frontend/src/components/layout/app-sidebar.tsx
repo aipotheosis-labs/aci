@@ -24,8 +24,9 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { PiStorefront } from "react-icons/pi";
 import { RiSettings3Line, RiLinkUnlinkM } from "react-icons/ri";
-import { AiOutlineExperiment } from "react-icons/ai";
+import { AiOutlineRobot } from "react-icons/ai";
 import { HiOutlineChatBubbleBottomCenterText } from "react-icons/hi2";
+import { RiFileList3Line } from "react-icons/ri";
 
 import {
   Tooltip,
@@ -34,6 +35,9 @@ import {
 } from "@/components/ui/tooltip";
 import { ProjectSelector } from "./project-selector";
 import { OrgSelector } from "./org-selector";
+
+const showLogDashboard =
+  process.env.NEXT_PUBLIC_FEATURE_LOG_DASHBOARD === "true";
 
 // Export sidebar items so they can be used in header
 export const sidebarItems = [
@@ -55,13 +59,22 @@ export const sidebarItems = [
   {
     title: "Agents",
     url: `/agents`,
-    icon: AiOutlineExperiment,
+    icon: AiOutlineRobot,
   },
   {
     title: "Agent Playground",
     url: `/playground`,
     icon: HiOutlineChatBubbleBottomCenterText,
   },
+  ...(showLogDashboard
+    ? [
+        {
+          title: "Log Dashboard",
+          url: `/logs`,
+          icon: RiFileList3Line,
+        },
+      ]
+    : []),
   {
     title: "Usage",
     url: `/usage`,
@@ -84,7 +97,7 @@ export function AppSidebar() {
   return (
     <Sidebar variant="inset" collapsible="icon" className="flex flex-col">
       <div className="w-full text-center py-1 text-xs font-bold flex items-center justify-center border-b-2 border-gray-200">
-        <AiOutlineExperiment className="inline-block mr-2" />
+        <AiOutlineRobot className="inline-block mr-2" />
         In Beta
       </div>
       <SidebarHeader>

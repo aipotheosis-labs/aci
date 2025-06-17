@@ -29,6 +29,7 @@ from aci.common.schemas.linked_accounts import (
     LinkedAccountPublic,
     LinkedAccountsList,
     LinkedAccountUpdate,
+    LinkedAccountWithCredentials,
 )
 from aci.common.schemas.security_scheme import (
     APIKeySchemeCredentials,
@@ -586,7 +587,7 @@ async def list_linked_accounts(
     return linked_accounts
 
 
-@router.get("/{linked_account_id}", response_model=LinkedAccountPublic)
+@router.get("/{linked_account_id}", response_model=LinkedAccountWithCredentials)
 async def get_linked_account(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     linked_account_id: UUID,
@@ -603,6 +604,30 @@ async def get_linked_account(
     if not linked_account:
         logger.error(f"Linked account not found, linked_account_id={linked_account_id}")
         raise LinkedAccountNotFound(f"linked account={linked_account_id} not found")
+
+    # Get the app configuration to check and refresh credentials if needed
+    app_configuration = crud.app_configurations.get_app_configuration(
+        context.db_session, context.project.id, linked_account.app.name
+    )
+    if not app_configuration:
+        logger.error(
+            "app configuration not found",
+        )
+        raise AppConfigurationNotFound(
+            f"app configuration for app={linked_account.app.name} not found"
+        )
+
+    security_credentials_response = await scm.get_security_credentials(
+        linked_account.app, app_configuration, linked_account
+    )
+    scm.update_security_credentials(
+        context.db_session, linked_account.app, linked_account, security_credentials_response
+    )
+    logger.info(
+        f"Fetched security credentials for linked account, linked_account_id={linked_account.id}, "
+        f"is_updated={security_credentials_response.is_updated}"
+    )
+    context.db_session.commit()
 
     return linked_account
 

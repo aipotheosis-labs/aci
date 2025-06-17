@@ -230,7 +230,7 @@ async def execute(
         "function execution result",
         extra={
             "function_execution": {
-                "app_name": context.project.name,
+                "app_name": function_name.split("__")[0] if "__" in function_name else "unknown",
                 "function_name": function_name,
                 "linked_account_owner_id": body.linked_account_owner_id,
                 "function_execution_start_time": start_time,
@@ -397,28 +397,17 @@ async def execute_function(
         app_configuration.app, app_configuration, linked_account
     )
 
+    scm.update_security_credentials(
+        db_session, function.app, linked_account, security_credentials_response
+    )
+
     logger.info(
         f"Fetched security credentials for function execution, function_name={function_name}, "
         f"app_name={function.app.name}, linked_account_owner_id={linked_account_owner_id}, "
         f"linked_account_id={linked_account.id}, is_updated={security_credentials_response.is_updated}, "
         f"is_app_default_credentials={security_credentials_response.is_app_default_credentials}"
     )
-
-    if security_credentials_response.is_updated:
-        if security_credentials_response.is_app_default_credentials:
-            crud.apps.update_app_default_security_credentials(
-                db_session,
-                function.app,
-                linked_account.security_scheme,
-                security_credentials_response.credentials.model_dump(),
-            )
-        else:
-            crud.linked_accounts.update_linked_account_credentials(
-                db_session,
-                linked_account,
-                security_credentials=security_credentials_response.credentials,
-            )
-        db_session.commit()
+    db_session.commit()
 
     custom_instructions.check_for_violation(
         openai_client,

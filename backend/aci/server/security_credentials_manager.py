@@ -1,7 +1,9 @@
 import time
 
 from pydantic import BaseModel
+from sqlalchemy.orm import Session
 
+from aci.common.db import crud
 from aci.common.db.sql_models import App, AppConfiguration, LinkedAccount
 from aci.common.enums import SecurityScheme
 from aci.common.exceptions import NoImplementationFound, OAuth2Error
@@ -45,6 +47,41 @@ async def get_security_credentials(
         raise NoImplementationFound(
             f"unsupported security scheme={linked_account.security_scheme}, app={app.name}"
         )
+
+
+def update_security_credentials(
+    db_session: Session,
+    app: App,
+    linked_account: LinkedAccount,
+    security_credentials_response: SecurityCredentialsResponse,
+) -> None:
+    """
+    Update security credentials in the database.
+
+    Args:
+        db_session: Database session
+        app: App object
+        linked_account: Linked account object
+        security_credentials_response: The security credentials response to update
+    """
+    if not security_credentials_response.is_updated:
+        return
+
+    if security_credentials_response.is_app_default_credentials:
+        crud.apps.update_app_default_security_credentials(
+            db_session,
+            app,
+            linked_account.security_scheme,
+            security_credentials_response.credentials.model_dump(),
+        )
+    else:
+        crud.linked_accounts.update_linked_account_credentials(
+            db_session,
+            linked_account,
+            security_credentials=security_credentials_response.credentials,
+        )
+
+    db_session.refresh(linked_account)
 
 
 async def _get_oauth2_credentials(

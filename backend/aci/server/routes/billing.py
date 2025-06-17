@@ -324,10 +324,16 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
             stripe_subscription_id=stripe_subscription_id,
             status=StripeSubscriptionStatus(subscription_details.status),
             interval=subscription_details.interval,
+            current_period_start=subscription_details.current_period_start,
             current_period_end=subscription_details.current_period_end,
             cancel_at_period_end=subscription_details.cancel_at_period_end,
         )
         db_session.add(new_subscription)
+
+        # Reset monthly quota for all projects in the org when subscription is created
+        crud.projects.reset_api_monthly_quota_for_org(
+            db_session, client_reference_id, subscription_details.current_period_start
+        )
 
     db_session.commit()
     logger.info(
@@ -440,10 +446,15 @@ async def handle_customer_subscription_updated(
         status=StripeSubscriptionStatus(latest_subscription_details.status),
         plan_id=plan.id,
         interval=latest_subscription_details.interval,
+        current_period_start=latest_subscription_details.current_period_start,
         current_period_end=latest_subscription_details.current_period_end,
         cancel_at_period_end=latest_subscription_details.cancel_at_period_end,
         stripe_customer_id=latest_subscription_details.stripe_customer_id,
     )
+
+    # Check if current_period_start has changed to reset quotas
+    old_period_start = subscription.current_period_start
+    new_period_start = latest_subscription_details.current_period_start
 
     subscription = crud.subscriptions.update_subscription_by_stripe_id(
         db_session,
@@ -459,6 +470,21 @@ async def handle_customer_subscription_updated(
             "Could not find existing Subscription record to update",
             error_code=status.HTTP_400_BAD_REQUEST,
         )
+
+    # Reset monthly quota if the billing period has changed
+    if old_period_start != new_period_start:
+        logger.info(
+            "Billing period changed, resetting monthly quota",
+            extra={
+                "org_id": subscription.org_id,
+                "old_period_start": old_period_start,
+                "new_period_start": new_period_start,
+            },
+        )
+        crud.projects.reset_api_monthly_quota_for_org(
+            db_session, subscription.org_id, new_period_start
+        )
+
     db_session.commit()
 
     logger.info(
@@ -521,11 +547,14 @@ def _parse_stripe_subscription_details(
     stripe_customer_id = subscription_data.get("customer")
     status = subscription_data.get("status")
     cancel_at_period_end = subscription_data.get("cancel_at_period_end", False)
+    current_period_start_ts = subscription_data.get("current_period_start", 0)
+    current_period_end_ts = subscription_data.get("current_period_end", 0)
+
+    current_period_start_dt = datetime.fromtimestamp(current_period_start_ts)
+    current_period_end_dt = datetime.fromtimestamp(current_period_end_ts)
 
     items_data = subscription_data.get("items", {}).get("data", [])
     price = items_data[0].get("price", {})
-    current_period_end_ts = items_data[0].get("current_period_end")
-    current_period_end_dt = datetime.fromtimestamp(current_period_end_ts)
     interval = price.get("recurring", {}).get("interval")
     stripe_price_id = price.get("id")
     subscription_interval = (
@@ -536,6 +565,7 @@ def _parse_stripe_subscription_details(
         stripe_subscription_id=stripe_subscription_id,  # type: ignore
         stripe_customer_id=stripe_customer_id,  # type: ignore
         status=StripeSubscriptionStatus(status),  # type: ignore
+        current_period_start=current_period_start_dt,
         current_period_end=current_period_end_dt,
         cancel_at_period_end=cancel_at_period_end,
         stripe_price_id=stripe_price_id,

@@ -226,12 +226,12 @@ def test_quota_enforcement_prevents_exceeding_credential_limit(
     dummy_agent_1_with_all_apps_allowed: Agent,
     dummy_function_agent_secrets_manager__create_credential_for_domain: Function,
     dummy_function_agent_secrets_manager__list_credentials: Function,
-    free_plan: Plan,
+    dummy_free_plan: Plan,
     db_session: Session,
 ) -> None:
     """Test that the system prevents creating more credentials than the quota allows."""
     # The free plan allows 5 agent credentials
-    max_credentials = free_plan.features["agent_credentials"]
+    max_credentials = dummy_free_plan.features["agent_credentials"]
 
     # Use CRUD operations to populate credentials up to the quota limit
     for i in range(max_credentials):
