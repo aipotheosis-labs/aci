@@ -2,6 +2,7 @@ export interface QuotaUsage {
   projects_used: number;
   linked_accounts_used: number;
   agent_credentials_used: number;
+  api_calls_used: number;
   plan: {
     name: string;
     features: {
