@@ -3338,5 +3338,1345 @@
             ],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "GITHUB__DELETE_REPOSITORY",
+        "description": "Deletes a repository. Deleting a repository requires admin access and cannot be undone",
+        "tags": [
+            "repository",
+            "delete",
+            "admin"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/repos/{owner}/{repo}",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "repo"
+                    ],
+                    "visible": [
+                        "owner",
+                        "repo"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITHUB__UPDATE_REPOSITORY",
+        "description": "Updates a repository's settings including name, description, visibility, archived status, and other properties",
+        "tags": [
+            "repository",
+            "update",
+            "settings"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/repos/{owner}/{repo}",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        },
+                        "content-type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent",
+                        "content-type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "repo"
+                    ],
+                    "visible": [
+                        "owner",
+                        "repo"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "The JSON payload containing repository update details",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the repository"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "A short description of the repository"
+                        },
+                        "homepage": {
+                            "type": "string",
+                            "description": "A URL with more information about the repository"
+                        },
+                        "private": {
+                            "type": "boolean",
+                            "description": "Whether the repository is private"
+                        },
+                        "archived": {
+                            "type": "boolean",
+                            "description": "Whether to archive this repository"
+                        },
+                        "has_issues": {
+                            "type": "boolean",
+                            "description": "Whether issues are enabled"
+                        },
+                        "has_projects": {
+                            "type": "boolean",
+                            "description": "Whether projects are enabled"
+                        },
+                        "has_wiki": {
+                            "type": "boolean",
+                            "description": "Whether the wiki is enabled"
+                        },
+                        "is_template": {
+                            "type": "boolean",
+                            "description": "Whether this repository acts as a template"
+                        },
+                        "default_branch": {
+                            "type": "string",
+                            "description": "The default branch for this repository"
+                        },
+                        "allow_squash_merge": {
+                            "type": "boolean",
+                            "description": "Whether to allow squash merges for pull requests"
+                        },
+                        "allow_merge_commit": {
+                            "type": "boolean",
+                            "description": "Whether to allow merge commits for pull requests"
+                        },
+                        "allow_rebase_merge": {
+                            "type": "boolean",
+                            "description": "Whether to allow rebase merging for pull requests"
+                        },
+                        "allow_auto_merge": {
+                            "type": "boolean",
+                            "description": "Whether to allow auto-merge on pull requests"
+                        },
+                        "delete_branch_on_merge": {
+                            "type": "boolean",
+                            "description": "Whether to delete head branches when pull requests are merged"
+                        },
+                        "security_and_analysis": {
+                            "type": "object",
+                            "description": "Security and analysis settings",
+                            "properties": {
+                                "advanced_security": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "enum": ["enabled", "disabled"]
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": [
+                                        "status"
+                                    ],
+                                    "additionalProperties": false
+                                },
+                                "secret_scanning": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "enum": ["enabled", "disabled"]
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": [
+                                        "status"
+                                    ],
+                                    "additionalProperties": false
+                                },
+                                "secret_scanning_push_protection": {
+                                    "type": "object",
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "enum": ["enabled", "disabled"]
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": [
+                                        "status"
+                                    ],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": [],
+                            "visible": [
+                                "advanced_security",
+                                "secret_scanning",
+                                "secret_scanning_push_protection"
+                            ],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "name",
+                        "description",
+                        "homepage",
+                        "private",
+                        "archived",
+                        "has_issues",
+                        "has_projects",
+                        "has_wiki",
+                        "is_template",
+                        "default_branch",
+                        "allow_squash_merge",
+                        "allow_merge_commit",
+                        "allow_rebase_merge",
+                        "allow_auto_merge",
+                        "delete_branch_on_merge",
+                        "security_and_analysis"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITHUB__DELETE_FILE",
+        "description": "Deletes a file from a repository",
+        "tags": [
+            "repository",
+            "file",
+            "delete"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/repos/{owner}/{repo}/contents/{path}",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        },
+                        "content-type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent",
+                        "content-type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        },
+                        "path": {
+                            "type": "string",
+                            "description": "The path to the file"
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "repo",
+                        "path"
+                    ],
+                    "visible": [
+                        "owner",
+                        "repo",
+                        "path"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "The JSON payload containing file deletion details",
+                    "properties": {
+                        "message": {
+                            "type": "string",
+                            "description": "The commit message"
+                        },
+                        "sha": {
+                            "type": "string",
+                            "description": "The blob SHA of the file being deleted"
+                        },
+                        "branch": {
+                            "type": "string",
+                            "description": "The branch name. Default: the repository's default branch (usually master)"
+                        },
+                        "committer": {
+                            "type": "object",
+                            "description": "The person that committed the file deletion",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "The name of the committer"
+                                },
+                                "email": {
+                                    "type": "string",
+                                    "description": "The email of the committer"
+                                }
+                            },
+                            "required": [
+                                "name",
+                                "email"
+                            ],
+                            "visible": [
+                                "name",
+                                "email"
+                            ],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": [
+                        "message",
+                        "sha"
+                    ],
+                    "visible": [
+                        "message",
+                        "sha",
+                        "branch",
+                        "committer"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITHUB__COMPARE_COMMITS",
+        "description": "Compares two commits and shows the differences between them",
+        "tags": [
+            "repository",
+            "commit",
+            "compare",
+            "diff"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/repos/{owner}/{repo}/compare/{basehead}",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        },
+                        "basehead": {
+                            "type": "string",
+                            "description": "The base and head to compare. Format: 'base...head' (e.g., 'main...feature-branch' or 'v1.0.0...v2.0.0')"
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "repo",
+                        "basehead"
+                    ],
+                    "visible": [
+                        "owner",
+                        "repo",
+                        "basehead"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {},
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITHUB__LIST_COLLABORATORS",
+        "description": "Lists the collaborators for a repository",
+        "tags": [
+            "repository",
+            "collaborator",
+            "permission"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/repos/{owner}/{repo}/collaborators",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "repo"
+                    ],
+                    "visible": [
+                        "owner",
+                        "repo"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "affiliation": {
+                            "type": "string",
+                            "description": "Filter collaborators returned by their affiliation",
+                            "enum": [
+                                "outside",
+                                "direct",
+                                "all"
+                            ],
+                            "default": "all"
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "The number of results per page (max 100)",
+                            "default": 30
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "The page number of the results to fetch",
+                            "default": 1
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "affiliation",
+                        "per_page",
+                        "page"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path",
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITHUB__ADD_COLLABORATOR",
+        "description": "Adds a collaborator to a repository",
+        "tags": [
+            "repository",
+            "collaborator",
+            "permission"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/repos/{owner}/{repo}/collaborators/{username}",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        },
+                        "content-type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent",
+                        "content-type"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        },
+                        "username": {
+                            "type": "string",
+                            "description": "The username of the user to add as a collaborator"
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "repo",
+                        "username"
+                    ],
+                    "visible": [
+                        "owner",
+                        "repo",
+                        "username"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "The JSON payload containing collaboration details",
+                    "properties": {
+                        "permission": {
+                            "type": "string",
+                            "description": "The permission to grant the collaborator",
+                            "enum": [
+                                "pull",
+                                "triage",
+                                "push",
+                                "maintain",
+                                "admin"
+                            ],
+                            "default": "push"
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "permission"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITHUB__REMOVE_COLLABORATOR",
+        "description": "Removes a collaborator from a repository",
+        "tags": [
+            "repository",
+            "collaborator",
+            "permission"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/repos/{owner}/{repo}/collaborators/{username}",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        },
+                        "username": {
+                            "type": "string",
+                            "description": "The username of the collaborator to remove"
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "repo",
+                        "username"
+                    ],
+                    "visible": [
+                        "owner",
+                        "repo",
+                        "username"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITHUB__GET_COLLABORATOR_PERMISSION",
+        "description": "Gets the permission level of a specific collaborator for a repository",
+        "tags": [
+            "repository",
+            "collaborator",
+            "permission"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/repos/{owner}/{repo}/collaborators/{username}/permission",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        },
+                        "username": {
+                            "type": "string",
+                            "description": "The username of the collaborator to check permissions for"
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "repo",
+                        "username"
+                    ],
+                    "visible": [
+                        "owner",
+                        "repo",
+                        "username"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITHUB__GET_REPOSITORY_STATS",
+        "description": "Gets repository statistics including code frequency and participation data",
+        "tags": [
+            "repository",
+            "statistics",
+            "insights"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/repos/{owner}/{repo}/stats/{stat_type}",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        },
+                        "stat_type": {
+                            "type": "string",
+                            "description": "The type of statistics to retrieve",
+                            "enum": [
+                                "contributors",
+                                "commit_activity",
+                                "code_frequency",
+                                "participation",
+                                "punch_card"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "repo",
+                        "stat_type"
+                    ],
+                    "visible": [
+                        "owner",
+                        "repo",
+                        "stat_type"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITHUB__LIST_CONTRIBUTORS",
+        "description": "Lists repository contributors sorted by the number of commits",
+        "tags": [
+            "repository",
+            "contributors",
+            "statistics"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/repos/{owner}/{repo}/contributors",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "repo"
+                    ],
+                    "visible": [
+                        "owner",
+                        "repo"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "anon": {
+                            "type": "string",
+                            "description": "Set to 1 or true to include anonymous Git commits",
+                            "enum": [
+                                "1",
+                                "true"
+                            ]
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "The number of results per page (max 100)",
+                            "default": 30
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "The page number of the results to fetch",
+                            "default": 1
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "anon",
+                        "per_page",
+                        "page"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path",
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITHUB__GET_REPOSITORY_LANGUAGES",
+        "description": "Gets the languages used in a repository with their percentage breakdown",
+        "tags": [
+            "repository",
+            "languages",
+            "statistics"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/repos/{owner}/{repo}/languages",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "repo"
+                    ],
+                    "visible": [
+                        "owner",
+                        "repo"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITHUB__LIST_USER_ORGANIZATIONS",
+        "description": "Lists the organizations a user is a member of",
+        "tags": [
+            "organization",
+            "user"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users/{username}/orgs",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "username": {
+                            "type": "string",
+                            "description": "The username of the user whose organizations to list"
+                        }
+                    },
+                    "required": [
+                        "username"
+                    ],
+                    "visible": [
+                        "username"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "per_page": {
+                            "type": "integer",
+                            "description": "The number of results per page (max 100)",
+                            "default": 30
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "The page number of the results to fetch",
+                            "default": 1
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "per_page",
+                        "page"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path",
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITHUB__GET_ORGANIZATION",
+        "description": "Gets information about an organization",
+        "tags": [
+            "organization"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/orgs/{org}",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "org": {
+                            "type": "string",
+                            "description": "The name of the organization"
+                        }
+                    },
+                    "required": [
+                        "org"
+                    ],
+                    "visible": [
+                        "org"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
     }
 ]

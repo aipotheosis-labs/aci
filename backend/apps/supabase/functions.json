@@ -766,11 +766,8 @@
                     "description": "query parameters",
                     "properties": {
                         "services": {
-                            "type": "array",
-                            "items": {
-                                "type": "string"
-                            },
-                            "description": "List of services to check health for (e.g., auth, db, storage, realtime, functions)"
+                            "type": "string",
+                            "description": "Comma-separated list of services to check health for (e.g., 'auth,db,pooler,realtime,rest,storage')"
                         },
                         "timeout_ms": {
                             "type": "integer",

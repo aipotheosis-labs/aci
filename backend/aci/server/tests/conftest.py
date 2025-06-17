@@ -3,10 +3,12 @@ import time
 import uuid
 from collections.abc import Generator
 from dataclasses import dataclass
+from datetime import UTC, datetime
 from typing import cast
 from unittest.mock import patch
 
 import pytest
+from dateutil.relativedelta import relativedelta
 from fastapi.testclient import TestClient
 from propelauth_fastapi import User
 from propelauth_py.types.login_method import SocialLoginProvider, SocialSsoLoginMethod
@@ -15,9 +17,9 @@ from sqlalchemy import inspect
 from sqlalchemy.engine.reflection import Inspector
 from sqlalchemy.orm import Session
 
-from aci.common.db.sql_models import Plan
-from aci.common.enums import OrganizationRole
-from aci.common.schemas.plans import PlanFeatures
+from aci.common.db.sql_models import Plan, Subscription
+from aci.common.enums import OrganizationRole, StripeSubscriptionInterval, StripeSubscriptionStatus
+from aci.common.schemas.plans import PlanFeatures, PlanType
 from aci.common.test_utils import clear_database, create_test_db_session
 from aci.server import acl
 
@@ -730,7 +732,7 @@ def dummy_linked_account_no_auth_mock_app_connector_project_1(
 
 
 @pytest.fixture(scope="function", autouse=True)
-def free_plan(db_session: Session) -> Plan:
+def dummy_free_plan(db_session: Session) -> Plan:
     plan = crud.plans.create(
         db=db_session,
         name="free",
@@ -750,3 +752,85 @@ def free_plan(db_session: Session) -> Plan:
     )
     db_session.commit()
     return plan
+
+
+@pytest.fixture(scope="function")
+def dummy_starter_plan(db_session: Session) -> Plan:
+    """Create a starter plan for testing paid subscriptions."""
+    dummy_starter_plan = crud.plans.create(
+        db=db_session,
+        name="starter",
+        stripe_product_id="prod_STARTER_test",
+        stripe_monthly_price_id="price_STARTER_monthly_test",
+        stripe_yearly_price_id="price_STARTER_yearly_test",
+        features=PlanFeatures(
+            linked_accounts=250,
+            api_calls_monthly=100000,
+            agent_credentials=2500,
+            developer_seats=5,
+            custom_oauth=True,
+            log_retention_days=30,
+            projects=5,
+        ),
+        is_public=True,
+    )
+    db_session.commit()
+    return dummy_starter_plan
+
+
+@pytest.fixture(scope="function")
+def dummy_subscription(
+    request: pytest.FixtureRequest,
+    dummy_free_plan: Plan,  # Ensures free plan is created and calls to get the free plan work
+    dummy_starter_plan: Plan,
+    dummy_project_1: Project,
+    db_session: Session,
+) -> Subscription | None:
+    """
+    Create a subscription for testing.
+
+    Args:
+        request: The pytest request object containing the plan type parameter
+        dummy_free_plan: The free plan fixture
+        dummy_starter_plan: The starter plan fixture
+        dummy_project_1: The project to create the subscription for
+        db_session: The database session
+
+    Returns:
+        A Subscription object for paid plans, or None for the free plan
+    """
+    # Get plan type from request parameter, default to STARTER
+    plan_type = request.param or PlanType.STARTER
+
+    # For free plan, return None as there is no subscription
+    if plan_type == PlanType.FREE:
+        return None
+
+    # Validate plan type
+    if plan_type != PlanType.STARTER:
+        raise ValueError(f"Unsupported plan type: {plan_type}")
+
+    # Create subscription period dates
+    current_period_start = datetime.now(UTC).replace(
+        day=1, hour=0, minute=0, second=0, microsecond=0
+    )
+    current_period_end = current_period_start + relativedelta(months=1)
+
+    # Create and save subscription
+    subscription = Subscription(
+        org_id=dummy_project_1.org_id,
+        plan_id=dummy_starter_plan.id,
+        stripe_customer_id="cus_test_customer_id",
+        stripe_subscription_id="sub_test_subscription_id",
+        status=StripeSubscriptionStatus.ACTIVE,
+        interval=StripeSubscriptionInterval.MONTH,
+        current_period_start=current_period_start,
+        current_period_end=current_period_end,
+        cancel_at_period_end=False,
+    )
+
+    db_session.add(subscription)
+    db_session.commit()
+    db_session.refresh(subscription)
+
+    return subscription

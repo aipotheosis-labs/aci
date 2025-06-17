@@ -230,7 +230,7 @@ async def execute(
         "function execution result",
         extra={
             "function_execution": {
-                "app_name": context.project.name,
+                "app_name": function_name.split("__")[0] if "__" in function_name else "unknown",
                 "function_name": function_name,
                 "linked_account_owner_id": body.linked_account_owner_id,
                 "function_execution_start_time": start_time,
