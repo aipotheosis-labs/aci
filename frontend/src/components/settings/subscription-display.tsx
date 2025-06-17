@@ -16,13 +16,6 @@ interface SubscriptionDisplayProps {
   onManageSubscription: () => void;
 }
 
-function getPlanDescription(plan: Plan): string {
-  if (plan === Plan.Free) {
-    return "Basic features for small teams";
-  }
-  return "Advanced features for growing organizations";
-}
-
 function ActionButton({
   plan,
   onManageSubscription,
@@ -32,12 +25,12 @@ function ActionButton({
 }) {
   if (plan === Plan.Free) {
     return (
-      <Link href="/pricing">
-        <Button className="gap-2">
+      <Button asChild className="gap-2">
+        <Link href="/pricing">
           <BsStars className="h-4 w-4" />
           Upgrade
-        </Button>
-      </Link>
+        </Link>
+      </Button>
     );
   }
 
@@ -46,21 +39,6 @@ function ActionButton({
       <RiUserSettingsLine className="h-4 w-4" />
       Manage Subscription
     </Button>
-  );
-}
-
-function SupportLink({ plan }: { plan: Plan }) {
-  if (plan === Plan.Free) {
-    return null;
-  }
-
-  return (
-    <p className="text-sm text-muted-foreground mt-2">
-      Need help with your subscription?{" "}
-      <Link href="/support" className="text-primary hover:underline">
-        Contact support
-      </Link>
-    </p>
   );
 }
 
@@ -81,7 +59,9 @@ function SubscriptionContent({
               " Plan"}
           </p>
           <p className="text-sm text-muted-foreground">
-            {getPlanDescription(subscription.plan)}
+            {subscription.plan === Plan.Free
+              ? "Basic features for small teams"
+              : "Advanced features for growing organizations"}
           </p>
         </div>
         <ActionButton
@@ -89,7 +69,6 @@ function SubscriptionContent({
           onManageSubscription={onManageSubscription}
         />
       </div>
-      <SupportLink plan={subscription.plan} />
     </div>
   );
 }
