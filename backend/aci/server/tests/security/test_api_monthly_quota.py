@@ -32,6 +32,7 @@ class TestQuotaIncrease:
         """Test that search apps route increases quota usage."""
         # Get initial quota usage
         dummy_project_1.api_quota_monthly_used = 1
+        dummy_project_1.total_quota_used = 1
         db_session.commit()
         db_session.refresh(dummy_project_1)
 
@@ -46,6 +47,7 @@ class TestQuotaIncrease:
 
         db_session.refresh(dummy_project_1)
         assert dummy_project_1.api_quota_monthly_used == 2
+        assert dummy_project_1.total_quota_used == 2
 
     def test_search_functions_increases_quota(
         self,
@@ -58,6 +60,7 @@ class TestQuotaIncrease:
         """Test that search functions route increases quota usage."""
         # Get initial quota usage
         dummy_project_1.api_quota_monthly_used = 1
+        dummy_project_1.total_quota_used = 1
         db_session.commit()
         db_session.refresh(dummy_project_1)
 
@@ -73,6 +76,7 @@ class TestQuotaIncrease:
         # Refresh project and check quota increased
         db_session.refresh(dummy_project_1)
         assert dummy_project_1.api_quota_monthly_used == 2
+        assert dummy_project_1.total_quota_used == 2
 
     def test_execute_function_increases_quota(
         self,
@@ -90,6 +94,7 @@ class TestQuotaIncrease:
         )
         assert project is not None  # Added for type checking
         project.api_quota_monthly_used = 1
+        project.total_quota_used = 1
         db_session.commit()
         db_session.refresh(project)
 
@@ -114,6 +119,7 @@ class TestQuotaIncrease:
             # Refresh project and check quota increased
             db_session.refresh(project)
             assert project.api_quota_monthly_used == 2
+            assert project.total_quota_used == 2
 
 
 @pytest.mark.parametrize("dummy_subscription", [PlanType.FREE, PlanType.STARTER], indirect=True)
@@ -244,13 +250,14 @@ class TestQuotaReset:
             first_day_of_this_month - timedelta(days=1)
         ).replace(day=1)
         dummy_project_1.api_quota_monthly_used = 2
+        dummy_project_1.total_quota_used = 2
         db_session.commit()
         db_session.refresh(dummy_project_1)
         assert (
             first_day_of_this_month - relativedelta(months=1)
         ) == dummy_project_1.api_quota_last_reset.replace(tzinfo=UTC)
         assert dummy_project_1.api_quota_monthly_used == 2
-
+        assert dummy_project_1.total_quota_used == 2
         # Make a request which should trigger quota reset
         response = test_client.get(
             f"{config.ROUTER_PREFIX_APPS}/search",
@@ -263,6 +270,7 @@ class TestQuotaReset:
         # Quota should be reset and then incremented by 1 for this request
         db_session.refresh(dummy_project_1)
         assert dummy_project_1.api_quota_monthly_used == 1
+        assert dummy_project_1.total_quota_used == 3
         assert dummy_project_1.api_quota_last_reset.replace(tzinfo=UTC) == first_day_of_this_month
 
     def test_quota_aggregation_across_org_projects(
@@ -312,6 +320,7 @@ class TestQuotaNotIncreased:
         """Test that app configurations endpoint does not increase quota usage."""
         # Get initial quota usage
         initial_usage = dummy_project_1.api_quota_monthly_used
+        initial_total_usage = dummy_project_1.total_quota_used
 
         # Make app configurations request
         response = test_client.get(
@@ -324,3 +333,4 @@ class TestQuotaNotIncreased:
         # Refresh project and check quota not increased
         db_session.refresh(dummy_project_1)
         assert dummy_project_1.api_quota_monthly_used == initial_usage
+        assert dummy_project_1.total_quota_used == initial_total_usage
