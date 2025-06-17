@@ -179,7 +179,7 @@
                         }
                     },
                     "required": [],
-                    "visible": [],
+                    "visible": ["teamId", "slug"],
                     "additionalProperties": false
                 }
             },
@@ -319,7 +319,7 @@
                         }
                     },
                     "required": [],
-                    "visible": [],
+                    "visible": ["teamId", "slug"],
                     "additionalProperties": false
                 }
             },
@@ -377,7 +377,7 @@
                         }
                     },
                     "required": [],
-                    "visible": ["limit", "search", "repo", "repoId", "repoUrl"],
+                    "visible": ["limit", "search", "repo", "repoId", "repoUrl", "teamId", "slug"],
                     "additionalProperties": false
                 }
             },
@@ -428,7 +428,7 @@
                         }
                     },
                     "required": [],
-                    "visible": [],
+                    "visible": ["teamId", "slug"],
                     "additionalProperties": false
                 }
             },
@@ -547,7 +547,7 @@
                         }
                     },
                     "required": [],
-                    "visible": ["forceNew", "skipAutoDetectionConfirmation"],
+                    "visible": ["forceNew", "skipAutoDetectionConfirmation", "teamId", "slug"],
                     "additionalProperties": false
                 }
             },
@@ -598,7 +598,7 @@
                         }
                     },
                     "required": [],
-                    "visible": [],
+                    "visible": ["teamId", "slug"],
                     "additionalProperties": false
                 },
                 "body": {
@@ -696,7 +696,9 @@
                         "gitBranch",
                         "redirects",
                         "verified",
-                        "limit"
+                        "limit",
+                        "teamId",
+                        "slug"
                     ],
                     "additionalProperties": false
                 }
@@ -752,7 +754,7 @@
                         }
                     },
                     "required": [],
-                    "visible": [],
+                    "visible": ["teamId", "slug"],
                     "additionalProperties": false
                 }
             },
