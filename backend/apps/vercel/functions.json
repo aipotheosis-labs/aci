@@ -155,7 +155,7 @@
                             }
                         }
                     },
-                    "required": ["name", "framework"],
+                    "required": ["name"],
                     "visible": [
                         "name",
                         "framework",
