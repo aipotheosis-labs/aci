@@ -221,15 +221,15 @@
                     "description": "Request body parameters for updating the project",
                     "properties": {
                         "buildCommand": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The build command for this project. When null is used this value will be automatically detected. Maximum length: 256."
                         },
                         "devCommand": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The dev command for this project. When null is used this value will be automatically detected. Maximum length: 256."
                         },
                         "framework": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The framework that is being used for this project. When null is used no framework is selected",
                             "enum": [
                                 "blitzjs",
@@ -282,7 +282,7 @@
                             ]
                         },
                         "installCommand": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The install command for this project. When null is used this value will be automatically detected. Maximum length: 256."
                         },
                         "name": {
@@ -290,7 +290,7 @@
                             "description": "The desired name for the project. Maximum length: 100."
                         },
                         "rootDirectory": {
-                            "type": ["string", "null"],
+                            "type": "string",
                             "description": "The name of a directory or relative path to the source code of your project. When null is used it will default to the project root. Maximum length: 256."
                         }
                     },
