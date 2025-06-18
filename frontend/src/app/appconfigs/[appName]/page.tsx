@@ -224,22 +224,27 @@ export default function AppConfigDetailPage() {
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-4">
-          <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
-            {app && (
-              <Image
-                src={app?.logo ?? ""}
-                alt={`${app?.display_name} logo`}
-                fill
-                className="object-contain"
-              />
-            )}
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center gap-4">
+            <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+              {app && (
+                <Image
+                  src={app?.logo ?? ""}
+                  alt={`${app?.display_name} logo`}
+                  fill
+                  className="object-contain"
+                />
+              )}
+            </div>
+            <div>
+              <Link href={`/apps/${app?.name}`}>
+                <h1 className="text-2xl font-semibold">{app?.display_name}</h1>
+              </Link>
+              <IdDisplay id={app?.name ?? ""} />
+            </div>
           </div>
-          <div>
-            <Link href={`/apps/${app?.name}`}>
-              <h1 className="text-2xl font-semibold">{app?.display_name}</h1>
-            </Link>
-            <IdDisplay id={app?.name ?? ""} />
+          <div className="max-w-3xl text-sm text-muted-foreground">
+            {app.description}
           </div>
         </div>
         {app && (
