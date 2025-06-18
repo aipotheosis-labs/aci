@@ -534,5 +534,95 @@
             ],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "GITLAB__DELETE_PROJECT",
+        "description": "Deletes a project including all associated resources. The project is marked for deletion and deleted after 7 days by default. If the project is already marked for deletion, it will be deleted immediately (GitLab 15.11+).",
+        "tags": [
+            "project",
+            "delete"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/projects/{id}",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__RESTORE_PROJECT",
+        "description": "Restore a project that is marked for deletion",
+        "tags": [
+            "project",
+            "restore"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/projects/{id}/restore",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
     }
 ]
