@@ -630,10 +630,6 @@
                             "type": "string",
                             "description": "Name of the deployment."
                         },
-                        "from": {
-                            "type": "number",
-                            "description": "Gets the deployment created after this Date timestamp. (default: current time)"
-                        },
                         "limit": {
                             "type": "number",
                             "description": "Maximum number of deployments to list from a request."
@@ -645,10 +641,6 @@
                         "target": {
                             "type": "string",
                             "description": "Filter deployments based on the environment."
-                        },
-                        "to": {
-                            "type": "number",
-                            "description": "Gets the deployment created before this Date timestamp. (default: current time)"
                         },
                         "users": {
                             "type": "string",
@@ -690,11 +682,9 @@
                     "required": [],
                     "visible": [
                         "app",
-                        "from",
                         "limit",
                         "projectId",
                         "target",
-                        "to",
                         "users",
                         "since",
                         "until",
