@@ -175,9 +175,6 @@ export const useAgentStore = create<AgentState>()(
       },
       initializeFromProject: (project: Project) => {
         if (project?.agents && project.agents.length > 0) {
-          // After the selected agent's loaded from session storage,
-          // we need to check if the selected agent is still in the project.
-          // If not, we need to set the default agent to the first agent in the project.
           const currentSelectedAgent = get().selectedAgent;
           let selectedAgent = currentSelectedAgent;
 
@@ -195,6 +192,13 @@ export const useAgentStore = create<AgentState>()(
               project.agents.find((agent) => agent.id === selectedAgent)
                 ?.allowed_apps || [],
             currentProjectId: project.id,
+            // Clear these when switching projects
+            apps: [],
+            appFunctions: [],
+            linkedAccounts: [],
+            selectedApps: [],
+            selectedFunctions: [],
+            selectedLinkedAccountOwnerId: "",
           }));
         }
       },
@@ -229,11 +233,17 @@ export const useAgentStore = create<AgentState>()(
       }),
       onRehydrateStorage: () => (state) => {
         // Clear state if project ID doesn't match
-        if (state && state.currentProjectId !== state.currentProjectId) {
+        if (
+          state &&
+          state.currentProjectId !== window.location.pathname.split("/")[2]
+        ) {
           state.selectedApps = [];
           state.selectedFunctions = [];
           state.selectedLinkedAccountOwnerId = "";
           state.selectedAgent = "";
+          state.apps = [];
+          state.appFunctions = [];
+          state.linkedAccounts = [];
         }
       },
     },
