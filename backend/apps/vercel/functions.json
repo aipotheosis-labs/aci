@@ -608,6 +608,271 @@
         }
     },
     {
+        "name": "VERCEL__LIST_DEPLOYMENTS",
+        "description": "List deployments under the authenticated user or team. If a deployment hasn't finished uploading (is incomplete), the url property will have a value of null.",
+        "tags": ["deployment", "list"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v6/deployments",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for filtering deployments",
+                    "properties": {
+                        "app": {
+                            "type": "string",
+                            "description": "Name of the deployment."
+                        },
+                        "from": {
+                            "type": "number",
+                            "description": "Gets the deployment created after this Date timestamp. (default: current time)"
+                        },
+                        "limit": {
+                            "type": "number",
+                            "description": "Maximum number of deployments to list from a request."
+                        },
+                        "projectId": {
+                            "type": "string",
+                            "description": "Filter deployments from the given ID or name."
+                        },
+                        "target": {
+                            "type": "string",
+                            "description": "Filter deployments based on the environment."
+                        },
+                        "to": {
+                            "type": "number",
+                            "description": "Gets the deployment created before this Date timestamp. (default: current time)"
+                        },
+                        "users": {
+                            "type": "string",
+                            "description": "Filter out deployments based on users who have created the deployment."
+                        },
+                        "since": {
+                            "type": "number",
+                            "description": "Get Deployments created after this JavaScript timestamp."
+                        },
+                        "until": {
+                            "type": "number",
+                            "description": "Get Deployments created before this JavaScript timestamp."
+                        },
+                        "state": {
+                            "type": "string",
+                            "description": "Filter deployments based on their state (BUILDING, ERROR, INITIALIZING, QUEUED, READY, CANCELED)"
+                        },
+                        "rollbackCandidate": {
+                            "type": "boolean",
+                            "description": "Filter deployments based on their rollback candidacy"
+                        },
+                        "branch": {
+                            "type": "string",
+                            "description": "Filter deployments based on the branch name"
+                        },
+                        "sha": {
+                            "type": "string",
+                            "description": "Filter deployments based on the SHA"
+                        },
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The Team slug to perform the request on behalf of."
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "app",
+                        "from",
+                        "limit",
+                        "projectId",
+                        "target",
+                        "to",
+                        "users",
+                        "since",
+                        "until",
+                        "state",
+                        "rollbackCandidate",
+                        "branch",
+                        "sha",
+                        "teamId",
+                        "slug"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "VERCEL__GET_DEPLOYMENT",
+        "description": "Retrieves information for a deployment either by supplying its ID (id property) or Hostname (url property). Additional details will be included when the authenticated user or team is an owner of the deployment.",
+        "tags": ["deployment", "get"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v13/deployments/{idOrUrl}",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "idOrUrl": {
+                            "type": "string",
+                            "description": "The unique identifier or hostname of the deployment."
+                        }
+                    },
+                    "required": ["idOrUrl"],
+                    "visible": ["idOrUrl"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "withGitRepoInfo": {
+                            "type": "string",
+                            "description": "Whether to add in gitRepo information."
+                        },
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The Team slug to perform the request on behalf of."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["withGitRepoInfo", "teamId", "slug"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "VERCEL__GET_DEPLOYMENT_EVENTS",
+        "description": "Get the build logs of a deployment by deployment ID and build ID. It can work as an infinite stream of logs or as a JSON endpoint depending on the input parameters.",
+        "tags": ["deployment", "events", "logs"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/deployments/{idOrUrl}/events",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "idOrUrl": {
+                            "type": "string",
+                            "description": "The unique identifier or hostname of the deployment."
+                        }
+                    },
+                    "required": ["idOrUrl"],
+                    "visible": ["idOrUrl"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for filtering and controlling event output",
+                    "properties": {
+                        "direction": {
+                            "type": "string",
+                            "enum": ["backward", "forward"],
+                            "default": "forward",
+                            "description": "Order of the returned events based on the timestamp."
+                        },
+                        "follow": {
+                            "type": "number",
+                            "enum": [0, 1],
+                            "description": "When enabled, this endpoint will return live events as they happen."
+                        },
+                        "limit": {
+                            "type": "number",
+                            "description": "Maximum number of events to return. Provide -1 to return all available logs."
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Deployment build ID."
+                        },
+                        "since": {
+                            "type": "number",
+                            "description": "Timestamp for when build logs should be pulled from."
+                        },
+                        "until": {
+                            "type": "number",
+                            "description": "Timestamp for when the build logs should be pulled up until."
+                        },
+                        "statusCode": {
+                            "type": "number",
+                            "description": "HTTP status code range to filter events by."
+                        },
+                        "delimiter": {
+                            "type": "number",
+                            "enum": [0, 1],
+                            "description": "Whether to include delimiter in the response."
+                        },
+                        "builds": {
+                            "type": "number",
+                            "enum": [0, 1],
+                            "description": "Whether to include build information in the response."
+                        },
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The Team slug to perform the request on behalf of."
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "direction",
+                        "follow",
+                        "limit",
+                        "name",
+                        "since",
+                        "until",
+                        "statusCode",
+                        "delimiter",
+                        "builds",
+                        "teamId",
+                        "slug"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
         "name": "VERCEL__ADD_DOMAIN_TO_PROJECT",
         "description": "Adds a domain to a Vercel project by project id or name.",
         "tags": ["project", "domain", "add"],
