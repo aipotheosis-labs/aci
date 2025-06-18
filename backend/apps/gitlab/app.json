@@ -1,0 +1,27 @@
+{
+  "name": "GITLAB",
+  "display_name": "GitLab",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/gitlab.svg",
+  "provider": "GitLab",
+  "version": "2024-01-01",
+  "description": "The GitLab API allows you to interact with GitLab programmatically, including repository management, merge requests, issues, commits, pipelines, and more.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_GITLAB_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_GITLAB_APP_CLIENT_SECRET }}",
+      "scope": "api read_user read_api read_repository write_repository",
+      "authorize_url": "https://gitlab.com/oauth/authorize",
+      "access_token_url": "https://gitlab.com/oauth/token",
+      "refresh_token_url": "https://gitlab.com/oauth/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Dev Tools"
+  ],
+  "visibility": "public",
+  "active": true
+}
