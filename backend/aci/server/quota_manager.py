@@ -37,20 +37,20 @@ def enforce_project_creation_quota(db_session: Session, org_id: UUID) -> None:
         MaxProjectsReached: If the user has reached their maximum allowed projects
         SubscriptionPlanNotFound: If the organization's subscription plan cannot be found
     """
-    subscription = billing.get_subscription_by_org_id(db_session, org_id)
+    active_plan = billing.get_active_plan_by_org_id(db_session, org_id)
 
     # Get the projects quota from the plan's features
-    max_projects = subscription.plan.features["projects"]
+    max_projects = active_plan.features["projects"]
 
     projects = crud.projects.get_projects_by_org(db_session, org_id)
     if len(projects) >= max_projects:
         logger.error(
             f"User/organization has reached maximum projects quota for their plan, "
             f"org_id={org_id}, "
-            f"max_projects={max_projects} num_projects={len(projects)} plan={subscription.plan.name}"
+            f"max_projects={max_projects} num_projects={len(projects)} plan={active_plan.name}"
         )
         raise MaxProjectsReached(
-            message=f"Maximum number of projects ({max_projects}) reached for the {subscription.plan.name} plan"
+            message=f"Maximum number of projects ({max_projects}) reached for the {active_plan.name} plan"
         )
 
 
@@ -99,10 +99,10 @@ def enforce_linked_accounts_creation_quota(
         return
 
     # Get the plan for the organization
-    subscription = billing.get_subscription_by_org_id(db_session, org_id)
+    active_plan = billing.get_active_plan_by_org_id(db_session, org_id)
 
     # Get the linked accounts quota from the plan's features
-    max_unique_linked_account_owner_ids = subscription.plan.features["linked_accounts"]
+    max_unique_linked_account_owner_ids = active_plan.features["linked_accounts"]
 
     num_unique_linked_account_owner_ids = (
         crud.linked_accounts.get_total_number_of_unique_linked_account_owner_ids(db_session, org_id)
@@ -113,10 +113,10 @@ def enforce_linked_accounts_creation_quota(
             f"org_id={org_id}, "
             f"num_unique_linked_account_owner_ids={num_unique_linked_account_owner_ids}, "
             f"max_unique_linked_account_owner_ids={max_unique_linked_account_owner_ids}, "
-            f"plan={subscription.plan.name}"
+            f"plan={active_plan.name}"
         )
         raise MaxUniqueLinkedAccountOwnerIdsReached(
-            message=f"Maximum number of unique linked account owner ids ({max_unique_linked_account_owner_ids}) reached for the {subscription.plan.name} plan"
+            message=f"Maximum number of unique linked account owner ids ({max_unique_linked_account_owner_ids}) reached for the {active_plan.name} plan"
         )
 
 
@@ -143,10 +143,10 @@ def enforce_agent_secrets_quota(db_session: Session, project_id: UUID) -> None:
         raise ProjectNotFound(f"Project {project_id} not found")
 
     # Get the plan for the organization
-    subscription = billing.get_subscription_by_org_id(db_session, project.org_id)
+    active_plan = billing.get_active_plan_by_org_id(db_session, project.org_id)
 
     # Get the agent secrets quota from the plan's features
-    max_agent_secrets = subscription.plan.features["agent_credentials"]
+    max_agent_secrets = active_plan.features["agent_credentials"]
 
     # Count the number of agent secrets for the project
     num_agent_secrets = crud.secret.get_total_number_of_agent_secrets_for_org(
@@ -156,8 +156,8 @@ def enforce_agent_secrets_quota(db_session: Session, project_id: UUID) -> None:
         logger.error(
             f"Project has reached maximum agent secrets quota, project_id={project_id}, "
             f"max_agent_secrets={max_agent_secrets} num_agent_secrets={num_agent_secrets}, "
-            f"plan={subscription.plan.name}"
+            f"plan={active_plan.name}"
         )
         raise MaxAgentSecretsReached(
-            message=f"Maximum number of agent secrets ({max_agent_secrets}) reached for the {subscription.plan.name} plan"
+            message=f"Maximum number of agent secrets ({max_agent_secrets}) reached for the {active_plan.name} plan"
         )

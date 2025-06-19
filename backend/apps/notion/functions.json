@@ -212,8 +212,7 @@
                     "properties": {
                         "archived": {
                             "type": "boolean",
-                            "description": "Set to true to archive the page, false to restore it from trash",
-                            "enum": [true, false]
+                            "description": "Set to true to archive the page, false to restore it from trash"
                         }
                     },
                     "required": ["archived"],

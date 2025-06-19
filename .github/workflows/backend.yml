@@ -3,7 +3,7 @@ name: Backend Checks
 on:
   push:
     branches: [main]
-  pull_request:
+  pull_request_target:
     branches: [main]
   schedule:
     - cron: "0 9 * * *"
@@ -12,10 +12,15 @@ jobs:
   lint:
     name: Format & Lint
     runs-on: ubuntu-latest
+    # Only apply environment protection (requires approval) for fork PRs
+    environment: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository && 'CICD_FOR_FORKED_REPO' || null }}
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          # For pull_request_target: checkout PR head, otherwise use default (main for push/schedule)
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
 
       - name: Install uv
         uses: astral-sh/setup-uv@v5
@@ -49,12 +54,18 @@ jobs:
     name: Compose Tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Only apply environment protection (requires approval) for fork PRs
+    environment: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.repo.full_name != github.repository && 'CICD_FOR_FORKED_REPO' || null }}
     env:
       SERVER_OPENAI_API_KEY: ${{ secrets.SERVER_OPENAI_API_KEY }}
       CLI_OPENAI_API_KEY: ${{ secrets.CLI_OPENAI_API_KEY }}
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          # For pull_request_target: checkout PR head, otherwise use default (main for push/schedule)
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.sha }}
 
       - name: Set up Docker Compose
         uses: docker/setup-compose-action@v1

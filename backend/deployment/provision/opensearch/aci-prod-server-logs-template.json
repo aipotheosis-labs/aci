@@ -1,0 +1,151 @@
+{
+  "index_patterns": ["aci-prod-server-logs-*"],
+  "template": {
+    "mappings": {
+      "dynamic": false,
+      "properties": {
+        "@timestamp": { "type": "date" },
+        "args": { "type": "flat_object" },
+        "asctime": { "type": "date" },
+        "created": { "type": "date" },
+        "exc_info": { "type": "text", "index": false },
+        "exc_text": { "type": "text" },
+        "file": { "type": "keyword" },
+        "filename": { "type": "keyword" },
+        "funcName": { "type": "keyword" },
+        "level": { "type": "keyword" },
+        "levelname": { "type": "keyword" },
+        "levelno": { "type": "integer" },
+        "lineno": { "type": "integer" },
+        "message": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 256
+            }
+          }
+        },
+        "module": { "type": "keyword" },
+        "msg": {
+          "type": "text"
+        },
+        "msecs": { "type": "float" },
+        "name": { "type": "keyword" },
+        "pathname": { "type": "keyword" },
+        "process": { "type": "integer" },
+        "processName": { "type": "keyword" },
+        "relativeCreated": { "type": "float" },
+        "stack_info": { "type": "text", "index": false },
+        "taskName": { "type": "keyword" },
+        "timestamp": { "type": "date" },
+        "thread": { "type": "long" },
+        "threadName": { "type": "keyword" },
+        "url": { "type": "text", "fields": { "keyword": { "type": "keyword", "ignore_above": 2048 } } },
+        "url_scheme": { "type": "keyword" },
+        "http_version": { "type": "keyword" },
+        "http_method": { "type": "keyword" },
+        "http_path": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 512
+            }
+          }
+        },
+        "query_params": { "type": "flat_object" },
+        "request_body": { "type": "text", "index": false },
+        "status_code": { "type": "integer" },
+        "content_length": { "type": "integer" },
+        "duration": { "type": "float" },
+        "client_ip": {
+          "type": "ip"
+        },
+        "user_agent": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword",
+              "ignore_above": 512
+            }
+          }
+        },
+        "x_forwarded_proto": { "type": "keyword" },
+        "request_id": { "type": "keyword" },
+        "agent_id": { "type": "keyword" },
+        "org_id": { "type": "keyword" },
+        "api_key_id": { "type": "keyword" },
+        "project_id": { "type": "keyword" },
+        "user_id": { "type": "keyword" },
+        "source": { "type": "keyword" },
+        "log": { "type": "text", "index": false },
+        "partial_id": { "type": "keyword" },
+        "partial_message": { "type": "text", "index": false },
+        "partial_last": { "type": "keyword" },
+        "partial_ordinal": { "type": "integer" },
+        "ecs_cluster": { "type": "keyword" },
+        "ecs_task_arn": { "type": "keyword" },
+        "ecs_task_definition": { "type": "keyword" },
+        "ec2_instance_id": { "type": "keyword" },
+        "container_id": { "type": "keyword" },
+        "container_name": { "type": "keyword" },
+        "function_execution": {
+          "type": "object",
+          "properties": {
+            "app_name": { "type": "keyword" },
+            "function_name": { "type": "keyword" },
+            "linked_account_owner_id": { "type": "keyword" },
+            "function_execution_start_time": { "type": "date" },
+            "function_execution_end_time": { "type": "date" },
+            "function_execution_duration": { "type": "float" },
+            "function_input": {
+              "type": "text"
+            },
+            "function_execution_result_success": { "type": "boolean" },
+            "function_execution_result_error": {
+              "type": "text"
+            },
+            "function_execution_result_data": {
+              "type": "text"
+            },
+            "function_execution_result_data_size": { "type": "integer" }
+          }
+        },
+        "search_functions": {
+          "type": "object",
+          "properties": {
+            "query_params_json": {
+              "type": "text"
+            },
+            "function_names": {
+              "type": "keyword"
+            }
+          }
+        },
+        "search_apps": {
+          "type": "object",
+          "properties": {
+            "query_params_json": {
+              "type": "text"
+            },
+            "app_names": {
+              "type": "keyword"
+            }
+          }
+        },
+        "get_function_definition": {
+          "type": "object",
+          "properties": {
+            "format": { "type": "keyword" },
+            "function_name": { "type": "keyword" }
+          }
+        },
+        "extra_attributes": {
+          "type": "flat_object"
+        }
+      }
+    }
+  },
+  "priority": 100
+}

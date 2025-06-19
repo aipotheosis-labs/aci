@@ -45,10 +45,27 @@ async def get_subscription(
 ) -> SubscriptionPublic:
     acl.require_org_member(user, org_id)
 
-    subscription = billing.get_subscription_by_org_id(db_session, org_id)
+    active_subscription = crud.subscriptions.get_subscription_by_org_id(db_session, org_id)
+    if not active_subscription:
+        logger.info(
+            "no active subscription found, the org is on the free plan",
+            extra={"org_id": org_id},
+        )
+        return SubscriptionPublic(
+            plan="free",
+            status=StripeSubscriptionStatus.ACTIVE,
+        )
+
+    plan = crud.plans.get_by_id(db_session, active_subscription.plan_id)
+    if not plan:
+        logger.error(
+            "plan not found",
+            extra={"plan_id": active_subscription.plan_id},
+        )
+        raise SubscriptionPlanNotFound(f"plan={active_subscription.plan_id} not found")
     return SubscriptionPublic(
-        plan=subscription.plan.name,
-        status=subscription.status,
+        plan=plan.name,
+        status=active_subscription.status,
     )
 
 
@@ -60,9 +77,8 @@ async def get_quota_usage(
 ) -> QuotaUsageResponse:
     acl.require_org_member(user, org_id)
 
-    subscription = billing.get_subscription_by_org_id(db_session, org_id)
-    plan = subscription.plan
-    logger.info(f"Getting quota usage, org_id={org_id}, plan={plan.name}")
+    active_plan = billing.get_active_plan_by_org_id(db_session, org_id)
+    logger.info(f"Getting quota usage, org_id={org_id}, plan={active_plan.name}")
 
     projects_used = len(crud.projects.get_projects_by_org(db_session, org_id))
     agent_credentials_used = crud.secret.get_total_number_of_agent_secrets_for_org(
@@ -71,12 +87,16 @@ async def get_quota_usage(
     linked_accounts_used = crud.linked_accounts.get_total_number_of_unique_linked_account_owner_ids(
         db_session, org_id
     )
+    total_monthly_api_calls_used_of_org = crud.projects.get_total_monthly_quota_usage_for_org(
+        db_session, org_id
+    )
 
     return QuotaUsageResponse(
         projects_used=projects_used,
         linked_accounts_used=linked_accounts_used,
         agent_credentials_used=agent_credentials_used,
-        plan=PlanInfo(name=plan.name, features=PlanFeatures(**plan.features)),
+        api_calls_used=total_monthly_api_calls_used_of_org,
+        plan=PlanInfo(name=active_plan.name, features=PlanFeatures(**active_plan.features)),
     )
 
 
@@ -324,16 +344,10 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
             stripe_subscription_id=stripe_subscription_id,
             status=StripeSubscriptionStatus(subscription_details.status),
             interval=subscription_details.interval,
-            current_period_start=subscription_details.current_period_start,
             current_period_end=subscription_details.current_period_end,
             cancel_at_period_end=subscription_details.cancel_at_period_end,
         )
         db_session.add(new_subscription)
-
-        # Reset monthly quota for all projects in the org when subscription is created
-        crud.projects.reset_api_monthly_quota_for_org(
-            db_session, client_reference_id, subscription_details.current_period_start
-        )
 
     db_session.commit()
     logger.info(
@@ -446,15 +460,10 @@ async def handle_customer_subscription_updated(
         status=StripeSubscriptionStatus(latest_subscription_details.status),
         plan_id=plan.id,
         interval=latest_subscription_details.interval,
-        current_period_start=latest_subscription_details.current_period_start,
         current_period_end=latest_subscription_details.current_period_end,
         cancel_at_period_end=latest_subscription_details.cancel_at_period_end,
         stripe_customer_id=latest_subscription_details.stripe_customer_id,
     )
-
-    # Check if current_period_start has changed to reset quotas
-    old_period_start = subscription.current_period_start
-    new_period_start = latest_subscription_details.current_period_start
 
     subscription = crud.subscriptions.update_subscription_by_stripe_id(
         db_session,
@@ -469,20 +478,6 @@ async def handle_customer_subscription_updated(
         raise BillingError(
             "Could not find existing Subscription record to update",
             error_code=status.HTTP_400_BAD_REQUEST,
-        )
-
-    # Reset monthly quota if the billing period has changed
-    if old_period_start != new_period_start:
-        logger.info(
-            "Billing period changed, resetting monthly quota",
-            extra={
-                "org_id": subscription.org_id,
-                "old_period_start": old_period_start,
-                "new_period_start": new_period_start,
-            },
-        )
-        crud.projects.reset_api_monthly_quota_for_org(
-            db_session, subscription.org_id, new_period_start
         )
 
     db_session.commit()
@@ -547,10 +542,7 @@ def _parse_stripe_subscription_details(
     stripe_customer_id = subscription_data.get("customer")
     status = subscription_data.get("status")
     cancel_at_period_end = subscription_data.get("cancel_at_period_end", False)
-    current_period_start_ts = subscription_data.get("current_period_start", 0)
     current_period_end_ts = subscription_data.get("current_period_end", 0)
-
-    current_period_start_dt = datetime.fromtimestamp(current_period_start_ts)
     current_period_end_dt = datetime.fromtimestamp(current_period_end_ts)
 
     items_data = subscription_data.get("items", {}).get("data", [])
@@ -565,7 +557,6 @@ def _parse_stripe_subscription_details(
         stripe_subscription_id=stripe_subscription_id,  # type: ignore
         stripe_customer_id=stripe_customer_id,  # type: ignore
         status=StripeSubscriptionStatus(status),  # type: ignore
-        current_period_start=current_period_start_dt,
         current_period_end=current_period_end_dt,
         cancel_at_period_end=cancel_at_period_end,
         stripe_price_id=stripe_price_id,

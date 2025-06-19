@@ -23,14 +23,6 @@ export default function UsagePage() {
     error: AnalyticsError,
   } = useAnalyticsQueries();
 
-  const isInitialLoading = isQuotaLoading || isAnalyticsLoading;
-
-  const hasError = quotaError || AnalyticsError;
-
-  const errorMessage = hasError
-    ? "Failed to load analytics data. Please try again later."
-    : null;
-
   return (
     <div>
       <div className="m-4 flex items-center justify-between">
@@ -58,19 +50,28 @@ export default function UsagePage() {
       <Separator />
 
       <div className="flex flex-col gap-6 p-6">
-        {errorMessage ? (
-          <div className="p-4 text-red-500">{errorMessage}</div>
-        ) : isInitialLoading ? (
-          <div className="p-4">Loading analytics data...</div>
-        ) : (
-          <>
-            {/* quota usage */}
-            {quotaUsage && (
-              <div className="w-full">
-                <QuotaUsageDisplay quotaUsage={quotaUsage} />
-              </div>
-            )}
+        {/* Quota Usage Section - Independent Loading */}
+        <div className="w-full">
+          {quotaError ? (
+            <div className="p-4 text-red-500">
+              Failed to load quota data. Please try again later.
+            </div>
+          ) : isQuotaLoading ? (
+            <div className="p-4">Loading quota data...</div>
+          ) : quotaUsage ? (
+            <QuotaUsageDisplay quotaUsage={quotaUsage} />
+          ) : null}
+        </div>
 
+        {/* Analytics Section - Independent Loading */}
+        <div className="w-full">
+          {AnalyticsError ? (
+            <div className="p-4 text-red-500">
+              Failed to load analytics data. Please try again later.
+            </div>
+          ) : isAnalyticsLoading ? (
+            <div className="p-4">Loading analytics data...</div>
+          ) : (
             <div className="grid gap-6 grid-cols-12">
               <div className="col-span-8">
                 <UsageBarChart title="App Usage" data={appTimeSeriesData} />
@@ -97,8 +98,8 @@ export default function UsagePage() {
                 />
               </div>
             </div>
-          </>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

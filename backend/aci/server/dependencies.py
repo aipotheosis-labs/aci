@@ -126,8 +126,8 @@ def validate_monthly_api_quota(
     """
     Use quota for a project operation.
 
-    1. Get subscription and quota limit
-    2. Reset quota if new billing cycle has started
+    1. Only check and manage quota for certain endpoints
+    2. Reset quota if it's a new month
     3. Increment usage or raise error if exceeded
     """
     # Only check quota for app search and function search/execute endpoints
@@ -139,11 +139,20 @@ def validate_monthly_api_quota(
     if not is_quota_limited_endpoint:
         return
 
-    subscription = billing.get_subscription_by_org_id(db_session, project.org_id)
-    monthly_quota_limit = subscription.plan.features["api_calls_monthly"]
+    last_reset = project.api_quota_last_reset.replace(tzinfo=UTC)
+    cur_first_day_of_month = datetime.now(UTC).replace(
+        day=1, hour=0, minute=0, second=0, microsecond=0
+    )
+    if cur_first_day_of_month > last_reset:
+        logger.info(
+            f"resetting monthly quota, last_reset={last_reset}, cur_first_day_of_month={cur_first_day_of_month}",
+        )
+        crud.projects.reset_api_monthly_quota_for_org(
+            db_session, project.org_id, cur_first_day_of_month
+        )
 
-    billing.reset_quota_if_new_billing_cycle(db_session, project, subscription)
-    billing.increment_quota(db_session, project, monthly_quota_limit)
+    plan = billing.get_active_plan_by_org_id(db_session, project.org_id)
+    billing.increment_quota(db_session, project, plan.features["api_calls_monthly"])
     db_session.commit()
 
     logger.info("monthly api quota validation successful", extra={"project_id": project.id})

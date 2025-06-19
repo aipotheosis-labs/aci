@@ -810,12 +810,6 @@ def dummy_subscription(
     if plan_type != PlanType.STARTER:
         raise ValueError(f"Unsupported plan type: {plan_type}")
 
-    # Create subscription period dates
-    current_period_start = datetime.now(UTC).replace(
-        day=1, hour=0, minute=0, second=0, microsecond=0
-    )
-    current_period_end = current_period_start + relativedelta(months=1)
-
     # Create and save subscription
     subscription = Subscription(
         org_id=dummy_project_1.org_id,
@@ -824,8 +818,7 @@ def dummy_subscription(
         stripe_subscription_id="sub_test_subscription_id",
         status=StripeSubscriptionStatus.ACTIVE,
         interval=StripeSubscriptionInterval.MONTH,
-        current_period_start=current_period_start,
-        current_period_end=current_period_end,
+        current_period_end=datetime.now(UTC) + relativedelta(months=1),
         cancel_at_period_end=False,
     )
 

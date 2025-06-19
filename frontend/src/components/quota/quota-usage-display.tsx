@@ -80,6 +80,12 @@ export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
           used={quotaUsage.agent_credentials_used}
           limit={quotaUsage.plan.features.agent_credentials}
         />
+
+        <QuotaItem
+          title="API Calls (Across All Projects,Reset Monthly)"
+          used={quotaUsage.api_calls_used}
+          limit={quotaUsage.plan.features.api_calls_monthly}
+        />
       </CardContent>
     </Card>
   );

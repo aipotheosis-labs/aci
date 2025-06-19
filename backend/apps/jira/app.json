@@ -1,0 +1,28 @@
+{
+  "name": "JIRA",
+  "display_name": "Jira",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/jira.svg",
+  "provider": "Atlassian",
+  "version": "1.0.0",
+  "description": "Jira API integration for issue tracking and project management. Provides functionality to create, update, and manage issues, projects, and workflows.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_JIRA_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_JIRA_APP_CLIENT_SECRET }}",
+      "scope": "read:jira-user read:jira-work write:jira-work manage:jira-project offline_access read:me",
+      "authorize_url": "https://auth.atlassian.com/authorize?audience=api.atlassian.com&response_type=code&prompt=consent",
+      "access_token_url": "https://auth.atlassian.com/oauth/token",
+      "refresh_token_url": "https://auth.atlassian.com/oauth/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Productivity",
+    "Dev Tools"
+  ],
+  "visibility": "public",
+  "active": true
+}

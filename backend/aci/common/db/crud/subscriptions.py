@@ -10,6 +10,7 @@ from aci.common.schemas.subscription import SubscriptionUpdate
 logger = get_logger(__name__)
 
 
+# TODO: no need to lock for most of the reads
 def get_subscription_by_org_id(db_session: Session, org_id: UUID) -> Subscription | None:
     """
     Get a subscription by organization ID.
