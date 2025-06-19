@@ -1146,5 +1146,374 @@
             "visible": ["path", "body", "query"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "VERCEL__CREATE_ENVIRONMENT_VARIABLES",
+        "description": "Create one or more environment variables for a project by passing its key, value, type and target and by specifying the project by either passing the project id or name in the URL. If you include upsert=true as a query parameter, a new environment variable will not be created if it already exists but, the existing variable's value will be updated.",
+        "tags": ["project", "env", "create"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v10/projects/{idOrName}/env",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "idOrName": {
+                            "type": "string",
+                            "description": "The unique project identifier or the project name."
+                        }
+                    },
+                    "required": ["idOrName"],
+                    "visible": ["idOrName"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "upsert": {
+                            "type": "string",
+                            "description": "Allow override of environment variable if it already exists."
+                        },
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The Team slug to perform the request on behalf of."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["upsert", "teamId", "slug"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters for creating environment variables.",
+                    "properties": {
+                        "key": {
+                            "type": "string",
+                            "description": "Name of the ENV variable."
+                        },
+                        "value": {
+                            "type": "string",
+                            "description": "Value for the ENV variable."
+                        },
+                        "type": {
+                            "type": "string",
+                            "enum": ["system", "secret", "encrypted", "plain", "sensitive"],
+                            "description": "Type of the ENV variable."
+                        },
+                        "target": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "description": "available options: production, preview, development"
+                            },
+                            "description": "Deployment Target or Targets in which the ENV variable will be used."
+                        }
+                    },
+                    "required": ["key", "value", "type", "target"],
+                    "visible": ["key", "value", "type", "target"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "query", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "VERCEL__EDIT_ENVIRONMENT_VARIABLE",
+        "description": "Edit a specific environment variable for a given project by passing the environment variable identifier and either passing the project id or name in the URL.",
+        "tags": ["project", "env", "edit"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/v9/projects/{idOrName}/env/{id}",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "idOrName": {
+                            "type": "string",
+                            "description": "The unique project identifier or the project name."
+                        },
+                        "id": {
+                            "type": "string",
+                            "description": "The unique environment variable identifier."
+                        }
+                    },
+                    "required": ["idOrName", "id"],
+                    "visible": ["idOrName", "id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The Team slug to perform the request on behalf of."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["teamId", "slug"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters for editing an environment variable.",
+                    "properties": {
+                        "key": {
+                            "type": "string",
+                            "description": "The name of the environment variable."
+                        },
+                        "target": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": ["production", "preview", "development"]
+                            },
+                            "description": "The target environment of the environment variable."
+                        },
+                        "gitBranch": {
+                            "type": ["string", "null"],
+                            "description": "If defined, the git branch of the environment variable (must have target=preview). Maximum length: 250."
+                        },
+                        "type": {
+                            "type": "string",
+                            "enum": ["plain", "sensitive"],
+                            "description": "The type of environment variable."
+                        },
+                        "value": {
+                            "type": "string",
+                            "description": "The value of the environment variable."
+                        },
+                        "customEnvironmentIds": {
+                            "type": "array",
+                            "items": { "type": "string" },
+                            "description": "The custom environments that the environment variable should be synced to."
+                        },
+                        "comment": {
+                            "type": "string",
+                            "description": "A comment to add context on what this env var is for. Maximum length: 500."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["key", "target", "gitBranch", "type", "value", "customEnvironmentIds", "comment"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "query", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "VERCEL__REMOVE_ENVIRONMENT_VARIABLE",
+        "description": "Delete a specific environment variable for a given project by passing the environment variable identifier and either passing the project id or name in the URL.",
+        "tags": ["project", "env", "delete"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v9/projects/{idOrName}/env/{id}",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "idOrName": {
+                            "type": "string",
+                            "description": "The unique project identifier or the project name."
+                        },
+                        "id": {
+                            "type": "string",
+                            "description": "The unique environment variable identifier."
+                        }
+                    },
+                    "required": ["idOrName", "id"],
+                    "visible": ["idOrName", "id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "customEnvironmentId": {
+                            "type": "string",
+                            "description": "The unique custom environment identifier within the project."
+                        },
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The Team slug to perform the request on behalf of."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["customEnvironmentId", "teamId", "slug"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "VERCEL__RETRIEVE_ENVIRONMENT_VARIABLES",
+        "description": "Retrieve the environment variables for a given project by passing either the project id or name in the URL.",
+        "tags": ["project", "env", "list"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v10/projects/{idOrName}/env",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "idOrName": {
+                            "type": "string",
+                            "description": "The unique project identifier or the project name."
+                        }
+                    },
+                    "required": ["idOrName"],
+                    "visible": ["idOrName"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "gitBranch": {
+                            "type": "string",
+                            "description": "If defined, the git branch of the environment variable to filter the results (must have target=preview). Maximum length: 250."
+                        },
+                        "decrypt": {
+                            "type": "string",
+                            "enum": ["true", "false"],
+                            "description": "If true, the environment variable value will be decrypted. (deprecated)"
+                        },
+                        "source": {
+                            "type": "string",
+                            "description": "The source that is calling the endpoint."
+                        },
+                        "customEnvironmentId": {
+                            "type": "string",
+                            "description": "The unique custom environment identifier within the project."
+                        },
+                        "customEnvironmentSlug": {
+                            "type": "string",
+                            "description": "The custom environment slug (name) within the project."
+                        },
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The Team slug to perform the request on behalf of."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["gitBranch", "decrypt", "source", "customEnvironmentId", "customEnvironmentSlug", "teamId", "slug"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "VERCEL__RETRIEVE_DECRYPTED_ENVIRONMENT_VARIABLE",
+        "description": "Retrieve the decrypted value of an environment variable for a given project.",
+        "tags": ["project", "env", "get", "decrypted"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/projects/{idOrName}/env/{id}",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "idOrName": {
+                            "type": "string",
+                            "description": "The unique project identifier or the project name."
+                        },
+                        "id": {
+                            "type": "string",
+                            "description": "The unique ID for the environment variable to get the decrypted value."
+                        }
+                    },
+                    "required": ["idOrName", "id"],
+                    "visible": ["idOrName", "id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The Team slug to perform the request on behalf of."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["teamId", "slug"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
     }
 ]
