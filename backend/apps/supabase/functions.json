@@ -341,5 +341,142 @@
       "visible": ["path", "query"],
       "additionalProperties": false
     }
+  },
+  {
+    "name": "SUPABASE__CREATE_PROJECT",
+    "description": "Creates a new Supabase project.",
+    "tags": ["project", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/projects",
+      "server_url": "https://api.supabase.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "body parameters",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Project name"
+            },
+            "organization_id": {
+              "type": "string",
+              "description": "Organization ID"
+            },
+            "db_pass": {
+              "type": "string",
+              "description": "Database password"
+            },
+            "region": {
+              "type": "string",
+              "description": "Region where the project will be deployed",
+              "enum": [
+                "us-east-1",
+                "us-west-1", 
+                "us-west-2",
+                "ca-central-1",
+                "eu-west-1",
+                "eu-west-2",
+                "eu-west-3",
+                "eu-central-1",
+                "eu-north-1",
+                "ap-northeast-1",
+                "ap-northeast-2",
+                "ap-southeast-1",
+                "ap-southeast-2",
+                "ap-south-1",
+                "sa-east-1"
+              ]
+            },
+            "plan": {
+              "type": "string",
+              "description": "Project plan (deprecated)",
+              "enum": ["free", "pro", "team", "enterprise"]
+            },
+            "desired_instance_size": {
+              "type": "string",
+              "description": "Desired instance size",
+              "enum": ["micro", "small", "medium", "large", "xlarge", "2xlarge", "4xlarge", "8xlarge", "12xlarge", "16xlarge"]
+            },
+            "template_url": {
+              "type": "string",
+              "description": "Template URL"
+            },
+            "kps_enabled": {
+              "type": "boolean",
+              "description": "KPS enabled (deprecated)"
+            }
+          },
+          "required": ["name", "organization_id", "db_pass", "region"],
+          "visible": ["name", "organization_id", "db_pass", "region", "desired_instance_size", "template_url"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "SUPABASE__LIST_ALL_PROJECTS",
+    "description": "Returns a list of all projects you've previously created.",
+    "tags": ["project", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/projects",
+      "server_url": "https://api.supabase.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "SUPABASE__DELETE_PROJECT",
+    "description": "Deletes the given project.",
+    "tags": ["project", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/v1/projects/{ref}",
+      "server_url": "https://api.supabase.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "ref": {
+              "type": "string",
+              "description": "Project ref",
+              "minLength": 20,
+              "maxLength": 20
+            }
+          },
+          "required": ["ref"],
+          "visible": ["ref"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
   }
 ]
