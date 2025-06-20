@@ -28,6 +28,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
     func,
+    text,
 )
 from sqlalchemy import Enum as SqlEnum
 
@@ -87,6 +88,17 @@ class Project(Base):
     daily_quota_used: Mapped[int] = mapped_column(Integer, default=0, nullable=False, init=False)
     daily_quota_reset_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
+    )
+    api_quota_monthly_used: Mapped[int] = mapped_column(
+        Integer, server_default="0", nullable=False, init=False
+    )
+    api_quota_last_reset: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False),
+        # set default to first day of the current month
+        # TODO: date_trunc('month', now()) breaks on SQLite & MySQL
+        server_default=text("date_trunc('month', now())"),
+        nullable=False,
+        init=False,
     )
     total_quota_used: Mapped[int] = mapped_column(Integer, default=0, nullable=False, init=False)
 
@@ -438,6 +450,11 @@ class LinkedAccount(Base):
             "linked_account_owner_id",
             name="uc_project_app_linked_account_owner",
         ),
+    )
+
+    # deleting linked account will delete all associated secrets
+    secrets: Mapped[list[Secret]] = relationship(
+        "Secret", lazy="select", cascade="all, delete-orphan", init=False
     )
 
 

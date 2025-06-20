@@ -16,6 +16,7 @@ from aci.server import config
 from aci.server import dependencies as deps
 from aci.server.acl import get_propelauth
 from aci.server.dependency_check import check_dependencies
+from aci.server.log_schema_filter import LogSchemaFilter
 from aci.server.middleware.interceptor import InterceptorMiddleware, RequestContextFilter
 from aci.server.middleware.ratelimit import RateLimitMiddleware
 from aci.server.routes import (
@@ -27,6 +28,7 @@ from aci.server.routes import (
     functions,
     health,
     linked_accounts,
+    organizations,
     projects,
     webhooks,
 )
@@ -42,7 +44,7 @@ setup_logging(
         style="{",
         rename_fields={"asctime": "timestamp", "name": "file", "levelname": "level"},
     ),
-    filters=[RequestContextFilter()],
+    filters=[RequestContextFilter(), LogSchemaFilter()],
     environment=config.ENVIRONMENT,
 )
 
@@ -181,4 +183,10 @@ app.include_router(
     billing.router,
     prefix=config.ROUTER_PREFIX_BILLING,
     tags=[config.ROUTER_PREFIX_BILLING.split("/")[-1]],
+)
+
+app.include_router(
+    organizations.router,
+    prefix=config.ROUTER_PREFIX_ORGANIZATIONS,
+    tags=[config.ROUTER_PREFIX_ORGANIZATIONS.split("/")[-1]],
 )

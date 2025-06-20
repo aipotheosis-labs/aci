@@ -1,7 +1,7 @@
 [
     {
         "name": "CAL__GET_SCHEDULES",
-        "description": "Retrieves a list of schedules from Cal.com",
+        "description": "Retrieves a list of schedules from the authenticated user in Cal.com",
         "tags": [
             "schedule"
         ],
@@ -10,8 +10,11 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/v1/schedules",
-            "server_url": "https://api.cal.com"
+            "path": "/v2/schedules",
+            "server_url": "https://api.cal.com",
+            "headers": {
+                "cal-api-version": "2024-06-11"
+            }
         },
         "parameters": {
             "type": "object",
@@ -32,9 +35,12 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "POST",
-            "path": "/v1/schedules",
+            "path": "/v2/schedules",
             "server_url": "https://api.cal.com",
-            "content_type": "application/json"
+            "content_type": "application/json",
+            "headers": {
+                "cal-api-version": "2024-06-11"
+            }
         },
         "parameters": {
             "type": "object",
@@ -48,8 +54,48 @@
                         },
                         "timeZone": {
                             "type": "string",
-                            "description": "Timezone for the schedule",
+                            "description": "Timezone for the schedule in IANA format",
                             "example": "Asia/Shanghai"
+                        },
+                        "availability": {
+                            "type": "array",
+                            "description": "Availability time slots for the schedule",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "days": {
+                                        "type": "array",
+                                        "description": "Days of the week for this availability",
+                                        "items": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Monday",
+                                                "Tuesday",
+                                                "Wednesday",
+                                                "Thursday",
+                                                "Friday",
+                                                "Saturday",
+                                                "Sunday"
+                                            ]
+                                        }
+                                    },
+                                    "startTime": {
+                                        "type": "string",
+                                        "description": "Start time in HH:MM format",
+                                        "example": "09:00"
+                                    },
+                                    "endTime": {
+                                        "type": "string",
+                                        "description": "End time in HH:MM format",
+                                        "example": "17:00"
+                                    }
+                                }
+                            }
+                        },
+                        "isDefault": {
+                            "type": "boolean",
+                            "description": "Whether this is the default schedule",
+                            "default": false
                         }
                     },
                     "required": [
@@ -58,7 +104,9 @@
                     ],
                     "visible": [
                         "name",
-                        "timeZone"
+                        "timeZone",
+                        "availability",
+                        "isDefault"
                     ],
                     "additionalProperties": false
                 }
@@ -83,8 +131,11 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "GET",
-            "path": "/v1/schedules/{schedule_id}",
-            "server_url": "https://api.cal.com"
+            "path": "/v2/schedules/{schedule_id}",
+            "server_url": "https://api.cal.com",
+            "headers": {
+                "cal-api-version": "2024-06-11"
+            }
         },
         "parameters": {
             "type": "object",
@@ -95,7 +146,7 @@
                         "schedule_id": {
                             "type": "string",
                             "description": "ID of the schedule to retrieve",
-                            "example": "613135"
+                            "example": "660201"
                         }
                     },
                     "required": [
@@ -127,9 +178,12 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "PATCH",
-            "path": "/v1/schedules/{schedule_id}",
+            "path": "/v2/schedules/{schedule_id}",
             "server_url": "https://api.cal.com",
-            "content_type": "application/json"
+            "content_type": "application/json",
+            "headers": {
+                "cal-api-version": "2024-06-11"
+            }
         },
         "parameters": {
             "type": "object",
@@ -140,7 +194,7 @@
                         "schedule_id": {
                             "type": "string",
                             "description": "ID of the schedule to update",
-                            "example": "613135"
+                            "example": "660201"
                         }
                     },
                     "required": [
@@ -157,18 +211,79 @@
                         "name": {
                             "type": "string",
                             "description": "Updated name for the schedule",
-                            "example": "date1"
+                            "example": "work time"
                         },
                         "timeZone": {
                             "type": "string",
                             "description": "Updated timezone in IANA format",
                             "example": "Asia/Shanghai"
+                        },
+                        "availability": {
+                            "type": "array",
+                            "description": "Updated availability time slots for the schedule",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "days": {
+                                        "type": "array",
+                                        "description": "Days of the week for this availability",
+                                        "items": {
+                                            "type": "string",
+                                            "enum": [
+                                                "Monday",
+                                                "Tuesday",
+                                                "Wednesday",
+                                                "Thursday",
+                                                "Friday",
+                                                "Saturday",
+                                                "Sunday"
+                                            ]
+                                        }
+                                    },
+                                    "startTime": {
+                                        "type": "string",
+                                        "description": "Start time in HH:MM format",
+                                        "example": "09:00"
+                                    },
+                                    "endTime": {
+                                        "type": "string",
+                                        "description": "End time in HH:MM format",
+                                        "example": "17:00"
+                                    }
+                                }
+                            }
+                        },
+                        "overrides": {
+                            "type": "array",
+                            "description": "Overrides for specific dates",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "date": {
+                                        "type": "string",
+                                        "description": "Date for the override in YYYY-MM-DD format",
+                                        "example": "2024-05-20"
+                                    },
+                                    "startTime": {
+                                        "type": "string",
+                                        "description": "Start time in HH:MM format",
+                                        "example": "10:00"
+                                    },
+                                    "endTime": {
+                                        "type": "string",
+                                        "description": "End time in HH:MM format",
+                                        "example": "18:00"
+                                    }
+                                }
+                            }
                         }
                     },
                     "required": [],
                     "visible": [
                         "name",
-                        "timeZone"
+                        "timeZone",
+                        "availability",
+                        "overrides"
                     ],
                     "additionalProperties": false
                 }
@@ -195,8 +310,11 @@
         "protocol": "rest",
         "protocol_data": {
             "method": "DELETE",
-            "path": "/v1/schedules/{schedule_id}",
-            "server_url": "https://api.cal.com"
+            "path": "/v2/schedules/{schedule_id}",
+            "server_url": "https://api.cal.com",
+            "headers": {
+                "cal-api-version": "2024-06-11"
+            }
         },
         "parameters": {
             "type": "object",
@@ -207,7 +325,7 @@
                         "schedule_id": {
                             "type": "string",
                             "description": "ID of the schedule to delete",
-                            "example": "613135"
+                            "example": "660201"
                         }
                     },
                     "required": [

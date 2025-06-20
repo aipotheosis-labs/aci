@@ -3,7 +3,6 @@ from uuid import UUID
 
 from pydantic import BaseModel
 
-from aci.common.db.sql_models import Plan
 from aci.common.enums import StripeSubscriptionInterval, StripeSubscriptionStatus
 
 
@@ -29,11 +28,6 @@ class SubscriptionUpdate(BaseModel):
     interval: StripeSubscriptionInterval
     current_period_end: datetime
     cancel_at_period_end: bool
-
-
-class SubscriptionFiltered(BaseModel):
-    plan: Plan
-    status: StripeSubscriptionStatus
 
 
 class SubscriptionPublic(BaseModel):

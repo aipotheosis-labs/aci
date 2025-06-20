@@ -211,6 +211,19 @@ class DailyQuotaExceeded(ACIException):
         )
 
 
+class MonthlyQuotaExceeded(ACIException):
+    """
+    Exception raised when a monthly quota is exceeded
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Monthly quota exceeded",
+            message=message,
+            error_code=status.HTTP_429_TOO_MANY_REQUESTS,
+        )
+
+
 class MaxProjectsReached(ACIException):
     """
     Exception raised when a user/organization has reached the maximum number of projects
@@ -471,4 +484,17 @@ class ProjectIsLastInOrgError(ACIException):
             title="Project is the last in the organization",
             message=message,
             error_code=status.HTTP_409_CONFLICT,
+        )
+
+
+class MaxAgentSecretsReached(ACIException):
+    """
+    Exception raised when a project has reached the maximum number of agent secrets allowed by their subscription plan
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Max agent secrets reached",
+            message=message,
+            error_code=status.HTTP_403_FORBIDDEN,
         )

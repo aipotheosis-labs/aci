@@ -155,7 +155,7 @@
                             }
                         }
                     },
-                    "required": ["name", "framework"],
+                    "required": ["name"],
                     "visible": [
                         "name",
                         "framework",
@@ -179,12 +179,12 @@
                         }
                     },
                     "required": [],
-                    "visible": [],
+                    "visible": ["teamId", "slug"],
                     "additionalProperties": false
                 }
             },
             "required": ["body"],
-            "visible": ["body"],
+            "visible": ["body", "query"],
             "additionalProperties": false
         }
     },
@@ -319,12 +319,12 @@
                         }
                     },
                     "required": [],
-                    "visible": [],
+                    "visible": ["teamId", "slug"],
                     "additionalProperties": false
                 }
             },
             "required": ["path"],
-            "visible": ["path", "body"],
+            "visible": ["path", "body", "query"],
             "additionalProperties": false
         }
     },
@@ -377,12 +377,63 @@
                         }
                     },
                     "required": [],
-                    "visible": ["limit", "search", "repo", "repoId", "repoUrl"],
+                    "visible": ["limit", "search", "repo", "repoId", "repoUrl", "teamId", "slug"],
                     "additionalProperties": false
                 }
             },
             "required": [],
             "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "VERCEL__FIND_PROJECT_BY_ID_OR_NAME",
+        "description": "Get the information for a specific project by passing either the project id or name in the URL.",
+        "tags": ["project", "get"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v9/projects/{idOrName}",
+            "server_url": "https://api.vercel.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "idOrName": {
+                            "type": "string",
+                            "description": "The unique project identifier or the project name."
+                        }
+                    },
+                    "required": ["idOrName"],
+                    "visible": ["idOrName"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "teamId": {
+                            "type": "string",
+                            "description": "The Team identifier to perform the request on behalf of."
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "The Team slug to perform the request on behalf of."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["teamId", "slug"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
             "additionalProperties": false
         }
     },
@@ -428,12 +479,12 @@
                         }
                     },
                     "required": [],
-                    "visible": [],
+                    "visible": ["teamId", "slug"],
                     "additionalProperties": false
                 }
             },
             "required": ["path"],
-            "visible": ["path"],
+            "visible": ["path", "query"],
             "additionalProperties": false
         }
     },
@@ -547,7 +598,7 @@
                         }
                     },
                     "required": [],
-                    "visible": ["forceNew", "skipAutoDetectionConfirmation"],
+                    "visible": ["forceNew", "skipAutoDetectionConfirmation", "teamId", "slug"],
                     "additionalProperties": false
                 }
             },
@@ -598,7 +649,7 @@
                         }
                     },
                     "required": [],
-                    "visible": [],
+                    "visible": ["teamId", "slug"],
                     "additionalProperties": false
                 },
                 "body": {
@@ -616,7 +667,7 @@
                 }
             },
             "required": ["path", "body"],
-            "visible": ["path", "body"],
+            "visible": ["path", "body", "query"],
             "additionalProperties": false
         }
     },
@@ -696,7 +747,9 @@
                         "gitBranch",
                         "redirects",
                         "verified",
-                        "limit"
+                        "limit",
+                        "teamId",
+                        "slug"
                     ],
                     "additionalProperties": false
                 }
@@ -752,12 +805,12 @@
                         }
                     },
                     "required": [],
-                    "visible": [],
+                    "visible": ["teamId", "slug"],
                     "additionalProperties": false
                 }
             },
             "required": ["path"],
-            "visible": ["path"],
+            "visible": ["path", "query"],
             "additionalProperties": false
         }
     },
@@ -807,7 +860,7 @@
                         }
                     },
                     "required": [],
-                    "visible": [],
+                    "visible": ["teamId", "slug"],
                     "additionalProperties": false
                 },
                 "body": {
@@ -825,7 +878,7 @@
                 }
             },
             "required": ["path"],
-            "visible": ["path", "body"],
+            "visible": ["path", "body", "query"],
             "additionalProperties": false
         }
     }

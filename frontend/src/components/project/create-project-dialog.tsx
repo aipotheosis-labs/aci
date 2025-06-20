@@ -21,11 +21,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { toast } from "sonner";
-import { createProject } from "@/lib/api/project";
+import { useCreateProject } from "@/hooks/use-project";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(1, "Project name cannot be empty"),
@@ -34,23 +32,20 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 interface CreateProjectDialogProps {
-  accessToken: string;
-  orgId: string;
   onProjectCreated: () => Promise<void>;
   openDialog: boolean;
   setOpenDialog: (open: boolean) => void;
 }
 
 export function CreateProjectDialog({
-  accessToken,
-  orgId,
   onProjectCreated,
   openDialog,
   setOpenDialog,
 }: CreateProjectDialogProps) {
   const { setActiveProject } = useMetaInfo();
   const router = useRouter();
-  const [isCreating, setIsCreating] = useState(false);
+  const { mutateAsync: createProject, isPending: isProjectCreating } =
+    useCreateProject();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -61,22 +56,16 @@ export function CreateProjectDialog({
 
   const handleSubmit = async (values: FormValues) => {
     try {
-      setIsCreating(true);
-      const newProject = await createProject(accessToken, values.name, orgId);
+      const newProject = await createProject({
+        name: values.name,
+      });
       setActiveProject(newProject);
       await onProjectCreated();
       setOpenDialog(false);
       form.reset();
-      toast.success("Project created successfully");
       router.push("/apps");
     } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("Failed to create project");
-      }
-    } finally {
-      setIsCreating(false);
+      console.error("create project failed:", error);
     }
   };
 
@@ -104,7 +93,7 @@ export function CreateProjectDialog({
                     <Input
                       placeholder="Enter project name"
                       {...field}
-                      disabled={isCreating}
+                      disabled={isProjectCreating}
                     />
                   </FormControl>
                   <FormMessage />
@@ -116,12 +105,12 @@ export function CreateProjectDialog({
                 type="button"
                 variant="outline"
                 onClick={() => setOpenDialog(false)}
-                disabled={isCreating}
+                disabled={isProjectCreating}
               >
                 Cancel
               </Button>
-              <Button type="submit" disabled={isCreating}>
-                {isCreating ? "Creating..." : "Create"}
+              <Button type="submit" disabled={isProjectCreating}>
+                {isProjectCreating ? "Creating..." : "Create"}
               </Button>
             </DialogFooter>
           </form>

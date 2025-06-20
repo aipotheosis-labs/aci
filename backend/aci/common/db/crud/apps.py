@@ -18,7 +18,7 @@ def create_app(
     app_upsert: AppUpsert,
     app_embedding: list[float],
 ) -> App:
-    logger.debug(f"creating app: {app_upsert}")
+    logger.debug(f"Creating app: {app_upsert}")
 
     app_data = app_upsert.model_dump(mode="json", exclude_none=True)
     app = App(
@@ -137,7 +137,7 @@ def search_apps(
 
     statement = statement.offset(offset).limit(limit)
 
-    logger.debug(f"Executing statement: {statement}")
+    logger.debug(f"Executing statement, statement={statement}")
 
     results = db_session.execute(statement).all()
 

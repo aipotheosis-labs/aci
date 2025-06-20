@@ -1,3 +1,4 @@
+import json
 from datetime import UTC, datetime
 from typing import Annotated
 
@@ -32,7 +33,7 @@ from aci.common.schemas.function import (
     OpenAIFunctionDefinition,
     OpenAIResponsesFunctionDefinition,
 )
-from aci.server import config, custom_instructions
+from aci.server import config, custom_instructions, utils
 from aci.server import dependencies as deps
 from aci.server import security_credentials_manager as scm
 from aci.server.function_executors import get_executor
@@ -51,10 +52,6 @@ async def list_functions(
     query_params: Annotated[FunctionsList, Query()],
 ) -> list[Function]:
     """Get a list of functions and their details. Sorted by function name."""
-    logger.info(
-        "list functions",
-        extra={"function_list": query_params.model_dump(exclude_none=True)},
-    )
     return crud.functions.get_functions(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
@@ -80,10 +77,7 @@ async def search_functions(
     """
     # TODO: currently the search is done across all apps, we might want to add flags to account for below scenarios:
     # - when clients search for functions, if the app of the functions is configured but disabled by client, should the functions be discoverable?
-    logger.info(
-        "search functions",
-        extra={"function_search": query_params.model_dump(exclude_none=True)},
-    )
+
     intent_embedding = (
         generate_embedding(
             openai_client,
@@ -95,8 +89,7 @@ async def search_functions(
         else None
     )
     logger.debug(
-        "generated intent embedding",
-        extra={"intent": query_params.intent, "intent_embedding": intent_embedding},
+        f"Generated intent embedding, intent={query_params.intent}, intent_embedding={intent_embedding}"
     )
 
     # get the apps to filter (or not) based on the allowed_apps_only and app_names query params
@@ -120,9 +113,15 @@ async def search_functions(
         query_params.limit,
         query_params.offset,
     )
+
     logger.info(
-        "search functions result",
-        extra={"function_names": [function.name for function in functions]},
+        "Search functions result",
+        extra={
+            "search_functions": {
+                "query_params_json": query_params.model_dump_json(),
+                "function_names": [function.name for function in functions],
+            }
+        },
     )
     function_definitions = [
         format_function_definition(function, query_params.format) for function in functions
@@ -158,13 +157,6 @@ async def get_function_definition(
     Return the function definition that can be used directly by LLM.
     The actual content depends on the FunctionDefinitionFormat and the function itself.
     """
-    logger.info(
-        "get function definition",
-        extra={
-            "function_name": function_name,
-            "format": format,
-        },
-    )
     function: Function | None = crud.functions.get_function(
         context.db_session,
         function_name,
@@ -173,8 +165,7 @@ async def get_function_definition(
     )
     if not function:
         logger.error(
-            "failed to get function definition, function not found",
-            extra={"function_name": function_name},
+            f"Failed to get function definition, function not found, function_name={function_name}"
         )
         raise FunctionNotFound(f"function={function_name} not found")
 
@@ -183,9 +174,10 @@ async def get_function_definition(
     logger.info(
         "function definition to return",
         extra={
-            "format": format,
-            "function_name": function_name,
-            "function_definition": function_definition.model_dump(exclude_none=True),
+            "get_function_definition": {
+                "format": format,
+                "function_name": function_name,
+            },
         },
     )
     return function_definition
@@ -203,16 +195,8 @@ async def execute(
     function_name: str,
     body: FunctionExecute,
 ) -> FunctionExecutionResult:
-    # Log the execution request
-    logger.info(
-        "execute function",
-        extra={
-            "function_name": function_name,
-            "function_execute": body.model_dump(exclude_none=True),
-        },
-    )
+    start_time = datetime.now(UTC)
 
-    # Use the service method to execute the function
     result = await execute_function(
         db_session=context.db_session,
         project=context.project,
@@ -221,6 +205,44 @@ async def execute(
         function_input=body.function_input,
         linked_account_owner_id=body.linked_account_owner_id,
         openai_client=openai_client,
+    )
+
+    end_time = datetime.now(UTC)
+
+    # TODO: reconsider the implementation handling large log fields
+    try:
+        execute_result_data = utils.truncate_if_too_large(
+            json.dumps(result.data, default=str), config.MAX_LOG_FIELD_SIZE
+        )
+    except Exception:
+        logger.exception("Failed to dump execute_result_data")
+        execute_result_data = "failed to dump execute_result_data"
+
+    try:
+        function_input_data = utils.truncate_if_too_large(
+            json.dumps(body.function_input, default=str), config.MAX_LOG_FIELD_SIZE
+        )
+    except Exception:
+        logger.exception("Failed to dump function_input_data")
+        function_input_data = "failed to dump function_input_data"
+
+    logger.info(
+        "function execution result",
+        extra={
+            "function_execution": {
+                "app_name": function_name.split("__")[0] if "__" in function_name else "unknown",
+                "function_name": function_name,
+                "linked_account_owner_id": body.linked_account_owner_id,
+                "function_execution_start_time": start_time,
+                "function_execution_end_time": end_time,
+                "function_execution_duration": (end_time - start_time).total_seconds(),
+                "function_input": function_input_data,
+                "function_execution_result_success": result.success,
+                "function_execution_result_error": result.error,
+                "function_execution_result_data": execute_result_data,
+                "function_execution_result_data_size": len(execute_result_data),
+            }
+        },
     )
     return result
 
@@ -308,11 +330,7 @@ async def execute_function(
     )
     if not function:
         logger.error(
-            "failed to execute function, function not found",
-            extra={
-                "function_name": function_name,
-                "linked_account_owner_id": linked_account_owner_id,
-            },
+            f"Failed to execute function, function not found, function_name={function_name}"
         )
         raise FunctionNotFound(f"function={function_name} not found")
 
@@ -322,38 +340,27 @@ async def execute_function(
     )
     if not app_configuration:
         logger.error(
-            "failed to execute function, app configuration not found",
-            extra={
-                "function_name": function_name,
-                "app_name": function.app.name,
-            },
+            f"Failed to execute function, app configuration not found, "
+            f"function_name={function_name} app_name={function.app.name}"
         )
         raise AppConfigurationNotFound(
-            f"configuration for app={function.app.name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{function.app.name}"
+            f"Configuration for app={function.app.name} not found, please configure the app first {config.DEV_PORTAL_URL}/apps/{function.app.name}"
         )
     # Check if user has disabled the app configuration
     if not app_configuration.enabled:
         logger.error(
-            "failed to execute function, app configuration is disabled",
-            extra={
-                "function_name": function_name,
-                "app_name": function.app.name,
-                "app_configuration_id": app_configuration.id,
-            },
+            f"Failed to execute function, app configuration is disabled, "
+            f"function_name={function_name} app_name={function.app.name} app_configuration_id={app_configuration.id}"
         )
         raise AppConfigurationDisabled(
-            f"configuration for app={function.app.name} is disabled, please enable the app first {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
+            f"Configuration for app={function.app.name} is disabled, please enable the app first {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
         )
 
     # Check if the function is allowed to be executed by the agent
     if function.app.name not in agent.allowed_apps:
         logger.error(
-            "failed to execute function, App not allowed to be used by this agent",
-            extra={
-                "function_name": function_name,
-                "app_name": function.app.name,
-                "agent_id": agent.id,
-            },
+            f"Failed to execute function, App not allowed to be used by this agent, "
+            f"function_name={function_name} app_name={function.app.name} agent_id={agent.id}"
         )
         raise AppNotAllowedForThisAgent(
             f"App={function.app.name} that this function belongs to is not allowed to be used by agent={agent.name}"
@@ -368,30 +375,21 @@ async def execute_function(
     )
     if not linked_account:
         logger.error(
-            "failed to execute function, linked account not found",
-            extra={
-                "function_name": function_name,
-                "app_name": function.app.name,
-                "linked_account_owner_id": linked_account_owner_id,
-            },
+            f"Failed to execute function, linked account not found, "
+            f"function_name={function_name} app_name={function.app.name} linked_account_owner_id={linked_account_owner_id}"
         )
         raise LinkedAccountNotFound(
-            f"linked account with linked_account_owner_id={linked_account_owner_id} not found for app={function.app.name},"
+            f"Linked account with linked_account_owner_id={linked_account_owner_id} not found for app={function.app.name},"
             f"please link the account for this app here: {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
         )
 
     if not linked_account.enabled:
         logger.error(
-            "failed to execute function, linked account is disabled",
-            extra={
-                "function_name": function_name,
-                "app_name": function.app.name,
-                "linked_account_owner_id": linked_account_owner_id,
-                "linked_account_id": linked_account.id,
-            },
+            f"Failed to execute function, linked account is disabled, "
+            f"function_name={function_name} app_name={function.app.name} linked_account_owner_id={linked_account_owner_id} linked_account_id={linked_account.id}"
         )
         raise LinkedAccountDisabled(
-            f"linked account with linked_account_owner_id={linked_account_owner_id} is disabled for app={function.app.name},"
+            f"Linked account with linked_account_owner_id={linked_account_owner_id} is disabled for app={function.app.name},"
             f"please enable the account for this app here: {config.DEV_PORTAL_URL}/appconfigs/{function.app.name}"
         )
 
@@ -399,33 +397,17 @@ async def execute_function(
         app_configuration.app, app_configuration, linked_account
     )
 
-    logger.info(
-        "fetched security credentials for function execution",
-        extra={
-            "function_name": function_name,
-            "app_name": function.app.name,
-            "linked_account_owner_id": linked_account_owner_id,
-            "linked_account_id": linked_account.id,
-            "is_app_default_credentials": security_credentials_response.is_app_default_credentials,
-            "is_updated": security_credentials_response.is_updated,
-        },
+    scm.update_security_credentials(
+        db_session, function.app, linked_account, security_credentials_response
     )
 
-    if security_credentials_response.is_updated:
-        if security_credentials_response.is_app_default_credentials:
-            crud.apps.update_app_default_security_credentials(
-                db_session,
-                function.app,
-                linked_account.security_scheme,
-                security_credentials_response.credentials.model_dump(),
-            )
-        else:
-            crud.linked_accounts.update_linked_account_credentials(
-                db_session,
-                linked_account,
-                security_credentials=security_credentials_response.credentials,
-            )
-        db_session.commit()
+    logger.info(
+        f"Fetched security credentials for function execution, function_name={function_name}, "
+        f"app_name={function.app.name}, linked_account_owner_id={linked_account_owner_id}, "
+        f"linked_account_id={linked_account.id}, is_updated={security_credentials_response.is_updated}, "
+        f"is_app_default_credentials={security_credentials_response.is_app_default_credentials}"
+    )
+    db_session.commit()
 
     custom_instructions.check_for_violation(
         openai_client,
@@ -436,8 +418,8 @@ async def execute_function(
 
     function_executor = get_executor(function.protocol, linked_account)
     logger.info(
-        "instantiated function executor",
-        extra={"function_name": function_name, "function_executor": type(function_executor)},
+        f"Instantiated function executor, function_executor={type(function_executor)}, "
+        f"function={function_name}"
     )
 
     # Execute the function
@@ -458,11 +440,8 @@ async def execute_function(
 
     if not execution_result.success:
         logger.error(
-            "function execution result error",
-            extra={
-                "function_name": function_name,
-                "error": execution_result.error,
-            },
+            f"Function execution result error, function_name={function_name}, "
+            f"error={execution_result.error}"
         )
 
     return execution_result

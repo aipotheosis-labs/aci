@@ -8,10 +8,14 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { AppCard } from "./app-card";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { App } from "@/lib/types/app";
 import { AppCardComingSoon } from "./app-card-coming-soon";
 import comingsoon from "@/lib/comingsoon/comingsoon.json";
+
+function normalize(str: string): string {
+  return str.toLowerCase().replace(/[\s\-_]/g, "");
+}
 interface AppGridProps {
   apps: App[];
 }
@@ -37,7 +41,21 @@ export function AppGrid({ apps }: AppGridProps) {
     return matchesNameOrDescriptionOrCategory && matchesCategory;
   });
 
-  const comingSoonApps = comingsoon;
+  const liveAppKeys = useMemo(() => {
+    const keys = new Set<string>();
+    apps.forEach((app) => {
+      keys.add(normalize(app.name));
+      // Since the names are not uniform, use a filter to make unique
+      if (app.display_name && app.display_name !== app.name) {
+        keys.add(normalize(app.display_name));
+      }
+    });
+    return keys;
+  }, [apps]);
+
+  const comingSoonApps = useMemo(() => {
+    return comingsoon.filter((app) => !liveAppKeys.has(normalize(app.title)));
+  }, [liveAppKeys]);
 
   return (
     <div className="space-y-6">

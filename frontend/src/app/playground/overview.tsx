@@ -1,3 +1,4 @@
+import { BetaAlert } from "@/components/playground/beta-alert";
 import * as motion from "motion/react-client";
 import Image from "next/image";
 
@@ -5,13 +6,16 @@ export const Overview = () => {
   return (
     <motion.div
       key="overview"
-      className="max-w-3xl mx-auto md:mt-20"
+      className="max-w-3xl mx-auto md:mt-12"
       initial={{ opacity: 0, scale: 0.98 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ delay: 0.5 }}
     >
       <div className="rounded-xl p-6 flex flex-col leading-relaxed text-center max-w-xl">
+        <div className="flex flex-col gap-4 mb-24">
+          <BetaAlert />
+        </div>
         <p className="flex flex-row justify-center gap-4 items-center mb-36">
           <Image
             src="/aci-dev-full-logo.svg"

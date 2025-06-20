@@ -20,33 +20,26 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { deleteProject } from "@/lib/api/project";
+import { useDeleteProject } from "@/hooks/use-project";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { useRouter } from "next/navigation";
 
 interface DeleteProjectDialogProps {
-  accessToken: string;
-  projectId: string;
   projectName: string;
 }
 
-export function DeleteProjectDialog({
-  accessToken,
-  projectId,
-  projectName,
-}: DeleteProjectDialogProps) {
-  console.log("projectName", projectName);
-  const [isDeleting, setIsDeleting] = useState(false);
+export function DeleteProjectDialog({ projectName }: DeleteProjectDialogProps) {
   const [confirmName, setConfirmName] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const { reloadActiveProject, projects } = useMetaInfo();
+  const { projects } = useMetaInfo();
   const router = useRouter();
+  const { mutateAsync: deleteProject, isPending: isProjectDeleting } =
+    useDeleteProject();
 
   const isLastProject = projects.length === 1;
 
   const resetForm = () => {
     setConfirmName("");
-    setIsDeleting(false);
   };
 
   const handleDeleteProject = async () => {
@@ -56,18 +49,12 @@ export function DeleteProjectDialog({
     }
 
     try {
-      setIsDeleting(true);
-      await deleteProject(accessToken, projectId);
-      await reloadActiveProject();
-      toast.success("Project deleted successfully");
+      await deleteProject();
       setIsOpen(false);
       resetForm();
       router.push("/apps");
     } catch (error) {
-      console.error("Failed to delete project:", error);
-      toast.error("Failed to delete project");
-    } finally {
-      setIsDeleting(false);
+      console.error("delete project failed:", error);
     }
   };
 
@@ -121,9 +108,9 @@ export function DeleteProjectDialog({
           <AlertDialogAction
             onClick={handleDeleteProject}
             className="bg-red-600 hover:bg-red-700"
-            disabled={isDeleting || confirmName !== projectName}
+            disabled={isProjectDeleting || confirmName !== projectName}
           >
-            {isDeleting ? "Deleting..." : "Delete Project"}
+            {isProjectDeleting ? "Deleting..." : "Delete Project"}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
