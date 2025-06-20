@@ -1,0 +1,123 @@
+[
+  {
+    "name": "REPLICATE__MODEL_FLUX_1_1_PRO",
+    "description": "Faster, better FLUX Pro. Text-to-image model with excellent image quality, prompt adherence, and output diversity.",
+    "tags": ["text-to-image", "prediction", "generate", "flux"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/models/black-forest-labs/flux-1.1-pro/predictions",
+      "server_url": "https://api.replicate.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "description": "Headers for the HTTP request",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "description": "Content-Type header",
+              "default": "application/json"
+            },
+            "Prefer": {
+              "type": "string",
+              "description": "Prefer header for synchronous response",
+              "default": "wait"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["Content-Type", "Prefer"],
+          "visible": []
+        },
+        "body": {
+          "type": "object",
+          "description": "Prediction input parameters for FLUX 1.1 Pro model.",
+          "properties": {
+            "input": {
+              "type": "object",
+              "description": "Input parameters for the model.",
+              "properties": {
+                "seed": {
+                  "type": "integer",
+                  "description": "Random seed. Set for reproducible generation."
+                },
+                "width": {
+                  "type": "integer",
+                  "description": "Width of the generated image in text-to-image mode. Only used when aspect_ratio=custom. Must be a multiple of 32 (if it's not, it will be rounded to nearest multiple of 32). Note: Ignored in img2img and inpainting modes.",
+                  "minimum": 256,
+                  "maximum": 1440
+                },
+                "height": {
+                  "type": "integer",
+                  "description": "Height of the generated image in text-to-image mode. Only used when aspect_ratio=custom. Must be a multiple of 32 (if it's not, it will be rounded to nearest multiple of 32). Note: Ignored in img2img and inpainting modes.",
+                  "minimum": 256,
+                  "maximum": 1440
+                },
+                "prompt": {
+                  "type": "string",
+                  "description": "Text prompt for image generation."
+                },
+                "aspect_ratio": {
+                  "type": "string",
+                  "description": "Aspect ratio for the generated image.",
+                  "default": "1:1"
+                },
+                "image_prompt": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Image to use with Flux Redux. This is used together with the text prompt to guide the generation towards the composition of the image_prompt. Must be jpeg, png, gif, or webp."
+                },
+                "output_format": {
+                  "type": "string",
+                  "description": "Format of the output images.",
+                  "default": "webp"
+                },
+                "output_quality": {
+                  "type": "integer",
+                  "description": "Quality when saving the output images, from 0 to 100. 100 is best quality, 0 is lowest quality. Not relevant for .png outputs",
+                  "default": 80,
+                  "maximum": 100
+                },
+                "safety_tolerance": {
+                  "type": "integer",
+                  "description": "Safety tolerance, 1 is most strict and 6 is most permissive",
+                  "default": 2,
+                  "minimum": 1,
+                  "maximum": 6
+                },
+                "prompt_upsampling": {
+                  "type": "boolean",
+                  "description": "Automatically modify the prompt for more creative generation."
+                }
+              },
+              "required": ["prompt"],
+              "visible": [
+                "seed",
+                "width",
+                "height",
+                "prompt",
+                "aspect_ratio",
+                "image_prompt",
+                "output_format",
+                "output_quality",
+                "safety_tolerance",
+                "prompt_upsampling"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": ["input"],
+          "visible": ["input"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  }
+]

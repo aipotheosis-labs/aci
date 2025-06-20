@@ -1,0 +1,22 @@
+{
+  "name": "REPLICATE",
+  "display_name": "Replicate",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/replicate.svg",
+  "provider": "Replicate",
+  "version": "1.0.0",
+  "description": "The Replicate API allows you to build applications that use AI models to generate images, audio, and more.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Text-to-Image",
+    "AI Generation"
+  ],
+  "visibility": "public",
+  "active": true
+}

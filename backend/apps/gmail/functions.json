@@ -29,7 +29,7 @@
                     "description": "The subject of the email."
                 },
                 "cc": {
-                    "type": ["array"],
+                    "type": "array",
                     "items": {
                         "type": "string",
                         "format": "email"
@@ -37,7 +37,7 @@
                     "description": "The email addresses of the cc recipients."
                 },
                 "bcc": {
-                    "type": ["array"],
+                    "type": "array",
                     "items": {
                         "type": "string",
                         "format": "email"
@@ -585,12 +585,11 @@
                     "description": "The body content of the email, for now only plain text is supported."
                 },
                 "subject": {
-                    "type": ["string", "null"],
-                    "description": "The subject of the email.",
-                    "default": null
+                    "type": "string",
+                    "description": "The subject of the email."
                 },
                 "cc": {
-                    "type": ["array"],
+                    "type": "array",
                     "items": {
                         "type": "string",
                         "format": "email"
@@ -598,7 +597,7 @@
                     "description": "The email addresses of the cc recipients."
                 },
                 "bcc": {
-                    "type": ["array"],
+                    "type": "array",
                     "items": {
                         "type": "string",
                         "format": "email"
@@ -690,12 +689,11 @@
                     "description": "The body content of the email, for now only plain text is supported."
                 },
                 "subject": {
-                    "type": ["string", "null"],
-                    "description": "The subject of the email.",
-                    "default": null
+                    "type": "string",
+                    "description": "The subject of the email."
                 },
                 "cc": {
-                    "type": ["array"],
+                    "type": "array",
                     "items": {
                         "type": "string",
                         "format": "email"
@@ -703,7 +701,7 @@
                     "description": "The email addresses of the cc recipients."
                 },
                 "bcc": {
-                    "type": ["array"],
+                    "type": "array",
                     "items": {
                         "type": "string",
                         "format": "email"
