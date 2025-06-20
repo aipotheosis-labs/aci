@@ -877,5 +877,333 @@
             "visible": ["path", "body"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "SUPABASE__LIST_ALL_EDGE_FUNCTIONS",
+        "description": "List all edge functions",
+        "tags": ["edge", "functions", "list"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/projects/{ref}/functions",
+            "server_url": "https://api.supabase.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "path parameters",
+                    "properties": {
+                        "ref": {
+                            "type": "string",
+                            "description": "Project ref"
+                        }
+                    },
+                    "required": ["ref"],
+                    "visible": ["ref"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SUPABASE__CREATE_EDGE_FUNCTION",
+        "description": "Create an edge function (deprecated - use deploy endpoint)",
+        "tags": ["edge", "functions", "create"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/projects/{ref}/functions",
+            "server_url": "https://api.supabase.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "path parameters",
+                    "properties": {
+                        "ref": {
+                            "type": "string",
+                            "description": "Project ref"
+                        }
+                    },
+                    "required": ["ref"],
+                    "visible": ["ref"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "query parameters",
+                    "properties": {
+                        "import_map_path": {
+                            "type": "string",
+                            "description": "Import map path"
+                        },
+                        "entrypoint_path": {
+                            "type": "string",
+                            "description": "Entrypoint path"
+                        },
+                        "import_map": {
+                            "type": "boolean",
+                            "description": "Import map enabled"
+                        },
+                        "verify_jwt": {
+                            "type": "boolean",
+                            "description": "Verify JWT"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Function name"
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "Function slug"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["import_map_path", "entrypoint_path", "import_map", "verify_jwt", "name", "slug"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "body parameters",
+                    "properties": {
+                        "slug": {
+                            "type": "string",
+                            "description": "Function slug"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Function name"
+                        },
+                        "body": {
+                            "type": "string",
+                            "description": "Function code body"
+                        },
+                        "verify_jwt": {
+                            "type": "boolean",
+                            "description": "Verify JWT"
+                        }
+                    },
+                    "required": ["slug", "name", "body"],
+                    "visible": ["slug", "name", "body", "verify_jwt"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "query", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SUPABASE__DELETE_EDGE_FUNCTION",
+        "description": "Delete an edge function",
+        "tags": ["edge", "functions", "delete"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v1/projects/{ref}/functions/{function_slug}",
+            "server_url": "https://api.supabase.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "path parameters",
+                    "properties": {
+                        "ref": {
+                            "type": "string",
+                            "description": "Project ref"
+                        },
+                        "function_slug": {
+                            "type": "string",
+                            "description": "Function slug"
+                        }
+                    },
+                    "required": ["ref", "function_slug"],
+                    "visible": ["ref", "function_slug"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SUPABASE__GET_EDGE_FUNCTION",
+        "description": "Get an edge function",
+        "tags": ["edge", "functions", "get"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/projects/{ref}/functions/{function_slug}",
+            "server_url": "https://api.supabase.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "path parameters",
+                    "properties": {
+                        "ref": {
+                            "type": "string",
+                            "description": "Project ref"
+                        },
+                        "function_slug": {
+                            "type": "string",
+                            "description": "Function slug"
+                        }
+                    },
+                    "required": ["ref", "function_slug"],
+                    "visible": ["ref", "function_slug"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SUPABASE__UPDATE_EDGE_FUNCTION",
+        "description": "Update an edge function",
+        "tags": ["edge", "functions", "update"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/v1/projects/{ref}/functions/{function_slug}",
+            "server_url": "https://api.supabase.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "path parameters",
+                    "properties": {
+                        "ref": {
+                            "type": "string",
+                            "description": "Project ref"
+                        },
+                        "function_slug": {
+                            "type": "string",
+                            "description": "Function slug"
+                        }
+                    },
+                    "required": ["ref", "function_slug"],
+                    "visible": ["ref", "function_slug"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "query parameters",
+                    "properties": {
+                        "import_map_path": {
+                            "type": "string",
+                            "description": "Import map path"
+                        },
+                        "entrypoint_path": {
+                            "type": "string",
+                            "description": "Entrypoint path"
+                        },
+                        "import_map": {
+                            "type": "boolean",
+                            "description": "Import map enabled"
+                        },
+                        "verify_jwt": {
+                            "type": "boolean",
+                            "description": "Verify JWT"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Function name"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["import_map_path", "entrypoint_path", "import_map", "verify_jwt", "name"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "body parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Function name"
+                        },
+                        "body": {
+                            "type": "string",
+                            "description": "Function code body"
+                        },
+                        "verify_jwt": {
+                            "type": "boolean",
+                            "description": "Verify JWT"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "body", "verify_jwt"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SUPABASE__GET_EDGE_FUNCTION_BODY",
+        "description": "Get an edge function body",
+        "tags": ["edge", "functions", "body", "get"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/projects/{ref}/functions/{function_slug}/body",
+            "server_url": "https://api.supabase.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "path parameters",
+                    "properties": {
+                        "ref": {
+                            "type": "string",
+                            "description": "Project ref"
+                        },
+                        "function_slug": {
+                            "type": "string",
+                            "description": "Function slug"
+                        }
+                    },
+                    "required": ["ref", "function_slug"],
+                    "visible": ["ref", "function_slug"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
     }
 ]
