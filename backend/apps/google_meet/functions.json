@@ -1,0 +1,144 @@
+[
+    {
+        "name": "SCHEDULE_MEETING",
+        "description": "Schedules a meeting with a Google Meet link",
+        "tags": ["calendar", "google_meet"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/calendars/primary/events",
+            "server_url": "https://www.googleapis.com/calendar/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "conferenceDataVersion": {
+                            "type": "integer",
+                            "description": "Version number of conference data supported by the API client.",
+                            "default": 1,
+                            "minimum": 0,
+                            "maximum": 1
+                        }
+                    },
+                    "required": ["conferenceDataVersion"],
+                    "visible": ["conferenceDataVersion"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Event data to be created",
+                    "properties": {
+                        "summary": {
+                            "type": "string",
+                            "description": "Title of the meeting."
+                        },
+                        "start": {
+                            "type": "object",
+                            "description": "Start date/time of the meeting.",
+                            "properties": {
+                                "dateTime": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "Start time in RFC3339 format."
+                                },
+                                "timeZone": {
+                                    "type": "string",
+                                    "description": "Time zone for the start time."
+                                }
+                            },
+                            "required": ["dateTime", "timeZone"],
+                            "visible": ["dateTime", "timeZone"],
+                            "additionalProperties": false
+                        },
+                        "end": {
+                            "type": "object",
+                            "description": "End date/time of the meeting.",
+                            "properties": {
+                                "dateTime": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "End time in RFC3339 format."
+                                },
+                                "timeZone": {
+                                    "type": "string",
+                                    "description": "Time zone for the end time."
+                                }
+                            },
+                            "required": ["dateTime", "timeZone"],
+                            "visible": ["dateTime", "timeZone"],
+                            "additionalProperties": false
+                        },
+                        "conferenceData": {
+                            "type": "object",
+                            "description": "Conference details such as Google Meet link.",
+                            "properties": {
+                                "createRequest": {
+                                    "type": "object",
+                                    "description": "Request to create a conference link.",
+                                    "properties": {
+                                        "requestId": {
+                                            "type": "string",
+                                            "description": "Unique request ID for creating the conference."
+                                        }
+                                    },
+                                    "required": ["requestId"],
+                                    "visible": ["requestId"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": ["createRequest"],
+                            "visible": ["createRequest"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["summary", "start", "end", "conferenceData"],
+                    "visible": ["summary", "start", "end", "conferenceData"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query", "body"],
+            "visible": ["query", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GET_MEETING_RECORD",
+        "description": "Retrieves details of a specific Google Meet meeting",
+        "tags": ["google_meet", "calendar"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/calendars/primary/events/{eventId}",
+            "server_url": "https://www.googleapis.com/calendar/v3"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "eventId": {
+                            "type": "string",
+                            "description": "The unique ID of the event to retrieve."
+                        }
+                    },
+                    "required": ["eventId"],
+                    "visible": ["eventId"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    }
+]
