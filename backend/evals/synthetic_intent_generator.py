@@ -1,4 +1,3 @@
-import openai
 import pandas as pd
 import wandb
 from dotenv import load_dotenv
@@ -9,6 +8,7 @@ from tqdm import tqdm
 from aci.cli import config
 from aci.common import utils
 from aci.common.db.sql_models import App, Function
+from aci.common.openai_client import create_openai_client
 from evals.intent_prompts import PROMPTS
 
 load_dotenv()
@@ -47,7 +47,7 @@ class SyntheticIntentGenerator:
             )
 
         # Initialize API clients
-        self.openai_client = openai.OpenAI(api_key=openai_api_key)
+        self.openai_client = create_openai_client(api_key=openai_api_key) 
 
     def _fetch_app_function_data(self) -> pd.DataFrame:
         """
