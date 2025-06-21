@@ -29,20 +29,36 @@ import {
 import { BsQuestionCircle } from "react-icons/bs";
 import { useShallow } from "zustand/react/shallow";
 // Maximum number of apps that can be selected
-const MAX_APPS = 6;
+const MAX_APPS = 10;
 
 export function AppMultiSelector() {
   const [open, setOpen] = useState(false);
 
-  const { selectedApps, setSelectedApps, getAvailableApps } = useAgentStore(
+  const {
+    selectedApps,
+    setSelectedApps,
+    getAvailableApps,
+    selectedFunctions,
+    setSelectedFunctions,
+    appFunctions,
+  } = useAgentStore(
     useShallow((state) => ({
       selectedApps: state.selectedApps,
       setSelectedApps: state.setSelectedApps,
       getAvailableApps: state.getAvailableApps,
+      selectedFunctions: state.selectedFunctions,
+      setSelectedFunctions: state.setSelectedFunctions,
+      appFunctions: state.appFunctions,
     })),
   );
 
-  const appList = getAvailableApps().map((app) => ({
+  const availableApps = getAvailableApps();
+  const availableAppIds = availableApps.map((app) => app.name);
+  const allSelected =
+    availableAppIds.length > 0 &&
+    availableAppIds.length === selectedApps.length;
+
+  const appList = availableApps.map((app) => ({
     id: app.name,
     name: app.display_name || app.name,
     icon: (
@@ -61,12 +77,36 @@ export function AppMultiSelector() {
   const handleAppChange = (appId: string) => {
     if (selectedApps.includes(appId)) {
       setSelectedApps(selectedApps.filter((id) => id !== appId));
+      // also remove all functions related to the app
+      const functionsForApp = appFunctions
+        .filter((func) => func.name.startsWith(`${appId.toUpperCase()}__`))
+        .map((func) => func.name);
+      setSelectedFunctions(
+        selectedFunctions.filter(
+          (funcName) => !functionsForApp.includes(funcName),
+        ),
+      );
     } else {
       if (selectedApps.length >= MAX_APPS) {
         toast.error(`You can only select up to ${MAX_APPS} apps at a time`);
         return;
       }
       setSelectedApps([...selectedApps, appId]);
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (allSelected) {
+      setSelectedApps([]);
+      setSelectedFunctions([]);
+    } else {
+      if (availableAppIds.length > MAX_APPS) {
+        toast.error(
+          `You can only select up to ${MAX_APPS} apps. Cannot select all ${availableAppIds.length} apps.`,
+        );
+        return;
+      }
+      setSelectedApps(availableAppIds);
     }
   };
 
@@ -121,6 +161,24 @@ export function AppMultiSelector() {
             <CommandList>
               <CommandEmpty>No apps found.</CommandEmpty>
               <CommandGroup>
+                {availableAppIds.length > 0 && (
+                  <CommandItem
+                    key="select-all"
+                    onSelect={handleSelectAll}
+                    className="flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2 flex-1">
+                      <span>{allSelected ? "Deselect All" : "Select All"}</span>
+                    </div>
+                    <Check
+                      className={cn(
+                        "h-4 w-4",
+                        allSelected ? "opacity-100" : "opacity-0",
+                      )}
+                    />
+                  </CommandItem>
+                )}
+                <div className="h-px bg-border my-1" />
                 {appList.map((app) => (
                   <CommandItem
                     key={app.id}
