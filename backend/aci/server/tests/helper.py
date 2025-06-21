@@ -2,15 +2,14 @@ import json
 import logging
 from pathlib import Path
 
-from openai import OpenAI
-
 from aci.common import embeddings
+from aci.common.openai_client import create_openai_client
 from aci.common.schemas.app import AppEmbeddingFields, AppUpsert
 from aci.common.schemas.function import FunctionEmbeddingFields, FunctionUpsert
 from aci.server import config
 
 logger = logging.getLogger(__name__)
-openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
+openai_client = create_openai_client(api_key=config.OPENAI_API_KEY)
 DUMMY_APPS_DIR = Path(__file__).parent / "dummy_apps"
 REAL_APPS_DIR = Path(__file__).parent.parent.parent.parent / "apps"
 CONNECTOR_APPS = [
