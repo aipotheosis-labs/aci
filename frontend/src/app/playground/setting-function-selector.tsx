@@ -28,7 +28,7 @@ import {
 import { BsQuestionCircle } from "react-icons/bs";
 import { useShallow } from "zustand/react/shallow";
 
-const MAX_FUNCTIONS = 20;
+const MAX_FUNCTIONS = Number(process.env.NEXT_PUBLIC_AGENT_MAX_FUNCTIONS) || 50;
 
 export function FunctionMultiSelector() {
   const [open, setOpen] = useState(false);

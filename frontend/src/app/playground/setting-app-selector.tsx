@@ -29,7 +29,7 @@ import {
 import { BsQuestionCircle } from "react-icons/bs";
 import { useShallow } from "zustand/react/shallow";
 // Maximum number of apps that can be selected
-const MAX_APPS = 10;
+const MAX_APPS = Number(process.env.NEXT_PUBLIC_AGENT_MAX_APPS) || 10;
 
 export function AppMultiSelector() {
   const [open, setOpen] = useState(false);
