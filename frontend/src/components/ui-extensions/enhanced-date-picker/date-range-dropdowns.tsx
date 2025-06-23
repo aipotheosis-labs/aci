@@ -79,24 +79,14 @@ const BaseDateRangeDropdown = <T extends string>({
             key={item}
             value={item}
             disabled={isLimited}
-            className={`${isLimited ? "opacity-50" : ""} py-3`}
+            className={`${isLimited ? "opacity-50" : ""} py-2 w-full`}
           >
             <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-2">
-                <span className="font-medium">{item}</span>
-              </div>
-              {planInfo && (
-                <div className="flex items-center gap-1 ml-2">
-                  <Badge
-                    variant={isLimited ? "destructive" : "secondary"}
-                    className="text-xs"
-                  >
-                    {planInfo.planName === "enterprise" && (
-                      <Crown className="h-3 w-3 mr-1" />
-                    )}
-                    {planInfo.planDisplayName}
-                  </Badge>
-                </div>
+              <div className="font-normal pr-2">{item}</div>
+              {isLimited && planInfo && (
+                <Badge variant={"outline"} className="text-xs py-0.5">
+                  {planInfo.planDisplayName}
+                </Badge>
               )}
             </div>
           </SelectItem>

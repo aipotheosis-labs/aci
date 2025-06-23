@@ -12,6 +12,7 @@ export const DASHBOARD_AGGREGATION_OPTIONS = [
   "1 hour",
   "3 hours",
   "24 hours",
+  "3 days",
   "7 days",
   "1 month",
   "3 months",
@@ -85,6 +86,10 @@ export const dashboardDateRangeAggregationSettings: DashboardDateRangeAggregatio
     "7 days": {
       date_trunc: "hour",
       minutes: 7 * 24 * 60,
+    },
+    "3 days": {
+      date_trunc: "hour",
+      minutes: 3 * 24 * 60,
     },
     "24 hours": {
       date_trunc: "hour",

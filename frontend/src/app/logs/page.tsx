@@ -501,7 +501,7 @@ export default function LogsPage() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="function-executions" className="">
-          <div className="mt-4 mb-4">
+          <div className="mt-4">
             <DatePickerWithRange
               dateRange={dateRange}
               selectedOption={selectedDateOption}
@@ -509,7 +509,7 @@ export default function LogsPage() {
               logRetentionDays={logRetentionDays}
             />
             {quotaUsage && (
-              <div className="mt-2 text-sm text-muted-foreground">
+              <div className="mt-4 text-sm text-muted-foreground">
                 Current plan ({quotaUsage.plan.name}): Log retention limited to{" "}
                 {logRetentionDays} days
               </div>
