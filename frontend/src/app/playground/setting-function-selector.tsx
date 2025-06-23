@@ -13,6 +13,7 @@ import {
   CommandList,
 } from "@/components/ui/command";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 import { useAgentStore } from "@/lib/store/agent";
 import {
   Popover,
@@ -26,6 +27,9 @@ import {
 } from "@/components/ui/tooltip";
 import { BsQuestionCircle } from "react-icons/bs";
 import { useShallow } from "zustand/react/shallow";
+
+const MAX_FUNCTIONS = 20;
+
 export function FunctionMultiSelector() {
   const [open, setOpen] = useState(false);
 
@@ -43,6 +47,10 @@ export function FunctionMultiSelector() {
     })),
   );
   const appFunctions = getAvailableAppFunctions();
+  const availableFunctionNames = appFunctions.map((func) => func.name);
+  const allSelected =
+    availableFunctionNames.length > 0 &&
+    selectedFunctions.length === availableFunctionNames.length;
 
   const handleFunctionChange = (functionName: string) => {
     if (selectedFunctions.includes(functionName)) {
@@ -50,7 +58,27 @@ export function FunctionMultiSelector() {
         selectedFunctions.filter((name) => name !== functionName),
       );
     } else {
+      if (selectedFunctions.length >= MAX_FUNCTIONS) {
+        toast.error(
+          `You can only select up to ${MAX_FUNCTIONS} functions at a time`,
+        );
+        return;
+      }
       setSelectedFunctions([...selectedFunctions, functionName]);
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (allSelected) {
+      setSelectedFunctions([]);
+    } else {
+      if (availableFunctionNames.length > MAX_FUNCTIONS) {
+        toast.error(
+          `You can only select up to ${MAX_FUNCTIONS} functions. Cannot select all ${availableFunctionNames.length} functions.`,
+        );
+        return;
+      }
+      setSelectedFunctions(availableFunctionNames);
     }
   };
 
@@ -114,6 +142,25 @@ export function FunctionMultiSelector() {
                   </div>
                 ) : (
                   <>
+                    {appFunctions.length > 0 && (
+                      <CommandItem
+                        key="select-all"
+                        onSelect={handleSelectAll}
+                        className="flex items-center justify-between"
+                      >
+                        <div className="flex items-center gap-2 flex-1">
+                          <span>
+                            {allSelected ? "Deselect All" : "Select All"}
+                          </span>
+                        </div>
+                        <Check
+                          className={cn(
+                            "h-4 w-4",
+                            allSelected ? "opacity-100" : "opacity-0",
+                          )}
+                        />
+                      </CommandItem>
+                    )}
                     <div className="h-px bg-border my-1" />
                     {appFunctions.map((func) => (
                       <CommandItem
@@ -123,6 +170,16 @@ export function FunctionMultiSelector() {
                         className="flex items-center justify-between"
                         data-value={func.name}
                       >
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className={cn("flex-1 truncate")}>
+                              <span className="text-sm">{func.name}</span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{func.name}</p>
+                          </TooltipContent>
+                        </Tooltip>
                         <Check
                           className={cn(
                             "h-4 w-4",
@@ -131,23 +188,6 @@ export function FunctionMultiSelector() {
                               : "opacity-0",
                           )}
                         />
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div
-                              className={cn(
-                                "flex flex-col gap-1 flex-1 px-2 py-1 rounded-md",
-                                selectedFunctions.includes(func.name)
-                                  ? "bg-slate-300 text-accent-foreground"
-                                  : "hover:bg-muted",
-                              )}
-                            >
-                              <span className="text-sm">{func.name}</span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{func.name}</p>
-                          </TooltipContent>
-                        </Tooltip>
                       </CommandItem>
                     ))}
                   </>
