@@ -94,6 +94,7 @@ export type DatePickerWithRangeProps = {
     option: DashboardDateRangeOptions,
     date?: DashboardDateRange,
   ) => void;
+  logRetentionDays?: number;
 };
 
 export function DatePickerWithRange({
@@ -102,6 +103,7 @@ export function DatePickerWithRange({
   selectedOption,
   setDateRangeAndOption,
   disabled,
+  logRetentionDays,
 }: DatePickerWithRangeProps) {
   const [internalDateRange, setInternalDateRange] = useState<
     DateRange | undefined
@@ -144,12 +146,26 @@ export function DatePickerWithRange({
   };
 
   const onCalendarSelection = (range?: DateRange) => {
-    const newRange = range
+    let newRange = range
       ? {
           from: range.from ? setBeginningOfDay(range.from) : undefined,
           to: range.to ? setEndOfDay(range.to) : undefined,
         }
       : undefined;
+
+    // Validate date range against log retention limit
+    if (newRange?.from && newRange?.to && logRetentionDays) {
+      const maxStartDate = new Date();
+      maxStartDate.setDate(maxStartDate.getDate() - logRetentionDays);
+
+      if (newRange.from < maxStartDate) {
+        // Create a new range with adjusted start date
+        newRange = {
+          ...newRange,
+          from: maxStartDate,
+        };
+      }
+    }
 
     setInternalDateRange(newRange);
     updateDashboardDateRange(newRange, setDateRangeAndOption);
@@ -213,7 +229,22 @@ export function DatePickerWithRange({
             selected={internalDateRange}
             onSelect={onCalendarSelection}
             numberOfMonths={2}
-            disabled={disabled}
+            disabled={(date) => {
+              // Combine existing disabled prop with log retention limit
+              const isDisabledByProp =
+                typeof disabled === "function" ? disabled(date) : false;
+
+              if (logRetentionDays) {
+                const maxStartDate = new Date();
+                maxStartDate.setDate(maxStartDate.getDate() - logRetentionDays);
+                maxStartDate.setHours(0, 0, 0, 0);
+
+                const isBeforeRetentionLimit = date < maxStartDate;
+                return isDisabledByProp || isBeforeRetentionLimit;
+              }
+
+              return isDisabledByProp;
+            }}
             classNames={{
               root: "w-full",
             }}
@@ -241,6 +272,7 @@ export function DatePickerWithRange({
       <DashboardDateRangeDropdown
         selectedOption={selectedOption}
         setDateRangeAndOption={setDateRangeAndOption}
+        logRetentionDays={logRetentionDays}
       />
     </div>
   );

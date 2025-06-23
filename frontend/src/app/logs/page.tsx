@@ -23,6 +23,7 @@ import {
   type DashboardDateRangeOptions,
   DEFAULT_DASHBOARD_AGGREGATION_SELECTION,
 } from "@/utils/date-range-utils";
+import { useQuota } from "@/hooks/use-quota";
 
 const PAGE_SIZE = 10;
 
@@ -154,7 +155,7 @@ const useTableColumns = (
   return useMemo(() => {
     return [
       columnHelper.accessor("@timestamp", {
-        header: "TIMESTAMP",
+        header: "TIMESTAMP (UTC)",
         cell: (info) => info.getValue(),
         enableGlobalFilter: true,
       }),
@@ -480,6 +481,11 @@ export default function LogsPage() {
     setDateRangeAndOption,
   } = useLogsTable();
 
+  // Get quota information for log retention limits
+  const { data: quotaUsage } = useQuota();
+  // The enterprise type is not considered here, and will be added after confirmation.
+  const logRetentionDays = quotaUsage?.plan.features.log_retention_days || 3; // Default to 3 days if not available
+
   const columns = useTableColumns(
     setSelectedLogEntry,
     setIsDetailPanelOpen,
@@ -500,7 +506,14 @@ export default function LogsPage() {
               dateRange={dateRange}
               selectedOption={selectedDateOption}
               setDateRangeAndOption={setDateRangeAndOption}
+              logRetentionDays={logRetentionDays}
             />
+            {quotaUsage && (
+              <div className="mt-2 text-sm text-muted-foreground">
+                Current plan ({quotaUsage.plan.name}): Log retention limited to{" "}
+                {logRetentionDays} days
+              </div>
+            )}
           </div>
           <LogsTableView
             logs={logs}

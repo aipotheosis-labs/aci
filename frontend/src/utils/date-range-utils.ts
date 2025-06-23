@@ -203,6 +203,67 @@ export function isValidTableDateRangeAggregationOption(
   return (TABLE_AGGREGATION_OPTIONS as readonly string[]).includes(value);
 }
 
+export const getAvailableDashboardOptions = (
+  logRetentionDays: number,
+): DashboardDateRangeAggregationOption[] => {
+  return DASHBOARD_AGGREGATION_OPTIONS.filter((option) => {
+    const setting = dashboardDateRangeAggregationSettings[option];
+    return setting.minutes <= logRetentionDays * 24 * 60;
+  });
+};
+
+export const getMinimumPlanForOption = (
+  option: DashboardDateRangeAggregationOption,
+): {
+  planName: string;
+  planDisplayName: string;
+  retentionDays: number;
+} | null => {
+  const setting = dashboardDateRangeAggregationSettings[option];
+  const requiredDays = Math.ceil(setting.minutes / (24 * 60));
+
+  if (requiredDays <= 3) {
+    return null;
+  } else if (requiredDays <= 7) {
+    return {
+      planName: "starter",
+      planDisplayName: "Starter",
+      retentionDays: 7,
+    };
+  } else if (requiredDays <= 30) {
+    return { planName: "team", planDisplayName: "Team", retentionDays: 30 };
+  } else {
+    return {
+      planName: "enterprise",
+      planDisplayName: "Enterprise",
+      retentionDays: 999,
+    };
+  }
+};
+
+export const getOptionDescription = (
+  option: DashboardDateRangeAggregationOption,
+  userRetentionDays?: number,
+): string => {
+  const minPlan = getMinimumPlanForOption(option);
+  const setting = dashboardDateRangeAggregationSettings[option];
+  const requiredDays = Math.ceil(setting.minutes / (24 * 60));
+
+  if (!minPlan) {
+    return `Available in your current plan`;
+  }
+
+  if (userRetentionDays && requiredDays <= userRetentionDays) {
+    return `Available in your current plan`;
+  } else {
+    const retentionText =
+      minPlan.planName === "enterprise"
+        ? "custom log retention"
+        : `${minPlan.retentionDays} days retention`;
+    return `Requires ${minPlan.planDisplayName} plan (${retentionText})`;
+  }
+};
+
 export const findClosestDashboardInterval = (
   dateRange: DateRange,
 ): DashboardDateRangeAggregationOption | undefined => {
