@@ -7,7 +7,6 @@ from pydantic import BaseModel
 from aci.common.enums import FunctionDefinitionFormat
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.function import OpenAIResponsesFunctionDefinition
-from aci.server import config
 from aci.server import dependencies as deps
 from aci.server.agent.prompt import (
     ClientMessage,

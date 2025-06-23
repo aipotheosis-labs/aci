@@ -6,7 +6,7 @@ ENVIRONMENT = check_and_get_env_variable("SERVER_ENVIRONMENT")
 
 # OpenAI API providers related configurations #
 # Additional parameters for the openai_client
-# choose between openai (compatible) or azure 
+# choose between openai (compatible) or azure
 OPENAI_CLIENT_TYPE = os.getenv("OPENAI_CLIENT_TYPE", "openai")
 # Support openai compatible end points
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", None)

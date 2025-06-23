@@ -1,3 +1,4 @@
+import openai
 import pandas as pd
 import wandb
 from dotenv import load_dotenv
@@ -47,7 +48,7 @@ class SyntheticIntentGenerator:
             )
 
         # Initialize API clients
-        self.openai_client = create_openai_client(api_key=openai_api_key) 
+        self.openai_client = create_openai_client(api_key=openai_api_key)
 
     def _fetch_app_function_data(self) -> pd.DataFrame:
         """

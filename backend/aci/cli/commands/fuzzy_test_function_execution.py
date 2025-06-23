@@ -6,12 +6,11 @@ from uuid import UUID
 
 import click
 import httpx
-from openai import OpenAI
 from rich.console import Console
 
 from aci.cli import config
 from aci.common.enums import FunctionDefinitionFormat
-from aci.common.openai_client import create_openai_client, OpenAI
+from aci.common.openai_client import OpenAI, create_openai_client
 from aci.common.schemas.function import FunctionExecute
 
 console = Console()
@@ -88,7 +87,7 @@ def fuzzy_test_function_execution_helper(
     console.print(function_definition)
 
     # Use OpenAI function calling to generate a random input
-    openai_client = create_openai_client (api_key=config.OPENAI_API_KEY)
+    openai_client = create_openai_client(api_key=config.OPENAI_API_KEY)
     function_args = _generate_fuzzy_function_call_arguments(
         openai_client, model, function_definition, prompt=prompt
     )

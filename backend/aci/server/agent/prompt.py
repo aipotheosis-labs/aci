@@ -1,11 +1,10 @@
 # mypy: ignore-errors
 import json
 
-from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam
 
-from aci.common.openai_client import create_openai_client
 from aci.common.logging_setup import get_logger
+from aci.common.openai_client import create_openai_client
 from aci.common.schemas.function import OpenAIResponsesFunctionDefinition
 from aci.server import config
 
