@@ -42,12 +42,7 @@ export const TimePeriodSelect = React.forwardRef<
     if (date) {
       const hours = display12HourValue(date.getHours());
       setDate(
-        setDateByType(
-          new Date(date),
-          hours.toString(),
-          "12hours",
-          period === "AM" ? "PM" : "AM",
-        ),
+        setDateByType(new Date(date), hours.toString(), "12hours", value),
       );
     }
   };
