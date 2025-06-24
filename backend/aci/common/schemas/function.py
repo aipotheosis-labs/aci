@@ -124,9 +124,7 @@ class FunctionsSearch(BaseModel):
         default=FunctionDefinitionFormat.BASIC,
         description="The format of the function definition to return. e.g., 'openai', 'anthropic' or 'basic' which only returns name and description.",
     )
-    limit: int = Field(
-        default=100, ge=1, le=1000, description="Maximum number of Functions per response."
-    )
+    limit: int = Field(default=100, ge=1, description="Maximum number of Functions per response.")
     offset: int = Field(default=0, ge=0, description="Pagination offset.")
 
     # empty intent or string with spaces should be treated as None
