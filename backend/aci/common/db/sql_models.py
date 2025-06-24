@@ -84,11 +84,6 @@ class Project(Base):
     # newly added apps and functions to public
     visibility_access: Mapped[Visibility] = mapped_column(SqlEnum(Visibility), nullable=False)
 
-    """ quota related fields: TODO: TBD how to implement quota system """
-    daily_quota_used: Mapped[int] = mapped_column(Integer, default=0, nullable=False, init=False)
-    daily_quota_reset_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
-    )
     api_quota_monthly_used: Mapped[int] = mapped_column(
         Integer, server_default="0", nullable=False, init=False
     )
