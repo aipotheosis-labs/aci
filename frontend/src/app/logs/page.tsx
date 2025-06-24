@@ -17,6 +17,13 @@ import { searchFunctionExecutionLogs } from "@/lib/api/log";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { LogEntry, LogSearchResponse } from "@/lib/types/log";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DatePickerWithRange } from "@/components/ui-extensions/enhanced-date-picker/date-picker";
+import {
+  type DashboardDateRange,
+  type DashboardDateRangeOptions,
+  DEFAULT_DASHBOARD_AGGREGATION_SELECTION,
+} from "@/utils/date-range-utils";
+import { useQuota } from "@/hooks/use-quota";
 
 const PAGE_SIZE = 10;
 
@@ -31,24 +38,49 @@ const useLogsTable = () => {
   const [nextPageCursor, setNextPageCursor] = useState<string | null>(null);
   const [cursorHistory, setCursorHistory] = useState<string[]>([]);
   const [currentPageNumber, setCurrentPageNumber] = useState(0);
+  const [dateRange, setDateRange] = useState<DashboardDateRange | undefined>();
+  const [selectedDateOption, setSelectedDateOption] =
+    useState<DashboardDateRangeOptions>(
+      DEFAULT_DASHBOARD_AGGREGATION_SELECTION,
+    );
   const pageSize = PAGE_SIZE;
 
   const { activeProject, accessToken, activeOrg } = useMetaInfo();
 
+  const setDateRangeAndOption = (
+    option: DashboardDateRangeOptions,
+    date?: DashboardDateRange,
+  ) => {
+    setSelectedDateOption(option);
+    setDateRange(date);
+    // Reset pagination when date range changes
+    setNextPageCursor(null);
+    setCursorHistory([]);
+    setCurrentPageNumber(0);
+  };
+
   const { data, isLoading, error, refetch } = useQuery<LogSearchResponse>({
-    queryKey: ["logs", nextPageCursor],
+    queryKey: ["logs", nextPageCursor, dateRange, selectedDateOption],
     queryFn: () => {
-      // Calculate start time as 3 days ago
-      // TODO: Make this configurable, for enterprise customers
-      // We support more than 3 days log retention
-      const threeDaysAgo = new Date();
-      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+      let startTime: string;
+      let endTime: string | undefined;
+
+      if (dateRange) {
+        startTime = dateRange.from.toISOString();
+        endTime = dateRange.to.toISOString();
+      } else {
+        // Default to 3 days ago
+        const threeDaysAgo = new Date();
+        threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+        startTime = threeDaysAgo.toISOString();
+      }
 
       return searchFunctionExecutionLogs(
         {
           log_type: "function_execution",
           limit: pageSize,
-          start_time: threeDaysAgo.toISOString(),
+          start_time: startTime,
+          ...(endTime && { end_time: endTime }),
           ...(nextPageCursor && { cursor: nextPageCursor }),
           ...(activeProject && { project_id: activeProject.id }),
         },
@@ -108,6 +140,9 @@ const useLogsTable = () => {
     canGoBack: cursorHistory.length > 0,
     refetch,
     currentPageNumber,
+    dateRange,
+    selectedDateOption,
+    setDateRangeAndOption,
   };
 };
 
@@ -120,7 +155,7 @@ const useTableColumns = (
   return useMemo(() => {
     return [
       columnHelper.accessor("@timestamp", {
-        header: "TIMESTAMP",
+        header: "TIMESTAMP (UTC)",
         cell: (info) => info.getValue(),
         enableGlobalFilter: true,
       }),
@@ -441,7 +476,15 @@ export default function LogsPage() {
     canGoBack,
     refetch,
     currentPageNumber,
+    dateRange,
+    selectedDateOption,
+    setDateRangeAndOption,
   } = useLogsTable();
+
+  // Get quota information for log retention limits
+  const { data: quotaUsage } = useQuota();
+  // The enterprise type is not considered here, and will be added after confirmation.
+  const logRetentionDays = quotaUsage?.plan.features.log_retention_days || 3; // Default to 3 days if not available
 
   const columns = useTableColumns(
     setSelectedLogEntry,
@@ -458,20 +501,20 @@ export default function LogsPage() {
           </TabsTrigger>
         </TabsList>
         <TabsContent value="function-executions" className="">
-          <p className="mt-4 text-sm text-muted-foreground">
-            Showing function execution logs from the past 3 days
-          </p>
-          <p className="text-sm text-muted-foreground">
-            We will support log retention more than 3 days (Coming soon), please
-            see{" "}
-            <a
-              href="https://platform.aci.dev/pricing"
-              className="text-blue-500"
-            >
-              https://platform.aci.dev/pricing
-            </a>{" "}
-            for more details.
-          </p>
+          <div className="mt-4">
+            <DatePickerWithRange
+              dateRange={dateRange}
+              selectedOption={selectedDateOption}
+              setDateRangeAndOption={setDateRangeAndOption}
+              logRetentionDays={logRetentionDays}
+            />
+            {quotaUsage && (
+              <div className="mt-4 text-sm text-muted-foreground">
+                Current plan ({quotaUsage.plan.name}): Log retention limited to{" "}
+                {logRetentionDays} days
+              </div>
+            )}
+          </div>
           <LogsTableView
             logs={logs}
             columns={columns}
