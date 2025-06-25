@@ -2,12 +2,18 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import AppStorePage from "@/app/apps/page";
 import { useApps } from "@/hooks/use-app";
+import { useAppLinkedAccounts } from "@/hooks/use-linked-account";
 import { App } from "@/lib/types/app";
 import { UseQueryResult } from "@tanstack/react-query";
 
 // Mock the useApps hook
 vi.mock("@/hooks/use-app", () => ({
   useApps: vi.fn(),
+}));
+
+// Mock the useAppLinkedAccounts hook
+vi.mock("@/hooks/use-linked-account", () => ({
+  useAppLinkedAccounts: vi.fn(),
 }));
 
 describe("AppStorePage", () => {
@@ -82,6 +88,35 @@ describe("AppStorePage", () => {
       refetch: vi.fn(),
       error: null,
     } as unknown as UseQueryResult<App[], Error>);
+
+    vi.mocked(useAppLinkedAccounts).mockReturnValue({
+      data: [
+        {
+          id: "1",
+          app_name: "TEST_APP_1",
+          project_id: "1",
+          linked_account_owner_id: "1",
+          security_scheme: "oauth2",
+          enabled: true,
+          created_at: "2024-01-01",
+          updated_at: "2024-01-01",
+          last_used_at: null,
+        },
+        {
+          id: "2",
+          app_name: "TEST_APP_1",
+          project_id: "1",
+          linked_account_owner_id: "1121",
+          security_scheme: "oauth2",
+          enabled: true,
+          created_at: "2024-01-01",
+          updated_at: "2024-01-01",
+          last_used_at: null,
+        },
+      ],
+      isPending: false,
+      isError: false,
+    } as unknown as ReturnType<typeof useAppLinkedAccounts>);
 
     render(<AppStorePage />);
     screen.logTestingPlaygroundURL();
