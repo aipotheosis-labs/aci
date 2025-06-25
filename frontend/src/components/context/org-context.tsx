@@ -12,7 +12,6 @@ import {
 import { OrgMemberInfoClass, useAuthInfo } from "@propelauth/react";
 import { useQuery } from "@tanstack/react-query";
 import { UserClass } from "@propelauth/javascript";
-import { LoadingGuard } from "./loading-guard";
 
 type OrgCtx = {
   orgs: OrgMemberInfoClass[];
@@ -36,7 +35,7 @@ const fetchOrgs = async (
   let retry = 0;
   while (!orgs.length && retry < 5) {
     await refreshAuthInfo();
-    await new Promise((r) => setTimeout(r, 800));
+    await new Promise((r) => setTimeout(r, 1000));
     orgs = userClass.getOrgs();
     retry++;
   }
@@ -46,11 +45,7 @@ const fetchOrgs = async (
 export const OrgProvider = ({ children }: { children: ReactNode }) => {
   const { userClass, refreshAuthInfo } = useAuthInfo();
 
-  const {
-    data: orgs = [],
-    isLoading,
-    refetch,
-  } = useQuery({
+  const { data: orgs = [], refetch } = useQuery({
     queryKey: ["orgs", userClass?.userId],
     queryFn: () => fetchOrgs(userClass!, refreshAuthInfo),
     enabled: !!userClass,
@@ -91,12 +86,8 @@ export const OrgProvider = ({ children }: { children: ReactNode }) => {
   }, [refetch]);
 
   return (
-    <LoadingGuard isLoading={isLoading || !activeOrg}>
-      <OrgContext.Provider
-        value={{ orgs, activeOrg, setActiveOrg, reloadOrgs }}
-      >
-        {children}
-      </OrgContext.Provider>
-    </LoadingGuard>
+    <OrgContext.Provider value={{ orgs, activeOrg, setActiveOrg, reloadOrgs }}>
+      {children}
+    </OrgContext.Provider>
   );
 };

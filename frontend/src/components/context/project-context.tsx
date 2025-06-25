@@ -38,7 +38,7 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
   const {
     data: projects = [],
     refetch,
-    isFetching,
+    isLoading: projectsLoading,
   } = useProjects(activeOrg?.orgId, safeAccessToken);
 
   const [activeProject, setActiveProject] = useState<Project | null>(null);
@@ -63,9 +63,15 @@ export const ProjectProvider = ({ children }: { children: ReactNode }) => {
     await refetch();
   }, [refetch]);
 
+  const { userClass } = useAuthInfo();
+
+  const shouldShowChildren =
+    activeOrg && activeProject && accessToken && !projectsLoading && userClass;
+
   return (
     <LoadingGuard
-      isLoading={!activeOrg || !accessToken || isFetching || !activeProject}
+      isLoading={!shouldShowChildren}
+      loadingMessage="Setting up your workspace..."
     >
       <ProjectContext.Provider
         value={{
