@@ -579,7 +579,8 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "description": "Type of icon ('emoji' or 'external')"
+                                    "description": "Type of icon ('emoji' or 'external')",
+                                    "enum": ["emoji", "external"]
                                 },
                                 "emoji": {
                                     "type": "string",
@@ -611,6 +612,11 @@
                             "type": "object",
                             "description": "Page cover image",
                             "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["external"],
+                                    "default": "external"
+                                },
                                 "external": {
                                     "type": "object",
                                     "description": "External file details",
@@ -625,8 +631,8 @@
                                     "additionalProperties": false
                                 }
                             },
-                            "required": ["external"],
-                            "visible": ["external"],
+                            "required": ["type", "external"],
+                            "visible": ["type", "external"],
                             "additionalProperties": false
                         }
                     },
