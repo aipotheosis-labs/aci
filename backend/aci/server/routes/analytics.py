@@ -14,7 +14,7 @@ router = APIRouter()
 logger = get_logger(__name__)
 
 
-def _get_project_api_key_ids_sql_list(context: deps.RequestContext) -> str | None:
+def _get_project_api_key_ids_list(context: deps.RequestContext) -> list[str] | None:
     project_api_key_ids = crud.projects.get_all_api_key_ids_for_project(
         context.db_session, context.project.id
     )
@@ -22,18 +22,20 @@ def _get_project_api_key_ids_sql_list(context: deps.RequestContext) -> str | Non
     if not project_api_key_ids:
         return None
 
-    return ",".join(f"'{key_id}'" for key_id in project_api_key_ids)
+    return [str(key_id) for key_id in project_api_key_ids]
 
 
 @router.get("/app-usage-distribution", response_model=list[DistributionDatapoint])
 async def get_app_usage_distribution(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
 ) -> list[DistributionDatapoint]:
-    api_key_ids_sql_list = _get_project_api_key_ids_sql_list(context)
+    api_key_ids_list = _get_project_api_key_ids_list(context)
 
-    if not api_key_ids_sql_list:
+    if not api_key_ids_list:
         return []
 
+    # Use parameterized query to prevent SQL injection
+    placeholders = ",".join(["?" for _ in api_key_ids_list])
     query = f"""
 SELECT
   regexp_replace(url_path, '/v1/functions/([^/]+?)(?:__.*)?/execute', '\\1') AS name,
@@ -42,14 +44,14 @@ FROM records
 WHERE attributes->>'http.user_agent' LIKE '%python%'
   AND attributes->>'fastapi.route.name' = 'execute'
   AND trace_id IN (SELECT trace_id FROM records
-WHERE attributes->>'api_key_id' IN ({api_key_ids_sql_list}))
+WHERE attributes->>'api_key_id' IN ({placeholders}))
 GROUP BY name
 ORDER BY value DESC;
     """
 
     async with AsyncLogfireQueryClient(read_token=config.LOGFIRE_READ_TOKEN) as client:
         json_rows = await client.query_json_rows(
-            sql=query, min_timestamp=datetime.now() - timedelta(days=7)
+            sql=query, min_timestamp=datetime.now() - timedelta(days=7), parameters=api_key_ids_list
         )
         return [DistributionDatapoint(**row) for row in json_rows["rows"]]
 
@@ -58,11 +60,13 @@ ORDER BY value DESC;
 async def get_function_usage_distribution(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
 ) -> list[DistributionDatapoint]:
-    api_key_ids_sql_list = _get_project_api_key_ids_sql_list(context)
+    api_key_ids_list = _get_project_api_key_ids_list(context)
 
-    if not api_key_ids_sql_list:
+    if not api_key_ids_list:
         return []
 
+    # Use parameterized query to prevent SQL injection
+    placeholders = ",".join(["?" for _ in api_key_ids_list])
     query = f"""
 SELECT
   regexp_replace(url_path, '/v1/functions/([A-Z0-9_]+)/execute', '\\1') AS name,
@@ -71,14 +75,14 @@ FROM records
 WHERE attributes->>'http.user_agent' LIKE '%python%'
   AND attributes->>'fastapi.route.name' = 'execute'
   AND trace_id IN (SELECT trace_id FROM records
-WHERE attributes->>'api_key_id' IN ({api_key_ids_sql_list}))
+WHERE attributes->>'api_key_id' IN ({placeholders}))
 GROUP BY name
 ORDER BY value DESC;
     """
 
     async with AsyncLogfireQueryClient(read_token=config.LOGFIRE_READ_TOKEN) as client:
         json_rows = await client.query_json_rows(
-            sql=query, min_timestamp=datetime.now() - timedelta(days=7)
+            sql=query, min_timestamp=datetime.now() - timedelta(days=7), parameters=api_key_ids_list
         )
         return [DistributionDatapoint(**row) for row in json_rows["rows"]]
 
@@ -87,11 +91,13 @@ ORDER BY value DESC;
 async def get_app_usage_timeseries(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
 ) -> list[TimeSeriesDatapoint]:
-    api_key_ids_sql_list = _get_project_api_key_ids_sql_list(context)
+    api_key_ids_list = _get_project_api_key_ids_list(context)
 
-    if not api_key_ids_sql_list:
+    if not api_key_ids_list:
         return []
 
+    # Use parameterized query to prevent SQL injection
+    placeholders = ",".join(["?" for _ in api_key_ids_list])
     query = f"""
 SELECT
   time_bucket('1d', start_timestamp)::DATE AS x,
@@ -101,14 +107,14 @@ FROM records
 WHERE attributes->>'http.user_agent' LIKE '%python%'
   AND attributes->>'fastapi.route.name' = 'execute'
   AND trace_id IN (SELECT trace_id FROM records
-WHERE attributes->>'api_key_id' IN ({api_key_ids_sql_list}))
+WHERE attributes->>'api_key_id' IN ({placeholders}))
 GROUP BY app_name, x
 ORDER BY x DESC;
     """
 
     async with AsyncLogfireQueryClient(read_token=config.LOGFIRE_READ_TOKEN) as client:
         json_rows = await client.query_json_rows(
-            sql=query, min_timestamp=datetime.now() - timedelta(days=7)
+            sql=query, min_timestamp=datetime.now() - timedelta(days=7), parameters=api_key_ids_list
         )
 
         # Transform the data format
@@ -132,11 +138,13 @@ ORDER BY x DESC;
 async def get_function_usage_timeseries(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
 ) -> list[TimeSeriesDatapoint]:
-    api_key_ids_sql_list = _get_project_api_key_ids_sql_list(context)
+    api_key_ids_list = _get_project_api_key_ids_list(context)
 
-    if not api_key_ids_sql_list:
+    if not api_key_ids_list:
         return []
 
+    # Use parameterized query to prevent SQL injection
+    placeholders = ",".join(["?" for _ in api_key_ids_list])
     query = f"""
 SELECT
   time_bucket('1d', start_timestamp)::DATE AS x,
@@ -146,14 +154,14 @@ FROM records
 WHERE attributes->>'http.user_agent' LIKE '%python%'
   AND attributes->>'fastapi.route.name' = 'execute'
   AND trace_id IN (SELECT trace_id FROM records
-WHERE attributes->>'api_key_id' IN ({api_key_ids_sql_list}))
+WHERE attributes->>'api_key_id' IN ({placeholders}))
 GROUP BY function_name, x
 ORDER BY x DESC;
     """
 
     async with AsyncLogfireQueryClient(read_token=config.LOGFIRE_READ_TOKEN) as client:
         json_rows = await client.query_json_rows(
-            sql=query, min_timestamp=datetime.now() - timedelta(days=7)
+            sql=query, min_timestamp=datetime.now() - timedelta(days=7), parameters=api_key_ids_list
         )
 
         # Transform the data format
