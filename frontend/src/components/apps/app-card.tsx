@@ -16,15 +16,39 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle } from "lucide-react";
 
 interface AppCardProps {
   app: App;
+  isConfigured?: boolean;
 }
 
-export function AppCard({ app }: AppCardProps) {
+export function AppCard({ app, isConfigured = false }: AppCardProps) {
   return (
     <Link href={`/apps/${app.name}`} className="block">
-      <Card className="h-[300px] transition-shadow hover:shadow-lg flex flex-col overflow-hidden ]">
+      <Card className="h-[300px] transition-shadow hover:shadow-lg flex flex-col overflow-hidden relative">
+        {isConfigured && (
+          <div className="absolute top-2 right-2 z-10">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge
+                    variant="secondary"
+                    className="bg-green-100 text-green-700 border-green-200 flex items-center gap-1"
+                  >
+                    <CheckCircle className="h-3 w-3" />
+                    Configured
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>App already configured for this project</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        )}
+
         <CardHeader className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0 flex-1 mr-4">

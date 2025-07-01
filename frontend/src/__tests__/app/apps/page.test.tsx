@@ -3,16 +3,32 @@ import { render, screen, waitFor, cleanup } from "@testing-library/react";
 import AppStorePage from "@/app/apps/page";
 import { useApps } from "@/hooks/use-app";
 import { App } from "@/lib/types/app";
+import { AppConfig } from "@/lib/types/appconfig";
 import { UseQueryResult } from "@tanstack/react-query";
+import { useAppConfigs } from "@/hooks/use-app-config";
 
 // Mock the useApps hook
 vi.mock("@/hooks/use-app", () => ({
   useApps: vi.fn(),
 }));
 
+// Mock the useAppConfigs hook
+vi.mock("@/hooks/use-app-config", () => ({
+  useAppConfigs: vi.fn(),
+}));
+
 describe("AppStorePage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Mock useAppConfigs to return empty array by default
+    vi.mocked(useAppConfigs).mockReturnValue({
+      data: [],
+      isPending: false,
+      isError: false,
+      refetch: vi.fn(),
+      error: null,
+    } as unknown as UseQueryResult<AppConfig[], Error>);
   });
 
   afterEach(() => {
