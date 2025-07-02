@@ -532,6 +532,7 @@ async def handle_customer_subscription_deleted(
     if subscription:
         # 2. Update PropelAuth organization max_users to 1 (free plan limit)
         try:
+            # TODO: Update when allowing multiple orgs
             auth.update_org_metadata(org_id=str(subscription.org_id), max_users=1)
             logger.info(
                 f"Updated PropelAuth org max_users to 1 for deleted subscription, "
