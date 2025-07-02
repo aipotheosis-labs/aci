@@ -483,7 +483,7 @@ async def handle_customer_subscription_updated(
     # 5. Update PropelAuth organization max_users based on the new plan
     try:
         new_max_users = plan.features["developer_seats"]
-        auth.update_org(org_id=str(subscription.org_id), max_users=new_max_users)
+        auth.update_org_metadata(org_id=str(subscription.org_id), max_users=new_max_users)
         logger.info(
             f"Updated PropelAuth org max_users, org_id={subscription.org_id}, "
             f"new_max_users={new_max_users}, plan={plan.name}"
