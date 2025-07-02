@@ -119,5 +119,92 @@
       "visible": ["body"],
       "additionalProperties": false
     }
+  },
+  {
+    "name": "REPLICATE__MODEL_GROUNDING_DINO",
+    "description": "Detects any object in an image based on a descriptive text query. It can detect objects it wasn't explicitly trained on.",
+    "tags": ["object-detection", "grounding-dino", "computer-vision", "zero-shot"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/predictions",
+      "server_url": "https://api.replicate.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "description": "Headers for the HTTP request",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "description": "Content-Type header",
+              "default": "application/json"
+            },
+            "Prefer": {
+              "type": "string",
+              "description": "Prefer header for synchronous response",
+              "default": "wait"
+            }
+          },
+          "additionalProperties": false,
+          "required": ["Content-Type", "Prefer"],
+          "visible": []
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body for the Replicate API.",
+          "properties": {
+            "version": {
+              "type": "string",
+              "description": "The specific version of the Grounding DINO model to run.",
+              "default": "efd10a8ddc57ea28773327e881ce95e20cc1d734c589f7dd01d2036921ed78aa"
+            },
+            "input": {
+              "type": "object",
+              "description": "Input parameters for the Grounding DINO model.",
+              "properties": {
+                "image": {
+                  "type": "string",
+                  "format": "uri",
+                  "description": "Input image to query. Must be a publicly accessible URL."
+                },
+                "query": {
+                  "type": "string",
+                  "description": "Comma seperated names of the objects to be detected in the image."
+                },
+                "box_threshold": {
+                  "type": "number",
+                  "description": "Confidence level for object detection (0 to 1).",
+                  "default": 0.25
+                },
+                "text_threshold": {
+                  "type": "number",
+                  "description": "Confidence level for text matching (0 to 1).",
+                  "default": 0.25
+                },
+                 "show_visualisation": {
+                    "type": "boolean",
+                    "description": "Draw and visualize bounding boxes on the image.",
+                    "default": true
+                }
+              },
+              "required": ["image", "query"],
+              "visible": ["image", "query", "box_threshold", "text_threshold", "show_visualisation"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["version", "input"],
+          "visible": ["input"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
   }
 ]
