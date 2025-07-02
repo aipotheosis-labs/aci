@@ -480,9 +480,10 @@ async def handle_customer_subscription_updated(
             error_code=status.HTTP_400_BAD_REQUEST,
         )
 
+    logger.info(f"SUCCESS {plan}")
     # 5. Update PropelAuth organization max_users based on the new plan
+    new_max_users = plan.features["developer_seats"]
     try:
-        new_max_users = plan.features["developer_seats"]
         auth.update_org_metadata(org_id=str(subscription.org_id), max_users=new_max_users)
         logger.info(
             f"Updated PropelAuth org max_users, org_id={subscription.org_id}, "
@@ -529,7 +530,21 @@ async def handle_customer_subscription_deleted(
     )
 
     if subscription:
-        # 2. Delete the subscription record
+        # 2. Update PropelAuth organization max_users to 1 (free plan limit)
+        try:
+            auth.update_org_metadata(org_id=str(subscription.org_id), max_users=1)
+            logger.info(
+                f"Updated PropelAuth org max_users to 1 for deleted subscription, "
+                f"org_id={subscription.org_id}"
+            )
+        except Exception as e:
+            logger.error(
+                f"Failed to update PropelAuth org max_users for deleted subscription, "
+                f"org_id={subscription.org_id}, error={e}"
+            )
+            # Don't fail the webhook if PropelAuth update fails, just log the error
+
+        # 3. Delete the subscription record
         logger.info(
             f"Deleting subscription record, stripe_subscription_id={stripe_subscription_id}, "
             f"org_id={subscription.org_id}, plan_id={subscription.plan_id}"
