@@ -128,7 +128,7 @@ async def create_checkout_session(
                     "quantity": 1,
                 }
             ],
-            success_url=f"{config.DEV_PORTAL_URL}/account",
+            success_url=f"{config.DEV_PORTAL_URL}/settings",
             cancel_url=f"{config.DEV_PORTAL_URL}/pricing",
             mode="subscription",
             client_reference_id=str(org_id),
@@ -171,7 +171,7 @@ async def create_customer_portal_session(
     try:
         session = stripe.billing_portal.Session.create(
             customer=active_subscription.stripe_customer_id,
-            return_url=f"{config.DEV_PORTAL_URL}/account",
+            return_url=f"{config.DEV_PORTAL_URL}/settings",
         )
     except stripe.StripeError as e:
         logger.error(f"Error creating customer portal session, error={e}")
