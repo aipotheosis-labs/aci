@@ -480,6 +480,22 @@ async def handle_customer_subscription_updated(
             error_code=status.HTTP_400_BAD_REQUEST,
         )
 
+    # 5. Update PropelAuth organization max_users based on the new plan
+    try:
+        new_max_users = plan.features["developer_seats"]
+        auth.update_org(org_id=str(subscription.org_id), max_users=new_max_users)
+        logger.info(
+            f"Updated PropelAuth org max_users, org_id={subscription.org_id}, "
+            f"new_max_users={new_max_users}, plan={plan.name}"
+        )
+    except Exception as e:
+        logger.error(
+            f"Failed to update PropelAuth org max_users, org_id={subscription.org_id}, "
+            f"new_max_users={new_max_users}, plan={plan.name}, error={e}"
+        )
+        # Don't fail the webhook if PropelAuth update fails, just log the error
+        # The subscription update in our DB is still valid
+
     db_session.commit()
 
     logger.info(
