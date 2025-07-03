@@ -489,10 +489,10 @@ async def handle_customer_subscription_updated(
             f"Updated PropelAuth org max_users, org_id={subscription.org_id}, "
             f"new_max_users={new_max_users}, plan={plan.name}"
         )
-    except Exception as e:
-        logger.error(
+    except Exception:
+        logger.exception(
             f"Failed to update PropelAuth org max_users, org_id={subscription.org_id}, "
-            f"new_max_users={new_max_users}, plan={plan.name}, error={e}"
+            f"new_max_users={new_max_users}, plan={plan.name}",
         )
         # Don't fail the webhook if PropelAuth update fails, just log the error
         # The subscription update in our DB is still valid
@@ -530,18 +530,32 @@ async def handle_customer_subscription_deleted(
     )
 
     if subscription:
-        # 2. Update PropelAuth organization max_users to 1 (free plan limit)
+        # 2. Update PropelAuth organization max_users to free plan limit
         try:
-            # TODO: Update when allowing multiple orgs
-            auth.update_org_metadata(org_id=str(subscription.org_id), max_users=1)
+            # Get the free plan to determine the correct max_users value
+            plan = crud.plans.get_by_name(db_session, "free")
+            if not plan:
+                logger.exception(f"Free plan not found, org_id={subscription.org_id}")
+                raise BillingError(
+                    "Free plan not found",
+                    error_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+            max_users = plan.features["developer_seats"]
             logger.info(
-                f"Updated PropelAuth org max_users to 1 for deleted subscription, "
-                f"org_id={subscription.org_id}"
+                f"Using developer_seats from free plan, plan={plan.name}, max_users={max_users}"
             )
-        except Exception as e:
-            logger.error(
+
+            # TODO: Update when allowing multiple orgs
+            auth.update_org_metadata(org_id=str(subscription.org_id), max_users=max_users)
+            logger.info(
+                f"Updated PropelAuth org max_users to free plan limit for deleted subscription, "
+                f"org_id={subscription.org_id}, max_users={max_users}"
+            )
+        except Exception:
+            logger.exception(
                 f"Failed to update PropelAuth org max_users for deleted subscription, "
-                f"org_id={subscription.org_id}, error={e}"
+                f"org_id={subscription.org_id}",
             )
             # Don't fail the webhook if PropelAuth update fails, just log the error
 
