@@ -349,12 +349,28 @@ async def handle_checkout_session_completed(session_data: dict, db_session: Sess
         )
         db_session.add(new_subscription)
 
+    # 6. Update PropelAuth organization max_users based on the new plan
+    new_max_users = plan.features["developer_seats"]
+    try:
+        auth.update_org_metadata(org_id=str(client_reference_id), max_users=new_max_users)
+        logger.info(
+            f"Updated PropelAuth org max_users for new subscription, org_id={client_reference_id}, "
+            f"new_max_users={new_max_users}, plan={plan.name}"
+        )
+    except Exception:
+        logger.exception(
+            f"Failed to update PropelAuth org max_users for new subscription, "
+            f"org_id={client_reference_id}, new_max_users={new_max_users}, plan={plan.name}",
+        )
+        # Don't fail the webhook if PropelAuth update fails, just log the error
+        # The subscription creation in our DB is still valid
+
     db_session.commit()
     logger.info(
         f"Successfully created/updated subscription record, org_id={client_reference_id}, stripe_subscription_id={stripe_subscription_id}"
     )
 
-    # 6. Update subscription metadata with org_id
+    # 7. Update subscription metadata with org_id
     metadata = session_data.get("metadata")
     try:
         subscription_metadata = StripeSubscriptionMetadata.model_validate(metadata)
