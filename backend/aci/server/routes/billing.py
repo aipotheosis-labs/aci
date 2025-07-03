@@ -480,7 +480,6 @@ async def handle_customer_subscription_updated(
             error_code=status.HTTP_400_BAD_REQUEST,
         )
 
-    logger.info(f"SUCCESS {plan}")
     # 5. Update PropelAuth organization max_users based on the new plan
     new_max_users = plan.features["developer_seats"]
     try:
