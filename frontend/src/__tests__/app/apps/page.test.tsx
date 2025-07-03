@@ -4,7 +4,9 @@ import AppStorePage from "@/app/apps/page";
 import { useApps } from "@/hooks/use-app";
 import { useAppLinkedAccounts } from "@/hooks/use-linked-account";
 import { App } from "@/lib/types/app";
+import { AppConfig } from "@/lib/types/appconfig";
 import { UseQueryResult } from "@tanstack/react-query";
+import { useAppConfigs } from "@/hooks/use-app-config";
 
 // Mock the useApps hook
 vi.mock("@/hooks/use-app", () => ({
@@ -16,9 +18,23 @@ vi.mock("@/hooks/use-linked-account", () => ({
   useAppLinkedAccounts: vi.fn(),
 }));
 
+// Mock the useAppConfigs hook
+vi.mock("@/hooks/use-app-config", () => ({
+  useAppConfigs: vi.fn(),
+}));
+
 describe("AppStorePage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+
+    // Mock useAppConfigs to return empty array by default
+    vi.mocked(useAppConfigs).mockReturnValue({
+      data: [],
+      isPending: false,
+      isError: false,
+      refetch: vi.fn(),
+      error: null,
+    } as unknown as UseQueryResult<AppConfig[], Error>);
   });
 
   afterEach(() => {
