@@ -41,7 +41,7 @@ export const Header = () => {
           </a>
 
           <a
-            href="https://github.com/aipotheosis-labs/aipolabs-python"
+            href="https://github.com/aipotheosis-labs/aci"
             target="_blank"
             rel="noopener noreferrer"
           >
