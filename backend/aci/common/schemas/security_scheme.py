@@ -162,6 +162,15 @@ class APIKeySchemeCredentials(BaseModel):
     secret_key: str
 
 
+class APIKeySchemeCredentialsLimited(BaseModel):
+    """
+    Limited API key credentials to expose to the client directly
+    Placeholder for now just to be consistent with OAuth2SchemeCredentialsLimited
+    """
+
+    pass
+
+
 class OAuth2SchemeCredentials(BaseModel):
     """Credentials for OAuth2 scheme"""
 
@@ -180,12 +189,29 @@ class OAuth2SchemeCredentials(BaseModel):
     raw_token_response: dict | None = None
 
 
+class OAuth2SchemeCredentialsLimited(BaseModel):
+    """Limited OAuth2 credentials to expose to the client directly"""
+
+    access_token: str
+    expires_at: int | None = None
+    refresh_token: str | None = None
+
+
 class NoAuthSchemeCredentials(BaseModel, extra="forbid"):
     """
     Credentials for no auth scheme
     For now it only allows an empty dict, this is clearer and less ambiguous than using {} or None directly.
     We could also add some fields as metadata in the future if needed.
     # TODO: there is some ambiguity with "no auth" and "use app's default credentials", needs a refactor.
+    """
+
+    pass
+
+
+class NoAuthSchemeCredentialsLimited(BaseModel, extra="forbid"):
+    """
+    Limited no auth credentials to expose to the client directly
+    Placeholder for now just to be consistent with OAuth2SchemeCredentialsLimited
     """
 
     pass

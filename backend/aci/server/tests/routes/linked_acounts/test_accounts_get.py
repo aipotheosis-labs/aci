@@ -5,11 +5,7 @@ from fastapi import status
 from fastapi.testclient import TestClient
 
 from aci.common.db.sql_models import LinkedAccount
-from aci.common.schemas.linked_accounts import (
-    APIKeySchemeCredentialsLimited,
-    LinkedAccountPublic,
-    OAuth2SchemeCredentialsLimited,
-)
+from aci.common.schemas.linked_accounts import LinkedAccountWithCredentials
 from aci.server import config, security_credentials_manager
 
 NON_EXISTENT_LINKED_ACCOUNT_ID = "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
@@ -32,14 +28,14 @@ def test_get_linked_account(
     response = test_client.get(ENDPOINT_1, headers={"x-api-key": dummy_api_key_1})
     assert response.status_code == status.HTTP_200_OK, response.json()
     assert (
-        LinkedAccountPublic.model_validate(response.json()).id
+        LinkedAccountWithCredentials.model_validate(response.json()).id
         == dummy_linked_account_oauth2_google_project_1.id
     )
 
     response = test_client.get(ENDPOINT_2, headers={"x-api-key": dummy_api_key_2})
     assert response.status_code == status.HTTP_200_OK, response.json()
     assert (
-        LinkedAccountPublic.model_validate(response.json()).id
+        LinkedAccountWithCredentials.model_validate(response.json()).id
         == dummy_linked_account_oauth2_google_project_2.id
     )
 
@@ -82,13 +78,8 @@ def test_get_linked_account_with_api_key_credentials(
     assert response.status_code == status.HTTP_200_OK
 
     linked_account = response.json()
-    security_credentials = APIKeySchemeCredentialsLimited.model_validate(
-        linked_account["security_credentials"]
-    )
-    credentials_dict = security_credentials.model_dump()
-    assert list(credentials_dict.keys()) == ["secret_key"], (
-        "API key credentials should only contain secret_key"
-    )
+    security_credentials = linked_account["security_credentials"]
+    assert not security_credentials, "API key credentials should not be exposed for now"
 
 
 def test_get_linked_account_with_oauth2_credentials(
@@ -105,13 +96,11 @@ def test_get_linked_account_with_oauth2_credentials(
     assert response.status_code == status.HTTP_200_OK
 
     linked_account = response.json()
-    security_credentials = OAuth2SchemeCredentialsLimited.model_validate(
-        linked_account["security_credentials"]
-    )
-    credentials_dict = security_credentials.model_dump()
-    assert list(credentials_dict.keys()) == ["access_token"], (
-        "OAuth2 credentials should only contain access_token"
-    )
+    security_credentials: dict[str, str] = linked_account["security_credentials"]
+    assert security_credentials["access_token"], "OAuth2 credentials should contain access_token"
+    # NOTE: expires_at and refresh_token are optional, but they exist in this mock linked account
+    assert security_credentials["expires_at"], "OAuth2 credentials should contain expires_at"
+    assert security_credentials["refresh_token"], "OAuth2 credentials should contain refresh_token"
 
 
 def test_get_linked_account_with_expired_oauth2_credentials(
@@ -125,7 +114,7 @@ def test_get_linked_account_with_expired_oauth2_credentials(
     )
 
     # Mock the token refresh response
-    mock_refresh_response = {
+    mock_refresh_response: dict[str, str | int] = {
         "access_token": "new_mock_access_token",
         "token_type": "Bearer",
         "expires_in": 3600,
@@ -147,12 +136,10 @@ def test_get_linked_account_with_expired_oauth2_credentials(
         assert response.status_code == status.HTTP_200_OK
 
         linked_account = response.json()
-        security_credentials = OAuth2SchemeCredentialsLimited.model_validate(
-            linked_account["security_credentials"]
+        security_credentials: dict[str, str] = linked_account["security_credentials"]
+        assert security_credentials["access_token"] == mock_refresh_response["access_token"]
+        assert int(security_credentials["expires_at"]) == (
+            mock_current_time + int(mock_refresh_response["expires_in"])
         )
-        credentials_dict = security_credentials.model_dump()
-        assert list(credentials_dict.keys()) == ["access_token"], (
-            "OAuth2 credentials should only contain access_token"
-        )
-        assert credentials_dict["access_token"] == mock_refresh_response["access_token"]
+        assert security_credentials["refresh_token"] == mock_refresh_response["refresh_token"]
         mock_refresh.assert_called_once()

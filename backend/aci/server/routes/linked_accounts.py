@@ -587,7 +587,11 @@ async def list_linked_accounts(
     return linked_accounts
 
 
-@router.get("/{linked_account_id}", response_model=LinkedAccountWithCredentials)
+@router.get(
+    "/{linked_account_id}",
+    response_model=LinkedAccountWithCredentials,
+    response_model_exclude_none=True,
+)
 async def get_linked_account(
     context: Annotated[deps.RequestContext, Depends(deps.get_request_context)],
     linked_account_id: UUID,

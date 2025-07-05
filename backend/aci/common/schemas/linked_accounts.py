@@ -5,7 +5,9 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from aci.common.db.sql_models import MAX_STRING_LENGTH, SecurityScheme
 from aci.common.schemas.security_scheme import (
-    NoAuthSchemeCredentials,
+    APIKeySchemeCredentialsLimited,
+    NoAuthSchemeCredentialsLimited,
+    OAuth2SchemeCredentialsLimited,
 )
 
 
@@ -57,26 +59,16 @@ class LinkedAccountPublic(BaseModel):
     enabled: bool
     created_at: datetime
     updated_at: datetime
-    last_used_at: datetime | None
+    last_used_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
 
-class OAuth2SchemeCredentialsLimited(BaseModel):
-    """Limited OAuth2 credentials containing only access token"""
-
-    access_token: str
-
-
-class APIKeySchemeCredentialsLimited(BaseModel):
-    """Limited API key credentials containing only secret key"""
-
-    secret_key: str
-
-
 class LinkedAccountWithCredentials(LinkedAccountPublic):
     security_credentials: (
-        OAuth2SchemeCredentialsLimited | APIKeySchemeCredentialsLimited | NoAuthSchemeCredentials
+        OAuth2SchemeCredentialsLimited
+        | APIKeySchemeCredentialsLimited
+        | NoAuthSchemeCredentialsLimited
     )
 
 
