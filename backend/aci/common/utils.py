@@ -1,8 +1,9 @@
 import os
 import re
+from functools import cache
 from uuid import UUID
 
-from sqlalchemy import create_engine
+from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from aci.common.logging_setup import get_logger
@@ -42,9 +43,33 @@ def format_to_screaming_snake_case(name: str) -> str:
     return s4
 
 
+# NOTE: it's important that you don't create a new engine for each session, which takes
+# up db resources and will lead up to errors pretty fast
+# TODO: fine tune the pool settings
+@cache
+def get_db_engine(db_url: str) -> Engine:
+    return create_engine(
+        db_url,
+        pool_size=10,
+        max_overflow=10,
+        pool_timeout=30,
+        pool_recycle=3600,  # recycle connections after 1 hour
+        pool_pre_ping=True,
+    )
+
+
+# NOTE: cache this because only one sessionmaker is needed for all db sessions
+@cache
+def get_sessionmaker(db_url: str) -> sessionmaker:
+    engine = get_db_engine(db_url)
+    return sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+
 def create_db_session(db_url: str) -> Session:
-    SessionMaker = sessionmaker(autocommit=False, autoflush=False, bind=create_engine(db_url))
-    return SessionMaker()
+    SessionMaker = get_sessionmaker(db_url)
+    session: Session = SessionMaker()
+
+    return session
 
 
 def parse_app_name_from_function_name(function_name: str) -> str:
