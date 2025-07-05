@@ -402,7 +402,8 @@ async def link_oauth2_account(
 @router.get(
     "/oauth2/callback",
     name=LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME,
-    response_model=LinkedAccountPublic,
+    response_model=LinkedAccountWithCredentials,
+    response_model_exclude_none=True,
 )
 async def linked_accounts_oauth2_callback(
     request: Request,
