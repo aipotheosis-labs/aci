@@ -624,5 +624,422 @@
             ],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "GITLAB__LIST_BRANCHES",
+        "description": "Lists repository branches for a project",
+        "tags": [
+            "repository",
+            "branch",
+            "git"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{id}/repository/branches",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "search": {
+                            "type": "string",
+                            "description": "Return list of branches matching the search criteria"
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Number of items to list per page",
+                            "default": 20
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number",
+                            "default": 1
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "search",
+                        "per_page",
+                        "page"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path",
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__CREATE_BRANCH",
+        "description": "Creates a new branch from another branch or commit",
+        "tags": [
+            "repository",
+            "branch",
+            "git"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/projects/{id}/repository/branches",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "branch": {
+                            "type": "string",
+                            "description": "Name of the branch"
+                        },
+                        "ref": {
+                            "type": "string",
+                            "description": "Branch name or commit SHA to create branch from"
+                        }
+                    },
+                    "required": ["branch", "ref"],
+                    "visible": ["branch", "ref"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "query"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__GET_FILE_CONTENT",
+        "description": "Gets the content of a file from the repository",
+        "tags": [
+            "repository",
+            "file",
+            "content"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{id}/repository/files/{file_path}",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        },
+                        "file_path": {
+                            "type": "string",
+                            "description": "URL-encoded full path to the file"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "file_path"
+                    ],
+                    "visible": [
+                        "id",
+                        "file_path"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the http request",
+                    "properties": {
+                        "ref": {
+                            "type": "string",
+                            "description": "The name of branch, tag or commit",
+                            "default": "main"
+                        }
+                    },
+                    "required": [
+                        "ref"
+                    ],
+                    "visible": [
+                        "ref"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "query"
+            ],
+            "visible": [
+                "path",
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__CREATE_FILE",
+        "description": "Creates a new file in the repository",
+        "tags": [
+            "repository",
+            "file",
+            "create"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/projects/{id}/repository/files/{file_path}",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        },
+                        "file_path": {
+                            "type": "string",
+                            "description": "URL-encoded full path to the new file"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "file_path"
+                    ],
+                    "visible": [
+                        "id",
+                        "file_path"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "The JSON payload containing file details",
+                    "properties": {
+                        "branch": {
+                            "type": "string",
+                            "description": "The name of branch to commit into",
+                            "default": "main"
+                        },
+                        "content": {
+                            "type": "string",
+                            "description": "The file content"
+                        },
+                        "commit_message": {
+                            "type": "string",
+                            "description": "The commit message"
+                        },
+                        "author_email": {
+                            "type": "string",
+                            "description": "The commit author's email address"
+                        },
+                        "author_name": {
+                            "type": "string",
+                            "description": "The commit author's name"
+                        },
+                        "encoding": {
+                            "type": "string",
+                            "description": "Change encoding to base64",
+                            "enum": [
+                                "text",
+                                "base64"
+                            ],
+                            "default": "text"
+                        }
+                    },
+                    "required": [
+                        "branch",
+                        "content",
+                        "commit_message"
+                    ],
+                    "visible": [
+                        "branch",
+                        "content",
+                        "commit_message",
+                        "author_email",
+                        "author_name",
+                        "encoding"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__UPDATE_FILE",
+        "description": "Updates an existing file in the repository",
+        "tags": [
+            "repository",
+            "file",
+            "update"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/projects/{id}/repository/files/{file_path}",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        },
+                        "file_path": {
+                            "type": "string",
+                            "description": "URL-encoded full path to the file"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "file_path"
+                    ],
+                    "visible": [
+                        "id",
+                        "file_path"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "The JSON payload containing file update details",
+                    "properties": {
+                        "branch": {
+                            "type": "string",
+                            "description": "The name of branch to commit into",
+                            "default": "main"
+                        },
+                        "content": {
+                            "type": "string",
+                            "description": "The file content"
+                        },
+                        "commit_message": {
+                            "type": "string",
+                            "description": "The commit message"
+                        },
+                        "author_email": {
+                            "type": "string",
+                            "description": "The commit author's email address"
+                        },
+                        "author_name": {
+                            "type": "string",
+                            "description": "The commit author's name"
+                        },
+                        "encoding": {
+                            "type": "string",
+                            "description": "Change encoding to base64",
+                            "enum": [
+                                "text",
+                                "base64"
+                            ],
+                            "default": "text"
+                        },
+                        "last_commit_id": {
+                            "type": "string",
+                            "description": "Last known file commit ID"
+                        }
+                    },
+                    "required": [
+                        "branch",
+                        "content",
+                        "commit_message"
+                    ],
+                    "visible": [
+                        "branch",
+                        "content",
+                        "commit_message",
+                        "author_email",
+                        "author_name",
+                        "encoding",
+                        "last_commit_id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
     }
 ]
