@@ -380,57 +380,9 @@ docker compose exec runner python -m aci.cli create-app --app-file ./apps/brave_
 
 ## Running Evaluations
 
-You will need to set up the following environment variables:
+The evaluation pipeline allows you to assess the performance of the function search mechanism by generating synthetic user intents and measuring how accurately the system retrieves the correct functions.
 
-```bash
-EVALS_SERVER_URL=<your_server_url_typically_http://localhost:8000>
-EVALS_ACI_API_KEY=<your_api_key_for_the_server_returned_from_seed_db_script>
-EVALS_OPENAI_KEY=<your_openai_api_key>
-EVALS_WANDB_KEY=<your_wandb_api_key>
-```
-
-The evaluation results will be logged to [Weights & Biases](https://wandb.ai/aipotheosis-labs/function-search-evaluation) where you can track metrics, view experiment configurations, and analyze the results.
-
-Then, seed the database with all apps and mock credentials:
-
-```bash
-docker compose exec runner ./scripts/seed_db.sh --all --mock
-```
-
-### Running the Evaluation Pipeline
-
-To run the complete evaluation pipeline with different modes:
-
-```bash
-# Generate synthetic intents and evaluate them
-docker compose exec runner python -m evals.evaluation_pipeline --mode generate-and-evaluate
-
-# Only generate synthetic intent data
-docker compose exec runner python -m evals.evaluation_pipeline --mode generate-only
-
-# Only evaluate using existing dataset
-docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only
-```
-
-Additional flags:
-
-```bash
-# Specify a custom dataset artifact name (default: "synthetic_intent_dataset")
-docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset-artifact my_custom_artifact
-
-# Specify the filename saved on the dataset artifact
-docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset-filename my_custom_dataset.csv
-
-# Limit the number of samples to generate
-docker compose exec runner python -m evals.evaluation_pipeline --mode generate-only --generation-limit 50
-
-# Limit the number of samples to evaluate
-docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --evaluation-samples 25
-```
-
-> [!NOTE]
-> If you use the `generate-and-evaluate` mode, the pipeline will use the freshly generated dataset directly
-> without having to reload it from Weights & Biases, which is more efficient.
+For a complete, step-by-step guide on how to set up your environment and run the pipeline, please see the **[Evaluation Pipeline Guide](./evals/README.md)**.
 
 ## Contributing
 
