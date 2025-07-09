@@ -1,0 +1,90 @@
+[
+    {
+        "name": "ROCKETREACH__ACCOUNT_INFO",
+        "description": "Retrieve & manage RocketReach API account details, view usage metrics, and access account configuration.",
+        "tags": ["account", "info"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/account/",
+            "server_url": "https://api.rocketreach.co/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header"],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ROCKETREACH__CREATE_API_KEY",
+        "description": "Create a new API key for your RocketReach account. Your previous API key will immediately be invalidated.",
+        "tags": ["account", "key"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/account/key/",
+            "server_url": "https://api.rocketreach.co/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "request body",
+                    "properties": {
+                        "api_key": {
+                            "type": "string",
+                            "description": "The API key for your account"
+                        }
+                    },
+                    "required": ["api_key"],
+                    "visible": ["api_key"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        },
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "The content type of the request body",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    }
+]
