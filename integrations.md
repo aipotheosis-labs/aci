@@ -93,21 +93,20 @@ The `app.json` file contains the app's metadata and, crucially, its security sch
     }
     ```
 
----
-
-# 2. Function Schema Design
+## 2. Function Configuration (`functions.json`)
 
 Functions define the specific operations an app can perform. The `functions.json` file contains an array of these function definitions.
 
 ### Step 1: Create `functions.json`
 
 ```bash
+# In your app directory
 touch your_app_name/functions.json
 ```
 
 ### Step 2: Define Function Schema
 
-Each function object has the following structure. Full examples are in the **Examples** section.
+Each function object has the following structure. Full examples are in the "Examples" section.
 
 ```json
 [
