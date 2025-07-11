@@ -16,4 +16,5 @@ class QuotaUsageResponse(BaseModel):
     projects_used: int
     linked_accounts_used: int  # unique account owner IDs across org
     agent_credentials_used: int  # total org secrets in secrets table
+    api_calls_used: int
     plan: PlanInfo

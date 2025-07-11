@@ -1,4 +1,12 @@
+from enum import Enum
+
 from pydantic import BaseModel, Field
+
+
+class PlanType(Enum):
+    FREE = "free"
+    STARTER = "starter"
+    TEAM = "team"
 
 
 class PlanFeatures(BaseModel):

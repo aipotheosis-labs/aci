@@ -19,7 +19,7 @@ from aci.common.schemas.app_configurations import (
 from aci.common.schemas.linked_accounts import (
     LinkedAccountOAuth2Create,
     LinkedAccountOAuth2CreateState,
-    LinkedAccountPublic,
+    LinkedAccountWithCredentials,
 )
 from aci.common.schemas.security_scheme import (
     OAuth2SchemeCredentials,
@@ -180,8 +180,19 @@ def test_link_oauth2_account_success(
             )
 
         if not after_oauth2_link_redirect_url:
-            assert LinkedAccountPublic.model_validate(response.json()), (
-                "should return linked account in response if after_oauth2_link_redirect_url is not provided"
+            assert LinkedAccountWithCredentials.model_validate(response.json()), (
+                "should return linked account with credentials in response if after_oauth2_link_redirect_url is not provided"
+            )
+            security_credentials = response.json()["security_credentials"]
+            assert (
+                security_credentials["access_token"] == mock_oauth2_token_response["access_token"]
+            )
+            # NOTE: expires_at and refresh_token are optional, but they exist in this mock linked account
+            assert security_credentials["expires_at"] == mock_oauth2_token_retrieval_time + cast(
+                int, mock_oauth2_token_response["expires_in"]
+            )
+            assert (
+                security_credentials["refresh_token"] == mock_oauth2_token_response["refresh_token"]
             )
 
 

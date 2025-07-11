@@ -1,0 +1,241 @@
+[
+  {
+    "name": "JIRA__GET_ACCESSIBLE_RESOURCES",
+    "description": "Get the cloudid for all accessible Atlassian sites. This is required before making other API calls to specific sites.",
+    "tags": [
+      "jira",
+      "atlassian",
+      "resources",
+      "cloudid"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/oauth/token/accessible-resources",
+      "server_url": "https://api.atlassian.com"
+    },
+    "security_schemes": [
+      "oauth2"
+    ],
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "header": {
+          "type": "object",
+          "description": "Headers for the HTTP request",
+          "properties": {
+            "Accept": {
+              "type": "string",
+              "description": "Content type to accept",
+              "default": "application/json"
+            }
+          },
+          "additionalProperties": false,
+          "required": [],
+          "visible": [
+            "Accept"
+          ]
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {},
+          "additionalProperties": false,
+          "required": [],
+          "visible": []
+        }
+      },
+      "required": [],
+      "visible": [
+        "header"
+      ]
+    }
+  },
+  {
+    "name": "JIRA__GET_PROJECTS",
+    "description": "Get a list of projects from Jira.",
+    "tags": [
+      "jira",
+      "projects"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/ex/jira/{cloudid}/rest/api/3/project",
+      "server_url": "https://api.atlassian.com"
+    },
+    "security_schemes": [
+      "oauth2"
+    ],
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "header": {
+          "type": "object",
+          "description": "Headers for the HTTP request",
+          "properties": {
+            "Accept": {
+              "type": "string",
+              "description": "Content type to accept",
+              "default": "application/json"
+            }
+          },
+          "additionalProperties": false,
+          "required": [],
+          "visible": [
+            "Accept"
+          ]
+        },
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site. You can get this by calling the JIRA__GET_ACCESSIBLE_RESOURCES function."
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "cloudid"
+          ],
+          "visible": [
+            "cloudid"
+          ]
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "expand": {
+              "type": "string",
+              "description": "Use expand to include additional information in the response. This parameter accepts a comma-separated list.",
+              "default": "description,lead"
+            }
+          },
+          "additionalProperties": false,
+          "required": [],
+          "visible": [
+            "expand"
+          ]
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path",
+        "header",
+        "query"
+      ]
+    }
+  },
+  {
+    "name": "JIRA__SEARCH_ISSUES",
+    "description": "Search for issues in Jira using JQL (Jira Query Language).",
+    "tags": [
+      "jira",
+      "issues",
+      "search",
+      "jql"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/ex/jira/{cloudid}/rest/api/3/search",
+      "server_url": "https://api.atlassian.com"
+    },
+    "security_schemes": [
+      "oauth2"
+    ],
+    "parameters": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "header": {
+          "type": "object",
+          "description": "Headers for the HTTP request",
+          "properties": {
+            "Accept": {
+              "type": "string",
+              "description": "Content type to accept",
+              "default": "application/json"
+            }
+          },
+          "additionalProperties": false,
+          "required": [],
+          "visible": [
+            "Accept"
+          ]
+        },
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site. You can get this by calling the JIRA__GET_ACCESSIBLE_RESOURCES function."
+            }
+          },
+          "additionalProperties": false,
+          "required": [
+            "cloudid"
+          ],
+          "visible": [
+            "cloudid"
+          ]
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "jql": {
+              "type": "string",
+              "description": "JQL query string. For example: project = AC AND status = Open",
+              "default": ""
+            },
+            "startAt": {
+              "type": "integer",
+              "description": "The index of the first item to return in the page of results (page offset).",
+              "default": 0
+            },
+            "maxResults": {
+              "type": "integer",
+              "description": "The maximum number of items to return per page.",
+              "default": 50
+            },
+            "fields": {
+              "type": "string",
+              "description": "A comma-separated list of fields to return for each issue. For example: summary,description,status",
+              "default": "summary,description,status,assignee,priority,issuetype"
+            }
+          },
+          "additionalProperties": false,
+          "required": [],
+          "visible": [
+            "jql",
+            "startAt",
+            "maxResults",
+            "fields"
+          ]
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path",
+        "query",
+        "header"
+      ]
+    }
+  }
+]

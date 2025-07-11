@@ -16,15 +16,41 @@ import {
   TooltipContent,
   TooltipProvider,
 } from "@/components/ui/tooltip";
+import { useAppLinkedAccounts } from "@/hooks/use-linked-account";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle } from "lucide-react";
 
 interface AppCardProps {
   app: App;
+  isConfigured?: boolean;
 }
 
-export function AppCard({ app }: AppCardProps) {
+export function AppCard({ app, isConfigured = false }: AppCardProps) {
+  const { data: linkedAccounts = [] } = useAppLinkedAccounts(app.name);
   return (
     <Link href={`/apps/${app.name}`} className="block">
-      <Card className="h-[300px] transition-shadow hover:shadow-lg flex flex-col overflow-hidden ]">
+      <Card className="h-[300px] transition-shadow hover:shadow-lg flex flex-col overflow-hidden relative">
+        {isConfigured && (
+          <div className="absolute top-2 right-2 z-10">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Badge
+                    variant="secondary"
+                    className="bg-green-100 text-green-700 border-green-200 flex items-center gap-1"
+                  >
+                    <CheckCircle className="h-3 w-3" />
+                    Configured
+                  </Badge>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>App already configured for this project</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+        )}
+
         <CardHeader className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0 flex-1 mr-4">
@@ -78,6 +104,18 @@ export function AppCard({ app }: AppCardProps) {
                 <TooltipContent>
                   <p className="text-xs">
                     {`Functions in This App: ${app.functions.length}`}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="text-sm bg-blue-100 px-2.5 py-1 font-medium text-blue-600 border rounded-full border-blue-200">
+                    {linkedAccounts.length}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs">
+                    {`Linked Accounts: ${linkedAccounts.length}`}
                   </p>
                 </TooltipContent>
               </Tooltip>

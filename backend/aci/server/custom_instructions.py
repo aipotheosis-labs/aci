@@ -41,15 +41,12 @@ def check_for_violation(
     """
     custom_instruction = custom_instructions.get(function.name)
     if not custom_instruction:
-        logger.debug(
-            "No custom instruction for the function",
-            extra={"function_name": function.name},
-        )
+        logger.debug(f"No custom instruction for the function, function_name={function.name}")
         return
 
     logger.info(
-        "Checking for violation of custom instruction",
-        extra={"function_name": function.name, "custom_instruction": custom_instruction},
+        f"Checking for violation of custom instruction, function_name={function.name} "
+        f"custom_instruction={custom_instruction}"
     )
 
     subject = {
@@ -86,29 +83,26 @@ def check_for_violation(
             response_format=ViolationCheckResult,
             temperature=temperature,
         )
-    except Exception:
+    except Exception as e:
         # for inference failure, we should let the request pass
-        logger.exception("failed inference for violation check, letting the request pass")
+        logger.exception(
+            f"Failed inference for violation check, letting the request pass, error={e}"
+        )
 
     result = response.choices[0].message.parsed
 
     if result and result.is_violated:
         logger.error(
-            "custom instruction violated",
-            extra={
-                "function_name": function.name,
-                "justification": result.justification,
-            },
+            f"Custom instruction violated, function_name={function.name}, "
+            f"justification={result.justification}"
         )
         raise CustomInstructionViolation(
-            f"{function.name} execution has been rejected because of custom instruction: {custom_instructions[function.name]}."
+            f"{function.name} execution has been rejected by: "
+            f"custom instruction: {custom_instructions[function.name]} "
             f"justification: {result.justification}"
         )
     else:
         logger.info(
-            "custom instruction not violated",
-            extra={
-                "function_name": function.name,
-                "justification": result.justification if result else "unknown",
-            },
+            f"Custom instruction not violated, function_name={function.name}, "
+            f"justification={result.justification if result else 'unknown'}"
         )

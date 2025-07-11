@@ -68,7 +68,7 @@ class Gmail(AppConnectorBase):
         Returns:
             dict: Response from the Gmail API
         """
-        logger.info("executing send_email")
+        logger.info("Executing send_email")
 
         # Create and encode the email message
         message = MIMEText(body)
@@ -88,7 +88,7 @@ class Gmail(AppConnectorBase):
 
         sent_message = service.users().messages().send(userId=sender, body=message_body).execute()  # type: ignore
 
-        logger.info(f"Email sent successfully. Message ID: {sent_message.get('id', 'unknown')}")
+        logger.info(f"Email sent successfully, message_id={sent_message.get('id', 'unknown')}")
 
         # TODO: if later found necessary, return the whole message object instead of just the id
         return {"message_id": sent_message.get("id", "unknown")}
@@ -117,7 +117,7 @@ class Gmail(AppConnectorBase):
         Returns:
             dict: Response from the Gmail API containing the draft ID
         """
-        logger.info("executing drafts_create")
+        logger.info("Executing drafts_create")
 
         # Create and encode the email message
         message = MIMEText(body)
@@ -138,7 +138,7 @@ class Gmail(AppConnectorBase):
         # Create the draft
         draft = service.users().drafts().create(userId=sender, body=message_body).execute()  # type: ignore
 
-        logger.info(f"Draft created successfully. Draft ID: {draft.get('id', 'unknown')}")
+        logger.info(f"Draft created successfully, draft_id={draft.get('id', 'unknown')}")
 
         return {"draft_id": draft.get("id", "unknown")}
 
@@ -168,7 +168,7 @@ class Gmail(AppConnectorBase):
         Returns:
             dict: Response from the Gmail API containing the updated draft ID
         """
-        logger.info(f"executing drafts_update for draft ID: {draft_id}")
+        logger.info(f"Executing drafts_update for draft ID: {draft_id}")
 
         # Create and encode the email message
         message = MIMEText(body)
@@ -194,6 +194,6 @@ class Gmail(AppConnectorBase):
             service.users().drafts().update(userId=sender, id=draft_id, body=message_body).execute()  # type: ignore
         )
 
-        logger.info(f"Draft updated successfully. Draft ID: {updated_draft.get('id', 'unknown')}")
+        logger.info(f"Draft updated successfully, draft_id={updated_draft.get('id', 'unknown')}")
 
         return {"draft_id": updated_draft.get("id", "unknown")}

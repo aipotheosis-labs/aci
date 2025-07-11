@@ -10,9 +10,17 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
+  totalCount?: number;
 }
 type PageItem = number | "ellipsis";
 
@@ -43,6 +51,7 @@ function getPageItems(current0: number, total: number): PageItem[] {
 
 export function DataTablePagination<TData>({
   table,
+  totalCount,
 }: DataTablePaginationProps<TData>) {
   const { pageIndex, pageSize } = table.getState().pagination;
   const pageCount = table.getPageCount();
@@ -83,8 +92,30 @@ export function DataTablePagination<TData>({
   return (
     <div className="flex flex-nowrap justify-between items-center px-3 py-1">
       {/* Left: Total row number information */}
-      <div className="text-sm font-medium">
-        {startRow} – {endRow} / {table.getRowCount()}
+      <div className="flex items-center gap-4">
+        <div className="text-sm font-medium">
+          {startRow} – {endRow} / {totalCount ?? table.getRowCount()}
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm text-muted-foreground">Rows per page</span>
+          <Select
+            value={pageSize.toString()}
+            onValueChange={(value) => {
+              table.setPageSize(Number(value));
+            }}
+          >
+            <SelectTrigger className="h-8 w-[70px]">
+              <SelectValue placeholder={pageSize} />
+            </SelectTrigger>
+            <SelectContent side="top">
+              {[10, 15, 20, 30, 50].map((size) => (
+                <SelectItem key={size} value={size.toString()}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Right: Pagination buttons + input box */}

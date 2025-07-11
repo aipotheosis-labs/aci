@@ -12,34 +12,110 @@ import { useState, useMemo } from "react";
 import { App } from "@/lib/types/app";
 import { AppCardComingSoon } from "./app-card-coming-soon";
 import comingsoon from "@/lib/comingsoon/comingsoon.json";
+import { useAppConfigs } from "@/hooks/use-app-config";
 
 function normalize(str: string): string {
   return str.toLowerCase().replace(/[\s\-_]/g, "");
 }
+enum FilterCategory {
+  ALL = "all",
+  CONFIGURED = "configured",
+  UNCONFIGURED = "unconfigured",
+}
+
+enum SortOption {
+  DEFAULT = "default",
+  ALPHABETICAL = "alphabetical",
+  REVERSE_ALPHABETICAL = "reverse-alphabetical",
+}
+
 interface AppGridProps {
   apps: App[];
 }
 
 export function AppGrid({ apps }: AppGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    FilterCategory.ALL,
+  );
+  const [sortOrder, setSortOrder] = useState<string>(SortOption.DEFAULT);
 
-  const [selectedCategory, setSelectedCategory] = useState("all");
+  const { data: appConfigs = [] } = useAppConfigs();
 
   const categories = Array.from(new Set(apps.flatMap((app) => app.categories)));
 
-  const filteredApps = apps.filter((app) => {
-    const matchesNameOrDescriptionOrCategory =
-      app.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      app.categories.some((c) =>
-        c.toLowerCase().includes(searchQuery.toLowerCase()),
+  const configuredAppNames = useMemo(() => {
+    return new Set(appConfigs.map((config) => config.app_name));
+  }, [appConfigs]);
+  const matchesCategory = useMemo(() => {
+    return (app: App, category: string, isConfigured: boolean): boolean => {
+      switch (category) {
+        case FilterCategory.ALL:
+          return true;
+        case FilterCategory.CONFIGURED:
+          return isConfigured;
+        case FilterCategory.UNCONFIGURED:
+          return !isConfigured;
+        default:
+          return app.categories.includes(category);
+      }
+    };
+  }, []);
+
+  const matchesSearchQuery = useMemo(() => {
+    return (app: App, query: string): boolean => {
+      if (!query) return true;
+
+      const lowerQuery = query.toLowerCase();
+      return (
+        app.name.toLowerCase().includes(lowerQuery) ||
+        app.description.toLowerCase().includes(lowerQuery) ||
+        app.categories.some((c) => c.toLowerCase().includes(lowerQuery))
       );
+    };
+  }, []);
 
-    const matchesCategory =
-      selectedCategory === "all" || app.categories.includes(selectedCategory);
+  const sortApps = useMemo(() => {
+    return (apps: App[], sortOption: string): App[] => {
+      const sortedApps = [...apps];
 
-    return matchesNameOrDescriptionOrCategory && matchesCategory;
-  });
+      switch (sortOption) {
+        case SortOption.ALPHABETICAL:
+          return sortedApps.sort((a, b) =>
+            a.display_name.localeCompare(b.display_name),
+          );
+        case SortOption.REVERSE_ALPHABETICAL:
+          return sortedApps.sort((a, b) =>
+            b.display_name.localeCompare(a.display_name),
+          );
+        case SortOption.DEFAULT:
+        default:
+          return sortedApps;
+      }
+    };
+  }, []);
+
+  const filteredAndSortedApps = useMemo(() => {
+    const filtered = apps.filter((app) => {
+      const isConfigured = configuredAppNames.has(app.name);
+
+      return (
+        matchesSearchQuery(app, searchQuery) &&
+        matchesCategory(app, selectedCategory, isConfigured)
+      );
+    });
+
+    return sortApps(filtered, sortOrder);
+  }, [
+    apps,
+    searchQuery,
+    selectedCategory,
+    sortOrder,
+    configuredAppNames,
+    matchesSearchQuery,
+    matchesCategory,
+    sortApps,
+  ]);
 
   const liveAppKeys = useMemo(() => {
     const keys = new Set<string>();
@@ -68,15 +144,37 @@ export function AppGrid({ apps }: AppGridProps) {
         />
 
         <Select onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-[120px]">
+          <SelectTrigger className="w-[160px]">
             <SelectValue placeholder="all" />
           </SelectTrigger>
           <SelectContent>
-            {["all", ...categories].map((category) => (
+            <SelectItem value={FilterCategory.ALL}>All Apps</SelectItem>
+            <SelectItem value={FilterCategory.CONFIGURED}>
+              Configured Apps
+            </SelectItem>
+            <SelectItem value={FilterCategory.UNCONFIGURED}>
+              Unconfigured Apps
+            </SelectItem>
+            {categories.map((category) => (
               <SelectItem key={category} value={category}>
                 {category}
               </SelectItem>
             ))}
+          </SelectContent>
+        </Select>
+
+        <Select onValueChange={setSortOrder}>
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder="Default" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={SortOption.DEFAULT}>Default</SelectItem>
+            <SelectItem value={SortOption.ALPHABETICAL}>
+              Ascending A-Z
+            </SelectItem>
+            <SelectItem value={SortOption.REVERSE_ALPHABETICAL}>
+              Descending Z-A
+            </SelectItem>
           </SelectContent>
         </Select>
 
@@ -95,8 +193,12 @@ export function AppGrid({ apps }: AppGridProps) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredApps.map((app) => (
-          <AppCard key={app.id} app={app} />
+        {filteredAndSortedApps.map((app) => (
+          <AppCard
+            key={app.id}
+            app={app}
+            isConfigured={configuredAppNames.has(app.name)}
+          />
         ))}
       </div>
 
@@ -121,7 +223,7 @@ export function AppGrid({ apps }: AppGridProps) {
         })}
       </div>
 
-      {filteredApps.length === 0 && (
+      {filteredAndSortedApps.length === 0 && (
         <div className="text-center text-muted-foreground">
           No apps found matching your criteria
         </div>

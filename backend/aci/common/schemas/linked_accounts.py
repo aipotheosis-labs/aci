@@ -4,6 +4,11 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field
 
 from aci.common.db.sql_models import MAX_STRING_LENGTH, SecurityScheme
+from aci.common.schemas.security_scheme import (
+    APIKeySchemeCredentialsLimited,
+    NoAuthSchemeCredentialsLimited,
+    OAuth2SchemeCredentialsLimited,
+)
 
 
 class LinkedAccountCreateBase(BaseModel):
@@ -54,9 +59,17 @@ class LinkedAccountPublic(BaseModel):
     enabled: bool
     created_at: datetime
     updated_at: datetime
-    last_used_at: datetime | None
+    last_used_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class LinkedAccountWithCredentials(LinkedAccountPublic):
+    security_credentials: (
+        OAuth2SchemeCredentialsLimited
+        | APIKeySchemeCredentialsLimited
+        | NoAuthSchemeCredentialsLimited
+    )
 
 
 class LinkedAccountsList(BaseModel):

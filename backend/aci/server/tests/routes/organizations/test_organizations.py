@@ -19,7 +19,7 @@ def test_invite_user(
         mock_auth.invite_user_to_org.return_value = None
 
         response = test_client.post(
-            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/invite_user",
+            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/invite-user",
             json={
                 "email": "new_user@example.com",
                 "role": OrganizationRole.MEMBER,
@@ -48,7 +48,7 @@ def test_cannot_invite_user_as_owner(
         mock_auth.invite_user_to_org.return_value = None
 
         response = test_client.post(
-            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/invite_user",
+            f"{config.ROUTER_PREFIX_ORGANIZATIONS}/invite-user",
             json={
                 "email": "new_owner@example.com",
                 "role": OrganizationRole.OWNER,

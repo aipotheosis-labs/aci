@@ -1,0 +1,1045 @@
+[
+    {
+        "name": "GITLAB__GET_USER_BY_USERNAME",
+        "description": "Gets information about a user by username using query parameter",
+        "tags": [
+            "user"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the http request",
+                    "properties": {
+                        "username": {
+                            "type": "string",
+                            "description": "The username to search for"
+                        }
+                    },
+                    "required": [
+                        "username"
+                    ],
+                    "visible": [
+                        "username"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "query"
+            ],
+            "visible": [
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__GET_USER_BY_ID",
+        "description": "Gets information about a user by numeric user ID",
+        "tags": [
+            "user"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users/{id}",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "integer",
+                            "description": "The numeric ID of the user"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__GET_CURRENT_USER",
+        "description": "Gets information about the authenticated user",
+        "tags": [
+            "user",
+            "authenticated"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/user",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__LIST_USER_PROJECTS",
+        "description": "Lists projects for a specific user",
+        "tags": [
+            "user",
+            "project"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users/{user_id}/projects",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "user_id": {
+                            "type": "integer",
+                            "description": "The numeric ID of the user"
+                        }
+                    },
+                    "required": [
+                        "user_id"
+                    ],
+                    "visible": [
+                        "user_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "visibility": {
+                            "type": "string",
+                            "description": "Limit by visibility",
+                            "enum": [
+                                "public",
+                                "internal",
+                                "private"
+                            ]
+                        },
+                        "order_by": {
+                            "type": "string",
+                            "description": "Return projects ordered by field",
+                            "enum": [
+                                "id",
+                                "name",
+                                "path",
+                                "created_at",
+                                "updated_at",
+                                "last_activity_at"
+                            ],
+                            "default": "created_at"
+                        },
+                        "sort": {
+                            "type": "string",
+                            "description": "Return projects sorted in ascending or descending order",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ],
+                            "default": "desc"
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Number of items to list per page",
+                            "default": 20
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number",
+                            "default": 1
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "visibility",
+                        "order_by",
+                        "sort",
+                        "per_page",
+                        "page"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path",
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__GET_PROJECT",
+        "description": "Gets information about a specific project",
+        "tags": [
+            "project"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{id}",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__CREATE_PROJECT",
+        "description": "Creates a new project for the authenticated user",
+        "tags": [
+            "project",
+            "create"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/projects",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+
+                "body": {
+                    "type": "object",
+                    "description": "The JSON payload containing project details",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the project"
+                        },
+                        "path": {
+                            "type": "string",
+                            "description": "Repository name for the project"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Short project description"
+                        },
+                        "visibility": {
+                            "type": "string",
+                            "description": "Project visibility level",
+                            "enum": [
+                                "private",
+                                "internal",
+                                "public"
+                            ],
+                            "default": "private"
+                        },
+                        "initialize_with_readme": {
+                            "type": "boolean",
+                            "description": "Initialize project with README file",
+                            "default": false
+                        }
+                    },
+                    "required": [
+                        "name"
+                    ],
+                    "visible": [
+                        "name",
+                        "path",
+                        "description",
+                        "visibility",
+                        "initialize_with_readme"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__LIST_PROJECT_ISSUES",
+        "description": "Lists issues for a project",
+        "tags": [
+            "project",
+            "issue"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{id}/issues",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "state": {
+                            "type": "string",
+                            "description": "Return issues with the given state",
+                            "enum": [
+                                "opened",
+                                "closed",
+                                "all"
+                            ],
+                            "default": "opened"
+                        },
+                        "labels": {
+                            "type": "string",
+                            "description": "Comma-separated list of label names"
+                        },
+                        "milestone": {
+                            "type": "string",
+                            "description": "The milestone title"
+                        },
+                        "order_by": {
+                            "type": "string",
+                            "description": "Return issues ordered by field",
+                            "enum": [
+                                "created_at",
+                                "updated_at",
+                                "priority",
+                                "due_date",
+                                "relative_position",
+                                "label_priority",
+                                "milestone_due",
+                                "popularity",
+                                "weight"
+                            ],
+                            "default": "created_at"
+                        },
+                        "sort": {
+                            "type": "string",
+                            "description": "Return issues sorted in ascending or descending order",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ],
+                            "default": "desc"
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Number of items to list per page",
+                            "default": 20
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number",
+                            "default": 1
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "state",
+                        "labels",
+                        "milestone",
+                        "order_by",
+                        "sort",
+                        "per_page",
+                        "page"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path",
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__ARCHIVE_PROJECT",
+        "description": "Archives a project. Requires administrator access or Owner role on the project.",
+        "tags": [
+            "project",
+            "archive"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/projects/{id}/archive",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__UNARCHIVE_PROJECT",
+        "description": "Unarchives a project. Requires administrator access or Owner role on the project. This endpoint is idempotent - unarchiving a project that isn't archived doesn't change the project.",
+        "tags": [
+            "project",
+            "archive"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/projects/{id}/unarchive",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__DELETE_PROJECT",
+        "description": "Deletes a project including all associated resources. The project is marked for deletion and deleted after 7 days by default. If the project is already marked for deletion, it will be deleted immediately (GitLab 15.11+).",
+        "tags": [
+            "project",
+            "delete"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/projects/{id}",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__RESTORE_PROJECT",
+        "description": "Restore a project that is marked for deletion",
+        "tags": [
+            "project",
+            "restore"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/projects/{id}/restore",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__LIST_BRANCHES",
+        "description": "Lists repository branches for a project",
+        "tags": [
+            "repository",
+            "branch",
+            "git"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{id}/repository/branches",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Optional query parameters for the http request",
+                    "properties": {
+                        "search": {
+                            "type": "string",
+                            "description": "Return list of branches matching the search criteria"
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Number of items to list per page",
+                            "default": 20
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number",
+                            "default": 1
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "search",
+                        "per_page",
+                        "page"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path"
+            ],
+            "visible": [
+                "path",
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__CREATE_BRANCH",
+        "description": "Creates a new branch from another branch or commit",
+        "tags": [
+            "repository",
+            "branch",
+            "git"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/projects/{id}/repository/branches",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        }
+                    },
+                    "required": [
+                        "id"
+                    ],
+                    "visible": [
+                        "id"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "branch": {
+                            "type": "string",
+                            "description": "Name of the branch"
+                        },
+                        "ref": {
+                            "type": "string",
+                            "description": "Branch name or commit SHA to create branch from"
+                        }
+                    },
+                    "required": ["branch", "ref"],
+                    "visible": ["branch", "ref"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "query"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__GET_FILE_CONTENT",
+        "description": "Gets the content of a file from the repository",
+        "tags": [
+            "repository",
+            "file",
+            "content"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/projects/{id}/repository/files/{file_path}",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        },
+                        "file_path": {
+                            "type": "string",
+                            "description": "URL-encoded full path to the file"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "file_path"
+                    ],
+                    "visible": [
+                        "id",
+                        "file_path"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the http request",
+                    "properties": {
+                        "ref": {
+                            "type": "string",
+                            "description": "The name of branch, tag or commit",
+                            "default": "main"
+                        }
+                    },
+                    "required": [
+                        "ref"
+                    ],
+                    "visible": [
+                        "ref"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "query"
+            ],
+            "visible": [
+                "path",
+                "query"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__CREATE_FILE",
+        "description": "Creates a new file in the repository",
+        "tags": [
+            "repository",
+            "file",
+            "create"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/projects/{id}/repository/files/{file_path}",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        },
+                        "file_path": {
+                            "type": "string",
+                            "description": "URL-encoded full path to the new file"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "file_path"
+                    ],
+                    "visible": [
+                        "id",
+                        "file_path"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "The JSON payload containing file details",
+                    "properties": {
+                        "branch": {
+                            "type": "string",
+                            "description": "The name of branch to commit into",
+                            "default": "main"
+                        },
+                        "content": {
+                            "type": "string",
+                            "description": "The file content"
+                        },
+                        "commit_message": {
+                            "type": "string",
+                            "description": "The commit message"
+                        },
+                        "author_email": {
+                            "type": "string",
+                            "description": "The commit author's email address"
+                        },
+                        "author_name": {
+                            "type": "string",
+                            "description": "The commit author's name"
+                        },
+                        "encoding": {
+                            "type": "string",
+                            "description": "Change encoding to base64",
+                            "enum": [
+                                "text",
+                                "base64"
+                            ],
+                            "default": "text"
+                        }
+                    },
+                    "required": [
+                        "branch",
+                        "content",
+                        "commit_message"
+                    ],
+                    "visible": [
+                        "branch",
+                        "content",
+                        "commit_message",
+                        "author_email",
+                        "author_name",
+                        "encoding"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITLAB__UPDATE_FILE",
+        "description": "Updates an existing file in the repository",
+        "tags": [
+            "repository",
+            "file",
+            "update"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/projects/{id}/repository/files/{file_path}",
+            "server_url": "https://gitlab.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "The ID or URL-encoded path of the project"
+                        },
+                        "file_path": {
+                            "type": "string",
+                            "description": "URL-encoded full path to the file"
+                        }
+                    },
+                    "required": [
+                        "id",
+                        "file_path"
+                    ],
+                    "visible": [
+                        "id",
+                        "file_path"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "The JSON payload containing file update details",
+                    "properties": {
+                        "branch": {
+                            "type": "string",
+                            "description": "The name of branch to commit into",
+                            "default": "main"
+                        },
+                        "content": {
+                            "type": "string",
+                            "description": "The file content"
+                        },
+                        "commit_message": {
+                            "type": "string",
+                            "description": "The commit message"
+                        },
+                        "author_email": {
+                            "type": "string",
+                            "description": "The commit author's email address"
+                        },
+                        "author_name": {
+                            "type": "string",
+                            "description": "The commit author's name"
+                        },
+                        "encoding": {
+                            "type": "string",
+                            "description": "Change encoding to base64",
+                            "enum": [
+                                "text",
+                                "base64"
+                            ],
+                            "default": "text"
+                        },
+                        "last_commit_id": {
+                            "type": "string",
+                            "description": "Last known file commit ID"
+                        }
+                    },
+                    "required": [
+                        "branch",
+                        "content",
+                        "commit_message"
+                    ],
+                    "visible": [
+                        "branch",
+                        "content",
+                        "commit_message",
+                        "author_email",
+                        "author_name",
+                        "encoding",
+                        "last_commit_id"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    }
+]

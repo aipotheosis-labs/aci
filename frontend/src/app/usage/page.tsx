@@ -1,71 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import UsagePieChart from "@/components/charts/usage-pie-chart";
 import { UsageBarChart } from "@/components/charts/usage-bar-chart";
 import { QuotaUsageDisplay } from "@/components/quota/quota-usage-display";
 import { Separator } from "@/components/ui/separator";
-import {
-  getAppDistributionData,
-  getFunctionDistributionData,
-  getAppTimeSeriesData,
-  getFunctionTimeSeriesData,
-} from "@/lib/api/analytics";
-import {
-  DistributionDatapoint,
-  TimeSeriesDatapoint,
-} from "@/lib/types/analytics";
-import { getApiKey } from "@/lib/api/util";
-import { useMetaInfo } from "@/components/context/metainfo";
 import { useQuota } from "@/hooks/use-quota";
+import { useAnalyticsQueries } from "@/hooks/use-analytics";
 
 export default function UsagePage() {
-  const { activeProject } = useMetaInfo();
-  const [appDistributionData, setAppDistributionData] = useState<
-    DistributionDatapoint[]
-  >([]);
-  const [functionDistributionData, setFunctionDistributionData] = useState<
-    DistributionDatapoint[]
-  >([]);
-  const [appTimeSeriesData, setAppTimeSeriesData] = useState<
-    TimeSeriesDatapoint[]
-  >([]);
-  const [functionTimeSeriesData, setFunctionTimeSeriesData] = useState<
-    TimeSeriesDatapoint[]
-  >([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: quotaUsage,
+    isLoading: isQuotaLoading,
+    error: quotaError,
+  } = useQuota();
 
-  const { data: quotaUsage } = useQuota();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const apiKey = getApiKey(activeProject);
-
-        const [appDistData, funcDistData, appTimeData, funcTimeData] =
-          await Promise.all([
-            getAppDistributionData(apiKey),
-            getFunctionDistributionData(apiKey),
-            getAppTimeSeriesData(apiKey),
-            getFunctionTimeSeriesData(apiKey),
-          ]);
-
-        setAppDistributionData(appDistData);
-        setFunctionDistributionData(funcDistData);
-        setAppTimeSeriesData(appTimeData);
-        setFunctionTimeSeriesData(funcTimeData);
-      } catch (err) {
-        console.error("Error fetching analytics data:", err);
-        setError("Failed to load analytics data. Please try again later.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [activeProject]);
+  const {
+    appDistributionData,
+    functionDistributionData,
+    appTimeSeriesData,
+    functionTimeSeriesData,
+    isLoading: isAnalyticsLoading,
+    error: AnalyticsError,
+  } = useAnalyticsQueries();
 
   return (
     <div>
@@ -94,19 +50,28 @@ export default function UsagePage() {
       <Separator />
 
       <div className="flex flex-col gap-6 p-6">
-        {error ? (
-          <div className="p-4 text-red-500">{error}</div>
-        ) : isLoading ? (
-          <div className="p-4">Loading analytics data...</div>
-        ) : (
-          <>
-            {/* quota usage */}
-            {quotaUsage && (
-              <div className="w-full">
-                <QuotaUsageDisplay quotaUsage={quotaUsage} />
-              </div>
-            )}
+        {/* Quota Usage Section - Independent Loading */}
+        <div className="w-full">
+          {quotaError ? (
+            <div className="p-4 text-red-500">
+              Failed to load quota data. Please try again later.
+            </div>
+          ) : isQuotaLoading ? (
+            <div className="p-4">Loading quota data...</div>
+          ) : quotaUsage ? (
+            <QuotaUsageDisplay quotaUsage={quotaUsage} />
+          ) : null}
+        </div>
 
+        {/* Analytics Section - Independent Loading */}
+        <div className="w-full">
+          {AnalyticsError ? (
+            <div className="p-4 text-red-500">
+              Failed to load analytics data. Please try again later.
+            </div>
+          ) : isAnalyticsLoading ? (
+            <div className="p-4">Loading analytics data...</div>
+          ) : (
             <div className="grid gap-6 grid-cols-12">
               <div className="col-span-8">
                 <UsageBarChart title="App Usage" data={appTimeSeriesData} />
@@ -133,8 +98,8 @@ export default function UsagePage() {
                 />
               </div>
             </div>
-          </>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

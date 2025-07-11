@@ -3,7 +3,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import Depends, Security
+from fastapi import Depends, Request, Security
 from fastapi.security import APIKeyHeader, HTTPBearer
 from sqlalchemy.orm import Session
 
@@ -18,7 +18,7 @@ from aci.common.exceptions import (
     ProjectNotFound,
 )
 from aci.common.logging_setup import get_logger
-from aci.server import config
+from aci.server import billing, config
 
 logger = get_logger(__name__)
 http_bearer = HTTPBearer(auto_error=True, description="login to receive a JWT token")
@@ -52,23 +52,20 @@ def validate_api_key(
     """Validate API key and return the API key ID. (not the actual API key string)"""
     api_key = crud.projects.get_api_key(db_session, api_key_key)
     if api_key is None:
-        logger.error(
-            "api key not found",
-            extra={"partial_api_key": f"{api_key_key[:4]}****{api_key_key[-4:]}"},
-        )
+        logger.error(f"API key not found, partial_api_key={api_key_key[:4]}****{api_key_key[-4:]}")
         raise InvalidAPIKey("api key not found")
 
     elif api_key.status == APIKeyStatus.DISABLED:
-        logger.error("api key is disabled", extra={"api_key_id": api_key.id})
+        logger.error(f"API key is disabled, api_key_id={api_key.id}")
         raise InvalidAPIKey("API key is disabled")
 
     elif api_key.status == APIKeyStatus.DELETED:
-        logger.error("api key is deleted", extra={"api_key_id": api_key.id})
+        logger.error(f"API key is deleted, api_key_id={api_key.id}")
         raise InvalidAPIKey("API key is deleted")
 
     else:
         api_key_id: UUID = api_key.id
-        logger.info("api key validation successful", extra={"api_key_id": api_key_id})
+        logger.info(f"API key validation successful, api_key_id={api_key_id}")
         return api_key_id
 
 
@@ -78,7 +75,7 @@ def validate_agent(
 ) -> Agent:
     agent = crud.projects.get_agent_by_api_key_id(db_session, api_key_id)
     if not agent:
-        raise AgentNotFound(f"agent not found for api_key_id={api_key_id}")
+        raise AgentNotFound(f"Agent not found, api_key_id={api_key_id}")
 
     return agent
 
@@ -90,27 +87,26 @@ def validate_project_quota(
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> Project:
-    logger.debug("validating project quota", extra={"api_key_id": api_key_id})
+    logger.debug(f"Validating project quota, api_key_id={api_key_id}")
 
     project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
     if not project:
-        logger.error("project not found", extra={"api_key_id": api_key_id})
-        raise ProjectNotFound(f"project not found for api_key_id={api_key_id}")
+        logger.error(f"Project not found, api_key_id={api_key_id}")
+        raise ProjectNotFound(f"Project not found, api_key_id={api_key_id}")
 
     now: datetime = datetime.now(UTC)
     need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=UTC) + timedelta(days=1)
 
     if not need_reset and project.daily_quota_used >= config.PROJECT_DAILY_QUOTA:
         logger.warning(
-            "daily quota exceeded",
-            extra={
-                "project_id": project.id,
-                "daily_quota_used": project.daily_quota_used,
-                "daily_quota": config.PROJECT_DAILY_QUOTA,
-            },
+            f"Daily quota exceeded, "
+            f"project_id={project.id} "
+            f"daily_quota_used={project.daily_quota_used} "
+            f"daily_quota={config.PROJECT_DAILY_QUOTA}"
         )
         raise DailyQuotaExceeded(
-            f"daily quota exceeded for project={project.id}, daily quota used={project.daily_quota_used}, "
+            f"Daily quota exceeded for project={project.id}, "
+            f"daily_quota_used={project.daily_quota_used} "
             f"daily quota={config.PROJECT_DAILY_QUOTA}"
         )
 
@@ -118,8 +114,48 @@ def validate_project_quota(
     # TODO: commit here with the same db_session or should create a separate db_session?
     db_session.commit()
 
-    logger.info("project quota validation successful", extra={"project_id": project.id})
+    logger.info(f"Project quota validation successful, project_id={project.id}")
     return project
+
+
+def validate_monthly_api_quota(
+    request: Request,
+    db_session: Annotated[Session, Depends(yield_db_session)],
+    project: Annotated[Project, Depends(validate_project_quota)],
+) -> None:
+    """
+    Use quota for a project operation.
+
+    1. Only check and manage quota for certain endpoints
+    2. Reset quota if it's a new month
+    3. Increment usage or raise error if exceeded
+    """
+    # Only check quota for app search and function search/execute endpoints
+    path = request.url.path
+    is_quota_limited_endpoint = path.startswith(f"{config.ROUTER_PREFIX_APPS}/search") or (
+        path.startswith(f"{config.ROUTER_PREFIX_FUNCTIONS}/")
+        and (path.endswith("/execute") or path.endswith("/search"))
+    )
+    if not is_quota_limited_endpoint:
+        return
+
+    last_reset = project.api_quota_last_reset.replace(tzinfo=UTC)
+    cur_first_day_of_month = datetime.now(UTC).replace(
+        day=1, hour=0, minute=0, second=0, microsecond=0
+    )
+    if cur_first_day_of_month > last_reset:
+        logger.info(
+            f"resetting monthly quota, last_reset={last_reset}, cur_first_day_of_month={cur_first_day_of_month}",
+        )
+        crud.projects.reset_api_monthly_quota_for_org(
+            db_session, project.org_id, cur_first_day_of_month
+        )
+
+    plan = billing.get_active_plan_by_org_id(db_session, project.org_id)
+    billing.increment_quota(db_session, project, plan.features["api_calls_monthly"])
+    db_session.commit()
+
+    logger.info("monthly api quota validation successful", extra={"project_id": project.id})
 
 
 def get_request_context(
@@ -127,14 +163,15 @@ def get_request_context(
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
     agent: Annotated[Agent, Depends(validate_agent)],
     project: Annotated[Project, Depends(validate_project_quota)],
+    _: Annotated[None, Depends(validate_monthly_api_quota)],
 ) -> RequestContext:
     """
     Returns a RequestContext object containing the DB session,
     the validated API key ID, and the project ID.
     """
     logger.info(
-        "populating request context",
-        extra={"api_key_id": api_key_id, "project_id": project.id, "agent_id": agent.id},
+        f"Populating request context, api_key_id={api_key_id}, "
+        f"project_id={project.id}, agent_id={agent.id}"
     )
     return RequestContext(
         db_session=db_session,

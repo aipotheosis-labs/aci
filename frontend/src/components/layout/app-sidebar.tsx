@@ -22,29 +22,25 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Separator } from "@/components/ui/separator";
-import { ProjectSelector } from "./project-selector";
 import { PiStorefront } from "react-icons/pi";
-import {
-  RiSettings3Line,
-  RiSettings4Line,
-  RiLinkUnlinkM,
-} from "react-icons/ri";
-import { AiOutlineExperiment } from "react-icons/ai";
+import { RiSettings3Line, RiLinkUnlinkM } from "react-icons/ri";
+import { AiOutlineRobot } from "react-icons/ai";
 import { HiOutlineChatBubbleBottomCenterText } from "react-icons/hi2";
+import { RiFileList3Line } from "react-icons/ri";
 
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ProjectSelector } from "./project-selector";
+import { OrgSelector } from "./org-selector";
+
+const showLogDashboard =
+  process.env.NEXT_PUBLIC_FEATURE_LOG_DASHBOARD === "true";
 
 // Export sidebar items so they can be used in header
 export const sidebarItems = [
-  // {
-  //   title: "Home",
-  //   url: `/home`,
-  //   icon: GoHome,
-  // },
   {
     title: "App Store",
     url: `/apps`,
@@ -63,13 +59,22 @@ export const sidebarItems = [
   {
     title: "Agents",
     url: `/agents`,
-    icon: AiOutlineExperiment,
+    icon: AiOutlineRobot,
   },
   {
     title: "Agent Playground",
     url: `/playground`,
     icon: HiOutlineChatBubbleBottomCenterText,
   },
+  ...(showLogDashboard
+    ? [
+        {
+          title: "Log Dashboard",
+          url: `/logs`,
+          icon: RiFileList3Line,
+        },
+      ]
+    : []),
   {
     title: "Usage",
     url: `/usage`,
@@ -78,18 +83,11 @@ export const sidebarItems = [
 ];
 
 // Add settings routes to be accessible in header
-export const settingsItems = [
-  {
-    title: "Manage Project",
-    url: "/project-setting",
-    icon: RiSettings3Line,
-  },
-  {
-    title: "Account Settings",
-    url: "/account",
-    icon: RiSettings4Line,
-  },
-];
+export const settingsItem = {
+  title: "Settings",
+  url: "/settings",
+  icon: RiSettings3Line,
+};
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -99,7 +97,7 @@ export function AppSidebar() {
   return (
     <Sidebar variant="inset" collapsible="icon" className="flex flex-col">
       <div className="w-full text-center py-1 text-xs font-bold flex items-center justify-center border-b-2 border-gray-200">
-        <AiOutlineExperiment className="inline-block mr-2" />
+        <AiOutlineRobot className="inline-block mr-2" />
         In Beta
       </div>
       <SidebarHeader>
@@ -133,7 +131,10 @@ export function AppSidebar() {
           )}
         >
           <div className="w-full p-4">
-            <ProjectSelector />
+            <OrgSelector />
+            <div className="mt-3">
+              <ProjectSelector />
+            </div>
           </div>
           <Separator />
         </div>
@@ -191,72 +192,32 @@ export function AppSidebar() {
               <TooltipTrigger asChild>
                 <SidebarMenuButton asChild>
                   <Link
-                    href={settingsItems[0].url}
+                    href={settingsItem.url}
                     className={cn(
                       "flex items-center gap-3 p-4 transition-colors",
                       isCollapsed && "justify-center",
-                      pathname === settingsItems[0].url &&
+                      pathname === settingsItem.url &&
                         "bg-primary/10 text-primary font-medium",
                     )}
                   >
                     {(() => {
-                      const IconComponent = settingsItems[0].icon;
+                      const IconComponent = settingsItem.icon;
                       return (
                         <IconComponent
                           className={cn(
                             "h-5 w-5 flex-shrink-0",
-                            pathname === settingsItems[0].url && "text-primary",
+                            pathname === settingsItem.url && "text-primary",
                           )}
                         />
                       );
                     })()}
-                    {!isCollapsed && <span>{settingsItems[0].title}</span>}
+                    {!isCollapsed && <span>{settingsItem.title}</span>}
                   </Link>
                 </SidebarMenuButton>
               </TooltipTrigger>
               {isCollapsed && (
                 <TooltipContent side="right">
-                  {settingsItems[0].title}
-                </TooltipContent>
-              )}
-            </Tooltip>
-          </SidebarMenuItem>
-        </SidebarMenu>
-
-        <Separator />
-
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <SidebarMenuButton asChild>
-                  <Link
-                    href={settingsItems[1].url}
-                    className={cn(
-                      "flex items-center gap-3 p-4 transition-colors",
-                      isCollapsed && "justify-center",
-                      pathname === settingsItems[1].url &&
-                        "bg-primary/10 text-primary font-medium",
-                    )}
-                  >
-                    {(() => {
-                      const IconComponent = settingsItems[1].icon;
-                      return (
-                        <IconComponent
-                          className={cn(
-                            "h-5 w-5 flex-shrink-0",
-                            pathname === settingsItems[1].url && "text-primary",
-                          )}
-                        />
-                      );
-                    })()}
-                    {!isCollapsed && <span>{settingsItems[1].title}</span>}
-                  </Link>
-                </SidebarMenuButton>
-              </TooltipTrigger>
-              {isCollapsed && (
-                <TooltipContent side="right">
-                  {settingsItems[1].title}
+                  {settingsItem.title}
                 </TooltipContent>
               )}
             </Tooltip>

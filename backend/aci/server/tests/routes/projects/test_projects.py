@@ -22,8 +22,8 @@ def test_get_projects_success(
     dummy_user: DummyUser,
 ) -> None:
     # Get the plan's project limit
-    subscription = billing.get_subscription_by_org_id(db_session, dummy_user.org_id)
-    max_projects = subscription.plan.features["projects"]
+    active_plan = billing.get_active_plan_by_org_id(db_session, dummy_user.org_id)
+    max_projects = active_plan.features["projects"]
 
     # First create multiple projects
     for i in range(max_projects):
@@ -112,8 +112,8 @@ def test_create_project_reached_max_projects_per_org(
     dummy_user: DummyUser,
 ) -> None:
     # Get the plan's project limit
-    subscription = billing.get_subscription_by_org_id(db_session, dummy_user.org_id)
-    max_projects = subscription.plan.features["projects"]
+    active_plan = billing.get_active_plan_by_org_id(db_session, dummy_user.org_id)
+    max_projects = active_plan.features["projects"]
 
     # create max number of projects under the user
     for i in range(max_projects):
