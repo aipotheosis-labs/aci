@@ -80,21 +80,10 @@ class EvaluationPipeline:
         artifact = wandb.use_artifact(f"{artifact_name}:latest")
         artifact_dir = artifact.download()
 
-        # Support both JSON and CSV formats for backward compatibility
-        # For evaluation artifacts, the dataset file is prefixed with "dataset_"
-        if "_evaluation_" in artifact_name and any(char.isdigit() for char in artifact_name):
-            # This is an evaluation artifact, look for dataset_<filename>
-            dataset_path = os.path.join(artifact_dir, f"dataset_{dataset_filename}")
-        else:
-            # This is a regular dataset artifact
-            dataset_path = os.path.join(artifact_dir, dataset_filename)
+        dataset_path = os.path.join(artifact_dir, dataset_filename)
+        return pd.read_json(dataset_path, orient="records")
 
-        if dataset_filename.endswith(".json"):
-            return pd.read_json(dataset_path, orient="records")
-        else:
-            return pd.read_csv(dataset_path)
-
-    def _create_comprehensive_artifact(
+    def _create_composite_artifact(
         self,
         dataset_artifact: str,
         dataset_filename: str,
@@ -103,7 +92,7 @@ class EvaluationPipeline:
         incorrect_results: list,
     ) -> str:
         """
-        Create a comprehensive artifact with properly written files.
+        Create a composite artifact with properly written files.
 
         Args:
             dataset_artifact: Name of the dataset artifact
@@ -118,16 +107,14 @@ class EvaluationPipeline:
         import json
         import os
         import tempfile
-        from datetime import datetime
 
-        # Create comprehensive artifact with timestamp
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        comprehensive_artifact_name = f"{dataset_artifact}_evaluation_{timestamp}"
+        # Create composite artifact without automatic suffixes
+        composite_artifact_name = dataset_artifact
 
-        comprehensive_artifact = wandb.Artifact(
-            name=comprehensive_artifact_name,
-            type="evaluation_results",
-            description=f"Comprehensive evaluation results for {dataset_artifact} - includes dataset, metrics, and incorrect predictions",
+        composite_artifact = wandb.Artifact(
+            name=composite_artifact_name,
+            type="dataset",
+            description=f"Composite evaluation results for {dataset_artifact} - includes dataset, metrics, and incorrect predictions",
         )
 
         temp_files = []
@@ -140,9 +127,7 @@ class EvaluationPipeline:
                 # Write data and ensure it's flushed to disk
                 df.to_json(dataset_file.name, orient="records", indent=2)
                 dataset_file.close()  # Explicitly close to ensure data is written
-                comprehensive_artifact.add_file(
-                    dataset_file.name, name=f"dataset_{dataset_filename}"
-                )
+                composite_artifact.add_file(dataset_file.name, name=dataset_filename)
 
             # Create metrics file
             metrics_file = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False)
@@ -151,7 +136,7 @@ class EvaluationPipeline:
             with open(metrics_file.name, "w") as f:
                 json.dump(detailed_metrics, f, indent=2)
             metrics_file.close()  # Explicitly close
-            comprehensive_artifact.add_file(metrics_file.name, name="detailed_metrics.json")
+            composite_artifact.add_file(metrics_file.name, name="detailed_metrics.json")
 
             # Create incorrect results file if any exist
             if incorrect_results:
@@ -161,18 +146,18 @@ class EvaluationPipeline:
                 with open(incorrect_file.name, "w") as f:
                     json.dump(incorrect_results, f, indent=2)
                 incorrect_file.close()  # Explicitly close
-                comprehensive_artifact.add_file(incorrect_file.name, name="incorrect_results.json")
+                composite_artifact.add_file(incorrect_file.name, name="incorrect_results.json")
 
-            # Log the comprehensive artifact
-            wandb.log_artifact(comprehensive_artifact)
+            # Log the composite artifact
+            wandb.log_artifact(composite_artifact)
 
             logger.info(
-                f"Saved comprehensive evaluation results to artifact: {comprehensive_artifact_name}"
+                f"Saved composite evaluation results to artifact: {composite_artifact_name}"
             )
             if incorrect_results:
                 logger.info(f"Included {len(incorrect_results)} incorrect results for analysis")
 
-            return comprehensive_artifact_name
+            return composite_artifact_name
 
         finally:
             # Clean up temporary files
@@ -239,17 +224,17 @@ class EvaluationPipeline:
             num_samples=evaluation_samples,
         )
 
-        # Extract incorrect results for the comprehensive artifact
+        # Extract incorrect results for the composite artifact
         incorrect_results = metrics.pop("incorrect_results", [])
 
         # Create detailed metrics
         detailed_metrics = {
-            "accuracy": metrics["accuracy"],
+            "correct": metrics["correct"],
             "mrr": metrics["mrr"],
-            "top_k_accuracy": metrics["top_k_accuracy"],
+            "response_time": metrics["response_time"],
+            "top_k": metrics["top_k"],
             "avg_response_time": metrics["avg_response_time"],
             "total_samples": metrics["total_samples"],
-            "correct_predictions": metrics["correct_predictions"],
             "incorrect_count": len(incorrect_results),
             "evaluation_config": {
                 "prompt_type": self.prompt_type,
@@ -259,8 +244,8 @@ class EvaluationPipeline:
             },
         }
 
-        # Create comprehensive artifact with all files using the new method
-        self._create_comprehensive_artifact(
+        # Create composite artifact with all files using the new method
+        self._create_composite_artifact(
             dataset_artifact=dataset_artifact,
             dataset_filename=dataset_filename,
             df=df,
@@ -270,23 +255,21 @@ class EvaluationPipeline:
 
         # Log only summary metrics to wandb
         summary_metrics = {
-            "accuracy": metrics["accuracy"],
+            "correct": metrics["correct"],
             "mrr": metrics["mrr"],
             "avg_response_time": metrics["avg_response_time"],
             "total_samples": metrics["total_samples"],
-            "correct_predictions": metrics["correct_predictions"],
             "incorrect_count": len(incorrect_results),
         }
         wandb.log(summary_metrics)
 
         # Log concise results
         logger.info("Evaluation Results:")
-        logger.info(f"Accuracy: {metrics['accuracy']:.2%}")
+        logger.info(f"Correct: {metrics['correct']}")
         logger.info(f"MRR: {metrics['mrr']:.3f}")
-        logger.info(f"Top-K Accuracy: {metrics['top_k_accuracy']}")
+        logger.info(f"Top-K: {metrics['top_k']}")
         logger.info(f"Average Response Time: {metrics['avg_response_time']:.2f}s")
         logger.info(f"Total Samples: {metrics['total_samples']}")
-        logger.info(f"Correct Predictions: {metrics['correct_predictions']}")
         logger.info(f"Incorrect Predictions: {len(incorrect_results)}")
 
         return metrics
@@ -336,7 +319,7 @@ class EvaluationPipeline:
         try:
             if generate_data:
                 # For generate-only mode, still create the dataset artifact
-                # For generate-and-evaluate mode, we'll include it in the comprehensive artifact
+                # For generate-and-evaluate mode, we'll include it in the composite evaluation artifact
                 if not evaluate_data:
                     # Generate-only mode: create separate dataset artifact
                     df = self._generate(
@@ -346,7 +329,7 @@ class EvaluationPipeline:
                     )
                 else:
                     # Generate-and-evaluate mode: generate but don't save separately
-                    # The dataset will be included in the comprehensive evaluation artifact
+                    # The dataset will be included in the composite evaluation artifact
                     logger.info("Generating synthetic intents...")
                     df = self.generator._fetch_app_function_data()
 
@@ -407,7 +390,7 @@ class EvaluationPipeline:
     "--dataset-filename",
     default=DEFAULT_DATASET_FILENAME,
     type=str,
-    help="Filename to save the generated dataset to (supports .json and .csv formats)",
+    help="Filename to save the generated dataset to (supports .json)",
     show_default=True,
 )
 @click.option("--generation-limit", type=int, help="Limit number of samples to generate")
@@ -433,9 +416,9 @@ def main(
         )
 
     # Automatically append prompt type to dataset name for better organization
-    # BUT don't append if it's already an evaluation artifact (contains timestamp)
-    if "_evaluation_" in dataset and any(char.isdigit() for char in dataset):
-        # This is already an evaluation artifact with timestamp, use as-is
+    # BUT don't append if it's already an evaluation artifact
+    if "_evaluation" in dataset:
+        # This is already an evaluation artifact, use as-is
         dataset_with_prompt = dataset
     elif dataset == DEFAULT_DATASET_ARTIFACT:
         dataset_with_prompt = f"{dataset}_{prompt_type}"
