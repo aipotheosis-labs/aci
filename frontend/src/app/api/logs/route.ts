@@ -70,8 +70,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(data);
   } catch (error) {
     console.error("Error fetching logs:", error);
+    // Log detailed error for debugging but return generic message to client
     return NextResponse.json(
-      { error: "Next.js Server Error" + (error as Error).message },
+      { error: "Internal server error occurred while fetching logs" },
       { status: 500 },
     );
   }
