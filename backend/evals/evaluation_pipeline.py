@@ -5,8 +5,6 @@ import click
 import pandas as pd
 
 import wandb
-
-# Import after environment is loaded
 from evals.intent_prompts import PROMPTS
 from evals.search_evaluator import SearchEvaluator
 from evals.synthetic_intent_generator import SyntheticIntentGenerator
