@@ -21,7 +21,6 @@ The backend component of ACI.dev provides the server infrastructure, API endpoin
   - [PropelAuth Configuration](#propelauth-configuration)
   - [Stripe Webhooks](#stripe-webhooks)
   - [Admin CLI](#admin-cli)
-  - [Running Evaluations](#running-evaluations)
   - [Contributing](#contributing)
   - [License](#license)
 
@@ -375,14 +374,8 @@ Commands:
 To create a new app, run:
 
 ```bash
-docker compose exec runner python -m aci.cli create-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
+docker compose exec runner python -m aci.cli create-app --app-file ./apps/brave_search/app.json
 ```
-
-## Running Evaluations
-
-The evaluation pipeline allows you to assess the performance of the function search mechanism by generating synthetic user intents and measuring how accurately the system retrieves the correct functions.
-
-For a complete, step-by-step guide on how to set up your environment and run the pipeline, please see the **[Evaluation Pipeline Guide](./evals/README.md)**.
 
 ## Contributing
 
