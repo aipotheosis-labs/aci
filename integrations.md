@@ -77,8 +77,14 @@ The `app.json` file contains the app's metadata and, crucially, its security sch
       }
     }
     ```
+-   **No Authentication:**
+    ```json
+    "security_schemes": {
+      "no_auth": {}
+    }
+    ```
 
-### Step 3: Best Practices & Secrets Management
+### Step 3: Secrets Management for OAuth2-based Application
 
 -   **Naming**: Use `lowercase_with_underscores` for the directory name and `UPPERCASE_WITH_UNDERSCORES` for the app `name` field.
 -   **Descriptions**: Write detailed descriptions to improve semantic search and discovery.
@@ -133,6 +139,57 @@ Each function object has the following structure. Full examples are in the "Exam
 
 -   **`rest`**: For direct API calls. `protocol_data` must contain `method`, `path`, and `server_url`.
 -   **`connector`**: For custom logic. The ACI framework routes execution to a corresponding Python class in `backend/aci/server/app_connectors/`. `protocol_data` is an empty object `{}`.
+
+#### REST Protocol Example (Brave Search)
+The following `functions.json` entry for `BRAVE_SEARCH__WEB_SEARCH` shows a simple REST function that passes a search query via URL parameters.
+```json
+{
+  "name": "BRAVE_SEARCH__WEB_SEARCH",
+  "description": "Search the web using Brave's independent search index with privacy protection.",
+  "protocol": "rest",
+  "protocol_data": {
+    "method": "GET",
+    "path": "/web/search",
+    "server_url": "https://api.search.brave.com"
+  },
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "query": {
+        "type": "object",
+        "properties": {
+          "q": { "type": "string", "description": "Search query string." }
+        },
+        "required": ["q"],
+        "visible": ["q"]
+      }
+    },
+    "required": ["query"],
+    "visible": ["query"]
+  }
+}
+```
+
+#### Connector Protocol Example (Gmail)
+The `GMAIL__SEND_EMAIL` function uses the `connector` protocol, routing execution to a custom Python class. The implementation logic for this can be found in [`backend/aci/server/app_connectors/gmail.py`](https://github.com/aipotheosis-labs/aci/blob/main/backend/aci/server/app_connectors/gmail.py).
+```json
+{
+  "name": "GMAIL__SEND_EMAIL",
+  "description": "Sends an email on behalf of the user using the Gmail API.",
+  "protocol": "connector",
+  "protocol_data": {},
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "recipient": { "type": "string", "format": "email" },
+      "subject": { "type": "string" },
+      "body": { "type": "string" }
+    },
+    "required": ["recipient", "body"],
+    "visible": ["recipient", "subject", "body"]
+  }
+}
+```
 
 ### Parameter Schema with Visibility Rules
 
@@ -226,29 +283,15 @@ This pattern separates user-facing `body` parameters from system-level `header` 
 
 #### Connector Function (Custom Logic)
 
-This pattern provides maximum flexibility for integrations that require custom Python code.
+This pattern provides maximum flexibility for integrations that require custom Python code. The parameters are sent directly to the corresponding Python method. For a complete example, refer to the **Connector Protocol Example (Gmail)** above.
 
-```json
-// See full schema in GMAIL__SEND_EMAIL example
-"parameters": {
-  "type": "object",
-  "properties": {
-    "recipient": { "type": "string", "format": "email" },
-    "subject": { "type": "string" },
-    "body": { "type": "string" }
-  },
-  "required": ["recipient", "body"],
-  "visible": ["recipient", "subject", "body"]
-}
-```
-
--   **Execution Flow**: ACI routes the call and its parameters to the corresponding Python method, e.g., `GmailConnector.send_email(...)`.
+-   **Execution Flow**: ACI routes the call and its parameters to the corresponding Python method, e.g., `GmailConnector.send_email(...)`. The implementation logic resides in a dedicated file, like [`backend/aci/server/app_connectors/gmail.py`](https://github.com/aipotheosis-labs/aci/blob/main/backend/aci/server/app_connectors/gmail.py) for Gmail.
 
 ---
 
 # 3. Integration Step by Step
 
-This five-step process walks you through registering and testing a new integration.
+This six-step process walks you through registering and testing a new integration.
 
 ### Prerequisites
 
@@ -271,25 +314,32 @@ docker compose exec runner ./scripts/seed_db.sh user
 
 ### Step 1: Insert an App
 
-Use the `upsert-app` CLI command to add your app's configuration to the database.
+Use the `upsert-app` CLI command to register your app's basic configuration (metadata, security schemes) with the database. At this stage, you do not need to provide secrets.
 
 ```bash
-# For an app without secrets
 docker compose exec runner python -m aci.cli upsert-app \
   --app-file ./apps/your_app/app.json \
-  --skip-dry-run
-
-# For an app with an associated .app.secrets.json file
-docker compose exec runner python -m aci.cli upsert-app \
-  --app-file ./apps/your_app/app.json \
-  --secrets-file ./apps/your_app/.app.secrets.json \
   --skip-dry-run
 
 # Verify insertion
 docker compose exec runner python -m aci.cli list-apps
 ```
 
-### Step 2: Insert Functions
+### Step 2: Set Secrets for OAuth2 Applications (If Applicable)
+
+If your app uses OAuth2, you must provide its `client_id` and `client_secret`. Create a `.app.secrets.json` file and run `upsert-app` again with the `--secrets-file` flag to securely store them.
+
+**This step is not needed for No-Auth or user-provided API Key apps.**
+
+```bash
+# This command reads secrets from the .app.secrets.json file.
+docker compose exec runner python -m aci.cli upsert-app \
+  --app-file ./apps/your_app/app.json \
+  --secrets-file ./apps/your_app/.app.secrets.json \
+  --skip-dry-run
+```
+
+### Step 3: Insert Functions
 
 Use the `upsert-functions` CLI command to add the app's functions.
 
@@ -302,7 +352,7 @@ docker compose exec runner python -m aci.cli upsert-functions \
 docker compose exec runner python -m aci.cli list-functions --app-name YOUR_APP_NAME
 ```
 
-### Step 3: Generate API Key and Create Linked Account
+### Step 4: Generate API Key and Create Linked Account
 
 To test your integration, you need an API key and a linked account.
 
@@ -319,7 +369,7 @@ To test your integration, you need an API key and a linked account.
     -   Use `POST /v1/app-configurations` to enable your app.
     -   Use the appropriate `POST /v1/linked-accounts/*` endpoint to create a linked account (e.g., `/api-key`, `/default`).
 
-### Step 4: Fuzzy Test the Function
+### Step 5: Fuzzy Test the Function
 
 The `fuzzy-test-function-execution` command uses an LLM to generate parameters from a natural language prompt, providing a realistic test of your function.
 
@@ -332,7 +382,7 @@ docker compose exec runner python -m aci.cli fuzzy-test-function-execution \
 ```
 **Troubleshooting**: If this step fails, common causes are an invalid linked account or incorrect visibility rules in `functions.json` preventing the LLM from seeing necessary parameters.
 
-### Step 5: Final Validation in Frontend
+### Step 6: Final Validation in Frontend
 
 For a complete end-to-end test, validate the integration in the UI.
 
@@ -496,7 +546,7 @@ This example shows a public REST API that requires no authentication.
 
 ## GMAIL (OAuth2 & Connector)
 
-This example demonstrates an OAuth2-protected app that uses the `connector` protocol.
+This example demonstrates an OAuth2-protected app that uses the `connector` protocol. The full implementation logic can be found in [`backend/aci/server/app_connectors/gmail.py`](https://github.com/aipotheosis-labs/aci/blob/main/backend/aci/server/app_connectors/gmail.py).
 
 **`apps/gmail/app.json`**
 ```json
