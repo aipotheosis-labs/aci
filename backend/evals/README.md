@@ -7,19 +7,19 @@
 
 ## 1. Environment Configuration
 
-The evaluation pipeline requires several environment variables to be set in your terminal session. These are passed directly into the Docker container when you run the evaluation commands.
+The evaluation pipeline requires several environment variables to be configured in your `.env.local` file. Make sure the following variables are set:
 
 ```bash
-# Set these environment variables in your terminal:
-export EVALS_SERVER_URL=http://localhost:8000
-export EVALS_OPENAI_KEY=<your_openai_api_key> # Can be the same as in your .env.local
+# Add these to your .env.local file:
+EVALS_SERVER_URL=http://localhost:8000
+EVALS_OPENAI_KEY=<your_openai_api_key> # Can be the same as SERVER_OPENAI_API_KEY
 
 # Optional: For logging results to Weights & Biases
 # Get your key from wandb.ai/authorize
-export EVALS_WANDB_KEY=<your_wandb_api_key>
+EVALS_WANDB_KEY=<your_wandb_api_key>
 ```
 
-The final variable, `EVALS_ACI_API_KEY`, is generated dynamically in the next step.
+The final variable, `EVALS_ACI_API_KEY`, is generated dynamically in the next step and will need to be added to your `.env.local` file.
 
 ## 2. Seed Database and Get ACI API Key
 
@@ -40,49 +40,42 @@ This will output a JSON object containing the API key:
 }
 ```
 
-**Copy the `API Key` value and export it as an environment variable:**
+**Copy the `API Key` value and add it to your `.env.local` file:**
 
 ```bash
-export EVALS_ACI_API_KEY=<your_generated_api_key>
+# Add this line to your .env.local file:
+EVALS_ACI_API_KEY=<your_generated_api_key>
+```
+
+**After updating your `.env.local` file, restart the Docker services:**
+
+```bash
+# Stop the services with Ctrl+C, then restart with:
+docker compose up --build
 ```
 
 ## 3. Running the Evaluation Pipeline
 
-Now you're ready to run the evaluation. The commands below must include the `-e` flags to pass your environment variables into the container.
+Now you're ready to run the evaluation. Since the environment variables are configured in your `.env.local` file, the commands are straightforward:
 
 ### Basic Modes
 
 #### Generate and Evaluate
 
 ```bash
-docker compose exec \
-  -e EVALS_SERVER_URL \
-  -e EVALS_ACI_API_KEY \
-  -e EVALS_OPENAI_KEY \
-  -e EVALS_WANDB_KEY \
-  runner python -m evals.evaluation_pipeline --mode generate-and-evaluate
+docker compose exec runner python -m evals.evaluation_pipeline --mode generate-and-evaluate
 ```
 
 #### Generate Synthetic Data Only
 
 ```bash
-docker compose exec \
-  -e EVALS_SERVER_URL \
-  -e EVALS_ACI_API_KEY \
-  -e EVALS_OPENAI_KEY \
-  -e EVALS_WANDB_KEY \
-  runner python -m evals.evaluation_pipeline --mode generate-only
+docker compose exec runner python -m evals.evaluation_pipeline --mode generate-only
 ```
 
 #### Evaluate Existing Dataset Only
 
 ```bash
-docker compose exec \
-  -e EVALS_SERVER_URL \
-  -e EVALS_ACI_API_KEY \
-  -e EVALS_OPENAI_KEY \
-  -e EVALS_WANDB_KEY \
-  runner python -m evals.evaluation_pipeline --mode evaluate-only
+docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only
 ```
 
 ### Advanced Options
@@ -93,12 +86,7 @@ You can add flags to limit sample sizes or customize dataset names.
 
 ```bash
 # Generate and evaluate with a small sample size of 10
-docker compose exec \
-  -e EVALS_SERVER_URL \
-  -e EVALS_ACI_API_KEY \
-  -e EVALS_OPENAI_KEY \
-  -e EVALS_WANDB_KEY \
-  runner python -m evals.evaluation_pipeline \
+docker compose exec runner python -m evals.evaluation_pipeline \
   --mode generate-and-evaluate \
   --generation-limit 10 \
   --evaluation-samples 10
@@ -111,7 +99,7 @@ docker compose exec \
 
 ## 5. Troubleshooting
 
-- **"401 Unauthorized" Error**: This almost always means your environment variables aren't being passed correctly. Double-check that you have `export`ed the variables in your terminal and that you are including the `-e` flags in your `docker compose exec` command.
+- **"401 Unauthorized" Error**: This usually means your `EVALS_ACI_API_KEY` is missing or incorrect in your `.env.local` file. Make sure you've added it and restarted Docker services.
 - **"No app and function data found"**: The database is likely empty. Rerun the seed script: `docker compose exec runner ./scripts/seed_db.sh --all --mock`.
-- **OpenAI Errors**: Check that `EVALS_OPENAI_KEY` is set correctly and that the key is valid.
-- **Docker Restart**: If you update variables in your `.env.local` file, you must restart the services for changes to take effect: `docker compose down && docker compose up -d`.
+- **OpenAI Errors**: Check that `EVALS_OPENAI_KEY` is set correctly in your `.env.local` file.
+- **Docker Restart**: After updating any variables in your `.env.local` file, stop the services with Ctrl+C and restart with `docker compose up --build`.

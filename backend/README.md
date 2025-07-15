@@ -374,7 +374,7 @@ Commands:
 To create a new app, run:
 
 ```bash
-docker compose exec runner python -m aci.cli create-app --app-file ./apps/brave_search/app.json
+docker compose exec runner python -m aci.cli create-app --app-file ./apps/brave_search/app.json --secrets-file ./apps/brave_search/.app.secrets.json
 ```
 
 ## Contributing
