@@ -1,5 +1,5 @@
 from collections.abc import Generator
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime
 from typing import Annotated
 from uuid import UUID
 
@@ -13,12 +13,11 @@ from aci.common.db.sql_models import Agent, Project
 from aci.common.enums import APIKeyStatus
 from aci.common.exceptions import (
     AgentNotFound,
-    DailyQuotaExceeded,
     InvalidAPIKey,
     ProjectNotFound,
 )
 from aci.common.logging_setup import get_logger
-from aci.server import billing, config
+from aci.server import billing, config, quota_manager
 
 logger = get_logger(__name__)
 http_bearer = HTTPBearer(auto_error=True, description="login to receive a JWT token")
@@ -80,48 +79,24 @@ def validate_agent(
     return agent
 
 
-# TODO: use cache (redis)
-# TODO: better way to handle replace(tzinfo=datetime.timezone.utc) ?
-# TODO: context return api key object instead of api_key_id
-def validate_project_quota(
+def validate_project(
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
 ) -> Project:
-    logger.debug(f"Validating project quota, api_key_id={api_key_id}")
-
+    """Validate and return the project associated with the API key."""
     project = crud.projects.get_project_by_api_key_id(db_session, api_key_id)
     if not project:
         logger.error(f"Project not found, api_key_id={api_key_id}")
         raise ProjectNotFound(f"Project not found, api_key_id={api_key_id}")
 
-    now: datetime = datetime.now(UTC)
-    need_reset = now >= project.daily_quota_reset_at.replace(tzinfo=UTC) + timedelta(days=1)
-
-    if not need_reset and project.daily_quota_used >= config.PROJECT_DAILY_QUOTA:
-        logger.warning(
-            f"Daily quota exceeded, "
-            f"project_id={project.id} "
-            f"daily_quota_used={project.daily_quota_used} "
-            f"daily_quota={config.PROJECT_DAILY_QUOTA}"
-        )
-        raise DailyQuotaExceeded(
-            f"Daily quota exceeded for project={project.id}, "
-            f"daily_quota_used={project.daily_quota_used} "
-            f"daily quota={config.PROJECT_DAILY_QUOTA}"
-        )
-
-    crud.projects.increase_project_quota_usage(db_session, project)
-    # TODO: commit here with the same db_session or should create a separate db_session?
-    db_session.commit()
-
-    logger.info(f"Project quota validation successful, project_id={project.id}")
+    logger.info(f"Project validation successful, project_id={project.id}, api_key_id={api_key_id}")
     return project
 
 
 def validate_monthly_api_quota(
     request: Request,
     db_session: Annotated[Session, Depends(yield_db_session)],
-    project: Annotated[Project, Depends(validate_project_quota)],
+    project: Annotated[Project, Depends(validate_project)],
 ) -> None:
     """
     Use quota for a project operation.
@@ -152,7 +127,10 @@ def validate_monthly_api_quota(
         )
 
     plan = billing.get_active_plan_by_org_id(db_session, project.org_id)
-    billing.increment_quota(db_session, project, plan.features["api_calls_monthly"])
+    quota_manager.increment_monthly_api_quota(
+        db_session, project, plan.features["api_calls_monthly"]
+    )
+    quota_manager.increment_total_api_quota(db_session, project)
     db_session.commit()
 
     logger.info("monthly api quota validation successful", extra={"project_id": project.id})
@@ -162,7 +140,7 @@ def get_request_context(
     db_session: Annotated[Session, Depends(yield_db_session)],
     api_key_id: Annotated[UUID, Depends(validate_api_key)],
     agent: Annotated[Agent, Depends(validate_agent)],
-    project: Annotated[Project, Depends(validate_project_quota)],
+    project: Annotated[Project, Depends(validate_project)],
     _: Annotated[None, Depends(validate_monthly_api_quota)],
 ) -> RequestContext:
     """
