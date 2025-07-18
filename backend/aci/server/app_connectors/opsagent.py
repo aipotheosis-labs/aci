@@ -1,4 +1,6 @@
 import asyncio
+import ipaddress
+import socket
 from datetime import datetime, timedelta
 from typing import override
 from urllib.parse import urlparse
@@ -25,13 +27,15 @@ logger = get_logger(__name__)
 
 def _validate_url(url: str) -> None:
     """
-    Validate URL format and accessibility.
+    Validate URL format and security to prevent SSRF attacks.
+    TODO: the best way to prevent SSRF attacks is actually put this agent execution in a sandboxed
+    environment such as E2B.
 
     Args:
         url: URL to validate
 
     Raises:
-        OpsAgentError: If URL format is invalid
+        OpsAgentError: If URL format is invalid or poses security risk
     """
     # Basic format validation using urlparse
     parsed = urlparse(url)
@@ -43,6 +47,45 @@ def _validate_url(url: str) -> None:
     # Ensure protocol is http or https
     if parsed.scheme not in ["http", "https"]:
         raise OpsAgentError("URL must use http or https protocol.")
+
+    # Extract hostname for security validation
+    hostname = parsed.hostname
+    if not hostname:
+        raise OpsAgentError("Invalid URL: hostname cannot be determined.")
+
+    # Block localhost and common internal hostnames
+    blocked_hostnames = ["localhost", "127.0.0.1", "::1", "0.0.0.0"]
+    if hostname.lower() in blocked_hostnames:
+        raise OpsAgentError(
+            "Access to localhost/loopback addresses is not allowed for security reasons."
+        )
+
+    # Check if hostname is an IP address and block private ranges
+    try:
+        ip = ipaddress.ip_address(hostname)
+        if ip.is_private or ip.is_loopback:
+            raise OpsAgentError(
+                "Access to private/internal IP addresses is not allowed for security reasons."
+            )
+
+        # Block cloud metadata service (AWS/GCP/Azure)
+        if str(ip) in ["169.254.169.254", "169.254.169.253", "168.63.129.16"]:
+            raise OpsAgentError(
+                "Access to cloud metadata endpoints is not allowed for security reasons."
+            )
+
+    except ValueError:
+        # It's a hostname, not an IP - do basic DNS resolution check
+        try:
+            resolved_ip = socket.gethostbyname(hostname)
+            ip = ipaddress.ip_address(resolved_ip)
+            if ip.is_private or ip.is_loopback:
+                raise OpsAgentError(
+                    "Domain resolves to private/internal IP address, access not allowed for security reasons."
+                )
+        except (socket.gaierror, ValueError):
+            # DNS resolution failed or invalid IP - let browser handle it
+            pass
 
 
 class Opsagent(AppConnectorBase):
