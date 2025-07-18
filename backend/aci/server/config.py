@@ -81,3 +81,6 @@ ACI_API_KEY_HEADER = "X-API-KEY"
 
 # 8KB
 MAX_LOG_FIELD_SIZE = 8 * 1024
+
+# Agentic Apps
+ANTHROPIC_API_KEY = check_and_get_env_variable("SERVER_ANTHROPIC_API_KEY")
