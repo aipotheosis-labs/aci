@@ -7,6 +7,7 @@ from uuid import UUID
 from browser_use import Agent
 from browser_use.browser import BrowserProfile
 from browser_use.llm.anthropic.chat import ChatAnthropic
+from sqlalchemy.exc import OperationalError
 
 from aci.common.db import crud
 from aci.common.db.sql_models import LinkedAccount
@@ -101,9 +102,15 @@ class Opsagent(AppConnectorBase):
                         )
 
             # Create or update evaluation record with IN_PROGRESS status
-            evaluation = crud.opsagent.start_website_evaluation(
-                db_session, self.linked_account.id, url
-            )
+            try:
+                evaluation = crud.opsagent.start_website_evaluation(
+                    db_session, self.linked_account.id, url
+                )
+            except OperationalError as e:
+                # Lock acquisition failed - another evaluation is in progress
+                raise OpsAgentError(
+                    "Another evaluation for this URL is currently in progress. Please wait and use OPSAGENT__GET_WEBSITE_EVALUATION_RESULT to check the status."
+                ) from e
 
             # Commit the evaluation record creation before starting async task
             db_session.commit()

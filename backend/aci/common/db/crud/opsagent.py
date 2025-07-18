@@ -44,9 +44,13 @@ def start_website_evaluation(
         Current implementation reuses records to prevent table bloat, but audit trail
         approach would require implementing a cleanup process for old records.
     """
-    existing_evaluation = get_website_evaluation_by_url_and_linked_account(
-        db_session, linked_account_id, url
+    # Try to lock the record if it exists, fail immediately if already locked
+    statement = (
+        select(WebsiteEvaluation)
+        .filter_by(linked_account_id=linked_account_id, url=url)
+        .with_for_update(nowait=True)
     )
+    existing_evaluation = db_session.execute(statement).scalar_one_or_none()
 
     if existing_evaluation:
         # Reuse existing record - update status and clear result
