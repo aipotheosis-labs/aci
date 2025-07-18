@@ -109,3 +109,9 @@ class StripeSubscriptionInterval(StrEnum):
 
     MONTH = "month"
     YEAR = "year"
+
+
+class WebsiteEvaluationStatus(StrEnum):
+    IN_PROGRESS = "in_progress"
+    COMPLETED = "completed"
+    FAILED = "failed"

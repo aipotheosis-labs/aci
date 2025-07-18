@@ -34,6 +34,7 @@ dependencies = [
     "svix>=1.65.0",
     "stripe>=12.1.0",
     "e2b-code-interpreter>=1.5.0",
+    "browser-use>=0.5.0",
 ]
 
 [dependency-groups]
@@ -48,13 +49,13 @@ dev = [
     "respx>=0.22.0",
     "types-jsonschema>=4.23.0.20250516",
     "google-api-python-client-stubs>=1.29.0",
-    
+
     # eval dependencies
     "datasets>=3.6.0",
     "huggingface-hub>=0.31.2",
     "pandas>=2.2.3",
     "pandas-stubs>=2.2.3.250308",
-    "tenacity>=9.1.2",
+    "tenacity>=8.2.3",
     "tqdm>=4.67.1",
     "types-tqdm>=4.67.0.20250516",
     "wandb>=0.16.4",
@@ -114,6 +115,10 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = "requests"
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "browser_use.*"
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
