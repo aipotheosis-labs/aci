@@ -50,6 +50,7 @@ from aci.common.enums import (
     StripeSubscriptionInterval,
     StripeSubscriptionStatus,
     Visibility,
+    WebsiteEvaluationStatus,
 )
 
 EMBEDDING_DIMENSION = 1024
@@ -57,6 +58,7 @@ APP_DEFAULT_VERSION = "1.0.0"
 # need app to be shorter because it's used as prefix for function name
 APP_NAME_MAX_LENGTH = 100
 MAX_STRING_LENGTH = 255
+MAX_ENUM_LENGTH = 50
 
 
 class Base(MappedAsDataclass, DeclarativeBase):
@@ -483,6 +485,40 @@ class Secret(Base):
     )
 
     __table_args__ = (UniqueConstraint("linked_account_id", "key", name="uc_linked_account_key"),)
+
+
+class WebsiteEvaluation(Base):
+    __tablename__ = "website_evaluations"
+
+    id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), primary_key=True, default_factory=uuid4, init=False
+    )
+
+    # TODO: the evaluation is scoped to individual linked account for now, but we may want to change
+    # this to be globally in the future to cache results, but that would require some thought on how
+    # to rate limit the evaluation requests.
+    linked_account_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("linked_accounts.id"), nullable=False
+    )
+    url: Mapped[str] = mapped_column(String(MAX_STRING_LENGTH), nullable=False)
+    status: Mapped[WebsiteEvaluationStatus] = mapped_column(
+        SqlEnum(WebsiteEvaluationStatus, native_enum=False, length=MAX_ENUM_LENGTH),
+        nullable=False,
+    )
+    result: Mapped[str] = mapped_column(Text, nullable=False)
+
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False), server_default=func.now(), nullable=False, init=False
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=False),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+        init=False,
+    )
+
+    __table_args__ = (UniqueConstraint("linked_account_id", "url", name="uc_linked_account_url"),)
 
 
 class Plan(Base):
