@@ -1,4 +1,4 @@
-"""Create a website evaluation table for storing the evalution results from the OpsAgent app
+"""Create a website evaluation table for storing the evaluation results from the Frontend QA Agent app
 
 Revision ID: 48bf142a794c
 Revises: 0d328a61b91f

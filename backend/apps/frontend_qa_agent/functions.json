@@ -1,7 +1,7 @@
 [
     {
-        "name": "OPSAGENT__EVALUATE_WEBSITE",
-        "description": "Initiates an asynchronous website evaluation to identify UI/UX issues. Rate limited to one evaluation per URL per 5 minutes. Returns a confirmation message that evaluation has started - use OPSAGENT__GET_WEBSITE_EVALUATION_RESULT to retrieve results.",
+        "name": "FRONTEND_QA_AGENT__EVALUATE_WEBSITE",
+        "description": "Initiates an asynchronous website evaluation to identify UI/UX issues. Rate limited to one evaluation per URL per 5 minutes. Returns a confirmation message that evaluation has started - use FRONTEND_QA_AGENT__GET_WEBSITE_EVALUATION_RESULT to retrieve results.",
         "tags": ["website", "evaluate", "debug"],
         "visibility": "public",
         "active": true,
@@ -21,8 +21,8 @@
         }
     },
     {
-        "name": "OPSAGENT__GET_WEBSITE_EVALUATION_RESULT",
-        "description": "Retrieves website evaluation results. If evaluation is in progress, wait using exponential backoff (15s, 30s, 60s, 120s, 240s) up to 5 retries. If evaluation failed, use OPSAGENT__EVALUATE_WEBSITE to start a new evaluation (respecting the 5-minute rate limit).",
+        "name": "FRONTEND_QA_AGENT__GET_WEBSITE_EVALUATION_RESULT",
+        "description": "Retrieves website evaluation results. If evaluation is in progress, wait using exponential backoff (15s, 30s, 60s, 120s, 240s) up to 5 retries. If evaluation failed, use FRONTEND_QA_AGENT__EVALUATE_WEBSITE to start a new evaluation (respecting the 5-minute rate limit).",
         "tags": ["website", "evaluate", "debug"],
         "visibility": "public",
         "active": true,

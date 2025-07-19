@@ -14,9 +14,9 @@ from sqlalchemy.exc import OperationalError
 from aci.common.db import crud
 from aci.common.db.sql_models import LinkedAccount
 from aci.common.enums import WebsiteEvaluationStatus
-from aci.common.exceptions import OpsAgentError
+from aci.common.exceptions import FrontendQaAgentError
 from aci.common.logging_setup import get_logger
-from aci.common.schemas.app_connectors.opsagent import WebsiteEvaluationPublic
+from aci.common.schemas.app_connectors.frontend_qa_agent import WebsiteEvaluationPublic
 from aci.common.schemas.security_scheme import NoAuthScheme, NoAuthSchemeCredentials
 from aci.common.utils import create_db_session
 from aci.server import config
@@ -35,28 +35,28 @@ def _validate_url(url: str) -> None:
         url: URL to validate
 
     Raises:
-        OpsAgentError: If URL format is invalid or poses security risk
+        FrontendQaAgent: If URL format is invalid or poses security risk
     """
     # Basic format validation using urlparse
     parsed = urlparse(url)
     if not parsed.scheme or not parsed.netloc:
-        raise OpsAgentError(
+        raise FrontendQaAgentError(
             "Invalid URL format. URL must include protocol (http/https) and domain."
         )
 
     # Ensure protocol is http or https
     if parsed.scheme not in ["http", "https"]:
-        raise OpsAgentError("URL must use http or https protocol.")
+        raise FrontendQaAgentError("URL must use http or https protocol.")
 
     # Extract hostname for security validation
     hostname = parsed.hostname
     if not hostname:
-        raise OpsAgentError("Invalid URL: hostname cannot be determined.")
+        raise FrontendQaAgentError("Invalid URL: hostname cannot be determined.")
 
     # Block localhost and common internal hostnames
     blocked_hostnames = ["localhost", "127.0.0.1", "::1", "0.0.0.0"]
     if hostname.lower() in blocked_hostnames:
-        raise OpsAgentError(
+        raise FrontendQaAgentError(
             "Access to localhost/loopback addresses is not allowed for security reasons."
         )
 
@@ -64,13 +64,13 @@ def _validate_url(url: str) -> None:
     try:
         ip = ipaddress.ip_address(hostname)
         if ip.is_private or ip.is_loopback:
-            raise OpsAgentError(
+            raise FrontendQaAgentError(
                 "Access to private/internal IP addresses is not allowed for security reasons."
             )
 
         # Block cloud metadata service (AWS/GCP/Azure)
         if str(ip) in ["169.254.169.254", "169.254.169.253", "168.63.129.16"]:
-            raise OpsAgentError(
+            raise FrontendQaAgentError(
                 "Access to cloud metadata endpoints is not allowed for security reasons."
             )
 
@@ -80,7 +80,7 @@ def _validate_url(url: str) -> None:
             resolved_ip = socket.gethostbyname(hostname)
             ip = ipaddress.ip_address(resolved_ip)
             if ip.is_private or ip.is_loopback:
-                raise OpsAgentError(
+                raise FrontendQaAgentError(
                     "Domain resolves to private/internal IP address, access not allowed for security reasons."
                 )
         except (socket.gaierror, ValueError):
@@ -88,9 +88,9 @@ def _validate_url(url: str) -> None:
             pass
 
 
-class Opsagent(AppConnectorBase):
+class FrontendQaAgent(AppConnectorBase):
     """
-    OpsAgent Connector that helps you to automate your DevOps tasks, e.g. evaluate and debug your website.
+    Frontend QA Agent Connector that helps you evaluate and debug your website.
     """
 
     def __init__(
@@ -119,15 +119,17 @@ class Opsagent(AppConnectorBase):
             dict with status and message indicating evaluation has started
 
         Raises:
-            OpsAgentError: If URL is invalid, rate limited, or evaluation is in progress
+            FrontendQaAgent: If URL is invalid, rate limited, or evaluation is in progress
         """
         # Validate URL format
         _validate_url(url)
 
         with create_db_session(config.DB_FULL_URL) as db_session:
             # Check for existing evaluation with rate limiting
-            existing_evaluation = crud.opsagent.get_website_evaluation_by_url_and_linked_account(
-                db_session, self.linked_account.id, url
+            existing_evaluation = (
+                crud.frontend_qa_agent.get_website_evaluation_by_url_and_linked_account(
+                    db_session, self.linked_account.id, url
+                )
             )
 
             if existing_evaluation:
@@ -136,23 +138,23 @@ class Opsagent(AppConnectorBase):
 
                 if existing_evaluation.updated_at > five_minutes_ago:
                     if existing_evaluation.status == WebsiteEvaluationStatus.IN_PROGRESS:
-                        raise OpsAgentError(
-                            "Website evaluation is currently in progress. Use OPSAGENT__GET_WEBSITE_EVALUATION_RESULT to check the status and retrieve results when completed."
+                        raise FrontendQaAgentError(
+                            "Website evaluation is currently in progress. Use FRONTEND_QA_AGENT__GET_WEBSITE_EVALUATION_RESULT to check the status and retrieve results when completed."
                         )
                     else:  # COMPLETED or FAILED
-                        raise OpsAgentError(
-                            "Rate limit exceeded. Please wait 5 minutes between evaluation requests for the same URL. Use OPSAGENT__GET_WEBSITE_EVALUATION_RESULT to retrieve the previous evaluation result."
+                        raise FrontendQaAgentError(
+                            "Rate limit exceeded. Please wait 5 minutes between evaluation requests for the same URL. Use FRONTEND_QA_AGENT__GET_WEBSITE_EVALUATION_RESULT to retrieve the previous evaluation result."
                         )
 
             # Create or update evaluation record with IN_PROGRESS status
             try:
-                evaluation = crud.opsagent.start_website_evaluation(
+                evaluation = crud.frontend_qa_agent.start_website_evaluation(
                     db_session, self.linked_account.id, url
                 )
             except OperationalError as e:
                 # Lock acquisition failed - another evaluation is in progress
-                raise OpsAgentError(
-                    "Another evaluation for this URL is currently in progress. Please wait and use OPSAGENT__GET_WEBSITE_EVALUATION_RESULT to check the status."
+                raise FrontendQaAgentError(
+                    "Another evaluation for this URL is currently in progress. Please wait and use FRONTEND_QA_AGENT__GET_WEBSITE_EVALUATION_RESULT to check the status."
                 ) from e
 
             # Commit the evaluation record creation before starting async task
@@ -167,7 +169,7 @@ class Opsagent(AppConnectorBase):
 
             return {
                 "status": "started",
-                "message": "Website evaluation initiated successfully. Use OPSAGENT__GET_WEBSITE_EVALUATION_RESULT to retrieve results.",
+                "message": "Website evaluation initiated successfully. Use FRONTEND_QA_AGENT__GET_WEBSITE_EVALUATION_RESULT to retrieve results.",
             }
 
     def get_website_evaluation_result(self, url: str) -> WebsiteEvaluationPublic:
@@ -184,29 +186,29 @@ class Opsagent(AppConnectorBase):
             WebsiteEvaluationPublic: Structured evaluation data with url, result, and timestamp
 
         Raises:
-            OpsAgentError: If no evaluation exists, evaluation is in progress, or evaluation failed
+            FrontendQaAgent: If no evaluation exists, evaluation is in progress, or evaluation failed
         """
         with create_db_session(config.DB_FULL_URL) as db_session:
             # Check if evaluation exists for this linked_account + URL
-            evaluation = crud.opsagent.get_website_evaluation_by_url_and_linked_account(
+            evaluation = crud.frontend_qa_agent.get_website_evaluation_by_url_and_linked_account(
                 db_session, self.linked_account.id, url
             )
 
             # No evaluation found
             if not evaluation:
-                raise OpsAgentError(
-                    "No evaluation found for this URL. Use OPSAGENT__EVALUATE_WEBSITE to start a new website evaluation."
+                raise FrontendQaAgentError(
+                    "No evaluation found for this URL. Use FRONTEND_QA_AGENT__EVALUATE_WEBSITE to start a new website evaluation."
                 )
 
             # Handle different evaluation statuses
             if evaluation.status == WebsiteEvaluationStatus.IN_PROGRESS:
-                raise OpsAgentError(
+                raise FrontendQaAgentError(
                     "Website evaluation is currently in progress. Please wait and try again in 15-30 seconds. If the evaluation takes longer, wait using exponential backoff: 15s, 30s, 60s, 120s, 240s (up to 5 retries total)."
                 )
 
             elif evaluation.status == WebsiteEvaluationStatus.FAILED:
-                raise OpsAgentError(
-                    f"Website evaluation failed: {evaluation.result}. Use OPSAGENT__EVALUATE_WEBSITE to start a new evaluation (respecting the 5-minute rate limit)."
+                raise FrontendQaAgentError(
+                    f"Website evaluation failed: {evaluation.result}. Use FRONTEND_QA_AGENT__EVALUATE_WEBSITE to start a new evaluation (respecting the 5-minute rate limit)."
                 )
 
             elif evaluation.status == WebsiteEvaluationStatus.COMPLETED:
@@ -217,8 +219,8 @@ class Opsagent(AppConnectorBase):
 
             else:
                 # Should never happen, but handle unknown status
-                raise OpsAgentError(
-                    f"Website evaluation has unknown status: {evaluation.status}. Use OPSAGENT__EVALUATE_WEBSITE to start a new evaluation."
+                raise FrontendQaAgentError(
+                    f"Website evaluation has unknown status: {evaluation.status}. Use FRONTEND_QA_AGENT__EVALUATE_WEBSITE to start a new evaluation."
                 )
 
 
@@ -253,21 +255,21 @@ async def _evaluate_and_update_database(url: str, evaluation_id: UUID) -> None:
             # Handle empty or None result as a failure case
             if result is None or result.strip() == "":
                 error_msg = "Website evaluation completed but returned no results. The website may have blocked automated access or encountered technical issues."
-                crud.opsagent.update_website_evaluation_status_and_result(
+                crud.frontend_qa_agent.update_website_evaluation_status_and_result(
                     db_session, evaluation_id, WebsiteEvaluationStatus.FAILED, error_msg
                 )
                 logger.warning(f"Website evaluation returned empty result for URL: {url}")
                 return
 
             # Update database with successful result
-            crud.opsagent.update_website_evaluation_status_and_result(
+            crud.frontend_qa_agent.update_website_evaluation_status_and_result(
                 db_session, evaluation_id, WebsiteEvaluationStatus.COMPLETED, result
             )
             logger.info(f"Website evaluation completed successfully for URL: {url}")
 
         except TimeoutError:
             error_msg = "Website evaluation timed out after 5 minutes. The website may be slow to respond or the evaluation process encountered issues."
-            crud.opsagent.update_website_evaluation_status_and_result(
+            crud.frontend_qa_agent.update_website_evaluation_status_and_result(
                 db_session, evaluation_id, WebsiteEvaluationStatus.FAILED, error_msg
             )
             logger.warning(f"Website evaluation timed out for URL: {url}")
@@ -276,7 +278,7 @@ async def _evaluate_and_update_database(url: str, evaluation_id: UUID) -> None:
             # TODO: Add specific browser_use exception handling once we determine the exact exception types
             error_msg = f"Website evaluation failed: {e!s}. Please try again or contact support if the issue persists."
 
-            crud.opsagent.update_website_evaluation_status_and_result(
+            crud.frontend_qa_agent.update_website_evaluation_status_and_result(
                 db_session, evaluation_id, WebsiteEvaluationStatus.FAILED, error_msg
             )
             logger.error(f"Website evaluation failed for URL {url}: {e}")

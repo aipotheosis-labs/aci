@@ -1,0 +1,15 @@
+{
+    "name": "FRONTEND_QA_AGENT",
+    "display_name": "Frontend QA Agent",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/aci.png",
+    "provider": "ACI.dev",
+    "version": "1.0.0",
+    "description": "The Frontend QA Agent helps you evaluate and debug your website.",
+    "security_schemes": {
+        "no_auth": {}
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": ["DevOps", "Dev Tools", "ACI.dev"],
+    "visibility": "public",
+    "active": true
+}

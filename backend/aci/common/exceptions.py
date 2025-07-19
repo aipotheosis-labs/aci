@@ -500,14 +500,14 @@ class MaxAgentSecretsReached(ACIException):
         )
 
 
-class OpsAgentError(ACIException):
+class FrontendQaAgentError(ACIException):
     """
-    Exception raised when an error occurs in the OpsAgent
+    Exception raised when an error occurs in the Frontend QA Agent
     """
 
     def __init__(self, message: str | None = None):
         super().__init__(
-            title="OpsAgent error",
+            title="Frontend QA Agent error",
             message=message,
             error_code=status.HTTP_400_BAD_REQUEST,
         )
