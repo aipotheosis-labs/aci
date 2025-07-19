@@ -17,7 +17,7 @@ def get_website_evaluation_by_url_and_linked_account(
     return db_session.execute(statement).scalar_one_or_none()
 
 
-def start_website_evaluation(
+def mark_website_evaluation_as_in_progress(
     db_session: Session, linked_account_id: UUID, url: str
 ) -> WebsiteEvaluation:
     """

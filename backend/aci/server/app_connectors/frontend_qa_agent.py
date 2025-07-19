@@ -14,7 +14,7 @@ from sqlalchemy.exc import OperationalError
 from aci.common.db import crud
 from aci.common.db.sql_models import LinkedAccount
 from aci.common.enums import WebsiteEvaluationStatus
-from aci.common.exceptions import FrontendQaAgentError
+from aci.common.exceptions import FrontendQaAgentError, UnexpectedError
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.app_connectors.frontend_qa_agent import WebsiteEvaluationPublic
 from aci.common.schemas.security_scheme import NoAuthScheme, NoAuthSchemeCredentials
@@ -148,7 +148,7 @@ class FrontendQaAgent(AppConnectorBase):
 
             # Create or update evaluation record with IN_PROGRESS status
             try:
-                evaluation = crud.frontend_qa_agent.start_website_evaluation(
+                evaluation = crud.frontend_qa_agent.mark_website_evaluation_as_in_progress(
                     db_session, self.linked_account.id, url
                 )
             except OperationalError as e:
@@ -161,7 +161,21 @@ class FrontendQaAgent(AppConnectorBase):
             db_session.commit()
 
             # Start async evaluation task
-            asyncio.create_task(_evaluate_and_update_database(url, evaluation.id))  # noqa: RUF006
+            try:
+                asyncio.create_task(_evaluate_and_update_database(url, evaluation.id))  # noqa: RUF006
+            except RuntimeError as e:
+                # Task creation failed - immediately mark as failed
+                with create_db_session(config.DB_FULL_URL) as cleanup_session:
+                    crud.frontend_qa_agent.update_website_evaluation_status_and_result(
+                        cleanup_session,
+                        evaluation.id,
+                        WebsiteEvaluationStatus.FAILED,
+                        f"Failed to start evaluation task: {e}",
+                    )
+                    cleanup_session.commit()
+                raise UnexpectedError(
+                    "Failed to start website evaluation. Please try again later."
+                ) from e
 
             logger.info(
                 f"Website evaluation initiated for URL: {url}, evaluation_id: {evaluation.id}"
