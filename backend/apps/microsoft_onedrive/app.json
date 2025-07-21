@@ -1,0 +1,28 @@
+{
+    "name": "MICROSOFT_ONEDRIVE",
+    "display_name": "OneDrive",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/onedrive.svg",
+    "provider": "Microsoft",
+    "version": "2.0.0",
+    "description": "The Microsoft Graph OneDrive API enables access to files and folders stored in OneDrive. This integration allows reading, managing, and searching OneDrive content on behalf of the user.",
+    "security_schemes": {
+      "oauth2": {
+        "location": "header",
+        "name": "Authorization",
+        "prefix": "Bearer",
+        "client_id": "{{ AIPOLABS_MICROSOFT_ONEDRIVE_CLIENT_ID }}",
+        "client_secret": "{{ AIPOLABS_MICROSOFT_ONEDRIVE_CLIENT_SECRET }}",
+        "scope": "Files.ReadWrite User.Read offline_access",
+        "authorize_url": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+        "access_token_url": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+        "refresh_token_url": "https://login.microsoftonline.com/common/oauth2/v2.0/token"
+      }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": [
+      "Productivity",
+      "File Storage"
+    ],
+    "visibility": "public",
+    "active": true
+  }
