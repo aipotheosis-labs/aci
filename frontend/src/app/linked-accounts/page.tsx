@@ -1,55 +1,41 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { LinkedAccount } from "@/lib/types/linkedaccount";
-import { Button } from "@/components/ui/button";
 import { IdDisplay } from "@/components/apps/id-display";
-import { GoTrash } from "react-icons/go";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
-import { LinkedAccountDetails } from "@/components/linkedaccount/linked-account-details";
 import { AddAccountForm } from "@/components/appconfig/add-account";
 import { App } from "@/lib/types/app";
-import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhanced-switch";
-import Image from "next/image";
-import { useMetaInfo } from "@/components/context/metainfo";
-import { formatToLocalTime } from "@/utils/time";
-import { ArrowUpDown } from "lucide-react";
-import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
-import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
+import { Input } from "@/components/ui/input";
 import {
   useLinkedAccounts,
-  useDeleteLinkedAccount,
   useUpdateLinkedAccount,
 } from "@/hooks/use-linked-account";
 import { useApps } from "@/hooks/use-app";
 import { useAppConfigs } from "@/hooks/use-app-config";
-
-const columnHelper = createColumnHelper<TableData>();
-type TableData = LinkedAccount & { logo: string };
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  CollapsibleAccountGroup,
+  type TableData,
+} from "@/components/linkedaccount/collapsible-account-group";
 
 export default function LinkedAccountsPage() {
-  const { activeProject } = useMetaInfo();
   const { data: linkedAccounts = [], isPending: isLinkedAccountsPending } =
     useLinkedAccounts();
   const { data: appConfigs = [], isPending: isConfigsPending } =
     useAppConfigs();
   const { data: apps, isPending: isAppsPending, isError } = useApps();
-  const { mutateAsync: deleteLinkedAccount } = useDeleteLinkedAccount();
   const { mutateAsync: updateLinkedAccount } = useUpdateLinkedAccount();
   const [appsMap, setAppsMap] = useState<Record<string, App>>({});
+  const [selectedOwnerId, setSelectedOwnerId] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const loadAppMaps = useCallback(async () => {
     if (linkedAccounts.length === 0 || !apps) {
@@ -81,7 +67,6 @@ export default function LinkedAccountsPage() {
 
   /**
    * Generate tableData and attach the logo from appsMap to each row of data.
-   * In this way, columns no longer need to rely on appsMap, avoiding uninstalling pop-up components when columns are rebuilt.
    */
   const tableData = useMemo(() => {
     return linkedAccounts.map((acc) => ({
@@ -89,6 +74,51 @@ export default function LinkedAccountsPage() {
       logo: appsMap[acc.app_name]?.logo ?? "",
     }));
   }, [linkedAccounts, appsMap]);
+
+  // Get unique owner IDs
+  const uniqueOwnerIds = useMemo(() => {
+    return Array.from(
+      new Set(linkedAccounts.map((acc) => acc.linked_account_owner_id)),
+    ).sort();
+  }, [linkedAccounts]);
+
+  // Group accounts by owner ID
+  const groupedAccounts = useMemo(() => {
+    const groups: Record<string, TableData[]> = {};
+    tableData.forEach((account) => {
+      if (!groups[account.linked_account_owner_id]) {
+        groups[account.linked_account_owner_id] = [];
+      }
+      groups[account.linked_account_owner_id].push(account);
+    });
+    return groups;
+  }, [tableData]);
+
+  // Filter groups based on selection and search query
+  const filteredGroups = useMemo(() => {
+    let filteredBySelection = groupedAccounts;
+
+    // Apply dropdown filter
+    if (selectedOwnerId !== "all") {
+      filteredBySelection =
+        selectedOwnerId in groupedAccounts
+          ? { [selectedOwnerId]: groupedAccounts[selectedOwnerId] }
+          : {};
+    }
+
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const filtered: Record<string, TableData[]> = {};
+      Object.entries(filteredBySelection).forEach(([ownerId, accounts]) => {
+        if (ownerId.toLowerCase().includes(searchQuery.toLowerCase())) {
+          filtered[ownerId] = accounts;
+        }
+      });
+      return filtered;
+    }
+
+    return filteredBySelection;
+  }, [groupedAccounts, selectedOwnerId, searchQuery]);
 
   const toggleAccountStatus = useCallback(
     async (accountId: string, newStatus: boolean): Promise<boolean> => {
@@ -113,194 +143,6 @@ export default function LinkedAccountsPage() {
       loadAppMaps();
     }
   }, [linkedAccounts, loadAppMaps]);
-
-  const linkedAccountsColumns: ColumnDef<TableData>[] = useMemo(() => {
-    return [
-      columnHelper.accessor("app_name", {
-        header: ({ column }) => (
-          <div className="flex items-center justify-start">
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-              className="p-0 h-auto text-left font-normal bg-transparent hover:bg-transparent focus:ring-0"
-            >
-              APP NAME
-              <ArrowUpDown className="h-4 w-4" />
-            </Button>
-          </div>
-        ),
-        cell: (info) => {
-          const appName = info.getValue();
-          return (
-            <div className="flex items-center gap-2">
-              {info.row.original.logo && (
-                <div className="relative h-6 w-6 flex-shrink-0 overflow-hidden">
-                  <Image
-                    src={info.row.original.logo}
-                    alt={`${appName} logo`}
-                    fill
-                    className="object-contain rounded-sm"
-                  />
-                </div>
-              )}
-              <span className="font-medium">{appName}</span>
-            </div>
-          );
-        },
-        enableGlobalFilter: true,
-      }),
-
-      columnHelper.accessor((row) => [row.linked_account_owner_id], {
-        id: "linked_account_owner_id",
-        header: ({ column }) => (
-          <div className="flex items-center justify-start">
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-              className="p-0 h-auto text-left font-normal  hover:bg-transparent focus:ring-0"
-            >
-              LINKED ACCOUNT OWNER ID
-              <ArrowUpDown className="h-4 w-4" />
-            </Button>
-          </div>
-        ),
-        cell: (info) => {
-          const [ownerId] = info.getValue();
-          return (
-            <div className="flex-shrink-0">
-              <IdDisplay id={ownerId} />
-            </div>
-          );
-        },
-        enableColumnFilter: true,
-        filterFn: "arrIncludes",
-      }),
-
-      columnHelper.accessor("created_at", {
-        header: ({ column }) => (
-          <div className="flex items-center justify-start">
-            <Button
-              variant="ghost"
-              onClick={() =>
-                column.toggleSorting(column.getIsSorted() === "asc")
-              }
-              className="p-0 h-auto text-left font-normal hover:bg-transparent focus:ring-0"
-            >
-              CREATED AT
-              <ArrowUpDown className="h-4 w-4" />
-            </Button>
-          </div>
-        ),
-        cell: (info) => formatToLocalTime(info.getValue()),
-        enableGlobalFilter: false,
-      }),
-
-      columnHelper.accessor("last_used_at", {
-        header: "LAST USED AT",
-        cell: (info) => {
-          const lastUsedAt = info.getValue();
-          return lastUsedAt ? formatToLocalTime(lastUsedAt) : "Never";
-        },
-        enableGlobalFilter: false,
-      }),
-
-      columnHelper.accessor("enabled", {
-        header: "ENABLED",
-        cell: (info) => {
-          const account = info.row.original;
-          return (
-            <EnhancedSwitch
-              checked={info.getValue()}
-              onAsyncChange={(checked) =>
-                toggleAccountStatus(account.id, checked)
-              }
-              successMessage={(newState) => {
-                return `Linked account ${account.linked_account_owner_id} ${newState ? "enabled" : "disabled"}`;
-              }}
-              errorMessage="Failed to update linked account"
-            />
-          );
-        },
-        enableGlobalFilter: false,
-      }),
-
-      columnHelper.accessor((row) => row, {
-        id: "details",
-        header: "DETAILS",
-        cell: (info) => {
-          const account = info.getValue();
-          return (
-            <LinkedAccountDetails
-              account={account}
-              toggleAccountStatus={toggleAccountStatus}
-            >
-              <Button variant="outline" size="sm">
-                See Details
-              </Button>
-            </LinkedAccountDetails>
-          );
-        },
-        enableGlobalFilter: false,
-      }),
-
-      columnHelper.accessor((row) => row, {
-        id: "actions",
-        header: "",
-        cell: (info) => {
-          const account = info.getValue();
-          return (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-red-600">
-                  <GoTrash />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Confirm Deletion?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    the linked account for owner ID &quot;
-                    {account.linked_account_owner_id}&quot;.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={async () => {
-                      try {
-                        if (!activeProject) {
-                          console.warn("No active project");
-                          return;
-                        }
-                        await deleteLinkedAccount({
-                          linkedAccountId: account.id,
-                        });
-
-                        toast.success(
-                          `Linked account ${account.linked_account_owner_id} deleted`,
-                        );
-                      } catch (error) {
-                        console.error(error);
-                        toast.error("Failed to delete linked account");
-                      }
-                    }}
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          );
-        },
-        enableGlobalFilter: false,
-      }),
-    ] as ColumnDef<TableData>[];
-  }, [toggleAccountStatus, deleteLinkedAccount, activeProject]);
 
   const isPageLoading =
     isLinkedAccountsPending || isAppsPending || isConfigsPending;
@@ -330,6 +172,51 @@ export default function LinkedAccountsPage() {
       </div>
       <Separator />
 
+      {/* Owner ID Filter and Search */}
+      {!isPageLoading && uniqueOwnerIds.length > 0 && (
+        <div className="m-4">
+          <div className="flex items-center gap-4 mb-4 flex-wrap">
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium">Filter by Owner ID:</label>
+              <Select
+                value={selectedOwnerId}
+                onValueChange={setSelectedOwnerId}
+              >
+                <SelectTrigger className="w-64">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">
+                    All Owner IDs ({uniqueOwnerIds.length})
+                  </SelectItem>
+                  {uniqueOwnerIds.map((ownerId) => (
+                    <SelectItem key={ownerId} value={ownerId}>
+                      <IdDisplay id={ownerId} />
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <label className="text-sm font-medium">Search Owner ID:</label>
+              <Input
+                placeholder="Search owner IDs..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-64"
+              />
+              {searchQuery && (
+                <span className="text-xs text-muted-foreground">
+                  Found {Object.keys(filteredGroups).length} matching owner
+                  {Object.keys(filteredGroups).length !== 1 ? "s" : ""}
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="m-4">
         <Tabs defaultValue={"linked"} className="w-full">
           <TabsContent value="linked">
@@ -340,23 +227,21 @@ export default function LinkedAccountsPage() {
                   <p className="text-sm text-gray-500">Loading...</p>
                 </div>
               </div>
-            ) : tableData.length === 0 ? (
+            ) : Object.keys(filteredGroups).length === 0 ? (
               <div className="text-center p-8 text-muted-foreground">
                 No linked accounts found
               </div>
             ) : (
-              <EnhancedDataTable
-                columns={linkedAccountsColumns}
-                data={tableData}
-                defaultSorting={[{ id: "app_name", desc: false }]}
-                searchBarProps={{
-                  placeholder: "Search linked accounts",
-                }}
-                paginationOptions={{
-                  initialPageIndex: 0,
-                  initialPageSize: 15,
-                }}
-              />
+              <div className="space-y-4">
+                {Object.entries(filteredGroups).map(([ownerId, accounts]) => (
+                  <CollapsibleAccountGroup
+                    key={ownerId}
+                    ownerId={ownerId}
+                    accounts={accounts}
+                    toggleAccountStatus={toggleAccountStatus}
+                  />
+                ))}
+              </div>
             )}
           </TabsContent>
         </Tabs>
