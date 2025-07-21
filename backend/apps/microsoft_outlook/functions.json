@@ -473,7 +473,8 @@
               }
             },
             "importance": {
-              "type": "string",
+              "type": "enum",
+              "enum": ["low", "normal", "high"],
               "description": "The importance of the message. Values: low, normal, high"
             },
             "isRead": {
@@ -820,7 +821,7 @@
                   "properties": {
                     "contentType": {
                       "type": "string",
-                      "enum": ["Text", "HTML"],
+                      "enum": ["text", "html"],
                       "description": "The content type of the message body"
                     },
                     "content": {
@@ -1281,7 +1282,7 @@
             },
             "importance": {
               "type": "string",
-              "enum": ["Low", "Normal", "High"],
+              "enum": ["low", "normal", "high"],
               "description": "The importance level of the message"
             },
             "body": {
@@ -1290,7 +1291,7 @@
               "properties": {
                 "contentType": {
                   "type": "string",
-                  "enum": ["Text", "HTML"],
+                  "enum": ["text", "html"],
                   "description": "The content type of the message body"
                 },
                 "content": {
