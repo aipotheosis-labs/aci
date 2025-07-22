@@ -14,12 +14,21 @@ import {
   getPaginationRowModel,
   PaginationState,
 } from "@tanstack/react-table";
+import { LucideIcon } from "lucide-react";
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData, TValue> {
     defaultSort?: boolean;
     defaultSortDesc?: boolean;
+    filterProps?: {
+      icon?: LucideIcon;
+      optionIcon?: LucideIcon;
+      placeholder?: string;
+      allText?: string;
+      className?: string;
+      width?: string;
+    };
   }
 }
 
@@ -193,9 +202,18 @@ export function EnhancedDataTable<TData, TValue>({
             const options = Array.from(uniqueValues);
             /** If there are no options, don't render the column filter component */
             if (options.length === 0) return null;
+
+            /** Get custom filter props from column meta */
+            const filterProps = column.columnDef.meta?.filterProps || {};
+
             /** Render the column filter component */
             return (
-              <ColumnFilter key={column.id} column={column} options={options} />
+              <ColumnFilter
+                key={column.id}
+                column={column}
+                options={options}
+                {...filterProps}
+              />
             );
           }
           return null;

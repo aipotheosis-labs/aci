@@ -26,7 +26,7 @@ import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhan
 import Image from "next/image";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { formatToLocalTime } from "@/utils/time";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, User, Users } from "lucide-react";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import {
@@ -149,7 +149,7 @@ export default function LinkedAccountsPage() {
             </div>
           );
         },
-        enableGlobalFilter: true,
+        // enableGlobalFilter: true,
       }),
 
       columnHelper.accessor((row) => [row.linked_account_owner_id], {
@@ -177,7 +177,16 @@ export default function LinkedAccountsPage() {
           );
         },
         enableColumnFilter: true,
+        enableGlobalFilter: true,
         filterFn: "arrIncludes",
+        meta: {
+          filterProps: {
+            icon: Users,
+            optionIcon: User,
+            allText: "All Owner Id",
+            width: "w-[180px]",
+          },
+        },
       }),
 
       columnHelper.accessor("created_at", {
@@ -350,7 +359,7 @@ export default function LinkedAccountsPage() {
                 data={tableData}
                 defaultSorting={[{ id: "app_name", desc: false }]}
                 searchBarProps={{
-                  placeholder: "Search linked accounts",
+                  placeholder: "Search AppName",
                 }}
                 paginationOptions={{
                   initialPageIndex: 0,
