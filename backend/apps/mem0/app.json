@@ -1,0 +1,19 @@
+{
+  "name": "MEM0",
+  "display_name": "Mem0",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/mem0.png",
+  "provider": "Mem0",
+  "version": "1.0.0",
+  "description": "Persistent, semantic memory API for AI agents enabling long-term context retention and personalized interactions",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["Memory", "AI Infrastructure"],
+  "visibility": "public",
+  "active": true
+}

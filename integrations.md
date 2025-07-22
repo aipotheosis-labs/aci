@@ -308,8 +308,8 @@ Before integrating new apps, ensure your development environment is ready:
 cd backend
 docker compose up --build
 
-# In a separate terminal, initialize the database
-docker compose exec runner ./scripts/seed_db.sh user
+# In a separate terminal, initialize the database with default apps and a test user
+docker compose exec runner ./scripts/seed_db.sh
 ```
 
 ### Step 1: Insert an App
@@ -363,11 +363,10 @@ To test your integration, you need an API key and a linked account.
     ```
     Copy the returned key for the next steps.
 
-2.  **Create App Configuration & Linked Account**: This is currently done via the Swagger UI.
-    -   Navigate to [http://localhost:8000/v1/notforhuman-docs](http://localhost:8000/v1/notforhuman-docs).
-    -   Authorize using your generated API key.
-    -   Use `POST /v1/app-configurations` to enable your app.
-    -   Use the appropriate `POST /v1/linked-accounts/*` endpoint to create a linked account (e.g., `/api-key`, `/default`).
+2.  **Create App Configuration & Linked Account via Swagger UI**:
+    -   Navigate to [http://localhost:8000/v1/notforhuman-docs](http://localhost:8000/v1/notforhuman-docs) and authorize using your new ACI API key.
+    -   **A) Create App Configuration**: Use `POST /v1/app-configurations` with the body `{"app_name": "YOUR_APP_NAME"}`. Copy the `id` from the response.
+    -   **B) Create Linked Account**: Use the appropriate `POST /v1/linked-accounts/*` endpoint (e.g., `/api-key`). Fill in the body with the `app_config_id` from step A, the `owner_id` as `"test_user"`, and your external app's `credentials`.
 
 ### Step 5: Fuzzy Test the Function
 

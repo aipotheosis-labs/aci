@@ -1,0 +1,327 @@
+[
+    {
+        "name": "MEM0__ADD_MEMORY",
+        "description": "Store conversation messages or raw text to create persistent memories that can be retrieved later",
+        "tags": ["memories"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/memories/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "messages": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "role": {
+                                        "type": "string",
+                                        "enum": ["user", "assistant", "system"]
+                                    },
+                                    "content": {
+                                        "type": "string"
+                                    }
+                                },
+                                "required": ["role", "content"],
+                                "visible": ["role", "content"],
+                                "additionalProperties": false
+                            },
+                            "description": "Array of conversation messages to extract memories from"
+                        },
+                        "user_id": {
+                            "type": "string",
+                            "description": "Unique identifier for the user"
+                        },
+                        "agent_id": {
+                            "type": "string",
+                            "description": "Unique identifier for the agent"
+                        },
+                        "run_id": {
+                            "type": "string",
+                            "description": "Unique identifier for the session/run"
+                        },
+                        "metadata": {
+                            "type": "object",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "description": "Additional metadata to associate with the memories",
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["messages", "user_id"],
+                    "visible": ["messages", "user_id", "agent_id", "run_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEM0__SEARCH_MEMORIES",
+        "description": "Search for relevant memories using semantic search with advanced filtering capabilities",
+        "tags": ["memories", "search"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/memories/search/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "Natural language search query to find relevant memories"
+                        },
+                        "filters": {
+                            "type": "object",
+                            "properties": {
+                                "user_id": {
+                                    "type": "string",
+                                    "description": "Filter memories by a specific user ID"
+                                }
+                            },
+                            "required": ["user_id"],
+                            "visible": ["user_id"],
+                            "description": "Filters to apply to the memory search",
+                            "additionalProperties": true
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "default": 10,
+                            "description": "Maximum number of memories to return"
+                        }
+                    },
+                    "required": ["query", "filters"],
+                    "visible": ["query", "filters", "limit"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEM0__GET_MEMORIES",
+        "description": "Retrieve memories with advanced filtering without requiring a search query",
+        "tags": ["memories"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/memories/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "filters": {
+                            "type": "object",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "description": "Advanced filters using AND/OR logic and comparison operators",
+                            "additionalProperties": false
+                        },
+                        "page": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Page number for pagination"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "default": 50,
+                            "description": "Number of memories per page"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page", "page_size"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEM0__GET_MEMORY",
+        "description": "Retrieve a specific memory by its unique identifier",
+        "tags": ["memories"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/memories/{memory_id}/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "memory_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the memory to retrieve"
+                        }
+                    },
+                    "required": ["memory_id"],
+                    "visible": ["memory_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEM0__UPDATE_MEMORY",
+        "description": "Update the content of an existing memory",
+        "tags": ["memories"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/v1/memories/{memory_id}/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "memory_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the memory to update"
+                        }
+                    },
+                    "required": ["memory_id"],
+                    "visible": ["memory_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "text": {
+                            "type": "string",
+                            "description": "New text content for the memory"
+                        }
+                    },
+                    "required": ["text"],
+                    "visible": ["text"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEM0__DELETE_MEMORY",
+        "description": "Delete a specific memory by its unique identifier",
+        "tags": ["memories"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v1/memories/{memory_id}/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "memory_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the memory to delete"
+                        }
+                    },
+                    "required": ["memory_id"],
+                    "visible": ["memory_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    }
+]
