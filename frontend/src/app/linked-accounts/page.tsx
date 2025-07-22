@@ -149,7 +149,7 @@ export default function LinkedAccountsPage() {
             </div>
           );
         },
-        // enableGlobalFilter: true,
+        enableGlobalFilter: true,
       }),
 
       columnHelper.accessor((row) => [row.linked_account_owner_id], {
@@ -177,7 +177,6 @@ export default function LinkedAccountsPage() {
           );
         },
         enableColumnFilter: true,
-        enableGlobalFilter: true,
         filterFn: "arrIncludes",
         meta: {
           filterProps: {
