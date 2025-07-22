@@ -305,10 +305,23 @@
           "required": ["startDateTime", "endDateTime"],
           "visible": ["startDateTime", "endDateTime", "$select", "$filter", "$orderby", "$top", "$skip"],
           "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "Optional request headers for customizing the response",
+          "properties": {
+            "Prefer": {
+              "type": "string",
+              "description": "Use 'outlook.timezone=\"{timezone}\"' to specify the timezone for start and end times in the response (e.g., 'outlook.timezone=\"Pacific Standard Time\"' or 'outlook.timezone=\"America/New_York\"'). If not specified, times are returned in UTC."
+            }
+          },
+          "required": [],
+          "visible": ["Prefer"],
+          "additionalProperties": false
         }
       },
       "required": ["path", "query"],
-      "visible": ["path", "query"],
+      "visible": ["path", "query", "header"],
       "additionalProperties": false
     }
   },
@@ -372,10 +385,23 @@
           "required": [],
           "visible": ["$select", "$filter", "$orderby", "$top", "$skip", "$expand"],
           "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "Optional request headers for customizing the response",
+          "properties": {
+            "Prefer": {
+              "type": "string",
+              "description": "Use 'outlook.timezone=\"{timezone}\"' to specify the timezone for start and end times in the response (e.g., 'outlook.timezone=\"Pacific Standard Time\"' or 'outlook.timezone=\"America/New_York\"'). If not specified, times are returned in UTC."
+            }
+          },
+          "required": [],
+          "visible": ["Prefer"],
+          "additionalProperties": false
         }
       },
       "required": ["path"],
-      "visible": ["path", "query"],
+      "visible": ["path", "query", "header"],
       "additionalProperties": false
     }
   },
@@ -433,7 +459,7 @@
                "visible": ["contentType", "content"],
                "additionalProperties": false
              },
-                         "start": {
+              "start": {
                "type": "object",
                "description": "Event start date and time",
                "properties": {
@@ -738,10 +764,23 @@
           "required": ["schedules", "startTime", "endTime"],
           "visible": ["schedules", "startTime", "endTime", "availabilityViewInterval"],
           "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "Optional request headers for customizing the response",
+          "properties": {
+            "Prefer": {
+              "type": "string",
+              "description": "Use 'outlook.timezone=\"{timezone}\"' to specify the timezone for free/busy times in the response (e.g., 'outlook.timezone=\"Pacific Standard Time\"' or 'outlook.timezone=\"America/New_York\"'). If not specified, times are returned in UTC."
+            }
+          },
+          "required": [],
+          "visible": ["Prefer"],
+          "additionalProperties": false
         }
       },
       "required": ["body"],
-      "visible": ["body"],
+      "visible": ["body", "header"],
       "additionalProperties": false
     }
   },
@@ -792,10 +831,23 @@
           "required": [],
           "visible": ["$select", "$filter", "$orderby", "$top", "$skip", "$expand"],
           "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "Optional request headers for customizing the response",
+          "properties": {
+            "Prefer": {
+              "type": "string",
+              "description": "Use 'outlook.timezone=\"{timezone}\"' to specify the timezone for start and end times in the response (e.g., 'outlook.timezone=\"Pacific Standard Time\"' or 'outlook.timezone=\"America/New_York\"'). If not specified, times are returned in UTC."
+            }
+          },
+          "required": [],
+          "visible": ["Prefer"],
+          "additionalProperties": false
         }
       },
       "required": [],
-      "visible": ["query"],
+      "visible": ["query", "header"],
       "additionalProperties": false
     }
   },
@@ -1139,10 +1191,23 @@
           "required": [],
           "visible": ["$select", "$expand"],
           "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "Optional request headers for customizing the response",
+          "properties": {
+            "Prefer": {
+              "type": "string",
+              "description": "Use 'outlook.timezone=\"{timezone}\"' to specify the timezone for start and end times in the response (e.g., 'outlook.timezone=\"Pacific Standard Time\"' or 'outlook.timezone=\"America/New_York\"'). If not specified, times are returned in UTC."
+            }
+          },
+          "required": [],
+          "visible": ["Prefer"],
+          "additionalProperties": false
         }
       },
       "required": ["path"],
-      "visible": ["path", "query"],
+      "visible": ["path", "query", "header"],
       "additionalProperties": false
     }
   },
@@ -1589,10 +1654,23 @@
           "required": [],
           "visible": ["startDateTime", "endDateTime", "$deltatoken", "$skiptoken"],
           "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "Optional request headers for customizing the response",
+          "properties": {
+            "Prefer": {
+              "type": "string",
+              "description": "Use 'outlook.timezone=\"{timezone}\"' to specify the timezone for start and end times in the response (e.g., 'outlook.timezone=\"Pacific Standard Time\"' or 'outlook.timezone=\"America/New_York\"'). If not specified, times are returned in UTC."
+            }
+          },
+          "required": [],
+          "visible": ["Prefer"],
+          "additionalProperties": false
         }
       },
       "required": [],
-      "visible": ["query"],
+      "visible": ["query", "header"],
       "additionalProperties": false
     }
   },
