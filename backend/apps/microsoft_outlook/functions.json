@@ -473,7 +473,7 @@
               }
             },
             "importance": {
-              "type": "enum",
+              "type": "string",
               "enum": ["low", "normal", "high"],
               "description": "The importance of the message. Values: low, normal, high"
             },
