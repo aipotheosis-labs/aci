@@ -878,7 +878,7 @@
     {
         "name": "MICROSOFT_ONEDRIVE__GET_DOWNLOAD_LINK",
         "description": "Get the download URL for a driveItem file. Returns the @microsoft.graph.downloadUrl property which provides a preauthenticated download URL that's valid for a short period. This URL can be used directly for downloading without additional authentication.",
-        "tags": ["download", "content", "file", "url", "stream", "binary"],
+        "tags": ["download", "content", "file", "url", "stream"],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
@@ -993,8 +993,8 @@
     },
     {
         "name": "MICROSOFT_ONEDRIVE__CREATE_FILE",
-        "description": "Upload or create a new file to OneDrive with binary content. This method supports files up to 250 MB in size. The file will be created at the specified parent location with the given filename.",
-        "tags": ["upload", "create", "file", "content", "binary", "onedrive"],
+        "description": "Upload or create a new text-based file to OneDrive. This method only supports text-based files like .txt, .md, .csv, .json, .log, .xml, .html, .css, .js, .py, .yaml, etc. Files up to 250 MB in size are supported. The file will be created at the specified parent location with the given filename.",
+        "tags": ["upload", "create", "file", "content", "text", "onedrive"],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
@@ -1029,8 +1029,8 @@
                     "properties": {
                         "Content-Type": {
                             "type": "string",
-                            "description": "The MIME type of the file content",
-                            "default": "application/octet-stream"
+                            "description": "The MIME type of the text file content (e.g., text/plain, text/csv, application/json)",
+                            "default": "text/plain"
                         }
                     },
                     "required": ["Content-Type"],
@@ -1039,7 +1039,7 @@
                 },
                 "body": {
                     "type": "string",
-                    "description": "The binary content of the file to upload. For text files, provide the text content directly. For binary files, provide base64-encoded content."
+                    "description": "The text content of the file to upload. Provide the text content directly as a string."
                 }
             },
             "required": ["path", "header", "body"],
@@ -1049,8 +1049,8 @@
     },
     {
         "name": "MICROSOFT_ONEDRIVE__UPDATE_FILE_CONTENT",
-        "description": "Update or replace the contents of an existing file in OneDrive. This method supports files up to 250 MB in size. The file content will be completely replaced with the new content provided.",
-        "tags": ["update", "replace", "file", "content", "binary", "onedrive"],
+        "description": "Update or replace the contents of an existing text-based file in OneDrive. This method only supports text-based files like .txt, .md, .csv, .json, .log, .xml, .html, .css, .js, .py, .yaml, etc. Files up to 250 MB in size are supported. The file content will be completely replaced with the new content provided.",
+        "tags": ["update", "replace", "file", "content", "text", "onedrive"],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
@@ -1081,8 +1081,8 @@
                     "properties": {
                         "Content-Type": {
                             "type": "string",
-                            "description": "The MIME type of the file content",
-                            "default": "application/octet-stream"
+                            "description": "The MIME type of the text file content (e.g., text/plain, text/csv, application/json)",
+                            "default": "text/plain"
                         }
                     },
                     "required": ["Content-Type"],
@@ -1091,7 +1091,7 @@
                 },
                 "body": {
                     "type": "string",
-                    "description": "The binary content to replace the existing file content with. For text files, provide the text content directly. For binary files, provide base64-encoded content."
+                    "description": "The text content to replace the existing file content with. Provide the text content directly as a string."
                 }
             },
             "required": ["path", "header", "body"],
