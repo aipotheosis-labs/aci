@@ -174,11 +174,16 @@
                     "properties": {
                         "filters": {
                             "type": "object",
-                            "properties": {},
-                            "required": [],
-                            "visible": [],
+                            "properties": {
+                                "user_id": {
+                                    "type": "string",
+                                    "description": "Filter memories by a specific user ID"
+                                }
+                            },
+                            "required": ["user_id"],
+                            "visible": ["user_id"],
                             "description": "Advanced filters using AND/OR logic and comparison operators",
-                            "additionalProperties": false
+                            "additionalProperties": true
                         },
                         "page": {
                             "type": "integer",
@@ -191,8 +196,8 @@
                             "description": "Number of memories per page"
                         }
                     },
-                    "required": [],
-                    "visible": ["page", "page_size"],
+                    "required": ["filters"],
+                    "visible": ["filters", "page", "page_size"],
                     "additionalProperties": false
                 }
             },
