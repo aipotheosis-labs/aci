@@ -938,7 +938,7 @@
                     "type": "object",
                     "description": "Optional query parameters",
                     "properties": {
-                        "select": {
+                         "$select": {
                             "type": "string",
                             "description": "Select specific properties. Defaults to 'id,@microsoft.graph.downloadUrl' to get the download URL.",
                             "default": "id,@microsoft.graph.downloadUrl"
