@@ -855,7 +855,7 @@
         }
     },
     {
-        "name": "MICROSOFT_ONEDRIVE__READ_TEXT_FILE",
+        "name": "MICROSOFT_ONEDRIVE__READ_TEXT_FILE_CONTENT",
         "description": "Read the content of a text-based file from OneDrive by its item ID. This function downloads the actual file content for text-based files such as .txt, .csv, .md, .log, .json, and other text formats.",
         "tags": ["read", "download", "file", "text", "content", "onedrive"],
         "visibility": "public",
@@ -992,7 +992,7 @@
         }
     },
     {
-        "name": "MICROSOFT_ONEDRIVE__CREATE_FILE",
+        "name": "MICROSOFT_ONEDRIVE__CREATE_TEXT_FILE",
         "description": "Upload or create a new text-based file to OneDrive. This method only supports text-based files like .txt, .md, .csv, .json, .log, .xml, .html, .css, .js, .py, .yaml, etc. Files up to 250 MB in size are supported. The file will be created at the specified parent location with the given filename.",
         "tags": ["upload", "create", "file", "content", "text", "onedrive"],
         "visibility": "public",
@@ -1048,7 +1048,7 @@
         }
     },
     {
-        "name": "MICROSOFT_ONEDRIVE__UPDATE_FILE_CONTENT",
+        "name": "MICROSOFT_ONEDRIVE__UPDATE_TEXT_FILE_CONTENT",
         "description": "Update or replace the contents of an existing text-based file in OneDrive. This method only supports text-based files like .txt, .md, .csv, .json, .log, .xml, .html, .css, .js, .py, .yaml, etc. Files up to 250 MB in size are supported. The file content will be completely replaced with the new content provided.",
         "tags": ["update", "replace", "file", "content", "text", "onedrive"],
         "visibility": "public",
@@ -1096,6 +1096,35 @@
             },
             "required": ["path", "header", "body"],
             "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MICROSOFT_ONEDRIVE__CREATE_EXCEL_FROM_CSV",
+        "description": "Convert CSV data to a formatted text file and save it to OneDrive. Takes CSV data as a string and creates a properly formatted CSV file in the specified parent folder on OneDrive. While named 'excel', this creates a CSV file that can be opened in Excel.",
+        "tags": ["convert", "csv", "text", "create", "onedrive"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "connector",
+        "protocol_data": {},
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "csv_data": {
+                    "type": "string",
+                    "description": "The CSV data as a string to save as a file. Should be properly formatted CSV with headers and data rows."
+                },
+                "parent_folder_id": {
+                    "type": "string",
+                    "description": "The identifier of the parent folder where the new CSV file will be created. Use 'root' for the root directory or a specific folder item ID."
+                },
+                "filename": {
+                    "type": "string",
+                    "description": "The name for the CSV file (without .csv extension). If not provided, defaults to 'converted_data'."
+                }
+            },
+            "required": ["csv_data", "parent_folder_id"],
+            "visible": ["csv_data", "parent_folder_id", "filename"],
             "additionalProperties": false
         }
     }

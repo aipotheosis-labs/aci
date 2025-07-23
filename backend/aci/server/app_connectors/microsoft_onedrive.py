@@ -1,3 +1,5 @@
+import csv
+import io
 from typing import override
 
 import requests
@@ -33,7 +35,7 @@ class MicrosoftOnedrive(AppConnectorBase):
         # TODO: Check token validity and refresh if needed
         pass
 
-    def read_text_file(self, item_id: str) -> dict[str, str]:
+    def read_text_file_content(self, item_id: str) -> dict[str, str | int]:
         """
         Read the content of a text file from OneDrive by its item ID.
 
@@ -92,3 +94,70 @@ class MicrosoftOnedrive(AppConnectorBase):
         except Exception as e:
             logger.error(f"Failed to read file from OneDrive: {item_id}, error: {e}")
             raise Exception(f"Failed to read file: {e}") from e
+
+    def create_excel_from_csv(
+        self, csv_data: str, parent_folder_id: str, filename: str | None = None
+    ) -> dict[str, str | int]:
+        """
+        Convert CSV data to a properly formatted CSV file and save it to OneDrive.
+        This creates a CSV file that can be opened in Excel.
+
+        Args:
+            csv_data: The CSV data as a string to save
+            parent_folder_id: The identifier of the parent folder where the CSV file will be created
+            filename: Optional custom name for the CSV file (without .csv extension)
+
+        Returns:
+            dict: Response containing the created CSV file metadata
+        """
+        logger.info(f"Creating CSV file on OneDrive, folder: {parent_folder_id}")
+
+        try:
+            # Parse and validate CSV data using built-in csv module
+            csv_reader = csv.reader(io.StringIO(csv_data))
+            rows = list(csv_reader)
+
+            if not rows:
+                raise Exception("CSV data is empty")
+
+            # Determine filename
+            if not filename:
+                filename = "converted_data"
+
+            # Ensure .csv extension
+            if not filename.endswith(".csv"):
+                filename += ".csv"
+
+            # Upload CSV file to OneDrive using the existing text file creation method
+            upload_url = f"{self.base_url}/me/drive/items/{parent_folder_id}:/{filename}:/content"
+
+            headers = {"Authorization": f"Bearer {self.access_token}", "Content-Type": "text/csv"}
+
+            upload_response = requests.put(
+                upload_url, headers=headers, data=csv_data.encode("utf-8"), timeout=60
+            )
+            upload_response.raise_for_status()
+
+            result = upload_response.json()
+
+            logger.info(f"Successfully created CSV file: {filename}, ID: {result.get('id', '')}")
+
+            return {
+                "id": result.get("id", ""),
+                "name": result.get("name", ""),
+                "path": result.get("parentReference", {}).get("path", "")
+                + "/"
+                + result.get("name", ""),
+                "size": result.get("size", 0),
+                "mime_type": result.get("file", {}).get("mimeType", ""),
+                "created_datetime": result.get("createdDateTime", ""),
+                "modified_datetime": result.get("lastModifiedDateTime", ""),
+                "download_url": result.get("@microsoft.graph.downloadUrl", ""),
+                "rows_converted": len(rows),
+                "columns_converted": len(rows[0]) if rows else 0,
+                "note": "CSV file created successfully. This file can be opened in Excel.",
+            }
+
+        except Exception as e:
+            logger.error(f"Failed to create CSV file from CSV data: {e}")
+            raise Exception(f"Failed to create CSV file: {e}") from e
