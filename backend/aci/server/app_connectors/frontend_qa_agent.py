@@ -173,7 +173,7 @@ class FrontendQaAgent(AppConnectorBase):
             # Start async evaluation task
             try:
                 asyncio.create_task(_evaluate_and_update_database(url, evaluation.id))  # noqa: RUF006
-            except RuntimeError as e:
+            except Exception as e:
                 # Task creation failed - immediately mark as failed
                 with create_db_session(config.DB_FULL_URL) as cleanup_session:
                     crud.frontend_qa_agent.update_website_evaluation_status_and_result(
