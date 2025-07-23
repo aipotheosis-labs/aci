@@ -1,0 +1,28 @@
+{
+  "name": "MICROSOFT_OUTLOOK",
+  "display_name": "Microsoft Outlook",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/outlook.svg",
+  "provider": "Microsoft",
+  "version": "2.0.0",
+  "description": "The Microsoft Graph Outlook API enables access to Microsoft Outlook data including emails, folders, contacts, and mail settings. This integration allows reading and managing Outlook content on behalf of the user.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_MICROSOFT_OUTLOOK_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_MICROSOFT_OUTLOOK_CLIENT_SECRET }}",
+      "scope": "User.Read Mail.ReadWrite Mail.Send offline_access",
+      "authorize_url": "https://login.microsoftonline.com/common/oauth2/v2.0/authorize",
+      "access_token_url": "https://login.microsoftonline.com/common/oauth2/v2.0/token",
+      "refresh_token_url": "https://login.microsoftonline.com/common/oauth2/v2.0/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Communication",
+    "Productivity"
+  ],
+  "visibility": "public",
+  "active": true
+}
