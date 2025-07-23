@@ -86,5 +86,92 @@
             "visible": ["body"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "ROCKETREACH__PEOPLE_LOOKUP",
+        "description": "Person Enrichment API. Provide identifiers such as name, employer, or location to quickly retrieve matching professional profiles.",
+        "tags": ["person", "lookup", "enrichment"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/person/lookup",
+            "server_url": "https://api.rocketreach.co/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "header parameters",
+                    "properties": {
+                        "Accept": {
+                            "type": "string",
+                            "description": "The supported media type",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "query parameters",
+                    "properties": {
+                        "current_employer": {
+                            "type": "string",
+                            "description": "Current employer of the desired profile. Must specify along with name",
+                            "minLength": 1
+                        },
+                        "email": {
+                            "type": "string",
+                            "description": "An email address for the desired profile",
+                            "minLength": 1
+                        },
+                        "id": {
+                            "type": "integer",
+                            "description": "RocketReach internal unique profile ID"
+                        },
+                        "linkedin_ext_url": {
+                            "type": "string",
+                            "description": "Deprecated: Use linkedin_url",
+                            "minLength": 1
+                        },
+                        "linkedin_url": {
+                            "type": "string",
+                            "description": "LinkedIn URL of the desired profile",
+                            "minLength": 1
+                        },
+                        "lookup_type": {
+                            "type": "string",
+                            "description": "Lookup type for the request",
+                            "enum": ["standard", "premium", "premium (feeds disabled)", "bulk", "phone", "enrich"]
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the desired profile. Must specify along with current_employer",
+                            "minLength": 1
+                        },
+                        "npi_number": {
+                            "type": "integer",
+                            "description": "An NPI number for the desired profile (US healthcare professional)"
+                        },
+                        "title": {
+                            "type": "string",
+                            "description": "Job title of the desired profile",
+                            "minLength": 1
+                        }
+                    },
+                    "required": [],
+                    "visible": ["current_employer", "email", "id", "linkedin_url", "lookup_type", "name", "npi_number", "title"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
     }
 ]
