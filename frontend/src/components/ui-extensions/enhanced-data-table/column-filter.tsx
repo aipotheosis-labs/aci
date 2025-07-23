@@ -17,6 +17,7 @@ interface ColumnFilterProps<TData, TValue> {
   icon?: LucideIcon;
   optionIcon?: LucideIcon;
   placeholder?: string;
+  placeholderIcon?: React.ComponentType<{ className?: string }>;
   allText?: string;
   className?: string;
   width?: string;
@@ -28,9 +29,10 @@ export function ColumnFilter<TData, TValue>({
   icon: Icon,
   optionIcon: OptionIcon,
   placeholder = "Select...",
+  placeholderIcon: PlaceholderIcon,
   allText = "all",
   className,
-  width = "w-[120px]",
+  width = "w-[180px]",
 }: ColumnFilterProps<TData, TValue>) {
   const [selectedValue, setSelectedValue] = useState("_all_");
 
@@ -50,7 +52,14 @@ export function ColumnFilter<TData, TValue>({
       }}
     >
       <SelectTrigger className={`${width} h-8 ${className || ""}`}>
-        <SelectValue placeholder={placeholder} />
+        {selectedValue === "_all_" ? (
+          <div className="flex items-center gap-2">
+            {PlaceholderIcon && <PlaceholderIcon className="h-4 w-4" />}
+            {placeholder}
+          </div>
+        ) : (
+          <SelectValue />
+        )}
       </SelectTrigger>
       <SelectContent>
         <SelectItem value="_all_">

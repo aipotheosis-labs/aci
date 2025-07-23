@@ -25,6 +25,7 @@ declare module "@tanstack/react-table" {
       icon?: LucideIcon;
       optionIcon?: LucideIcon;
       placeholder?: string;
+      placeholderIcon?: React.ComponentType<{ className?: string }>;
       allText?: string;
       className?: string;
       width?: string;

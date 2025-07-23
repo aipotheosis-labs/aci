@@ -163,7 +163,7 @@ export default function LinkedAccountsPage() {
               }
               className="p-0 h-auto text-left font-normal  hover:bg-transparent focus:ring-0"
             >
-              LINKED ACCOUNT OWNER ID
+              <User className="h-4 w-4" /> LINKED ACCOUNT OWNER ID
               <ArrowUpDown className="h-4 w-4" />
             </Button>
           </div>
@@ -182,8 +182,10 @@ export default function LinkedAccountsPage() {
           filterProps: {
             icon: Users,
             optionIcon: User,
-            allText: "All Owner Id",
-            width: "w-[180px]",
+            placeholder: "Filter by linked account owner",
+            placeholderIcon: Users,
+            allText: "All",
+            width: "w-[260px]",
           },
         },
       }),
