@@ -1,7 +1,8 @@
 import asyncio
 import ipaddress
 import socket
-from datetime import datetime, timedelta
+import time
+from datetime import UTC, datetime, timedelta
 from typing import override
 from urllib.parse import urlparse
 from uuid import UUID
@@ -133,18 +134,27 @@ class FrontendQaAgent(AppConnectorBase):
             )
 
             if existing_evaluation:
-                # Always enforce 5-minute cooldown regardless of previous status
-                five_minutes_ago = datetime.now() - timedelta(minutes=5)
-
-                if existing_evaluation.updated_at > five_minutes_ago:
-                    if existing_evaluation.status == WebsiteEvaluationStatus.IN_PROGRESS:
+                match existing_evaluation.status:
+                    case WebsiteEvaluationStatus.IN_PROGRESS:
+                        # Block IN_PROGRESS evaluations regardless of time
                         raise FrontendQaAgentError(
                             "Website evaluation is currently in progress. Use FRONTEND_QA_AGENT__GET_WEBSITE_EVALUATION_RESULT to check the status and retrieve results when completed."
                         )
-                    else:  # COMPLETED or FAILED
-                        raise FrontendQaAgentError(
-                            "Rate limit exceeded. Please wait 5 minutes between evaluation requests for the same URL. Use FRONTEND_QA_AGENT__GET_WEBSITE_EVALUATION_RESULT to retrieve the previous evaluation result."
-                        )
+                    case WebsiteEvaluationStatus.COMPLETED:
+                        # Apply 5-minute rate limit for completed evaluations
+                        five_minutes_ago = datetime.now(UTC) - timedelta(minutes=5)
+                        if existing_evaluation.updated_at.replace(tzinfo=UTC) > five_minutes_ago:
+                            raise FrontendQaAgentError(
+                                "Rate limit exceeded. Please wait 5 minutes between evaluation requests for the same URL. Use FRONTEND_QA_AGENT__GET_WEBSITE_EVALUATION_RESULT to retrieve the previous evaluation result."
+                            )
+                    case WebsiteEvaluationStatus.FAILED:
+                        # Apply 5-minute rate limit for failed evaluations
+                        five_minutes_ago = datetime.now(UTC) - timedelta(minutes=5)
+                        if existing_evaluation.updated_at.replace(tzinfo=UTC) > five_minutes_ago:
+                            raise FrontendQaAgentError(
+                                "Rate limit exceeded. Please wait 5 minutes between evaluation requests for the same URL. The previous evaluation failed, you can retry after the cooldown period."
+                            )
+                # If we reach here, existing evaluation is COMPLETED or FAILED and older than 5 minutes, so proceed
 
             # Create or update evaluation record with IN_PROGRESS status
             try:
@@ -182,7 +192,7 @@ class FrontendQaAgent(AppConnectorBase):
             )
 
             return {
-                "status": "started",
+                "status": WebsiteEvaluationStatus.IN_PROGRESS.value,
                 "message": "Website evaluation initiated successfully. Use FRONTEND_QA_AGENT__GET_WEBSITE_EVALUATION_RESULT to retrieve results.",
             }
 
@@ -257,6 +267,11 @@ async def _evaluate_and_update_database(url: str, evaluation_id: UUID) -> None:
         Always commits the transaction to ensure status updates are persisted.
         TODO: Implement cleanup process for old evaluation records if audit trail approach is adopted.
     """
+    start_time = time.time()
+    logger.info(
+        f"Starting _evaluate_and_update_database for URL: {url}, evaluation_id: {evaluation_id}"
+    )
+
     with create_db_session(config.DB_FULL_URL) as db_session:
         try:
             # Evaluate website with 5-minute timeout
@@ -301,9 +316,18 @@ async def _evaluate_and_update_database(url: str, evaluation_id: UUID) -> None:
             # Always commit to ensure database state is updated
             db_session.commit()
 
+            # Log total function duration
+            end_time = time.time()
+            total_duration = end_time - start_time
+            logger.info(
+                f"_evaluate_and_update_database completed for URL: {url}, evaluation_id: {evaluation_id}, total duration: {total_duration:.2f} seconds"
+            )
+
 
 async def _evaluate_website_with_browser_use(url: str) -> str | None:
-    llm = ChatAnthropic(model="claude-3-5-sonnet-latest", api_key=config.ANTHROPIC_API_KEY)
+    llm = ChatAnthropic(
+        model=config.ANTHROPIC_MODEL_FOR_FRONTEND_QA_AGENT, api_key=config.ANTHROPIC_API_KEY
+    )
 
     task = f"""VISIT: {url}
 
@@ -377,4 +401,7 @@ async def _evaluate_website_with_browser_use(url: str) -> str | None:
     )
 
     history = await agent.run(max_steps=10)
+    logger.info(
+        f"Browser-use agent execution total duration: {history.total_duration_seconds()} seconds"
+    )
     return history.final_result()  # type: ignore
