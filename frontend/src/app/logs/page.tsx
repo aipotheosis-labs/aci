@@ -16,7 +16,6 @@ import { useQuery } from "@tanstack/react-query";
 import { searchFunctionExecutionLogs } from "@/lib/api/log";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { LogEntry, LogSearchResponse } from "@/lib/types/log";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DatePickerWithRange } from "@/components/ui-extensions/enhanced-date-picker/date-picker";
 import {
   type DashboardDateRange,
@@ -24,6 +23,7 @@ import {
   DEFAULT_DASHBOARD_AGGREGATION_SELECTION,
 } from "@/utils/date-range-utils";
 import { useQuota } from "@/hooks/use-quota";
+import { Separator } from "@/components/ui/separator";
 
 const PAGE_SIZE = 10;
 
@@ -256,7 +256,6 @@ const LogsTableView = ({
   canGoBack,
   onLoadMore,
   onGoToPreviousPage,
-  onRefresh,
   currentPageNumber,
 }: {
   logs: LogEntry[];
@@ -266,7 +265,6 @@ const LogsTableView = ({
   canGoBack: boolean;
   onLoadMore: () => void;
   onGoToPreviousPage: () => void;
-  onRefresh: () => void;
   currentPageNumber: number;
 }) => {
   if (isLoading && logs.length === 0) {
@@ -288,17 +286,8 @@ const LogsTableView = ({
       <div className="flex justify-between items-center mb-4">
         <p className="text-sm text-muted-foreground">
           Showing {totalCount > 0 ? startRow : 0} – {endRow} of {totalCount}{" "}
-          logs in the past 3 days
+          logs
         </p>
-        <Button
-          onClick={onRefresh}
-          variant="default"
-          size="sm"
-          className="gap-2"
-        >
-          <RefreshCw className="h-4 w-4" />
-          Refresh
-        </Button>
       </div>
       <div className="overflow-x-auto w-full">
         <EnhancedDataTable
@@ -471,11 +460,11 @@ export default function LogsPage() {
     setIsDetailPanelOpen,
     getJsonPreview,
     formatJson,
+    canGoBack,
+    currentPageNumber,
     loadNextPage,
     goToPreviousPage,
-    canGoBack,
     refetch,
-    currentPageNumber,
     dateRange,
     selectedDateOption,
     setDateRangeAndOption,
@@ -493,41 +482,50 @@ export default function LogsPage() {
   );
 
   return (
-    <div className="w-full">
-      <Tabs defaultValue="function-executions" className="w-full pt-4 px-4">
-        <TabsList className="px-2 ">
-          <TabsTrigger value="function-executions">
-            Function Executions
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="function-executions" className="">
-          <div className="mt-4">
-            <DatePickerWithRange
-              dateRange={dateRange}
-              selectedOption={selectedDateOption}
-              setDateRangeAndOption={setDateRangeAndOption}
-              logRetentionDays={logRetentionDays}
-            />
-            {quotaUsage && (
-              <div className="mt-4 text-sm text-muted-foreground">
-                Current plan ({quotaUsage.plan.name}): Log retention limited to{" "}
-                {logRetentionDays} days
-              </div>
-            )}
-          </div>
-          <LogsTableView
-            logs={logs}
-            columns={columns}
-            isLoading={isLoading}
-            totalCount={totalCount}
-            canGoBack={canGoBack}
-            onLoadMore={loadNextPage}
-            onGoToPreviousPage={goToPreviousPage}
-            onRefresh={refetch}
-            currentPageNumber={currentPageNumber}
+    <div>
+      <div className="m-4 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold">Log Dashboard</h1>
+          <p className="text-sm text-muted-foreground">
+            View and analyze function execution logs and performance metrics.
+          </p>
+        </div>
+        <div>
+          <Button onClick={() => refetch()} variant="default" className="gap-2">
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </Button>
+        </div>
+      </div>
+      <Separator />
+
+      <div className="m-4">
+        <div className="mb-4">
+          <DatePickerWithRange
+            dateRange={dateRange}
+            selectedOption={selectedDateOption}
+            setDateRangeAndOption={setDateRangeAndOption}
+            logRetentionDays={logRetentionDays}
           />
-        </TabsContent>
-      </Tabs>
+          {quotaUsage && (
+            <div className="mt-4 text-sm text-muted-foreground">
+              Current plan ({quotaUsage.plan.name}): Log retention limited to{" "}
+              {logRetentionDays} days
+            </div>
+          )}
+        </div>
+
+        <LogsTableView
+          logs={logs}
+          columns={columns}
+          isLoading={isLoading}
+          totalCount={totalCount}
+          canGoBack={canGoBack}
+          onLoadMore={loadNextPage}
+          onGoToPreviousPage={goToPreviousPage}
+          currentPageNumber={currentPageNumber}
+        />
+      </div>
 
       <LogDetailSheet
         selectedLogEntry={selectedLogEntry}

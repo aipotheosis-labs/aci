@@ -33,8 +33,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { ProjectSelector } from "./project-selector";
-import { OrgSelector } from "./org-selector";
 
 const showLogDashboard =
   process.env.NEXT_PUBLIC_FEATURE_LOG_DASHBOARD === "true";
@@ -96,19 +94,15 @@ export function AppSidebar() {
 
   return (
     <Sidebar variant="inset" collapsible="icon" className="flex flex-col">
-      <div className="w-full text-center py-1 text-xs font-bold flex items-center justify-center border-b-2 border-gray-200">
-        <AiOutlineRobot className="inline-block mr-2" />
-        In Beta
-      </div>
-      <SidebarHeader>
+      <SidebarHeader className="px-2 pt-4 pb-0 gap-2 flex flex-col">
         <div
           className={cn(
-            "flex items-center px-4",
+            "flex items-center px-4 h-9",
             isCollapsed ? "justify-center" : "justify-between gap-2",
           )}
         >
           {!isCollapsed && (
-            <div className="h-8 w-auto relative flex items-center justify-center">
+            <div className="h-9 w-auto relative flex items-center justify-center">
               <Image
                 src="/aci-dev-full-logo.svg"
                 alt="ACI Dev Logo"
@@ -122,22 +116,6 @@ export function AppSidebar() {
           <SidebarTrigger />
         </div>
         <Separator />
-        <div
-          className={cn(
-            "transition-all duration-200 overflow-hidden",
-            isCollapsed
-              ? "max-h-0 opacity-0 scale-95"
-              : "max-h-[100px] opacity-100 scale-100",
-          )}
-        >
-          <div className="w-full p-4">
-            <OrgSelector />
-            <div className="mt-3">
-              <ProjectSelector />
-            </div>
-          </div>
-          <Separator />
-        </div>
       </SidebarHeader>
 
       <SidebarContent>

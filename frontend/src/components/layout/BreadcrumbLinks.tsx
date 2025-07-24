@@ -6,7 +6,6 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { sidebarItems, settingsItem } from "./app-sidebar";
 
@@ -39,7 +38,11 @@ export const BreadcrumbLinks = ({ pathname }: BreadcrumbLinksProps) => {
 
   for (let i = 0; i < breadcrumbs.length; i++) {
     if (i > 0) {
-      breadcrumbsList.push(<BreadcrumbSeparator key={i * 2 - 1} />);
+      breadcrumbsList.push(
+        <span key={i * 2 - 1} className="text-gray-400">
+          /
+        </span>,
+      );
     }
 
     breadcrumbsList.push(
