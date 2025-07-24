@@ -48,6 +48,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Validate auth URL environment variable with fallback
+  const authUrl = process.env.NEXT_PUBLIC_AUTH_URL || "";
+  
   return (
     <html lang="en">
       <head>
@@ -99,7 +102,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <QueryClientProvider client={queryClient}>
-          <RequiredAuthProvider authUrl={process.env.NEXT_PUBLIC_AUTH_URL!}>
+          <RequiredAuthProvider authUrl={authUrl}>
             <MetaInfoProvider>
               <SidebarProvider>
                 <AppSidebar />
