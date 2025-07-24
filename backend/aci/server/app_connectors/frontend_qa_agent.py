@@ -1,5 +1,6 @@
 import asyncio
 import ipaddress
+import logging
 import socket
 import time
 from datetime import UTC, datetime, timedelta
@@ -24,6 +25,16 @@ from aci.server import config
 from aci.server.app_connectors.base import AppConnectorBase
 
 logger = get_logger(__name__)
+
+
+# Completely suppress browser_use logging
+browser_use_logger = logging.getLogger("browser_use")
+browser_use_logger.setLevel(logging.CRITICAL)  # Suppress internal handler output
+browser_use_logger.propagate = False  # Prevent propagation to parent loggers
+
+browser_use_cost_logger = logging.getLogger("cost")
+browser_use_cost_logger.setLevel(logging.CRITICAL)  # Suppress internal handler output
+browser_use_cost_logger.propagate = False  # Prevent propagation to parent loggers
 
 
 def _validate_url(url: str) -> None:
