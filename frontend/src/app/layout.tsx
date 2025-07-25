@@ -1,6 +1,6 @@
 "use client";
 
-import { Geist, Geist_Mono } from "next/font/google";
+import { Lexend, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
@@ -13,8 +13,8 @@ import { RequiredAuthProvider } from "@propelauth/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const lexend = Lexend({
+  variable: "--font-lexend",
   subsets: ["latin"],
 });
 
@@ -96,7 +96,7 @@ export default function RootLayout({
         {/* <script async src="https://js.stripe.com/v3/buy-button.js"></script> */}
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${lexend.variable} ${geistMono.variable} antialiased`}
       >
         <QueryClientProvider client={queryClient}>
           <RequiredAuthProvider authUrl={process.env.NEXT_PUBLIC_AUTH_URL!}>
