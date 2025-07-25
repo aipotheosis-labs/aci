@@ -136,7 +136,7 @@ export default function LinkedAccountsPage() {
           return (
             <div className="flex items-center gap-2">
               {info.row.original.logo && (
-                <div className="relative h-6 w-6 flex-shrink-0 overflow-hidden">
+                <div className="relative h-6 w-6 shrink-0 overflow-hidden">
                   <Image
                     src={info.row.original.logo}
                     alt={`${appName} logo`}
@@ -171,7 +171,7 @@ export default function LinkedAccountsPage() {
         cell: (info) => {
           const [ownerId] = info.getValue();
           return (
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <IdDisplay id={ownerId} />
             </div>
           );

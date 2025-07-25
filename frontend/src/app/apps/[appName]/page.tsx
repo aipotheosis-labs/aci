@@ -42,7 +42,7 @@ const AppPage = () => {
           {app && (
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-4">
-                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg">
                   <Image
                     src={app?.logo ?? ""}
                     alt={`${app?.display_name} logo`}

@@ -244,7 +244,7 @@ columnHelper.accessor("app_name", {
     const appName = info.getValue();
     return (
       <div className="flex items-center gap-3">
-        <div className="relative h-5 w-5 flex-shrink-0 overflow-hidden">
+        <div className="relative h-5 w-5 shrink-0 overflow-hidden">
           {appsMap[appName]?.logo && (
             <Image
               src={appsMap[appName]?.logo || ""}

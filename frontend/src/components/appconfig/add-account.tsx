@@ -322,7 +322,7 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
                         <SelectItem key={appInfo.name} value={appInfo.name}>
                           <div className="flex items-center gap-2">
                             {appInfo.logo && (
-                              <div className="relative h-5 w-5 flex-shrink-0 overflow-hidden">
+                              <div className="relative h-5 w-5 shrink-0 overflow-hidden">
                                 <Image
                                   src={appInfo.logo}
                                   alt={appInfo.name}

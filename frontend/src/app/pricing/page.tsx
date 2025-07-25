@@ -121,12 +121,12 @@ export default function PricingPage() {
           sales.
         </p>
         <div className="flex justify-center mt-8">
-          <div className="inline-flex rounded-md shadow-sm bg-muted p-1">
+          <div className="inline-flex rounded-md shadow-xs bg-muted p-1">
             <button
               onClick={() => setIsYearly(false)}
-              className={`px-6 py-2 rounded-l-md text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-150 ${
+              className={`px-6 py-2 rounded-l-md text-sm font-medium focus:z-10 focus:outline-hidden transition-colors duration-150 ${
                 !isYearly
-                  ? "bg-background text-foreground shadow-sm"
+                  ? "bg-background text-foreground shadow-xs"
                   : "text-muted-foreground hover:bg-background/50"
               }`}
             >
@@ -134,9 +134,9 @@ export default function PricingPage() {
             </button>
             <button
               onClick={() => setIsYearly(true)}
-              className={`px-6 py-2 rounded-r-md text-sm font-medium focus:z-10 focus:outline-none transition-colors duration-150 ${
+              className={`px-6 py-2 rounded-r-md text-sm font-medium focus:z-10 focus:outline-hidden transition-colors duration-150 ${
                 isYearly
-                  ? "bg-background text-foreground shadow-sm"
+                  ? "bg-background text-foreground shadow-xs"
                   : "text-muted-foreground hover:bg-background/50"
               }`}
             >

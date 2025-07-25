@@ -102,7 +102,7 @@ const Page = () => {
   }
 
   return (
-    <div className="flex flex-grow h-[calc(100vh-6rem)]">
+    <div className="flex grow h-[calc(100vh-6rem)]">
       {/* Left part - Chat area */}
       <div className="flex-1 flex flex-col">
         <div className="flex flex-col gap-4 mb-1 bg-transparent">
