@@ -104,7 +104,7 @@ export function AppEditForm({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] ">
+      <DialogContent className="sm:max-w-[600px] ">
         <DialogHeader className="space-y-4">
           <div className="flex items-center justify-between">
             <DialogTitle>Edit Allowed Apps</DialogTitle>
@@ -141,7 +141,7 @@ export function AppEditForm({
                 <p>No app configurations available</p>
               </div>
             ) : (
-              <div className="max-h-[45vh] overflow-y-auto">
+              <div className="max-h-[60vh] overflow-y-auto">
                 <EnhancedDataTable
                   columns={columns}
                   data={appConfigs}
