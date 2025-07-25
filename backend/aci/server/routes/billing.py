@@ -128,6 +128,7 @@ async def create_checkout_session(
                     "quantity": 1,
                 }
             ],
+            allow_promotion_codes=True,
             success_url=f"{config.DEV_PORTAL_URL}/settings",
             cancel_url=f"{config.DEV_PORTAL_URL}/pricing",
             mode="subscription",
