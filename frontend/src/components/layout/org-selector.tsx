@@ -35,14 +35,14 @@ export const OrgSelector = () => {
           className="w-full justify-between h-9 px-2 text-sm font-medium hover:bg-gray-50 border border-gray-200 rounded-md"
         >
           <div className="flex items-center gap-2 truncate">
-            <Building className="h-3 w-3 text-gray-500 flex-shrink-0" />
+            <Building className="h-3 w-3 text-gray-500 shrink-0" />
             {activeOrg ? (
               <span className="truncate">{activeOrg.orgName}</span>
             ) : (
               <Skeleton className="h-3 w-20" />
             )}
           </div>
-          <ChevronsUpDown className="h-3 w-3 opacity-50 flex-shrink-0" />
+          <ChevronsUpDown className="h-3 w-3 opacity-50 shrink-0" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-64 p-0" align="start">
@@ -63,7 +63,7 @@ export const OrgSelector = () => {
                 >
                   <div className="flex items-center gap-2 w-full">
                     <Building className="h-4 w-4 text-gray-400" />
-                    <div className="flex-grow truncate">{org.orgName}</div>
+                    <div className="grow truncate">{org.orgName}</div>
                     <Check
                       className={cn(
                         "h-4 w-4",

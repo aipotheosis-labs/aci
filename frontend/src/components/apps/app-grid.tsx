@@ -203,11 +203,11 @@ export function AppGrid({ apps }: AppGridProps) {
       </div>
 
       <div className="relative flex items-center my-6">
-        <div className="flex-grow border-t border-gray-300"></div>
+        <div className="grow border-t border-gray-300"></div>
         <span className="mx-4 text-4xl font-bold text-gray-700">
           Coming Soon
         </span>
-        <div className="flex-grow border-t border-gray-300"></div>
+        <div className="grow border-t border-gray-300"></div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

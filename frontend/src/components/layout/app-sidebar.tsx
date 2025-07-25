@@ -141,7 +141,7 @@ export function AppSidebar() {
                           >
                             <item.icon
                               className={cn(
-                                "h-5 w-5 flex-shrink-0",
+                                "h-5 w-5 shrink-0",
                                 isActive && "text-primary",
                               )}
                             />
@@ -183,7 +183,7 @@ export function AppSidebar() {
                       return (
                         <IconComponent
                           className={cn(
-                            "h-5 w-5 flex-shrink-0",
+                            "h-5 w-5 shrink-0",
                             pathname === settingsItem.url && "text-primary",
                           )}
                         />

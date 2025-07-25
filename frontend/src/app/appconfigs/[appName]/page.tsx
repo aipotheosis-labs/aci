@@ -104,7 +104,7 @@ export default function AppConfigDetailPage() {
           </div>
         ),
         cell: (info) => (
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <IdDisplay id={info.getValue()} />
           </div>
         ),
@@ -225,7 +225,7 @@ export default function AppConfigDetailPage() {
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+          <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg">
             {app && (
               <Image
                 src={app?.logo ?? ""}

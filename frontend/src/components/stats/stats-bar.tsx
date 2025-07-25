@@ -17,7 +17,7 @@ export function StatsContainer({ children, className }: StatsContainerProps) {
                 className={cn(
                   "relative",
                   index !== 0 &&
-                    "before:absolute before:inset-y-4 before:left-0 before:w-[1px] before:bg-border",
+                    "before:absolute before:inset-y-4 before:left-0 before:w-px before:bg-border",
                 )}
               >
                 {child}

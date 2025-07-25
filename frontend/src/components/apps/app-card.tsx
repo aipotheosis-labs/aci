@@ -54,7 +54,7 @@ export function AppCard({ app, isConfigured = false }: AppCardProps) {
         <CardHeader className="space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3 min-w-0 flex-1 mr-4">
-              <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg">
                 <Image
                   src={app.logo}
                   alt={`${app.name} logo`}
@@ -64,7 +64,7 @@ export function AppCard({ app, isConfigured = false }: AppCardProps) {
               </div>
               <CardTitle className="truncate">{app.display_name}</CardTitle>
             </div>
-            <div className="flex-shrink-0 w-24">
+            <div className="shrink-0 w-24">
               <IdDisplay id={app.name} />
             </div>
           </div>

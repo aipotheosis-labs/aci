@@ -32,7 +32,7 @@ export function AppCardComingSoon({
       <CardHeader className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0 flex-1 mr-4">
-            <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg">
               <Image
                 src={logo}
                 alt={`${title} logo`}
@@ -42,7 +42,7 @@ export function AppCardComingSoon({
             </div>
             <CardTitle className="truncate text-gray-700">{title}</CardTitle>
           </div>
-          <div className="flex-shrink-0 w-24">
+          <div className="shrink-0 w-24">
             <IdDisplay id={title} />
           </div>
         </div>

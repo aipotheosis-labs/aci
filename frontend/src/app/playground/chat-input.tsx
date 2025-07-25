@@ -81,7 +81,7 @@ export function ChatInput({
         onSubmit={submitForm}
         className="flex flex-col w-full max-w-3xl mx-auto"
       >
-        <div className="flex flex-col items-start bg-white rounded-2xl border shadow-sm">
+        <div className="flex flex-col items-start bg-white rounded-2xl border shadow-xs">
           <div className="relative w-full">
             <Textarea
               value={input}
@@ -108,7 +108,7 @@ export function ChatInput({
                   }
                 }
               }}
-              className="flex-1 p-4 pr-20 bg-transparent outline-none resize-none min-h-[4rem] border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
+              className="flex-1 p-4 pr-20 bg-transparent outline-hidden resize-none min-h-16 border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-hidden"
               disabled={status !== "ready"}
               rows={2}
             />
