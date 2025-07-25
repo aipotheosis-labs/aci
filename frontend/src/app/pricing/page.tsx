@@ -30,10 +30,7 @@ const tiers = [
     features: [
       "1 Project",
       "10 Unique End Users",
-      "1K API calls/month",
-      "5 Agent Credentials",
       "1 Developer Seat",
-      "Custom OAuth2 Client",
       "3 Days Log Retention",
     ],
     buttonText: "Start for Free",
@@ -49,10 +46,7 @@ const tiers = [
     features: [
       "5 Projects",
       "250 Unique End Users",
-      "100K API calls/month",
-      "2500 Agent Credentials",
       "5 Developer Seats",
-      "Custom OAuth2 Client",
       "1 Week Log Retention",
     ],
     buttonText: "Get Started",
@@ -68,10 +62,7 @@ const tiers = [
     features: [
       "10 Projects",
       "1000 Unique End Users",
-      "300K API calls/month",
-      "10000 Agent Credentials",
       "10 Developer Seats",
-      "Custom OAuth2 Client",
       "1 Month Log Retention",
     ],
     mostPopular: true,
@@ -86,10 +77,7 @@ const tiers = [
     features: [
       "Custom Projects",
       "Custom Unique End User Accounts",
-      "Custom API Calls",
-      "Unlimited Agent Credentials",
       "Custom Developer Seats",
-      "Custom OAuth2 Client",
       "Custom Log Retention",
     ],
     buttonText: "Contact Us",
