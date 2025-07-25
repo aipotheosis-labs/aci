@@ -95,9 +95,7 @@ export default function RootLayout({
 
         {/* <script async src="https://js.stripe.com/v3/buy-button.js"></script> */}
       </head>
-      <body
-        className={`${lexend.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${lexend.variable} ${geistMono.variable} antialiased`}>
         <QueryClientProvider client={queryClient}>
           <RequiredAuthProvider authUrl={process.env.NEXT_PUBLIC_AUTH_URL!}>
             <MetaInfoProvider>
