@@ -1127,5 +1127,55 @@
             "visible": ["csv_data", "parent_folder_id", "filename"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "MICROSOFT_ONEDRIVE__CREATE_DOCX_FROM_MARKDOWN",
+        "description": "Convert Markdown text to a formatted DOCX document and save it to OneDrive. Takes Markdown data as a string and creates a properly formatted Word document in the specified parent folder on OneDrive. Supports common Markdown elements like headers, paragraphs, lists, bold, italic, and code blocks.",
+        "tags": ["convert", "markdown", "docx", "word", "create", "onedrive"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "connector",
+        "protocol_data": {},
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "markdown_data": {
+                    "type": "string",
+                    "description": "The Markdown text as a string to convert to DOCX. Should be properly formatted Markdown with headers, paragraphs, lists, etc."
+                },
+                "parent_folder_id": {
+                    "type": "string",
+                    "description": "The identifier of the parent folder where the new DOCX file will be created. Use 'root' for the root directory or a specific folder item ID."
+                },
+                "filename": {
+                    "type": "string",
+                    "description": "The name for the DOCX file (without .docx extension). If not provided, defaults to 'converted_document'."
+                }
+            },
+            "required": ["markdown_data", "parent_folder_id"],
+            "visible": ["markdown_data", "parent_folder_id", "filename"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MICROSOFT_ONEDRIVE__READ_MARKDOWN_FROM_DOCX",
+        "description": "Read and extract Markdown content from a DOCX file stored in OneDrive. Downloads the DOCX file and extracts its content as properly formatted Markdown text, preserving headings, lists, formatting, and other document structure.",
+        "tags": ["convert", "docx", "markdown", "read", "extract", "onedrive"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "connector",
+        "protocol_data": {},
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "item_id": {
+                    "type": "string",
+                    "description": "The identifier of the DOCX file in OneDrive to convert. Use the full item ID as returned by other OneDrive functions (e.g., '7006ADAF2D3C1355!s5625f3cefe4c4fe28f99a4b6f05cb944')."
+                }
+            },
+            "required": ["item_id"],
+            "visible": ["item_id"],
+            "additionalProperties": false
+        }
     }
 ]
