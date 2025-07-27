@@ -64,7 +64,10 @@ export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
       <CardHeader className="flex flex-row items-center justify-between p-4">
         <CardTitle>Quota Usage</CardTitle>
         <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="px-3 py-1.5 text-sm font-semibold">
+          <Badge
+            variant="secondary"
+            className="px-3 py-1.5 text-sm font-semibold"
+          >
             {quotaUsage.plan.name.charAt(0).toUpperCase() +
               quotaUsage.plan.name.slice(1) +
               " Plan"}
