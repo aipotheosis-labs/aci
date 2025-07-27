@@ -28,10 +28,10 @@ import { AiOutlineRobot } from "react-icons/ai";
 import { HiOutlineChatBubbleBottomCenterText } from "react-icons/hi2";
 import { RiFileList3Line } from "react-icons/ri";
 import { useQuota } from "@/hooks/use-quota";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BsStars } from "react-icons/bs";
+import { Plan } from "@/lib/types/billing";
 
 import {
   Tooltip,
@@ -96,7 +96,20 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
   const pathname = usePathname();
-  const { data: quotaData, error } = useQuota();
+  const { data: quotaData, isPending, error } = useQuota();
+
+  const getUpgradeButtonText = (planName: Plan): string => {
+    switch (planName) {
+      case Plan.Free:
+        return "Upgrade to Starter Plan";
+      case Plan.Starter:
+        return "Upgrade to Team Plan";
+      case Plan.Team:
+        return "Upgrade to Enterprise Plan";
+      default:
+        return "Upgrade Plan";
+    }
+  };
 
   return (
     <Sidebar variant="inset" collapsible="icon" className="flex flex-col">
@@ -169,55 +182,27 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {!error && (
+      {!isPending && !error && !isCollapsed && (
         <div className="px-2 pb-2">
-          <Card className="border-border/50">
-            <CardContent className="p-3">
-              {(() => {
-                const planName = quotaData?.plan?.name || "Free";
-                const isFreePlan = planName.toLowerCase() === "free";
-
-                return (
-                  <div className="flex flex-col items-center gap-3">
-                    {!isCollapsed && (
-                      <div className="flex items-center justify-center w-full">
-                        <Badge
-                          variant="secondary"
-                          className="text-xs font-medium"
-                        >
-                          {planName.charAt(0).toUpperCase() + planName.slice(1)}{" "}
-                          Plan
-                        </Badge>
-                      </div>
-                    )}
-                    {isFreePlan && (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Link href="/pricing" className="w-full">
-                            <Button
-                              size={isCollapsed ? "icon" : "sm"}
-                              className={cn(
-                                "gap-1.5 transition-all duration-200 hover:scale-105",
-                                !isCollapsed && "w-full",
-                              )}
-                            >
-                              <BsStars className="h-3.5 w-3.5" />
-                              {!isCollapsed && "Upgrade"}
-                            </Button>
-                          </Link>
-                        </TooltipTrigger>
-                        {isCollapsed && (
-                          <TooltipContent side="right">
-                            Upgrade Plan
-                          </TooltipContent>
-                        )}
-                      </Tooltip>
-                    )}
-                  </div>
-                );
-              })()}
-            </CardContent>
-          </Card>
+          <div className="flex flex-col items-center gap-2">
+            <Badge
+              variant="outline"
+              className="px-3 py-1.5 text-sm w-full text-center"
+            >
+              {quotaData.plan.name.charAt(0).toUpperCase() +
+                quotaData.plan.name.slice(1)}{" "}
+              Plan
+            </Badge>
+            <Link href="/pricing" className="w-full">
+              <Button
+                size="sm"
+                className="gap-1.5 transition-all duration-200 hover:scale-105 w-full"
+              >
+                <BsStars className="h-3.5 w-3.5" />
+                {getUpgradeButtonText(quotaData.plan.name as Plan)}
+              </Button>
+            </Link>
+          </div>
         </div>
       )}
 
