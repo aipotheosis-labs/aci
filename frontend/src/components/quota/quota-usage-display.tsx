@@ -59,36 +59,38 @@ const QuotaItem: React.FC<QuotaItemProps> = ({ title, used, limit }) => {
 export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
   quotaUsage,
 }) => {
+  const getUpgradeButtonText = (planName: Plan): string => {
+    switch (planName) {
+      case Plan.Free:
+        return "Upgrade to Starter Plan";
+      case Plan.Starter:
+        return "Upgrade to Team Plan";
+      case Plan.Team:
+        return "Upgrade to Enterprise Plan";
+      default:
+        return "Upgrade Plan";
+    }
+  };
+
   return (
     <Card className="flex flex-col h-full">
       <CardHeader className="flex flex-row items-center justify-between p-4">
         <CardTitle>Quota Usage</CardTitle>
         <div className="flex items-center gap-2">
           <Badge
-            variant="secondary"
+            variant="outline"
             className="px-3 py-1.5 text-sm font-semibold"
           >
             {quotaUsage.plan.name.charAt(0).toUpperCase() +
               quotaUsage.plan.name.slice(1) +
               " Plan"}
           </Badge>
-          {quotaUsage.plan.name !== Plan.Team && (
-            <Link href="/pricing">
-              <Button className="gap-2" size="sm">
-                <BsStars className="h-4 w-4" />
-                {quotaUsage.plan.name === Plan.Free && "Upgrade to Starter"}
-                {quotaUsage.plan.name === Plan.Starter && "Upgrade to Team"}
-              </Button>
-            </Link>
-          )}
-          {quotaUsage.plan.name === Plan.Team && (
-            <Link href="/pricing">
-              <Button className="gap-2" size="sm">
-                <BsStars className="h-4 w-4" />
-                Upgrade to Enterprise
-              </Button>
-            </Link>
-          )}
+          <Link href="/pricing">
+            <Button className="gap-2" size="sm">
+              <BsStars className="h-4 w-4" />
+              {getUpgradeButtonText(quotaUsage.plan.name as Plan)}
+            </Button>
+          </Link>
         </div>
       </CardHeader>
       <Separator />
