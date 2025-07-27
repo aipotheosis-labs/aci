@@ -69,11 +69,20 @@ export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
               quotaUsage.plan.name.slice(1) +
               " Plan"}
           </Badge>
-          {quotaUsage.plan.name === Plan.Free && (
+          {quotaUsage.plan.name !== Plan.Team && (
             <Link href="/pricing">
               <Button className="gap-2" size="sm">
                 <BsStars className="h-4 w-4" />
-                Upgrade
+                {quotaUsage.plan.name === Plan.Free && "Upgrade to Starter"}
+                {quotaUsage.plan.name === Plan.Starter && "Upgrade to Team"}
+              </Button>
+            </Link>
+          )}
+          {quotaUsage.plan.name === Plan.Team && (
+            <Link href="/pricing">
+              <Button className="gap-2" size="sm">
+                <BsStars className="h-4 w-4" />
+                Upgrade to Enterprise
               </Button>
             </Link>
           )}
