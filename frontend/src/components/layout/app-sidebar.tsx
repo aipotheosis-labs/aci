@@ -27,6 +27,11 @@ import { RiSettings3Line, RiLinkUnlinkM } from "react-icons/ri";
 import { AiOutlineRobot } from "react-icons/ai";
 import { HiOutlineChatBubbleBottomCenterText } from "react-icons/hi2";
 import { RiFileList3Line } from "react-icons/ri";
+import { useQuota } from "@/hooks/use-quota";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { BsStars } from "react-icons/bs";
 
 import {
   Tooltip,
@@ -91,6 +96,7 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
   const pathname = usePathname();
+  const { data: quotaData, error } = useQuota();
 
   return (
     <Sidebar variant="inset" collapsible="icon" className="flex flex-col">
@@ -162,6 +168,57 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+
+      {!error && (
+        <div className="px-2 pb-2">
+          <Card className="border-border/50">
+            <CardContent className="p-3">
+              {(() => {
+                const planName = quotaData?.plan?.name || "Free";
+                const isFreePlan = planName.toLowerCase() === "free";
+
+                return (
+                  <div
+                    className={cn(
+                      "flex items-center",
+                      isCollapsed ? "justify-center" : "justify-between gap-2",
+                    )}
+                  >
+                    {!isCollapsed && (
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Badge variant="secondary" className="text-xs">
+                          {planName.charAt(0).toUpperCase() + planName.slice(1)}{" "}
+                          Plan
+                        </Badge>
+                      </div>
+                    )}
+                    {isFreePlan && (
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Link href="/pricing">
+                            <Button
+                              size={isCollapsed ? "icon" : "sm"}
+                              className="gap-1.5"
+                            >
+                              <BsStars className="h-3.5 w-3.5" />
+                              {!isCollapsed && "Upgrade"}
+                            </Button>
+                          </Link>
+                        </TooltipTrigger>
+                        {isCollapsed && (
+                          <TooltipContent side="right">
+                            Upgrade Plan
+                          </TooltipContent>
+                        )}
+                      </Tooltip>
+                    )}
+                  </div>
+                );
+              })()}
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <SidebarFooter>
         <SidebarMenu>
