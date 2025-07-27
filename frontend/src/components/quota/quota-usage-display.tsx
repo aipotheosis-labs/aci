@@ -5,6 +5,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Plan } from "@/lib/types/billing";
+import { BsStars } from "react-icons/bs";
+import Link from "next/link";
 
 interface QuotaUsageDisplayProps {
   quotaUsage: QuotaUsage;
@@ -59,7 +63,21 @@ export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
     <Card className="flex flex-col h-full">
       <CardHeader className="flex flex-row items-center justify-between p-4">
         <CardTitle>Quota Usage</CardTitle>
-        <Badge variant="outline">{quotaUsage.plan.name} Plan</Badge>
+        <div className="flex items-center gap-2">
+          <Badge variant="outline">
+            {quotaUsage.plan.name.charAt(0).toUpperCase() +
+              quotaUsage.plan.name.slice(1) +
+              " Plan"}
+          </Badge>
+          {quotaUsage.plan.name === Plan.Free && (
+            <Link href="/pricing">
+              <Button className="gap-2" size="sm">
+                <BsStars className="h-4 w-4" />
+                Upgrade
+              </Button>
+            </Link>
+          )}
+        </div>
       </CardHeader>
       <Separator />
       <CardContent className="p-4 space-y-6">
