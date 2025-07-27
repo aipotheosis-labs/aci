@@ -1,10 +1,11 @@
 import { Plan } from "@/lib/types/billing";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BsStars } from "react-icons/bs";
 import { RiUserSettingsLine } from "react-icons/ri";
-import Link from "next/link";
 import { SettingsItem } from "./settings-item";
+import { UpgradeButton } from "@/components/layout/upgrade-button";
+import { BsStars } from "react-icons/bs";
+import Link from "next/link";
 
 interface SubscriptionDisplayProps {
   subscription:
@@ -46,17 +47,11 @@ export function SubscriptionDisplay({
                     : "Advanced features for growing organizations"}
                 </p>
               </div>
-              {subscription.plan === Plan.Free ? (
-                <Link href="/pricing">
-                  <Button className="gap-2">
-                    <BsStars className="h-4 w-4" />
-                    Upgrade
-                  </Button>
-                </Link>
-              ) : (
+              <UpgradeButton size="sm" />
+              {subscription.plan !== Plan.Free && (
                 <Button
                   variant="outline"
-                  className="gap-2"
+                  className="gap-2 ml-2"
                   onClick={onManageSubscription}
                 >
                   <RiUserSettingsLine className="h-4 w-4" />

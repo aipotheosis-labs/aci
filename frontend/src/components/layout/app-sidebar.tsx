@@ -29,9 +29,7 @@ import { HiOutlineChatBubbleBottomCenterText } from "react-icons/hi2";
 import { RiFileList3Line } from "react-icons/ri";
 import { useQuota } from "@/hooks/use-quota";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { BsStars } from "react-icons/bs";
-import { Plan } from "@/lib/types/billing";
+import { UpgradeButton } from "./upgrade-button";
 
 import {
   Tooltip,
@@ -97,19 +95,6 @@ export function AppSidebar() {
   const isCollapsed = state === "collapsed";
   const pathname = usePathname();
   const { data: quotaData, isPending, error } = useQuota();
-
-  const getUpgradeButtonText = (planName: Plan): string => {
-    switch (planName) {
-      case Plan.Free:
-        return "Upgrade to Starter Plan";
-      case Plan.Starter:
-        return "Upgrade to Team Plan";
-      case Plan.Team:
-        return "Upgrade to Enterprise Plan";
-      default:
-        return "Upgrade Plan";
-    }
-  };
 
   return (
     <Sidebar variant="inset" collapsible="icon" className="flex flex-col">
@@ -193,15 +178,7 @@ export function AppSidebar() {
                 quotaData.plan.name.slice(1)}{" "}
               Plan
             </Badge>
-            <Link href="/pricing" className="w-full">
-              <Button
-                size="sm"
-                className="gap-1.5 transition-all duration-200 hover:scale-105 w-full"
-              >
-                <BsStars className="h-3.5 w-3.5" />
-                {getUpgradeButtonText(quotaData.plan.name as Plan)}
-              </Button>
-            </Link>
+            <UpgradeButton size="sm" className="w-full" />
           </div>
         </div>
       )}

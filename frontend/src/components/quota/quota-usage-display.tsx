@@ -5,10 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
-import { Plan } from "@/lib/types/billing";
-import { BsStars } from "react-icons/bs";
-import Link from "next/link";
+import { UpgradeButton } from "@/components/layout/upgrade-button";
 
 interface QuotaUsageDisplayProps {
   quotaUsage: QuotaUsage;
@@ -59,19 +56,6 @@ const QuotaItem: React.FC<QuotaItemProps> = ({ title, used, limit }) => {
 export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
   quotaUsage,
 }) => {
-  const getUpgradeButtonText = (planName: Plan): string => {
-    switch (planName) {
-      case Plan.Free:
-        return "Upgrade to Starter Plan";
-      case Plan.Starter:
-        return "Upgrade to Team Plan";
-      case Plan.Team:
-        return "Upgrade to Enterprise Plan";
-      default:
-        return "Upgrade Plan";
-    }
-  };
-
   return (
     <Card className="flex flex-col h-full">
       <CardHeader className="flex flex-row items-center justify-between p-4">
@@ -85,12 +69,7 @@ export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
               quotaUsage.plan.name.slice(1) +
               " Plan"}
           </Badge>
-          <Link href="/pricing">
-            <Button className="gap-2" size="sm">
-              <BsStars className="h-4 w-4" />
-              {getUpgradeButtonText(quotaUsage.plan.name as Plan)}
-            </Button>
-          </Link>
+          <UpgradeButton size="sm" />
         </div>
       </CardHeader>
       <Separator />
