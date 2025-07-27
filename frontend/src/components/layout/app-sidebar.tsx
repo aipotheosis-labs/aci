@@ -178,15 +178,13 @@ export function AppSidebar() {
                 const isFreePlan = planName.toLowerCase() === "free";
 
                 return (
-                  <div
-                    className={cn(
-                      "flex items-center",
-                      isCollapsed ? "justify-center" : "justify-between gap-2",
-                    )}
-                  >
+                  <div className="flex flex-col items-center gap-3">
                     {!isCollapsed && (
-                      <div className="flex items-center gap-2 min-w-0">
-                        <Badge variant="secondary" className="text-xs">
+                      <div className="flex items-center justify-center w-full">
+                        <Badge
+                          variant="secondary"
+                          className="text-xs font-medium"
+                        >
                           {planName.charAt(0).toUpperCase() + planName.slice(1)}{" "}
                           Plan
                         </Badge>
@@ -195,10 +193,13 @@ export function AppSidebar() {
                     {isFreePlan && (
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Link href="/pricing">
+                          <Link href="/pricing" className="w-full">
                             <Button
                               size={isCollapsed ? "icon" : "sm"}
-                              className="gap-1.5"
+                              className={cn(
+                                "gap-1.5 transition-all duration-200 hover:scale-105",
+                                !isCollapsed && "w-full",
+                              )}
                             >
                               <BsStars className="h-3.5 w-3.5" />
                               {!isCollapsed && "Upgrade"}
