@@ -36,6 +36,8 @@ dependencies = [
     "e2b-code-interpreter>=1.5.0",
     "browser-use>=0.5.0",
     "langchain-openai>=0.3.28",
+    "md2docx-python>=0.1.8",
+    "elevenlabs>=2.8.1",
 ]
 
 [dependency-groups]

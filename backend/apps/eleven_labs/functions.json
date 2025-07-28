@@ -1,129 +1,74 @@
 [
     {
         "name": "ELEVEN_LABS__CREATE_SPEECH",
-        "description": "Converts text into speech using a specified voice and returns the audio.",
+        "description": "Converts text into speech using a specified voice and returns the audio as base64-encoded MP3 file.",
         "tags": ["elevenlabs", "text-to-speech"],
         "visibility": "public",
         "active": true,
-        "protocol": "rest",
-        "protocol_data": {
-            "method": "POST",
-            "path": "/v1/text-to-speech/{voice_id}",
-            "server_url": "https://api.elevenlabs.io"
-        },
+        "protocol": "connector",
+        "protocol_data": {},
         "parameters": {
             "type": "object",
             "properties": {
-                "path": {
-                    "type": "object",
-                    "description": "Path parameters",
-                    "properties": {
-                        "voice_id": {
-                            "type": "string",
-                            "description": "ID of the voice to be used. Use the Get voices endpoint to list all available voices."
-                        }
-                    },
-                    "required": ["voice_id"],
-                    "visible": ["voice_id"],
-                    "additionalProperties": false
+                "voice_id": {
+                    "type": "string",
+                    "description": "ID of the voice to be used. Use the List voices endpoint to find available voices."
                 },
-                "query": {
+                "text": {
+                    "type": "string",
+                    "description": "The text that will be converted into speech."
+                },
+                "model_id": {
+                    "type": "string",
+                    "description": "Identifier of the model that will be used. Defaults to eleven_multilingual_v2.",
+                    "default": "eleven_multilingual_v2"
+                },
+                "voice_settings": {
                     "type": "object",
-                    "description": "Query parameters",
+                    "description": "Voice settings overriding stored settings for the given voice. They are applied only on the given request.",
                     "properties": {
-                        "enable_logging": {
-                            "type": "boolean",
-                            "description": "When set to false, zero retention mode will be used for the request, making history features unavailable, including request stitching. Zero retention mode may only be used by enterprise customers.",
-                            "default": true
+                        "stability": {
+                            "type": "number",
+                            "description": "Controls the stability of the voice output.",
+                            "minimum": 0,
+                            "maximum": 1
                         },
-                        "output_format": {
-                            "type": "string",
-                            "description": "Output format of the generated audio. Formatted as codec_sample_rate_bitrate. For example, an mp3 with 22.05kHz sample rate at 32kbps is represented as mp3_22050_32.",
-                            "default": "mp3_44100_128"
+                        "similarity_boost": {
+                            "type": "number",
+                            "description": "Controls the similarity boost of the voice output.",
+                            "minimum": 0,
+                            "maximum": 1
+                        },
+                        "style": {
+                            "type": "number",
+                            "description": "Controls the style of the voice output.",
+                            "minimum": 0,
+                            "maximum": 1
+                        },
+                        "use_speaker_boost": {
+                            "type": "boolean",
+                            "description": "Whether to use speaker boost."
+                        },
+                        "speed": {
+                            "type": "number",
+                            "description": "Controls the speed of the voice output.",
+                            "minimum": 0.5,
+                            "maximum": 2.0
                         }
                     },
                     "required": [],
-                    "visible": ["enable_logging", "output_format"],
-                    "additionalProperties": false
-                },
-                "header": {
-                    "type": "object",
-                    "description": "Header parameters",
-                    "properties": {
-                        "Content-Type": {
-                            "type": "string",
-                            "description": "The content type of the request, typically application/json.",
-                            "default": "application/json"
-                        }
-                    },
-                    "required": ["Content-Type"],
-                    "visible": ["Content-Type"],
-                    "additionalProperties": false
-                },
-                "body": {
-                    "type": "object",
-                    "description": "Request body parameters",
-                    "properties": {
-                        "text": {
-                            "type": "string",
-                            "description": "The text that will be converted into speech."
-                        },
-                        "model_id": {
-                            "type": "string",
-                            "description": "Identifier of the model that will be used. Defaults to eleven_monolingual_v1.",
-                            "default": "eleven_monolingual_v1"
-                        },
-                        "voice_settings": {
-                            "type": "object",
-                            "description": "Voice settings overriding stored settings for the given voice. They are applied only on the given request.",
-                            "properties": {
-                                "stability": {
-                                    "type": "number",
-                                    "description": "Controls the stability of the voice output.",
-                                    "minimum": 0,
-                                    "maximum": 1
-                                },
-                                "similarity_boost": {
-                                    "type": "number",
-                                    "description": "Controls the similarity boost of the voice output.",
-                                    "minimum": 0,
-                                    "maximum": 1
-                                },
-                                "style": {
-                                    "type": "number",
-                                    "description": "Controls the style of the voice output.",
-                                    "minimum": 0,
-                                    "maximum": 1
-                                },
-                                "use_speaker_boost": {
-                                    "type": "boolean",
-                                    "description": "Whether to use speaker boost."
-                                },
-                                "speed": {
-                                    "type": "number",
-                                    "description": "Controls the speed of the voice output.",
-                                    "minimum": 0.5,
-                                    "maximum": 2.0
-                                }
-                            },
-                            "required": [],
-                            "visible": [
-                                "stability",
-                                "similarity_boost",
-                                "style",
-                                "use_speaker_boost",
-                                "speed"
-                            ],
-                            "additionalProperties": false
-                        }
-                    },
-                    "required": ["text"],
-                    "visible": ["text", "model_id", "voice_settings"],
+                    "visible": [
+                        "stability",
+                        "similarity_boost",
+                        "style",
+                        "use_speaker_boost",
+                        "speed"
+                    ],
                     "additionalProperties": false
                 }
             },
-            "required": ["path", "header", "body"],
-            "visible": ["path", "query", "header", "body"],
+            "required": ["voice_id", "text"],
+            "visible": ["voice_id", "text", "model_id", "voice_settings"],
             "additionalProperties": false
         }
     },
