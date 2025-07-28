@@ -52,7 +52,7 @@ export function AppCard({ app, isConfigured = false }: AppCardProps) {
         )}
 
         <CardHeader className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between min-w-0">
             <div className="flex items-center gap-3 min-w-0 flex-1 mr-4">
               <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg">
                 <Image
