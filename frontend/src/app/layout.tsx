@@ -111,7 +111,7 @@ export default function RootLayout({
                 <SidebarProvider>
                   <AppSidebar />
                   <SidebarInset>
-                    <main className="w-full h-full mr-2 border rounded-lg bg-background">
+                    <main className="w-full h-full mr-2 border border-border rounded-lg bg-background">
                       <Header />
                       {children}
                       <Analytics />
