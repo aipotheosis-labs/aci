@@ -328,7 +328,9 @@ export function AgentInstructionFilterForm({
               <Button variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleSave} disabled={isUpdatingAgent}>Save All Configurations</Button>
+              <Button onClick={handleSave} disabled={isUpdatingAgent}>
+                Save All Configurations
+              </Button>
             </DialogFooter>
           </>
         )}
