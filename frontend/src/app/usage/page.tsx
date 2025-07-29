@@ -53,7 +53,7 @@ export default function UsagePage() {
         {/* Quota Usage Section - Independent Loading */}
         <div className="w-full">
           {quotaError ? (
-            <div className="p-4 text-red-500">
+            <div className="p-4 text-destructive">
               Failed to load quota data. Please try again later.
             </div>
           ) : isQuotaLoading ? (
@@ -66,7 +66,7 @@ export default function UsagePage() {
         {/* Analytics Section - Independent Loading */}
         <div className="w-full">
           {AnalyticsError ? (
-            <div className="p-4 text-red-500">
+            <div className="p-4 text-destructive">
               Failed to load analytics data. Please try again later.
             </div>
           ) : isAnalyticsLoading ? (

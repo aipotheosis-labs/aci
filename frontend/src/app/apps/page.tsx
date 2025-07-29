@@ -27,7 +27,7 @@ export default function AppStorePage() {
           </div>
         ) : isError ? (
           <div className="flex justify-center items-center py-16">
-            <AlertCircle className="h-10 w-10 text-red-500" />
+            <AlertCircle className="h-10 w-10 text-destructive" />
             Failed to load apps. Please try to refresh the page.
           </div>
         ) : (
