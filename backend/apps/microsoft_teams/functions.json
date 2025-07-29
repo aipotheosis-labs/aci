@@ -504,10 +504,10 @@
               "type": "array",
               "items": {
                 "type": "string",
-                "enum": ["owner", "member"]
+                "enum": ["owner", "guest"]
               },
               "default": [],
-              "description": "The roles for the member (owner or member)"
+              "description": "The roles for the member. Use [] for basic members, ['owner'] for owners, ['guest'] for in-tenant guests. Out-of-tenant external members are assigned ['owner']."
             }
           },
           "required": ["@odata.type", "user@odata.bind"],
@@ -1289,7 +1289,7 @@
                         "type": "string"
                       },
                       "default": ["owner"],
-                      "description": "The roles for this member (owner, guest)"
+                      "description": "The roles for this member. Use [] for basic members, ['owner'] for owners, ['guest'] for in-tenant guests. Out-of-tenant external members are assigned ['owner']."
                     },
                     "user": {
                       "type": "object",
@@ -1404,9 +1404,9 @@
                 "type": "array",
                 "items": {
                   "type": "string",
-                  "enum": ["owner", "member"]
+                  "enum": ["owner", "guest"]
                 },
-                "description": "Array of roles for the member. Use ['owner'] for team owner, [] for regular member"
+                "description": "Array of roles for the member. Use [] for basic members, ['owner'] for owners, ['guest'] for in-tenant guests. Out-of-tenant external members are assigned ['owner']."
               }
             },
             "required": ["@odata.type", "roles"],
@@ -1606,7 +1606,7 @@
                   "type": "string"
                 },
                 "default": ["owner"],
-                "description": "Roles for the member in the chat"
+                "description": "Roles for the member in the chat. Use [] for basic members, ['owner'] for owners, ['guest'] for in-tenant guests. Out-of-tenant external members are assigned ['owner']."
               },
               "user@odata.bind": {
                 "type": "string",
