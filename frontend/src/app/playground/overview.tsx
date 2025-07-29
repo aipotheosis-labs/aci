@@ -1,8 +1,11 @@
 import { BetaAlert } from "@/components/playground/beta-alert";
 import * as motion from "motion/react-client";
 import Image from "next/image";
+import { useTheme } from "next-themes";
 
 export const Overview = () => {
+  const { resolvedTheme } = useTheme();
+
   return (
     <motion.div
       key="overview"
@@ -18,17 +21,17 @@ export const Overview = () => {
         </div>
         <p className="flex flex-row justify-center gap-4 items-center mb-36">
           <Image
-            src="/aci-dev-full-logo.svg"
+            src={`/aci-dev-full-logo-${resolvedTheme ?? "light"}-bg.svg`}
             alt="ACI.dev Logo"
             width={241}
             height={48}
             className="w-auto h-6"
           />
         </p>
-        <h1 className="text-2xl font-bold mb-2 sm:mb-4 text-transparent bg-clip-text bg-linear-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300">
+        <h1 className="text-2xl font-bold mb-2 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-r from-gray-900 to-gray-700 dark:from-gray-100 dark:to-gray-300">
           Hi, <span className="text-primary/80">Agent Builder</span>
         </h1>
-        <h2 className="text-xl sm:text-xl md:text-xl font-medium mb-4 sm:mb-8 text-transparent bg-clip-text bg-linear-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400">
+        <h2 className="text-xl sm:text-xl md:text-xl font-medium mb-4 sm:mb-8 text-transparent bg-clip-text bg-gradient-to-r from-gray-800 to-gray-600 dark:from-gray-200 dark:to-gray-400">
           How can I help you today?
         </h2>
       </div>
