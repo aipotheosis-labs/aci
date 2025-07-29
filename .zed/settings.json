@@ -1,0 +1,11 @@
+{
+  "lsp": {
+    "pyright": {
+      "settings": {
+        "python": {
+          "pythonPath": "/Users/zixuanzhang/projects/aci/backend/.venv/bin/python"
+        }
+      }
+    }
+  }
+}
