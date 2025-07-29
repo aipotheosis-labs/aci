@@ -86,7 +86,9 @@ export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
           limit={quotaUsage.plan.features.linked_accounts}
         />
 
-        <QuotaItem
+        {/* Not displaying the agent credentials and API calls limit for now */}
+        {/* Refer to the prod DB for the actual limits */}
+        {/* <QuotaItem
           title="Agent Credentials"
           used={quotaUsage.agent_credentials_used}
           limit={quotaUsage.plan.features.agent_credentials}
@@ -96,7 +98,7 @@ export const QuotaUsageDisplay: React.FC<QuotaUsageDisplayProps> = ({
           title="API Calls (Across All Projects,Reset Monthly)"
           used={quotaUsage.api_calls_used}
           limit={quotaUsage.plan.features.api_calls_monthly}
-        />
+        /> */}
       </CardContent>
     </Card>
   );
