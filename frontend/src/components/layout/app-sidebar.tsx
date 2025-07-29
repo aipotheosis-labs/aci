@@ -36,6 +36,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ThemeToggle } from "../theme-toggle";
+import { useTheme } from "next-themes";
 
 const showLogDashboard =
   process.env.NEXT_PUBLIC_FEATURE_LOG_DASHBOARD === "true";
@@ -95,6 +97,7 @@ export function AppSidebar() {
   const isCollapsed = state === "collapsed";
   const pathname = usePathname();
   const { data: quotaData, isPending, error } = useQuota();
+  const { resolvedTheme } = useTheme();
 
   return (
     <Sidebar variant="inset" collapsible="icon" className="flex flex-col">
@@ -108,7 +111,7 @@ export function AppSidebar() {
           {!isCollapsed && (
             <div className="h-9 w-auto relative flex items-center justify-center">
               <Image
-                src="/aci-dev-full-logo.svg"
+                src={`/aci-dev-full-logo-${resolvedTheme ?? "light"}-bg.svg`}
                 alt="ACI Dev Logo"
                 width={150}
                 height={30}
@@ -118,6 +121,7 @@ export function AppSidebar() {
             </div>
           )}
           <SidebarTrigger />
+          {!isCollapsed && <ThemeToggle />}
         </div>
         <Separator />
       </SidebarHeader>

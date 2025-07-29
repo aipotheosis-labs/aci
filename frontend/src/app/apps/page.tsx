@@ -22,7 +22,7 @@ export default function AppStorePage() {
       <div className="m-4">
         {isPending ? (
           <div className="flex justify-center items-center py-16">
-            <Loader2 className="animate-spin h-10 w-10 text-gray-500" />
+            <Loader2 className="animate-spin h-10 w-10 text-muted-foreground" />
             Loading apps...
           </div>
         ) : isError ? (

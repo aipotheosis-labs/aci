@@ -20,12 +20,12 @@ export function Stepper({ currentStep, totalSteps, steps }: StepperProps) {
                 currentStep === step.id
                   ? "bg-primary text-primary-foreground"
                   : currentStep > step.id
-                    ? "bg-[#1CD1AF] text-white"
+                    ? "bg-emerald-500 text-white dark:text-emerald-50"
                     : "bg-muted text-muted-foreground",
               )}
             >
               {currentStep > step.id ? (
-                <FaCheck className="text-white" />
+                <FaCheck className="text-white dark:text-emerald-50" />
               ) : (
                 step.id
               )}

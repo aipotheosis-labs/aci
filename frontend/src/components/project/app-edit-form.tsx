@@ -109,7 +109,7 @@ export function AppEditForm({
           <div className="flex items-center justify-between">
             <DialogTitle>Edit Allowed Apps</DialogTitle>
           </div>
-          <p className="text-sm text-gray-500 mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             Select what apps are enabled for this agent.
           </p>
           <Separator />

@@ -32,10 +32,10 @@ export const OrgSelector = () => {
           variant="ghost"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between h-9 px-2 text-sm font-medium hover:bg-gray-50 border border-gray-200 rounded-md"
+          className="w-full justify-between h-9 px-2 text-sm font-medium hover:bg-muted border border-border rounded-md"
         >
           <div className="flex items-center gap-2 truncate">
-            <Building className="h-3 w-3 text-gray-500 shrink-0" />
+            <Building className="h-3 w-3 text-muted-foreground shrink-0" />
             {activeOrg ? (
               <span className="truncate">{activeOrg.orgName}</span>
             ) : (
@@ -62,7 +62,7 @@ export const OrgSelector = () => {
                   className="flex justify-between items-center relative"
                 >
                   <div className="flex items-center gap-2 w-full">
-                    <Building className="h-4 w-4 text-gray-400" />
+                    <Building className="h-4 w-4 text-muted-foreground" />
                     <div className="grow truncate">{org.orgName}</div>
                     <Check
                       className={cn(
