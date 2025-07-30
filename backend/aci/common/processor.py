@@ -48,9 +48,10 @@ def filter_visible_properties(parameters_schema: dict) -> dict:
     return filter(filtered_parameters_schema)
 
 
-def inject_required_but_invisible_defaults(parameters_schema: dict, input_data: dict) -> dict:
+def inject_required_but_invisible_defaults(parameters_schema: dict, input_data: dict, context: dict = None) -> dict:
     """
     Recursively injects required but invisible properties with their default values into the input data.
+    Supports template substitution for values like {{linked_account_owner_id}}.
     """
     for prop, subschema in parameters_schema.get("properties", {}).items():
         # check if the property is not set by user and is required but invisible
@@ -61,7 +62,17 @@ def inject_required_but_invisible_defaults(parameters_schema: dict, input_data: 
         ):
             # check if it has a default value, which should exist for non-object types
             if "default" in subschema:
-                input_data[prop] = subschema["default"]
+                default_value = subschema["default"]
+                # Handle template substitution like {{linked_account_owner_id}}
+                if isinstance(default_value, str) and default_value.startswith("{{") and default_value.endswith("}}"):
+                    template_key = default_value[2:-2]  # Extract the key between {{ }}
+                    if context and template_key in context:
+                        default_value = context[template_key]
+                    else:
+                        raise Exception(
+                            f"Template variable '{template_key}' not found in context for property: {prop}"
+                        )
+                input_data[prop] = default_value
             else:
                 # If no default value, but it's an object, initialize it as an empty dict
                 if subschema.get("type") == "object":
@@ -72,7 +83,7 @@ def inject_required_but_invisible_defaults(parameters_schema: dict, input_data: 
                     )
         # Recursively inject defaults for nested objects
         if isinstance(input_data.get(prop), dict):
-            inject_required_but_invisible_defaults(subschema, input_data[prop])
+            inject_required_but_invisible_defaults(subschema, input_data[prop], context)
 
     return input_data
 
