@@ -7,26 +7,35 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { AppCard } from "./app-card";
 import { useState, useMemo } from "react";
 import { App } from "@/lib/types/app";
 import { AppCardComingSoon } from "./app-card-coming-soon";
 import comingsoon from "@/lib/comingsoon/comingsoon.json";
 import { useAppConfigs } from "@/hooks/use-app-config";
+import { ArrowUp, ArrowDown } from "lucide-react";
 
 function normalize(str: string): string {
   return str.toLowerCase().replace(/[\s\-_]/g, "");
 }
-enum FilterCategory {
+
+enum ConfigurationFilter {
   ALL = "all",
   CONFIGURED = "configured",
   UNCONFIGURED = "unconfigured",
 }
 
+enum AuthType {
+  ALL = "All Auth Types",
+  API_KEY = "api_key",
+  OAUTH2 = "oauth2",
+  NO_AUTH = "no_auth",
+}
+
 enum SortOption {
-  DEFAULT = "default",
-  ALPHABETICAL = "alphabetical",
-  REVERSE_ALPHABETICAL = "reverse-alphabetical",
+  ASC = "asc",
+  DESC = "desc",
 }
 
 interface AppGridProps {
@@ -35,30 +44,67 @@ interface AppGridProps {
 
 export function AppGrid({ apps }: AppGridProps) {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    FilterCategory.ALL,
+  const [selectedCategory, setSelectedCategory] =
+    useState<string>("All Categories");
+  const [selectedAuthType, setSelectedAuthType] = useState<string>(
+    AuthType.ALL,
   );
-  const [sortOrder, setSortOrder] = useState<string>(SortOption.DEFAULT);
+  const [sortOrder, setSortOrder] = useState<string>(SortOption.ASC);
+  const [configurationFilter, setConfigurationFilter] = useState<string>(
+    ConfigurationFilter.ALL,
+  );
 
   const { data: appConfigs = [] } = useAppConfigs();
 
   const categories = Array.from(new Set(apps.flatMap((app) => app.categories)));
 
+  const authTypes = Array.from(
+    new Set(
+      apps.flatMap((app) => Object.keys(app.supported_security_schemes || {})),
+    ),
+  ).filter((authType) =>
+    [AuthType.API_KEY, AuthType.OAUTH2, AuthType.NO_AUTH].includes(
+      authType as AuthType,
+    ),
+  );
+
   const configuredAppNames = useMemo(() => {
     return new Set(appConfigs.map((config) => config.app_name));
   }, [appConfigs]);
   const matchesCategory = useMemo(() => {
-    return (app: App, category: string, isConfigured: boolean): boolean => {
+    return (app: App, category: string): boolean => {
       switch (category) {
-        case FilterCategory.ALL:
+        case "All Categories":
           return true;
-        case FilterCategory.CONFIGURED:
-          return isConfigured;
-        case FilterCategory.UNCONFIGURED:
-          return !isConfigured;
         default:
           return app.categories.includes(category);
       }
+    };
+  }, []);
+
+  const matchesConfigurationStatus = useMemo(() => {
+    return (app: App, isConfigured: boolean, filter: string): boolean => {
+      switch (filter) {
+        case ConfigurationFilter.ALL:
+          return true;
+        case ConfigurationFilter.CONFIGURED:
+          return isConfigured;
+        case ConfigurationFilter.UNCONFIGURED:
+          return !isConfigured;
+        default:
+          return true;
+      }
+    };
+  }, []);
+
+  const matchesAuthType = useMemo(() => {
+    return (app: App, authType: string): boolean => {
+      if (authType === AuthType.ALL) {
+        return true;
+      }
+      return Object.keys(app.supported_security_schemes || {}).includes(
+        authType,
+      );
     };
   }, []);
 
@@ -80,17 +126,18 @@ export function AppGrid({ apps }: AppGridProps) {
       const sortedApps = [...apps];
 
       switch (sortOption) {
-        case SortOption.ALPHABETICAL:
+        case SortOption.ASC:
           return sortedApps.sort((a, b) =>
             a.display_name.localeCompare(b.display_name),
           );
-        case SortOption.REVERSE_ALPHABETICAL:
+        case SortOption.DESC:
           return sortedApps.sort((a, b) =>
             b.display_name.localeCompare(a.display_name),
           );
-        case SortOption.DEFAULT:
         default:
-          return sortedApps;
+          return sortedApps.sort((a, b) =>
+            a.display_name.localeCompare(b.display_name),
+          );
       }
     };
   }, []);
@@ -101,7 +148,9 @@ export function AppGrid({ apps }: AppGridProps) {
 
       return (
         matchesSearchQuery(app, searchQuery) &&
-        matchesCategory(app, selectedCategory, isConfigured)
+        matchesCategory(app, selectedCategory) &&
+        matchesConfigurationStatus(app, isConfigured, configurationFilter) &&
+        matchesAuthType(app, selectedAuthType)
       );
     });
 
@@ -110,10 +159,14 @@ export function AppGrid({ apps }: AppGridProps) {
     apps,
     searchQuery,
     selectedCategory,
+    selectedAuthType,
     sortOrder,
+    configurationFilter,
     configuredAppNames,
     matchesSearchQuery,
     matchesCategory,
+    matchesConfigurationStatus,
+    matchesAuthType,
     sortApps,
   ]);
 
@@ -135,7 +188,7 @@ export function AppGrid({ apps }: AppGridProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <Input
           placeholder="Search apps by name, description, or category..."
           value={searchQuery}
@@ -143,18 +196,12 @@ export function AppGrid({ apps }: AppGridProps) {
           className="max-w-sm"
         />
 
-        <Select onValueChange={setSelectedCategory}>
-          <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="all" />
+        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+          <SelectTrigger className="w-[170px]">
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={FilterCategory.ALL}>All Apps</SelectItem>
-            <SelectItem value={FilterCategory.CONFIGURED}>
-              Configured Apps
-            </SelectItem>
-            <SelectItem value={FilterCategory.UNCONFIGURED}>
-              Unconfigured Apps
-            </SelectItem>
+            <SelectItem value="All Categories">All Categories</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category} value={category}>
                 {category}
@@ -163,20 +210,76 @@ export function AppGrid({ apps }: AppGridProps) {
           </SelectContent>
         </Select>
 
-        <Select onValueChange={setSortOrder}>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Default" />
+        <Select value={selectedAuthType} onValueChange={setSelectedAuthType}>
+          <SelectTrigger className="w-[160px]">
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value={SortOption.DEFAULT}>Default</SelectItem>
-            <SelectItem value={SortOption.ALPHABETICAL}>
-              Ascending A-Z
-            </SelectItem>
-            <SelectItem value={SortOption.REVERSE_ALPHABETICAL}>
-              Descending Z-A
-            </SelectItem>
+            <SelectItem value={AuthType.ALL}>All Auth Types</SelectItem>
+            {authTypes.map((authType) => (
+              <SelectItem key={authType} value={authType}>
+                {authType === AuthType.API_KEY && "API Key"}
+                {authType === AuthType.OAUTH2 && "OAuth2"}
+                {authType === AuthType.NO_AUTH && "No Auth"}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
+
+        <ToggleGroup
+          type="single"
+          value={configurationFilter}
+          onValueChange={(value) =>
+            setConfigurationFilter(value || ConfigurationFilter.ALL)
+          }
+          className="border rounded-md"
+        >
+          <ToggleGroupItem
+            value={ConfigurationFilter.ALL}
+            aria-label="Show all apps"
+            className="flex-none px-4"
+          >
+            All
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value={ConfigurationFilter.CONFIGURED}
+            aria-label="Show configured apps"
+            className="flex-none px-4"
+          >
+            Configured
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value={ConfigurationFilter.UNCONFIGURED}
+            aria-label="Show unconfigured apps"
+            className="flex-none px-4"
+          >
+            Unconfigured
+          </ToggleGroupItem>
+        </ToggleGroup>
+
+        <ToggleGroup
+          type="single"
+          value={sortOrder}
+          onValueChange={(value) => setSortOrder(value || SortOption.ASC)}
+          className="border rounded-md"
+        >
+          <ToggleGroupItem
+            value={SortOption.ASC}
+            aria-label="Sort A to Z"
+            className="flex-none px-3"
+          >
+            <ArrowUp className="h-4 w-4" />
+            A-Z
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value={SortOption.DESC}
+            aria-label="Sort Z to A"
+            className="flex-none px-3"
+          >
+            <ArrowDown className="h-4 w-4" />
+            Z-A
+          </ToggleGroupItem>
+        </ToggleGroup>
 
         {/* <Select onValueChange={setSelectedTag}>
           <SelectTrigger className="w-[80px]">
