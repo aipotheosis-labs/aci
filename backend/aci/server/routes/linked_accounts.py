@@ -433,6 +433,11 @@ async def linked_accounts_oauth2_callback(
 
     # check for state
     state_jwt = request.query_params.get("state")
+    # Special handling for Instagram: remove #_ suffix if present
+    if state_jwt.endswith("#_"):
+        state_jwt = state_jwt[:-2]  # Remove the last 2 characters (#_)
+        logger.info(f"Removed Instagram #_ suffix from state")
+    
     if not state_jwt:
         logger.error(
             "OAuth2 account linking callback received, missing state",

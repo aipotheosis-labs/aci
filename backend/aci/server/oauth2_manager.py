@@ -130,14 +130,25 @@ class OAuth2Manager:
             Token response dictionary
         """
         try:
+            # Prepare token request parameters
+            token_params = {
+                "redirect_uri": redirect_uri,
+                "code": code,
+                "code_verifier": code_verifier,
+                "scope": self.scope,
+            }
+            
+            # Add client_id for Instagram (and potentially other apps that require it)
+            if self.app_name == "INSTAGRAM":
+                token_params["client_id"] = self.client_id
+                token_params["client_secret"] = self.client_secret
+                logger.info(f"Adding client_id and client_secret for Instagram OAuth2 request: {self.client_id}")
+            
             token = cast(
                 dict[str, Any],
                 await self.oauth2_client.fetch_token(
                     self.access_token_url,
-                    redirect_uri=redirect_uri,
-                    code=code,
-                    code_verifier=code_verifier,
-                    scope=self.scope,
+                    **token_params,
                 ),
             )
             return token

@@ -1,0 +1,148 @@
+[
+  {
+    "name": "INSTAGRAM__MEDIA_CONTAINER_CREATE",
+    "description": "Creates a media container on Instagram for publishing a post. This is the first step to publish a media object (photo, video, etc.) to an Instagram Business account.",
+    "tags": [
+      "instagram",
+      "media",
+      "publish",
+      "container"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v23.0/me/media",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for creating a media container",
+          "properties": {
+            "image_url": {
+              "type": "string",
+              "description": "URL of the image to be published"
+            },
+            "is_carousel_item": {
+              "type": "boolean",
+              "description": "Whether this media is part of a carousel post",
+              "default": false
+            },
+            "alt_text": {
+              "type": "string",
+              "description": "Alternative text for the image for accessibility"
+            },
+            "caption": {
+              "type": "string",
+              "description": "Caption text for the Instagram post"
+            },
+            "location_id": {
+              "type": "string",
+              "description": "Location page ID to tag the post with a location"
+            },
+            "user_tags": {
+              "type": "array",
+              "description": "Array of users to tag in the post",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "username": {
+                    "type": "string",
+                    "description": "Username to tag"
+                  },
+                  "x": {
+                    "type": "number",
+                    "description": "X coordinate for tag placement (0.0 to 1.0)"
+                  },
+                  "y": {
+                    "type": "number",
+                    "description": "Y coordinate for tag placement (0.0 to 1.0)"
+                  }
+                },
+                "required": ["username", "x", "y"]
+              }
+            },
+            "product_tags": {
+              "type": "array",
+              "description": "Array of products to tag in the post",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "product_id": {
+                    "type": "string",
+                    "description": "Product ID to tag"
+                  },
+                  "x": {
+                    "type": "number",
+                    "description": "X coordinate for tag placement (0.0 to 1.0)"
+                  },
+                  "y": {
+                    "type": "number",
+                    "description": "Y coordinate for tag placement (0.0 to 1.0)"
+                  }
+                },
+                "required": ["product_id", "x", "y"]
+              }
+            }
+          },
+          "required": ["image_url"],
+          "visible": [
+            "image_url",
+            "is_carousel_item",
+            "alt_text",
+            "caption",
+            "location_id",
+            "user_tags",
+            "product_tags"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": ["query"],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__MEDIA_CONTAINER_PUBLISH",
+    "description": "Publishes a previously created media container to the Instagram Business account. This is the final step to make the media object (photo, video, etc.) visible on the user's Instagram feed.",
+    "tags": [
+      "instagram",
+      "media",
+      "publish"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v23.0/me/media_publish",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for publishing the media container",
+          "properties": {
+            "creation_id": {
+              "type": "string",
+              "description": "The ID of the media container to be published"
+            }
+          },
+          "required": ["creation_id"],
+          "visible": ["creation_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["query"],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  }
+]
