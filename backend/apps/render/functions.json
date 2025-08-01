@@ -1752,5 +1752,34 @@
       "visible": ["path", "body"],
       "additionalProperties": false
     }
+  },
+  {
+    "name": "RENDER__RUN_SQL_QUERY",
+    "description": "Execute a SQL query on a Render PostgreSQL database. This function retrieves connection information and executes the provided SQL query.",
+    "tags": ["postgres", "database", "sql", "query", "execute"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "connector",
+    "protocol_data": {},
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "workspace_id": {
+          "type": "string",
+          "description": "The ID of the workspace/owner that contains the database."
+        },
+        "database_id": {
+          "type": "string",
+          "description": "The ID of the PostgreSQL database instance to query."
+        },
+        "sql": {
+          "type": "string",
+          "description": "The SQL query to execute on the database."
+        }
+      },
+      "required": ["workspace_id", "database_id", "sql"],
+      "visible": ["workspace_id", "database_id", "sql"],
+      "additionalProperties": false
+    }
   }
 ]
