@@ -62,7 +62,7 @@ class RestFunctionExecutor(FunctionExecutor[TScheme, TCred], Generic[TScheme, TC
 
         # Check Content-Type to determine how to send body data
         content_type = headers.get("Content-Type", "") if headers else ""
-        is_form_encoded = "application/x-www-form-urlencoded" in content_type
+        is_form_encoded = "application/x-www-form-urlencoded" in content_type.lower()
 
         request = httpx.Request(
             method=protocol_data.method,
