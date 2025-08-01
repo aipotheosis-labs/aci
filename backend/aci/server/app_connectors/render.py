@@ -106,7 +106,7 @@ class Render(AppConnectorBase):
             connection_info: Connection information from Render API
 
         Returns:
-            str: PostgreSQL connection URL for async SQLAlchemy
+            str: PostgreSQL connection URL for synchronous SQLAlchemy
         """
         # Get the external connection string from Render API response
         conn_str = connection_info.get("externalConnectionString")
