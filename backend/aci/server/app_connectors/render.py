@@ -43,8 +43,8 @@ class Render(AppConnectorBase):
         Execute a SQL query on a Render PostgreSQL database.
 
         Args:
-            workspaceId: The ID of the workspace/owner that contains the database
-            databaseId: The ID of the PostgreSQL database instance to query
+            workspace_id: The ID of the workspace/owner that contains the database
+            database_id: The ID of the PostgreSQL database instance to query
             sql: The SQL query to execute
 
         Returns:
@@ -116,9 +116,9 @@ class Render(AppConnectorBase):
 
         # Convert standard PostgreSQL URL to sync psycopg URL
         if conn_str.startswith("postgresql://"):
-            return cast(str, conn_str.replace("postgresql://", "postgresql+psycopg://", 1))
+            return cast(str, conn_str.replace("postgresql://", "postgresql+psycopg2://", 1))
         elif conn_str.startswith("postgres://"):
-            return cast(str, conn_str.replace("postgres://", "postgresql+psycopg://", 1))
+            return cast(str, conn_str.replace("postgres://", "postgresql+psycopg2://", 1))
         else:
             raise ValueError(f"Unexpected connection string format: {conn_str}")
 
