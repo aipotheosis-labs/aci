@@ -532,31 +532,37 @@
             },
             "repo": {
               "type": "string",
-              "description": "The Git repository URL (e.g., https://github.com/user/repo)."
+              "description": "The Git repository URL (e.g., https://github.com/user/repo). Do not include the branch in the repo string."
+            },
+            "autoDeploy": {
+              "type": "string",
+              "enum": ["yes", "no"],
+              "default": "yes",
+              "description": "Whether to enable automatic deployment."
             },
             "branch": {
               "type": "string",
-              "default": "main",
-              "description": "The Git branch to deploy from."
+              "description": "The Git branch to deploy from. If left empty, this will fall back to the default branch of the repository."
+            },
+            "image": {
+              "type": "object",
+              "description": "Image configuration for the static site.",
+              "properties": {},
+              "required": [],
+              "visible": [],
+              "additionalProperties": true
+            },
+            "buildFilter": {
+              "type": "object",
+              "description": "Build filter configuration.",
+              "properties": {},
+              "required": [],
+              "visible": [],
+              "additionalProperties": true
             },
             "rootDir": {
               "type": "string",
               "description": "The root directory of the site in the repository."
-            },
-            "buildCommand": {
-              "type": "string",
-              "description": "The command to build the static site."
-            },
-            "publishPath": {
-              "type": "string",
-              "default": "./dist",
-              "description": "The directory containing the built static files to serve."
-            },
-            "pullRequestPreviewsEnabled": {
-              "type": "string",
-              "enum": ["yes", "no"],
-              "default": "no",
-              "description": "Whether to enable pull request previews."
             },
             "envVars": {
               "type": "array",
@@ -576,10 +582,82 @@
                 "required": ["key", "value"],
                 "additionalProperties": false
               }
+            },
+            "environmentId": {
+              "type": "string",
+              "description": "The ID of the environment the service is associated with."
+            },
+            "serviceDetails": {
+              "type": "object",
+              "description": "Static site specific details",
+              "properties": {
+                "buildCommand": {
+                  "type": "string",
+                  "description": "The command to build the static site."
+                },
+                "headers": {
+                  "type": "array",
+                  "description": "Custom headers for the static site",
+                  "items": {
+                    "type": "object",
+                    "properties": {},
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": true
+                  }
+                },
+                "publishPath": {
+                  "type": "string",
+                  "default": "public",
+                  "description": "The directory containing the built static files to serve. Defaults to 'public'."
+                },
+                "pullRequestPreviewsEnabled": {
+                  "type": "string",
+                  "enum": ["yes", "no"],
+                  "default": "no",
+                  "description": "Whether to enable pull request previews. DEPRECATED: This field has been deprecated. previews.generation should be used in its place."
+                },
+                "previews": {
+                  "type": "object",
+                  "description": "Preview configuration",
+                  "properties": {
+                    "generation": {
+                      "type": "string",
+                      "enum": ["off", "on"],
+                      "default": "off",
+                      "description": "Preview generation setting. Defaults to 'off'."
+                    }
+                  },
+                  "required": [],
+                  "visible": ["generation"],
+                  "additionalProperties": false
+                },
+                "routes": {
+                  "type": "array",
+                  "description": "Route configuration for the static site",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "description": "The type of route (e.g., 'redirect')."
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                },
+                "renderSubdomainPolicy": {
+                  "type": "string",
+                  "description": "Controls whether render.com subdomains are available for the service."
+                }
+              },
+              "required": [],
+              "visible": ["buildCommand", "headers", "publishPath", "pullRequestPreviewsEnabled", "previews", "routes", "renderSubdomainPolicy"],
+              "additionalProperties": false
             }
           },
           "required": ["type", "name", "ownerId", "repo"],
-          "visible": ["type", "name", "ownerId", "repo", "branch", "rootDir", "buildCommand", "publishPath", "pullRequestPreviewsEnabled", "envVars"],
+          "visible": ["type", "name", "ownerId", "repo", "autoDeploy", "branch", "image", "buildFilter", "rootDir", "envVars", "environmentId", "serviceDetails"],
           "additionalProperties": false
         }
       },
@@ -1593,6 +1671,85 @@
       },
       "required": ["body"],
       "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__UPDATE_SERVICE",
+    "description": "Update configuration of an existing web service including build commands, start commands, and environment settings.",
+    "tags": ["service", "update", "configuration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/v1/services/{serviceId}",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service to update."
+            }
+          },
+          "required": ["serviceId"],
+          "visible": ["serviceId"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Service update configuration",
+          "properties": {
+            "serviceDetails": {
+              "type": "object",
+              "description": "Service configuration details to update",
+              "properties": {
+                "envSpecificDetails": {
+                  "type": "object",
+                  "description": "Environment-specific configuration",
+                  "properties": {
+                    "buildCommand": {
+                      "type": "string",
+                      "description": "The command to build the service."
+                    },
+                    "startCommand": {
+                      "type": "string",
+                      "description": "The command to start the service."
+                    }
+                  },
+                  "required": [],
+                  "visible": ["buildCommand", "startCommand"],
+                  "additionalProperties": false
+                },
+                "plan": {
+                  "type": "string",
+                  "enum": ["free", "starter", "standard", "pro", "pro_plus"],
+                  "description": "The service plan."
+                },
+                "region": {
+                  "type": "string",
+                  "enum": ["oregon", "ohio", "virginia", "iowa", "frankfurt", "singapore"],
+                  "description": "The region to deploy the service."
+                }
+              },
+              "required": [],
+              "visible": ["envSpecificDetails", "plan", "region"],
+              "additionalProperties": false
+            }
+          },
+          "required": [],
+          "visible": ["serviceDetails"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "body"],
       "additionalProperties": false
     }
   }
