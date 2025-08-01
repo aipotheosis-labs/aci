@@ -1,0 +1,23 @@
+{
+  "name": "X_COM",
+  "display_name": "X.com",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/x.svg",
+  "provider": "X Corp",
+  "version": "1.0.0",
+  "description": "X API v2 integration for accessing posts, users, communities, trends, and social interactions. Provides programmatic access to X's global conversation with real-time data and advanced analytics.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Social Media",
+    "Communication",
+    "Analytics"
+  ],
+  "visibility": "public",
+  "active": true
+} 
