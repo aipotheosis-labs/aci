@@ -1,0 +1,569 @@
+[
+  {
+    "name": "FIREBASE__CREATE_PROJECT",
+    "description": "Adds Firebase to an existing Google Cloud project. Note: This requires Firebase project creation permissions.",
+    "tags": ["project", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1beta1/projects/{projectId}:addFirebase",
+      "server_url": "https://firebase.googleapis.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "description": "The ID of the Google Cloud project to add Firebase to."
+            }
+          },
+          "required": ["projectId"],
+          "visible": ["projectId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIREBASE__GET_PROJECT",
+    "description": "Gets a Firebase project by its project ID.",
+    "tags": ["project", "get"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1beta1/projects/{projectId}",
+      "server_url": "https://firebase.googleapis.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "description": "The ID of the Firebase project to retrieve."
+            }
+          },
+          "required": ["projectId"],
+          "visible": ["projectId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIREBASE__LIST_PROJECTS",
+    "description": "Lists all Firebase projects accessible to the user.",
+    "tags": ["project", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1beta1/projects",
+      "server_url": "https://firebase.googleapis.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "pageSize": {
+              "type": "integer",
+              "description": "The maximum number of projects to return.",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "pageToken": {
+              "type": "string",
+              "description": "Token for pagination."
+            }
+          },
+          "required": [],
+          "visible": ["pageSize"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIREBASE__CREATE_WEB_APP",
+    "description": "Creates a new web app for a Firebase project.",
+    "tags": ["webapp", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1beta1/projects/{projectId}/webApps",
+      "server_url": "https://firebase.googleapis.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "description": "The ID of the Firebase project."
+            }
+          },
+          "required": ["projectId"],
+          "visible": ["projectId"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body parameters",
+          "properties": {
+            "displayName": {
+              "type": "string",
+              "description": "The display name of the web app."
+            },
+            "appUrls": {
+              "type": "array",
+              "description": "The URLs where the web app is hosted.",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "required": ["displayName"],
+          "visible": ["displayName", "appUrls"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIREBASE__GET_WEB_APP_CONFIG",
+    "description": "Gets the configuration for a Firebase web app.",
+    "tags": ["webapp", "config"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1beta1/projects/{projectId}/webApps/{appId}/config",
+      "server_url": "https://firebase.googleapis.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "description": "The ID of the Firebase project."
+            },
+            "appId": {
+              "type": "string",
+              "description": "The ID of the web app."
+            }
+          },
+          "required": ["projectId", "appId"],
+          "visible": ["projectId", "appId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIREBASE__CREATE_DATABASE",
+    "description": "Creates a new Realtime Database instance in a Firebase project.",
+    "tags": ["database", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1beta/projects/{projectId}/locations/{locationId}/instances",
+      "server_url": "https://firebasedatabase.googleapis.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "description": "The ID of the Firebase project."
+            },
+            "locationId": {
+              "type": "string",
+              "description": "The location where the database will be created.",
+              "default": "us-central1"
+            }
+          },
+          "required": ["projectId", "locationId"],
+          "visible": ["projectId", "locationId"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "databaseId": {
+              "type": "string",
+              "description": "The ID of the database instance to create."
+            }
+          },
+          "required": ["databaseId"],
+          "visible": ["databaseId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "query"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIREBASE__LIST_APPS",
+    "description": "Retrieves apps registered in the current Firebase project.",
+    "tags": ["app", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1beta1/projects/{projectId}/webApps",
+      "server_url": "https://firebase.googleapis.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "description": "The ID of the Firebase project."
+            }
+          },
+          "required": ["projectId"],
+          "visible": ["projectId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIREBASE__GET_ADMIN_SDK_CONFIG",
+    "description": "Gets the Admin SDK config for the current project.",
+    "tags": ["config", "admin", "sdk"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1beta1/projects/{projectId}/adminSdkConfig",
+      "server_url": "https://firebase.googleapis.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "description": "The ID of the Firebase project."
+            }
+          },
+          "required": ["projectId"],
+          "visible": ["projectId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIREBASE__FIRESTORE_GET_DOCUMENTS",
+    "description": "Retrieves one or more Firestore documents from a database in the current project by full document paths.",
+    "tags": ["firestore", "document", "get"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/projects/{projectId}/databases/{databaseId}/documents/{documentPath}",
+      "server_url": "https://firestore.googleapis.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "description": "The project ID."
+            },
+            "databaseId": {
+              "type": "string",
+              "description": "The database ID.",
+              "default": "(default)"
+            },
+            "documentPath": {
+              "type": "string",
+              "description": "The full path to the document (e.g., 'users/user123')."
+            }
+          },
+          "required": ["projectId", "databaseId", "documentPath"],
+          "visible": ["projectId", "documentPath"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIREBASE__FIRESTORE_LIST_COLLECTIONS",
+    "description": "Retrieves a list of collections from a Firestore database in the current project.",
+    "tags": ["firestore", "collection", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/projects/{projectId}/databases/{databaseId}/documents:listCollectionIds",
+      "server_url": "https://firestore.googleapis.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "description": "The project ID."
+            },
+            "databaseId": {
+              "type": "string",
+              "description": "The database ID.",
+              "default": "(default)"
+            }
+          },
+          "required": ["projectId", "databaseId"],
+          "visible": ["projectId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIREBASE__FIRESTORE_QUERY_COLLECTION",
+    "description": "Retrieves documents from a Firestore collection with optional filtering.",
+    "tags": ["firestore", "collection", "query"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/projects/{projectId}/databases/{databaseId}/documents:runQuery",
+      "server_url": "https://firestore.googleapis.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "description": "The project ID."
+            },
+            "databaseId": {
+              "type": "string",
+              "description": "The database ID.",
+              "default": "(default)"
+            }
+          },
+          "required": ["projectId", "databaseId"],
+          "visible": ["projectId"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Query body parameters",
+          "properties": {
+            "structuredQuery": {
+              "type": "object",
+              "description": "The structured query to execute.",
+              "properties": {
+                "from": {
+                  "type": "array",
+                  "description": "The collections to query.",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "collectionId": {
+                        "type": "string",
+                        "description": "The collection ID to query."
+                      }
+                    }
+                  }
+                },
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of results to return.",
+                  "default": 10,
+                  "minimum": 1,
+                  "maximum": 1000
+                }
+              },
+              "required": ["from"],
+              "visible": ["from", "limit"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["structuredQuery"],
+          "visible": ["structuredQuery"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIREBASE__MESSAGING_SEND_MESSAGE",
+    "description": "Sends a message to a Firebase Cloud Messaging registration token or topic.",
+    "tags": ["messaging", "fcm", "send"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/projects/{projectId}/messages:send",
+      "server_url": "https://fcm.googleapis.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "projectId": {
+              "type": "string",
+              "description": "The project ID."
+            }
+          },
+          "required": ["projectId"],
+          "visible": ["projectId"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Message payload",
+          "properties": {
+            "message": {
+              "type": "object",
+              "description": "The message to send.",
+              "properties": {
+                "token": {
+                  "type": "string",
+                  "description": "Registration token to send a message to."
+                },
+                "topic": {
+                  "type": "string",
+                  "description": "Topic name to send a message to."
+                },
+                "notification": {
+                  "type": "object",
+                  "description": "Notification payload.",
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "description": "The notification's title."
+                    },
+                    "body": {
+                      "type": "string",
+                      "description": "The notification's body text."
+                    }
+                  },
+                  "required": [],
+                  "visible": ["title", "body"],
+                  "additionalProperties": false
+                },
+                "data": {
+                  "type": "object",
+                  "description": "Arbitrary key/value payload.",
+                  "properties": {},
+                  "required": [],
+                  "visible": [],
+                  "additionalProperties": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [],
+              "visible": ["token", "topic", "notification", "data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["message"],
+          "visible": ["message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  }
+]
