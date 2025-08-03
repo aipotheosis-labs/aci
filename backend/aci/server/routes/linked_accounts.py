@@ -360,6 +360,7 @@ async def link_oauth2_account(
         access_token_url=oauth2_scheme.access_token_url,
         refresh_token_url=oauth2_scheme.refresh_token_url,
         token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
+        exchange_token_url=oauth2_scheme.exchange_token_url,
     )
 
     path = request.url_for(LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
@@ -506,6 +507,7 @@ async def linked_accounts_oauth2_callback(
         access_token_url=oauth2_scheme.access_token_url,
         refresh_token_url=oauth2_scheme.refresh_token_url,
         token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
+        exchange_token_url=oauth2_scheme.exchange_token_url,
     )
 
     token_response = await oauth2_manager.fetch_token(

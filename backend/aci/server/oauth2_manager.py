@@ -24,6 +24,7 @@ class OAuth2Manager:
         access_token_url: str,
         refresh_token_url: str,
         token_endpoint_auth_method: str | None = None,
+        exchange_token_url: str | None = None,
     ):
         """
         Initialize the OAuth2Manager
@@ -39,6 +40,7 @@ class OAuth2Manager:
             token_endpoint_auth_method:
                 client_secret_basic (default) | client_secret_post | none
                 Additional options can be achieved by registering a custom auth method
+            exchange_token_url: The URL for exchanging short-lived tokens to long-lived tokens (Instagram specific)
         """
         self.app_name = app_name
         self.client_id = client_id
@@ -48,6 +50,7 @@ class OAuth2Manager:
         self.access_token_url = access_token_url
         self.refresh_token_url = refresh_token_url
         self.token_endpoint_auth_method = token_endpoint_auth_method
+        self.exchange_token_url = exchange_token_url
 
         # TODO: need to close the client after use
         # Add an aclose() helper (or implement __aenter__/__aexit__) and make callers invoke it during shutdown.
@@ -175,9 +178,12 @@ class OAuth2Manager:
         if self.app_name != "INSTAGRAM":
             raise OAuth2Error("Token exchange is only supported for Instagram")
 
+        if not self.exchange_token_url:
+            raise OAuth2Error("Exchange token URL is not configured for Instagram")
+
         try:
             response = await self.oauth2_client.get(
-                "https://graph.instagram.com/access_token",
+                self.exchange_token_url,
                 params={
                     "grant_type": "ig_exchange_token",
                     "client_secret": self.client_secret,

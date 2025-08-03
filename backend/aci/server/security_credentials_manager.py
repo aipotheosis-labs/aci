@@ -157,6 +157,7 @@ async def _refresh_oauth2_access_token(
         access_token_url=oauth2_scheme.access_token_url,
         refresh_token_url=oauth2_scheme.refresh_token_url,
         token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
+        exchange_token_url=oauth2_scheme.exchange_token_url,
     )
 
     return await oauth2_manager.refresh_token(refresh_token)

@@ -79,6 +79,12 @@ class OAuth2Scheme(BaseModel):
     redirect_url: str | None = Field(
         default=None, min_length=1, max_length=2048, description="Redirect URL for OAuth2 callback."
     )
+    exchange_token_url: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=2048,
+        description="URL for exchanging short-lived tokens to long-lived tokens (Instagram specific)",
+    )
 
 
 # NOTE: need to show these fields for custom oauth2 app feature.
