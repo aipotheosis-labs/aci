@@ -434,10 +434,10 @@ async def linked_accounts_oauth2_callback(
     # check for state
     state_jwt = request.query_params.get("state")
     # Special handling for Instagram: remove #_ suffix if present
-    if state_jwt.endswith("#_"):
+    if state_jwt and state_jwt.endswith("#_"):
         state_jwt = state_jwt[:-2]  # Remove the last 2 characters (#_)
-        logger.info(f"Removed Instagram #_ suffix from state")
-    
+        logger.info("Removed Instagram #_ suffix from state")
+
     if not state_jwt:
         logger.error(
             "OAuth2 account linking callback received, missing state",
@@ -513,7 +513,7 @@ async def linked_accounts_oauth2_callback(
         code=code,
         code_verifier=state.code_verifier,
     )
-    security_credentials = oauth2_manager.parse_fetch_token_response(token_response)
+    security_credentials = await oauth2_manager.parse_fetch_token_response(token_response)
 
     # if the linked account already exists, update it, otherwise create a new one
     # TODO: consider separating the logic for updating and creating a linked account or give warning to clients

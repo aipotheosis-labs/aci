@@ -130,25 +130,14 @@ class OAuth2Manager:
             Token response dictionary
         """
         try:
-            # Prepare token request parameters
-            token_params = {
-                "redirect_uri": redirect_uri,
-                "code": code,
-                "code_verifier": code_verifier,
-                "scope": self.scope,
-            }
-            
-            # Add client_id for Instagram (and potentially other apps that require it)
-            if self.app_name == "INSTAGRAM":
-                token_params["client_id"] = self.client_id
-                token_params["client_secret"] = self.client_secret
-                logger.info(f"Adding client_id and client_secret for Instagram OAuth2 request: {self.client_id}")
-            
             token = cast(
                 dict[str, Any],
                 await self.oauth2_client.fetch_token(
                     self.access_token_url,
-                    **token_params,
+                    redirect_uri=redirect_uri,
+                    code=code,
+                    code_verifier=code_verifier,
+                    scope=self.scope,
                 ),
             )
             return token
@@ -172,7 +161,44 @@ class OAuth2Manager:
             logger.error(f"Failed to refresh access token, app_name={self.app_name}, error={e}")
             raise OAuth2Error("Failed to refresh access token") from e
 
-    def parse_fetch_token_response(self, token: dict) -> OAuth2SchemeCredentials:
+    async def exchange_short_lived_token(self, short_lived_token: str) -> dict[str, Any]:
+        """
+        Exchange short-lived access token for long-lived access token.
+        This is specific to Instagram's API requirements.
+
+        Args:
+            short_lived_token: The short-lived access token from the initial OAuth flow
+
+        Returns:
+            Token response dictionary with long-lived access token
+        """
+        if self.app_name != "INSTAGRAM":
+            raise OAuth2Error("Token exchange is only supported for Instagram")
+
+        try:
+            response = await self.oauth2_client.get(
+                "https://graph.instagram.com/access_token",
+                params={
+                    "grant_type": "ig_exchange_token",
+                    "client_secret": self.client_secret,
+                    "access_token": short_lived_token,
+                },
+            )
+            response.raise_for_status()
+
+            token_data = cast(dict[str, Any], response.json())
+            logger.info(
+                f"Successfully exchanged short-lived token for long-lived token, app_name={self.app_name}"
+            )
+            return token_data
+
+        except Exception as e:
+            logger.error(
+                f"Failed to exchange short-lived token, app_name={self.app_name}, error={e}"
+            )
+            raise OAuth2Error("Failed to exchange short-lived token for long-lived token") from e
+
+    async def parse_fetch_token_response(self, token: dict) -> OAuth2SchemeCredentials:
         """
         Parse OAuth2SchemeCredentials from token response with app-specific handling.
 
@@ -191,6 +217,22 @@ class OAuth2Manager:
             else:
                 logger.error(f"Missing authed_user in Slack OAuth response, app={self.app_name}")
                 raise OAuth2Error("Missing access_token in Slack OAuth response")
+
+        # handle Instagram's special case - exchange short-lived token for long-lived token
+        if self.app_name == "INSTAGRAM":
+            if "access_token" in data:
+                short_lived_token = data["access_token"]
+                logger.info(
+                    f"Exchanging short-lived token for long-lived token, app_name={self.app_name}"
+                )
+                long_lived_token_response = await self.exchange_short_lived_token(short_lived_token)
+                # Update data with long-lived token response: add expires_in and token_type, update access_token
+                data.update(long_lived_token_response)
+            else:
+                logger.error(
+                    f"Missing access_token in Instagram OAuth response, app={self.app_name}"
+                )
+                raise OAuth2Error("Missing access_token in Instagram OAuth response")
 
         if "access_token" not in data:
             logger.error(f"Missing access_token in OAuth response, app={self.app_name}")
