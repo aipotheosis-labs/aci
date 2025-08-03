@@ -17,6 +17,7 @@ from aci.common.schemas.security_scheme import (
     OAuth2SchemeCredentials,
     SecuritySchemeOverrides,
 )
+from aci.server import config
 from aci.server.oauth2_manager import OAuth2Manager
 
 logger = get_logger(__name__)
@@ -96,6 +97,17 @@ async def _get_oauth2_credentials(
         linked_account.security_credentials
     )
     if _access_token_is_expired(oauth2_scheme_credentials):
+        if app.name == "INSTAGRAM":
+            logger.error(
+                f"Access token expired, please re-authorize, linked_account_id={linked_account.id}, "
+                f"security_scheme={linked_account.security_scheme}, app={app.name}"
+            )
+            # NOTE: this error message could be used by the frontend to guide the user to re-authorize
+            raise OAuth2Error(
+                f"Access token expired. Please re-authorize at: "
+                f"{config.DEV_PORTAL_URL}/appconfigs/{app.name}"
+            )
+
         logger.warning(
             f"Access token expired, trying to refresh linked_account_id={linked_account.id}, "
             f"security_scheme={linked_account.security_scheme}, app={app.name}"
@@ -155,9 +167,9 @@ async def _refresh_oauth2_access_token(
         scope=oauth2_scheme_credentials.scope,
         authorize_url=oauth2_scheme.authorize_url,
         access_token_url=oauth2_scheme.access_token_url,
+        exchange_token_url=oauth2_scheme.exchange_token_url,
         refresh_token_url=oauth2_scheme.refresh_token_url,
         token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
-        exchange_token_url=oauth2_scheme.exchange_token_url,
     )
 
     return await oauth2_manager.refresh_token(refresh_token)
