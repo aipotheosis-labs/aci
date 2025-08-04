@@ -13,6 +13,10 @@ from propelauth_py import (
     StepUpMfaVerifyTotpResponse,
     TokenVerificationMetadata,
 )
+from propelauth_py.types.user import (
+    UserMetadata,
+    UsersPagedResponse,
+)
 from propelauth_py.api import (
     OrgQueryOrderBy,
     UserQueryOrderBy,
@@ -270,7 +274,44 @@ class FastAPIAuth:
         include_orgs: bool = False,
         role: str | None = None,
     ):
-        return self.auth.fetch_users_in_org(org_id, page_size, page_number, include_orgs, role)
+        return UsersPagedResponse(
+            users=[
+                UserMetadata(
+                    user_id="e50870d2-9dcd-44fe-a273-1b9cc1e982de",
+                    email="testuser@aipolabs.xyz",
+                    email_confirmed=True,
+                    has_password=False,
+                    username=None,
+                    first_name="Test",
+                    last_name="User",
+                    picture_url="",
+                    locked=False,
+                    enabled=True,
+                    mfa_enabled=False,
+                    can_create_orgs=False,
+                    created_at=1746268241,
+                    last_active_at=1746272886,
+                    org_id_to_org_info={
+                        "107e06da-e857-4864-bc1d-4adcba02ab76": {
+                            "org_id": "107e06da-e857-4864-bc1d-4adcba02ab76",
+                            "org_name": "Personal fa0H1m",
+                            "url_safe_org_name": "personal-fa0h1m",
+                        }
+                    }
+                    if include_orgs
+                    else None,
+                    legacy_user_id=None,
+                    impersonator_user_id=None,
+                    metadata=None,
+                    properties={},
+                )
+            ],
+            total_users=1,
+            current_page=page_number,
+            page_size=page_size,
+            has_more_results=False,
+        )
+        # return self.auth.fetch_users_in_org(org_id, page_size, page_number, include_orgs, role)
 
     def create_user(
         self,
