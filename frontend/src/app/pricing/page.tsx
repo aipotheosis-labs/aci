@@ -11,9 +11,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { IoMdCheckmark } from "react-icons/io";
-import { Interval } from "@/lib/types/billing";
+import { Interval, Plan } from "@/lib/types/billing";
 import { useSubscription } from "@/hooks/use-subscription";
-import { createCheckoutSession } from "@/lib/api/billing";
+import {
+  createCheckoutSession,
+  createCustomerPortalSession,
+} from "@/lib/api/billing";
 import { useMetaInfo } from "@/components/context/metainfo";
 import { useState } from "react";
 import { X } from "lucide-react";
@@ -206,13 +209,21 @@ export default function PricingPage() {
                       return;
                     }
 
-                    const url = await createCheckoutSession(
-                      accessToken,
-                      activeOrg.orgId,
-                      tier.name,
-                      isYearly ? Interval.Year : Interval.Month,
-                    );
-                    window.location.href = url;
+                    if (subscription?.plan === Plan.Free) {
+                      const url = await createCheckoutSession(
+                        accessToken,
+                        activeOrg.orgId,
+                        tier.name,
+                        isYearly ? Interval.Year : Interval.Month,
+                      );
+                      window.location.href = url;
+                    } else {
+                      const url = await createCustomerPortalSession(
+                        accessToken,
+                        activeOrg.orgId,
+                      );
+                      window.location.href = url;
+                    }
                   }}
                 >
                   {subscription?.plan === tier.name ? (
