@@ -80,7 +80,7 @@ ACI.dev improves tool-calling reliability and accountability:
 - **Documentation:** [aci.dev/docs](https://www.aci.dev/docs)
 - **Available Tools List:** [aci.dev/tools](https://www.aci.dev/tools)
 - **Python SDK:** [github.com/aipotheosis-labs/aci-python-sdk](https://github.com/aipotheosis-labs/aci-python-sdk)
-- **Typescript SDK:** [github.com/aipotheosis-labs/aci-python-sdk](https://github.com/aipotheosis-labs/aci-typescript-sdk)
+- **Typescript SDK:** [github.com/aipotheosis-labs/aci-typescript-sdk](https://github.com/aipotheosis-labs/aci-typescript-sdk)
 - **Unified MCP Server:** [github.com/aipotheosis-labs/aci-mcp](https://github.com/aipotheosis-labs/aci-mcp)
 - **Agent Examples Built with ACI.dev:** [github.com/aipotheosis-labs/aci-agents](https://github.com/aipotheosis-labs/aci-agents)
 - **Blog:** [aci.dev/blog](https://www.aci.dev/blog)
