@@ -11,9 +11,9 @@ export function getUpgradeButtonText(planName: Plan): string {
     case Plan.Free:
       return "Upgrade to Starter Plan";
     case Plan.Starter:
-      return "Upgrade to Team Plan";
+      return "Starter Plan";
     case Plan.Team:
-      return "Upgrade to Enterprise Plan";
+      return "Team Plan";
     default:
       return "Upgrade Plan";
   }

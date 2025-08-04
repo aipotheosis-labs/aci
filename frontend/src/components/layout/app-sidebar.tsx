@@ -27,8 +27,6 @@ import { RiSettings3Line, RiLinkUnlinkM } from "react-icons/ri";
 import { AiOutlineRobot } from "react-icons/ai";
 import { HiOutlineChatBubbleBottomCenterText } from "react-icons/hi2";
 import { RiFileList3Line } from "react-icons/ri";
-import { useQuota } from "@/hooks/use-quota";
-import { Badge } from "@/components/ui/badge";
 import { UpgradeButton } from "./upgrade-button";
 
 import {
@@ -96,7 +94,6 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
   const pathname = usePathname();
-  const { data: quotaData, isPending, error } = useQuota();
   const { resolvedTheme } = useTheme();
 
   return (
@@ -171,21 +168,11 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      {!isPending && !error && !isCollapsed && (
-        <div className="px-2 pb-2">
-          <div className="flex flex-col items-center gap-2">
-            <Badge
-              variant="outline"
-              className="px-3 py-1.5 text-sm w-full text-center"
-            >
-              {quotaData.plan.name.charAt(0).toUpperCase() +
-                quotaData.plan.name.slice(1)}{" "}
-              Plan
-            </Badge>
-            <UpgradeButton size="sm" className="w-full" />
-          </div>
+      <div className="px-2 pb-2">
+        <div className="flex flex-col items-center gap-2">
+          <UpgradeButton size="sm" className="w-full" />
         </div>
-      )}
+      </div>
 
       <SidebarFooter>
         <SidebarMenu>
