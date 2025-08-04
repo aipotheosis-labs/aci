@@ -27,7 +27,7 @@ import { RiSettings3Line, RiLinkUnlinkM } from "react-icons/ri";
 import { AiOutlineRobot } from "react-icons/ai";
 import { HiOutlineChatBubbleBottomCenterText } from "react-icons/hi2";
 import { RiFileList3Line } from "react-icons/ri";
-import { UpgradeButton } from "./upgrade-button";
+import { UpgradeButton } from "./subscription-button";
 
 import {
   Tooltip,

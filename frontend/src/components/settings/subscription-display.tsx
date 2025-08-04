@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { RiUserSettingsLine } from "react-icons/ri";
 import { SettingsItem } from "./settings-item";
-import { UpgradeButton } from "@/components/layout/upgrade-button";
+import { UpgradeButton } from "@/components/layout/subscription-button";
 import { BsStars } from "react-icons/bs";
 import Link from "next/link";
 
