@@ -35,22 +35,10 @@ export function SubscriptionDisplay({
         ) : subscription ? (
           <div className="mt-1">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium">
-                  {subscription.plan.charAt(0).toUpperCase() +
-                    subscription.plan.slice(1) +
-                    " Plan"}
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  {subscription.plan === Plan.Free
-                    ? "Basic features for small teams"
-                    : "Advanced features for growing organizations"}
-                </p>
-              </div>
               <UpgradeButton size="sm" />
               {subscription.plan !== Plan.Free && (
                 <Button
-                  variant="outline"
+                  variant="default"
                   className="gap-2 ml-2"
                   onClick={onManageSubscription}
                 >
@@ -62,7 +50,10 @@ export function SubscriptionDisplay({
             {subscription.plan !== Plan.Free && (
               <p className="text-sm text-muted-foreground mt-2">
                 Need help with your subscription?{" "}
-                <Link href="/support" className="text-primary hover:underline">
+                <Link
+                  href="mailto:support@aipolabs.xyz"
+                  className="text-primary hover:underline"
+                >
                   Contact support
                 </Link>
               </p>

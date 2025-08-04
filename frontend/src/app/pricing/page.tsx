@@ -15,7 +15,7 @@ import { Interval } from "@/lib/types/billing";
 import { useSubscription } from "@/hooks/use-subscription";
 import { createCheckoutSession } from "@/lib/api/billing";
 import { useMetaInfo } from "@/components/context/metainfo";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { FaqSection } from "@/components/pricing/faq";
@@ -91,13 +91,6 @@ export default function PricingPage() {
   const [isYearly, setIsYearly] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
-    if (subscription && subscription.plan !== "free") {
-      router.replace("/account");
-    }
-  }, [subscription, router]);
-
-  // TODO: Enterprise button should have a mail popup
   return (
     <div className="relative bg-background text-foreground py-10 sm:py-14 min-h-screen">
       <Button
