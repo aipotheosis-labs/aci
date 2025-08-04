@@ -131,7 +131,10 @@ export function FunctionMultiSelector() {
             <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
+        <PopoverContent
+          className="w-auto min-w-[var(--radix-popover-trigger-width)] max-w-2xl p-0"
+          align="end"
+        >
           <Command className="rounded-lg shadow-md">
             <CommandInput placeholder="Search functions..." />
             <CommandList>
@@ -147,7 +150,7 @@ export function FunctionMultiSelector() {
                       <CommandItem
                         key="select-all"
                         onSelect={handleSelectAll}
-                        className="flex items-center justify-between"
+                        className="flex items-center gap-2"
                       >
                         <div className="flex items-center gap-2 flex-1">
                           <span>
@@ -156,7 +159,7 @@ export function FunctionMultiSelector() {
                         </div>
                         <Check
                           className={cn(
-                            "h-4 w-4",
+                            "h-4 w-4 shrink-0 flex-shrink-0",
                             allSelected ? "opacity-100" : "opacity-0",
                           )}
                         />
@@ -168,22 +171,15 @@ export function FunctionMultiSelector() {
                         key={`function-${func.name}`}
                         value={func.name}
                         onSelect={() => handleFunctionChange(func.name)}
-                        className="flex items-center justify-between"
+                        className="flex items-center gap-2"
                         data-value={func.name}
                       >
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className={cn("flex-1 truncate")}>
-                              <span className="text-sm">{func.name}</span>
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{func.name}</p>
-                          </TooltipContent>
-                        </Tooltip>
+                        <div className="flex-1">
+                          <span className="text-sm">{func.name}</span>
+                        </div>
                         <Check
                           className={cn(
-                            "h-4 w-4",
+                            "h-4 w-4 shrink-0 flex-shrink-0",
                             selectedFunctions.includes(func.name)
                               ? "opacity-100"
                               : "opacity-0",

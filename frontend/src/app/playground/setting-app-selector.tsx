@@ -155,7 +155,10 @@ export function AppMultiSelector() {
             <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-(--radix-popover-trigger-width) p-0">
+        <PopoverContent
+          className="w-auto min-w-(--radix-popover-trigger-width) max-w-md p-0"
+          align="end"
+        >
           <Command className="rounded-lg shadow-md">
             <CommandInput placeholder="Search apps..." />
             <CommandList>
@@ -172,7 +175,7 @@ export function AppMultiSelector() {
                     </div>
                     <Check
                       className={cn(
-                        "h-4 w-4",
+                        "h-4 w-4 ml-2 shrink-0",
                         allSelected ? "opacity-100" : "opacity-0",
                       )}
                     />
@@ -192,7 +195,7 @@ export function AppMultiSelector() {
                     </div>
                     <Check
                       className={cn(
-                        "h-4 w-4",
+                        "h-4 w-4 ml-2 shrink-0",
                         selectedApps.includes(app.id)
                           ? "opacity-100"
                           : "opacity-0",

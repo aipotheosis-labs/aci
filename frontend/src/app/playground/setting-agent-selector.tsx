@@ -92,7 +92,7 @@ export function AgentSelector({ status, setMessages }: AgentSelectorProps) {
           <SelectTrigger className="w-full" aria-label="Select an agent">
             <SelectValue placeholder="Select an Agent" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent align="end">
             {agents.map((agent) => (
               <SelectItem key={agent.id} value={agent.id}>
                 {agent.name}

@@ -50,6 +50,14 @@ export function LinkAccountOwnerIdSelector({
   };
   const linkedAccounts = getUniqueLinkedAccounts();
 
+  // Only use the selectedLinkedAccountOwnerId if it exists in the available options
+  const currentValue = linkedAccounts.find(
+    (account) =>
+      account.linked_account_owner_id === selectedLinkedAccountOwnerId,
+  )
+    ? selectedLinkedAccountOwnerId
+    : undefined;
+
   return (
     <div className="space-y-2">
       <Tooltip>
@@ -64,14 +72,14 @@ export function LinkAccountOwnerIdSelector({
         </TooltipContent>
       </Tooltip>
       <Select
-        value={selectedLinkedAccountOwnerId}
+        value={currentValue}
         onValueChange={resetSelectedLinkedAccountOwnerId}
         disabled={status !== "ready"}
       >
         <SelectTrigger className="w-full">
           <SelectValue placeholder="Select a Linked Account Owner" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent align="end">
           {linkedAccounts.map((account) => (
             <SelectItem
               key={account.linked_account_owner_id}
