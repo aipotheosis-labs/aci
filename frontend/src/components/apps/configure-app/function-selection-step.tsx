@@ -34,14 +34,16 @@ export function FunctionSelectionStep({
   appName,
   isDialogOpen,
 }: FunctionSelectionStepProps) {
-  const [selectedFunctionNames, setSelectedFunctionNames] = useState<RowSelectionState>(
-    {},
-  );
+  const [selectedFunctionNames, setSelectedFunctionNames] =
+    useState<RowSelectionState>({});
   const [functions, setFunctions] = useState<AppFunction[]>([]);
   const [isAllFunctionsEnabled, setIsAllFunctionsEnabled] = useState(false);
-  
+
   const { app } = useApp(appName);
-  const { mutateAsync: updateAppConfigMutation, isPending: isUpdatingAppConfig } = useUpdateAppConfig();
+  const {
+    mutateAsync: updateAppConfigMutation,
+    isPending: isUpdatingAppConfig,
+  } = useUpdateAppConfig();
 
   // Load available functions from the app
   useEffect(() => {
@@ -83,16 +85,18 @@ export function FunctionSelectionStep({
           enabled_functions: [],
         });
       } else {
-        const enabledFunctions = functions.filter((func) => selectedFunctionNames[func.name]);
+        const enabledFunctions = functions.filter(
+          (func) => selectedFunctionNames[func.name],
+        );
         const enabledFunctionsNames = enabledFunctions.map((func) => func.name);
-  
+
         await updateAppConfigMutation({
           app_name: appName,
           enabled: true,
           all_functions_enabled: false,
           enabled_functions: enabledFunctionsNames,
         });
-      }      
+      }
 
       toast.success("Updated enabled functions successfully");
       onNext();
@@ -128,18 +132,18 @@ export function FunctionSelectionStep({
                 </Badge>
               </div>
               <EnhancedDataTable
-              columns={columns}
-              data={functions}
-              searchBarProps={{ placeholder: "Search functions..." }}
-              rowSelectionProps={{
+                columns={columns}
+                data={functions}
+                searchBarProps={{ placeholder: "Search functions..." }}
+                rowSelectionProps={{
                   rowSelection: selectedFunctionNames,
                   onRowSelectionChange: setSelectedFunctionNames,
                   getRowId: (row) => row.name,
-              }}
-              paginationOptions={{
+                }}
+                paginationOptions={{
                   initialPageIndex: 0,
                   initialPageSize: 15,
-              }}
+                }}
               />
             </div>
           )}
@@ -151,7 +155,11 @@ export function FunctionSelectionStep({
       )}
 
       <DialogFooter>
-        <Button type="button" onClick={handleNext} disabled={isUpdatingAppConfig}>
+        <Button
+          type="button"
+          onClick={handleNext}
+          disabled={isUpdatingAppConfig}
+        >
           {isUpdatingAppConfig ? "Confirming..." : "Confirm"}
         </Button>
       </DialogFooter>
