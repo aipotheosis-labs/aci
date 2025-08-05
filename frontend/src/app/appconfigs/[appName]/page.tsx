@@ -244,21 +244,6 @@ export default function AppConfigDetailPage() {
    */
   const functionsColumns = useAppFunctionsColumns();
 
-  const populateSelectedFunctionNames = () => {
-    const initialSelection: RowSelectionState = {};
-    if (appConfig?.all_functions_enabled) {
-      setIsAllFunctionsEnabled(true);
-    } else if (appConfig?.enabled_functions) {
-      setIsAllFunctionsEnabled(false);
-      appConfig.enabled_functions.forEach((func: string) => {
-        if (func) {
-          initialSelection[func] = true;
-        }
-      });
-    }
-    setSelectedFunctionNames(initialSelection);
-  };
-
   const handleSaveFunction = useCallback(async () => {
     try {
       if (isAllFunctionsEnabled) {
@@ -284,15 +269,33 @@ export default function AppConfigDetailPage() {
     } catch (error) {
       console.error("Failed to update app config:", error);
     }
-  }, [appName, isAllFunctionsEnabled, selectedFunctionNames, app]);
+  }, [appName, isAllFunctionsEnabled, selectedFunctionNames, app, updateAppConfigMutation]);
 
+
+  const populateSelectedFunctionNames = () => {
+    const initialSelection: RowSelectionState = {};
+    if (appConfig?.all_functions_enabled) {
+      setIsAllFunctionsEnabled(true);
+    } else if (appConfig?.enabled_functions) {
+      setIsAllFunctionsEnabled(false);
+      appConfig.enabled_functions.forEach((func: string) => {
+        if (func) {
+          initialSelection[func] = true;
+        }
+      });
+    }
+    setSelectedFunctionNames(initialSelection);
+  };
+  
+  // populate selected function names when the page is loaded
   useEffect(() => {
     populateSelectedFunctionNames();
   }, [appConfig]);
 
-  const handleResetFunction = useCallback(async () => {
+  // reset function selection to original state before any changes are made
+  const handleResetFunction = () => {
     populateSelectedFunctionNames();
-  }, [appConfig]);
+  };
 
   return (
     <div className="p-6">
