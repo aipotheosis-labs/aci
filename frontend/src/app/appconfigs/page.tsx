@@ -44,7 +44,11 @@ export default function AppConfigPage() {
   const enabledFunctionsCountMap = useMemo(() => {
     return appConfigs.reduce(
       (countMap, appConfig) => {
-        countMap[appConfig.app_name] = appConfig.enabled_functions?.length ?? 0;
+        if (appConfig.all_functions_enabled) {
+          countMap[appConfig.app_name] = appsMap[appConfig.app_name]?.functions?.length ?? 0;
+        } else {
+          countMap[appConfig.app_name] = appConfig.enabled_functions?.length ?? 0;
+        }
         return countMap;
       },
       {} as Record<string, number>,
