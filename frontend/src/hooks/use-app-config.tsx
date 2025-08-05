@@ -102,7 +102,13 @@ export const useUpdateAppConfig = () => {
 
   return useMutation<AppConfig, Error, UpdateAppConfigParams>({
     mutationFn: (params) =>
-      updateAppConfig(params.app_name, apiKey, params.enabled, params.all_functions_enabled, params.enabled_functions),
+      updateAppConfig(
+        params.app_name,
+        apiKey,
+        params.enabled,
+        params.all_functions_enabled,
+        params.enabled_functions,
+      ),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: appConfigKeys.all(activeProject.id),

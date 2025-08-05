@@ -33,7 +33,11 @@ import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhan
 import { formatToLocalTime } from "@/utils/time";
 import { ArrowUpDown } from "lucide-react";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
-import { createColumnHelper, RowSelectionState, type ColumnDef } from "@tanstack/react-table";
+import {
+  createColumnHelper,
+  RowSelectionState,
+  type ColumnDef,
+} from "@tanstack/react-table";
 import {
   useAppLinkedAccounts,
   useDeleteLinkedAccount,
@@ -55,13 +59,17 @@ export default function AppConfigDetailPage() {
 
   const { data: linkedAccounts = [] } = useAppLinkedAccounts(appName);
   const { data: appConfig } = useAppConfig(appName);
-  const [selectedFunctionNames, setSelectedFunctionNames] = useState<RowSelectionState>({});
+  const [selectedFunctionNames, setSelectedFunctionNames] =
+    useState<RowSelectionState>({});
   const [isAllFunctionsEnabled, setIsAllFunctionsEnabled] = useState(false);
 
   const { mutateAsync: deleteLinkedAccount } = useDeleteLinkedAccount();
   const { mutateAsync: updateLinkedAccount } = useUpdateLinkedAccount();
 
-  const { mutateAsync: updateAppConfigMutation, isPending: isUpdatingAppConfig } = useUpdateAppConfig();
+  const {
+    mutateAsync: updateAppConfigMutation,
+    isPending: isUpdatingAppConfig,
+  } = useUpdateAppConfig();
 
   const toggleAccountStatus = useCallback(
     async (accountId: string, newStatus: boolean) => {
@@ -231,15 +239,12 @@ export default function AppConfigDetailPage() {
     ] as ColumnDef<LinkedAccount>[];
   }, [toggleAccountStatus, handleDeleteLinkedAccount]);
 
-  
-
   /**
    * Functions table setup
    */
   const functionsColumns = useAppFunctionsColumns();
 
   const populateSelectedFunctionNames = () => {
-
     const initialSelection: RowSelectionState = {};
     if (appConfig?.all_functions_enabled) {
       setIsAllFunctionsEnabled(true);
@@ -263,8 +268,12 @@ export default function AppConfigDetailPage() {
           enabled_functions: [],
         });
       } else {
-        const enabledFunctions = app?.functions.filter((func: AppFunction) => selectedFunctionNames[func.name]);
-        const enabledFunctionsNames = enabledFunctions?.map((func: AppFunction) => func.name);
+        const enabledFunctions = app?.functions.filter(
+          (func: AppFunction) => selectedFunctionNames[func.name],
+        );
+        const enabledFunctionsNames = enabledFunctions?.map(
+          (func: AppFunction) => func.name,
+        );
         await updateAppConfigMutation({
           app_name: appName,
           all_functions_enabled: false,
@@ -402,13 +411,13 @@ export default function AppConfigDetailPage() {
             />
           )}
           <div className="flex justify-end gap-2 mt-4">
-          <Button
+            <Button
               variant="outline"
               size="sm"
               onClick={() => handleResetFunction()}
               disabled={isUpdatingAppConfig}
               // className="me-1"
-              >
+            >
               Reset
             </Button>
 
@@ -417,13 +426,11 @@ export default function AppConfigDetailPage() {
               size="sm"
               onClick={() => handleSaveFunction()}
               disabled={isUpdatingAppConfig}
-              >
+            >
               {isUpdatingAppConfig ? "Saving..." : "Save"}
             </Button>
           </div>
         </TabsContent>
-
-        
 
         {/* <TabsContent value="logs">
           <div className="text-muted-foreground">Logs content coming soon...</div>
