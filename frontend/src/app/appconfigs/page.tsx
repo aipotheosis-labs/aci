@@ -15,6 +15,7 @@ export default function AppConfigPage() {
   const { data: apps = [] } = useApps();
   const { data: linkedAccounts = [], isPending: isLinkedAccountsPending } =
     useLinkedAccounts();
+
   const isLoading = isConfigsPending || isLinkedAccountsPending;
 
   const appsMap = useMemo(
@@ -39,8 +40,20 @@ export default function AppConfigPage() {
       {} as Record<string, number>,
     );
   }, [linkedAccounts]);
+
+  const enabledFunctionsCountMap = useMemo(() => {
+    return appConfigs.reduce(
+      (countMap, appConfig) => {
+        countMap[appConfig.app_name] = appConfig.enabled_functions?.length ?? 0;
+        return countMap;
+      },
+      {} as Record<string, number>,
+    );
+  }, [appConfigs]);
+
   const appConfigsColumns = useAppConfigsTableColumns({
     linkedAccountsCountMap,
+    enabledFunctionsCountMap,
     appsMap,
   });
 
