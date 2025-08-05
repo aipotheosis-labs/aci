@@ -43,6 +43,8 @@ import { useApp } from "@/hooks/use-app";
 import { useAppConfig, useUpdateAppConfig } from "@/hooks/use-app-config";
 import { useAppFunctionsColumns } from "@/components/apps/useAppFunctionsColumns";
 import { AppFunction } from "@/lib/types/appfunction";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 const columnHelper = createColumnHelper<LinkedAccount>();
 
@@ -54,6 +56,7 @@ export default function AppConfigDetailPage() {
   const { data: linkedAccounts = [] } = useAppLinkedAccounts(appName);
   const { data: appConfig } = useAppConfig(appName);
   const [selectedFunctionNames, setSelectedFunctionNames] = useState<RowSelectionState>({});
+  const [isAllFunctionsEnabled, setIsAllFunctionsEnabled] = useState(false);
 
   const { mutateAsync: deleteLinkedAccount } = useDeleteLinkedAccount();
   const { mutateAsync: updateLinkedAccount } = useUpdateLinkedAccount();
@@ -236,14 +239,12 @@ export default function AppConfigDetailPage() {
   const functionsColumns = useAppFunctionsColumns();
 
   const populateSelectedFunctionNames = () => {
+
     const initialSelection: RowSelectionState = {};
     if (appConfig?.all_functions_enabled) {
-      app?.functions.forEach((func: AppFunction) => {
-        if (func.name) {
-          initialSelection[func.name] = true;
-        }
-      });
+      setIsAllFunctionsEnabled(true);
     } else if (appConfig?.enabled_functions) {
+      setIsAllFunctionsEnabled(false);
       appConfig.enabled_functions.forEach((func: string) => {
         if (func) {
           initialSelection[func] = true;
@@ -255,19 +256,27 @@ export default function AppConfigDetailPage() {
 
   const handleSaveFunction = useCallback(async () => {
     try {
-      const enabledFunctions = app?.functions.filter((func: AppFunction) => selectedFunctionNames[func.name]);
-      const enabledFunctionsNames = enabledFunctions?.map((func: AppFunction) => func.name);
-      await updateAppConfigMutation({
-        app_name: appName,
-        enabled: true,
-        all_functions_enabled: false,
-        enabled_functions: enabledFunctionsNames,
-      });
+      console.log("enable all functions", isAllFunctionsEnabled);
+      if (isAllFunctionsEnabled) {
+        await updateAppConfigMutation({
+          app_name: appName,
+          all_functions_enabled: true,
+          enabled_functions: [],
+        });
+      } else {
+        const enabledFunctions = app?.functions.filter((func: AppFunction) => selectedFunctionNames[func.name]);
+        const enabledFunctionsNames = enabledFunctions?.map((func: AppFunction) => func.name);
+        await updateAppConfigMutation({
+          app_name: appName,
+          all_functions_enabled: false,
+          enabled_functions: enabledFunctionsNames,
+        });
+      }
       toast.success("Functions updated successfully");
     } catch (error) {
       console.error("Failed to update app config:", error);
     }
-  }, [appName, selectedFunctionNames]);
+  }, [appName, isAllFunctionsEnabled, selectedFunctionNames, app]);
 
   useEffect(() => {
     populateSelectedFunctionNames();
@@ -334,7 +343,7 @@ export default function AppConfigDetailPage() {
             </div>
           </TabsTrigger>
           <TabsTrigger value="functions">
-            Functions
+            Function Selections
             <div className="ml-2">
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -368,21 +377,31 @@ export default function AppConfigDetailPage() {
         </TabsContent>
 
         <TabsContent value="functions">
-          <EnhancedDataTable
-            columns={functionsColumns}
-            data={app?.functions ?? []}
-            searchBarProps={{ placeholder: "Search functions..." }}
-            rowSelectionProps={{
-              rowSelection: selectedFunctionNames,
-              onRowSelectionChange: setSelectedFunctionNames,
-              getRowId: (row) => row.name,
-            }}
-            paginationOptions={{
-              initialPageIndex: 0,
-              initialPageSize: 15,
-            }}
-          />
-          
+          <div className="flex items-center gap-2 m-2">
+            <Switch
+              checked={isAllFunctionsEnabled}
+              onCheckedChange={setIsAllFunctionsEnabled}
+            />
+            <Label className="text-sm font-medium">
+              Enable All Available Functions
+            </Label>
+          </div>
+          {!isAllFunctionsEnabled && (
+            <EnhancedDataTable
+              columns={functionsColumns}
+              data={app?.functions ?? []}
+              searchBarProps={{ placeholder: "Search functions..." }}
+              rowSelectionProps={{
+                rowSelection: selectedFunctionNames,
+                onRowSelectionChange: setSelectedFunctionNames,
+                getRowId: (row) => row.name,
+              }}
+              paginationOptions={{
+                initialPageIndex: 0,
+                initialPageSize: 15,
+              }}
+            />
+          )}
           <div className="flex justify-end gap-2 mt-4">
           <Button
               variant="outline"
