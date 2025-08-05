@@ -8,6 +8,7 @@ from aci.cli.commands import (
     delete_app,
     fuzzy_test_function_execution,
     get_app,
+    mcp,
     rename_app,
     update_agent,
     upsert_app,
@@ -34,6 +35,7 @@ cli.add_command(upsert_functions.upsert_functions)
 cli.add_command(create_random_api_key.create_random_api_key)
 cli.add_command(fuzzy_test_function_execution.fuzzy_test_function_execution)
 cli.add_command(billing.populate_subscription_plans)
+cli.add_command(mcp.generate_functions_file_from_mcp_server)
 
 if __name__ == "__main__":
     cli()
