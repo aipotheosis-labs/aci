@@ -270,7 +270,15 @@ class FastAPIAuth:
         include_orgs: bool = False,
         role: str | None = None,
     ):
-        return self.auth.fetch_users_in_org(org_id, page_size, page_number, include_orgs, role)
+        # Mock response for local development
+        from propelauth_py.api import UsersPagedResponse
+        return UsersPagedResponse(
+            users=[],
+            total_users=0,
+            current_page=page_number,
+            page_size=page_size,
+            has_more_results=False
+        )
 
     def create_user(
         self,

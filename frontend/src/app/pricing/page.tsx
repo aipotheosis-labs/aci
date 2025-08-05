@@ -93,7 +93,7 @@ export default function PricingPage() {
 
   useEffect(() => {
     if (subscription && subscription.plan !== "free") {
-      router.replace("/account");
+      router.replace("/settings");
     }
   }, [subscription, router]);
 
