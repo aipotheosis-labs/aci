@@ -10,6 +10,11 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useAppFunctionsColumns } from "../useAppFunctionsColumns";
 import { AppFunction } from "@/lib/types/appfunction";
+import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { BsAsterisk } from "react-icons/bs";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 // Form schema for agent selection
 export const agentSelectFormSchema = z.object({
@@ -33,13 +38,17 @@ export function FunctionSelectionStep({
     {},
   );
   const [functions, setFunctions] = useState<AppFunction[]>([]);
+  const [isAllFunctionsEnabled, setIsAllFunctionsEnabled] = useState(false);
+  
+  const { app } = useApp(appName);
+  const { mutateAsync: updateAppConfigMutation, isPending: isUpdatingAppConfig } = useUpdateAppConfig();
 
   // Load available functions from the app
-  const { app } = useApp(appName);
   useEffect(() => {
     if (app) {
       setFunctions(app.functions);
     }
+    setIsAllFunctionsEnabled(true);
   }, [app]);
 
   // By default select all available functions
@@ -58,27 +67,32 @@ export function FunctionSelectionStep({
   // construct the functions table
   const columns = useAppFunctionsColumns();
 
-  // Update the app config with the selected functions
-  const { mutateAsync: updateAppConfigMutation, isPending: isUpdatingAppConfig } =
-    useUpdateAppConfig();
-
   // Handle when user click confirm button
   const handleNext = async () => {
     if (Object.keys(selectedFunctionNames).length === 0) {
       onNext();
       return;
     }
+
     try {
-
-      const enabledFunctions = functions.filter((func) => selectedFunctionNames[func.name]);
-      const enabledFunctionsNames = enabledFunctions.map((func) => func.name);
-
-      await updateAppConfigMutation({
-        app_name: appName,
-        enabled: true,
-        all_functions_enabled: false,
-        enabled_functions: enabledFunctionsNames,
-      });
+      if (isAllFunctionsEnabled) {
+        await updateAppConfigMutation({
+          app_name: appName,
+          enabled: true,
+          all_functions_enabled: true,
+          enabled_functions: [],
+        });
+      } else {
+        const enabledFunctions = functions.filter((func) => selectedFunctionNames[func.name]);
+        const enabledFunctionsNames = enabledFunctions.map((func) => func.name);
+  
+        await updateAppConfigMutation({
+          app_name: appName,
+          enabled: true,
+          all_functions_enabled: false,
+          enabled_functions: enabledFunctionsNames,
+        });
+      }      
 
       toast.success("Updated enabled functions successfully");
       onNext();
@@ -93,30 +107,42 @@ export function FunctionSelectionStep({
       {functions.length > 0 ? (
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-medium">Selected Functions</h3>
-            <Badge
-              variant="secondary"
-              className="flex items-center gap-1 px-2 py-1 text-xs"
-            >
-              Selected {Object.keys(selectedFunctionNames).length} Functions
-            </Badge>
+            <Switch
+              checked={isAllFunctionsEnabled}
+              onCheckedChange={setIsAllFunctionsEnabled}
+            />
+            <Label className="text-sm font-medium">
+              Enable All Available Functions
+            </Label>
           </div>
-          <div className="m-4">
-        <EnhancedDataTable
-          columns={columns}
-          data={functions}
-          searchBarProps={{ placeholder: "Search functions..." }}
-          rowSelectionProps={{
-            rowSelection: selectedFunctionNames,
-            onRowSelectionChange: setSelectedFunctionNames,
-            getRowId: (row) => row.name,
-          }}
-          paginationOptions={{
-            initialPageIndex: 0,
-            initialPageSize: 15,
-          }}
-        />
-      </div>
+
+          {!isAllFunctionsEnabled && (
+            <div className="mt-4">
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-medium">Selected Functions</h3>
+                <Badge
+                  variant="secondary"
+                  className="flex items-center gap-1 px-2 py-1 text-xs"
+                >
+                  Selected {Object.keys(selectedFunctionNames).length} Functions
+                </Badge>
+              </div>
+              <EnhancedDataTable
+              columns={columns}
+              data={functions}
+              searchBarProps={{ placeholder: "Search functions..." }}
+              rowSelectionProps={{
+                  rowSelection: selectedFunctionNames,
+                  onRowSelectionChange: setSelectedFunctionNames,
+                  getRowId: (row) => row.name,
+              }}
+              paginationOptions={{
+                  initialPageIndex: 0,
+                  initialPageSize: 15,
+              }}
+              />
+            </div>
+          )}
         </div>
       ) : (
         <div className="flex items-center justify-center p-8 border rounded-md">
