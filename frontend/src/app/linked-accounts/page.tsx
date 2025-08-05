@@ -136,7 +136,7 @@ export default function LinkedAccountsPage() {
           return (
             <div className="flex items-center gap-2">
               {info.row.original.logo && (
-                <div className="relative h-6 w-6 flex-shrink-0 overflow-hidden">
+                <div className="relative h-6 w-6 shrink-0 overflow-hidden">
                   <Image
                     src={info.row.original.logo}
                     alt={`${appName} logo`}
@@ -171,7 +171,7 @@ export default function LinkedAccountsPage() {
         cell: (info) => {
           const [ownerId] = info.getValue();
           return (
-            <div className="flex-shrink-0">
+            <div className="shrink-0">
               <IdDisplay id={ownerId} />
             </div>
           );
@@ -265,7 +265,7 @@ export default function LinkedAccountsPage() {
           return (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-red-600">
+                <Button variant="ghost" size="sm" className="text-destructive">
                   <GoTrash />
                 </Button>
               </AlertDialogTrigger>
@@ -347,7 +347,7 @@ export default function LinkedAccountsPage() {
               <div className="flex items-center justify-center p-8">
                 <div className="flex flex-col items-center space-y-4">
                   <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
-                  <p className="text-sm text-gray-500">Loading...</p>
+                  <p className="text-sm text-muted-foreground">Loading...</p>
                 </div>
               </div>
             ) : tableData.length === 0 ? (

@@ -32,7 +32,7 @@ export function AppCardComingSoon({
       <CardHeader className="space-y-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 min-w-0 flex-1 mr-4">
-            <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+            <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg">
               <Image
                 src={logo}
                 alt={`${title} logo`}
@@ -40,9 +40,9 @@ export function AppCardComingSoon({
                 className="object-contain "
               />
             </div>
-            <CardTitle className="truncate text-gray-700">{title}</CardTitle>
+            <CardTitle className="truncate text-foreground">{title}</CardTitle>
           </div>
-          <div className="flex-shrink-0 w-24">
+          <div className="shrink-0 w-24">
             <IdDisplay id={title} />
           </div>
         </div>
@@ -61,7 +61,7 @@ export function AppCardComingSoon({
       </CardHeader>
       <CardContent className="mt-auto">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-md bg-gray-200 px-3 py-1 text-sm font-medium text-gray-600 border border-gray-300">
+          <span className="rounded-md bg-muted px-3 py-1 text-sm font-medium text-muted-foreground border border-border">
             Coming Soon
           </span>
         </div>

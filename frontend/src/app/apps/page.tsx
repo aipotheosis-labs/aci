@@ -22,12 +22,12 @@ export default function AppStorePage() {
       <div className="m-4">
         {isPending ? (
           <div className="flex justify-center items-center py-16">
-            <Loader2 className="animate-spin h-10 w-10 text-gray-500" />
+            <Loader2 className="animate-spin h-10 w-10 text-muted-foreground" />
             Loading apps...
           </div>
         ) : isError ? (
           <div className="flex justify-center items-center py-16">
-            <AlertCircle className="h-10 w-10 text-red-500" />
+            <AlertCircle className="h-10 w-10 text-destructive" />
             Failed to load apps. Please try to refresh the page.
           </div>
         ) : (

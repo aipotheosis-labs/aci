@@ -1,8 +1,11 @@
 import { BetaAlert } from "@/components/playground/beta-alert";
 import * as motion from "motion/react-client";
 import Image from "next/image";
+import { useTheme } from "next-themes";
 
 export const Overview = () => {
+  const { resolvedTheme } = useTheme();
+
   return (
     <motion.div
       key="overview"
@@ -18,7 +21,7 @@ export const Overview = () => {
         </div>
         <p className="flex flex-row justify-center gap-4 items-center mb-36">
           <Image
-            src="/aci-dev-full-logo.svg"
+            src={`/aci-dev-full-logo-${resolvedTheme ?? "light"}-bg.svg`}
             alt="ACI.dev Logo"
             width={241}
             height={48}

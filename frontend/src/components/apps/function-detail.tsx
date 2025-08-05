@@ -2,6 +2,7 @@
 import ReactJsonView from "@microlink/react-json-view";
 import * as React from "react";
 import { useState, useMemo } from "react";
+import { useTheme } from "next-themes";
 import {
   Dialog,
   DialogContent,
@@ -158,6 +159,7 @@ function formatFunctionDefinition(
 export function FunctionDetail({ func }: FunctionDetailProps) {
   const [selectedFormat, setSelectedFormat] =
     useState<FunctionDefinitionFormat>(FunctionDefinitionFormat.OPENAI);
+  const { resolvedTheme } = useTheme();
 
   const formattedDefinition = useMemo(
     () => formatFunctionDefinition(func, selectedFormat),
@@ -221,7 +223,17 @@ export function FunctionDetail({ func }: FunctionDetailProps) {
             </Select>
           </div>
           <ScrollArea className="h-96 rounded-md border p-4">
-            <ReactJsonView name={false} src={formattedDefinition} />
+            <ReactJsonView
+              name={false}
+              src={formattedDefinition}
+              theme={resolvedTheme === "dark" ? "chalk" : "rjv-default"}
+              style={{
+                backgroundColor: "transparent",
+              }}
+              displayDataTypes={false}
+              displayObjectSize={false}
+              enableClipboard={true}
+            />
           </ScrollArea>
         </div>
         <DialogFooter></DialogFooter>

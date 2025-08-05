@@ -25,16 +25,16 @@ export function CodeBlock({ code }: CodeBlockProps) {
   };
 
   return (
-    <div className="bg-gray-900 text-gray-300 p-3 rounded-md relative group overflow-auto">
+    <div className="bg-slate-900 dark:bg-slate-950 text-slate-300 dark:text-slate-400 p-3 rounded-md relative group overflow-auto">
       <button
         onClick={copyToClipboard}
-        className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition-opacity bg-gray-800 hover:bg-gray-700 rounded-md"
+        className="absolute top-2 right-2 p-2 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 dark:bg-slate-900 hover:bg-slate-700 dark:hover:bg-slate-800 rounded-md"
         aria-label="Copy code"
       >
         {copied ? (
           <BsCheckLg className="h-4 w-4 text-green-500" />
         ) : (
-          <BiCopy className="h-4 w-4 text-gray-300" />
+          <BiCopy className="h-4 w-4 text-slate-300 dark:text-slate-400" />
         )}
       </button>
       <pre className="font-mono text-sm whitespace-pre pl-2 pt-2 pb-2 pr-12 overflow-x-auto">

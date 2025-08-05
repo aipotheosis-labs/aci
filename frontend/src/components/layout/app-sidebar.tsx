@@ -27,12 +27,17 @@ import { RiSettings3Line, RiLinkUnlinkM } from "react-icons/ri";
 import { AiOutlineRobot } from "react-icons/ai";
 import { HiOutlineChatBubbleBottomCenterText } from "react-icons/hi2";
 import { RiFileList3Line } from "react-icons/ri";
+import { useQuota } from "@/hooks/use-quota";
+import { Badge } from "@/components/ui/badge";
+import { UpgradeButton } from "./upgrade-button";
 
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ThemeToggle } from "../theme-toggle";
+import { useTheme } from "next-themes";
 
 const showLogDashboard =
   process.env.NEXT_PUBLIC_FEATURE_LOG_DASHBOARD === "true";
@@ -91,6 +96,8 @@ export function AppSidebar() {
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
   const pathname = usePathname();
+  const { data: quotaData, isPending, error } = useQuota();
+  const { resolvedTheme } = useTheme();
 
   return (
     <Sidebar variant="inset" collapsible="icon" className="flex flex-col">
@@ -104,7 +111,7 @@ export function AppSidebar() {
           {!isCollapsed && (
             <div className="h-9 w-auto relative flex items-center justify-center">
               <Image
-                src="/aci-dev-full-logo.svg"
+                src={`/aci-dev-full-logo-${resolvedTheme ?? "light"}-bg.svg`}
                 alt="ACI Dev Logo"
                 width={150}
                 height={30}
@@ -114,6 +121,7 @@ export function AppSidebar() {
             </div>
           )}
           <SidebarTrigger />
+          {!isCollapsed && <ThemeToggle />}
         </div>
         <Separator />
       </SidebarHeader>
@@ -141,7 +149,7 @@ export function AppSidebar() {
                           >
                             <item.icon
                               className={cn(
-                                "h-5 w-5 flex-shrink-0",
+                                "h-5 w-5 shrink-0",
                                 isActive && "text-primary",
                               )}
                             />
@@ -163,6 +171,22 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
+      {!isPending && !error && !isCollapsed && (
+        <div className="px-2 pb-2">
+          <div className="flex flex-col items-center gap-2">
+            <Badge
+              variant="outline"
+              className="px-3 py-1.5 text-sm w-full text-center"
+            >
+              {quotaData.plan.name.charAt(0).toUpperCase() +
+                quotaData.plan.name.slice(1)}{" "}
+              Plan
+            </Badge>
+            <UpgradeButton size="sm" className="w-full" />
+          </div>
+        </div>
+      )}
+
       <SidebarFooter>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -183,7 +207,7 @@ export function AppSidebar() {
                       return (
                         <IconComponent
                           className={cn(
-                            "h-5 w-5 flex-shrink-0",
+                            "h-5 w-5 shrink-0",
                             pathname === settingsItem.url && "text-primary",
                           )}
                         />

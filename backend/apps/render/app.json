@@ -1,0 +1,22 @@
+{
+  "name": "RENDER",
+  "display_name": "Render",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/render.jpg",
+  "provider": "Render Services, Inc.",
+  "version": "1.0.0",
+  "description": "Render is a cloud hosting platform that provides auto-scaling web services, static sites, and databases with continuous deployment from Git.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Dev Tools",
+    "Cloud Infrastructure"
+  ],
+  "visibility": "public",
+  "active": true
+}

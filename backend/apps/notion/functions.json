@@ -425,5 +425,224 @@
             "visible": [],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "NOTION__CREATE_PAGE",
+        "description": "Creates a new page that is a child of an existing page or database. If the parent is a database, properties must match the parent database's schema.",
+        "tags": ["notion", "pages"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/pages",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": ["Notion-Version"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Page creation parameters",
+                    "properties": {
+                        "parent": {
+                            "type": "object",
+                            "description": "The parent page or database where the new page will be created. Use EITHER database_id OR page_id, not both.",
+                            "properties": {
+                                "database_id": {
+                                    "type": "string",
+                                    "description": "The ID of the database this page belongs to (for database entries)"
+                                },
+                                "page_id": {
+                                    "type": "string",
+                                    "description": "The ID of the page this page belongs to (for child pages)"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["database_id", "page_id"],
+                            "additionalProperties": false,
+                            "oneOf": [
+                                {"required": ["database_id"]},
+                                {"required": ["page_id"]}
+                            ]
+                        },
+                        "properties": {
+                            "type": "object",
+                            "description": "Page properties. For child pages, typically only 'title' is needed. For database entries, properties must match the database schema. Title format: {'title': [{'type': 'text', 'text': {'content': 'Page Title'}}]}",
+                            "properties": {
+                                "title": {
+                                    "type": "array",
+                                    "description": "Page title as rich text array. Format: [{'type': 'text', 'text': {'content': 'Title Text'}}]",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "type": {
+                                                "type": "string",
+                                                "enum": ["text"],
+                                                "default": "text"
+                                            },
+                                            "text": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "content": {
+                                                        "type": "string",
+                                                        "description": "The text content"
+                                                    }
+                                                },
+                                                "required": ["content"],
+                                                "additionalProperties": false
+                                            }
+                                        },
+                                        "required": ["type", "text"],
+                                        "additionalProperties": false
+                                    }
+                                }
+                            },
+                            "required": ["title"],
+                            "visible": ["title"],
+                            "additionalProperties": true
+                        },
+                        "children": {
+                            "type": "array",
+                            "description": "Page content as an array of block objects. Common types: paragraph, heading_1, heading_2, heading_3, bulleted_list_item, numbered_list_item",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "object": {
+                                        "type": "string",
+                                        "enum": ["block"],
+                                        "default": "block"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": ["paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item", "numbered_list_item", "to_do", "toggle"],
+                                        "description": "Type of block"
+                                    },
+                                    "paragraph": {
+                                        "type": "object",
+                                        "description": "Paragraph block content. Use when type is 'paragraph'",
+                                        "properties": {
+                                            "rich_text": {
+                                                "type": "array",
+                                                "description": "Rich text content array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "type": {
+                                                            "type": "string",
+                                                            "enum": ["text"],
+                                                            "default": "text"
+                                                        },
+                                                        "text": {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "content": {
+                                                                    "type": "string",
+                                                                    "description": "The text content"
+                                                                }
+                                                            },
+                                                            "required": ["content"],
+                                                            "additionalProperties": false
+                                                        }
+                                                    },
+                                                    "required": ["type", "text"],
+                                                    "additionalProperties": false
+                                                }
+                                            }
+                                        },
+                                        "required": ["rich_text"],
+                                        "additionalProperties": false
+                                    }
+                                },
+                                "required": ["object", "type"],
+                                "additionalProperties": true
+                            }
+                        },
+                        "icon": {
+                            "type": "object",
+                            "description": "Page icon (emoji or external file)",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "description": "Type of icon ('emoji' or 'external')",
+                                    "enum": ["emoji", "external"]
+                                },
+                                "emoji": {
+                                    "type": "string",
+                                    "description": "Emoji character when type is 'emoji'"
+                                },
+                                "external": {
+                                    "type": "object",
+                                    "description": "External file details when type is 'external'",
+                                    "properties": {
+                                        "url": {
+                                            "type": "string",
+                                            "description": "URL of the external file"
+                                        }
+                                    },
+                                    "required": ["url"],
+                                    "visible": ["url"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": ["type"],
+                            "visible": ["type", "emoji", "external"],
+                            "additionalProperties": false,
+                            "oneOf": [
+                                {"required": ["type", "emoji"]},
+                                {"required": ["type", "external"]}
+                            ]
+                        },
+                        "cover": {
+                            "type": "object",
+                            "description": "Page cover image",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["external"],
+                                    "default": "external"
+                                },
+                                "external": {
+                                    "type": "object",
+                                    "description": "External file details",
+                                    "properties": {
+                                        "url": {
+                                            "type": "string",
+                                            "description": "URL of the external file"
+                                        }
+                                    },
+                                    "required": ["url"],
+                                    "visible": ["url"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": ["type", "external"],
+                            "visible": ["type", "external"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["parent", "properties"],
+                    "visible": ["parent", "properties", "children", "icon", "cover"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
     }
 ]

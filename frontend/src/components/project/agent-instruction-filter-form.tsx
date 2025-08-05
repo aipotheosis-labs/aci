@@ -229,7 +229,7 @@ export function AgentInstructionFilterForm({
                         value={config.app_name}
                         className="border rounded-md mb-2 overflow-hidden"
                       >
-                        <AccordionTrigger className="px-4 hover:bg-gray-50 py-3 rounded-md">
+                        <AccordionTrigger className="px-4 hover:bg-muted py-3 rounded-md">
                           <div className="flex items-center gap-2">
                             <span className="font-medium">
                               {config.app_name}
@@ -242,7 +242,7 @@ export function AgentInstructionFilterForm({
                               functions.map((func) => (
                                 <div
                                   key={func.name}
-                                  className=" bg-gray-50 p-3 rounded-md"
+                                  className=" bg-muted p-3 rounded-md"
                                 >
                                   <div>
                                     <div className="font-medium text-sm overflow-hidden p-2 text-ellipsis">
@@ -262,13 +262,12 @@ export function AgentInstructionFilterForm({
                                           )
                                         }
                                         placeholder="Enter custom instruction..."
-                                        className="flex-1 bg-white w-full py-1.5 overflow-y-auto resize-none leading-normal"
+                                        className="flex-1 bg-background w-full py-1.5 overflow-y-auto resize-none leading-normal"
                                       />
                                       <div className="flex flex-col gap-1">
                                         <Button
-                                          variant="outline"
+                                          variant="default"
                                           size="sm"
-                                          className="bg-[#1CD1AF] hover:bg-[#19bd9e] text-white border-none w-20"
                                           onClick={() =>
                                             handleSaveFunction(
                                               config.app_name,
@@ -280,9 +279,8 @@ export function AgentInstructionFilterForm({
                                           Save
                                         </Button>
                                         <Button
-                                          variant="outline"
+                                          variant="destructive"
                                           size="sm"
-                                          className="bg-red-500 hover:bg-red-600 text-white border-none w-20"
                                           onClick={() =>
                                             handleDeleteFunction(
                                               config.app_name,
@@ -299,7 +297,7 @@ export function AgentInstructionFilterForm({
                                 </div>
                               ))
                             ) : (
-                              <div className="flex flex-col items-center justify-center py-6 text-gray-400">
+                              <div className="flex flex-col items-center justify-center py-6 text-muted-foreground">
                                 <p className="text-sm">
                                   No functions available for this app
                                 </p>
@@ -315,10 +313,10 @@ export function AgentInstructionFilterForm({
                   })
                 ) : (
                   <div className="border rounded-md p-8 text-center">
-                    <p className="text-gray-500">
+                    <p className="text-muted-foreground">
                       No allowed app configurations available
                     </p>
-                    <p className="text-sm text-gray-400 mt-2">
+                    <p className="text-sm text-muted-foreground mt-2">
                       Please enable apps in the Edit Allowed Apps section first
                     </p>
                   </div>
@@ -330,10 +328,7 @@ export function AgentInstructionFilterForm({
               <Button variant="outline" onClick={() => setOpen(false)}>
                 Cancel
               </Button>
-              <Button
-                onClick={handleSave}
-                className="bg-[#1CD1AF] hover:bg-[#19bd9e] text-white"
-              >
+              <Button onClick={handleSave} disabled={isUpdatingAgent}>
                 Save All Configurations
               </Button>
             </DialogFooter>

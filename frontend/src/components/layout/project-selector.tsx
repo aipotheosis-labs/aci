@@ -43,17 +43,17 @@ export const ProjectSelector = () => {
             variant="ghost"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between h-9 px-2 text-sm font-medium hover:bg-gray-50 border border-gray-200 rounded-md"
+            className="w-full justify-between h-9 px-2 text-sm font-medium hover:bg-muted border border-border rounded-md"
           >
             <div className="flex items-center gap-2 truncate">
-              <FolderOpen className="h-3 w-3 text-gray-500 flex-shrink-0" />
+              <FolderOpen className="h-3 w-3 text-muted-foreground shrink-0" />
               {activeProject ? (
                 <span className="truncate">{activeProject.name}</span>
               ) : (
                 <Skeleton className="h-3 w-20" />
               )}
             </div>
-            <ChevronsUpDown className="h-3 w-3 opacity-50 flex-shrink-0" />
+            <ChevronsUpDown className="h-3 w-3 opacity-50 shrink-0" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-64 p-0" align="start">
@@ -73,8 +73,8 @@ export const ProjectSelector = () => {
                     className="flex justify-between items-center relative"
                   >
                     <div className="flex items-center gap-2 w-full">
-                      <FolderOpen className="h-4 w-4 text-gray-400" />
-                      <div className="flex-grow truncate">{project.name}</div>
+                      <FolderOpen className="h-4 w-4 text-muted-foreground" />
+                      <div className="grow truncate">{project.name}</div>
                       <Check
                         className={cn(
                           "h-4 w-4",

@@ -29,19 +29,14 @@ export const Header = () => {
             <div className="w-44">
               <OrgSelector />
             </div>
-            <span className="text-gray-400">/</span>
+            <span className="text-muted-foreground">/</span>
             <div className="w-44">
               <ProjectSelector />
             </div>
-            <span className="text-gray-400">/</span>
+            <span className="text-muted-foreground">/</span>
             <BreadcrumbLinks pathname={pathname} />
           </div>
         </div>
-
-        {/* <Input
-          placeholder="Search keyword, category, etc."
-          className="mx-2 w-80"
-        /> */}
 
         <div className="flex items-center gap-2">
           <a

@@ -37,7 +37,7 @@ export function AppCard({ app, isConfigured = false }: AppCardProps) {
                 <TooltipTrigger asChild>
                   <Badge
                     variant="secondary"
-                    className="bg-green-100 text-green-700 border-green-200 flex items-center gap-1"
+                    className="bg-secondary text-secondary-foreground border border-border flex items-center gap-1"
                   >
                     <CheckCircle className="h-3 w-3" />
                     Configured
@@ -52,9 +52,9 @@ export function AppCard({ app, isConfigured = false }: AppCardProps) {
         )}
 
         <CardHeader className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between min-w-0">
             <div className="flex items-center gap-3 min-w-0 flex-1 mr-4">
-              <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+              <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg">
                 <Image
                   src={app.logo}
                   alt={`${app.name} logo`}
@@ -64,7 +64,7 @@ export function AppCard({ app, isConfigured = false }: AppCardProps) {
               </div>
               <CardTitle className="truncate">{app.display_name}</CardTitle>
             </div>
-            <div className="flex-shrink-0 w-24">
+            <div className="shrink-0 w-24">
               <IdDisplay id={app.name} />
             </div>
           </div>
@@ -87,7 +87,7 @@ export function AppCard({ app, isConfigured = false }: AppCardProps) {
             {app.categories.map((category) => (
               <span
                 key={category}
-                className="rounded-md bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600 border border-gray-200"
+                className="rounded-md bg-muted px-3 py-1 text-sm font-medium text-muted-foreground border border-border"
               >
                 {category}
               </span>
@@ -97,7 +97,7 @@ export function AppCard({ app, isConfigured = false }: AppCardProps) {
             <div className="flex justify-end  items-end  flex-wrap gap-2  ">
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="text-sm bg-gray-100 px-2.5 py-1 font-medium text-gray-600 border rounded-full border-gray-200">
+                  <span className="text-sm bg-muted px-2.5 py-1 font-medium text-muted-foreground border rounded-full border-border">
                     {app.functions.length}
                   </span>
                 </TooltipTrigger>
@@ -109,7 +109,7 @@ export function AppCard({ app, isConfigured = false }: AppCardProps) {
               </Tooltip>
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="text-sm bg-blue-100 px-2.5 py-1 font-medium text-blue-600 border rounded-full border-blue-200">
+                  <span className="text-sm bg-primary/10 px-2.5 py-1 font-medium text-primary border rounded-full border-border">
                     {linkedAccounts.length}
                   </span>
                 </TooltipTrigger>

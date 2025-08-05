@@ -42,7 +42,7 @@ const AppPage = () => {
           {app && (
             <div className="flex flex-col gap-4">
               <div className="flex items-center gap-4">
-                <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg">
+                <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-lg">
                   <Image
                     src={app?.logo ?? ""}
                     alt={`${app?.display_name} logo`}
@@ -68,10 +68,7 @@ const AppPage = () => {
               supported_security_schemes={app.supported_security_schemes ?? {}}
               logo={app.logo}
             >
-              <Button
-                className="bg-primary text-white hover:bg-primary/90"
-                disabled={isAppConfigLoading || !!appConfig}
-              >
+              <Button disabled={isAppConfigLoading || !!appConfig}>
                 {isAppConfigLoading ? (
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />

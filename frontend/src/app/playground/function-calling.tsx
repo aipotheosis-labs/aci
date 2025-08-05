@@ -34,8 +34,8 @@ export function FunctionCalling({
   }
 
   return (
-    <div className="flex items-center space-x-2 border border-gray-200 rounded-md p-2">
-      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
+    <div className="flex items-center space-x-2 border border-border rounded-md p-2">
+      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-foreground"></div>
       <span>Function Calling: {toolName}</span>
     </div>
   );

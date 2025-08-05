@@ -176,8 +176,8 @@ const useTableColumns = (
           cell: (info) => {
             const success = info.getValue();
             const statusColor = success
-              ? `bg-green-100 text-green-800`
-              : `bg-red-100 text-red-800`;
+              ? `bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200`
+              : `bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200`;
 
             return (
               <div className="flex items-center">
@@ -398,8 +398,8 @@ const LogDetailSheet = ({
                       className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                         selectedLogEntry.function_execution
                           .function_execution_result_success
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
+                          ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200"
+                          : "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200"
                       }`}
                     >
                       {selectedLogEntry.function_execution
@@ -433,7 +433,7 @@ const LogDetailSheet = ({
               .function_execution_result_error && (
               <div>
                 <h3 className="text-sm font-medium mb-2">Error</h3>
-                <pre className="bg-red-50 p-4 rounded-lg overflow-auto text-sm text-red-800 whitespace-pre-wrap break-all">
+                <pre className="bg-red-50 dark:bg-red-950 p-4 rounded-lg overflow-auto text-sm text-red-800 dark:text-red-200 whitespace-pre-wrap break-all">
                   {
                     selectedLogEntry.function_execution
                       .function_execution_result_error
