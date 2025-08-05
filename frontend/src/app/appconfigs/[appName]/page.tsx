@@ -269,8 +269,13 @@ export default function AppConfigDetailPage() {
     } catch (error) {
       console.error("Failed to update app config:", error);
     }
-  }, [appName, isAllFunctionsEnabled, selectedFunctionNames, app, updateAppConfigMutation]);
-
+  }, [
+    appName,
+    isAllFunctionsEnabled,
+    selectedFunctionNames,
+    app,
+    updateAppConfigMutation,
+  ]);
 
   const populateSelectedFunctionNames = () => {
     const initialSelection: RowSelectionState = {};
@@ -286,7 +291,7 @@ export default function AppConfigDetailPage() {
     }
     setSelectedFunctionNames(initialSelection);
   };
-  
+
   // populate selected function names when the page is loaded
   useEffect(() => {
     populateSelectedFunctionNames();
