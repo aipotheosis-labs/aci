@@ -10,9 +10,6 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { useAppFunctionsColumns } from "../useAppFunctionsColumns";
 import { AppFunction } from "@/lib/types/appfunction";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { BsAsterisk } from "react-icons/bs";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
