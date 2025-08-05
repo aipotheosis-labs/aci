@@ -35,6 +35,7 @@ dependencies = [
     "stripe>=12.1.0",
     "e2b-code-interpreter>=1.5.0",
     "browser-use>=0.5.0",
+    "langchain-openai>=0.3.28",
 ]
 
 [dependency-groups]

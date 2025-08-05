@@ -186,7 +186,7 @@ export default function AppConfigDetailPage() {
           return (
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-red-600">
+                <Button variant="ghost" size="sm" className="text-destructive">
                   <GoTrash />
                 </Button>
               </AlertDialogTrigger>
@@ -293,11 +293,11 @@ export default function AppConfigDetailPage() {
         </TabsContent>
 
         {/* <TabsContent value="logs">
-          <div className="text-gray-500">Logs content coming soon...</div>
+          <div className="text-muted-foreground">Logs content coming soon...</div>
         </TabsContent>
 
         <TabsContent value="settings">
-          <div className="text-gray-500">Settings content coming soon...</div>
+          <div className="text-muted-foreground">Settings content coming soon...</div>
         </TabsContent> */}
       </Tabs>
     </div>

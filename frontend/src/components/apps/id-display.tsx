@@ -40,7 +40,7 @@ export function IdDisplay({ id, dim = true }: IdDisplayProps) {
           <TooltipTrigger asChild>
             <span
               className={`text-sm ${
-                dim ? "text-gray-500" : "text-gray-800"
+                dim ? "text-muted-foreground" : "text-foreground"
               } truncate min-w-0 cursor-default`}
             >
               {id}
@@ -57,7 +57,7 @@ export function IdDisplay({ id, dim = true }: IdDisplayProps) {
                 e.preventDefault();
                 copyToClipboard();
               }}
-              className="text-gray-500 hover:text-gray-700"
+              className="text-muted-foreground hover:text-foreground"
               aria-label="Copy app ID"
             >
               <BiCopy />

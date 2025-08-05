@@ -1,0 +1,1785 @@
+[
+  {
+    "name": "RENDER__LIST_WORKSPACES",
+    "description": "List all workspaces that you have access to in your Render account.",
+    "tags": ["workspaces", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/owners",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__GET_WORKSPACE",
+    "description": "Retrieve details of a specific workspace by its owner ID.",
+    "tags": ["workspaces", "get", "retrieve"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/owners/{ownerId}",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "ownerId": {
+              "type": "string",
+              "description": "The ID of the workspace/owner to retrieve."
+            }
+          },
+          "required": ["ownerId"],
+          "visible": ["ownerId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__LIST_WORKSPACE_MEMBERS",
+    "description": "Retrieves the list of users belonging to the workspace with the provided ID.",
+    "tags": ["workspaces", "members", "list", "users"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/owners/{ownerId}/members",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "ownerId": {
+              "type": "string",
+              "description": "The ID of the team/workspace to list members for."
+            }
+          },
+          "required": ["ownerId"],
+          "visible": ["ownerId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__LIST_SERVICES",
+    "description": "List all services in the current workspace. Returns a paginated list of services you have access to.",
+    "tags": ["services", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/services",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "query parameters",
+          "properties": {
+            "ownerId": {
+              "type": "string",
+              "description": "Filter services by owner/workspace ID."
+            },
+            "limit": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Number of services to return per page."
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination to get the next page of results."
+            }
+          },
+          "required": [],
+          "visible": ["ownerId", "limit"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__GET_SERVICE",
+    "description": "Retrieve details about a specific service by its ID.",
+    "tags": ["services", "get", "retrieve"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/services/{serviceId}",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service to retrieve details for."
+            }
+          },
+          "required": ["serviceId"],
+          "visible": ["serviceId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__LIST_ENV_VARS",
+    "description": "List all environment variables for a specific service.",
+    "tags": ["environment", "variables", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/services/{serviceId}/env-vars",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service to list environment variables for."
+            }
+          },
+          "required": ["serviceId"],
+          "visible": ["serviceId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__UPDATE_ENV_VARS",
+    "description": "Update multiple environment variables for a service. This replaces all environment variables.",
+    "tags": ["environment", "variables", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/v1/services/{serviceId}/env-vars",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service to update environment variables for."
+            }
+          },
+          "required": ["serviceId"],
+          "visible": ["serviceId"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "array",
+          "description": "Array of environment variables to set",
+          "items": {
+            "type": "object",
+            "properties": {
+              "key": {
+                "type": "string",
+                "description": "The environment variable name."
+              },
+              "value": {
+                "type": "string",
+                "description": "The environment variable value."
+              }
+            },
+            "required": ["key", "value"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__GET_ENV_VAR",
+    "description": "Retrieve a specific environment variable by key for a service.",
+    "tags": ["environment", "variables", "get", "retrieve"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/services/{serviceId}/env-vars/{key}",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service."
+            },
+            "key": {
+              "type": "string",
+              "description": "The environment variable key to retrieve."
+            }
+          },
+          "required": ["serviceId", "key"],
+          "visible": ["serviceId", "key"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__SET_ENV_VAR",
+    "description": "Add or update a single environment variable for a service.",
+    "tags": ["environment", "variables", "set", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/v1/services/{serviceId}/env-vars/{key}",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service."
+            },
+            "key": {
+              "type": "string",
+              "description": "The environment variable key to set."
+            }
+          },
+          "required": ["serviceId", "key"],
+          "visible": ["serviceId", "key"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Environment variable value",
+          "properties": {
+            "value": {
+              "type": "string",
+              "description": "The environment variable value."
+            }
+          },
+          "required": ["value"],
+          "visible": ["value"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__DELETE_ENV_VAR",
+    "description": "Delete a specific environment variable by key for a service.",
+    "tags": ["environment", "variables", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/v1/services/{serviceId}/env-vars/{key}",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service."
+            },
+            "key": {
+              "type": "string",
+              "description": "The environment variable key to delete."
+            }
+          },
+          "required": ["serviceId", "key"],
+          "visible": ["serviceId", "key"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__CREATE_WEB_SERVICE",
+    "description": "Create a new web service with specified configuration including repository, build settings, and environment variables.",
+    "tags": ["services", "create", "web"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/services",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "Web service configuration",
+          "properties": {
+            "type": {
+              "type": "string",
+              "default": "web_service",
+              "description": "The type of service to create."
+            },
+            "name": {
+              "type": "string",
+              "description": "The name of the service."
+            },
+            "ownerId": {
+              "type": "string",
+              "description": "The ID of the owner/workspace for this service."
+            },
+            "repo": {
+              "type": "string",
+              "description": "The Git repository URL (e.g., https://github.com/user/repo)."
+            },
+            "branch": {
+              "type": "string",
+              "default": "main",
+              "description": "The Git branch to deploy from."
+            },
+            "rootDir": {
+              "type": "string",
+              "description": "The root directory of the service in the repository."
+            },
+            "serviceDetails": {
+              "type": "object",
+              "description": "Service configuration details",
+              "properties": {
+                "env": {
+                  "type": "string",
+                  "enum": ["node", "python", "go", "ruby", "php", "rust", "docker"],
+                  "description": "The runtime environment for the service."
+                },
+                "envSpecificDetails": {
+                  "type": "object",
+                  "description": "Environment-specific configuration",
+                  "properties": {
+                    "buildCommand": {
+                      "type": "string",
+                      "description": "The command to build the service."
+                    },
+                    "startCommand": {
+                      "type": "string",
+                      "description": "The command to start the service."
+                    }
+                  },
+                  "required": ["buildCommand"],
+                  "visible": ["buildCommand", "startCommand"],
+                  "additionalProperties": false
+                },
+                "plan": {
+                  "type": "string",
+                  "enum": ["free", "starter", "standard", "pro", "pro_plus"],
+                  "default": "free",
+                  "description": "The service plan."
+                },
+                "region": {
+                  "type": "string",
+                  "enum": ["oregon", "ohio", "virginia", "iowa", "frankfurt", "singapore"],
+                  "default": "oregon",
+                  "description": "The region to deploy the service."
+                }
+              },
+              "required": ["env"],
+              "visible": ["env", "envSpecificDetails", "plan", "region"],
+              "additionalProperties": false
+            },
+            "envVars": {
+              "type": "array",
+              "description": "Environment variables for the service",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "description": "Environment variable key."
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Environment variable value."
+                  }
+                },
+                "required": ["key", "value"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": ["type", "name", "ownerId", "repo", "serviceDetails"],
+          "visible": ["type", "name", "ownerId", "repo", "branch", "rootDir", "serviceDetails", "envVars"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__CREATE_STATIC_SITE",
+    "description": "Create a new static site with specified configuration including repository, build settings, and custom domains.",
+    "tags": ["services", "create", "static", "site"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/services",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "Static site configuration",
+          "properties": {
+            "type": {
+              "type": "string",
+              "default": "static_site",
+              "description": "The type of service to create."
+            },
+            "name": {
+              "type": "string",
+              "description": "The name of the static site."
+            },
+            "ownerId": {
+              "type": "string",
+              "description": "The ID of the owner/workspace for this site."
+            },
+            "repo": {
+              "type": "string",
+              "description": "The Git repository URL (e.g., https://github.com/user/repo). Do not include the branch in the repo string."
+            },
+            "autoDeploy": {
+              "type": "string",
+              "enum": ["yes", "no"],
+              "default": "yes",
+              "description": "Whether to enable automatic deployment."
+            },
+            "branch": {
+              "type": "string",
+              "description": "The Git branch to deploy from. If left empty, this will fall back to the default branch of the repository."
+            },
+            "image": {
+              "type": "object",
+              "description": "Image configuration for the static site.",
+              "properties": {},
+              "required": [],
+              "visible": [],
+              "additionalProperties": true
+            },
+            "buildFilter": {
+              "type": "object",
+              "description": "Build filter configuration.",
+              "properties": {},
+              "required": [],
+              "visible": [],
+              "additionalProperties": true
+            },
+            "rootDir": {
+              "type": "string",
+              "description": "The root directory of the site in the repository."
+            },
+            "envVars": {
+              "type": "array",
+              "description": "Environment variables for the build process",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "key": {
+                    "type": "string",
+                    "description": "Environment variable key."
+                  },
+                  "value": {
+                    "type": "string",
+                    "description": "Environment variable value."
+                  }
+                },
+                "required": ["key", "value"],
+                "additionalProperties": false
+              }
+            },
+            "environmentId": {
+              "type": "string",
+              "description": "The ID of the environment the service is associated with."
+            },
+            "serviceDetails": {
+              "type": "object",
+              "description": "Static site specific details",
+              "properties": {
+                "buildCommand": {
+                  "type": "string",
+                  "description": "The command to build the static site."
+                },
+                "headers": {
+                  "type": "array",
+                  "description": "Custom headers for the static site",
+                  "items": {
+                    "type": "object",
+                    "properties": {},
+                    "required": [],
+                    "visible": [],
+                    "additionalProperties": true
+                  }
+                },
+                "publishPath": {
+                  "type": "string",
+                  "default": "public",
+                  "description": "The directory containing the built static files to serve. Defaults to 'public'."
+                },
+                "pullRequestPreviewsEnabled": {
+                  "type": "string",
+                  "enum": ["yes", "no"],
+                  "default": "no",
+                  "description": "Whether to enable pull request previews. DEPRECATED: This field has been deprecated. previews.generation should be used in its place."
+                },
+                "previews": {
+                  "type": "object",
+                  "description": "Preview configuration",
+                  "properties": {
+                    "generation": {
+                      "type": "string",
+                      "enum": ["off", "on"],
+                      "default": "off",
+                      "description": "Preview generation setting. Defaults to 'off'."
+                    }
+                  },
+                  "required": [],
+                  "visible": ["generation"],
+                  "additionalProperties": false
+                },
+                "routes": {
+                  "type": "array",
+                  "description": "Route configuration for the static site",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "description": "The type of route (e.g., 'redirect')."
+                      }
+                    },
+                    "additionalProperties": true
+                  }
+                },
+                "renderSubdomainPolicy": {
+                  "type": "string",
+                  "description": "Controls whether render.com subdomains are available for the service."
+                }
+              },
+              "required": [],
+              "visible": ["buildCommand", "headers", "publishPath", "pullRequestPreviewsEnabled", "previews", "routes", "renderSubdomainPolicy"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["type", "name", "ownerId", "repo"],
+          "visible": ["type", "name", "ownerId", "repo", "autoDeploy", "branch", "image", "buildFilter", "rootDir", "envVars", "environmentId", "serviceDetails"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__SUSPEND_SERVICE",
+    "description": "Suspend a running service to stop it from consuming resources. The service can be resumed later.",
+    "tags": ["services", "suspend", "management"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/services/{serviceId}/suspend",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service to suspend."
+            }
+          },
+          "required": ["serviceId"],
+          "visible": ["serviceId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__RESUME_SERVICE",
+    "description": "Resume a suspended service to restore it to running state.",
+    "tags": ["services", "resume", "management"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/services/{serviceId}/resume",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service to resume."
+            }
+          },
+          "required": ["serviceId"],
+          "visible": ["serviceId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__RESTART_SERVICE",
+    "description": "Restart a service to reload its configuration and redeploy the latest code.",
+    "tags": ["services", "restart", "management"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/services/{serviceId}/restart",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service to restart."
+            }
+          },
+          "required": ["serviceId"],
+          "visible": ["serviceId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__LIST_DEPLOYS",
+    "description": "List all deployments for a specific service, including their status and deployment details.",
+    "tags": ["deploys", "deployments", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/services/{serviceId}/deploys",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service to list deployments for."
+            }
+          },
+          "required": ["serviceId"],
+          "visible": ["serviceId"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "query parameters",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Number of deployments to return per page."
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination to get the next page of results."
+            }
+          },
+          "required": [],
+          "visible": ["limit"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__TRIGGER_DEPLOY",
+    "description": "Trigger a new deployment for a service to deploy the latest code from the connected repository.",
+    "tags": ["deploys", "deployments", "trigger"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/services/{serviceId}/deploys",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service to trigger deployment for."
+            }
+          },
+          "required": ["serviceId"],
+          "visible": ["serviceId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__GET_DEPLOY",
+    "description": "Retrieve details about a specific deployment, including its status, logs, and deployment information.",
+    "tags": ["deploys", "deployments", "get", "retrieve"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/services/{serviceId}/deploys/{deployId}",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service."
+            },
+            "deployId": {
+              "type": "string",
+              "description": "The ID of the deployment to retrieve."
+            }
+          },
+          "required": ["serviceId", "deployId"],
+          "visible": ["serviceId", "deployId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__CANCEL_DEPLOY",
+    "description": "Cancel a running deployment to stop the deployment process.",
+    "tags": ["deploys", "deployments", "cancel"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/services/{serviceId}/deploys/{deployId}/cancel",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service."
+            },
+            "deployId": {
+              "type": "string",
+              "description": "The ID of the deployment to cancel."
+            }
+          },
+          "required": ["serviceId", "deployId"],
+          "visible": ["serviceId", "deployId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__ROLLBACK_DEPLOY",
+    "description": "Roll back to a previous deployment to restore the service to a previous working state.",
+    "tags": ["deploys", "deployments", "rollback"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/services/{serviceId}/deploys/{deployId}/rollback",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service."
+            },
+            "deployId": {
+              "type": "string",
+              "description": "The ID of the deployment to roll back to."
+            }
+          },
+          "required": ["serviceId", "deployId"],
+          "visible": ["serviceId", "deployId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__LIST_POSTGRES_INSTANCES",
+    "description": "List all Postgres database instances in your account with their configuration and status.",
+    "tags": ["postgres", "database", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/postgres",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "query parameters",
+          "properties": {
+            "ownerId": {
+              "type": "string",
+              "description": "Filter instances by owner/workspace ID."
+            },
+            "limit": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Number of instances to return per page."
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination to get the next page of results."
+            }
+          },
+          "required": [],
+          "visible": ["ownerId", "limit"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__CREATE_POSTGRES_INSTANCE",
+    "description": "Create a new Postgres database instance with specified configuration including plan, region, and initial settings.",
+    "tags": ["postgres", "database", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/postgres",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "Postgres instance configuration",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of the Postgres instance."
+            },
+            "ownerId": {
+              "type": "string",
+              "description": "The ID of the owner/workspace for this instance."
+            },
+            "plan": {
+              "type": "string",
+              "enum": ["free", "starter", "standard", "pro", "pro_plus"],
+              "default": "free",
+              "description": "The Postgres plan/tier."
+            },
+            "region": {
+              "type": "string",
+              "enum": ["oregon", "ohio", "virginia", "iowa", "frankfurt", "singapore"],
+              "default": "oregon",
+              "description": "The region to deploy the Postgres instance."
+            },
+            "version": {
+              "type": "string",
+              "enum": ["11", "12", "13", "14", "15", "16"],
+              "default": "16",
+              "description": "The Postgres version."
+            },
+            "databaseName": {
+              "type": "string",
+              "description": "The initial database name."
+            },
+            "databaseUser": {
+              "type": "string",
+              "description": "The initial database user."
+            }
+          },
+          "required": ["name", "ownerId", "version"],
+          "visible": ["name", "ownerId", "plan", "region", "version", "databaseName", "databaseUser"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__GET_POSTGRES_INSTANCE",
+    "description": "Retrieve details about a specific Postgres instance including configuration, status, and connection information.",
+    "tags": ["postgres", "database", "get", "retrieve"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/postgres/{postgresId}",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "postgresId": {
+              "type": "string",
+              "description": "The ID of the Postgres instance to retrieve."
+            }
+          },
+          "required": ["postgresId"],
+          "visible": ["postgresId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__UPDATE_POSTGRES_INSTANCE",
+    "description": "Update configuration of an existing Postgres instance such as plan, auto-suspend settings, or other parameters.",
+    "tags": ["postgres", "database", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/v1/postgres/{postgresId}",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "postgresId": {
+              "type": "string",
+              "description": "The ID of the Postgres instance to update."
+            }
+          },
+          "required": ["postgresId"],
+          "visible": ["postgresId"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Updated Postgres instance configuration",
+          "properties": {
+            "plan": {
+              "type": "string",
+              "enum": ["free", "starter", "standard", "pro", "pro_plus"],
+              "description": "The Postgres plan/tier to update to."
+            },
+            "autoSuspend": {
+              "type": "boolean",
+              "description": "Whether to enable auto-suspend for the instance."
+            }
+          },
+          "required": [],
+          "visible": ["plan", "autoSuspend"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+
+  {
+    "name": "RENDER__GET_POSTGRES_CONNECTION_INFO",
+    "description": "Retrieve connection information for a Postgres instance including host, port, database name, and credentials.",
+    "tags": ["postgres", "database", "connection", "info"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/postgres/{postgresId}/connection-info",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "postgresId": {
+              "type": "string",
+              "description": "The ID of the Postgres instance."
+            }
+          },
+          "required": ["postgresId"],
+          "visible": ["postgresId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__SUSPEND_POSTGRES_INSTANCE",
+    "description": "Suspend a Postgres instance to stop it from consuming resources while preserving data.",
+    "tags": ["postgres", "database", "suspend", "management"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/postgres/{postgresId}/suspend",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "postgresId": {
+              "type": "string",
+              "description": "The ID of the Postgres instance to suspend."
+            }
+          },
+          "required": ["postgresId"],
+          "visible": ["postgresId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__RESUME_POSTGRES_INSTANCE",
+    "description": "Resume a suspended Postgres instance to restore it to active state.",
+    "tags": ["postgres", "database", "resume", "management"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/postgres/{postgresId}/resume",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "postgresId": {
+              "type": "string",
+              "description": "The ID of the Postgres instance to resume."
+            }
+          },
+          "required": ["postgresId"],
+          "visible": ["postgresId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__RESTART_POSTGRES_INSTANCE",
+    "description": "Restart a Postgres instance to reload configuration and apply any pending changes.",
+    "tags": ["postgres", "database", "restart", "management"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/postgres/{postgresId}/restart",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "postgresId": {
+              "type": "string",
+              "description": "The ID of the Postgres instance to restart."
+            }
+          },
+          "required": ["postgresId"],
+          "visible": ["postgresId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__LIST_LOGS",
+    "description": "List logs matching the provided filters. Logs are paginated by start and end timestamps.",
+    "tags": ["logs", "list", "filter", "monitoring"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/logs",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "query parameters",
+          "properties": {
+            "ownerId": {
+              "type": "string",
+              "description": "The ID of the workspace to return logs for."
+            },
+            "startTime": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Epoch/Unix timestamp of start of time range to return. Defaults to now() - 1 hour."
+            },
+            "endTime": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Epoch/Unix timestamp of end of time range to return. Defaults to now()."
+            },
+            "direction": {
+              "type": "string",
+              "enum": ["backward", "forward"],
+              "default": "backward",
+              "description": "The direction to query logs for. Backward will return most recent logs first."
+            },
+            "resource": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter logs by their resource. A resource is the id of a server, cronjob, job, postgres, or redis."
+            },
+            "instance": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter logs by the instance they were emitted from."
+            },
+            "host": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter request logs by their host. Wildcards and regex are supported."
+            },
+            "statusCode": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter request logs by their status code. Wildcards and regex are supported."
+            },
+            "method": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter request logs by their requests method. Wildcards and regex are supported."
+            },
+            "level": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter logs by their severity level. Wildcards and regex are supported."
+            },
+            "type": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter logs by their type. Types include app, request, and build logs."
+            },
+            "text": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter by the text of the logs. Wildcards and regex are supported."
+            },
+            "path": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter request logs by their path. Wildcards and regex are supported."
+            },
+            "limit": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100,
+              "description": "The maximum number of items to return."
+            }
+          },
+          "required": ["ownerId", "resource"],
+          "visible": ["ownerId", "resource", "startTime", "endTime", "direction", "instance", "host", "statusCode", "method", "level", "type", "text", "path", "limit"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["query"],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__LIST_LOG_LABEL_VALUES",
+    "description": "List all values for a given log label in the logs matching the provided filters.",
+    "tags": ["logs", "labels", "values", "metadata"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/logs/values",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "query parameters",
+          "properties": {
+            "ownerId": {
+              "type": "string",
+              "description": "The ID of the workspace to return log label values for."
+            },
+            "label": {
+              "type": "string",
+              "enum": ["host", "instance", "statusCode", "method", "level", "type"],
+              "description": "The label to query logs for."
+            },
+            "startTime": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Epoch/Unix timestamp of start of time range to return. Defaults to now() - 1 hour."
+            },
+            "endTime": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Epoch/Unix timestamp of end of time range to return. Defaults to now()."
+            },
+            "direction": {
+              "type": "string",
+              "enum": ["backward", "forward"],
+              "default": "backward",
+              "description": "The direction to query logs for. Backward will return most recent logs first."
+            },
+            "resource": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter logs by their resource. A resource is the id of a server, cronjob, job, postgres, or redis."
+            },
+            "instance": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter logs by the instance they were emitted from."
+            },
+            "host": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter request logs by their host. Wildcards and regex are supported."
+            },
+            "statusCode": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter request logs by their status code. Wildcards and regex are supported."
+            },
+            "method": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter request logs by their requests method. Wildcards and regex are supported."
+            },
+            "level": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter logs by their severity level. Wildcards and regex are supported."
+            },
+            "type": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter logs by their type. Types include app, request, and build logs."
+            },
+            "text": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter by the text of the logs. Wildcards and regex are supported."
+            },
+            "path": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter request logs by their path. Wildcards and regex are supported."
+            },
+            "limit": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100,
+              "description": "The maximum number of items to return."
+            }
+          },
+          "required": ["ownerId", "label", "resource"],
+          "visible": ["ownerId", "label", "resource", "startTime", "endTime", "direction", "instance", "host", "statusCode", "method", "level", "type", "text", "path", "limit"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["query"],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__LIST_KEY_VALUE_INSTANCES",
+    "description": "List all Key Value instances in your Render account.",
+    "tags": ["key-value", "list", "instances"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/key-value",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "query parameters",
+          "properties": {
+            "ownerId": {
+              "type": "string",
+              "description": "The ID of the workspace to list Key Value instances for."
+            },
+            "limit": {
+              "type": "integer",
+              "default": 20,
+              "minimum": 1,
+              "maximum": 100,
+              "description": "The maximum number of items to return."
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Pagination cursor for retrieving next set of instances."
+            }
+          },
+          "required": ["ownerId"],
+          "visible": ["ownerId", "limit", "cursor"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["query"],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__GET_KEY_VALUE_INSTANCE",
+    "description": "Get details about a specific Key Value instance.",
+    "tags": ["key-value", "get", "retrieve", "instance"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/key-value/{keyValueId}",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "keyValueId": {
+              "type": "string",
+              "description": "The ID of the Key Value instance to retrieve."
+            }
+          },
+          "required": ["keyValueId"],
+          "visible": ["keyValueId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__CREATE_KEY_VALUE_INSTANCE",
+    "description": "Create a new Key Value instance.",
+    "tags": ["key-value", "create", "instance"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/key-value",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "Key Value instance configuration",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The name of the Key Value instance."
+            },
+            "ownerId": {
+              "type": "string",
+              "description": "The ID of the workspace that will own this Key Value instance."
+            },
+            "region": {
+              "type": "string",
+              "enum": ["oregon", "ohio", "virginia", "ireland", "frankfurt", "singapore"],
+              "description": "The region where the Key Value instance will be created."
+            },
+            "plan": {
+              "type": "string",
+              "enum": ["starter", "standard"],
+              "description": "The Key Value instance plan."
+            }
+          },
+          "required": ["name", "ownerId", "region", "plan"],
+          "visible": ["name", "ownerId", "region", "plan"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__UPDATE_SERVICE",
+    "description": "Update configuration of an existing web service including build commands, start commands, and environment settings.",
+    "tags": ["service", "update", "configuration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/v1/services/{serviceId}",
+      "server_url": "https://api.render.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "path parameters",
+          "properties": {
+            "serviceId": {
+              "type": "string",
+              "description": "The ID of the service to update."
+            }
+          },
+          "required": ["serviceId"],
+          "visible": ["serviceId"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Service update configuration",
+          "properties": {
+            "serviceDetails": {
+              "type": "object",
+              "description": "Service configuration details to update",
+              "properties": {
+                "envSpecificDetails": {
+                  "type": "object",
+                  "description": "Environment-specific configuration",
+                  "properties": {
+                    "buildCommand": {
+                      "type": "string",
+                      "description": "The command to build the service."
+                    },
+                    "startCommand": {
+                      "type": "string",
+                      "description": "The command to start the service."
+                    }
+                  },
+                  "required": [],
+                  "visible": ["buildCommand", "startCommand"],
+                  "additionalProperties": false
+                },
+                "plan": {
+                  "type": "string",
+                  "enum": ["free", "starter", "standard", "pro", "pro_plus"],
+                  "description": "The service plan."
+                },
+                "region": {
+                  "type": "string",
+                  "enum": ["oregon", "ohio", "virginia", "iowa", "frankfurt", "singapore"],
+                  "description": "The region to deploy the service."
+                }
+              },
+              "required": [],
+              "visible": ["envSpecificDetails", "plan", "region"],
+              "additionalProperties": false
+            }
+          },
+          "required": [],
+          "visible": ["serviceDetails"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "RENDER__RUN_SQL_QUERY",
+    "description": "Execute a SQL query on a Render PostgreSQL database. This function retrieves connection information and executes the provided SQL query.",
+    "tags": ["postgres", "database", "sql", "query", "execute"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "connector",
+    "protocol_data": {},
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "workspace_id": {
+          "type": "string",
+          "description": "The ID of the workspace/owner that contains the database."
+        },
+        "database_id": {
+          "type": "string",
+          "description": "The ID of the PostgreSQL database instance to query."
+        },
+        "sql": {
+          "type": "string",
+          "description": "The SQL query to execute on the database."
+        }
+      },
+      "required": ["workspace_id", "database_id", "sql"],
+      "visible": ["workspace_id", "database_id", "sql"],
+      "additionalProperties": false
+    }
+  }
+]

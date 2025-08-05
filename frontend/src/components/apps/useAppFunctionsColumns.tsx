@@ -31,7 +31,7 @@ export const useAppFunctionsColumns = (): ColumnDef<AppFunction>[] => {
             {(info.getValue() || []).map((tag: string) => (
               <span
                 key={tag}
-                className="rounded-md bg-gray-100 px-3 py-1 text-sm font-medium text-gray-600 border border-gray-200"
+                className="rounded-md bg-muted px-3 py-1 text-sm font-medium text-muted-foreground border border-border"
               >
                 {tag}
               </span>

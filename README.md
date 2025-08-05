@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="frontend/public/aci-dev-full-logo.svg" alt="ACI.dev Logo" width="100%">
+  <img src="frontend/public/aci-dev-full-logo-light-bg.svg" alt="ACI.dev Logo" width="100%">
 </p>
 
 # ACI: Open-Source Infra to Power Unified MCP Servers and VibeOps

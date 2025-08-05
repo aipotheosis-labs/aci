@@ -224,7 +224,7 @@ export default function PricingPage() {
                 >
                   {subscription?.plan === tier.name ? (
                     <div className="flex items-center gap-1">
-                      <IoMdCheckmark className="text-white" />
+                      <IoMdCheckmark className="text-primary-foreground" />
                       Current Plan
                     </div>
                   ) : (

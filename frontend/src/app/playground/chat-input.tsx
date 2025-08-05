@@ -81,7 +81,7 @@ export function ChatInput({
         onSubmit={submitForm}
         className="flex flex-col w-full max-w-3xl mx-auto"
       >
-        <div className="flex flex-col items-start bg-white rounded-2xl border shadow-xs">
+        <div className="flex flex-col items-start bg-background rounded-2xl border shadow-xs">
           <div className="relative w-full">
             <Textarea
               value={input}

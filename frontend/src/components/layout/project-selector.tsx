@@ -43,10 +43,10 @@ export const ProjectSelector = () => {
             variant="ghost"
             role="combobox"
             aria-expanded={open}
-            className="w-full justify-between h-9 px-2 text-sm font-medium hover:bg-gray-50 border border-gray-200 rounded-md"
+            className="w-full justify-between h-9 px-2 text-sm font-medium hover:bg-muted border border-border rounded-md"
           >
             <div className="flex items-center gap-2 truncate">
-              <FolderOpen className="h-3 w-3 text-gray-500 shrink-0" />
+              <FolderOpen className="h-3 w-3 text-muted-foreground shrink-0" />
               {activeProject ? (
                 <span className="truncate">{activeProject.name}</span>
               ) : (
@@ -73,7 +73,7 @@ export const ProjectSelector = () => {
                     className="flex justify-between items-center relative"
                   >
                     <div className="flex items-center gap-2 w-full">
-                      <FolderOpen className="h-4 w-4 text-gray-400" />
+                      <FolderOpen className="h-4 w-4 text-muted-foreground" />
                       <div className="grow truncate">{project.name}</div>
                       <Check
                         className={cn(

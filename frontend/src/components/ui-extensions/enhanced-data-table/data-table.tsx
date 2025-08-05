@@ -235,7 +235,7 @@ export function EnhancedDataTable<TData, TValue>({
       )}
       <div className="border rounded-lg overflow-hidden">
         <Table>
-          <TableHeader className="bg-gray-50 rounded-t-lg">
+          <TableHeader className="bg-muted rounded-t-lg">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -284,7 +284,7 @@ export function EnhancedDataTable<TData, TValue>({
           </TableBody>
         </Table>
         {paginationOptions && (
-          <div className="border-t border-gray-200 bg-gray-50 ">
+          <div className="border-t border-border bg-muted ">
             <DataTablePagination
               table={table}
               totalCount={paginationOptions.totalCount}

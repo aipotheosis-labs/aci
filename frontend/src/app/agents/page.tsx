@@ -81,7 +81,7 @@ export default function AgentsPage() {
             <Tooltip>
               <TooltipTrigger asChild>
                 <span className="cursor-pointer ml-1">
-                  <BsQuestionCircle className="h-4 w-4 text-white/70" />
+                  <BsQuestionCircle className="h-4 w-4 text-primary-foreground/70" />
                 </span>
               </TooltipTrigger>
               <TooltipContent side="top">

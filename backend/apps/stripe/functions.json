@@ -1,0 +1,1400 @@
+
+[
+  {
+    "name": "STRIPE__GET_ACCOUNT_INFO",
+    "description": "Retrieves the details of the Stripe account.",
+    "tags": ["stripe", "account", "retrieve"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/account",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__RETRIEVE_BALANCE",
+    "description": "Retrieves the complete current balance details for the connected stripe account.",
+    "tags": ["stripe", "balance", "retrieve"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/balance",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__CREATE_COUPON",
+    "description": "Creates a new coupon object for use in Stripe.",
+    "tags": ["stripe", "coupon", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/coupons",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "percent_off": {
+              "type": "number",
+              "description": "A positive float larger than 0, and smaller or equal to 100, that represents the discount the coupon will apply (if it's a percent-off coupon)."
+            },
+            "amount_off": {
+              "type": "integer",
+              "description": "A positive integer representing the amount to subtract from an invoice total (if it's an amount-off coupon)."
+            },
+            "currency": {
+              "type": "string",
+              "description": "Three-letter ISO currency code. Required for amount-off coupons."
+            },
+            "duration": {
+              "type": "string",
+              "enum": ["forever", "once", "repeating"],
+              "description": "Describes how long a customer who applies this coupon will get the discount."
+            },
+            "name": {
+              "type": "string",
+              "description": "Name of the coupon displayed to customers on invoices or receipts."
+            }
+          },
+          "required": ["duration"],
+          "visible": ["percent_off", "amount_off", "currency", "duration", "name"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__LIST_COUPONS",
+    "description": "Retrieves a list of discount coupons from a stripe account, supporting pagination via limit, starting after, and ending before.",
+    "tags": ["stripe", "coupons", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/coupons",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "description": "A limit on the number of objects to be returned.",
+              "maximum": 100,
+              "default": 10
+            },
+            "starting_after": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            },
+            "ending_before": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            }
+          },
+          "required": [],
+          "visible": ["limit", "starting_after", "ending_before"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__CREATE_CUSTOMER",
+    "description": "Creates a new customer in stripe, required for creating charges or subscriptions; an email is highly recommended for customer communications.",
+    "tags": ["stripe", "customer", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/customers",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email",
+              "description": "Customer's email address. It's displayed in the dashboard and can be used to search for the customer."
+            },
+            "name": {
+              "type": "string",
+              "description": "The customer's full name or business name."
+            },
+            "phone": {
+              "type": "string",
+              "description": "The customer's phone number."
+            },
+            "description": {
+              "type": "string",
+              "description": "An arbitrary string that you can attach to a customer object."
+            }
+          },
+          "required": [],
+          "visible": ["email", "name", "phone", "description"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__LIST_CUSTOMERS",
+    "description": "Retrieves a list of stripe customers, with options to filter by email, creation date, or test clock, and support for pagination.",
+    "tags": ["stripe", "customers", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/customers",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "description": "A filter on the list based on the customer's email field."
+            },
+            "created": {
+              "type": "string",
+              "description": "A filter on the list based on the object created field. Can be a timestamp or a dictionary with gt, gte, lt, lte keys."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "A limit on the number of objects to be returned.",
+              "maximum": 100,
+              "default": 10
+            },
+            "starting_after": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            },
+            "ending_before": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            }
+          },
+          "required": [],
+          "visible": ["email", "created", "limit", "starting_after", "ending_before"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__LIST_DISPUTES",
+    "description": "Returns a list of your disputes.",
+    "tags": ["stripe", "disputes", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/disputes",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "charge": {
+              "type": "string",
+              "description": "Only return disputes for the charge specified by this charge ID."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "A limit on the number of objects to be returned.",
+              "maximum": 100,
+              "default": 10
+            },
+            "starting_after": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            },
+            "ending_before": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            }
+          },
+          "required": [],
+          "visible": ["charge", "limit", "starting_after", "ending_before"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__UPDATE_DISPUTE",
+    "description": "Updates the specific dispute by setting the values of the parameters passed.",
+    "tags": ["stripe", "dispute", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/disputes/{id}",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The dispute ID to update."
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+                         "evidence": {
+               "type": "object",
+               "properties": {
+                 "receipt": {
+                   "type": "string",
+                   "description": "Documentation demonstrating that the product was received or service was delivered."
+                 },
+                 "shipping_documentation": {
+                   "type": "string",
+                   "description": "Documentation showing proof that a product was shipped to the customer."
+                 }
+               },
+               "required": [],
+               "visible": ["receipt", "shipping_documentation"],
+               "description": "Evidence to upload to respond to a dispute.",
+               "additionalProperties": false
+             },
+             "metadata": {
+               "type": "object",
+               "properties": {},
+               "required": [],
+               "visible": [],
+               "description": "Set of key-value pairs that you can attach to an object.",
+               "additionalProperties": true
+             }
+          },
+          "required": [],
+          "visible": ["evidence", "metadata"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__CREATE_INVOICE",
+    "description": "Creates a new draft stripe invoice for a customer; use to revise an existing invoice, bill for a specific subscription (which must belong to the customer), or apply detailed customizations.",
+    "tags": ["stripe", "invoice", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/invoices",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "customer": {
+              "type": "string",
+              "description": "The ID of the customer who will be billed."
+            },
+            "auto_advance": {
+              "type": "boolean",
+              "description": "Controls whether Stripe performs automatic collection of the invoice. When false, the invoice's state won't automatically advance without an explicit action.",
+              "default": true
+            },
+            "description": {
+              "type": "string",
+              "description": "An arbitrary string attached to the object."
+            }
+          },
+          "required": ["customer"],
+          "visible": ["customer", "auto_advance", "description"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__CREATE_INVOICE_ITEM",
+    "description": "Creates an item to be added to a draft invoice (up to 250 items per invoice). If no invoice is specified, the item will be on the next invoice created for the customer specified.",
+    "tags": ["stripe", "invoice", "item", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/invoiceitems",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "customer": {
+              "type": "string",
+              "description": "The ID of the customer who will be billed when this invoice item is billed."
+            },
+            "amount": {
+              "type": "integer",
+              "description": "The integer amount in cents (or local equivalent) of the charge to be applied to the upcoming invoice."
+            },
+            "currency": {
+              "type": "string",
+              "description": "Three-letter ISO currency code, in lowercase. Must be a supported currency."
+            },
+            "description": {
+              "type": "string",
+              "description": "An arbitrary string which you can attach to the invoice item."
+            }
+          },
+          "required": ["customer", "amount", "currency"],
+          "visible": ["customer", "amount", "currency", "description"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__FINALIZE_INVOICE",
+    "description": "Stripe automatically finalizes drafts before sending and attempting payment on invoices. However, if you'd like to finalize a draft invoice manually, you can do so using this method.",
+    "tags": ["stripe", "invoice", "finalize"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/invoices/{invoice}/finalize",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "invoice": {
+              "type": "string",
+              "description": "The invoice ID to finalize."
+            }
+          },
+          "required": ["invoice"],
+          "visible": ["invoice"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "auto_advance": {
+              "type": "boolean",
+              "description": "Controls whether Stripe performs automatic collection of the invoice."
+            }
+          },
+          "required": [],
+          "visible": ["auto_advance"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__LIST_INVOICES",
+    "description": "Retrieves a list of stripe invoices, filterable by various criteria and paginatable using invoice id cursors obtained from previous responses.",
+    "tags": ["stripe", "invoices", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/invoices",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "customer": {
+              "type": "string",
+              "description": "Only return invoices for the customer specified by this customer ID."
+            },
+            "status": {
+              "type": "string",
+              "enum": ["draft", "open", "paid", "uncollectible", "void"],
+              "description": "The status of the invoice, one of draft, open, paid, uncollectible, or void."
+            },
+            "subscription": {
+              "type": "string",
+              "description": "Only return invoices for the subscription specified by this subscription ID."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "A limit on the number of objects to be returned.",
+              "maximum": 100,
+              "default": 10
+            },
+            "starting_after": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            },
+            "ending_before": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            }
+          },
+          "required": [],
+          "visible": ["customer", "status", "subscription", "limit", "starting_after", "ending_before"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__CREATE_PAYMENT_LINK",
+    "description": "Creates a payment link that you can share with customers to collect payment.",
+    "tags": ["stripe", "payment", "link", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/payment_links",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "line_items[0][price]": {
+              "type": "string",
+              "description": "The ID of the price object for the first line item."
+            },
+            "line_items[0][quantity]": {
+              "type": "integer",
+              "description": "The quantity of the first line item being purchased.",
+              "default": 1
+            }
+          },
+          "required": ["line_items[0][price]"],
+          "visible": ["line_items[0][price]", "line_items[0][quantity]"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__LIST_PAYMENT_INTENTS",
+    "description": "Retrieves a list of stripe paymentintents, optionally filtered and paginated using paymentintent ids as cursors.",
+    "tags": ["stripe", "payment intents", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/payment_intents",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "customer": {
+              "type": "string",
+              "description": "Only return PaymentIntents for the customer specified by this customer ID."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "A limit on the number of objects to be returned.",
+              "maximum": 100,
+              "default": 10
+            },
+            "starting_after": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            },
+            "ending_before": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            }
+          },
+          "required": [],
+          "visible": ["customer", "limit", "starting_after", "ending_before"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__CREATE_PRICE",
+    "description": "Creates a new stripe price for a product, defining its charges (one-time or recurring) and billing scheme; requires either an existing product id or product data.",
+    "tags": ["stripe", "price", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/prices",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "currency": {
+              "type": "string",
+              "description": "Three-letter ISO currency code, in lowercase."
+            },
+            "product": {
+              "type": "string",
+              "description": "The ID of the product that this price will belong to."
+            },
+            "unit_amount": {
+              "type": "integer",
+              "description": "A positive integer representing how much to charge in the smallest currency unit."
+            },
+            "recurring": {
+              "type": "object",
+              "properties": {
+                "interval": {
+                  "type": "string",
+                  "enum": ["day", "week", "month", "year"],
+                  "description": "Specifies billing frequency."
+                },
+                "interval_count": {
+                  "type": "integer",
+                  "description": "The number of intervals between subscription billings.",
+                  "default": 1
+                }
+              },
+              "required": [],
+              "visible": ["interval", "interval_count"],
+              "additionalProperties": false,
+              "description": "The recurring components of a price such as interval and usage_type."
+            }
+          },
+          "required": ["currency", "product"],
+          "visible": ["currency", "product", "unit_amount", "recurring"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__LIST_PRICES",
+    "description": "Returns a list of your prices.",
+    "tags": ["stripe", "prices", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/prices",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "description": "Only return prices that are active or inactive."
+            },
+            "currency": {
+              "type": "string",
+              "description": "Only return prices for the given currency."
+            },
+            "product": {
+              "type": "string",
+              "description": "Only return prices for the given product."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "A limit on the number of objects to be returned.",
+              "maximum": 100,
+              "default": 10
+            },
+            "starting_after": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            },
+            "ending_before": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            }
+          },
+          "required": [],
+          "visible": ["active", "currency", "product", "limit", "starting_after", "ending_before"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__CREATE_PRODUCT",
+    "description": "Creates a new product in stripe, encoding the request as application/x-www-form-urlencoded by flattening nested structures.",
+    "tags": ["stripe", "product", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/products",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The product's name, meant to be displayable to the customer."
+            },
+            "description": {
+              "type": "string",
+              "description": "The product's description, meant to be displayable to the customer."
+            },
+            "active": {
+              "type": "boolean",
+              "description": "Whether the product is currently available for purchase.",
+              "default": true
+            },
+            "tax_code": {
+              "type": "string",
+              "description": "A tax code ID."
+            }
+          },
+          "required": ["name"],
+          "visible": ["name", "description", "active", "tax_code"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__LIST_PRODUCTS",
+    "description": "Retrieves a list of stripe products, with optional filtering and pagination; starting after/ending before cursors must be valid product ids from a previous response.",
+    "tags": ["stripe", "products", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/products",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "boolean",
+              "description": "Only return products that are active or inactive."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "A limit on the number of objects to be returned.",
+              "maximum": 100,
+              "default": 10
+            },
+            "starting_after": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            },
+            "ending_before": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            }
+          },
+          "required": [],
+          "visible": ["active", "limit", "starting_after", "ending_before"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__CREATE_REFUND",
+    "description": "Creates a full or partial refund in stripe, targeting either a specific charge id or a payment intent id.",
+    "tags": ["stripe", "refund", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/refunds",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "charge": {
+              "type": "string",
+              "description": "The identifier of the charge to refund."
+            },
+            "payment_intent": {
+              "type": "string",
+              "description": "The identifier of the PaymentIntent to refund."
+            },
+            "amount": {
+              "type": "integer",
+              "description": "A positive integer representing how much to refund in the smallest currency unit. If no amount is provided, the entire charge will be refunded."
+            },
+            "reason": {
+              "type": "string",
+              "enum": ["duplicate", "fraudulent", "requested_by_customer"],
+              "description": "String indicating the reason for the refund."
+            }
+          },
+          "required": [],
+          "visible": ["charge", "payment_intent", "amount", "reason"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__CANCEL_SUBSCRIPTION",
+    "description": "Cancels a customer's active stripe subscription at the end of the current billing period, with options to invoice immediately for metered usage and prorate charges for unused time.",
+    "tags": ["stripe", "subscription", "cancel"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/v1/subscriptions/{id}",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The subscription ID to cancel."
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__LIST_SUBSCRIPTIONS",
+    "description": "Retrieves a list of stripe subscriptions, optionally filtered by various criteria such as customer, price, status, collection method, and date ranges, with support for pagination.",
+    "tags": ["stripe", "subscriptions", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/subscriptions",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "customer": {
+              "type": "string",
+              "description": "The ID of the customer whose subscriptions will be retrieved."
+            },
+            "price": {
+              "type": "string",
+              "description": "Filter for subscriptions that contain this recurring price ID."
+            },
+            "status": {
+              "type": "string",
+              "enum": ["incomplete", "incomplete_expired", "trialing", "active", "past_due", "canceled", "unpaid", "paused"],
+              "description": "The status of the subscriptions to retrieve."
+            },
+            "collection_method": {
+              "type": "string",
+              "enum": ["charge_automatically", "send_invoice"],
+              "description": "The collection method of the subscriptions to retrieve."
+            },
+            "limit": {
+              "type": "integer",
+              "description": "A limit on the number of objects to be returned.",
+              "maximum": 100,
+              "default": 10
+            },
+            "starting_after": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            },
+            "ending_before": {
+              "type": "string",
+              "description": "A cursor for use in pagination."
+            }
+          },
+          "required": [],
+          "visible": ["customer", "price", "status", "collection_method", "limit", "starting_after", "ending_before"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__UPDATE_SUBSCRIPTION",
+    "description": "Updates an existing, non-canceled stripe subscription by its id, ensuring all referenced entity ids (e.g., prices, coupons) are valid and automatic tax liability is correctly specified if enabled.",
+    "tags": ["stripe", "subscription", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/subscriptions/{id}",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The subscription ID to update."
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string",
+                    "description": "Subscription item to update."
+                  },
+                  "price": {
+                    "type": "string",
+                    "description": "The ID of the price object."
+                  },
+                  "quantity": {
+                    "type": "integer",
+                    "description": "The quantity you'd like to apply to the subscription item."
+                  }
+                }
+              },
+              "description": "A list of subscription items to update."
+            },
+            "trial_end": {
+              "type": "string",
+              "description": "Unix timestamp representing the end of the trial period the customer will get before being charged for the first time."
+            },
+            "proration_behavior": {
+              "type": "string",
+              "enum": ["create_prorations", "none", "always_invoice"],
+              "description": "Determines how to handle prorations resulting from the billing_cycle_anchor."
+            }
+          },
+          "required": [],
+          "visible": ["items", "trial_end", "proration_behavior"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__CREATE_SUBSCRIPTION",
+    "description": "Creates a new subscription for a customer with specified pricing and billing details.",
+    "tags": ["stripe", "subscription", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/subscriptions",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "customer": {
+              "type": "string",
+              "description": "The identifier of the customer to subscribe."
+            },
+            "items[0][price]": {
+              "type": "string",
+              "description": "The price ID for the subscription item."
+            },
+            "items[0][quantity]": {
+              "type": "integer",
+              "description": "The quantity of the subscription item.",
+              "default": 1
+            },
+            "trial_period_days": {
+              "type": "integer",
+              "description": "Integer representing the number of trial period days before the customer is charged for the first time."
+            },
+            "collection_method": {
+              "type": "string",
+              "enum": ["charge_automatically", "send_invoice"],
+              "description": "Either charge_automatically, or send_invoice.",
+              "default": "charge_automatically"
+            }
+          },
+          "required": ["customer", "items[0][price]"],
+          "visible": ["customer", "items[0][price]", "items[0][quantity]", "trial_period_days", "collection_method"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__CREATE_PAYMENT_METHOD",
+    "description": "Creates a new payment method object that can be attached to customers for future payments.",
+    "tags": ["stripe", "payment", "method", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/payment_methods",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["card"],
+              "description": "The type of the PaymentMethod.",
+              "default": "card"
+            },
+            "card[token]": {
+              "type": "string",
+              "description": "A test token representing a card (safer than raw card data).",
+              "default": "tok_visa"
+            }
+          },
+          "required": ["type", "card[token]"],
+          "visible": ["type", "card[token]"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__ATTACH_PAYMENT_METHOD",
+    "description": "Attaches a payment method to a customer for future payments and subscriptions.",
+    "tags": ["stripe", "payment", "method", "attach"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/payment_methods/{payment_method}/attach",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "payment_method": {
+              "type": "string",
+              "description": "The payment method ID to attach."
+            }
+          },
+          "required": ["payment_method"],
+          "visible": ["payment_method"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "customer": {
+              "type": "string",
+              "description": "The ID of the customer to attach the payment method to."
+            }
+          },
+          "required": ["customer"],
+          "visible": ["customer"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "STRIPE__UPDATE_CUSTOMER_DEFAULT_PAYMENT_METHOD",
+    "description": "Updates a customer's default payment method for invoices and subscriptions.",
+    "tags": ["stripe", "customer", "payment", "method", "default"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/customers/{id}",
+      "server_url": "https://api.stripe.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The customer ID to update."
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "invoice_settings[default_payment_method]": {
+              "type": "string",
+              "description": "ID of a payment method that's attached to the customer, to be used as the customer's default payment method for subscriptions and invoices."
+            }
+          },
+          "required": ["invoice_settings[default_payment_method]"],
+          "visible": ["invoice_settings[default_payment_method]"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  }
+]

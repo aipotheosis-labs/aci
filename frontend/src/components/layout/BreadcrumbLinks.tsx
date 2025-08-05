@@ -39,7 +39,7 @@ export const BreadcrumbLinks = ({ pathname }: BreadcrumbLinksProps) => {
   for (let i = 0; i < breadcrumbs.length; i++) {
     if (i > 0) {
       breadcrumbsList.push(
-        <span key={i * 2 - 1} className="text-gray-400">
+        <span key={i * 2 - 1} className="text-muted-foreground">
           /
         </span>,
       );

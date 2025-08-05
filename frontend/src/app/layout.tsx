@@ -12,6 +12,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { RequiredAuthProvider } from "@propelauth/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,7 +50,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <title>ACI.DEV Platform</title>
         <meta
@@ -98,33 +99,40 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <QueryClientProvider client={queryClient}>
-          <RequiredAuthProvider authUrl={process.env.NEXT_PUBLIC_AUTH_URL!}>
-            <MetaInfoProvider>
-              <SidebarProvider>
-                <AppSidebar />
-                <SidebarInset>
-                  <main className="w-full h-full mr-2 border rounded-lg bg-white">
-                    <Header />
-                    {children}
-                    <Analytics />
-                  </main>
-                </SidebarInset>
-              </SidebarProvider>
-            </MetaInfoProvider>
-            <Footer />
-          </RequiredAuthProvider>
-          <ReactQueryDevtools initialIsOpen={false} />
-        </QueryClientProvider>
-        <Toaster
-          closeButton
-          toastOptions={{
-            classNames: {
-              closeButton:
-                "text-gray-600! hover:text-red-500! h-6! w-6! bg-white! hover:bg-red-50! rounded! border! border-gray-200! hover:border-red-200! transition-colors! duration-150!",
-            },
-          }}
-        />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <QueryClientProvider client={queryClient}>
+            <RequiredAuthProvider authUrl={process.env.NEXT_PUBLIC_AUTH_URL!}>
+              <MetaInfoProvider>
+                <SidebarProvider>
+                  <AppSidebar />
+                  <SidebarInset>
+                    <main className="w-full h-full mr-2 border border-border rounded-lg bg-background">
+                      <Header />
+                      {children}
+                      <Analytics />
+                    </main>
+                  </SidebarInset>
+                </SidebarProvider>
+              </MetaInfoProvider>
+              <Footer />
+            </RequiredAuthProvider>
+            <ReactQueryDevtools initialIsOpen={false} />
+          </QueryClientProvider>
+          <Toaster
+            closeButton
+            toastOptions={{
+              classNames: {
+                closeButton:
+                  "text-muted-foreground! hover:text-red-500! h-6! w-6! bg-background! hover:bg-red-50! dark:hover:bg-red-950! rounded! border! border-border! hover:border-red-200! dark:hover:border-red-800! transition-colors! duration-150!",
+              },
+            }}
+          />
+        </ThemeProvider>
       </body>
     </html>
   );

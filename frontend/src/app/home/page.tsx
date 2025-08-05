@@ -27,7 +27,7 @@ export default function HomePage() {
 
       <div className="p-4 grid gap-6">
         <Card className="overflow-hidden">
-          <CardHeader className="flex flex-row items-center bg-slate-50">
+          <CardHeader className="flex flex-row items-center bg-muted">
             <div className="mr-2 mt-1">
               <TiDocumentText />
             </div>
@@ -66,7 +66,7 @@ export default function HomePage() {
         </Card>
 
         <Card className="overflow-hidden">
-          <CardHeader className="flex flex-row items-center bg-slate-50">
+          <CardHeader className="flex flex-row items-center bg-muted">
             <div className="mr-2 mt-1">
               <BiArchiveIn />
             </div>

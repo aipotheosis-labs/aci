@@ -51,7 +51,7 @@ export function LinkedAccountDetails({
 
         <div className="space-y-4">
           <Tabs defaultValue="account" className="w-full">
-            <TabsList className="mb-2 bg-slate-200">
+            <TabsList className="mb-2 bg-muted">
               {/* this button maybe should be active by default */}
               <TabsTrigger value="account">Account Info</TabsTrigger>
             </TabsList>
@@ -59,13 +59,13 @@ export function LinkedAccountDetails({
             <TabsContent value="account">
               <Card className="border rounded-md overflow-hidden">
                 <Table>
-                  <TableHeader className="bg-gray-50">
+                  <TableHeader className="bg-muted/50">
                     <TableRow>
                       <TableHead className="w-1/3 text-left">Key</TableHead>
                       <TableHead className="w-2/3 text-right">Value</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody className="text-gray-500">
+                  <TableBody className="text-muted-foreground">
                     <TableRow>
                       <TableCell className="font-medium text-left">
                         Account Owner ID

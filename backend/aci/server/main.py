@@ -25,6 +25,7 @@ from aci.server.routes import (
     app_configurations,
     apps,
     billing,
+    docs,
     functions,
     health,
     linked_accounts,
@@ -189,4 +190,10 @@ app.include_router(
     organizations.router,
     prefix=config.ROUTER_PREFIX_ORGANIZATIONS,
     tags=[config.ROUTER_PREFIX_ORGANIZATIONS.split("/")[-1]],
+)
+
+app.include_router(
+    docs.router,
+    prefix=config.ROUTER_PREFIX_DOCS,
+    tags=[config.ROUTER_PREFIX_DOCS.split("/")[-1]],
 )

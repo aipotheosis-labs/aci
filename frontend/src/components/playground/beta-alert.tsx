@@ -12,7 +12,7 @@ export const BetaAlert = () => {
       variant="default"
       className={cn(
         "relative m-1 w-[calc(100%-0.5rem)] pr-10",
-        "bg-blue-100 text-blue-800 border border-blue-200",
+        "bg-blue-50 dark:bg-blue-950 text-blue-800 dark:text-blue-200 border border-blue-200 dark:border-blue-800",
       )}
     >
       <AlertDescription>
@@ -21,7 +21,7 @@ export const BetaAlert = () => {
       </AlertDescription>
 
       <button
-        className="absolute top-2 right-2 text-blue-800 hover:text-blue-600"
+        className="absolute top-2 right-2 text-blue-800 dark:text-blue-200 hover:text-blue-600 dark:hover:text-blue-300"
         onClick={() => setVisible(false)}
         aria-label="Close beta alert"
       >
