@@ -256,7 +256,6 @@ export default function AppConfigDetailPage() {
 
   const handleSaveFunction = useCallback(async () => {
     try {
-      console.log("enable all functions", isAllFunctionsEnabled);
       if (isAllFunctionsEnabled) {
         await updateAppConfigMutation({
           app_name: appName,
