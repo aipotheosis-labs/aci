@@ -25,6 +25,13 @@ class RestMetadata(BaseModel):
     server_url: str
 
 
+class MCPMetadata(BaseModel):
+    original_tool_name: str
+    original_tool_description_hash: str
+    original_tool_input_schema_hash: str
+    need_initialize: bool
+
+
 class ConnectorMetadata(RootModel[dict]):
     """placeholder, allow any metadata for connector for now"""
 
@@ -40,7 +47,8 @@ class FunctionUpsert(BaseModel):
     # TODO: we need to use left_to_right union mode to avoid pydantic validating RestMetadata
     # input against ConnectorMetadata schema (which allows any dict)
     protocol_data: Annotated[
-        RestMetadata | ConnectorMetadata, Field(default_factory=dict, union_mode="left_to_right")
+        RestMetadata | MCPMetadata | ConnectorMetadata,
+        Field(default_factory=dict, union_mode="left_to_right"),
     ]
     parameters: dict = Field(default_factory=dict)
     response: dict = Field(default_factory=dict)
@@ -72,6 +80,7 @@ class FunctionUpsert(BaseModel):
         protocol_to_class = {
             Protocol.REST: RestMetadata,
             Protocol.CONNECTOR: ConnectorMetadata,
+            Protocol.MCP: MCPMetadata,
         }
 
         expected_class = protocol_to_class[self.protocol]
