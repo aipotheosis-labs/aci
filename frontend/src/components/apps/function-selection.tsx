@@ -50,9 +50,8 @@ export function FunctionSelection({
               </TooltipTrigger>
               <TooltipContent side="top">
                 <p className="text-xs">
-                  Checking this option to enable all functions available under
-                  the app. New functions available in the future will be enabled
-                  automatically.
+                  New functions available in the future for the app will be
+                  enabled automatically.
                 </p>
               </TooltipContent>
             </Tooltip>
