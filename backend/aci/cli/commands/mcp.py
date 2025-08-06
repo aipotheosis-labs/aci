@@ -7,10 +7,15 @@ from typing import Any, cast
 
 import click
 import httpx
+from openai import OpenAI
 from rich import print as rprint
 from rich.console import Console
 
+from aci.cli import config
+
 console = Console()
+
+openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
 
 MCP_PROTOCOL_VERSION = "2025-06-18"
 
@@ -237,7 +242,14 @@ def _create_function_file(app_name: str, tools: list[dict], need_initialize: boo
         description = tool["description"]
         if len(description) > 1024:
             rprint(
-                f"  └─ [yellow]Warning: Description for '{tool['name']}' is {len(description)} characters (exceeds 1024 limit). Need manual fix after generation.[/yellow]"
+                f"  └─ [yellow]Warning: Description for '{tool['name']}' is {len(description)} characters (exceeds 1024 limit).[/yellow]"
+            )
+            rprint("  └─ [yellow]Sending to LLM to shorten description...[/yellow]")
+            description = _shorten_function_description(
+                tool["name"], description, tool["inputSchema"]
+            )
+            rprint(
+                f"  └─ [green]Shortened description (new length: {len(description)}): {description}[/green]"
             )
 
         # Generate hashes for change detection
@@ -349,3 +361,16 @@ def _sanitize_orginal_tool_name(original_tool_name: str) -> str:
         sanitized = "UNKNOWN_TOOL"
 
     return sanitized
+
+
+# passing name and input_schema as well to help the model understand the function better
+def _shorten_function_description(name: str, description: str, input_schema: dict) -> str:
+    """Cap function description to 1024 characters"""
+    task = f"I have a function definition that contains name: {name}, description: {description}, and input_schema: {input_schema}. The desciption is a bit too long, please cap it to 1024 characters, while keeping the original meaning and structure as much as possible. Only return the shortened description, no other text."
+
+    response = openai_client.responses.create(model="gpt-4.1", input=task)
+    if len(response.output_text) > 1024:
+        rprint(
+            f"  └─ [red]Warning: Description is still too long ({len(response.output_text)}) after LLM processing. Need manual fix.[/red]"
+        )
+    return response.output_text
