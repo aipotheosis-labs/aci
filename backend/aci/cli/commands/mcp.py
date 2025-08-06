@@ -103,11 +103,6 @@ def handle_oauth2_mcp_server(app_name: str, mcp_server_url: str, access_token: s
     tools = _list_tools(mcp_server_url, access_token, mcp_session_id)
     list_tools_latency = time.perf_counter() - list_tools_start
 
-    number_of_tools = len(tools)
-    if tools:
-        console.print(json.dumps(tools[0], indent=2))
-    else:
-        console.print("No tools found")
     # Create final report
     summary = {
         "app_name": app_name,
@@ -116,7 +111,7 @@ def handle_oauth2_mcp_server(app_name: str, mcp_server_url: str, access_token: s
         "need_initialize": need_initialize,
         "initialize_latency": round(initialize_latency, 3),
         "mcp_session_id_example (if present)": mcp_session_id,
-        "number_of_tools": number_of_tools,
+        "number_of_tools": len(tools),
         "list_tools_latency": round(list_tools_latency, 3),
     }
 
