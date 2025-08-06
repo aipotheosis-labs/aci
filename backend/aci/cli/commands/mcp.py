@@ -1,3 +1,4 @@
+import hashlib
 import json
 import re
 import time
@@ -228,7 +229,7 @@ def _create_function_file(app_name: str, tools: list[dict], need_initialize: boo
     functions = []
 
     for tool in tools:
-        function_name = f"{app_name}__{_sanitize_orginal_mcp_tool_name(tool['name'])}"
+        function_name = f"{app_name}__{_sanitize_orginal_tool_name(tool['name'])}"
 
         rprint(f"Creating function {function_name} (mcp tool name: {tool['name']})")
 
@@ -239,6 +240,10 @@ def _create_function_file(app_name: str, tools: list[dict], need_initialize: boo
                 f"  └─ [yellow]Warning: Description for '{tool['name']}' is {len(description)} characters (exceeds 1024 limit). Need manual fix after generation.[/yellow]"
             )
 
+        # Generate hashes for change detection
+        description_hash = _normalize_and_hash_content(description)
+        input_schema_hash = _normalize_and_hash_content(tool["inputSchema"])
+
         # Build function definition according to the specification
         function = {
             "name": function_name,
@@ -247,7 +252,13 @@ def _create_function_file(app_name: str, tools: list[dict], need_initialize: boo
             "visibility": "public",
             "active": True,
             "protocol": "mcp",
-            "protocol_data": {"mcp_tool_name": tool["name"], "need_initialize": need_initialize},
+            "protocol_data": {
+                "original_tool_name": tool["name"],
+                # storing hashes so we can better detect changes from the original MCP server
+                "original_tool_description_hash": description_hash,
+                "original_tool_input_schema_hash": input_schema_hash,
+                "need_initialize": need_initialize,
+            },
             "parameters": tool["inputSchema"],
         }
 
@@ -292,13 +303,34 @@ def _parse_mcp_response(response: httpx.Response) -> Any:
         return response.json()
 
 
-def _sanitize_orginal_mcp_tool_name(mcp_tool_name: str) -> str:
+def _normalize_and_hash_content(content: Any) -> str:
+    """
+    Normalize content and generate a hash to detect meaningful changes while ignoring formatting.
+
+    For strings: keeps only letters and numbers (removes punctuation, whitespace, etc.)
+    For objects: converts to normalized JSON with sorted keys
+    """
+    if isinstance(content, str):
+        # Normalize string content:
+        # 1. Convert to lowercase for case-insensitive comparison
+        # 2. Keep only letters and numbers (remove all punctuation, whitespace, etc.)
+        normalized = re.sub(r"[^a-z0-9]", "", content.lower())
+    else:
+        # For objects (like inputSchema), convert to normalized JSON
+        # Sort keys to ensure consistent ordering
+        normalized = json.dumps(content, sort_keys=True, separators=(",", ":"))
+
+    # Generate SHA-256 hash of normalized content
+    return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
+
+
+def _sanitize_orginal_tool_name(original_tool_name: str) -> str:
     """Convert MCP tool name to comply with naming rules: uppercase letters, numbers, underscores only, no consecutive underscores"""
-    if not mcp_tool_name:
-        return mcp_tool_name
+    if not original_tool_name:
+        return original_tool_name
 
     # Convert to uppercase
-    sanitized = mcp_tool_name.upper()
+    sanitized = original_tool_name.upper()
 
     # Replace any non-alphanumeric characters (except underscores) with underscores
     sanitized = re.sub(r"[^A-Z0-9_]", "_", sanitized)
@@ -312,7 +344,7 @@ def _sanitize_orginal_mcp_tool_name(mcp_tool_name: str) -> str:
     # If the sanitized name is empty (edge case), provide a fallback
     if not sanitized:
         rprint(
-            f"[yellow]Warning: Tool name '{mcp_tool_name}' is empty after sanitization. Using 'UNKNOWN_TOOL' as placeholder. Need manual fix after generation.[/yellow]"
+            f"[yellow]Warning: Tool name '{original_tool_name}' is empty after sanitization. Using 'UNKNOWN_TOOL' as placeholder. Need manual fix after generation.[/yellow]"
         )
         sanitized = "UNKNOWN_TOOL"
 
