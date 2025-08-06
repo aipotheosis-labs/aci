@@ -54,7 +54,7 @@ def generate_functions_file_from_mcp_server(
                 raise click.BadParameter("--access-token is required for OAuth2 authentication")
             return handle_oauth2_mcp_server(app_name, mcp_server_url, access_token)
         case _:
-            raise ValueError(f"Unsupported security scheme: {security_scheme}")
+            raise click.BadParameter(f"Unsupported security scheme: {security_scheme}")
 
 
 def handle_oauth2_mcp_server(app_name: str, mcp_server_url: str, access_token: str) -> None:
