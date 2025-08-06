@@ -8,15 +8,11 @@ from pydantic import BaseModel, ConfigDict, Field, RootModel, field_validator, m
 from aci.common.db.sql_models import MAX_STRING_LENGTH
 from aci.common.enums import (
     FunctionDefinitionFormat,
-    HttpLocation,
     HttpMethod,
     Protocol,
     Visibility,
 )
-from aci.common.validator import (
-    validate_function_parameters_schema_common,
-    validate_function_parameters_schema_rest_protocol,
-)
+from aci.common.validator import validate_function_parameters_schema
 
 
 class RestMetadata(BaseModel):
@@ -59,18 +55,8 @@ class FunctionUpsert(BaseModel):
         # Validate that parameters schema itself is a valid JSON Schema
         jsonschema.validate(instance=self.parameters, schema=jsonschema.Draft7Validator.META_SCHEMA)
 
-        # common validation
-        validate_function_parameters_schema_common(self.parameters, f"{self.name}.parameters")
-
-        # specific validation per protocol
-        if self.protocol == Protocol.REST:
-            validate_function_parameters_schema_rest_protocol(
-                self.parameters,
-                f"{self.name}.parameters",
-                [str(location) for location in HttpLocation],
-            )
-        else:
-            pass
+        # custom validation for parameters schema based on protocol type
+        validate_function_parameters_schema(self.protocol, self.parameters)
 
         return self
 
