@@ -6,6 +6,12 @@ import { useAppFunctionsColumns } from "./useAppFunctionsColumns";
 import { AppFunction } from "@/lib/types/appfunction";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { BsInfoCircle } from "react-icons/bs";
 
 interface FunctionSelectionProps {
   availableFunctions: AppFunction[];
@@ -36,6 +42,18 @@ export function FunctionSelection({
             <Label className="text-sm font-medium">
               Enable All Available Functions
             </Label>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="cursor-pointer">
+                  <BsInfoCircle className="h-4 w-4 text-muted-foreground" />
+                </span>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p className="text-xs">
+                  Checking this option to enable all functions available under the app. New functions available in the future will be enabled automatically.
+                </p>
+              </TooltipContent>
+            </Tooltip>
           </div>
 
           {!isAllFunctionsEnabled && (
