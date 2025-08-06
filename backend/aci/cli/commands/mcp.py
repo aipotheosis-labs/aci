@@ -276,7 +276,7 @@ def _parse_mcp_response(response: httpx.Response) -> dict:
         #             return json.loads(json_str)
 
         # raise click.ClickException("No valid JSON data found in SSE response")
-        return {}
+        raise click.ClickException("text/event-stream responses are not supported yet")
     else:
         # Regular JSON response
         return cast(dict, response.json())
