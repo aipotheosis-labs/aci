@@ -149,13 +149,15 @@ export function FunctionSelectionDialog({
         <DialogHeader>
           <DialogTitle>Enable/Disable functions</DialogTitle>
         </DialogHeader>
-        <FunctionSelection
-          availableFunctions={functions}
-          isAllFunctionsEnabled={isAllFunctionsEnabled}
-          setIsAllFunctionsEnabled={setIsAllFunctionsEnabled}
-          selectedFunctionNames={selectedFunctionNames}
-          setSelectedFunctionNames={setSelectedFunctionNames}
-        />
+        <div className="mt-2">
+          <FunctionSelection
+            availableFunctions={functions}
+            isAllFunctionsEnabled={isAllFunctionsEnabled}
+            setIsAllFunctionsEnabled={setIsAllFunctionsEnabled}
+            selectedFunctionNames={selectedFunctionNames}
+            setSelectedFunctionNames={setSelectedFunctionNames}
+          />
+        </div>
         <div className="flex justify-end gap-2 mt-4">
           <Button
             variant="outline"
