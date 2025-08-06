@@ -55,7 +55,7 @@ export default function AppConfigPage() {
       },
       {} as Record<string, number>,
     );
-  }, [appConfigs]);
+  }, [appConfigs, appsMap]);
 
   const appConfigsColumns = useAppConfigsTableColumns({
     linkedAccountsCountMap,
