@@ -2,7 +2,7 @@ import json
 import re
 import time
 from pathlib import Path
-from typing import cast
+from typing import Any, cast
 
 import click
 import httpx
@@ -14,11 +14,37 @@ console = Console()
 MCP_PROTOCOL_VERSION = "2025-06-18"
 
 
+def _validate_app_name(ctx: click.Context, param: click.Parameter, value: str) -> str:
+    """Validate that app name only contains uppercase letters, numbers, underscores and no consecutive underscores"""
+    if not value:
+        return value
+
+    # Check if contains only valid characters (uppercase letters, numbers, underscores)
+    if not re.match(r"^[A-Z0-9_]+$", value):
+        raise click.BadParameter(
+            "App name must contain only uppercase letters (A-Z), numbers (0-9), and underscores (_). "
+            f"Invalid characters found in: {value}"
+        )
+
+    # Check for consecutive underscores
+    if "__" in value:
+        raise click.BadParameter(
+            f"App name cannot contain consecutive underscores. Found in: {value}"
+        )
+
+    # Check if starts or ends with underscore
+    if value.startswith("_") or value.endswith("_"):
+        raise click.BadParameter(f"App name cannot start or end with underscore. Found: {value}")
+
+    return value
+
+
 @click.command()
 @click.option(
     "--app-name",
     required=True,
-    help="App name to be used as prefix for function names, e.g., NOTION, NOTION_V2",
+    callback=_validate_app_name,
+    help="App name to be used as prefix for function names, e.g., NOTION, NOTION_V2. Must contain only uppercase letters, numbers, and underscores (no consecutive underscores).",
 )
 @click.option(
     "--mcp-server-url",
@@ -207,18 +233,9 @@ def _create_function_file(app_name: str, tools: list[dict], need_initialize: boo
     functions = []
 
     for tool in tools:
-        # Generate function name: {app_name}_{tool_name} (all uppercase)
-        # Convert any non-alphanumeric characters (except underscores) to underscores
-        raw_function_name = f"{app_name}__{tool['name']}".upper()
-        function_name = re.sub(r"[^A-Z0-9_]", "_", raw_function_name)
+        function_name = f"{app_name}__{_sanitize_orginal_mcp_tool_name(tool['name'])}"
 
-        # Print function name and original tool name
         rprint(f"Creating function {function_name} (mcp tool name: {tool['name']})")
-
-        if "__" in function_name:
-            rprint(
-                f"  └─ [yellow]Warning: Function name '{function_name}' contains consecutive underscores. Need manual fix after generation.[/yellow]"
-            )
 
         # Check description length
         description = tool["description"]
@@ -258,25 +275,50 @@ def _create_function_file(app_name: str, tools: list[dict], need_initialize: boo
     rprint(f"[green]Local path: ./apps/{app_name.lower()}/functions.json[/green]")
 
 
-def _parse_mcp_response(response: httpx.Response) -> dict:
+def _parse_mcp_response(response: httpx.Response) -> Any:
     """Parse MCP response, handling both JSON and event-stream formats"""
     content_type = response.headers.get("content-type", "").lower()
 
     if "text/event-stream" in content_type:
-        # TODO:Parse event-stream format?
-        # content = response.text.strip()
-        # lines = content.split("\n")
+        content = response.text.strip()
+        lines = content.split("\n")
 
-        # # Find the data line in event-stream format
-        # for line in lines:
-        #     if line.startswith("data:"):
-        #         # Extract JSON from "data: {...}"
-        #         json_str = line[5:].strip()  # Remove "data:" prefix
-        #         if json_str:
-        #             return json.loads(json_str)
+        # Find the data line in event-stream format
+        for line in lines:
+            if line.startswith("data:"):
+                # Extract JSON from "data: {...}"
+                json_str = line[5:].strip()  # Remove "data:" prefix
+                if json_str:
+                    return json.loads(json_str)
 
-        # raise click.ClickException("No valid JSON data found in SSE response")
-        raise click.ClickException("text/event-stream responses are not supported yet")
+        raise click.ClickException("No valid JSON data found in SSE response")
     else:
         # Regular JSON response
-        return cast(dict, response.json())
+        return response.json()
+
+
+def _sanitize_orginal_mcp_tool_name(mcp_tool_name: str) -> str:
+    """Convert MCP tool name to comply with naming rules: uppercase letters, numbers, underscores only, no consecutive underscores"""
+    if not mcp_tool_name:
+        return mcp_tool_name
+
+    # Convert to uppercase
+    sanitized = mcp_tool_name.upper()
+
+    # Replace any non-alphanumeric characters (except underscores) with underscores
+    sanitized = re.sub(r"[^A-Z0-9_]", "_", sanitized)
+
+    # Remove consecutive underscores by replacing multiple underscores with single underscore
+    sanitized = re.sub(r"_+", "_", sanitized)
+
+    # Remove leading and trailing underscores
+    sanitized = sanitized.strip("_")
+
+    # If the sanitized name is empty (edge case), provide a fallback
+    if not sanitized:
+        rprint(
+            f"[yellow]Warning: Tool name '{mcp_tool_name}' is empty after sanitization. Using 'UNKNOWN_TOOL' as placeholder. Need manual fix after generation.[/yellow]"
+        )
+        sanitized = "UNKNOWN_TOOL"
+
+    return sanitized
