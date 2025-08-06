@@ -33,22 +33,17 @@ import { EnhancedSwitch } from "@/components/ui-extensions/enhanced-switch/enhan
 import { formatToLocalTime } from "@/utils/time";
 import { ArrowUpDown } from "lucide-react";
 import { EnhancedDataTable } from "@/components/ui-extensions/enhanced-data-table/data-table";
-import {
-  createColumnHelper,
-  RowSelectionState,
-  type ColumnDef,
-} from "@tanstack/react-table";
+import { createColumnHelper, type ColumnDef } from "@tanstack/react-table";
 import {
   useAppLinkedAccounts,
   useDeleteLinkedAccount,
   useUpdateLinkedAccount,
 } from "@/hooks/use-linked-account";
 import { useApp } from "@/hooks/use-app";
-import { useAppConfig, useUpdateAppConfig } from "@/hooks/use-app-config";
 import { useAppFunctionsColumns } from "@/components/apps/useAppFunctionsColumns";
+import { FunctionSelectionDialog } from "@/components/appconfig/function-selection-dialog";
+import { useAppConfig } from "@/hooks/use-app-config";
 import { AppFunction } from "@/lib/types/appfunction";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 
 const columnHelper = createColumnHelper<LinkedAccount>();
 
@@ -56,20 +51,15 @@ export default function AppConfigDetailPage() {
   const { appName } = useParams<{ appName: string }>();
 
   const { app } = useApp(appName);
+  const { data: appConfig } = useAppConfig(appName);
 
   const { data: linkedAccounts = [] } = useAppLinkedAccounts(appName);
-  const { data: appConfig } = useAppConfig(appName);
-  const [selectedFunctionNames, setSelectedFunctionNames] =
-    useState<RowSelectionState>({});
-  const [isAllFunctionsEnabled, setIsAllFunctionsEnabled] = useState(false);
+  const [activeTab, setActiveTab] = useState("linked");
 
   const { mutateAsync: deleteLinkedAccount } = useDeleteLinkedAccount();
   const { mutateAsync: updateLinkedAccount } = useUpdateLinkedAccount();
 
-  const {
-    mutateAsync: updateAppConfigMutation,
-    isPending: isUpdatingAppConfig,
-  } = useUpdateAppConfig();
+  const [enabledFunctions, setEnabledFunctions] = useState<AppFunction[]>([]);
 
   const toggleAccountStatus = useCallback(
     async (accountId: string, newStatus: boolean) => {
@@ -244,63 +234,20 @@ export default function AppConfigDetailPage() {
    */
   const functionsColumns = useAppFunctionsColumns();
 
-  const handleSaveFunction = useCallback(async () => {
-    try {
-      if (isAllFunctionsEnabled) {
-        await updateAppConfigMutation({
-          app_name: appName,
-          all_functions_enabled: true,
-          enabled_functions: [],
-        });
-      } else {
-        const enabledFunctions = app?.functions.filter(
-          (func: AppFunction) => selectedFunctionNames[func.name],
-        );
-        const enabledFunctionsNames = enabledFunctions?.map(
-          (func: AppFunction) => func.name,
-        );
-        await updateAppConfigMutation({
-          app_name: appName,
-          all_functions_enabled: false,
-          enabled_functions: enabledFunctionsNames,
-        });
-      }
-      toast.success("Functions updated successfully");
-    } catch (error) {
-      console.error("Failed to update app config:", error);
-    }
-  }, [
-    appName,
-    isAllFunctionsEnabled,
-    selectedFunctionNames,
-    app,
-    updateAppConfigMutation,
-  ]);
-
-  const populateSelectedFunctionNames = () => {
-    const initialSelection: RowSelectionState = {};
-    if (appConfig?.all_functions_enabled) {
-      setIsAllFunctionsEnabled(true);
-    } else if (appConfig?.enabled_functions) {
-      setIsAllFunctionsEnabled(false);
-      appConfig.enabled_functions.forEach((func: string) => {
-        if (func) {
-          initialSelection[func] = true;
-        }
-      });
-    }
-    setSelectedFunctionNames(initialSelection);
-  };
-
-  // populate selected function names when the page is loaded
+  // load enabled functions from app config
   useEffect(() => {
-    populateSelectedFunctionNames();
-  }, [appConfig]);
-
-  // reset function selection to original state before any changes are made
-  const handleResetFunction = () => {
-    populateSelectedFunctionNames();
-  };
+    if (app?.functions) {
+      if (appConfig?.all_functions_enabled) {
+        setEnabledFunctions(app.functions);
+      } else if (appConfig?.enabled_functions) {
+        setEnabledFunctions(
+          app.functions.filter((func: AppFunction) =>
+            appConfig.enabled_functions.includes(func.name),
+          ),
+        );
+      }
+    }
+  }, [appConfig, app]);
 
   return (
     <div className="p-6">
@@ -323,7 +270,7 @@ export default function AppConfigDetailPage() {
             <IdDisplay id={app?.name ?? ""} />
           </div>
         </div>
-        {app && (
+        {app && activeTab === "linked" && (
           <AddAccountForm
             appInfos={[
               {
@@ -335,9 +282,16 @@ export default function AppConfigDetailPage() {
             ]}
           />
         )}
+        {app && activeTab === "functions" && (
+          <FunctionSelectionDialog appName={app.name} onSave={() => {}} />
+        )}
       </div>
 
-      <Tabs defaultValue={"linked"} className="w-full">
+      <Tabs
+        defaultValue={"linked"}
+        className="w-full"
+        onValueChange={setActiveTab}
+      >
         <TabsList>
           <TabsTrigger value="linked">
             Linked Accounts
@@ -359,7 +313,7 @@ export default function AppConfigDetailPage() {
             </div>
           </TabsTrigger>
           <TabsTrigger value="functions">
-            Function Selections
+            Enabled Functions
             <div className="ml-2">
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -393,51 +347,15 @@ export default function AppConfigDetailPage() {
         </TabsContent>
 
         <TabsContent value="functions">
-          <div className="flex items-center gap-2 m-2">
-            <Switch
-              checked={isAllFunctionsEnabled}
-              onCheckedChange={setIsAllFunctionsEnabled}
-            />
-            <Label className="text-sm font-medium">
-              Enable All Available Functions
-            </Label>
-          </div>
-          {!isAllFunctionsEnabled && (
-            <EnhancedDataTable
-              columns={functionsColumns}
-              data={app?.functions ?? []}
-              searchBarProps={{ placeholder: "Search functions..." }}
-              rowSelectionProps={{
-                rowSelection: selectedFunctionNames,
-                onRowSelectionChange: setSelectedFunctionNames,
-                getRowId: (row) => row.name,
-              }}
-              paginationOptions={{
-                initialPageIndex: 0,
-                initialPageSize: 15,
-              }}
-            />
-          )}
-          <div className="flex justify-end gap-2 mt-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleResetFunction()}
-              disabled={isUpdatingAppConfig}
-              // className="me-1"
-            >
-              Reset
-            </Button>
-
-            <Button
-              variant="default"
-              size="sm"
-              onClick={() => handleSaveFunction()}
-              disabled={isUpdatingAppConfig}
-            >
-              {isUpdatingAppConfig ? "Saving..." : "Save"}
-            </Button>
-          </div>
+          <EnhancedDataTable
+            columns={functionsColumns}
+            data={enabledFunctions}
+            searchBarProps={{ placeholder: "Search functions..." }}
+            paginationOptions={{
+              initialPageIndex: 0,
+              initialPageSize: 15,
+            }}
+          />
         </TabsContent>
 
         {/* <TabsContent value="logs">
