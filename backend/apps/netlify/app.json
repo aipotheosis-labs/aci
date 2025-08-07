@@ -1,0 +1,23 @@
+{
+  "name": "NETLIFY",
+  "display_name": "Netlify",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/netlify.jpg",
+  "provider": "Netlify, Inc.",
+  "version": "1.0.0",
+  "description": "Netlify is a cloud hosting platform for web applications and static sites with continuous deployment, forms, and serverless functions.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Dev Tools",
+    "Cloud Infrastructure",
+    "Web Development"
+  ],
+  "visibility": "public",
+  "active": true
+}

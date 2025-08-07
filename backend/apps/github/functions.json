@@ -2135,7 +2135,7 @@
                         },
                         "branch": {
                             "type": "string",
-                            "description": "The branch name. Default: the repository's default branch (usually master)"
+                            "description": "The branch name. Default: the repository's default branch (usually 'main' for new repos, 'master' for older repos). Use GITHUB__LIST_BRANCHES to verify available branches."
                         },
                         "committer": {
                             "type": "object",
@@ -2189,11 +2189,14 @@
     },
     {
         "name": "GITHUB__LIST_BRANCHES",
-        "description": "Lists branches for a repository",
+        "description": "Lists all branches for a repository. Use this before deployment to verify the correct branch name (main vs master) and avoid 'branch not found' deployment errors in Netlify.",
         "tags": [
             "repository",
             "branch",
-            "git"
+            "git",
+            "deployment",
+            "netlify",
+            "verification"
         ],
         "visibility": "public",
         "active": true,
@@ -4678,5 +4681,219 @@
             ],
             "additionalProperties": false
         }
-    }
+    },
+    {
+        "name": "GITHUB__CREATE_DEPLOY_KEY",
+        "description": "Add a deploy key to a repository. Deploy keys are SSH keys that grant access to a single repository.",
+        "tags": [
+            "repository",
+            "deploy",
+            "key",
+            "ssh",
+            "private"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/repos/{owner}/{repo}/keys",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "content-type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "content-type",
+                        "user-agent"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "repo"
+                    ],
+                    "visible": [
+                        "owner",
+                        "repo"
+                    ],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body for creating deploy key",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "description": "A name for the key."
+                        },
+                        "key": {
+                            "type": "string",
+                            "description": "The contents of the key (SSH public key)."
+                        },
+                        "read_only": {
+                            "type": "boolean",
+                            "description": "If true, the key will only be able to read repository contents. Otherwise, the key will be able to read and write.",
+                            "default": false
+                        }
+                    },
+                    "required": [
+                        "title",
+                        "key"
+                    ],
+                    "visible": [
+                        "title",
+                        "key",
+                        "read_only"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GITHUB__LIST_DEPLOY_KEYS",
+        "description": "List deploy keys for a repository.",
+        "tags": [
+            "repository",
+            "deploy",
+            "key",
+            "list"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/repos/{owner}/{repo}/keys",
+            "server_url": "https://api.github.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/vnd.github+json"
+                        },
+                        "user-agent": {
+                            "type": "string",
+                            "description": "User-Agent header",
+                            "default": "ACI::GITHUB"
+                        }
+                    },
+                    "required": [
+                        "accept",
+                        "user-agent"
+                    ],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters for the http request",
+                    "properties": {
+                        "owner": {
+                            "type": "string",
+                            "description": "The account owner of the repository. The name is not case sensitive."
+                        },
+                        "repo": {
+                            "type": "string",
+                            "description": "The name of the repository without the .git extension. The name is not case sensitive."
+                        }
+                    },
+                    "required": [
+                        "owner",
+                        "repo"
+                    ],
+                    "visible": [
+                        "owner",
+                        "repo"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the http request",
+                    "properties": {
+                        "per_page": {
+                            "type": "integer",
+                            "description": "The number of results per page (max 100).",
+                            "default": 30,
+                            "maximum": 100
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "The page number of the results to fetch.",
+                            "default": 1
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "per_page",
+                        "page"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "path"
+            ],
+            "visible": [
+                "path",
+                "query"
+            ],
+            "additionalProperties": false
+        }
+         }
 ]
