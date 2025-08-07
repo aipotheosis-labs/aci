@@ -435,59 +435,6 @@
     }
   },
   {
-    "name": "NETLIFY__CREATE_DEPLOY",
-    "description": "Create a new deployment for a site.",
-    "tags": ["deploy", "deployment", "create"],
-    "visibility": "public",
-    "active": true,
-    "protocol": "rest",
-    "protocol_data": {
-      "method": "POST",
-      "path": "/api/v1/sites/{site_id}/deploys",
-      "server_url": "https://api.netlify.com"
-    },
-    "parameters": {
-      "type": "object",
-      "properties": {
-        "path": {
-          "type": "object",
-          "description": "path parameters",
-          "properties": {
-            "site_id": {
-              "type": "string",
-              "description": "The unique identifier of the site to deploy."
-            }
-          },
-          "required": ["site_id"],
-          "visible": ["site_id"],
-          "additionalProperties": false
-        },
-        "body": {
-          "type": "object",
-          "description": "Deployment configuration",
-          "properties": {
-            "draft": {
-              "type": "boolean",
-              "default": false,
-              "description": "Create as draft deployment."
-            },
-            "async": {
-              "type": "boolean",
-              "default": false,
-              "description": "Create deployment asynchronously for large deploys."
-            }
-          },
-          "required": [],
-          "visible": ["draft", "async"],
-          "additionalProperties": false
-        }
-      },
-      "required": ["path"],
-      "visible": ["path", "body"],
-      "additionalProperties": false
-    }
-  },
-  {
     "name": "NETLIFY__GET_DEPLOY",
     "description": "Get information about a specific deployment.",
     "tags": ["deploy", "deployment", "get", "retrieve"],
@@ -732,6 +679,127 @@
       },
       "required": ["path"],
       "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "NETLIFY__CREATE_BUILD_HOOK",
+    "description": "Create a new build hook for a site. Build hooks provide unique URLs to trigger new builds and deploys from external services or scripts. Once created, use NETLIFY__TRIGGER_BUILD_HOOK to actually trigger builds.",
+    "tags": ["build", "hook", "create", "webhook", "integration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/v1/sites/{site_id}/build_hooks",
+      "server_url": "https://api.netlify.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "site_id": {
+              "type": "string",
+              "description": "The unique identifier of the site to create a build hook for."
+            }
+          },
+          "required": ["site_id"],
+          "visible": ["site_id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Build hook configuration",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "A descriptive name for the build hook. This will appear in deploy messages."
+            },
+            "branch": {
+              "type": "string",
+              "default": "main",
+              "description": "The branch to build when the hook is triggered. Defaults to the site's default branch."
+            }
+          },
+          "required": ["title"],
+          "visible": ["title", "branch"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "NETLIFY__TRIGGER_BUILD_HOOK",
+    "description": "Trigger a new build and deployment by calling a build hook URL. Build hooks pull the latest code from the connected Git repository and rebuild the site. This is the proper way to trigger deployments with code changes, unlike NETLIFY__CREATE_DEPLOY which creates empty deployments.",
+    "tags": ["build", "hook", "trigger", "deploy", "git", "webhook"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/{hook_id}",
+      "server_url": "https://api.netlify.com/build_hooks"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Build hook parameters",
+          "properties": {
+            "hook_id": {
+              "type": "string",
+              "description": "The build hook ID from the build hook URL. Find this in Project configuration > Build & deploy > Build hooks."
+            }
+          },
+          "required": ["hook_id"],
+          "visible": ["hook_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional parameters to customize the build",
+          "properties": {
+            "trigger_branch": {
+              "type": "string",
+              "description": "Specify which repository branch the build will use. If not specified, uses the default branch."
+            },
+            "trigger_title": {
+              "type": "string",
+              "description": "Custom title to replace the default deploy message in your site deploy list."
+            },
+            "clear_cache": {
+              "type": "boolean",
+              "default": false,
+              "description": "When set to true, triggers a build with a cleared cache."
+            }
+          },
+          "required": [],
+          "visible": ["trigger_branch", "trigger_title", "clear_cache"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Optional payload that will be available as INCOMING_HOOK_BODY environment variable",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "Custom message or payload to include with the build trigger."
+            }
+          },
+          "required": [],
+          "visible": ["message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query", "body"],
       "additionalProperties": false
     }
   }
