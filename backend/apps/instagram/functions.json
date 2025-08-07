@@ -1,7 +1,7 @@
 [
   {
     "name": "INSTAGRAM__MEDIA_CONTAINER_CREATE",
-    "description": "Creates a media container on Instagram for publishing a post. This is the first step to publish a media object (photo, video, etc.) to an Instagram Business account.",
+    "description": "Creates a media container for publishing content to Instagram Business account.",
     "tags": [
       "instagram",
       "media",
@@ -109,7 +109,7 @@
   },
   {
     "name": "INSTAGRAM__MEDIA_CONTAINER_PUBLISH",
-    "description": "Publishes a previously created media container to the Instagram Business account. This is the final step to make the media object (photo, video, etc.) visible on the user's Instagram feed.",
+    "description": "Publishes a media container to Instagram feed.",
     "tags": [
       "instagram",
       "media",
@@ -142,6 +142,941 @@
       },
       "required": ["query"],
       "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__GET_USER_PROFILE",
+    "description": "Retrieves Instagram Business or Creator account profile information.",
+    "tags": [
+      "instagram",
+      "profile",
+      "user",
+      "account"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v23.0/me",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for retrieving user profile information",
+          "properties": {
+            "fields": {
+              "type": "string",
+              "description": "Comma-separated list of fields to retrieve from the Instagram user profile",
+              "default": "id,username,biography,followers_count,media_count"
+            }
+          },
+          "required": [],
+          "visible": ["fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__GET_USER_MEDIA",
+    "description": "Retrieves media objects from Instagram Business or Creator account.",
+    "tags": [
+      "instagram",
+      "media",
+      "user",
+      "content"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v23.0/{ig_id}/media",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "ig_id": {
+              "type": "string",
+              "description": "Instagram User ID to retrieve media objects for"
+            }
+          },
+          "required": ["ig_id"],
+          "visible": ["ig_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for retrieving user media objects",
+          "properties": {
+            "fields": {
+              "type": "string",
+              "description": "Comma-separated list of fields to retrieve for each media object",
+              "default": "id"
+            },
+            "limit": {
+              "type": "number",
+              "description": "Number of media objects to return (max 25)",
+              "minimum": 1,
+              "maximum": 25
+            },
+            "after": {
+              "type": "string",
+              "description": "Pagination cursor to get media objects after this cursor"
+            },
+            "before": {
+              "type": "string",
+              "description": "Pagination cursor to get media objects before this cursor"
+            }
+          },
+          "required": [],
+          "visible": ["fields", "limit", "after", "before"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__GET_CONVERSATIONS",
+    "description": "Retrieves conversations for Instagram professional account.",
+    "tags": [
+      "instagram",
+      "conversations",
+      "messages",
+      "business"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v23.0/{ig_id}/conversations",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "ig_id": {
+              "type": "string",
+              "description": "Instagram professional account ID to retrieve conversations for"
+            }
+          },
+          "required": ["ig_id"],
+          "visible": ["ig_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for retrieving conversations",
+          "properties": {
+            "platform": {
+              "type": "string",
+              "description": "Platform to filter conversations",
+              "default": "instagram",
+              "enum": ["instagram"]
+            },
+            "fields": {
+              "type": "string",
+              "description": "Comma-separated list of fields to retrieve for each conversation",
+              "default": "id,updated_time"
+            },
+            "limit": {
+              "type": "number",
+              "description": "Number of conversations to return",
+              "minimum": 1
+            },
+            "after": {
+              "type": "string",
+              "description": "Pagination cursor to get conversations after this cursor"
+            },
+            "before": {
+              "type": "string",
+              "description": "Pagination cursor to get conversations before this cursor"
+            }
+          },
+          "required": [],
+          "visible": ["platform", "fields", "limit", "after", "before"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__GET_CONVERSATION_MESSAGES",
+    "description": "Retrieves messages from a specific Instagram conversation.",
+    "tags": [
+      "instagram",
+      "messages",
+      "conversation",
+      "business"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v23.0/{conversation_id}",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "conversation_id": {
+              "type": "string",
+              "description": "Instagram conversation ID to retrieve messages from"
+            }
+          },
+          "required": ["conversation_id"],
+          "visible": ["conversation_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for retrieving conversation messages",
+          "properties": {
+            "fields": {
+              "type": "string",
+              "description": "Comma-separated list of fields to retrieve",
+              "default": "messages"
+            },
+            "limit": {
+              "type": "number",
+              "description": "Number of messages to return",
+              "minimum": 1
+            },
+            "after": {
+              "type": "string",
+              "description": "Pagination cursor to get messages after this cursor"
+            },
+            "before": {
+              "type": "string",
+              "description": "Pagination cursor to get messages before this cursor"
+            }
+          },
+          "required": [],
+          "visible": ["fields", "limit", "after", "before"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__GET_MESSAGE_INFO",
+    "description": "Retrieves detailed information about a specific Instagram message.",
+    "tags": [
+      "instagram",
+      "message",
+      "details",
+      "business"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v23.0/{message_id}",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "message_id": {
+              "type": "string",
+              "description": "Instagram message ID to retrieve information for"
+            }
+          },
+          "required": ["message_id"],
+          "visible": ["message_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for retrieving message information",
+          "properties": {
+            "fields": {
+              "type": "string",
+              "description": "Comma-separated list of fields to retrieve for the message",
+              "default": "id,created_time,from,to,message"
+            }
+          },
+          "required": [],
+          "visible": ["fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__GET_CONTAINER_STATUS",
+    "description": "Retrieves Instagram media container status and details.",
+    "tags": [
+      "instagram",
+      "container",
+      "status",
+      "media"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v23.0/{ig_container_id}",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "ig_container_id": {
+              "type": "string",
+              "description": "Instagram Container ID to retrieve information for"
+            }
+          },
+          "required": ["ig_container_id"],
+          "visible": ["ig_container_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for retrieving container information",
+          "properties": {
+            "fields": {
+              "type": "string",
+              "description": "Comma-separated list of fields to retrieve for the container.",
+              "default": "id,status_code,status"
+            }
+          },
+          "required": [],
+          "visible": ["fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__GET_MEDIA_COMMENTS",
+    "description": "Retrieves comments on a published Instagram media object.",
+    "tags": [
+      "instagram",
+      "comments",
+      "media",
+      "engagement"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v23.0/{ig_media_id}/comments",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "ig_media_id": {
+              "type": "string",
+              "description": "Instagram Media ID to retrieve comments for"
+            }
+          },
+          "required": ["ig_media_id"],
+          "visible": ["ig_media_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for retrieving media comments",
+          "properties": {
+            "fields": {
+              "type": "string",
+              "description": "Comma-separated list of fields to retrieve for each comment",
+              "default": "id,text,timestamp"
+            },
+            "limit": {
+              "type": "number",
+              "description": "Number of comments to return",
+              "minimum": 1
+            },
+            "after": {
+              "type": "string",
+              "description": "Pagination cursor to get comments after this cursor"
+            },
+            "before": {
+              "type": "string",
+              "description": "Pagination cursor to get comments before this cursor"
+            }
+          },
+          "required": [],
+          "visible": ["fields", "limit", "after", "before"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__REPLY_TO_COMMENT",
+    "description": "Replies to a specific Instagram comment.",
+    "tags": [
+      "instagram",
+      "comment",
+      "reply",
+      "engagement"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v23.0/{ig_comment_id}/replies",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "ig_comment_id": {
+              "type": "string",
+              "description": "Instagram Comment ID to reply to"
+            }
+          },
+          "required": ["ig_comment_id"],
+          "visible": ["ig_comment_id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body parameters for replying to a comment",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "The reply message text to post"
+            }
+          },
+          "required": ["message"],
+          "visible": ["message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__SEND_PRIVATE_REPLY",
+    "description": "Sends a private reply message to a commenter on Instagram.",
+    "tags": [
+      "instagram",
+      "message",
+      "private",
+      "reply"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v23.0/{ig_id}/messages",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "ig_id": {
+              "type": "string",
+              "description": "Instagram professional account ID to send the private reply from"
+            }
+          },
+          "required": ["ig_id"],
+          "visible": ["ig_id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body parameters for sending a private reply",
+          "properties": {
+            "recipient": {
+              "type": "object",
+              "description": "Recipient information for the private reply",
+              "properties": {
+                "comment_id": {
+                  "type": "string",
+                  "description": "The ID of the comment to reply to privately"
+                }
+              },
+              "required": ["comment_id"],
+              "visible": ["comment_id"],
+              "additionalProperties": false
+            },
+            "message": {
+              "type": "object",
+              "description": "Message content for the private reply",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "description": "The text content of the private reply message"
+                }
+              },
+              "required": ["text"],
+              "visible": ["text"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["recipient", "message"],
+          "visible": ["recipient", "message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__GET_MEDIA_INSIGHTS",
+    "description": "Retrieves analytics and performance metrics for Instagram media objects.",
+    "tags": [
+      "instagram",
+      "insights",
+      "analytics",
+      "metrics"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v23.0/{instagram_media_id}/insights",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "instagram_media_id": {
+              "type": "string",
+              "description": "Instagram Media ID (not Container ID) of a published media object to retrieve insights for"
+            }
+          },
+          "required": ["instagram_media_id"],
+          "visible": ["instagram_media_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for retrieving media insights",
+          "properties": {
+            "metric": {
+              "type": "string",
+              "description": "Comma-separated list of metrics to retrieve.",
+              "default": "reach,views,likes,comments"
+            },
+            "period": {
+              "type": "string",
+              "description": "Time period for the metrics",
+              "default": "lifetime",
+              "enum": ["day", "week", "days_28", "month", "lifetime", "total_over_range"]
+            }
+          },
+          "required": [],
+          "visible": ["metric", "period"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__GET_ACCOUNT_INSIGHTS",
+    "description": "Retrieves social interaction metrics for Instagram business or creator account.",
+    "tags": [
+      "instagram",
+      "insights",
+      "analytics",
+      "account",
+      "metrics"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v23.0/{ig_account_id}/insights",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "ig_account_id": {
+              "type": "string",
+              "description": "Instagram professional account ID to retrieve insights for"
+            }
+          },
+          "required": ["ig_account_id"],
+          "visible": ["ig_account_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for retrieving account insights",
+          "properties": {
+            "metric": {
+              "type": "string",
+              "description": "Comma-separated list of metrics to retrieve."
+            },
+            "period": {
+              "type": "string",
+              "description": "Period aggregation for interaction metrics. Required for interaction metrics, not applicable for demographic metrics.",
+              "enum": ["day", "week", "days_28", "month", "lifetime"],
+              "default": "day"
+            },
+            "metric_type": {
+              "type": "string",
+              "description": "Designates response aggregation type: time_series for time period aggregation, total_value for simple totals with optional breakdowns",
+              "enum": ["time_series", "total_value"],
+              "default": "total_value"
+            },
+            "breakdown": {
+              "type": "string",
+              "description": "Break down results into subsets (only with metric_type=total_value). contact_button_type: profile component breakdown, follow_type: followers vs non-followers, media_product_type: surface breakdown (AD, FEED, REELS, STORY)",
+              "enum": ["contact_button_type", "follow_type", "media_product_type"]
+            },
+            "timeframe": {
+              "type": "string",
+              "description": "Required for demographic metrics. Designates how far back to look for data, overrides since/until parameters",
+              "enum": ["last_14_days", "last_30_days", "last_90_days", "prev_month", "this_month", "this_week"]
+            },
+            "since": {
+              "type": "number",
+              "description": "Unix timestamp indicating start of range for interaction metrics (ignored for demographic metrics when timeframe is used)"
+            },
+            "until": {
+              "type": "number",
+              "description": "Unix timestamp indicating end of range for interaction metrics (ignored for demographic metrics when timeframe is used)"
+            }
+          },
+          "required": ["metric"],
+          "visible": ["metric", "period", "metric_type", "breakdown", "timeframe", "since", "until"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "query"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__GET_MEDIA_DETAILS",
+    "description": "Retrieves detailed information about a specific Instagram media object.",
+    "tags": [
+      "instagram",
+      "media",
+      "details",
+      "information"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v23.0/{ig_media_id}",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "ig_media_id": {
+              "type": "string",
+              "description": "Instagram Media ID to retrieve detailed information for"
+            }
+          },
+          "required": ["ig_media_id"],
+          "visible": ["ig_media_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for retrieving media details",
+          "properties": {
+            "fields": {
+              "type": "string",
+              "description": "Comma-separated list of fields to retrieve for the media object.",
+              "default": "id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count"
+            }
+          },
+          "required": [],
+          "visible": ["fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__HIDE_UNHIDE_COMMENT",
+    "description": "Hides or unhides a specific comment on Instagram media.",
+    "tags": [
+      "instagram",
+      "comment",
+      "hide",
+      "moderation"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v23.0/{ig_comment_id}",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "ig_comment_id": {
+              "type": "string",
+              "description": "Instagram Comment ID to hide or unhide"
+            }
+          },
+          "required": ["ig_comment_id"],
+          "visible": ["ig_comment_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for hiding/unhiding the comment",
+          "properties": {
+            "hide": {
+              "type": "boolean",
+              "description": "Set to true to hide the comment, or false to show the comment"
+            }
+          },
+          "required": ["hide"],
+          "visible": ["hide"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "query"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__DELETE_COMMENT",
+    "description": "Deletes a specific comment on Instagram media.",
+    "tags": [
+      "instagram",
+      "comment",
+      "delete",
+      "moderation"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/v23.0/{ig_comment_id}",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "ig_comment_id": {
+              "type": "string",
+              "description": "Instagram Comment ID to delete"
+            }
+          },
+          "required": ["ig_comment_id"],
+          "visible": ["ig_comment_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__GET_COMMENT_DETAILS",
+    "description": "Retrieves detailed information about a specific Instagram comment.",
+    "tags": [
+      "instagram",
+      "comment",
+      "details",
+      "information"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v23.0/{ig_comment_id}",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "ig_comment_id": {
+              "type": "string",
+              "description": "Instagram Comment ID to retrieve detailed information for"
+            }
+          },
+          "required": ["ig_comment_id"],
+          "visible": ["ig_comment_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for retrieving comment details",
+          "properties": {
+            "fields": {
+              "type": "string",
+              "description": "Comma-separated list of fields to retrieve for the comment",
+              "default": "id,text,timestamp,from,like_count"
+            }
+          },
+          "required": [],
+          "visible": ["fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "INSTAGRAM__ENABLE_DISABLE_COMMENTS",
+    "description": "Enables or disables comments on Instagram media object.",
+    "tags": [
+      "instagram",
+      "comments",
+      "enable",
+      "disable",
+      "moderation"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v23.0/{ig_media_id}",
+      "server_url": "https://graph.instagram.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the request",
+          "properties": {
+            "ig_media_id": {
+              "type": "string",
+              "description": "Instagram Media ID to enable or disable comments on"
+            }
+          },
+          "required": ["ig_media_id"],
+          "visible": ["ig_media_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for enabling/disabling comments",
+          "properties": {
+            "comment_enabled": {
+              "type": "boolean",
+              "description": "Set to true to enable comments or false to disable comments"
+            }
+          },
+          "required": ["comment_enabled"],
+          "visible": ["comment_enabled"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "query"],
+      "visible": ["path", "query"],
       "additionalProperties": false
     }
   }
