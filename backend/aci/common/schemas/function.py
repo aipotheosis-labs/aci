@@ -8,21 +8,24 @@ from pydantic import BaseModel, ConfigDict, Field, RootModel, field_validator, m
 from aci.common.db.sql_models import MAX_STRING_LENGTH
 from aci.common.enums import (
     FunctionDefinitionFormat,
-    HttpLocation,
     HttpMethod,
     Protocol,
     Visibility,
 )
-from aci.common.validator import (
-    validate_function_parameters_schema_common,
-    validate_function_parameters_schema_rest_protocol,
-)
+from aci.common.validator import validate_function_parameters_schema
 
 
 class RestMetadata(BaseModel):
     method: HttpMethod
     path: str
     server_url: str
+
+
+class MCPMetadata(BaseModel):
+    original_tool_name: str
+    original_tool_description_hash: str
+    original_tool_input_schema_hash: str
+    need_initialize: bool
 
 
 class ConnectorMetadata(RootModel[dict]):
@@ -40,7 +43,8 @@ class FunctionUpsert(BaseModel):
     # TODO: we need to use left_to_right union mode to avoid pydantic validating RestMetadata
     # input against ConnectorMetadata schema (which allows any dict)
     protocol_data: Annotated[
-        RestMetadata | ConnectorMetadata, Field(default_factory=dict, union_mode="left_to_right")
+        RestMetadata | MCPMetadata | ConnectorMetadata,
+        Field(default_factory=dict, union_mode="left_to_right"),
     ]
     parameters: dict = Field(default_factory=dict)
     response: dict = Field(default_factory=dict)
@@ -51,18 +55,8 @@ class FunctionUpsert(BaseModel):
         # Validate that parameters schema itself is a valid JSON Schema
         jsonschema.validate(instance=self.parameters, schema=jsonschema.Draft7Validator.META_SCHEMA)
 
-        # common validation
-        validate_function_parameters_schema_common(self.parameters, f"{self.name}.parameters")
-
-        # specific validation per protocol
-        if self.protocol == Protocol.REST:
-            validate_function_parameters_schema_rest_protocol(
-                self.parameters,
-                f"{self.name}.parameters",
-                [str(location) for location in HttpLocation],
-            )
-        else:
-            pass
+        # custom validation for parameters schema based on protocol type
+        validate_function_parameters_schema(self.protocol, self.parameters)
 
         return self
 
@@ -72,6 +66,7 @@ class FunctionUpsert(BaseModel):
         protocol_to_class = {
             Protocol.REST: RestMetadata,
             Protocol.CONNECTOR: ConnectorMetadata,
+            Protocol.MCP: MCPMetadata,
         }
 
         expected_class = protocol_to_class[self.protocol]

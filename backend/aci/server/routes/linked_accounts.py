@@ -354,11 +354,11 @@ async def link_oauth2_account(
     oauth2_manager = OAuth2Manager(
         app_name=query_params.app_name,
         client_id=oauth2_scheme.client_id,
-        client_secret=oauth2_scheme.client_secret,
         scope=oauth2_scheme.scope,
         authorize_url=oauth2_scheme.authorize_url,
         access_token_url=oauth2_scheme.access_token_url,
         refresh_token_url=oauth2_scheme.refresh_token_url,
+        client_secret=oauth2_scheme.client_secret,
         token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
     )
 
@@ -495,11 +495,11 @@ async def linked_accounts_oauth2_callback(
     oauth2_manager = OAuth2Manager(
         app_name=state.app_name,
         client_id=oauth2_scheme.client_id,
-        client_secret=oauth2_scheme.client_secret,
         scope=oauth2_scheme.scope,
         authorize_url=oauth2_scheme.authorize_url,
         access_token_url=oauth2_scheme.access_token_url,
         refresh_token_url=oauth2_scheme.refresh_token_url,
+        client_secret=oauth2_scheme.client_secret,
         token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
     )
 
