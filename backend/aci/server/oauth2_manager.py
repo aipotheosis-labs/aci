@@ -189,6 +189,7 @@ class OAuth2Manager:
                     "client_secret": self.client_secret,
                     "access_token": short_lived_token,
                 },
+                timeout=30.0,
             )
             response.raise_for_status()
 
