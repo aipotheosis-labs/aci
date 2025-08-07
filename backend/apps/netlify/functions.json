@@ -648,7 +648,7 @@
   },
   {
     "name": "NETLIFY__TRIGGER_BUILD_HOOK",
-    "description": "Trigger a new build and deployment by calling a build hook URL. Build hooks pull the latest code from the connected Git repository and rebuild the site. This is the proper way to trigger deployments with code changes, unlike NETLIFY__CREATE_DEPLOY which creates empty deployments.",
+    "description": "Trigger a new build and deployment by calling a build hook URL. Build hooks pull the latest code from the connected Git repository and rebuild the site. This is the recommended method for triggering Git-based deployments.",
     "tags": ["build", "hook", "trigger", "deploy", "git", "webhook"],
     "visibility": "public",
     "active": true,

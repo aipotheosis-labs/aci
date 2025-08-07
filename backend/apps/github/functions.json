@@ -4712,6 +4712,11 @@
                             "description": "Accept header",
                             "default": "application/vnd.github+json"
                         },
+                        "content-type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        },
                         "user-agent": {
                             "type": "string",
                             "description": "User-Agent header",
@@ -4720,6 +4725,7 @@
                     },
                     "required": [
                         "accept",
+                        "content-type",
                         "user-agent"
                     ],
                     "visible": [],
