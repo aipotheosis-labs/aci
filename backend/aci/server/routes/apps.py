@@ -15,7 +15,7 @@ from aci.common.schemas.app import (
     AppsList,
     AppsSearch,
 )
-from aci.common.schemas.function import BasicFunctionDefinition, FunctionDetails, FunctionDetailsWithEnabled
+from aci.common.schemas.function import BasicFunctionDefinition, BasicFunctionDefinitionWithEnabled, FunctionDetails, FunctionDetailsWithEnabled
 from aci.common.schemas.security_scheme import SecuritySchemesPublic
 from aci.server import config
 from aci.server import dependencies as deps
@@ -153,7 +153,7 @@ async def search_apps(
     for app, _ in apps_with_scores:
         if query_params.include_functions:
             functions = [
-                BasicFunctionDefinition(name=function.name, description=function.description, enabled=function.name in enabled_function_names)
+                BasicFunctionDefinitionWithEnabled(name=function.name, description=function.description, enabled=function.name in enabled_function_names)
                 for function in app.functions
             ]
             apps.append(AppBasic(name=app.name, description=app.description, functions=functions))

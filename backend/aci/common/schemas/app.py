@@ -5,7 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from aci.common.enums import SecurityScheme, Visibility
-from aci.common.schemas.function import BasicFunctionDefinition, FunctionDetails, FunctionDetailsWithEnabled
+from aci.common.schemas.function import BasicFunctionDefinition, BasicFunctionDefinitionWithEnabled, FunctionDetails, FunctionDetailsWithEnabled
 from aci.common.schemas.security_scheme import (
     APIKeyScheme,
     APIKeySchemeCredentials,
@@ -134,7 +134,7 @@ class AppsList(BaseModel):
 class AppBasic(BaseModel):
     name: str
     description: str
-    functions: list[BasicFunctionDefinition] | None = None
+    functions: list[BasicFunctionDefinitionWithEnabled] | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
