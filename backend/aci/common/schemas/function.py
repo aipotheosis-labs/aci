@@ -118,7 +118,12 @@ class FunctionsSearch(BaseModel):
     )
     allowed_apps_only: bool = Field(
         default=False,
+        deprecated=True,
         description="If true, only returns functions of apps that are allowed by the agent/accessor, identified by the api key.",
+    )
+    allowed_only: bool = Field(
+        default=False,
+        description="If true, only returns functions that are enabled and only from the allowed apps of the agent/accessor, identified by the api key.",
     )
     format: FunctionDefinitionFormat = Field(
         default=FunctionDefinitionFormat.BASIC,
