@@ -100,6 +100,10 @@ async def search_functions(
         else:
             apps_to_filter = list(set(query_params.app_names) & set(context.agent.allowed_apps))
 
+        # TODO: currently it fetches all allowed functions of the agents and compare the function names in code runtime to see if they are enabled.
+        # It may not be efficient if the number of apps / enabled functions is large. We can modify the db schema to create relational table between 
+        # app config and functions. So we can filter by joining the tables which is more efficient.
+
         # Compute the enabled function names from the app configurations of the filtered apps
         enabled_function_names = []
         app_configs = crud.app_configurations.get_app_configurations(
