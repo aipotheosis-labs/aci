@@ -373,7 +373,7 @@ async def link_oauth2_account(
         project_id=context.project.id,
         linked_account_owner_id=query_params.linked_account_owner_id,
         client_id=oauth2_scheme.client_id,
-        redirect_uri=redirect_uri,
+        # NOTE: state slimming — do not store redirect_uri (recompute in callback)
         code_verifier=OAuth2Manager.generate_code_verifier(),
         after_oauth2_link_redirect_url=query_params.after_oauth2_link_redirect_url,
     )
@@ -468,8 +468,7 @@ async def linked_accounts_oauth2_callback(
     )
     if not app_configuration:
         logger.error(
-            f"Unable to continue with account linking, app configuration not found "
-            f"app_name={state.app_name}"
+            f"app configuration for app={state.app_name} not found"
         )
         raise AppConfigurationNotFound(f"app configuration for app={state.app_name} not found")
     if app_configuration.security_scheme != SecurityScheme.OAUTH2:
@@ -492,6 +491,10 @@ async def linked_accounts_oauth2_callback(
         )
         raise OAuth2Error("client_id mismatch during account linking")
 
+    # recompute redirect_uri if not in state
+    path = request.url_for(LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
+    redirect_uri = oauth2_scheme.redirect_url or f"{config.REDIRECT_URI_BASE}{path}"
+
     oauth2_manager = OAuth2Manager(
         app_name=state.app_name,
         client_id=oauth2_scheme.client_id,
@@ -504,7 +507,7 @@ async def linked_accounts_oauth2_callback(
     )
 
     token_response = await oauth2_manager.fetch_token(
-        redirect_uri=state.redirect_uri,
+        redirect_uri=redirect_uri,
         code=code,
         code_verifier=state.code_verifier,
     )
