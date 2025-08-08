@@ -92,23 +92,43 @@ async def search_functions(
         f"Generated intent embedding, intent={query_params.intent}, intent_embedding={intent_embedding}"
     )
 
-    # get the apps to filter (or not) based on the allowed_apps_only and app_names query params
-    if query_params.allowed_apps_only:
+    # if "allowed_only" (or "allowed_apps_only" for backward compatibility) is true, search functions from enabled functions under allowed apps only.
+    enabled_function_names: list[str] | None = None
+    if query_params.allowed_only or query_params.allowed_apps_only:
         if query_params.app_names is None:
             apps_to_filter = context.agent.allowed_apps
         else:
             apps_to_filter = list(set(query_params.app_names) & set(context.agent.allowed_apps))
+
+        # Compute the enabled function names from the app configurations of the filtered apps
+        enabled_function_names = []
+        app_configs = crud.app_configurations.get_app_configurations(
+            context.db_session,
+            context.project.id,
+            apps_to_filter,
+            None,
+            None,
+        )
+        for app_config in app_configs:
+            if app_config.enabled:
+                if app_config.all_functions_enabled:
+                    enabled_function_names.extend([function.name for function in app_config.app.functions])
+                else:
+                    enabled_function_names.extend(app_config.enabled_functions)
     else:
+        # Not filter by allowed functions. Simply search from all apps or follow the app names filter.
         if query_params.app_names is None:
             apps_to_filter = None
         else:
             apps_to_filter = query_params.app_names
+
 
     functions = crud.functions.search_functions(
         context.db_session,
         context.project.visibility_access == Visibility.PUBLIC,
         True,
         apps_to_filter,
+        enabled_function_names,
         intent_embedding,
         query_params.limit,
         query_params.offset,
