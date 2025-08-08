@@ -104,8 +104,10 @@ export async function createAppConfig(
 
 export async function updateAppConfig(
   appName: string,
-  enabled: boolean,
   apiKey: string,
+  enabled?: boolean,
+  all_functions_enabled?: boolean,
+  enabled_functions?: string[],
 ): Promise<AppConfig> {
   const response = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/v1/app-configurations/${appName}`,
@@ -117,6 +119,8 @@ export async function updateAppConfig(
       },
       body: JSON.stringify({
         enabled: enabled,
+        all_functions_enabled: all_functions_enabled,
+        enabled_functions: enabled_functions,
       }),
     },
   );

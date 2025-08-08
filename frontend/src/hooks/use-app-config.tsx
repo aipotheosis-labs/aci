@@ -90,7 +90,9 @@ export const useCreateAppConfig = () => {
 
 type UpdateAppConfigParams = {
   app_name: string;
-  enabled: boolean;
+  enabled?: boolean;
+  enabled_functions?: string[];
+  all_functions_enabled?: boolean;
 };
 
 export const useUpdateAppConfig = () => {
@@ -100,7 +102,13 @@ export const useUpdateAppConfig = () => {
 
   return useMutation<AppConfig, Error, UpdateAppConfigParams>({
     mutationFn: (params) =>
-      updateAppConfig(params.app_name, params.enabled, apiKey),
+      updateAppConfig(
+        params.app_name,
+        apiKey,
+        params.enabled,
+        params.all_functions_enabled,
+        params.enabled_functions,
+      ),
     onSuccess: (_data, variables) => {
       queryClient.invalidateQueries({
         queryKey: appConfigKeys.all(activeProject.id),

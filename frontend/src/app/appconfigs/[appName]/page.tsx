@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { LinkedAccount } from "@/lib/types/linkedaccount";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,10 @@ import {
   useUpdateLinkedAccount,
 } from "@/hooks/use-linked-account";
 import { useApp } from "@/hooks/use-app";
+import { useAppFunctionsColumns } from "@/components/apps/useAppFunctionsColumns";
+import { FunctionSelectionDialog } from "@/components/appconfig/function-selection-dialog";
+import { useAppConfig } from "@/hooks/use-app-config";
+import { AppFunction } from "@/lib/types/appfunction";
 
 const columnHelper = createColumnHelper<LinkedAccount>();
 
@@ -47,11 +51,15 @@ export default function AppConfigDetailPage() {
   const { appName } = useParams<{ appName: string }>();
 
   const { app } = useApp(appName);
+  const { data: appConfig } = useAppConfig(appName);
 
   const { data: linkedAccounts = [] } = useAppLinkedAccounts(appName);
+  const [activeTab, setActiveTab] = useState("linked");
 
   const { mutateAsync: deleteLinkedAccount } = useDeleteLinkedAccount();
   const { mutateAsync: updateLinkedAccount } = useUpdateLinkedAccount();
+
+  const [enabledFunctions, setEnabledFunctions] = useState<AppFunction[]>([]);
 
   const toggleAccountStatus = useCallback(
     async (accountId: string, newStatus: boolean) => {
@@ -221,6 +229,26 @@ export default function AppConfigDetailPage() {
     ] as ColumnDef<LinkedAccount>[];
   }, [toggleAccountStatus, handleDeleteLinkedAccount]);
 
+  /**
+   * Functions table setup
+   */
+  const functionsColumns = useAppFunctionsColumns();
+
+  // load enabled functions from app config
+  useEffect(() => {
+    if (app?.functions) {
+      if (appConfig?.all_functions_enabled) {
+        setEnabledFunctions(app.functions);
+      } else if (appConfig?.enabled_functions) {
+        setEnabledFunctions(
+          app.functions.filter((func: AppFunction) =>
+            appConfig.enabled_functions.includes(func.name),
+          ),
+        );
+      }
+    }
+  }, [appConfig, app]);
+
   return (
     <div className="p-6">
       <div className="flex items-center justify-between mb-6">
@@ -242,7 +270,7 @@ export default function AppConfigDetailPage() {
             <IdDisplay id={app?.name ?? ""} />
           </div>
         </div>
-        {app && (
+        {app && activeTab === "linked" && (
           <AddAccountForm
             appInfos={[
               {
@@ -254,9 +282,16 @@ export default function AppConfigDetailPage() {
             ]}
           />
         )}
+        {app && activeTab === "functions" && (
+          <FunctionSelectionDialog appName={app.name} onSave={() => {}} />
+        )}
       </div>
 
-      <Tabs defaultValue={"linked"} className="w-full">
+      <Tabs
+        defaultValue={"linked"}
+        className="w-full"
+        onValueChange={setActiveTab}
+      >
         <TabsList>
           <TabsTrigger value="linked">
             Linked Accounts
@@ -277,6 +312,25 @@ export default function AppConfigDetailPage() {
               </Tooltip>
             </div>
           </TabsTrigger>
+          <TabsTrigger value="functions">
+            Enabled Functions
+            <div className="ml-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="cursor-pointer">
+                    <BsQuestionCircle className="h-4 w-4 text-muted-foreground" />
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <p className="text-xs">
+                    {
+                      "This shows a list of available functions. You can enable/disable functions for the app."
+                    }
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
+          </TabsTrigger>
           {/* <TabsTrigger value="logs">Logs</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger> */}
         </TabsList>
@@ -288,6 +342,18 @@ export default function AppConfigDetailPage() {
             defaultSorting={[{ id: "created_at", desc: true }]}
             searchBarProps={{
               placeholder: "Search by linked account owner ID",
+            }}
+          />
+        </TabsContent>
+
+        <TabsContent value="functions">
+          <EnhancedDataTable
+            columns={functionsColumns}
+            data={enabledFunctions}
+            searchBarProps={{ placeholder: "Search functions..." }}
+            paginationOptions={{
+              initialPageIndex: 0,
+              initialPageSize: 15,
             }}
           />
         </TabsContent>

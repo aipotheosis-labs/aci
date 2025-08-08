@@ -1,3 +1,6 @@
+from aci.common.enums import SecurityScheme
+from aci.common.schemas.app_configurations import AppConfigurationCreate
+from aci.common.db import crud
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
@@ -157,3 +160,59 @@ def test_execute_function_of_app_that_is_not_allowed_for_agent(
     else:
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
         assert str(response.json()["error"]).startswith("App not allowed for this agent")
+
+
+def test_execute_function_enablement_for_agent(
+    db_session: Session,
+    test_client: TestClient,
+    dummy_agent_1_with_all_apps_allowed: Agent,
+    dummy_function_aci_test__hello_world_no_args: Function,
+    dummy_linked_account_default_api_key_aci_test_project_1: LinkedAccount,
+) -> None:
+
+    function_execute = FunctionExecute(
+        linked_account_owner_id=dummy_linked_account_default_api_key_aci_test_project_1.linked_account_owner_id,
+    )
+
+    app_config = crud.app_configurations.get_app_configuration(
+        db_session,
+        dummy_agent_1_with_all_apps_allowed.project_id,
+        dummy_function_aci_test__hello_world_no_args.app.name,
+    )
+    assert app_config is not None
+
+    # Case 1: all_functions_enabled = True, enabled_functions = []
+    app_config.all_functions_enabled = True
+    app_config.enabled_functions = []
+    db_session.commit()
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_no_args.name}/execute",
+        json=function_execute.model_dump(mode="json"),
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
+    )
+    assert response.status_code == status.HTTP_200_OK, "should return 200 because all_functions_enabled is True"
+
+    # Case 2: all_functions_enabled = False, enabled_functions = []
+    app_config.all_functions_enabled = False
+    app_config.enabled_functions = []
+    db_session.commit()
+
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_no_args.name}/execute",
+        json=function_execute.model_dump(mode="json"),
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
+    )
+    assert response.status_code == status.HTTP_403_FORBIDDEN, "should return 403 because function is not enabled"
+    assert str(response.json()["error"]).startswith("Function not enabled for this agent")
+
+    # Case 3: all_functions_enabled = False, enabled_functions = [includes the function]
+    app_config.all_functions_enabled = False
+    app_config.enabled_functions = [dummy_function_aci_test__hello_world_no_args.name]
+    db_session.commit()
+
+    response = test_client.post(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/{dummy_function_aci_test__hello_world_no_args.name}/execute",
+        json=function_execute.model_dump(mode="json"),
+        headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
+    )
+    assert response.status_code == status.HTTP_200_OK, "should return 200 because function is enabled"

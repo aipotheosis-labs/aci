@@ -2,11 +2,12 @@ import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
+from typing import cast
 
 from aci.common.db import crud
 from aci.common.db.sql_models import Agent, App, Function, Project
-from aci.common.enums import FunctionDefinitionFormat, Visibility
-from aci.common.schemas.app_configurations import AppConfigurationPublic
+from aci.common.enums import FunctionDefinitionFormat, SecurityScheme, Visibility
+from aci.common.schemas.app_configurations import AppConfigurationCreate, AppConfigurationPublic, AppConfigurationUpdate
 from aci.common.schemas.function import (
     AnthropicFunctionDefinition,
     BasicFunctionDefinition,
@@ -449,7 +450,6 @@ def test_search_functions_allowed_apps_only_true(
         function_name = _get_function_name_from_definition(function)
         assert function_name in dummy_app_function_names
 
-
 @pytest.mark.parametrize(
     "format",
     [
@@ -491,10 +491,164 @@ def test_search_functions_allowed_apps_only_false(
         FunctionDefinitionFormat.ANTHROPIC,
     ],
 )
+def test_search_functions_allowed_only_true(
+    db_session: Session,
+    test_client: TestClient,
+    dummy_app_github: App,
+    dummy_app_google: App,
+    dummy_app_aci_test: App,
+    dummy_agent_1_with_no_apps_allowed: Agent,
+    format: FunctionDefinitionFormat,
+) -> None:
+    function_search = FunctionsSearch(
+        allowed_only=True,
+        format=format,
+    )
+
+    mock_agent = dummy_agent_1_with_no_apps_allowed
+
+    # Test 1: Setup agent to allow access to all functions of 1 app
+    mock_agent.allowed_apps = [dummy_app_aci_test.name]
+    aci_test_app_config = crud.app_configurations.create_app_configuration(
+        db_session,
+        mock_agent.project_id,
+        AppConfigurationCreate(
+            app_name=dummy_app_aci_test.name, security_scheme=SecurityScheme.API_KEY,
+            all_functions_enabled=True,
+        ),
+    )
+    db_session.commit()
+
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+        params=function_search.model_dump(exclude_none=True),
+        headers={"x-api-key": mock_agent.api_keys[0].key},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == len(dummy_app_aci_test.functions), "should return all functions from the allowed app"
+
+
+    # Test 2: Setup agent to allow access to partial functions of 1 app
+    aci_test_app_config.all_functions_enabled = False
+    aci_test_app_config.enabled_functions = [dummy_app_aci_test.functions[0].name, dummy_app_aci_test.functions[1].name]
+    db_session.commit()
+
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+        params=function_search.model_dump(exclude_none=True),
+        headers={"x-api-key": mock_agent.api_keys[0].key},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == 2, "should return only the enabled functions"
+    if format == FunctionDefinitionFormat.BASIC:
+        assert response.json()[0]["name"] == dummy_app_aci_test.functions[0].name
+        assert response.json()[1]["name"] == dummy_app_aci_test.functions[1].name
+
+    # Test 3: Setup agent to allow access to all functions of multiple apps
+    mock_agent.allowed_apps = [dummy_app_aci_test.name, dummy_app_github.name, dummy_app_google.name]
+
+    aci_test_app_config.all_functions_enabled = True
+    aci_test_app_config.enabled_functions = []
+
+    github_app_config = crud.app_configurations.create_app_configuration(
+        db_session,
+        mock_agent.project_id,
+        AppConfigurationCreate(
+            app_name=dummy_app_github.name, security_scheme=SecurityScheme.API_KEY,
+            all_functions_enabled=True,
+        ),
+    )
+    google_app_config = crud.app_configurations.create_app_configuration(
+        db_session,
+        mock_agent.project_id,
+        AppConfigurationCreate(
+            app_name=dummy_app_google.name, security_scheme=SecurityScheme.API_KEY,
+            all_functions_enabled=True,
+        ),
+    )
+    db_session.commit()
+
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+        params=function_search.model_dump(exclude_none=True),
+        headers={"x-api-key": mock_agent.api_keys[0].key},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) == len(dummy_app_aci_test.functions) + len(dummy_app_github.functions) + len(dummy_app_google.functions), "should return all functions from all apps"
+
+
+    # Test 4: Setup agent to allow access to all apps and no functions
+    for app_config in [aci_test_app_config, github_app_config, google_app_config]:
+        app_config.all_functions_enabled = False
+        app_config.enabled_functions = []
+    db_session.commit()
+
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+        params=function_search.model_dump(exclude_none=True),
+        headers={"x-api-key": mock_agent.api_keys[0].key},
+    )
+    assert len(response.json()) == 0, "should return no functions because no apps are allowed"
+
+
+    # Test 5: Setup agent to allow access to no apps
+    mock_agent.allowed_apps = []
+    db_session.commit()
+
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+        params=function_search.model_dump(exclude_none=True),
+        headers={"x-api-key": mock_agent.api_keys[0].key},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    print(mock_agent.allowed_apps)
+    assert len(response.json()) == 0, "should return no functions because no apps are allowed"
+
+
+@pytest.mark.parametrize(
+    "format",
+    [
+        FunctionDefinitionFormat.BASIC,
+        FunctionDefinitionFormat.OPENAI,
+        FunctionDefinitionFormat.ANTHROPIC,
+    ],
+)
+def test_search_functions_allowed_only_false(
+    db_session: Session,
+    test_client: TestClient,
+    dummy_functions: list[Function],
+    dummy_agent_1_with_some_functions_enabled: Agent,
+    format: FunctionDefinitionFormat,
+) -> None:
+    function_search = FunctionsSearch(
+        allowed_only=False,
+        format=format,
+    )
+    response = test_client.get(
+        f"{config.ROUTER_PREFIX_FUNCTIONS}/search",
+        params=function_search.model_dump(exclude_none=True),
+        headers={"x-api-key": dummy_agent_1_with_some_functions_enabled.api_keys[0].key},
+    )
+    assert response.status_code == status.HTTP_200_OK
+    functions = [
+        _validate_function_definition(response_function, format)
+        for response_function in response.json()
+    ]
+    assert len(functions) == len(dummy_functions), (
+        "should return all functions because allowed_apps_only is False"
+    )
+
+@pytest.mark.parametrize(
+    "format",
+    [
+        FunctionDefinitionFormat.BASIC,
+        FunctionDefinitionFormat.OPENAI,
+        FunctionDefinitionFormat.ANTHROPIC,
+    ],
+)
 def test_search_functions_with_app_names_and_allowed_apps_only(
     db_session: Session,
     test_client: TestClient,
-    dummy_app_configuration_api_key_github_project_1: AppConfigurationPublic,
     dummy_app_github: App,
     dummy_app_google: App,
     dummy_agent_1_with_no_apps_allowed: Agent,
@@ -502,6 +656,14 @@ def test_search_functions_with_app_names_and_allowed_apps_only(
 ) -> None:
     # set the agent to allow access to one of the apps
     dummy_agent_1_with_no_apps_allowed.allowed_apps = [dummy_app_github.name]
+    crud.app_configurations.create_app_configuration(
+        db_session,
+        dummy_agent_1_with_no_apps_allowed.project_id,
+        AppConfigurationCreate(
+            app_name=dummy_app_github.name, security_scheme=SecurityScheme.API_KEY,
+            all_functions_enabled=True,
+        ),
+    )
     db_session.commit()
 
     function_search = FunctionsSearch(
@@ -532,6 +694,14 @@ def test_search_functions_with_app_names_and_allowed_apps_only(
 
     # set the agent to allow access to both apps
     dummy_agent_1_with_no_apps_allowed.allowed_apps = [dummy_app_github.name, dummy_app_google.name]
+    crud.app_configurations.create_app_configuration(
+        db_session,
+        dummy_agent_1_with_no_apps_allowed.project_id,
+        AppConfigurationCreate(
+            app_name=dummy_app_google.name, security_scheme=SecurityScheme.API_KEY,
+            all_functions_enabled=True,
+        ),
+    )
     db_session.commit()
 
     response = test_client.get(

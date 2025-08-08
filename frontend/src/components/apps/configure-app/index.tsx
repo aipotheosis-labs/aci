@@ -15,12 +15,14 @@ import Image from "next/image";
 import { ConfigureAppStep } from "@/components/apps/configure-app/configure-app-step";
 import { AgentSelectionStep } from "@/components/apps/configure-app/agent-selection-step";
 import { LinkedAccountStep } from "@/components/apps/configure-app/linked-account-step";
+import { FunctionSelectionStep } from "@/components/apps/configure-app/function-selection-step";
 
 // step definitions
 const STEPS = [
   { id: 1, title: "Configure App" },
-  { id: 2, title: "Select Agents" },
-  { id: 3, title: "Add Linked Account" },
+  { id: 2, title: "Select Functions" },
+  { id: 3, title: "Select Agents" },
+  { id: 4, title: "Add Linked Account" },
 ];
 
 interface ConfigureAppProps {
@@ -58,8 +60,12 @@ export function ConfigureApp({
     setCurrentStep(2);
   };
 
-  const handleAgentSelectionNext = () => {
+  const handleFunctionSelectionNext = () => {
     setCurrentStep(3);
+  };
+
+  const handleAgentSelectionNext = () => {
+    setCurrentStep(4);
   };
 
   const handleClose = () => {
@@ -87,7 +93,7 @@ export function ConfigureApp({
         </DialogHeader>
 
         {/* stepper */}
-        <Stepper currentStep={currentStep} totalSteps={3} steps={STEPS} />
+        <Stepper currentStep={currentStep} totalSteps={4} steps={STEPS} />
 
         {/* step content */}
         <div className="max-h-[70vh] overflow-y-auto p-1">
@@ -100,6 +106,14 @@ export function ConfigureApp({
           )}
 
           {currentStep === 2 && (
+            <FunctionSelectionStep
+              onNext={handleFunctionSelectionNext}
+              appName={name}
+              isDialogOpen={open}
+            />
+          )}
+
+          {currentStep === 3 && (
             <AgentSelectionStep
               onNext={handleAgentSelectionNext}
               appName={name}
@@ -107,7 +121,7 @@ export function ConfigureApp({
             />
           )}
 
-          {currentStep === 3 && (
+          {currentStep === 4 && (
             <LinkedAccountStep
               authType={security_scheme}
               onClose={handleClose}

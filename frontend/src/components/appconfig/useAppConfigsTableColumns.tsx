@@ -26,11 +26,13 @@ const columnHelper = createColumnHelper<AppConfig>();
 
 interface AppConfigsTableColumnsProps {
   linkedAccountsCountMap: Record<string, number>;
+  enabledFunctionsCountMap: Record<string, number>;
   appsMap: Record<string, App>;
 }
 
 export const useAppConfigsTableColumns = ({
   linkedAccountsCountMap,
+  enabledFunctionsCountMap,
   appsMap,
 }: AppConfigsTableColumnsProps): ColumnDef<AppConfig>[] => {
   const updateAppConfigMutation = useUpdateAppConfig();
@@ -110,6 +112,29 @@ export const useAppConfigsTableColumns = ({
                 className="w-full justify-start px-0"
               >
                 LINKED ACCOUNTS
+                <ArrowUpDown className="h-4 w-4" />
+              </Button>
+            </div>
+          ),
+          cell: (info) => info.getValue(),
+          enableGlobalFilter: false,
+        },
+      ),
+
+      columnHelper.accessor(
+        (row) => enabledFunctionsCountMap[row.app_name] || 0,
+        {
+          id: "enabledFunctions",
+          header: ({ column }) => (
+            <div className="text-left">
+              <Button
+                variant="ghost"
+                onClick={() =>
+                  column.toggleSorting(column.getIsSorted() === "asc")
+                }
+                className="w-full justify-start px-0"
+              >
+                ENABLED FUNCTIONS
                 <ArrowUpDown className="h-4 w-4" />
               </Button>
             </div>
@@ -206,6 +231,7 @@ export const useAppConfigsTableColumns = ({
     ] as ColumnDef<AppConfig>[];
   }, [
     linkedAccountsCountMap,
+    enabledFunctionsCountMap,
     appsMap,
     updateAppConfigMutation,
     deleteAppConfigMutation,
