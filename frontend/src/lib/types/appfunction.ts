@@ -21,7 +21,9 @@ export interface FunctionExecutionResult {
 export interface FunctionsSearchParams {
   app_names?: string[];
   intent?: string;
+  /** @deprecated */
   allowed_apps_only?: boolean;
+  allowed_only?: boolean;
   format?: "basic" | "openai" | "anthropic";
   limit?: number;
   offset?: number;
