@@ -118,11 +118,12 @@ class FunctionsSearch(BaseModel):
     )
     allowed_apps_only: bool = Field(
         default=False,
+        deprecated=True,
         description="If true, only returns functions of apps that are allowed by the agent/accessor, identified by the api key.",
     )
-    enabled_only: bool = Field(
+    allowed_only: bool = Field(
         default=False,
-        description="If true, only returns functions that are enabled from the allowed apps of the agent/accessor, identified by the api key.",
+        description="If true, only returns functions that are enabled and only from the allowed apps of the agent/accessor, identified by the api key.",
     )
     format: FunctionDefinitionFormat = Field(
         default=FunctionDefinitionFormat.BASIC,
@@ -185,8 +186,6 @@ class OpenAIFunction(BaseModel):
     strict: bool | None = None
     description: str
     parameters: dict
-
-
 class OpenAIFunctionDefinition(BaseModel):
     type: Literal["function"] = "function"
     function: OpenAIFunction
@@ -214,10 +213,11 @@ class BasicFunctionDefinition(BaseModel):
 
     name: str
     description: str
-    enabled: bool
 
     model_config = ConfigDict(from_attributes=True)
 
+class BasicFunctionDefinitionWithEnabled(BasicFunctionDefinition):
+    enabled: bool
 
 class FunctionExecutionResult(BaseModel):
     success: bool
