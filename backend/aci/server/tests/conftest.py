@@ -215,47 +215,7 @@ def dummy_agent_1_with_all_apps_allowed(
 
 
 @pytest.fixture(scope="function")
-def dummy_agent_1_with_all_apps_allowed_and_all_functions_enabled(
-    db_session: Session, dummy_agent_1_with_no_apps_allowed: Agent, dummy_apps: list[App]
-) -> Generator[Agent, None, None]:
-    dummy_agent_1_with_no_apps_allowed.allowed_apps = [app.name for app in dummy_apps]
-    
-    # enable all functions for all apps
-    for app in dummy_apps:
-        crud.app_configurations.create_app_configuration(
-            db_session,
-            dummy_agent_1_with_no_apps_allowed.project_id,
-            AppConfigurationCreate(
-                app_name=app.name, security_scheme=SecurityScheme.API_KEY,
-                all_functions_enabled=True,
-            ),
-        )
-    db_session.commit()
-    yield dummy_agent_1_with_no_apps_allowed
-
-
-@pytest.fixture(scope="function")
-def dummy_agent_1_with_all_apps_allowed_and_no_functions_enabled(
-    db_session: Session, dummy_agent_1_with_no_apps_allowed: Agent, dummy_apps: list[App]
-) -> Generator[Agent, None, None]:
-    dummy_agent_1_with_no_apps_allowed.allowed_apps = [app.name for app in dummy_apps]
-    
-    # disable all functions for all apps
-    for app in dummy_apps:
-        crud.app_configurations.create_app_configuration(
-            db_session,
-            dummy_agent_1_with_no_apps_allowed.project_id,
-            AppConfigurationCreate(
-                app_name=app.name, security_scheme=SecurityScheme.API_KEY,
-                all_functions_enabled=False,
-                enabled_functions=[],
-            ),
-        )
-    db_session.commit()
-    yield dummy_agent_1_with_no_apps_allowed
-
-@pytest.fixture(scope="function")
-def dummy_agent_1_with_partial_apps_allowed_and_all_functions_enabled(
+def dummy_agent_1_with_some_functions_enabled(
     db_session: Session, dummy_agent_1_with_no_apps_allowed: Agent, dummy_apps: list[App], dummy_app_aci_test: App
 ) -> Generator[Agent, None, None]:
     print(dummy_apps)
@@ -272,26 +232,6 @@ def dummy_agent_1_with_partial_apps_allowed_and_all_functions_enabled(
 
     db_session.commit()
     yield dummy_agent_1_with_no_apps_allowed
-
-@pytest.fixture(scope="function")
-def dummy_agent_1_with_partial_apps_allowed_and_partial_functions_enabled(
-    db_session: Session, dummy_agent_1_with_no_apps_allowed: Agent, dummy_apps: list[App], dummy_app_aci_test: App
-) -> Generator[Agent, None, None]:
-    print(dummy_apps)
-    dummy_agent_1_with_no_apps_allowed.allowed_apps = [dummy_app_aci_test.name]
-
-    crud.app_configurations.create_app_configuration(
-        db_session,
-        dummy_agent_1_with_no_apps_allowed.project_id,
-        AppConfigurationCreate(
-            app_name=dummy_app_aci_test.name, security_scheme=SecurityScheme.API_KEY,
-            all_functions_enabled=False,
-            enabled_functions=["ACI_TEST__HELLO_WORLD_NO_ARGS", "ACI_TEST__HELLO_WORLD_WITH_ARGS"] # only enable 2 functions
-        ),
-    )
-    db_session.commit()
-    yield dummy_agent_1_with_no_apps_allowed
-
 
 ################################################################################
 # Dummy Apps
