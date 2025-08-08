@@ -1,5 +1,6 @@
 from typing import Annotated
 
+from aci.common.db.crud.app_configurations import get_app_configuration
 from fastapi import APIRouter, Depends, Query
 from openai import OpenAI
 
@@ -14,7 +15,7 @@ from aci.common.schemas.app import (
     AppsList,
     AppsSearch,
 )
-from aci.common.schemas.function import BasicFunctionDefinition, FunctionDetails
+from aci.common.schemas.function import BasicFunctionDefinition, FunctionDetails, FunctionDetailsWithEnabled
 from aci.common.schemas.security_scheme import SecuritySchemesPublic
 from aci.server import config
 from aci.server import dependencies as deps
@@ -42,8 +43,32 @@ async def list_apps(
         query_params.offset,
     )
 
+    # Find what functions are enabled for each app with single query
+    app_configs = crud.app_configurations.get_app_configurations(
+        context.db_session,
+        context.project.id,
+        query_params.app_names,
+        None,
+        None,
+    )
+    enabled_function_names: list[str] = []
+    for app_config in app_configs:
+        if app_config.enabled:
+            if app_config.all_functions_enabled:
+                enabled_function_names.extend([function.name for function in app_config.app.functions])
+            else:
+                enabled_function_names.extend(app_config.enabled_functions)
+
     response: list[AppDetails] = []
     for app in apps:
+
+        functions: list[FunctionDetailsWithEnabled] = []
+        for app_function in app.functions:
+            functions.append(FunctionDetailsWithEnabled.model_validate({
+                **FunctionDetails.model_validate(app_function).model_dump(),
+                "enabled": app_function.name in enabled_function_names,
+            }))
+
         app_details = AppDetails(
             id=app.id,
             name=app.name,
@@ -58,7 +83,7 @@ async def list_apps(
             security_schemes=list(app.security_schemes.keys()),
             # TODO: check validation latency
             supported_security_schemes=SecuritySchemesPublic.model_validate(app.security_schemes),
-            functions=[FunctionDetails.model_validate(function) for function in app.functions],
+            functions=functions,
             created_at=app.created_at,
             updated_at=app.updated_at,
         )
@@ -106,12 +131,29 @@ async def search_apps(
         query_params.offset,
     )
 
+    # Find what functions are enabled for each app with single query
+    app_configs = crud.app_configurations.get_app_configurations(
+        context.db_session,
+        context.project.id,
+        apps_to_filter,
+        None,
+        None,
+    )
+    enabled_function_names: list[str] = []
+    for app_config in app_configs:
+        if app_config.enabled:
+            if app_config.all_functions_enabled:
+                enabled_function_names.extend([function.name for function in app_config.app.functions])
+            else:
+                enabled_function_names.extend(app_config.enabled_functions)
+
+
     apps: list[AppBasic] = []
 
     for app, _ in apps_with_scores:
         if query_params.include_functions:
             functions = [
-                BasicFunctionDefinition(name=function.name, description=function.description)
+                BasicFunctionDefinition(name=function.name, description=function.description, enabled=function.name in enabled_function_names)
                 for function in app.functions
             ]
             apps.append(AppBasic(name=app.name, description=app.description, functions=functions))
@@ -163,6 +205,20 @@ async def get_app_details(
         )
     ]
 
+    app_config = crud.app_configurations.get_app_configuration(
+        context.db_session,
+        context.project.id,
+        app_name,
+    )
+
+    if app_config is None:
+        enabled_function_names = []
+    else:
+        if app_config.all_functions_enabled:
+            enabled_function_names = [function.name for function in app.functions]
+        else:
+            enabled_function_names = app_config.enabled_functions
+
     app_details: AppDetails = AppDetails(
         id=app.id,
         name=app.name,
@@ -176,7 +232,10 @@ async def get_app_details(
         active=app.active,
         security_schemes=list(app.security_schemes.keys()),
         supported_security_schemes=SecuritySchemesPublic.model_validate(app.security_schemes),
-        functions=[FunctionDetails.model_validate(function) for function in functions],
+        functions=[FunctionDetailsWithEnabled.model_validate({
+            **FunctionDetails.model_validate(function).model_dump(),
+            "enabled": function.name in enabled_function_names,
+        }) for function in functions],
         created_at=app.created_at,
         updated_at=app.updated_at,
     )

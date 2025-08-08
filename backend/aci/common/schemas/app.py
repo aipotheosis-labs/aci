@@ -5,7 +5,7 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from aci.common.enums import SecurityScheme, Visibility
-from aci.common.schemas.function import BasicFunctionDefinition, FunctionDetails
+from aci.common.schemas.function import BasicFunctionDefinition, FunctionDetails, FunctionDetailsWithEnabled
 from aci.common.schemas.security_scheme import (
     APIKeyScheme,
     APIKeySchemeCredentials,
@@ -158,7 +158,7 @@ class AppDetails(BaseModel):
     # consider merging the two fields in the future
     supported_security_schemes: SecuritySchemesPublic
 
-    functions: list[FunctionDetails]
+    functions: list[FunctionDetailsWithEnabled]
 
     created_at: datetime
     updated_at: datetime

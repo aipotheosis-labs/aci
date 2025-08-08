@@ -120,6 +120,10 @@ class FunctionsSearch(BaseModel):
         default=False,
         description="If true, only returns functions of apps that are allowed by the agent/accessor, identified by the api key.",
     )
+    enabled_only: bool = Field(
+        default=False,
+        description="If true, only returns functions that are enabled from the allowed apps of the agent/accessor, identified by the api key.",
+    )
     format: FunctionDefinitionFormat = Field(
         default=FunctionDefinitionFormat.BASIC,
         description="The format of the function definition to return. e.g., 'openai', 'anthropic' or 'basic' which only returns name and description.",
@@ -172,6 +176,8 @@ class FunctionDetails(BaseModel):
     updated_at: datetime
 
     model_config = ConfigDict(from_attributes=True)
+class FunctionDetailsWithEnabled(FunctionDetails):
+    enabled: bool
 
 
 class OpenAIFunction(BaseModel):
@@ -208,6 +214,7 @@ class BasicFunctionDefinition(BaseModel):
 
     name: str
     description: str
+    enabled: bool
 
     model_config = ConfigDict(from_attributes=True)
 
