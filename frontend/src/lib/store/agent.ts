@@ -145,7 +145,7 @@ export const useAgentStore = create<AgentState>()(
         try {
           let functionsData = await searchFunctions(
             {
-              allowed_apps_only: true,
+              allowed_only: true,
               limit: 1000,
             },
             apiKey,

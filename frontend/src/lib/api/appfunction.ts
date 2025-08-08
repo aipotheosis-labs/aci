@@ -49,6 +49,9 @@ export async function searchFunctions(
   if (params.allowed_apps_only) {
     searchParams.append("allowed_apps_only", "true");
   }
+  if (params.allowed_only) {
+    searchParams.append("allowed_only", "true");
+  }
   if (params.format) {
     searchParams.append("format", params.format);
   }
