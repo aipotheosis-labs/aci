@@ -233,6 +233,7 @@ def dummy_agent_1_with_some_functions_enabled(
     db_session.commit()
     yield dummy_agent_1_with_no_apps_allowed
 
+
 ################################################################################
 # Dummy Apps
 ################################################################################
