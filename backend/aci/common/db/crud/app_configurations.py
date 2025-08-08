@@ -80,8 +80,8 @@ def get_app_configurations(
     db_session: Session,
     project_id: UUID,
     app_names: list[str] | None,
-    limit: int,
-    offset: int,
+    limit: int | None = None,
+    offset: int | None = None,
 ) -> list[AppConfiguration]:
     """Get all app configurations for a project, optionally filtered by app names"""
     statement = select(AppConfiguration).filter_by(project_id=project_id)
@@ -89,7 +89,11 @@ def get_app_configurations(
         statement = statement.join(App, AppConfiguration.app_id == App.id).filter(
             App.name.in_(app_names)
         )
-    statement = statement.offset(offset).limit(limit)
+    if offset is not None:
+        statement = statement.offset(offset)
+    if limit is not None:
+        statement = statement.limit(limit)
+
     app_configurations = list(db_session.execute(statement).scalars().all())
     return app_configurations
 
