@@ -167,7 +167,6 @@ async def _refresh_oauth2_access_token(
         scope=oauth2_scheme_credentials.scope,
         authorize_url=oauth2_scheme.authorize_url,
         access_token_url=oauth2_scheme.access_token_url,
-        exchange_token_url=oauth2_scheme.exchange_token_url,
         refresh_token_url=oauth2_scheme.refresh_token_url,
         token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
     )

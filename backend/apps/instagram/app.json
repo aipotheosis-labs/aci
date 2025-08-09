@@ -15,7 +15,6 @@
         "scope": "instagram_business_basic instagram_business_content_publish instagram_business_manage_messages instagram_business_manage_comments instagram_business_manage_insights",
         "authorize_url": "https://www.instagram.com/oauth/authorize",
         "access_token_url": "https://api.instagram.com/oauth/access_token",
-        "exchange_token_url": "https://graph.instagram.com/access_token",
         "refresh_token_url": "https://graph.instagram.com/refresh_access_token",
         "token_endpoint_auth_method": "client_secret_post"
       }
