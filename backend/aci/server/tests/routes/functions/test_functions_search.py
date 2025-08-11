@@ -1,13 +1,16 @@
+
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
-from typing import cast
 
 from aci.common.db import crud
 from aci.common.db.sql_models import Agent, App, Function, Project
 from aci.common.enums import FunctionDefinitionFormat, SecurityScheme, Visibility
-from aci.common.schemas.app_configurations import AppConfigurationCreate, AppConfigurationPublic, AppConfigurationUpdate
+from aci.common.schemas.app_configurations import (
+    AppConfigurationCreate,
+    AppConfigurationPublic,
+)
 from aci.common.schemas.function import (
     AnthropicFunctionDefinition,
     BasicFunctionDefinition,
