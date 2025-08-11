@@ -1,11 +1,9 @@
-from aci.common.enums import SecurityScheme
-from aci.common.schemas.app_configurations import AppConfigurationCreate
-from aci.common.db import crud
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
+from aci.common.db import crud
 from aci.common.db.sql_models import Agent, AppConfiguration, Function, LinkedAccount
 from aci.common.schemas.function import FunctionExecute
 from aci.server import config
