@@ -145,6 +145,7 @@ class AppConfigurationDisabled(ACIException):
             error_code=status.HTTP_403_FORBIDDEN,
         )
 
+
 class AppConfigurationAlreadyExists(ACIException):
     """
     Exception raised when an app configuration already exists
@@ -363,6 +364,7 @@ class AppNotAllowedForThisAgent(ACIException):
             error_code=status.HTTP_401_UNAUTHORIZED,
         )
 
+
 class FunctionNotEnabledForThisAgent(ACIException):
     """
     Exception raised when a function is not enabled for an agent
@@ -374,6 +376,7 @@ class FunctionNotEnabledForThisAgent(ACIException):
             message=message,
             error_code=status.HTTP_403_FORBIDDEN,
         )
+
 
 class CustomInstructionViolation(ACIException):
     """

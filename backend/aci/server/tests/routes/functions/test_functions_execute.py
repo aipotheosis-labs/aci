@@ -167,7 +167,6 @@ def test_execute_function_enablement_for_agent(
     dummy_function_aci_test__hello_world_no_args: Function,
     dummy_linked_account_default_api_key_aci_test_project_1: LinkedAccount,
 ) -> None:
-
     function_execute = FunctionExecute(
         linked_account_owner_id=dummy_linked_account_default_api_key_aci_test_project_1.linked_account_owner_id,
     )
@@ -188,7 +187,9 @@ def test_execute_function_enablement_for_agent(
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
-    assert response.status_code == status.HTTP_200_OK, "should return 200 because all_functions_enabled is True"
+    assert response.status_code == status.HTTP_200_OK, (
+        "should return 200 because all_functions_enabled is True"
+    )
 
     # Case 2: all_functions_enabled = False, enabled_functions = []
     app_config.all_functions_enabled = False
@@ -200,7 +201,9 @@ def test_execute_function_enablement_for_agent(
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
-    assert response.status_code == status.HTTP_403_FORBIDDEN, "should return 403 because function is not enabled"
+    assert response.status_code == status.HTTP_403_FORBIDDEN, (
+        "should return 403 because function is not enabled"
+    )
     assert str(response.json()["error"]).startswith("Function not enabled for this agent")
 
     # Case 3: all_functions_enabled = False, enabled_functions = [includes the function]
@@ -213,4 +216,6 @@ def test_execute_function_enablement_for_agent(
         json=function_execute.model_dump(mode="json"),
         headers={"x-api-key": dummy_agent_1_with_all_apps_allowed.api_keys[0].key},
     )
-    assert response.status_code == status.HTTP_200_OK, "should return 200 because function is enabled"
+    assert response.status_code == status.HTTP_200_OK, (
+        "should return 200 because function is enabled"
+    )

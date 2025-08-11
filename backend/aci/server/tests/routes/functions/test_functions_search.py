@@ -1,4 +1,3 @@
-
 import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
@@ -453,6 +452,7 @@ def test_search_functions_allowed_apps_only_true(
         function_name = _get_function_name_from_definition(function)
         assert function_name in dummy_app_function_names
 
+
 @pytest.mark.parametrize(
     "format",
     [
@@ -516,7 +516,8 @@ def test_search_functions_allowed_only_true(
         db_session,
         mock_agent.project_id,
         AppConfigurationCreate(
-            app_name=dummy_app_aci_test.name, security_scheme=SecurityScheme.API_KEY,
+            app_name=dummy_app_aci_test.name,
+            security_scheme=SecurityScheme.API_KEY,
             all_functions_enabled=True,
         ),
     )
@@ -528,12 +529,16 @@ def test_search_functions_allowed_only_true(
         headers={"x-api-key": mock_agent.api_keys[0].key},
     )
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == len(dummy_app_aci_test.functions), "should return all functions from the allowed app"
-
+    assert len(response.json()) == len(dummy_app_aci_test.functions), (
+        "should return all functions from the allowed app"
+    )
 
     # Test 2: Setup agent to allow access to partial functions of 1 app
     aci_test_app_config.all_functions_enabled = False
-    aci_test_app_config.enabled_functions = [dummy_app_aci_test.functions[0].name, dummy_app_aci_test.functions[1].name]
+    aci_test_app_config.enabled_functions = [
+        dummy_app_aci_test.functions[0].name,
+        dummy_app_aci_test.functions[1].name,
+    ]
     db_session.commit()
 
     response = test_client.get(
@@ -548,7 +553,11 @@ def test_search_functions_allowed_only_true(
         assert response.json()[1]["name"] == dummy_app_aci_test.functions[1].name
 
     # Test 3: Setup agent to allow access to all functions of multiple apps
-    mock_agent.allowed_apps = [dummy_app_aci_test.name, dummy_app_github.name, dummy_app_google.name]
+    mock_agent.allowed_apps = [
+        dummy_app_aci_test.name,
+        dummy_app_github.name,
+        dummy_app_google.name,
+    ]
 
     aci_test_app_config.all_functions_enabled = True
     aci_test_app_config.enabled_functions = []
@@ -557,7 +566,8 @@ def test_search_functions_allowed_only_true(
         db_session,
         mock_agent.project_id,
         AppConfigurationCreate(
-            app_name=dummy_app_github.name, security_scheme=SecurityScheme.API_KEY,
+            app_name=dummy_app_github.name,
+            security_scheme=SecurityScheme.API_KEY,
             all_functions_enabled=True,
         ),
     )
@@ -565,7 +575,8 @@ def test_search_functions_allowed_only_true(
         db_session,
         mock_agent.project_id,
         AppConfigurationCreate(
-            app_name=dummy_app_google.name, security_scheme=SecurityScheme.API_KEY,
+            app_name=dummy_app_google.name,
+            security_scheme=SecurityScheme.API_KEY,
             all_functions_enabled=True,
         ),
     )
@@ -577,8 +588,9 @@ def test_search_functions_allowed_only_true(
         headers={"x-api-key": mock_agent.api_keys[0].key},
     )
     assert response.status_code == status.HTTP_200_OK
-    assert len(response.json()) == len(dummy_app_aci_test.functions) + len(dummy_app_github.functions) + len(dummy_app_google.functions), "should return all functions from all apps"
-
+    assert len(response.json()) == len(dummy_app_aci_test.functions) + len(
+        dummy_app_github.functions
+    ) + len(dummy_app_google.functions), "should return all functions from all apps"
 
     # Test 4: Setup agent to allow access to all apps and no functions
     for app_config in [aci_test_app_config, github_app_config, google_app_config]:
@@ -592,7 +604,6 @@ def test_search_functions_allowed_only_true(
         headers={"x-api-key": mock_agent.api_keys[0].key},
     )
     assert len(response.json()) == 0, "should return no functions because no apps are allowed"
-
 
     # Test 5: Setup agent to allow access to no apps
     mock_agent.allowed_apps = []
@@ -641,6 +652,7 @@ def test_search_functions_allowed_only_false(
         "should return all functions because allowed_apps_only is False"
     )
 
+
 @pytest.mark.parametrize(
     "format",
     [
@@ -663,7 +675,8 @@ def test_search_functions_with_app_names_and_allowed_apps_only(
         db_session,
         dummy_agent_1_with_no_apps_allowed.project_id,
         AppConfigurationCreate(
-            app_name=dummy_app_github.name, security_scheme=SecurityScheme.API_KEY,
+            app_name=dummy_app_github.name,
+            security_scheme=SecurityScheme.API_KEY,
             all_functions_enabled=True,
         ),
     )
@@ -701,7 +714,8 @@ def test_search_functions_with_app_names_and_allowed_apps_only(
         db_session,
         dummy_agent_1_with_no_apps_allowed.project_id,
         AppConfigurationCreate(
-            app_name=dummy_app_google.name, security_scheme=SecurityScheme.API_KEY,
+            app_name=dummy_app_google.name,
+            security_scheme=SecurityScheme.API_KEY,
             all_functions_enabled=True,
         ),
     )
