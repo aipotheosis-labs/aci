@@ -1055,12 +1055,41 @@
           "properties": {
             "text": {
               "type": "string",
-              "description": "The content of the post. Required if media is not provided.",
-              "maxLength": 280
+              "description": "The content of the Tweet."
+            },
+            "card_uri": {
+              "type": "string",
+              "description": "Card Uri Parameter. This is mutually exclusive from Quote Tweet Id, Poll, Media, and Direct Message Deep Link."
+            },
+            "community_id": {
+              "type": "string",
+              "description": "The unique identifier of this Community."
+            },
+            "direct_message_deep_link": {
+              "type": "string",
+              "description": "Link to take the conversation from the public timeline to a private Direct Message."
+            },
+            "for_super_followers_only": {
+              "type": "boolean",
+              "description": "Exclusive Tweet for super followers.",
+              "default": false
+            },
+            "geo": {
+              "type": "object",
+              "description": "Place ID being attached to the Tweet for geo location.",
+              "properties": {
+                "place_id": {
+                  "type": "string",
+                  "description": "Place ID for the location"
+                }
+              },
+              "required": [],
+              "visible": ["place_id"],
+              "additionalProperties": false
             },
             "media": {
               "type": "object",
-              "description": "Media to attach to the post",
+              "description": "Media information being attached to created Tweet. This is mutually exclusive from Quote Tweet Id, Poll, and Card URI.",
               "properties": {
                 "media_ids": {
                   "type": "array",
@@ -1081,9 +1110,14 @@
               "visible": ["media_ids", "tagged_user_ids"],
               "additionalProperties": false
             },
+            "nullcast": {
+              "type": "boolean",
+              "description": "Nullcasted (promoted-only) Posts do not appear in the public timeline and are not served to followers.",
+              "default": false
+            },
             "poll": {
               "type": "object",
-              "description": "Poll to include in the post",
+              "description": "Poll options for a Tweet with a poll. This is mutually exclusive from Media, Quote Tweet Id, and Card URI.",
               "properties": {
                 "options": {
                   "type": "array",
@@ -1101,60 +1135,47 @@
                   "description": "Poll duration in minutes (5 minutes to 7 days)"
                 }
               },
-              "required": ["options", "duration_minutes"],
+              "required": [],
               "visible": ["options", "duration_minutes"],
               "additionalProperties": false
             },
+            "quote_tweet_id": {
+              "type": "string",
+              "description": "Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers."
+            },
             "reply": {
               "type": "object",
-              "description": "Reply settings for the post",
+              "description": "Tweet information of the Tweet being replied to.",
               "properties": {
                 "in_reply_to_tweet_id": {
                   "type": "string",
-                  "description": "ID of the post being replied to"
+                  "description": "Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers."
                 },
                 "exclude_reply_user_ids": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "User IDs to exclude from reply notifications"
+                  "description": "A list of User Ids to be excluded from the reply Tweet."
                 }
               },
               "required": [],
               "visible": ["in_reply_to_tweet_id", "exclude_reply_user_ids"],
               "additionalProperties": false
             },
-            "quote_tweet_id": {
-              "type": "string",
-              "description": "ID of the post being quoted"
-            },
             "reply_settings": {
               "type": "string",
-              "enum": ["everyone", "mentionedUsers", "following"],
-              "description": "Who can reply to this post"
+              "enum": ["following", "mentionedUsers", "subscribers", "verified"],
+              "description": "Settings to indicate who can reply to the Tweet."
             },
-            "geo": {
-              "type": "object",
-              "description": "Geographic location for the post",
-              "properties": {
-                "place_id": {
-                  "type": "string",
-                  "description": "Place ID for the location"
-                }
-              },
-              "required": ["place_id"],
-              "visible": ["place_id"],
-              "additionalProperties": false
-            },
-            "for_super_followers_only": {
+            "share_with_followers": {
               "type": "boolean",
-              "description": "Whether the post is for Super Followers only",
+              "description": "Share community post with followers too.",
               "default": false
             }
           },
           "required": [],
-          "visible": ["text", "media", "poll", "reply", "quote_tweet_id", "reply_settings", "geo", "for_super_followers_only"],
+          "visible": ["text", "card_uri", "community_id", "direct_message_deep_link", "for_super_followers_only", "geo", "media", "nullcast", "poll", "quote_tweet_id", "reply", "reply_settings", "share_with_followers"],
           "additionalProperties": false
         }
       },
