@@ -1,7 +1,7 @@
 {
   "name": "NETLIFY",
   "display_name": "Netlify",
-  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/netlify.jpg",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/netlify.svg",
   "provider": "Netlify, Inc.",
   "version": "1.0.0",
   "description": "Netlify is a cloud hosting platform for web applications and static sites with continuous deployment, forms, and serverless functions.",
