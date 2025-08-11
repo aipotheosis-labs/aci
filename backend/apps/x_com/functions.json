@@ -221,7 +221,7 @@
     "name": "X_COM__GET_POST_RETWEETS",
     "description": "Get users who have retweeted a specific post. Returns user information for those who retweeted.",
     "tags": ["posts", "retweets", "users"],
-    "visibility": "public", 
+    "visibility": "public",
     "active": true,
     "protocol": "rest",
     "protocol_data": {
@@ -606,7 +606,7 @@
             "user.fields": {
               "type": "string",
               "description": "Comma-separated list of user fields to include",
-              "default": "id,name,username"  
+              "default": "id,name,username"
             },
             "expansions": {
               "type": "string",
@@ -748,7 +748,7 @@
     "name": "X_COM__GET_USER_FOLLOWED_LISTS",
     "description": "Get lists that a specific user follows. Returns list information for lists they follow.",
     "tags": ["lists", "users", "following"],
-    "visibility": "public",  
+    "visibility": "public",
     "active": true,
     "protocol": "rest",
     "protocol_data": {
@@ -1020,5 +1020,147 @@
       "visible": ["query"],
       "additionalProperties": false
     }
+  },
+  {
+    "name": "X_COM__PUBLISH_POST",
+    "description": "Creates and publishes a new post on X.com. Supports text content, media attachments, polls, reply settings, and other advanced features.",
+    "tags": ["posts", "create", "publish", "tweet"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/tweets",
+      "server_url": "https://api.x.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "description": "HTTP headers",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body for creating a post",
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "The content of the post. Required if media is not provided.",
+              "maxLength": 280
+            },
+            "media": {
+              "type": "object",
+              "description": "Media to attach to the post",
+              "properties": {
+                "media_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of media IDs to attach"
+                },
+                "tagged_user_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Array of user IDs to tag in media"
+                }
+              },
+              "required": [],
+              "visible": ["media_ids", "tagged_user_ids"],
+              "additionalProperties": false
+            },
+            "poll": {
+              "type": "object",
+              "description": "Poll to include in the post",
+              "properties": {
+                "options": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 2,
+                  "maxItems": 4,
+                  "description": "Poll options (2-4 options required)"
+                },
+                "duration_minutes": {
+                  "type": "integer",
+                  "minimum": 5,
+                  "maximum": 10080,
+                  "description": "Poll duration in minutes (5 minutes to 7 days)"
+                }
+              },
+              "required": ["options", "duration_minutes"],
+              "visible": ["options", "duration_minutes"],
+              "additionalProperties": false
+            },
+            "reply": {
+              "type": "object",
+              "description": "Reply settings for the post",
+              "properties": {
+                "in_reply_to_tweet_id": {
+                  "type": "string",
+                  "description": "ID of the post being replied to"
+                },
+                "exclude_reply_user_ids": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "User IDs to exclude from reply notifications"
+                }
+              },
+              "required": [],
+              "visible": ["in_reply_to_tweet_id", "exclude_reply_user_ids"],
+              "additionalProperties": false
+            },
+            "quote_tweet_id": {
+              "type": "string",
+              "description": "ID of the post being quoted"
+            },
+            "reply_settings": {
+              "type": "string",
+              "enum": ["everyone", "mentionedUsers", "following"],
+              "description": "Who can reply to this post"
+            },
+            "geo": {
+              "type": "object",
+              "description": "Geographic location for the post",
+              "properties": {
+                "place_id": {
+                  "type": "string",
+                  "description": "Place ID for the location"
+                }
+              },
+              "required": ["place_id"],
+              "visible": ["place_id"],
+              "additionalProperties": false
+            },
+            "for_super_followers_only": {
+              "type": "boolean",
+              "description": "Whether the post is for Super Followers only",
+              "default": false
+            }
+          },
+          "required": [],
+          "visible": ["text", "media", "poll", "reply", "quote_tweet_id", "reply_settings", "geo", "for_super_followers_only"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
   }
-] 
+]
