@@ -362,25 +362,26 @@ async def link_oauth2_account(
         token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
     )
 
-    path = request.url_for(LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
-    redirect_uri = oauth2_scheme.redirect_url or f"{config.REDIRECT_URI_BASE}{path}"
-
     # create and encode the state payload.
     # NOTE: the state payload is jwt encoded (signed), but it's not encrypted, anyone can decode it
     # TODO: add expiration check to the state payload for extra security
-    oauth2_state = oauth2_manager.create_oauth2_state(
+    oauth2_state = LinkedAccountOAuth2CreateState(
+        app_name=query_params.app_name,
         project_id=context.project.id,
         linked_account_owner_id=query_params.linked_account_owner_id,
         client_id=oauth2_scheme.client_id,
-        redirect_uri=redirect_uri,
+        code_verifier=OAuth2Manager.generate_code_verifier(),
         after_oauth2_link_redirect_url=query_params.after_oauth2_link_redirect_url,
     )
+
     oauth2_state_jwt = jwt.encode(
         {"alg": config.JWT_ALGORITHM},
         oauth2_state.model_dump(mode="json", exclude_none=True),
         config.SIGNING_KEY,
     ).decode()  # decode() is needed to convert the bytes to a string (not decoding the jwt payload) for this jwt library.
 
+    path = request.url_for(LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
+    redirect_uri = oauth2_scheme.redirect_url or f"{config.REDIRECT_URI_BASE}{path}"
     authorization_url = await oauth2_manager.create_authorization_url(
         redirect_uri=redirect_uri,
         state=oauth2_state_jwt,
@@ -500,11 +501,9 @@ async def linked_accounts_oauth2_callback(
         refresh_token_url=oauth2_scheme.refresh_token_url,
         token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
     )
-    if state.redirect_uri:
-        redirect_uri = state.redirect_uri
-    else:
-        path = request.url_for(LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
-        redirect_uri = oauth2_scheme.redirect_url or f"{config.REDIRECT_URI_BASE}{path}"
+
+    path = request.url_for(LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
+    redirect_uri = oauth2_scheme.redirect_url or f"{config.REDIRECT_URI_BASE}{path}"
     token_response = await oauth2_manager.fetch_token(
         redirect_uri=redirect_uri,
         code=code,

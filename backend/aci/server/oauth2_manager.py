@@ -2,13 +2,11 @@ import random
 import string
 import time
 from typing import Any, cast
-from uuid import UUID
 
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 
 from aci.common.exceptions import OAuth2Error
 from aci.common.logging_setup import get_logger
-from aci.common.schemas.linked_accounts import LinkedAccountOAuth2CreateState
 from aci.common.schemas.security_scheme import OAuth2SchemeCredentials
 
 UNICODE_ASCII_CHARACTER_SET = string.ascii_letters + string.digits
@@ -112,44 +110,6 @@ class OAuth2Manager:
         )
 
         return str(authorization_url)
-
-    def create_oauth2_state(
-        self,
-        project_id: UUID,
-        linked_account_owner_id: str,
-        client_id: str,
-        redirect_uri: str,
-        after_oauth2_link_redirect_url: str | None = None,
-    ) -> LinkedAccountOAuth2CreateState:
-        """
-        Create OAuth2 state for authorization flow.
-        Special case: X_COM app will have redirect_uri set to None.
-
-        Args:
-            project_id: The project ID
-            linked_account_owner_id: The linked account owner ID
-            client_id: The OAuth2 client ID
-            redirect_uri: The redirect URI for OAuth2 callback
-            after_oauth2_link_redirect_url: Optional URL to redirect to after linking
-
-        Returns:
-            LinkedAccountOAuth2CreateState object
-        """
-        oauth2_state = LinkedAccountOAuth2CreateState(
-            app_name=self.app_name,
-            project_id=project_id,
-            linked_account_owner_id=linked_account_owner_id,
-            client_id=client_id,
-            redirect_uri=redirect_uri,
-            code_verifier=self.generate_code_verifier(),
-            after_oauth2_link_redirect_url=after_oauth2_link_redirect_url,
-        )
-
-        # Special case: X_COM app should not store redirect_uri in state
-        if self.app_name == "X_COM":
-            del oauth2_state.redirect_uri
-
-        return oauth2_state
 
     # TODO: some app may not support "code_verifier"?
     async def fetch_token(

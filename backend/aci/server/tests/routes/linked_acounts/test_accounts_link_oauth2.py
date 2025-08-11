@@ -99,9 +99,6 @@ def test_link_oauth2_account_success(
     assert state.app_name == google_app_configuration.app_name
     assert state.linked_account_owner_id == "test_link_oauth2_account_success"
     assert state.after_oauth2_link_redirect_url == after_oauth2_link_redirect_url
-    assert state.redirect_uri == (
-        f"{config.REDIRECT_URI_BASE}{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback"
-    )
     if use_custom_oauth2_app:
         assert state.client_id == "custom_client_id"
     else:
@@ -262,17 +259,11 @@ def test_link_oauth2_account_under_app_config_with_custom_redirect_url(
     state_jwt = qs_params.get("state", [None])[0]
     assert redirect_uri_in_authorization_url is not None
     assert state_jwt is not None
-    state = LinkedAccountOAuth2CreateState.model_validate(jwt.decode(state_jwt, config.SIGNING_KEY))
 
     if redirect_url:
         assert redirect_uri_in_authorization_url == redirect_url
-        assert state.redirect_uri == redirect_url
     else:
         assert (
             redirect_uri_in_authorization_url
-            == f"{config.REDIRECT_URI_BASE}{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback"
-        )
-        assert (
-            state.redirect_uri
             == f"{config.REDIRECT_URI_BASE}{config.ROUTER_PREFIX_LINKED_ACCOUNTS}/oauth2/callback"
         )

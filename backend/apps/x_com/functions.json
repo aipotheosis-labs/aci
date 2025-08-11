@@ -1059,15 +1059,15 @@
             },
             "card_uri": {
               "type": "string",
-              "description": "Card Uri Parameter. This is mutually exclusive from Quote Tweet Id, Poll, Media, and Direct Message Deep Link."
+              "description": "Card URI parameter for attaching a card to the tweet. Only provide this if specifically requested. This is mutually exclusive from Quote Tweet Id, Poll, Media, and Direct Message Deep Link. Omit this field if not needed."
             },
             "community_id": {
               "type": "string",
-              "description": "The unique identifier of this Community."
+              "description": "The unique identifier of this Community. Only provide this if posting to a specific community. Must be a valid community ID (19-digit number). Omit this field for regular tweets."
             },
             "direct_message_deep_link": {
               "type": "string",
-              "description": "Link to take the conversation from the public timeline to a private Direct Message."
+              "description": "Link to take the conversation from the public timeline to a private Direct Message. Only provide this if specifically requested. Omit this field for regular tweets."
             },
             "for_super_followers_only": {
               "type": "boolean",
@@ -1076,11 +1076,11 @@
             },
             "geo": {
               "type": "object",
-              "description": "Place ID being attached to the Tweet for geo location.",
+              "description": "Geographic location information. Only provide this object if adding location to the tweet. Omit this entire object for tweets without location.",
               "properties": {
                 "place_id": {
                   "type": "string",
-                  "description": "Place ID for the location"
+                  "description": "Valid place ID for the location. Must be obtained from the geo search endpoint. Required when using geo object."
                 }
               },
               "required": [],
@@ -1089,21 +1089,21 @@
             },
             "media": {
               "type": "object",
-              "description": "Media information being attached to created Tweet. This is mutually exclusive from Quote Tweet Id, Poll, and Card URI.",
+              "description": "Media information for attaching images, videos, etc. Only provide this object if attaching media. This is mutually exclusive from Quote Tweet Id, Poll, and Card URI. Omit this entire object for text-only tweets.",
               "properties": {
                 "media_ids": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "Array of media IDs to attach"
+                  "description": "Array of valid media IDs to attach. Each media ID must be obtained from the media upload endpoint. Required when using media object."
                 },
                 "tagged_user_ids": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "Array of user IDs to tag in media"
+                  "description": "Array of user IDs to tag in the media. Each must be a valid user ID (19-digit number). Optional when using media object."
                 }
               },
               "required": [],
@@ -1141,22 +1141,22 @@
             },
             "quote_tweet_id": {
               "type": "string",
-              "description": "Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers."
+              "description": "Unique identifier of the tweet to quote. Only provide this if creating a quote tweet. Must be a valid tweet ID (19-digit number). Omit this field for regular tweets."
             },
             "reply": {
               "type": "object",
-              "description": "Tweet information of the Tweet being replied to.",
+              "description": "Reply information. Only provide this object if creating a reply to another tweet. Omit this entire object for regular tweets.",
               "properties": {
                 "in_reply_to_tweet_id": {
                   "type": "string",
-                  "description": "Unique identifier of this Tweet. This is returned as a string in order to avoid complications with languages and tools that cannot handle large integers."
+                  "description": "Unique identifier of the tweet being replied to. Must be a valid tweet ID (19-digit number). Required when creating a reply."
                 },
                 "exclude_reply_user_ids": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "A list of User Ids to be excluded from the reply Tweet."
+                  "description": "List of user IDs to exclude from reply notifications. Each must be a valid user ID (19-digit number). Optional when creating a reply."
                 }
               },
               "required": [],
@@ -1175,7 +1175,7 @@
             }
           },
           "required": [],
-          "visible": ["text", "card_uri", "community_id", "direct_message_deep_link", "for_super_followers_only", "geo", "media", "nullcast", "poll", "quote_tweet_id", "reply", "reply_settings", "share_with_followers"],
+          "visible": ["text", "poll", "media", "reply", "reply_settings"],
           "additionalProperties": false
         }
       },
