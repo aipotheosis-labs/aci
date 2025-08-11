@@ -102,7 +102,7 @@ async def search_functions(
             apps_to_filter = list(set(query_params.app_names) & set(context.agent.allowed_apps))
 
         # TODO: currently it fetches all allowed functions of the agents and compare the function names in code runtime to see if they are enabled.
-        # It may not be efficient if the number of apps / enabled functions is large. We can modify the db schema to create relational table between 
+        # It may not be efficient if the number of apps / enabled functions is large. We can modify the db schema to create relational table between
         # app config and functions. So we can filter by joining the tables which is more efficient.
 
         # Compute the enabled function names from the app configurations of the filtered apps
@@ -117,7 +117,9 @@ async def search_functions(
         for app_config in app_configs:
             if app_config.enabled:
                 if app_config.all_functions_enabled:
-                    enabled_function_names.extend([function.name for function in app_config.app.functions])
+                    enabled_function_names.extend(
+                        [function.name for function in app_config.app.functions]
+                    )
                 else:
                     enabled_function_names.extend(app_config.enabled_functions)
     else:
@@ -126,7 +128,6 @@ async def search_functions(
             apps_to_filter = None
         else:
             apps_to_filter = query_params.app_names
-
 
     functions = crud.functions.search_functions(
         context.db_session,
@@ -392,8 +393,10 @@ async def execute_function(
             f"App={function.app.name} that this function belongs to is not allowed to be used by agent={agent.name}"
         )
 
-
-    if not app_configuration.all_functions_enabled and function.name not in app_configuration.enabled_functions:
+    if (
+        not app_configuration.all_functions_enabled
+        and function.name not in app_configuration.enabled_functions
+    ):
         logger.error(
             f"Failed to execute function, function not enabled for this agent, "
             f"function_name={function_name} app_name={function.app.name} agent_id={agent.id}"
