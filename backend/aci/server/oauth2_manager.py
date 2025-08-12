@@ -202,6 +202,7 @@ class OAuth2Manager:
                         f"Missing access_token in Instagram OAuth response, app={self.app_name}"
                     )
                     raise OAuth2Error("Missing access_token in Instagram OAuth response")
+
             # return the token response with long-lived access token
             return token
         except Exception as e:
@@ -210,15 +211,28 @@ class OAuth2Manager:
 
     async def refresh_token(
         self,
+        access_token: str,
         refresh_token: str,
     ) -> dict[str, Any]:
         try:
-            token = cast(
-                dict[str, Any],
-                await self.oauth2_client.refresh_token(
-                    self.refresh_token_url, refresh_token=refresh_token
-                ),
-            )
+            if self.app_name == "INSTAGRAM":
+                response = await self.oauth2_client.get(
+                    self.refresh_token_url,
+                    params={
+                        "grant_type": "ig_refresh_token",
+                        "access_token": access_token,
+                    },
+                    timeout=30.0,
+                )
+                response.raise_for_status()
+                token = cast(dict[str, Any], response.json())
+            else:
+                token = cast(
+                    dict[str, Any],
+                    await self.oauth2_client.refresh_token(
+                        self.refresh_token_url, refresh_token=refresh_token
+                    ),
+                )
             return token
         except Exception as e:
             logger.error(f"Failed to refresh access token, app_name={self.app_name}, error={e}")
@@ -253,7 +267,11 @@ class OAuth2Manager:
         if "expires_at" in data:
             expires_at = int(data["expires_at"])
         elif "expires_in" in data:
-            expires_at = int(time.time()) + int(data["expires_in"])
+            if self.app_name == "INSTAGRAM":
+                # Reduce expiration time by 1 day (86400 seconds) for safety margin
+                expires_at = int(time.time()) + max(0, int(data["expires_in"]) - 86400)
+            else:
+                expires_at = int(time.time()) + int(data["expires_in"])
 
         # TODO: if scope is present, check if it matches the scope in the App Configuration
 

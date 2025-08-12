@@ -97,6 +97,7 @@ async def _get_oauth2_credentials(
         linked_account.security_credentials
     )
     if _access_token_is_expired(oauth2_scheme_credentials):
+        # Instagram's access token only could be refreshed with a valid access token, so we need to re-authorize
         if app.name == "INSTAGRAM":
             logger.error(
                 f"Access token expired, please re-authorize, linked_account_id={linked_account.id}, "
@@ -120,7 +121,11 @@ async def _get_oauth2_credentials(
         if "expires_at" in token_response:
             expires_at = int(token_response["expires_at"])
         elif "expires_in" in token_response:
-            expires_at = int(time.time()) + int(token_response["expires_in"])
+            if app.name == "INSTAGRAM":
+                # Reduce expiration time by 1 day (86400 seconds) for safety margin
+                expires_at = int(time.time()) + max(0, int(token_response["expires_in"]) - 86400)
+            else:
+                expires_at = int(time.time()) + int(token_response["expires_in"])
 
         if not token_response.get("access_token") or not expires_at:
             logger.error(
@@ -155,6 +160,8 @@ async def _refresh_oauth2_access_token(
     app_name: str, oauth2_scheme: OAuth2Scheme, oauth2_scheme_credentials: OAuth2SchemeCredentials
 ) -> dict:
     refresh_token = oauth2_scheme_credentials.refresh_token
+    access_token = oauth2_scheme_credentials.access_token
+
     if not refresh_token:
         raise OAuth2Error("no refresh token found")
 
@@ -172,7 +179,7 @@ async def _refresh_oauth2_access_token(
         custom_data=oauth2_scheme.custom_data,
     )
 
-    return await oauth2_manager.refresh_token(refresh_token)
+    return await oauth2_manager.refresh_token(refresh_token, access_token)
 
 
 def _get_api_key_credentials(
