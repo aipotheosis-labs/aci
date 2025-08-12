@@ -1,6 +1,6 @@
 [
   {
-    "name": "X_COM__GET_POST_BY_ID",
+    "name": "X__GET_POST_BY_ID",
     "description": "Retrieve a specific post by its ID. Returns detailed post information including metrics and context.",
     "tags": ["posts", "lookup", "details"],
     "visibility": "public",
@@ -58,7 +58,7 @@
     }
   },
   {
-    "name": "X_COM__GET_POSTS_BY_IDS",
+    "name": "X__GET_POSTS_BY_IDS",
     "description": "Retrieve multiple posts by their IDs. Returns detailed information for up to 100 posts.",
     "tags": ["posts", "lookup", "batch"],
     "visibility": "public",
@@ -107,7 +107,7 @@
     }
   },
   {
-    "name": "X_COM__SEARCH_POSTS",
+    "name": "X__SEARCH_POSTS",
     "description": "Search for posts published in the last 7 days using a query. Returns matching posts with comprehensive metadata.",
     "tags": ["search", "posts", "recent"],
     "visibility": "public",
@@ -163,7 +163,7 @@
     }
   },
   {
-    "name": "X_COM__GET_USER_POSTS",
+    "name": "X__GET_USER_POSTS",
     "description": "Get posts from a specific user's timeline. Returns the user's recent posts with engagement metrics.",
     "tags": ["posts", "timeline", "user"],
     "visibility": "public",
@@ -218,7 +218,7 @@
     }
   },
   {
-    "name": "X_COM__GET_POST_RETWEETS",
+    "name": "X__GET_POST_RETWEETS",
     "description": "Get users who have retweeted a specific post. Returns user information for those who retweeted.",
     "tags": ["posts", "retweets", "users"],
     "visibility": "public",
@@ -273,7 +273,7 @@
     }
   },
   {
-    "name": "X_COM__GET_USER_BY_ID",
+    "name": "X__GET_USER_BY_ID",
     "description": "Retrieve user information by user ID. Returns detailed user profile data including metrics and verification status.",
     "tags": ["users", "profile", "lookup"],
     "visibility": "public",
@@ -321,7 +321,7 @@
     }
   },
   {
-    "name": "X_COM__GET_USERS_BY_IDS",
+    "name": "X__GET_USERS_BY_IDS",
     "description": "Retrieve multiple users by their IDs. Returns detailed user profile data for up to 100 users.",
     "tags": ["users", "profile", "batch"],
     "visibility": "public",
@@ -360,7 +360,7 @@
     }
   },
   {
-    "name": "X_COM__GET_USER_BY_USERNAME",
+    "name": "X__GET_USER_BY_USERNAME",
     "description": "Retrieve user information by username. Returns detailed user profile data including metrics and verification status.",
     "tags": ["users", "profile", "lookup"],
     "visibility": "public",
@@ -408,7 +408,7 @@
     }
   },
   {
-    "name": "X_COM__GET_USERS_BY_USERNAMES",
+    "name": "X__GET_USERS_BY_USERNAMES",
     "description": "Retrieve multiple users by their usernames. Returns detailed user profile data for up to 100 users.",
     "tags": ["users", "profile", "batch"],
     "visibility": "public",
@@ -447,7 +447,7 @@
     }
   },
   {
-    "name": "X_COM__GET_LIST_BY_ID",
+    "name": "X__GET_LIST_BY_ID",
     "description": "Retrieve detailed information about a specific list by its ID. Returns list metadata and settings.",
     "tags": ["lists", "lookup", "details"],
     "visibility": "public",
@@ -505,7 +505,7 @@
     }
   },
   {
-    "name": "X_COM__GET_USER_OWNED_LISTS",
+    "name": "X__GET_USER_OWNED_LISTS",
     "description": "Get lists owned by a specific user. Returns list information for lists they created.",
     "tags": ["lists", "users", "owned"],
     "visibility": "public",
@@ -560,7 +560,7 @@
     }
   },
   {
-    "name": "X_COM__GET_LIST_POSTS",
+    "name": "X__GET_LIST_POSTS",
     "description": "Get posts from a specific list. Returns recent posts from list members.",
     "tags": ["lists", "posts", "timeline"],
     "visibility": "public",
@@ -625,7 +625,7 @@
     }
   },
   {
-    "name": "X_COM__GET_LIST_MEMBERS",
+    "name": "X__GET_LIST_MEMBERS",
     "description": "Get members of a specific list. Returns user information for list members.",
     "tags": ["lists", "members", "users"],
     "visibility": "public",
@@ -680,7 +680,7 @@
     }
   },
   {
-    "name": "X_COM__GET_USER_LIST_MEMBERSHIPS",
+    "name": "X__GET_USER_LIST_MEMBERSHIPS",
     "description": "Get lists that a specific user is a member of. Returns list information for their memberships.",
     "tags": ["lists", "users", "memberships"],
     "visibility": "public",
@@ -745,7 +745,7 @@
     }
   },
   {
-    "name": "X_COM__GET_USER_FOLLOWED_LISTS",
+    "name": "X__GET_USER_FOLLOWED_LISTS",
     "description": "Get lists that a specific user follows. Returns list information for lists they follow.",
     "tags": ["lists", "users", "following"],
     "visibility": "public",
@@ -810,7 +810,7 @@
     }
   },
   {
-    "name": "X_COM__GET_SPACE_BY_ID",
+    "name": "X__GET_SPACE_BY_ID",
     "description": "Retrieve detailed information about a specific Space by its ID. Returns Space metadata and settings.",
     "tags": ["spaces", "lookup", "details"],
     "visibility": "public",
@@ -868,7 +868,7 @@
     }
   },
   {
-    "name": "X_COM__GET_SPACES_BY_IDS",
+    "name": "X__GET_SPACES_BY_IDS",
     "description": "Retrieve multiple Spaces by their IDs. Returns detailed information for up to 100 Spaces.",
     "tags": ["spaces", "lookup", "batch"],
     "visibility": "public",
@@ -917,7 +917,7 @@
     }
   },
   {
-    "name": "X_COM__GET_SPACES_BY_CREATOR_IDS",
+    "name": "X__GET_SPACES_BY_CREATOR_IDS",
     "description": "Get Spaces created by specific users. Returns Space information for Spaces they created.",
     "tags": ["spaces", "creators", "users"],
     "visibility": "public",
@@ -966,7 +966,7 @@
     }
   },
   {
-    "name": "X_COM__SEARCH_SPACES",
+    "name": "X__SEARCH_SPACES",
     "description": "Search for live or scheduled Spaces matching specified search terms. Returns matching Spaces.",
     "tags": ["spaces", "search", "live"],
     "visibility": "public",
@@ -1022,8 +1022,8 @@
     }
   },
   {
-    "name": "X_COM__PUBLISH_POST",
-    "description": "Creates and publishes a new post on X.com. Supports text content, media attachments, polls, reply settings, and other advanced features.",
+    "name": "X__PUBLISH_POST",
+    "description": "Creates and publishes a text post on X.com with optional poll support. For basic text posts, only provide the 'text' field. To create a poll, include both 'text' and 'poll' fields. The poll field should only be included when creating a poll with valid options (2-4 options) and duration.",
     "tags": ["posts", "create", "publish", "tweet"],
     "visibility": "public",
     "active": true,
@@ -1089,14 +1089,14 @@
             },
             "media": {
               "type": "object",
-              "description": "Media information for attaching images, videos, etc. Only provide this object if attaching media. This is mutually exclusive from Quote Tweet Id, Poll, and Card URI. Omit this entire object for text-only tweets.",
+              "description": "Media information for attaching images, videos, etc. IMPORTANT: Only include this object if you have actual media to attach. If not attaching media, completely omit this field from the request. Do NOT send empty arrays or this will cause validation errors.",
               "properties": {
                 "media_ids": {
                   "type": "array",
                   "items": {
                     "type": "string"
                   },
-                  "description": "Array of valid media IDs to attach. Each media ID must be obtained from the media upload endpoint. Required when using media object."
+                  "description": "Array of valid media IDs to attach. Each media ID must be obtained from the media upload endpoint. IMPORTANT: Only provide this array if you have actual media IDs. Do NOT send an empty array."
                 },
                 "tagged_user_ids": {
                   "type": "array",
@@ -1117,7 +1117,7 @@
             },
             "poll": {
               "type": "object",
-              "description": "Poll options for a Tweet with a poll. This is mutually exclusive from Media, Quote Tweet Id, and Card URI.",
+              "description": "Poll options for a Tweet with a poll. IMPORTANT: Only include this object if you want to create a poll. If not creating a poll, completely omit this field from the request. This is mutually exclusive from Media, Quote Tweet Id, and Card URI.",
               "properties": {
                 "options": {
                   "type": "array",
@@ -1145,11 +1145,11 @@
             },
             "reply": {
               "type": "object",
-              "description": "Reply information. Only provide this object if creating a reply to another tweet. Omit this entire object for regular tweets.",
+              "description": "Reply information. IMPORTANT: Only include this object if you are replying to a specific tweet and have a valid tweet ID. If not replying to a tweet, completely omit this field from the request. Do NOT send empty strings or this will cause validation errors.",
               "properties": {
                 "in_reply_to_tweet_id": {
                   "type": "string",
-                  "description": "Unique identifier of the tweet being replied to. Must be a valid tweet ID (19-digit number). Required when creating a reply."
+                  "description": "Unique identifier of the tweet being replied to. Must be a valid tweet ID (19-digit number). IMPORTANT: Only provide this if you have a valid tweet ID. Do NOT send empty strings."
                 },
                 "exclude_reply_user_ids": {
                   "type": "array",
@@ -1166,7 +1166,7 @@
             "reply_settings": {
               "type": "string",
               "enum": ["following", "mentionedUsers", "subscribers", "verified"],
-              "description": "Settings to indicate who can reply to the Tweet."
+              "description": "Settings to indicate who can reply to the Tweet. Optional field - only include if you want to restrict replies. Valid values: 'following', 'mentionedUsers', 'subscribers', 'verified'. Omit this field for default reply settings."
             },
             "share_with_followers": {
               "type": "boolean",
@@ -1175,7 +1175,7 @@
             }
           },
           "required": [],
-          "visible": ["text", "poll", "media", "reply", "reply_settings"],
+          "visible": ["text", "poll"],
           "additionalProperties": false
         }
       },
