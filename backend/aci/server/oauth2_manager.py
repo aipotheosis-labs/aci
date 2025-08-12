@@ -24,6 +24,7 @@ class OAuth2Manager:
         access_token_url: str,
         refresh_token_url: str,
         token_endpoint_auth_method: str | None = None,
+        custom_data: dict | None = None,
     ):
         """
         Initialize the OAuth2Manager
@@ -39,6 +40,7 @@ class OAuth2Manager:
             token_endpoint_auth_method:
                 client_secret_basic (default) | client_secret_post | none
                 Additional options can be achieved by registering a custom auth method
+            custom_data: Custom data for OAuth2 scheme, e.g., additional URLs or configuration
         """
         self.app_name = app_name
         self.client_id = client_id
@@ -48,6 +50,7 @@ class OAuth2Manager:
         self.access_token_url = access_token_url
         self.refresh_token_url = refresh_token_url
         self.token_endpoint_auth_method = token_endpoint_auth_method
+        self.custom_data = custom_data or {}
 
         # TODO: need to close the client after use
         # Add an aclose() helper (or implement __aenter__/__aexit__) and make callers invoke it during shutdown.
@@ -175,7 +178,9 @@ class OAuth2Manager:
         if self.app_name != "INSTAGRAM":
             raise OAuth2Error("Token exchange is only supported for Instagram")
 
-        exchange_token_url = "https://graph.instagram.com/access_token"
+        exchange_token_url = self.custom_data.get(
+            "exchange_token_url", "https://graph.instagram.com/access_token"
+        )
 
         try:
             response = await self.oauth2_client.get(

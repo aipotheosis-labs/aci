@@ -16,11 +16,14 @@
         "authorize_url": "https://www.instagram.com/oauth/authorize",
         "access_token_url": "https://api.instagram.com/oauth/access_token",
         "refresh_token_url": "https://graph.instagram.com/refresh_access_token",
+        "custom_data": {
+          "exchange_token_url": "https://graph.instagram.com/access_token"
+        },
         "token_endpoint_auth_method": "client_secret_post"
       }
     },
     "default_security_credentials_by_scheme": {},
-    "categories": ["Social Media", "User Data"],
+    "categories": ["Social Media"],
     "visibility": "public",
     "active": true
   }
