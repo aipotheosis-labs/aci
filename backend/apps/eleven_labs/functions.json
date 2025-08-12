@@ -52,8 +52,8 @@
                         "speed": {
                             "type": "number",
                             "description": "Controls the speed of the voice output.",
-                            "minimum": 0.5,
-                            "maximum": 2.0
+                            "minimum": 0.7,
+                            "maximum": 1.2
                         }
                     },
                     "required": [],
