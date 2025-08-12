@@ -259,8 +259,7 @@ def test_link_oauth2_account_under_app_config_with_custom_redirect_url(
     state_jwt = qs_params.get("state", [None])[0]
     assert redirect_uri_in_authorization_url is not None
     assert state_jwt is not None
-    state = LinkedAccountOAuth2CreateState.model_validate(jwt.decode(state_jwt, config.SIGNING_KEY))
-    assert state is not None
+    LinkedAccountOAuth2CreateState.model_validate(jwt.decode(state_jwt, config.SIGNING_KEY))
     if redirect_url:
         assert redirect_uri_in_authorization_url == redirect_url
     else:
