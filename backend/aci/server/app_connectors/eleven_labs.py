@@ -40,7 +40,7 @@ class ElevenLabs(AppConnectorBase):
         output_format: str = "mp3_44100_128",
     ) -> dict[str, Any]:
         """
-        Converts text into speech using ElevenLabs API and returns base64-encoded MP3 audio.
+        Converts text into speech using ElevenLabs API and returns base64-encoded audio.
 
         Args:
             voice_id: ID of the voice to be used
@@ -52,35 +52,31 @@ class ElevenLabs(AppConnectorBase):
         Returns:
             Dictionary containing the base64-encoded MP3 audio and metadata
         """
-        try:
-            # Use the ElevenLabs SDK to convert text to speech
-            audio_generator = self.client.text_to_speech.convert(
-                voice_id=voice_id,
-                text=text,
-                model_id=model_id,
-                voice_settings=voice_settings,
-                output_format=output_format,
-            )
+        logger.info("Executing create_speech")
 
-            # Convert the generator to bytes
-            audio_bytes = b"".join(audio_generator)
+        # Use the ElevenLabs SDK to convert text to speech
+        audio_generator = self.client.text_to_speech.convert(
+            voice_id=voice_id,
+            text=text,
+            model_id=model_id,
+            voice_settings=voice_settings,
+            output_format=output_format,
+        )
 
-            # Convert audio bytes to base64
-            audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
+        # Convert the generator to bytes
+        audio_bytes = b"".join(audio_generator)
 
-            return {
-                "success": True,
-                "audio_base64": audio_base64,
-                "voice_id": voice_id,
-                "text_length": len(text),
-                "model_id": model_id,
-                "output_format": output_format,
-            }
+        # Convert audio bytes to base64
+        audio_base64 = base64.b64encode(audio_bytes).decode("utf-8")
 
-        except Exception as e:
-            logger.error(f"ElevenLabs SDK error: {e}")
-            return {
-                "success": False,
-                "error": f"ElevenLabs SDK error: {e}",
-                "voice_id": voice_id,
-            }
+        logger.info(
+            f"Generated speech, bytes={len(audio_bytes)}, voice_id={voice_id}, model_id={model_id}, output_format={output_format}"
+        )
+
+        return {
+            "audio_base64": audio_base64,
+            "voice_id": voice_id,
+            "text_length": len(text),
+            "model_id": model_id,
+            "output_format": output_format,
+        }
