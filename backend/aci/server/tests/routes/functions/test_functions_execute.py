@@ -161,7 +161,7 @@ def test_execute_function_of_app_that_is_not_allowed_for_agent(
 
 
 @pytest.mark.parametrize("all_functions_enabled", [True, False])
-@pytest.mark.parametrize("enabled_functions", [[], ["ACI_TEST__HELLO_WORLD_NO_ARGS"]])
+@pytest.mark.parametrize("is_included_in_enabled_functions", [True, False])
 def test_execute_function_enablement_for_agent(
     db_session: Session,
     test_client: TestClient,
@@ -169,7 +169,7 @@ def test_execute_function_enablement_for_agent(
     dummy_function_aci_test__hello_world_no_args: Function,
     dummy_linked_account_default_api_key_aci_test_project_1: LinkedAccount,
     all_functions_enabled: bool,
-    enabled_functions: list[str],
+    is_included_in_enabled_functions: bool,
 ) -> None:
     function_execute = FunctionExecute(
         linked_account_owner_id=dummy_linked_account_default_api_key_aci_test_project_1.linked_account_owner_id,
@@ -185,7 +185,11 @@ def test_execute_function_enablement_for_agent(
 
     # Setup the case
     app_config.all_functions_enabled = all_functions_enabled
-    app_config.enabled_functions = enabled_functions
+    app_config.enabled_functions = (
+        [dummy_function_aci_test__hello_world_no_args.name]
+        if is_included_in_enabled_functions
+        else []
+    )
     db_session.commit()
 
     # Execute the function
@@ -200,7 +204,7 @@ def test_execute_function_enablement_for_agent(
         assert response.status_code == status.HTTP_200_OK, (
             "should return 200 because all_functions_enabled is True"
         )
-    elif "ACI_TEST__HELLO_WORLD_NO_ARGS" in enabled_functions:
+    elif is_included_in_enabled_functions:
         assert response.status_code == status.HTTP_200_OK, (
             "should return 200 because function is enabled"
         )
