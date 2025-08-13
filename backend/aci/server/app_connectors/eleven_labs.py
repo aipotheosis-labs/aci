@@ -37,6 +37,7 @@ class ElevenLabs(AppConnectorBase):
         text: str,
         model_id: str | None = "eleven_multilingual_v2",
         voice_settings: VoiceSettings | None = None,
+        output_format: str = "mp3_44100_128",
     ) -> dict[str, Any]:
         """
         Converts text into speech using ElevenLabs API and returns base64-encoded MP3 audio.
@@ -46,6 +47,7 @@ class ElevenLabs(AppConnectorBase):
             text: The text that will be converted into speech
             model_id: Identifier of the model to use (defaults to eleven_multilingual_v2)
             voice_settings: Voice settings overriding stored settings for the given voice
+            output_format: Output format of the generated audio. Formatted as codec_sample_rate_bitrate. Defaults to mp3_44100_128.
 
         Returns:
             Dictionary containing the base64-encoded MP3 audio and metadata
@@ -57,7 +59,7 @@ class ElevenLabs(AppConnectorBase):
                 text=text,
                 model_id=model_id,
                 voice_settings=voice_settings,
-                output_format="mp3_44100_128",  # Request MP3 format with 44.1kHz and 128kbps
+                output_format=output_format,
             )
 
             # Convert the generator to bytes
@@ -69,12 +71,10 @@ class ElevenLabs(AppConnectorBase):
             return {
                 "success": True,
                 "audio_base64": audio_base64,
-                "format": "mp3",
                 "voice_id": voice_id,
                 "text_length": len(text),
                 "model_id": model_id,
-                "sample_rate": "44100",
-                "bitrate": "128",
+                "output_format": output_format,
             }
 
         except Exception as e:
