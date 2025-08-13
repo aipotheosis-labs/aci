@@ -603,7 +603,7 @@ def test_search_functions_allowed_only_true(
         params=function_search.model_dump(exclude_none=True),
         headers={"x-api-key": mock_agent.api_keys[0].key},
     )
-    assert len(response.json()) == 0, "should return no functions because no apps are allowed"
+    assert len(response.json()) == 0, "should return no functions because no functions are enabled"
 
     # Test 5: Setup agent to allow access to no apps
     mock_agent.allowed_apps = []
@@ -648,7 +648,7 @@ def test_search_functions_allowed_only_false(
         for response_function in response.json()
     ]
     assert len(functions) == len(dummy_functions), (
-        "should return all functions because allowed_apps_only is False"
+        "should return all functions because allowed_only is False"
     )
 
 
