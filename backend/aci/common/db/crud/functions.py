@@ -80,6 +80,7 @@ def search_functions(
     public_only: bool,
     active_only: bool,
     app_names: list[str] | None,
+    function_names: list[str] | None,
     intent_embedding: list[float] | None,
     limit: int,
     offset: int,
@@ -97,6 +98,11 @@ def search_functions(
         statement = statement.filter(App.visibility == Visibility.PUBLIC).filter(
             Function.visibility == Visibility.PUBLIC
         )
+
+    # filter out functions that are not in the specified function names
+    if function_names is not None:
+        statement = statement.filter(Function.name.in_(function_names))
+
     # filter out functions that are not in the specified apps
     if app_names is not None:
         statement = statement.filter(App.name.in_(app_names))

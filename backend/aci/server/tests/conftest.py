@@ -214,6 +214,30 @@ def dummy_agent_1_with_all_apps_allowed(
     yield dummy_agent_1_with_no_apps_allowed
 
 
+@pytest.fixture(scope="function")
+def dummy_agent_1_with_some_functions_enabled(
+    db_session: Session,
+    dummy_agent_1_with_no_apps_allowed: Agent,
+    dummy_apps: list[App],
+    dummy_app_aci_test: App,
+) -> Generator[Agent, None, None]:
+    print(dummy_apps)
+    dummy_agent_1_with_no_apps_allowed.allowed_apps = [dummy_app_aci_test.name]
+
+    crud.app_configurations.create_app_configuration(
+        db_session,
+        dummy_agent_1_with_no_apps_allowed.project_id,
+        AppConfigurationCreate(
+            app_name=dummy_app_aci_test.name,
+            security_scheme=SecurityScheme.API_KEY,
+            all_functions_enabled=True,
+        ),
+    )
+
+    db_session.commit()
+    yield dummy_agent_1_with_no_apps_allowed
+
+
 ################################################################################
 # Dummy Apps
 ################################################################################

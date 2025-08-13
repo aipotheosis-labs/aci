@@ -15,6 +15,7 @@ from aci.common.exceptions import (
     AppConfigurationDisabled,
     AppConfigurationNotFound,
     AppNotAllowedForThisAgent,
+    FunctionNotEnabledInAppConfiguration,
     FunctionNotFound,
     InvalidFunctionDefinitionFormat,
     LinkedAccountDisabled,
@@ -92,13 +93,37 @@ async def search_functions(
         f"Generated intent embedding, intent={query_params.intent}, intent_embedding={intent_embedding}"
     )
 
-    # get the apps to filter (or not) based on the allowed_apps_only and app_names query params
-    if query_params.allowed_apps_only:
+    # if "allowed_only" (or "allowed_apps_only" for backward compatibility) is true, search functions from enabled functions under allowed apps only.
+    enabled_function_names: list[str] | None = None
+    if query_params.allowed_only or query_params.allowed_apps_only:
         if query_params.app_names is None:
             apps_to_filter = context.agent.allowed_apps
         else:
             apps_to_filter = list(set(query_params.app_names) & set(context.agent.allowed_apps))
+
+        # TODO: currently it fetches all allowed functions of the agents and compare the function names in code runtime to see if they are enabled.
+        # It may not be efficient if the number of apps / enabled functions is large. We can modify the db schema to create relational table between
+        # app config and functions. So we can filter by joining the tables which is more efficient.
+
+        # Compute the enabled function names from the app configurations of the filtered apps
+        enabled_function_names = []
+        app_configs = crud.app_configurations.get_app_configurations(
+            context.db_session,
+            context.project.id,
+            apps_to_filter,
+            None,
+            None,
+        )
+        for app_config in app_configs:
+            if app_config.enabled:
+                if app_config.all_functions_enabled:
+                    enabled_function_names.extend(
+                        [function.name for function in app_config.app.functions]
+                    )
+                else:
+                    enabled_function_names.extend(app_config.enabled_functions)
     else:
+        # Not filter by allowed functions. Simply search from all apps or follow the app names filter.
         if query_params.app_names is None:
             apps_to_filter = None
         else:
@@ -109,6 +134,7 @@ async def search_functions(
         context.project.visibility_access == Visibility.PUBLIC,
         True,
         apps_to_filter,
+        enabled_function_names,
         intent_embedding,
         query_params.limit,
         query_params.offset,
@@ -318,6 +344,7 @@ async def execute_function(
         AppConfigurationNotFound: If the app configuration is not found
         AppConfigurationDisabled: If the app configuration is disabled
         AppNotAllowedForThisAgent: If the app is not allowed for the agent
+        FunctionNotEnabledInAppConfiguration: If the function is not enabled for this app configuration
         LinkedAccountNotFound: If the linked account is not found
         LinkedAccountDisabled: If the linked account is disabled
     """
@@ -364,6 +391,18 @@ async def execute_function(
         )
         raise AppNotAllowedForThisAgent(
             f"App={function.app.name} that this function belongs to is not allowed to be used by agent={agent.name}"
+        )
+
+    if (
+        not app_configuration.all_functions_enabled
+        and function.name not in app_configuration.enabled_functions
+    ):
+        logger.error(
+            f"Failed to execute function, function not enabled for this agent, "
+            f"function_name={function_name} app_name={function.app.name} agent_id={agent.id}"
+        )
+        raise FunctionNotEnabledInAppConfiguration(
+            f"Function={function_name} is not enabled for this app configuration"
         )
 
     # Check if the linked account status (configured, enabled, etc.)

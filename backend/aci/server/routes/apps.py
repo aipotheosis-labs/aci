@@ -42,6 +42,8 @@ async def list_apps(
         query_params.offset,
     )
 
+    # TODO: Now if include_functions=true, it returns all functions of the app whether or not it is enabled by the agent.
+    # We can either add a optional filtering logic or add a flag to clarify whether each function is enabled by the agent.
     response: list[AppDetails] = []
     for app in apps:
         app_details = AppDetails(
@@ -78,6 +80,10 @@ async def search_apps(
     """
     # TODO: currently the search is done across all apps, we might want to add flags to account for below scenarios:
     # - when clients search for apps, if an app is configured but disabled by client, should it be discoverable?
+
+    # TODO: Now if include_functions=true, it returns all functions of the app whether or not it is enabled by the agent.
+    # We can either add a optional filtering logic or add a flag to clarify whether each function is enabled by the agent.
+
     intent_embedding = (
         generate_embedding(
             openai_client,

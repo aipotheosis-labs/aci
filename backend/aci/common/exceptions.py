@@ -365,6 +365,19 @@ class AppNotAllowedForThisAgent(ACIException):
         )
 
 
+class FunctionNotEnabledInAppConfiguration(ACIException):
+    """
+    Exception raised when a function is not enabled for an agent
+    """
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            title="Function not enabled in this app configuration",
+            message=message,
+            error_code=status.HTTP_403_FORBIDDEN,
+        )
+
+
 class CustomInstructionViolation(ACIException):
     """
     Exception raised when a function execution is reject due to a custom instruction
