@@ -15,7 +15,7 @@ from aci.common.exceptions import (
     AppConfigurationDisabled,
     AppConfigurationNotFound,
     AppNotAllowedForThisAgent,
-    FunctionNotEnabledForThisAgent,
+    FunctionNotEnabledInAppConfiguration,
     FunctionNotFound,
     InvalidFunctionDefinitionFormat,
     LinkedAccountDisabled,
@@ -344,7 +344,7 @@ async def execute_function(
         AppConfigurationNotFound: If the app configuration is not found
         AppConfigurationDisabled: If the app configuration is disabled
         AppNotAllowedForThisAgent: If the app is not allowed for the agent
-        FunctionNotEnabledForThisAgent: If the function is not enabled for the agent
+        FunctionNotEnabledInAppConfiguration: If the function is not enabled for this app configuration
         LinkedAccountNotFound: If the linked account is not found
         LinkedAccountDisabled: If the linked account is disabled
     """
@@ -401,8 +401,8 @@ async def execute_function(
             f"Failed to execute function, function not enabled for this agent, "
             f"function_name={function_name} app_name={function.app.name} agent_id={agent.id}"
         )
-        raise FunctionNotEnabledForThisAgent(
-            f"Function={function_name} is not enabled for this agent"
+        raise FunctionNotEnabledInAppConfiguration(
+            f"Function={function_name} is not enabled for this app configuration"
         )
 
     # Check if the linked account status (configured, enabled, etc.)
