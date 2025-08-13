@@ -615,7 +615,6 @@ def test_search_functions_allowed_only_true(
         headers={"x-api-key": mock_agent.api_keys[0].key},
     )
     assert response.status_code == status.HTTP_200_OK
-    print(mock_agent.allowed_apps)
     assert len(response.json()) == 0, "should return no functions because no apps are allowed"
 
 
