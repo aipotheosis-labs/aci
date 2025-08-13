@@ -552,7 +552,7 @@ def test_search_functions(
             all_functions_enabled = True
             enabled_functions = []
 
-        app_config = crud.app_configurations.create_app_configuration(
+        crud.app_configurations.create_app_configuration(
             db_session,
             mock_agent.project_id,
             AppConfigurationCreate(
