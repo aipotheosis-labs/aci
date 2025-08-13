@@ -97,17 +97,20 @@ async def _get_oauth2_credentials(
         linked_account.security_credentials
     )
     if _access_token_is_expired(oauth2_scheme_credentials):
-        # Instagram's access token only could be refreshed with a valid access token, so we need to re-authorize
+        # Instagram's access token only could be refreshed with a valid access token, so we need to re-authorize if invalid
         if app.name == "INSTAGRAM":
-            logger.error(
-                f"Access token expired, please re-authorize, linked_account_id={linked_account.id}, "
-                f"security_scheme={linked_account.security_scheme}, app={app.name}"
-            )
-            # NOTE: this error message could be used by the frontend to guide the user to re-authorize
-            raise OAuth2Error(
-                f"Access token expired. Please re-authorize at: "
-                f"{config.DEV_PORTAL_URL}/appconfigs/{app.name}"
-            )
+            # Since _access_token_is_expired returned True, expires_at is guaranteed to be not None
+            actual_expires_at = oauth2_scheme_credentials.expires_at + 86400  # type: ignore[operator]
+            if int(time.time()) > actual_expires_at:
+                logger.error(
+                    f"Access token expired, please re-authorize, linked_account_id={linked_account.id}, "
+                    f"security_scheme={linked_account.security_scheme}, app={app.name}"
+                )
+                # NOTE: this error message could be used by the frontend to guide the user to re-authorize
+                raise OAuth2Error(
+                    f"Access token expired. Please re-authorize at: "
+                    f"{config.DEV_PORTAL_URL}/appconfigs/{app.name}"
+                )
 
         logger.warning(
             f"Access token expired, trying to refresh linked_account_id={linked_account.id}, "
@@ -116,6 +119,7 @@ async def _get_oauth2_credentials(
         token_response = await _refresh_oauth2_access_token(
             app.name, oauth2_scheme, oauth2_scheme_credentials
         )
+
         # TODO: refactor parsing to _refresh_oauth2_access_token
         expires_at: int | None = None
         if "expires_at" in token_response:

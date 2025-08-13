@@ -3,11 +3,13 @@ import string
 import time
 from typing import Any, cast
 
+import httpx
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 
 from aci.common.exceptions import OAuth2Error
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.security_scheme import OAuth2SchemeCredentials
+from aci.server import config
 
 UNICODE_ASCII_CHARACTER_SET = string.ascii_letters + string.digits
 logger = get_logger(__name__)
@@ -214,6 +216,16 @@ class OAuth2Manager:
         access_token: str,
         refresh_token: str,
     ) -> dict[str, Any]:
+        """
+        Refresh OAuth2 access token
+
+        Args:
+            access_token: The current access token used for Instagram refresh
+            refresh_token: The refresh token used for standard OAuth2 refresh
+
+        Returns:
+            Token response dictionary
+        """
         try:
             if self.app_name == "INSTAGRAM":
                 response = await self.oauth2_client.get(
@@ -233,10 +245,21 @@ class OAuth2Manager:
                         self.refresh_token_url, refresh_token=refresh_token
                     ),
                 )
-            return token
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Failed to refresh access token, app_name={self.app_name}, error={e}")
+            if self.app_name == "INSTAGRAM" and e.response.status_code == 400:
+                raise OAuth2Error(
+                    f"Access token expired. Please re-authorize at: "
+                    f"{config.DEV_PORTAL_URL}/appconfigs/{self.app_name}"
+                ) from e
+            raise OAuth2Error("Failed to refresh access token") from e
+
         except Exception as e:
             logger.error(f"Failed to refresh access token, app_name={self.app_name}, error={e}")
             raise OAuth2Error("Failed to refresh access token") from e
+
+        return token
 
     async def parse_fetch_token_response(self, token: dict) -> OAuth2SchemeCredentials:
         """
