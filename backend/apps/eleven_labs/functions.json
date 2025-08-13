@@ -1,7 +1,7 @@
 [
     {
         "name": "ELEVEN_LABS__CREATE_SPEECH",
-        "description": "Converts text into speech using a specified voice and returns the audio as base64-encoded MP3 file.",
+        "description": "Converts text into speech using a specified voice and returns base64-encoded audio in the specified output format (see output_format).",
         "tags": ["elevenlabs", "text-to-speech"],
         "visibility": "public",
         "active": true,
