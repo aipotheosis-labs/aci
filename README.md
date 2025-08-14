@@ -1,3 +1,5 @@
+[![MSeeP.ai Security Assessment Badge](https://mseep.net/pr/aipotheosis-labs-aci-badge.png)](https://mseep.ai/app/aipotheosis-labs-aci)
+
 <p align="center">
   <img src="frontend/public/aci-dev-full-logo-light-bg.svg" alt="ACI.dev Logo" width="100%">
 </p>
