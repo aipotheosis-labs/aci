@@ -45,8 +45,10 @@ class OAuth2Scheme(BaseModel):
         max_length=2048,
         description="The client ID of the OAuth2 client (provided by ACI) used for the app",
     )
-    client_secret: str = Field(
-        ...,
+    # NOTE: Changing client_secret from required to optional for mcp server based app because most
+    # remote oauth2 based mcp servers use dynamic client registration and most of them don't provide client secret.
+    client_secret: str | None = Field(
+        default=None,
         min_length=1,
         max_length=2048,
         description="The client secret of the OAuth2 client (provided by ACI) used for the app",
@@ -102,6 +104,10 @@ class OAuth2SchemeOverride(BaseModel):
         max_length=2048,
         description="The client ID of the OAuth2 client used for the app",
     )
+    # TODO: might need to change this to optional for mcp server based app,
+    # as the whitelabeling logic for mcp server based app would be different.
+    # Or ideally, wether client_secret should be provided or not should depend on the OAuth2Scheme data of the App:
+    # if the OAuth2Scheme data has client_secret, this field should be required, else it should not be provided.
     client_secret: str = Field(
         ...,
         min_length=1,
@@ -178,7 +184,7 @@ class OAuth2SchemeCredentials(BaseModel):
     # change any time for a particular App Configuration. (e.g., user provided custom oauth2 app, or we changed
     # our default oauth2 app). In which case, we still want the existing linked accounts to work. (refresh token)
     client_id: str
-    client_secret: str
+    client_secret: str | None = None
     # Technically we don't need to store scope, but can be useful if we know which accounts are not up to date
     # with current App/ App Configuration's oauth2 scopes and to let user know.
     scope: str
