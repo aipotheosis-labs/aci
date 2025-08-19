@@ -9,7 +9,7 @@ RUN uv sync --no-dev --no-install-project
 ENV PATH="/workdir/.venv/bin:$PATH"
 ENV PYTHONPATH=/workdir
 
-RUN playwright install chromium --with-deps --no-shell
+# RUN playwright install chromium --with-deps --no-shell
 
 # .env files will be skipped by default specified in .dockerignore
 COPY ./aci/server /workdir/aci/server
