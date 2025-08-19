@@ -67,8 +67,10 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
         )
 
         # inject non-visible defaults, note that should pass the original parameters schema not just visible ones
+        # also pass context for template substitution like {{linked_account_owner_id}}
+        context = {"linked_account_owner_id": self.linked_account.linked_account_owner_id}
         function_input = processor.inject_required_but_invisible_defaults(
-            function.parameters, function_input
+            function.parameters, function_input, context
         )
         logger.debug(
             f"Function_input after injecting defaults, function_name={function.name}, "
