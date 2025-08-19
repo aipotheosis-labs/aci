@@ -2,7 +2,10 @@
     {
         "name": "NOTION__GET_PAGE",
         "description": "Retrieves a Page object using the ID specified. Returns page properties (limited to 25 references per property) but not page content. For page content, use the Retrieve block children endpoint. For properties with >25 references, use the Retrieve a page property endpoint. If page's parent is a database, properties conform to database schema. If not, only title is available.",
-        "tags": ["notion", "pages"],
+        "tags": [
+            "notion",
+            "pages"
+        ],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
@@ -23,8 +26,12 @@
                             "description": "The ID of the page to retrieve."
                         }
                     },
-                    "required": ["page_id"],
-                    "visible": ["page_id"],
+                    "required": [
+                        "page_id"
+                    ],
+                    "visible": [
+                        "page_id"
+                    ],
                     "additionalProperties": false
                 },
                 "query": {
@@ -40,7 +47,9 @@
                         }
                     },
                     "required": [],
-                    "visible": ["filter_properties"],
+                    "visible": [
+                        "filter_properties"
+                    ],
                     "additionalProperties": false
                 },
                 "header": {
@@ -53,20 +62,32 @@
                             "default": "2022-06-28"
                         }
                     },
-                    "required": ["Notion-Version"],
-                    "visible": [],
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
                     "additionalProperties": false
                 }
             },
-            "required": ["path", "header"],
-            "visible": ["path", "query"],
+            "required": [
+                "path",
+                "header"
+            ],
+            "visible": [
+                "path",
+                "query",
+                "header"
+            ],
             "additionalProperties": false
         }
     },
     {
         "name": "NOTION__SEARCH_PAGES",
         "description": "Searches all pages that have been shared with an integration. Returns pages that have titles matching the query.",
-        "tags": ["notion", "search"],
+        "tags": [
+            "notion",
+            "search"
+        ],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
@@ -88,8 +109,10 @@
                             "default": "2022-06-28"
                         }
                     },
-                    "required": ["Notion-Version"],
-                    "visible": [],
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
                     "additionalProperties": false
                 },
                 "body": {
@@ -107,17 +130,25 @@
                                 "direction": {
                                     "type": "string",
                                     "description": "Sort direction",
-                                    "enum": ["ascending", "descending"],
+                                    "enum": [
+                                        "ascending",
+                                        "descending"
+                                    ],
                                     "default": "descending"
                                 },
                                 "timestamp": {
                                     "type": "string",
                                     "description": "Timestamp to sort by",
-                                    "enum": ["last_edited_time"],
+                                    "enum": [
+                                        "last_edited_time"
+                                    ],
                                     "default": "last_edited_time"
                                 }
                             },
-                            "required": ["direction", "timestamp"],
+                            "required": [
+                                "direction",
+                                "timestamp"
+                            ],
                             "visible": [],
                             "additionalProperties": false
                         },
@@ -128,23 +159,31 @@
                                 "value": {
                                     "type": "string",
                                     "description": "Type of objects to return",
-                                    "enum": ["page"],
+                                    "enum": [
+                                        "page"
+                                    ],
                                     "default": "page"
                                 },
                                 "property": {
                                     "type": "string",
                                     "description": "Property to filter by",
-                                    "enum": ["object"],
+                                    "enum": [
+                                        "object"
+                                    ],
                                     "default": "object"
                                 }
                             },
-                            "required": ["value", "property"],
+                            "required": [
+                                "value",
+                                "property"
+                            ],
                             "visible": [],
                             "additionalProperties": false
                         },
                         "start_cursor": {
                             "type": "string",
-                            "description": "Cursor for pagination. If supplied, limits results to those after the cursor."
+                            "description": "Cursor for pagination. If supplied, limits results to those after the cursor.",
+                            "format": "uuid"
                         },
                         "page_size": {
                             "type": "integer",
@@ -154,20 +193,36 @@
                             "maximum": 100
                         }
                     },
-                    "required": ["query", "filter", "sort"],
-                    "visible": ["query", "start_cursor", "page_size"],
+                    "required": [
+                        "query",
+                        "filter",
+                        "sort"
+                    ],
+                    "visible": [
+                        "query",
+                        "page_size"
+                    ],
                     "additionalProperties": false
                 }
             },
-            "required": ["header", "body"],
-            "visible": ["body"],
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body",
+                "header"
+            ],
             "additionalProperties": false
         }
     },
     {
         "name": "NOTION__TOGGLE_PAGE_ARCHIVE",
         "description": "Archives or restores a page. Note: Cannot archive workspace-level pages via API, and the API does not support permanently deleting pages.",
-        "tags": ["notion", "pages"],
+        "tags": [
+            "notion",
+            "pages"
+        ],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
@@ -188,8 +243,12 @@
                             "description": "The ID of the page to archive or restore"
                         }
                     },
-                    "required": ["page_id"],
-                    "visible": ["page_id"],
+                    "required": [
+                        "page_id"
+                    ],
+                    "visible": [
+                        "page_id"
+                    ],
                     "additionalProperties": false
                 },
                 "header": {
@@ -202,8 +261,10 @@
                             "default": "2022-06-28"
                         }
                     },
-                    "required": ["Notion-Version"],
-                    "visible": [],
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
                     "additionalProperties": false
                 },
                 "body": {
@@ -215,20 +276,35 @@
                             "description": "Set to true to archive the page, false to restore it from trash"
                         }
                     },
-                    "required": ["archived"],
-                    "visible": ["archived"],
+                    "required": [
+                        "archived"
+                    ],
+                    "visible": [
+                        "archived"
+                    ],
                     "additionalProperties": false
                 }
             },
-            "required": ["path", "header", "body"],
-            "visible": ["path", "body"],
+            "required": [
+                "path",
+                "header",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body",
+                "header"
+            ],
             "additionalProperties": false
         }
     },
     {
         "name": "NOTION__RESTORE_PAGE",
         "description": "Restores a page from trash.",
-        "tags": ["notion", "pages"],
+        "tags": [
+            "notion",
+            "pages"
+        ],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
@@ -249,8 +325,12 @@
                             "description": "The ID of the page to restore from trash"
                         }
                     },
-                    "required": ["page_id"],
-                    "visible": ["page_id"],
+                    "required": [
+                        "page_id"
+                    ],
+                    "visible": [
+                        "page_id"
+                    ],
                     "additionalProperties": false
                 },
                 "header": {
@@ -263,8 +343,10 @@
                             "default": "2022-06-28"
                         }
                     },
-                    "required": ["Notion-Version"],
-                    "visible": [],
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
                     "additionalProperties": false
                 },
                 "body": {
@@ -277,21 +359,31 @@
                             "default": false
                         }
                     },
-
-                    "required": ["archived"],
+                    "required": [
+                        "archived"
+                    ],
                     "visible": [],
                     "additionalProperties": false
                 }
             },
-            "required": ["path", "header", "body"],
-            "visible": ["path"],
+            "required": [
+                "path",
+                "header",
+                "body"
+            ],
+            "visible": [
+                "path"
+            ],
             "additionalProperties": false
         }
     },
     {
         "name": "NOTION__LIST_USERS",
         "description": "Returns a paginated list of Users for the workspace. Does not include guests. Requires user information capabilities.",
-        "tags": ["notion", "users"],
+        "tags": [
+            "notion",
+            "users"
+        ],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
@@ -309,7 +401,8 @@
                     "properties": {
                         "start_cursor": {
                             "type": "string",
-                            "description": "If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results."
+                            "description": "If supplied, this endpoint will return a page of results starting after the cursor provided. If not supplied, this endpoint will return the first page of results.",
+                            "format": "uuid"
                         },
                         "page_size": {
                             "type": "integer",
@@ -320,7 +413,9 @@
                         }
                     },
                     "required": [],
-                    "visible": ["start_cursor", "page_size"],
+                    "visible": [
+                        "page_size"
+                    ],
                     "additionalProperties": false
                 },
                 "header": {
@@ -333,20 +428,29 @@
                             "default": "2022-06-28"
                         }
                     },
-                    "required": ["Notion-Version"],
-                    "visible": [],
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
                     "additionalProperties": false
                 }
             },
-            "required": ["header"],
-            "visible": ["query"],
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "query"
+            ],
             "additionalProperties": false
         }
     },
     {
         "name": "NOTION__GET_USER",
         "description": "Retrieves a User using the ID specified. Requires user information capabilities.",
-        "tags": ["notion", "users"],
+        "tags": [
+            "notion",
+            "users"
+        ],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
@@ -367,8 +471,12 @@
                             "description": "Identifier for a Notion user"
                         }
                     },
-                    "required": ["user_id"],
-                    "visible": ["user_id"],
+                    "required": [
+                        "user_id"
+                    ],
+                    "visible": [
+                        "user_id"
+                    ],
                     "additionalProperties": false
                 },
                 "header": {
@@ -381,20 +489,31 @@
                             "default": "2022-06-28"
                         }
                     },
-                    "required": ["Notion-Version"],
-                    "visible": [],
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
                     "additionalProperties": false
                 }
             },
-            "required": ["path", "header"],
-            "visible": ["path"],
+            "required": [
+                "path",
+                "header"
+            ],
+            "visible": [
+                "path",
+                "header"
+            ],
             "additionalProperties": false
         }
     },
     {
         "name": "NOTION__GET_ME",
         "description": "Retrieves the bot User associated with the API token provided in the authorization header.",
-        "tags": ["notion", "users"],
+        "tags": [
+            "notion",
+            "users"
+        ],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
@@ -416,20 +535,29 @@
                             "default": "2022-06-28"
                         }
                     },
-                    "required": ["Notion-Version"],
-                    "visible": [],
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
                     "additionalProperties": false
                 }
             },
-            "required": ["header"],
-            "visible": [],
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "header"
+            ],
             "additionalProperties": false
         }
     },
     {
         "name": "NOTION__CREATE_PAGE",
         "description": "Creates a new page that is a child of an existing page or database. If the parent is a database, properties must match the parent database's schema.",
-        "tags": ["notion", "pages"],
+        "tags": [
+            "notion",
+            "pages"
+        ],
         "visibility": "public",
         "active": true,
         "protocol": "rest",
@@ -451,9 +579,14 @@
                             "default": "2022-06-28"
                         }
                     },
-                    "required": ["Notion-Version"],
-                    "visible": [],
-                    "additionalProperties": false
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false,
+                    "default": {
+                        "Notion-Version": "2022-06-28"
+                    }
                 },
                 "body": {
                     "type": "object",
@@ -473,11 +606,22 @@
                                 }
                             },
                             "required": [],
-                            "visible": ["database_id", "page_id"],
+                            "visible": [
+                                "database_id",
+                                "page_id"
+                            ],
                             "additionalProperties": false,
                             "oneOf": [
-                                {"required": ["database_id"]},
-                                {"required": ["page_id"]}
+                                {
+                                    "required": [
+                                        "database_id"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "page_id"
+                                    ]
+                                }
                             ]
                         },
                         "properties": {
@@ -492,7 +636,9 @@
                                         "properties": {
                                             "type": {
                                                 "type": "string",
-                                                "enum": ["text"],
+                                                "enum": [
+                                                    "text"
+                                                ],
                                                 "default": "text"
                                             },
                                             "text": {
@@ -503,17 +649,28 @@
                                                         "description": "The text content"
                                                     }
                                                 },
-                                                "required": ["content"],
-                                                "additionalProperties": false
+                                                "required": [
+                                                    "content"
+                                                ],
+                                                "additionalProperties": false,
+                                                "visible": []
                                             }
                                         },
-                                        "required": ["type", "text"],
-                                        "additionalProperties": false
+                                        "required": [
+                                            "type",
+                                            "text"
+                                        ],
+                                        "additionalProperties": false,
+                                        "visible": []
                                     }
                                 }
                             },
-                            "required": ["title"],
-                            "visible": ["title"],
+                            "required": [
+                                "title"
+                            ],
+                            "visible": [
+                                "title"
+                            ],
                             "additionalProperties": true
                         },
                         "children": {
@@ -524,12 +681,23 @@
                                 "properties": {
                                     "object": {
                                         "type": "string",
-                                        "enum": ["block"],
+                                        "enum": [
+                                            "block"
+                                        ],
                                         "default": "block"
                                     },
                                     "type": {
                                         "type": "string",
-                                        "enum": ["paragraph", "heading_1", "heading_2", "heading_3", "bulleted_list_item", "numbered_list_item", "to_do", "toggle"],
+                                        "enum": [
+                                            "paragraph",
+                                            "heading_1",
+                                            "heading_2",
+                                            "heading_3",
+                                            "bulleted_list_item",
+                                            "numbered_list_item",
+                                            "to_do",
+                                            "toggle"
+                                        ],
                                         "description": "Type of block"
                                     },
                                     "paragraph": {
@@ -544,7 +712,9 @@
                                                     "properties": {
                                                         "type": {
                                                             "type": "string",
-                                                            "enum": ["text"],
+                                                            "enum": [
+                                                                "text"
+                                                            ],
                                                             "default": "text"
                                                         },
                                                         "text": {
@@ -555,21 +725,35 @@
                                                                     "description": "The text content"
                                                                 }
                                                             },
-                                                            "required": ["content"],
-                                                            "additionalProperties": false
+                                                            "required": [
+                                                                "content"
+                                                            ],
+                                                            "additionalProperties": false,
+                                                            "visible": []
                                                         }
                                                     },
-                                                    "required": ["type", "text"],
-                                                    "additionalProperties": false
+                                                    "required": [
+                                                        "type",
+                                                        "text"
+                                                    ],
+                                                    "additionalProperties": false,
+                                                    "visible": []
                                                 }
                                             }
                                         },
-                                        "required": ["rich_text"],
-                                        "additionalProperties": false
+                                        "required": [
+                                            "rich_text"
+                                        ],
+                                        "additionalProperties": false,
+                                        "visible": []
                                     }
                                 },
-                                "required": ["object", "type"],
-                                "additionalProperties": true
+                                "required": [
+                                    "object",
+                                    "type"
+                                ],
+                                "additionalProperties": true,
+                                "visible": []
                             }
                         },
                         "icon": {
@@ -579,7 +763,10 @@
                                 "type": {
                                     "type": "string",
                                     "description": "Type of icon ('emoji' or 'external')",
-                                    "enum": ["emoji", "external"]
+                                    "enum": [
+                                        "emoji",
+                                        "external"
+                                    ]
                                 },
                                 "emoji": {
                                     "type": "string",
@@ -594,17 +781,37 @@
                                             "description": "URL of the external file"
                                         }
                                     },
-                                    "required": ["url"],
-                                    "visible": ["url"],
+                                    "required": [
+                                        "url"
+                                    ],
+                                    "visible": [
+                                        "url"
+                                    ],
                                     "additionalProperties": false
                                 }
                             },
-                            "required": ["type"],
-                            "visible": ["type", "emoji", "external"],
+                            "required": [
+                                "type"
+                            ],
+                            "visible": [
+                                "type",
+                                "emoji",
+                                "external"
+                            ],
                             "additionalProperties": false,
                             "oneOf": [
-                                {"required": ["type", "emoji"]},
-                                {"required": ["type", "external"]}
+                                {
+                                    "required": [
+                                        "type",
+                                        "emoji"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "type",
+                                        "external"
+                                    ]
+                                }
                             ]
                         },
                         "cover": {
@@ -613,7 +820,9 @@
                             "properties": {
                                 "type": {
                                     "type": "string",
-                                    "enum": ["external"],
+                                    "enum": [
+                                        "external"
+                                    ],
                                     "default": "external"
                                 },
                                 "external": {
@@ -625,23 +834,1722 @@
                                             "description": "URL of the external file"
                                         }
                                     },
-                                    "required": ["url"],
-                                    "visible": ["url"],
+                                    "required": [
+                                        "url"
+                                    ],
+                                    "visible": [
+                                        "url"
+                                    ],
                                     "additionalProperties": false
                                 }
                             },
-                            "required": ["type", "external"],
-                            "visible": ["type", "external"],
+                            "required": [
+                                "type",
+                                "external"
+                            ],
+                            "visible": [
+                                "type",
+                                "external"
+                            ],
                             "additionalProperties": false
                         }
                     },
-                    "required": ["parent", "properties"],
-                    "visible": ["parent", "properties", "children", "icon", "cover"],
+                    "required": [
+                        "parent",
+                        "properties"
+                    ],
+                    "visible": [
+                        "parent",
+                        "properties",
+                        "children",
+                        "icon",
+                        "cover"
+                    ],
                     "additionalProperties": false
                 }
             },
-            "required": ["header", "body"],
-            "visible": ["body"],
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__CREATE_TOKEN",
+        "description": "Create an OAuth token for authentication.",
+        "tags": [
+            "notion",
+            "oauth",
+            "auth"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/oauth/token",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "OAuth token creation parameters",
+                    "properties": {
+                        "grant_type": {
+                            "type": "string",
+                            "description": "OAuth grant type",
+                            "enum": [
+                                "authorization_code"
+                            ],
+                            "default": "authorization_code"
+                        },
+                        "code": {
+                            "type": "string",
+                            "description": "Authorization code received from the authorization server"
+                        },
+                        "redirect_uri": {
+                            "type": "string",
+                            "description": "Redirect URI used in the authorization request"
+                        }
+                    },
+                    "required": [
+                        "grant_type",
+                        "code",
+                        "redirect_uri"
+                    ],
+                    "visible": [
+                        "grant_type",
+                        "code",
+                        "redirect_uri"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__INTROSPECT_TOKEN",
+        "description": "Introspect an OAuth token to get information about its validity and scope.",
+        "tags": [
+            "notion",
+            "oauth",
+            "auth"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/oauth/token/introspection",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "header"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__REVOKE_TOKEN",
+        "description": "Revoke an OAuth token.",
+        "tags": [
+            "notion",
+            "oauth",
+            "auth"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/oauth/revoke",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Token revocation parameters",
+                    "properties": {
+                        "token": {
+                            "type": "string",
+                            "description": "The token to revoke"
+                        }
+                    },
+                    "required": [
+                        "token"
+                    ],
+                    "visible": [
+                        "token"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__REFRESH_TOKEN",
+        "description": "Refresh an OAuth token.",
+        "tags": [
+            "notion",
+            "oauth",
+            "auth"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/oauth/refresh",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Token refresh parameters",
+                    "properties": {
+                        "grant_type": {
+                            "type": "string",
+                            "description": "OAuth grant type",
+                            "enum": [
+                                "refresh_token"
+                            ],
+                            "default": "refresh_token"
+                        },
+                        "refresh_token": {
+                            "type": "string",
+                            "description": "The refresh token"
+                        }
+                    },
+                    "required": [
+                        "grant_type",
+                        "refresh_token"
+                    ],
+                    "visible": [
+                        "grant_type",
+                        "refresh_token"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "body"
+            ],
+            "visible": [
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__CREATE_DATABASE",
+        "description": "Creates a new database as a child of an existing page.",
+        "tags": [
+            "notion",
+            "databases",
+            "create"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/databases",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Database creation parameters",
+                    "properties": {
+                        "parent": {
+                            "type": "object",
+                            "description": "Parent page where database will be created",
+                            "properties": {
+                                "page_id": {
+                                    "type": "string",
+                                    "description": "ID of the parent page"
+                                }
+                            },
+                            "required": [
+                                "page_id"
+                            ],
+                            "visible": [
+                                "page_id"
+                            ],
+                            "additionalProperties": false
+                        },
+                        "title": {
+                            "type": "array",
+                            "description": "Database title as rich text array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "text"
+                                        ],
+                                        "default": "text"
+                                    },
+                                    "text": {
+                                        "type": "object",
+                                        "properties": {
+                                            "content": {
+                                                "type": "string",
+                                                "description": "The text content"
+                                            }
+                                        },
+                                        "required": [
+                                            "content"
+                                        ],
+                                        "additionalProperties": false,
+                                        "visible": []
+                                    }
+                                },
+                                "required": [
+                                    "type",
+                                    "text"
+                                ],
+                                "additionalProperties": false,
+                                "visible": []
+                            }
+                        },
+                        "properties": {
+                            "type": "object",
+                            "description": "Database schema - property definitions",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": [
+                        "parent",
+                        "title",
+                        "properties"
+                    ],
+                    "visible": [
+                        "parent",
+                        "title",
+                        "properties"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body",
+                "header"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__GET_DATABASE",
+        "description": "Retrieves a database object using the ID specified.",
+        "tags": [
+            "notion",
+            "databases",
+            "info"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/databases/{database_id}",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "database_id": {
+                            "type": "string",
+                            "description": "The ID of the database to retrieve"
+                        }
+                    },
+                    "required": [
+                        "database_id"
+                    ],
+                    "visible": [
+                        "database_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "header"
+            ],
+            "visible": [
+                "path",
+                "header"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__UPDATE_DATABASE",
+        "description": "Updates the existing database object using the ID specified.",
+        "tags": [
+            "notion",
+            "databases",
+            "update"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/databases/{database_id}",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "database_id": {
+                            "type": "string",
+                            "description": "The ID of the database to update"
+                        }
+                    },
+                    "required": [
+                        "database_id"
+                    ],
+                    "visible": [
+                        "database_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Database update parameters",
+                    "properties": {
+                        "title": {
+                            "type": "array",
+                            "description": "Database title as rich text array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "text"
+                                        ],
+                                        "default": "text"
+                                    },
+                                    "text": {
+                                        "type": "object",
+                                        "properties": {
+                                            "content": {
+                                                "type": "string",
+                                                "description": "The text content"
+                                            }
+                                        },
+                                        "required": [
+                                            "content"
+                                        ],
+                                        "additionalProperties": false,
+                                        "visible": []
+                                    }
+                                },
+                                "required": [
+                                    "type",
+                                    "text"
+                                ],
+                                "additionalProperties": false,
+                                "visible": []
+                            }
+                        },
+                        "properties": {
+                            "type": "object",
+                            "description": "Database schema - property definitions to update",
+                            "additionalProperties": true,
+                            "properties": {},
+                            "required": [],
+                            "visible": []
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "title",
+                        "properties"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "header"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__QUERY_DATABASE",
+        "description": "Gets a list of Pages contained in the database, filtered and ordered according to the filter conditions and sort criteria provided.",
+        "tags": [
+            "notion",
+            "databases",
+            "query"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/databases/{database_id}/query",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "database_id": {
+                            "type": "string",
+                            "description": "The ID of the database to query"
+                        }
+                    },
+                    "required": [
+                        "database_id"
+                    ],
+                    "visible": [
+                        "database_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "filter": {
+                            "type": "object",
+                            "description": "Filter conditions for the database query",
+                            "additionalProperties": true,
+                            "properties": {},
+                            "required": [],
+                            "visible": []
+                        },
+                        "sorts": {
+                            "type": "array",
+                            "description": "Sort criteria for the results",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true,
+                                "properties": {},
+                                "required": [],
+                                "visible": []
+                            }
+                        },
+                        "start_cursor": {
+                            "type": "string",
+                            "description": "Cursor for pagination",
+                            "format": "uuid"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "description": "Number of results to return. Maximum: 100",
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "filter",
+                        "sorts",
+                        "page_size"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "header"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__GET_BLOCK",
+        "description": "Retrieves a Block object using the ID specified.",
+        "tags": [
+            "notion",
+            "blocks",
+            "info"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/blocks/{block_id}",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "block_id": {
+                            "type": "string",
+                            "description": "The ID of the block to retrieve"
+                        }
+                    },
+                    "required": [
+                        "block_id"
+                    ],
+                    "visible": [
+                        "block_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "header"
+            ],
+            "visible": [
+                "path",
+                "header"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__GET_BLOCK_CHILDREN",
+        "description": "Returns a paginated array of child Block objects contained in the block using the ID specified.",
+        "tags": [
+            "notion",
+            "blocks",
+            "children"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/blocks/{block_id}/children",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "block_id": {
+                            "type": "string",
+                            "description": "The ID of the block whose children to retrieve"
+                        }
+                    },
+                    "required": [
+                        "block_id"
+                    ],
+                    "visible": [
+                        "block_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "start_cursor": {
+                            "type": "string",
+                            "description": "If supplied, this endpoint will return a page of results starting after the cursor provided.",
+                            "format": "uuid"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "description": "The number of items from the full list desired in the response. Maximum: 100",
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "page_size"
+                    ],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "header"
+            ],
+            "visible": [
+                "path",
+                "query",
+                "header"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__APPEND_BLOCK_CHILDREN",
+        "description": "Creates and appends new children blocks to the parent block_id specified.",
+        "tags": [
+            "notion",
+            "blocks",
+            "children",
+            "create"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/blocks/{block_id}/children",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "block_id": {
+                            "type": "string",
+                            "description": "The ID of the block to append children to"
+                        }
+                    },
+                    "required": [
+                        "block_id"
+                    ],
+                    "visible": [
+                        "block_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Block children to append",
+                    "properties": {
+                        "children": {
+                            "type": "array",
+                            "description": "Array of block objects to append as children",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "object": {
+                                        "type": "string",
+                                        "enum": [
+                                            "block"
+                                        ],
+                                        "default": "block"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "paragraph",
+                                            "heading_1",
+                                            "heading_2",
+                                            "heading_3",
+                                            "bulleted_list_item",
+                                            "numbered_list_item",
+                                            "to_do",
+                                            "toggle"
+                                        ],
+                                        "description": "Type of block"
+                                    }
+                                },
+                                "required": [
+                                    "object",
+                                    "type"
+                                ],
+                                "additionalProperties": true,
+                                "visible": []
+                            }
+                        }
+                    },
+                    "required": [
+                        "children"
+                    ],
+                    "visible": [
+                        "children"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "header",
+                "body"
+            ],
+            "visible": [
+                "path",
+                "body",
+                "header"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__UPDATE_BLOCK",
+        "description": "Updates the content for the specified block_id based on the block type.",
+        "tags": [
+            "notion",
+            "blocks",
+            "update"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/blocks/{block_id}",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "block_id": {
+                            "type": "string",
+                            "description": "The ID of the block to update"
+                        }
+                    },
+                    "required": [
+                        "block_id"
+                    ],
+                    "visible": [
+                        "block_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Block content to update",
+                    "properties": {
+                        "archived": {
+                            "type": "boolean",
+                            "description": "Set to true to archive (delete) the block"
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "archived"
+                    ],
+                    "additionalProperties": true
+                }
+            },
+            "required": [
+                "path",
+                "header"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__DELETE_BLOCK",
+        "description": "Sets a Block object, including page blocks, to archived: true using the ID specified.",
+        "tags": [
+            "notion",
+            "blocks",
+            "delete"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/blocks/{block_id}",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "block_id": {
+                            "type": "string",
+                            "description": "The ID of the block to delete"
+                        }
+                    },
+                    "required": [
+                        "block_id"
+                    ],
+                    "visible": [
+                        "block_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "header"
+            ],
+            "visible": [
+                "path",
+                "header"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__GET_PAGE_PROPERTY",
+        "description": "Retrieves a page property item for a given page ID and property ID.",
+        "tags": [
+            "notion",
+            "pages",
+            "properties"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/pages/{page_id}/properties/{property_id}",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "page_id": {
+                            "type": "string",
+                            "description": "The ID of the page containing the property"
+                        },
+                        "property_id": {
+                            "type": "string",
+                            "description": "The ID of the property to retrieve"
+                        }
+                    },
+                    "required": [
+                        "page_id",
+                        "property_id"
+                    ],
+                    "visible": [
+                        "page_id",
+                        "property_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "start_cursor": {
+                            "type": "string",
+                            "description": "If supplied, this endpoint will return a page of results starting after the cursor provided.",
+                            "format": "uuid"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "description": "The number of items from the full list desired in the response. Maximum: 100",
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "page_size"
+                    ],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "header"
+            ],
+            "visible": [
+                "path",
+                "query",
+                "header"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__UPDATE_PAGE_PROPERTIES",
+        "description": "Updates page property values for the specified page.",
+        "tags": [
+            "notion",
+            "pages",
+            "properties",
+            "update"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/pages/{page_id}",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "page_id": {
+                            "type": "string",
+                            "description": "The ID of the page to update properties for"
+                        }
+                    },
+                    "required": [
+                        "page_id"
+                    ],
+                    "visible": [
+                        "page_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Page property updates",
+                    "properties": {
+                        "properties": {
+                            "type": "object",
+                            "description": "Page properties to update. The keys should match the property names or IDs from the page.",
+                            "additionalProperties": true,
+                            "properties": {},
+                            "required": [],
+                            "visible": []
+                        },
+                        "icon": {
+                            "type": "object",
+                            "description": "Page icon (emoji or external file)",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "description": "Type of icon ('emoji' or 'external')",
+                                    "enum": [
+                                        "emoji",
+                                        "external"
+                                    ],
+                                    "default": "emoji"
+                                },
+                                "emoji": {
+                                    "type": "string",
+                                    "description": "Emoji character when type is 'emoji'"
+                                },
+                                "external": {
+                                    "type": "object",
+                                    "description": "External file details when type is 'external'",
+                                    "properties": {
+                                        "url": {
+                                            "type": "string",
+                                            "description": "URL of the external file",
+                                            "default": ""
+                                        }
+                                    },
+                                    "required": [
+                                        "url"
+                                    ],
+                                    "additionalProperties": false,
+                                    "visible": [
+                                        "url"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "type"
+                            ],
+                            "additionalProperties": false,
+                            "visible": [
+                                "type"
+                            ]
+                        },
+                        "cover": {
+                            "type": "object",
+                            "description": "Page cover image",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": [
+                                        "external"
+                                    ],
+                                    "default": "external"
+                                },
+                                "external": {
+                                    "type": "object",
+                                    "description": "External file details",
+                                    "properties": {
+                                        "url": {
+                                            "type": "string",
+                                            "description": "URL of the external file"
+                                        }
+                                    },
+                                    "required": [
+                                        "url"
+                                    ],
+                                    "additionalProperties": false,
+                                    "visible": [
+                                        "url"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "type",
+                                "external"
+                            ],
+                            "additionalProperties": false,
+                            "visible": [
+                                "type"
+                            ]
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "properties",
+                        "icon",
+                        "cover"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "header"
+            ],
+            "visible": [
+                "path",
+                "body"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__CREATE_COMMENT",
+        "description": "Creates a comment in a page or existing discussion thread.",
+        "tags": [
+            "notion",
+            "comments",
+            "create"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/comments",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Comment creation parameters",
+                    "properties": {
+                        "parent": {
+                            "type": "object",
+                            "description": "Parent of the comment - either a page or a discussion thread",
+                            "properties": {
+                                "page_id": {
+                                    "type": "string",
+                                    "description": "ID of the page to comment on"
+                                },
+                                "discussion_id": {
+                                    "type": "string",
+                                    "description": "ID of the discussion thread to reply to"
+                                }
+                            },
+                            "additionalProperties": false,
+                            "oneOf": [
+                                {
+                                    "required": [
+                                        "page_id"
+                                    ]
+                                },
+                                {
+                                    "required": [
+                                        "discussion_id"
+                                    ]
+                                }
+                            ],
+                            "required": [],
+                            "visible": ["page_id", "discussion_id"]
+                        },
+                        "rich_text": {
+                            "type": "array",
+                            "description": "Comment content as rich text array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "text"
+                                        ],
+                                        "default": "text"
+                                    },
+                                    "text": {
+                                        "type": "object",
+                                        "properties": {
+                                            "content": {
+                                                "type": "string",
+                                                "description": "The text content"
+                                            }
+                                        },
+                                        "required": [
+                                            "content"
+                                        ],
+                                        "additionalProperties": false,
+                                        "visible": []
+                                    }
+                                },
+                                "required": [
+                                    "type",
+                                    "text"
+                                ],
+                                "additionalProperties": false,
+                                "visible": []
+                            }
+                        }
+                    },
+                    "required": [
+                        "parent",
+                        "rich_text"
+                    ],
+                    "visible": [
+                        "parent",
+                        "rich_text"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body",
+                "header"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__GET_COMMENTS",
+        "description": "Retrieves a list of un-resolved Comment objects from a page or block.",
+        "tags": [
+            "notion",
+            "comments",
+            "list"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/comments",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "block_id": {
+                            "type": "string",
+                            "description": "Identifier for a Notion block"
+                        },
+                        "page_id": {
+                            "type": "string",
+                            "description": "Identifier for a Notion page"
+                        },
+                        "start_cursor": {
+                            "type": "string",
+                            "description": "If supplied, this endpoint will return a page of results starting after the cursor provided.",
+                            "format": "uuid"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "description": "The number of items from the full list desired in the response. Maximum: 100",
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    "required": [],
+                    "visible": [
+                        "block_id",
+                        "page_id",
+                        "page_size"
+                    ],
+                    "additionalProperties": false,
+                    "oneOf": [
+                        {
+                            "required": [
+                                "block_id"
+                            ]
+                        },
+                        {
+                            "required": [
+                                "page_id"
+                            ]
+                        }
+                    ]
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "query",
+                "header"
+            ],
+            "visible": [
+                "query",
+                "header"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__GET_COMMENT",
+        "description": "Retrieves a Comment object using the ID specified.",
+        "tags": [
+            "notion",
+            "comments",
+            "info"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/comments/{comment_id}",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "comment_id": {
+                            "type": "string",
+                            "description": "Identifier for a Notion comment"
+                        }
+                    },
+                    "required": [
+                        "comment_id"
+                    ],
+                    "visible": [
+                        "comment_id"
+                    ],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "path",
+                "header"
+            ],
+            "visible": [
+                "path",
+                "header"
+            ],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "NOTION__CREATE_FILE_UPLOAD",
+        "description": "Creates a file upload URL that can be used to upload files to Notion.",
+        "tags": [
+            "notion",
+            "files",
+            "upload"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/files",
+            "server_url": "https://api.notion.com/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Notion-Version": {
+                            "type": "string",
+                            "description": "The version of the Notion API to use. Defaults to 2022-06-28.",
+                            "default": "2022-06-28"
+                        }
+                    },
+                    "required": [
+                        "Notion-Version"
+                    ],
+                    "visible": ["Notion-Version"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "File upload parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the file including the file extension"
+                        },
+                        "file": {
+                            "type": "object",
+                            "description": "File object containing file details",
+                            "properties": {
+                                "external": {
+                                    "type": "object",
+                                    "description": "External file reference",
+                                    "properties": {
+                                        "url": {
+                                            "type": "string",
+                                            "description": "URL of the external file",
+                                            "default": ""
+                                        }
+                                    },
+                                    "required": [
+                                        "url"
+                                    ],
+                                    "additionalProperties": false,
+                                    "visible": [
+                                        "url"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "external"
+                            ],
+                            "additionalProperties": false,
+                            "visible": [
+                                "external"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "name",
+                        "file"
+                    ],
+                    "visible": [
+                        "name",
+                        "file"
+                    ],
+                    "additionalProperties": false
+                }
+            },
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body",
+                "header"
+            ],
             "additionalProperties": false
         }
     }
