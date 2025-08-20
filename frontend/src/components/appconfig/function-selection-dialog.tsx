@@ -149,7 +149,7 @@ export function FunctionSelectionDialog({
         <DialogHeader>
           <DialogTitle>Enable/Disable functions</DialogTitle>
         </DialogHeader>
-        <div className="mt-2">
+        <div className="mt-2 overflow-y-auto max-h-[70vh]">
           <FunctionSelection
             availableFunctions={functions}
             isAllFunctionsEnabled={isAllFunctionsEnabled}
