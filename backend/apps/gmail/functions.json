@@ -1042,6 +1042,49 @@
                 }
             },
             "required": ["path"],
+        "visible": ["path"],
+        "additionalProperties": false
+        }
+    },
+    {
+        "name": "GMAIL__MESSAGES_GET_ATTACHMENT",
+        "description": "Retrieves a specific attachment from a message",
+        "tags": ["email", "attachments"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/users/{userId}/messages/{messageId}/attachments/{id}",
+            "server_url": "https://gmail.googleapis.com/gmail/v1"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "userId": {
+                            "type": "string",
+                            "description": "The user's email address. The special value me can be used to indicate the authenticated user.",
+                            "default": "me"
+                        },
+                        "messageId": {
+                            "type": "string",
+                            "description": "The ID of the message containing the attachment"
+                        },
+                        "id": {
+                            "type": "string",
+                            "description": "The ID of the attachment"
+                        }
+                    },
+                    "required": ["messageId", "id"],
+                    "visible": ["userId", "messageId", "id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
             "visible": ["path"],
             "additionalProperties": false
         }

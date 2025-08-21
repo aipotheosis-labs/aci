@@ -2469,6 +2469,62 @@
     }
   },
   {
+    "name": "SLACK__REMINDERS_ADD",
+    "description": "Creates a reminder for a user",
+    "tags": ["reminders"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/reminders.add",
+      "server_url": "https://slack.com/api"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "description": "Headers for the HTTP request",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "description": "Content type for the request",
+              "default": "application/x-www-form-urlencoded"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Body parameters for creating a reminder",
+          "properties": {
+            "text": {
+              "type": "string",
+              "description": "The content of the reminder"
+            },
+            "time": {
+              "type": "string",
+              "description": "When this reminder should happen. Natural language like 'in 15 minutes', or a Unix timestamp"
+            },
+            "user": {
+              "type": "string",
+              "description": "The user to create a reminder for. Omit to create for the authed user"
+            }
+          },
+          "required": ["text", "time"],
+          "visible": ["text", "time", "user"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
     "name": "SLACK__SEARCH_ALL",
     "description": "Searches for messages and files matching a query",
     "tags": ["search", "messages", "files"],

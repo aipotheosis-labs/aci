@@ -1180,7 +1180,67 @@
         }
       },
       "required": ["header", "body"],
-      "visible": ["body"],
+    "visible": ["body"],
+    "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__LIKE_POST",
+    "description": "Like a post on behalf of the authenticated user. Requires the user's ID and the ID of the post to like.",
+    "tags": ["posts", "likes", "social"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/users/{id}/likes",
+      "server_url": "https://api.x.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "description": "HTTP headers",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the user performing the like"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body for liking a post",
+          "properties": {
+            "tweet_id": {
+              "type": "string",
+              "description": "The ID of the post to like"
+            }
+          },
+          "required": ["tweet_id"],
+          "visible": ["tweet_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
       "additionalProperties": false
     }
   }
