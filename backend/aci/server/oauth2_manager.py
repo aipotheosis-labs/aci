@@ -3,11 +3,13 @@ import string
 import time
 from typing import Any, cast
 
+import httpx
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 
 from aci.common.exceptions import OAuth2Error
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.security_scheme import OAuth2SchemeCredentials
+from aci.server import config
 
 UNICODE_ASCII_CHARACTER_SET = string.ascii_letters + string.digits
 logger = get_logger(__name__)
@@ -24,6 +26,7 @@ class OAuth2Manager:
         access_token_url: str,
         refresh_token_url: str,
         token_endpoint_auth_method: str | None = None,
+        custom_data: dict | None = None,
     ):
         """
         Initialize the OAuth2Manager
@@ -39,6 +42,7 @@ class OAuth2Manager:
             token_endpoint_auth_method:
                 client_secret_basic (default) | client_secret_post | none
                 Additional options can be achieved by registering a custom auth method
+            custom_data: Custom data for OAuth2 scheme, e.g., additional URLs or configuration
         """
         self.app_name = app_name
         self.client_id = client_id
@@ -48,6 +52,7 @@ class OAuth2Manager:
         self.access_token_url = access_token_url
         self.refresh_token_url = refresh_token_url
         self.token_endpoint_auth_method = token_endpoint_auth_method
+        self.custom_data = custom_data or {}
 
         # TODO: need to close the client after use
         # Add an aclose() helper (or implement __aenter__/__aexit__) and make callers invoke it during shutdown.
@@ -111,6 +116,48 @@ class OAuth2Manager:
 
         return str(authorization_url)
 
+    async def exchange_short_lived_token(self, short_lived_token: str) -> dict[str, Any]:
+        """
+        Exchange short-lived access token for long-lived access token.
+        This is specific to Instagram's API requirements.
+
+        Args:
+            short_lived_token: The short-lived access token from the initial OAuth flow
+
+        Returns:
+            Token response dictionary with long-lived access token
+        """
+        if self.app_name != "INSTAGRAM":
+            raise OAuth2Error("Token exchange is only supported for Instagram")
+
+        exchange_token_url = self.custom_data.get(
+            "exchange_token_url", "https://graph.instagram.com/access_token"
+        )
+
+        try:
+            response = await self.oauth2_client.get(
+                exchange_token_url,
+                params={
+                    "grant_type": "ig_exchange_token",
+                    "client_secret": self.client_secret,
+                    "access_token": short_lived_token,
+                },
+                timeout=30.0,
+            )
+            response.raise_for_status()
+
+            token_data = cast(dict[str, Any], response.json())
+            logger.info(
+                f"Successfully exchanged short-lived token for long-lived token, app_name={self.app_name}"
+            )
+            return token_data
+
+        except Exception as e:
+            logger.error(
+                f"Failed to exchange short-lived token, app_name={self.app_name}, error={e}"
+            )
+            raise OAuth2Error("Failed to exchange short-lived token for long-lived token") from e
+
     # TODO: some app may not support "code_verifier"?
     async def fetch_token(
         self,
@@ -140,6 +187,25 @@ class OAuth2Manager:
                     scope=self.scope,
                 ),
             )
+            # handle Instagram's special case - exchange short-lived token for long-lived token
+            if self.app_name == "INSTAGRAM":
+                if "access_token" in token:
+                    short_lived_token = token["access_token"]
+                    logger.info(
+                        f"Exchanging short-lived token for long-lived token, app_name={self.app_name}"
+                    )
+                    long_lived_token_response = await self.exchange_short_lived_token(
+                        short_lived_token
+                    )
+                    # Update data with long-lived token response: add expires_in and token_type, update access_token
+                    token.update(long_lived_token_response)
+                else:
+                    logger.error(
+                        f"Missing access_token in Instagram OAuth response, app={self.app_name}"
+                    )
+                    raise OAuth2Error("Missing access_token in Instagram OAuth response")
+
+            # return the token response with long-lived access token
             return token
         except Exception as e:
             logger.error(f"Failed to fetch access token, app_name={self.app_name}, error={e}")
@@ -147,21 +213,55 @@ class OAuth2Manager:
 
     async def refresh_token(
         self,
+        access_token: str,
         refresh_token: str,
     ) -> dict[str, Any]:
+        """
+        Refresh OAuth2 access token
+
+        Args:
+            access_token: The current access token used for Instagram refresh
+            refresh_token: The refresh token used for standard OAuth2 refresh
+
+        Returns:
+            Token response dictionary
+        """
         try:
-            token = cast(
-                dict[str, Any],
-                await self.oauth2_client.refresh_token(
-                    self.refresh_token_url, refresh_token=refresh_token
-                ),
-            )
-            return token
+            if self.app_name == "INSTAGRAM":
+                response = await self.oauth2_client.get(
+                    self.refresh_token_url,
+                    params={
+                        "grant_type": "ig_refresh_token",
+                        "access_token": access_token,
+                    },
+                    timeout=30.0,
+                )
+                response.raise_for_status()
+                token = cast(dict[str, Any], response.json())
+            else:
+                token = cast(
+                    dict[str, Any],
+                    await self.oauth2_client.refresh_token(
+                        self.refresh_token_url, refresh_token=refresh_token
+                    ),
+                )
+
+        except httpx.HTTPStatusError as e:
+            logger.error(f"Failed to refresh access token, app_name={self.app_name}, error={e}")
+            if self.app_name == "INSTAGRAM" and e.response.status_code == 400:
+                raise OAuth2Error(
+                    f"Access token expired. Please re-authorize at: "
+                    f"{config.DEV_PORTAL_URL}/appconfigs/{self.app_name}"
+                ) from e
+            raise OAuth2Error("Failed to refresh access token") from e
+
         except Exception as e:
             logger.error(f"Failed to refresh access token, app_name={self.app_name}, error={e}")
             raise OAuth2Error("Failed to refresh access token") from e
 
-    def parse_fetch_token_response(self, token: dict) -> OAuth2SchemeCredentials:
+        return token
+
+    async def parse_fetch_token_response(self, token: dict) -> OAuth2SchemeCredentials:
         """
         Parse OAuth2SchemeCredentials from token response with app-specific handling.
 
@@ -190,7 +290,11 @@ class OAuth2Manager:
         if "expires_at" in data:
             expires_at = int(data["expires_at"])
         elif "expires_in" in data:
-            expires_at = int(time.time()) + int(data["expires_in"])
+            if self.app_name == "INSTAGRAM":
+                # Reduce expiration time by 1 day (86400 seconds) for safety margin
+                expires_at = int(time.time()) + max(0, int(data["expires_in"]) - 86400)
+            else:
+                expires_at = int(time.time()) + int(data["expires_in"])
 
         # TODO: if scope is present, check if it matches the scope in the App Configuration
 
