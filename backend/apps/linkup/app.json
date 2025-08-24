@@ -1,0 +1,19 @@
+{
+  "name": "LINKUP",
+  "display_name": "Linkup",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/linkup.svg",
+  "provider": "Linkup",
+  "version": "1.0.0",
+  "description": "AI-powered web search that provides real-time web content with precision and contextual answers for grounding LLM responses",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["Search", "AI", "Web", "Data"],
+  "visibility": "public",
+  "active": true
+}
