@@ -98,8 +98,8 @@ spec:
         # Resource limits - Guaranteed QoS for maximum stability
         resources:
           requests:
-            memory: "2Gi"             # Guaranteed memory allocation
-            cpu: "1"                  # Guaranteed CPU allocation
+            memory: "1Gi"             # Guaranteed memory allocation
+            cpu: "0.5"                # Guaranteed CPU allocation
           limits:
-            memory: "2Gi"             # Same as requests = Guaranteed QoS
-            cpu: "1"                  # Same as requests = Guaranteed QoS
+            memory: "1Gi"             # Same as requests = Guaranteed QoS
+            cpu: "0.5"                # Same as requests = Guaranteed QoS
