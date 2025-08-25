@@ -24,7 +24,7 @@ jobs:
           NAMESPACE="aci-prod"
           REPLICAS="1"
           POSTGRES_INSTANCES="2"
-          DOMAIN="aci-api.assista.us"
+          DOMAIN="aci-api.assista.dev"
           APPLY_HPA="true"
         else
           BRANCH_NAME="dev"
@@ -32,7 +32,7 @@ jobs:
           REPLICAS="1"
           POSTGRES_INSTANCES="1"
           APPLY_HPA="false"
-          DOMAIN="aci-api-dev.assista.us"
+          DOMAIN="aci-api-dev.assista.dev"
         fi
         SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
         echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
