@@ -16,7 +16,8 @@ COPY ./aci/server /workdir/aci/server
 COPY ./aci/common /workdir/aci/common
 COPY ./aci/__init__.py /workdir/aci/__init__.py
 COPY ./alembic.ini /workdir/alembic.ini
-COPY ./aci/alembic /workdir/alembic
+COPY ./aci/alembic /workdir/aci/alembic
+COPY ./aci/cli /workdir/aci/cli
 COPY ./scripts /workdir/scripts
 # remove unecessary or sensitive files (.env files are skipped by default specified in .dockerignore)
 RUN rm -rf /workdir/aci/server/tests
