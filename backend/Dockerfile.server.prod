@@ -1,0 +1,24 @@
+FROM python:3.12-slim-bullseye
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+WORKDIR /workdir
+
+COPY ./pyproject.toml ./uv.lock /workdir/
+RUN uv sync --no-dev --no-install-project
+
+ENV PATH="/workdir/.venv/bin:$PATH"
+ENV PYTHONPATH=/workdir
+
+RUN playwright install chromium --with-deps --no-shell
+
+# .env files will be skipped by default specified in .dockerignore
+COPY ./aci/server /workdir/aci/server
+COPY ./aci/common /workdir/aci/common
+COPY ./aci/__init__.py /workdir/aci/__init__.py
+
+# remove unecessary or sensitive files (.env files are skipped by default specified in .dockerignore)
+RUN rm -rf /workdir/aci/server/tests
+
+COPY .env.prod .env
+
+CMD ["uvicorn", "aci.server.main:app", "--proxy-headers", "--forwarded-allow-ips=*", "--host", "0.0.0.0", "--port", "8000", "--no-access-log"]

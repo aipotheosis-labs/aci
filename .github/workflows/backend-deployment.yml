@@ -22,7 +22,7 @@ jobs:
         if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
           BRANCH_NAME="prod"
           NAMESPACE="aci-prod"
-          REPLICAS="2"
+          REPLICAS="1"
           POSTGRES_INSTANCES="2"
           APPLY_HPA="true"
         else
@@ -51,7 +51,7 @@ jobs:
     
     - name: Build and push backend
       run: |
-        docker build -f Dockerfile.server -t ${{ env.FULL_IMAGE_NAME }} .
+        docker build -f Dockerfile.server.prod -t ${{ env.FULL_IMAGE_NAME }} .
         docker push ${{ env.FULL_IMAGE_NAME }}
     
     - name: Set up kubectl
