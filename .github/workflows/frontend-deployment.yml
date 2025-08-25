@@ -3,6 +3,9 @@ name: Build and Deploy frontend to DigitalOcean Kubernetes
 on:
   push:
     branches: [main, dev]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/frontend-deployment.yml'
 
 env:
   REGISTRY: registry.digitalocean.com/assista-ai
