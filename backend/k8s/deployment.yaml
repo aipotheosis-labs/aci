@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aci-backend
+  namespace: ${NAMESPACE}
+  labels:
+    app: aci-backend
+spec:
+  replicas: ${REPLICAS}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: aci-backend
+  template:
+    metadata:
+      labels:
+        app: aci-backend
+    spec:
+      imagePullSecrets:
+      - name: assista-ai
+      containers:
+      - name: aci-backend
+        image: ${FULL_IMAGE_NAME}
+        ports:
+        - containerPort: 8000
+          name: http
+        env:
+        - name: ALEMBIC_DB_SCHEME
+          value: postgresql+psycopg
+        # PostgreSQL credentials from CloudNative-PG generated secret
+        - name: ALEMBIC_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: aci-postgres-app
+              key: username
+        - name: ALEMBIC_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: aci-postgres-app
+              key: password
+        - name: ALEMBIC_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: aci-postgres-app
+              key: dbname
+        # Load all environment variables from existing secret
+        envFrom:
+        - secretRef:
+            name: aci-backend-${NAMESPACE}
+        
+        # Health checks - relaxed for stability
+        livenessProbe:
+          httpGet:
+            path: /v1/health
+            port: 8000
+          initialDelaySeconds: 120    # Mai mult timp să pornească
+          periodSeconds: 30           # Verifică mai rar
+          timeoutSeconds: 10          # Mai mult timp pentru răspuns
+          failureThreshold: 5         # Mai multe încercări înainte să restart
+        
+        readinessProbe:
+          httpGet:
+            path: /v1/health
+            port: 8000
+          initialDelaySeconds: 60
+          periodSeconds: 10           # Mai rar
+          timeoutSeconds: 5           # Mai mult timp
+          failureThreshold: 3         # Mai multe încercări
+        
+        # Resource limits - Guaranteed QoS for maximum stability
+        resources:
+          requests:
+            memory: "2Gi"             # Guaranteed memory allocation
+            cpu: "1"                  # Guaranteed CPU allocation
+          limits:
+            memory: "2Gi"             # Same as requests = Guaranteed QoS
+            cpu: "1"                  # Same as requests = Guaranteed QoS

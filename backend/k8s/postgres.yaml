@@ -1,0 +1,77 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: aci-postgres
+  namespace: ${NAMESPACE}
+spec:
+  instances: ${POSTGRES_INSTANCES}
+  imageName: ghcr.io/cloudnative-pg/postgresql:17
+  
+  postgresql:
+    parameters:
+      shared_buffers: '1GB' 
+      max_connections: '200'
+      work_mem: '8MB'
+      maintenance_work_mem: '64MB'
+      effective_cache_size: '1500MB'
+      max_parallel_workers_per_gather: '4'
+  
+  primaryUpdateStrategy: unsupervised
+
+  bootstrap:
+    initdb:
+      database: local_db
+      owner: user
+      postInitApplicationSQL:
+        - CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+        - CREATE EXTENSION IF NOT EXISTS vector;
+        - CREATE EXTENSION IF NOT EXISTS pgcrypto;
+        - CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+        - CREATE EXTENSION IF NOT EXISTS citext;
+
+  storage:
+    size: 30Gi
+    storageClass: do-block-storage
+
+  monitoring:
+    enablePodMonitor: true
+
+  backup:
+    retentionPolicy: 30d
+    barmanObjectStore:
+      wal:
+        compression: gzip
+        maxParallel: 8
+      endpointURL: https://nyc3.digitaloceanspaces.com
+      destinationPath: s3://assista-db-backups/aci-postgres/${NAMESPACE}/
+      s3Credentials:
+        accessKeyId:
+          name: do-spaces-creds
+          key: access-key-id
+        secretAccessKey:
+          name: do-spaces-creds
+          key: secret-access-key
+  
+  resources:
+    requests:
+      cpu: 1
+      memory: 2Gi
+    limits:
+      cpu: 2
+      memory: 4Gi
+      
+  affinity:
+    enablePodAntiAffinity: true
+    podAntiAffinityType: preferred
+
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: ScheduledBackup
+metadata:
+  name: backup-aci-postgres
+  namespace: ${NAMESPACE}
+spec:
+  schedule: "0 30 2 * * *"  # Daily at 2:30 AM
+  backupOwnerReference: self
+  cluster:
+    name: aci-postgres
