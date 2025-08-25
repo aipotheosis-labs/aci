@@ -11,7 +11,9 @@ env:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    
+    defaults:
+      run:
+        working-directory: frontend
     steps:
     - uses: actions/checkout@v4
     
@@ -19,7 +21,7 @@ jobs:
       run: |
         if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
           BRANCH_NAME="prod"
-          NAMESPACE="prod"
+          NAMESPACE="aci-prod"
           REPLICAS="2"
           POSTGRES_INSTANCES="2"
           APPLY_HPA="true"
@@ -52,47 +54,47 @@ jobs:
         cd frontend && docker build -f Dockerfile -t ${{ env.FULL_IMAGE_NAME }} .
         docker push ${{ env.FULL_IMAGE_NAME }}
     
-    # - name: Set up kubectl
-    #   uses: azure/setup-kubectl@v3
-    #   with:
-    #     version: "latest"
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: "latest"
     
-    # - name: Load Kubeconfig
-    #   run: |
-    #     if [ "${{ github.ref_name }}" = "main" ]; then
-    #       echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > kubeconfig
-    #     else
-    #       echo "${{ secrets.KUBE_CONFIG_DEV }}" | base64 -d > kubeconfig
-    #     fi
-    #     export KUBECONFIG=kubeconfig
-    #     # Verify connection
-    #     kubectl cluster-info
-    #     kubectl get nodes
+    - name: Load Kubeconfig
+      run: |
+        if [ "${{ github.ref_name }}" = "main" ]; then
+          echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > kubeconfig
+        else
+          echo "${{ secrets.KUBE_CONFIG_DEV }}" | base64 -d > kubeconfig
+        fi
+        export KUBECONFIG=kubeconfig
+        # Verify connection
+        kubectl cluster-info
+        kubectl get nodes
     
-    # - name: Deploy to Kubernetes
-    #   run: |
-    #     export KUBECONFIG=kubeconfig
+    - name: Deploy to Kubernetes
+      run: |
+        export KUBECONFIG=kubeconfig
         
-    #     # Verify envsubst is available (should be pre-installed)
-    #     which envsubst || sudo apt-get update && sudo apt-get install -y gettext-base
+        # Verify envsubst is available (should be pre-installed)
+        which envsubst || sudo apt-get update && sudo apt-get install -y gettext-base
         
-    #     # Process and apply manifests
-    #     envsubst '${NAMESPACE}' < k8s/namespace.yaml | kubectl apply -f -
-    #     envsubst '${NAMESPACE} ${POSTGRES_INSTANCES}' < k8s/postgres.yaml | kubectl apply -f -
-    #     envsubst '${NAMESPACE}' < k8s/redis.yaml | kubectl apply -f -
-    #     envsubst '${NAMESPACE} ${FULL_IMAGE_NAME} ${REPLICAS}' < k8s/deployment.yaml | kubectl apply -f -
-    #     envsubst '${NAMESPACE}' < k8s/service.yaml | kubectl apply -f -
+        # # Process and apply manifests
+        # envsubst '${NAMESPACE}' < k8s/namespace.yaml | kubectl apply -f -
+        # envsubst '${NAMESPACE} ${POSTGRES_INSTANCES}' < k8s/postgres.yaml | kubectl apply -f -
+        # envsubst '${NAMESPACE}' < k8s/redis.yaml | kubectl apply -f -
+        envsubst '${NAMESPACE} ${FULL_IMAGE_NAME} ${REPLICAS}' < k8s/deployment.yaml | kubectl apply -f -
+        # envsubst '${NAMESPACE}' < k8s/service.yaml | kubectl apply -f -
         
-    #     # Apply HPA only for prod environment
-    #     if [ "${{ env.APPLY_HPA }}" = "true" ]; then
-    #       envsubst '${NAMESPACE}' < k8s/hpa.yaml | kubectl apply -f -
-    #     fi
+        # Apply HPA only for prod environment
+        # if [ "${{ env.APPLY_HPA }}" = "true" ]; then
+        #   envsubst '${NAMESPACE}' < k8s/hpa.yaml | kubectl apply -f -
+        # fi
         
-    #     # Wait for deployment
-    #     kubectl rollout status deployment/react-agent-api -n ${{ env.NAMESPACE }} --timeout=300s
-    #   env:
-    #     NAMESPACE: ${{ env.NAMESPACE }}
-    #     FULL_IMAGE_NAME: ${{ env.FULL_IMAGE_NAME }}
-    #     REPLICAS: ${{ env.REPLICAS }}
-    #     POSTGRES_INSTANCES: ${{ env.POSTGRES_INSTANCES }}
-    #     APPLY_HPA: ${{ env.APPLY_HPA }} 
+        # Wait for deployment
+        kubectl rollout status deployment/aci-frontend -n ${{ env.NAMESPACE }} --timeout=300s
+      env:
+        NAMESPACE: ${{ env.NAMESPACE }}
+        FULL_IMAGE_NAME: ${{ env.FULL_IMAGE_NAME }}
+        REPLICAS: ${{ env.REPLICAS }}
+        POSTGRES_INSTANCES: ${{ env.POSTGRES_INSTANCES }}
+        APPLY_HPA: ${{ env.APPLY_HPA }} 
