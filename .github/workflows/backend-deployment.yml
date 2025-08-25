@@ -1,0 +1,98 @@
+name: Build and Deploy to DigitalOcean Kubernetes
+
+on:
+  push:
+    branches: [main, dev]
+
+env:
+  REGISTRY: registry.digitalocean.com/assista-ai
+  IMAGE_NAME: aci
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set environment variables
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          BRANCH_NAME="prod"
+          NAMESPACE="prod"
+          REPLICAS="2"
+          POSTGRES_INSTANCES="2"
+          APPLY_HPA="true"
+        else
+          BRANCH_NAME="dev"
+          NAMESPACE="dev"
+          REPLICAS="1"
+          POSTGRES_INSTANCES="1"
+          APPLY_HPA="false"
+        fi
+        SHORT_SHA=$(echo "${{ github.sha }}" | cut -c1-7)
+        echo "BRANCH_NAME=${BRANCH_NAME}" >> $GITHUB_ENV
+        echo "NAMESPACE=${NAMESPACE}" >> $GITHUB_ENV
+        echo "REPLICAS=${REPLICAS}" >> $GITHUB_ENV
+        echo "POSTGRES_INSTANCES=${POSTGRES_INSTANCES}" >> $GITHUB_ENV
+        echo "APPLY_HPA=${APPLY_HPA}" >> $GITHUB_ENV
+        echo "IMAGE_TAG=${BRANCH_NAME}-${SHORT_SHA}" >> $GITHUB_ENV
+        echo "FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${BRANCH_NAME}-${SHORT_SHA}" >> $GITHUB_ENV
+    
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    
+    - name: Log in to DigitalOcean Container Registry
+      run: doctl registry login --expiry-seconds 1200
+    
+    - name: Build and push LangGraph image
+      run: |
+        cd backend && docker build -f Dockerfile.server -t ${{ env.FULL_IMAGE_NAME }} .
+        docker push ${{ env.FULL_IMAGE_NAME }}
+    
+    # - name: Set up kubectl
+    #   uses: azure/setup-kubectl@v3
+    #   with:
+    #     version: "latest"
+    
+    # - name: Load Kubeconfig
+    #   run: |
+    #     if [ "${{ github.ref_name }}" = "main" ]; then
+    #       echo "${{ secrets.KUBE_CONFIG_PROD }}" | base64 -d > kubeconfig
+    #     else
+    #       echo "${{ secrets.KUBE_CONFIG_DEV }}" | base64 -d > kubeconfig
+    #     fi
+    #     export KUBECONFIG=kubeconfig
+    #     # Verify connection
+    #     kubectl cluster-info
+    #     kubectl get nodes
+    
+    # - name: Deploy to Kubernetes
+    #   run: |
+    #     export KUBECONFIG=kubeconfig
+        
+    #     # Verify envsubst is available (should be pre-installed)
+    #     which envsubst || sudo apt-get update && sudo apt-get install -y gettext-base
+        
+    #     # Process and apply manifests
+    #     envsubst '${NAMESPACE}' < k8s/namespace.yaml | kubectl apply -f -
+    #     envsubst '${NAMESPACE} ${POSTGRES_INSTANCES}' < k8s/postgres.yaml | kubectl apply -f -
+    #     envsubst '${NAMESPACE}' < k8s/redis.yaml | kubectl apply -f -
+    #     envsubst '${NAMESPACE} ${FULL_IMAGE_NAME} ${REPLICAS}' < k8s/deployment.yaml | kubectl apply -f -
+    #     envsubst '${NAMESPACE}' < k8s/service.yaml | kubectl apply -f -
+        
+    #     # Apply HPA only for prod environment
+    #     if [ "${{ env.APPLY_HPA }}" = "true" ]; then
+    #       envsubst '${NAMESPACE}' < k8s/hpa.yaml | kubectl apply -f -
+    #     fi
+        
+    #     # Wait for deployment
+    #     kubectl rollout status deployment/react-agent-api -n ${{ env.NAMESPACE }} --timeout=300s
+    #   env:
+    #     NAMESPACE: ${{ env.NAMESPACE }}
+    #     FULL_IMAGE_NAME: ${{ env.FULL_IMAGE_NAME }}
+    #     REPLICAS: ${{ env.REPLICAS }}
+    #     POSTGRES_INSTANCES: ${{ env.POSTGRES_INSTANCES }}
+    #     APPLY_HPA: ${{ env.APPLY_HPA }} 
