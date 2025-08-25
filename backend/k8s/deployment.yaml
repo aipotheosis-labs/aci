@@ -74,9 +74,9 @@ spec:
         - name: SERVER_DB_PORT
           value: "5432"
         - name: SERVER_STRIPE_SECRET_KEY
-          value: "sk_test_51N000000000000000000000"
+          value: "dummy"
         - name: SERVER_STRIPE_WEBHOOK_SIGNING_SECRET
-          value: "pk_test_51N000000000000000000000" 
+          value: "dummy" 
         - name: SERVER_ENVIRONMENT
           value: "local"
         - name: COMMON_AWS_ENDPOINT_URL
