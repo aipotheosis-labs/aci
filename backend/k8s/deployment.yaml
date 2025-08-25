@@ -49,7 +49,33 @@ spec:
             secretKeyRef:
               name: aci-postgres-app
               key: dbname
-
+        - name: CLI_DB_PORT
+          value: "5432"
+        - name: CLI_DB_HOST
+          value: aci-postgres-rw.${NAMESPACE}.svc.cluster.local
+        - name: CLI_DB_SCHEME
+          value: postgresql+psycopg
+        - name: CLI_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: aci-postgres-app
+              key: username
+        - name: CLI_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: aci-postgres-app
+              key: password
+        - name: CLI_DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: aci-postgres-app
+              key: dbname
+        - name: CLI_OPENAI_EMBEDDING_MODEL
+          value: "text-embedding-3-small"
+        - name: CLI_OPENAI_EMBEDDING_DIMENSION
+          value: "1024"
+        - name: CLI_SERVER_URL
+          value: "https://aci-api.assista.dev"
         - name: ALEMBIC_DB_SCHEME
           value: postgresql+psycopg
 
