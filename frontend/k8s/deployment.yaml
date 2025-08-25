@@ -95,11 +95,11 @@ spec:
         #   timeoutSeconds: 5           # Mai mult timp
         #   failureThreshold: 3         # Mai multe încercări
         
-        # Resource limits - Guaranteed QoS for maximum stability
-        resources:
-          requests:
-            memory: "1Gi"             # Guaranteed memory allocation
-            cpu: "0.5"                # Guaranteed CPU allocation
-          limits:
-            memory: "1Gi"             # Same as requests = Guaranteed QoS
-            cpu: "0.5"                # Same as requests = Guaranteed QoS
+        # # Resource limits - Guaranteed QoS for maximum stability
+        # resources:
+        #   requests:
+        #     memory: "1Gi"             # Guaranteed memory allocation
+        #     cpu: "0.5"                # Guaranteed CPU allocation
+        #   limits:
+        #     memory: "1Gi"             # Same as requests = Guaranteed QoS
+        #     cpu: "0.5"                # Same as requests = Guaranteed QoS

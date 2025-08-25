@@ -71,6 +71,8 @@ spec:
             secretKeyRef:
               name: aci-postgres-app
               key: dbname
+        - name: SERVER_DB_PORT
+          value: "5432"
         - name: SERVER_ENVIRONMENT
           value: "local"
         - name: SERVER_SIGNING_KEY
@@ -135,10 +137,10 @@ spec:
           failureThreshold: 3         # Mai multe încercări
         
         # Resource limits - Guaranteed QoS for maximum stability
-        resources:
-          requests:
-            memory: "2Gi"             # Guaranteed memory allocation
-            cpu: "1"                  # Guaranteed CPU allocation
-          limits:
-            memory: "2Gi"             # Same as requests = Guaranteed QoS
-            cpu: "1"                  # Same as requests = Guaranteed QoS
+        # resources:
+        #   requests:
+        #     memory: "2Gi"             # Guaranteed memory allocation
+        #     cpu: "1"                  # Guaranteed CPU allocation
+        #   limits:
+        #     memory: "2Gi"             # Same as requests = Guaranteed QoS
+        #     cpu: "1"                  # Same as requests = Guaranteed QoS
