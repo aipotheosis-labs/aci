@@ -6,7 +6,7 @@ on:
 
 env:
   REGISTRY: registry.digitalocean.com/assista-ai
-  IMAGE_NAME: aci-backend
+  IMAGE_NAME: aci-frontend
 
 jobs:
   build-and-deploy:
@@ -47,9 +47,9 @@ jobs:
     - name: Log in to DigitalOcean Container Registry
       run: doctl registry login --expiry-seconds 1200
     
-    - name: Build and push backend
+    - name: Build and push frontend
       run: |
-        cd backend && docker build -f Dockerfile.server -t ${{ env.FULL_IMAGE_NAME }} .
+        cd frontend && docker build -f Dockerfile -t ${{ env.FULL_IMAGE_NAME }} .
         docker push ${{ env.FULL_IMAGE_NAME }}
     
     # - name: Set up kubectl
