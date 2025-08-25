@@ -51,7 +51,7 @@ jobs:
     
     - name: Build and push frontend
       run: |
-        cd frontend && docker build -f Dockerfile -t ${{ env.FULL_IMAGE_NAME }} .
+        docker build -f Dockerfile -t ${{ env.FULL_IMAGE_NAME }} .
         docker push ${{ env.FULL_IMAGE_NAME }}
     
     - name: Set up kubectl
