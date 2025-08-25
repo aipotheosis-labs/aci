@@ -71,6 +71,45 @@ spec:
             secretKeyRef:
               name: aci-postgres-app
               key: dbname
+        - name: SERVER_ENVIRONMENT
+          value: "local"
+        - name: SERVER_SIGNING_KEY
+          value: "SErq6tYWOXsCQZ0B-ynjAIOxVFyOQX71E8vprZx6Msg"
+        - name: SERVER_JWT_ALGORITHM
+          value: "HS256"
+        - name: SERVER_JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+          value: "1440"
+        - name: SERVER_OPENAI_EMBEDDING_MODEL
+          value: "text-embedding-3-small"
+        - name: SERVER_OPENAI_EMBEDDING_DIMENSION
+          value: "1024"
+        - name: SERVER_RATE_LIMIT_IP_PER_SECOND
+          value: "999"
+        - name: SERVER_RATE_LIMIT_IP_PER_DAY
+          value: "100000"
+        - name: SERVER_PROJECT_DAILY_QUOTA
+          value: "100000"
+        - name: SERVER_APPLICATION_LOAD_BALANCER_DNS
+          value: "127.0.0.1"
+        - name: SERVER_REDIRECT_URI_BASE
+          value: "https://aci-api.assista.us"
+        - name: SERVER_DEV_PORTAL_URL
+          value: "https://aci.assista.us"
+        - name: SERVER_MAX_PROJECTS_PER_ORG
+          value: "3"
+        - name: SERVER_MAX_AGENTS_PER_PROJECT
+          value: "10"
+        - name: SERVER_LOGFIRE_WRITE_TOKEN
+          value: "dummy"
+        - name: SERVER_LOGFIRE_READ_TOKEN
+          value: "dummy"
+        - name: SERVER_VECTOR_DB_FULL_URL
+          value: "dummy"
+        - name: CLI_OPENAI_EMBEDDING_MODEL
+          value: "text-embedding-3-small"
+        - name: CLI_OPENAI_EMBEDDING_DIMENSION
+          value: "1024"
+        
         # Load all environment variables from existing secret
         envFrom:
         - secretRef:
