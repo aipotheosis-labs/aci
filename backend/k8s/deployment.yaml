@@ -79,6 +79,8 @@ spec:
           value: "pk_test_51N000000000000000000000" 
         - name: SERVER_ENVIRONMENT
           value: "local"
+        - name: COMMON_AWS_ENDPOINT_URL
+          value: "https://kms.us-east-1.amazonaws.com"
         - name: SERVER_SIGNING_KEY
           value: "SErq6tYWOXsCQZ0B-ynjAIOxVFyOQX71E8vprZx6Msg"
         - name: SERVER_JWT_ALGORITHM
