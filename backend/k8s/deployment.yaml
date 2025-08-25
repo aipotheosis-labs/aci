@@ -30,7 +30,7 @@ spec:
           name: http
         env:
         - name: SERVER_HOST
-          value: aci-postgres-rw.${NAMESPACE}.svc.cluster.local:
+          value: aci-postgres-rw.${NAMESPACE}.svc.cluster.local
         - name: SERVER_DB_SCHEME
           value: postgresql+psycopg
         # PostgreSQL credentials from CloudNative-PG generated secret
