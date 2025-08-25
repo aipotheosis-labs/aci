@@ -6,7 +6,7 @@ metadata:
   labels:
     app: aci-backend
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   ports:
   - port: 80
     targetPort: 8000
@@ -14,3 +14,7 @@ spec:
     name: http
   selector:
     app: aci-backend
+  sessionAffinity: ClientIP
+  sessionAffinityConfig:
+    clientIP:
+      timeoutSeconds: 10800

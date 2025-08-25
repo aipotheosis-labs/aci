@@ -100,9 +100,9 @@ spec:
         - name: SERVER_APPLICATION_LOAD_BALANCER_DNS
           value: "127.0.0.1"
         - name: SERVER_REDIRECT_URI_BASE
-          value: "https://aci-api.assista.us"
+          value: "https://aci-api.assista.dev"
         - name: SERVER_DEV_PORTAL_URL
-          value: "https://aci.assista.us"
+          value: "https://aci.assista.dev"
         - name: SERVER_MAX_PROJECTS_PER_ORG
           value: "3"
         - name: SERVER_MAX_AGENTS_PER_PROJECT
