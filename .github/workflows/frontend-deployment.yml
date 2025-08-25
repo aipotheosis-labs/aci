@@ -1,4 +1,4 @@
-name: Build and Deploy to DigitalOcean Kubernetes
+name: Build and Deploy frontend to DigitalOcean Kubernetes
 
 on:
   push:
