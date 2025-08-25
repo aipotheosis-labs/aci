@@ -53,6 +53,8 @@ spec:
         - name: ALEMBIC_DB_SCHEME
           value: postgresql+psycopg
 
+        - name: ALEMBIC_DB_PORT
+          value: "5432"
         - name: ALEMBIC_DB_HOST
           value: aci-postgres-rw.${NAMESPACE}.svc.cluster.local
         # PostgreSQL credentials from CloudNative-PG generated secret
