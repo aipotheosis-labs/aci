@@ -22,7 +22,7 @@ jobs:
         if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
           BRANCH_NAME="prod"
           NAMESPACE="aci-prod"
-          REPLICAS="2"
+          REPLICAS="1"
           POSTGRES_INSTANCES="2"
           APPLY_HPA="true"
         else
