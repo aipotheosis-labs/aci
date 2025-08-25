@@ -29,7 +29,7 @@ spec:
         - containerPort: 8000
           name: http
         env:
-        - name: SERVER_HOST
+        - name: SERVER_DB_HOST
           value: aci-postgres-rw.${NAMESPACE}.svc.cluster.local
         - name: SERVER_DB_SCHEME
           value: postgresql+psycopg
