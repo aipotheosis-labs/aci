@@ -1,0 +1,103 @@
+[
+  {
+    "name": "LINKUP__SEARCH",
+    "description": "Search for web content with Linkup's context retrieval service.  For a natural language query, it finds online information to ground your LLM’s answer, along with sources.",
+    "tags": ["search", "web", "research"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/search",
+      "server_url": "https://api.linkup.so"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "Search request parameters",
+          "properties": {
+            "q": {
+              "type": "string",
+              "description": "The natural language question for which you want to retrieve context."
+            },
+            "depth": {
+              "type": "string",
+              "default": "standard",
+              "description": "Search precision level. 'standard' returns results faster; 'deep' takes longer but yields more comprehensive results.",
+              "enum": ["standard", "deep"]
+            },
+            "outputType": {
+              "type": "string",
+              "default": "sourcedAnswer",
+              "description": "The type of output. 'sourcedAnswer' includes answer with sources, 'searchResults' provides raw search results, 'structured' for custom format.",
+              "enum": ["sourcedAnswer", "searchResults", "structured"]
+            },
+            "structuredOutputSchema": {
+              "type": "string",
+              "description": "Required only when outputType is 'structured'. Provide a JSON schema (as a string) representing the desired response format."
+            },
+            "includeImages": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether to include images in the results."
+            },
+            "fromDate": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "The date from which search results should be considered, in ISO 8601 format (YYYY-MM-DD)."
+            },
+            "toDate": {
+              "type": "string",
+              "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+              "description": "The date until which search results should be considered, in ISO 8601 format (YYYY-MM-DD)."
+            },
+            "excludeDomains": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of domains to exclude from the search."
+            },
+            "includeDomains": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of domains to search on exclusively."
+            }
+          },
+          "required": ["q", "depth", "outputType"],
+          "visible": ["q", "depth", "outputType", "structuredOutputSchema", "includeImages", "fromDate", "toDate", "excludeDomains", "includeDomains"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    },
+    "response": {}
+  },
+  {
+    "name": "LINKUP__GET_CREDITS_BALANCE",
+    "description": "Get the current credit balance for your Linkup account.",
+    "tags": ["account", "credits"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/credits/balance",
+      "server_url": "https://api.linkup.so"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    },
+    "response": {}
+  }
+]
