@@ -1,0 +1,21 @@
+{
+  "name": "LINKUP",
+  "display_name": "Linkup",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/linkup_so.svg",
+  "provider": "linkup.so",
+  "version": "1.0.0",
+  "description": "Linkup is a context retrieval service for online content. It provides precise web search results optimized for LLMs, finding online information to ground your AI's answers with reliable sources.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Search & Scraping"
+  ],
+  "visibility": "public",
+  "active": true
+}
