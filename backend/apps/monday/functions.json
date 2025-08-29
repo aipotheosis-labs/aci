@@ -1,0 +1,490 @@
+[
+  {
+    "name": "MONDAY__GET_BOARDS",
+    "description": "Retrieve boards from Monday.com workspace with their structure, items, and metadata.",
+    "tags": ["boards", "workspace", "projects"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2",
+      "server_url": "https://api.monday.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "query { boards(limit: $limit) { id name description state board_kind items { id name state } columns { id title type } } }",
+              "description": "GraphQL query for retrieving boards"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "default": 25,
+                  "maximum": 100,
+                  "description": "Number of boards to return"
+                }
+              },
+              "required": [],
+              "visible": ["limit"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MONDAY__CREATE_BOARD",
+    "description": "Create a new board in Monday.com with specified name, kind, and template structure.",
+    "tags": ["boards", "create", "project"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2",
+      "server_url": "https://api.monday.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "mutation { create_board(board_name: $board_name, board_kind: $board_kind) { id name board_kind } }",
+              "description": "GraphQL mutation for creating a board"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "board_name": {
+                  "type": "string",
+                  "description": "Name of the new board"
+                },
+                "board_kind": {
+                  "type": "string",
+                  "enum": ["public", "private", "share"],
+                  "default": "public",
+                  "description": "Board visibility kind"
+                }
+              },
+              "required": ["board_name"],
+              "visible": ["board_name", "board_kind"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query", "variables"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MONDAY__GET_ITEMS",
+    "description": "Retrieve items from a specific board in Monday.com with their column values and status.",
+    "tags": ["items", "tasks", "board-content"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2",
+      "server_url": "https://api.monday.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "query { boards(ids: [$board_id]) { items(limit: $limit) { id name state column_values { id text value } created_at updated_at } } }",
+              "description": "GraphQL query for retrieving board items"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "board_id": {
+                  "type": "string",
+                  "description": "Board ID to get items from"
+                },
+                "limit": {
+                  "type": "integer",
+                  "default": 25,
+                  "maximum": 100,
+                  "description": "Number of items to return"
+                }
+              },
+              "required": ["board_id"],
+              "visible": ["board_id", "limit"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query", "variables"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MONDAY__CREATE_ITEM",
+    "description": "Create a new item in a Monday.com board with name and initial column values.",
+    "tags": ["items", "create", "task"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2",
+      "server_url": "https://api.monday.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "mutation { create_item(board_id: $board_id, item_name: $item_name, column_values: $column_values) { id name } }",
+              "description": "GraphQL mutation for creating an item"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "board_id": {
+                  "type": "string",
+                  "description": "Board ID to create item in"
+                },
+                "item_name": {
+                  "type": "string",
+                  "description": "Name of the new item"
+                },
+                "column_values": {
+                  "type": "string",
+                  "description": "JSON string of column values (e.g., '{\"status\": \"Working on it\", \"text\": \"Description\"}')"
+                }
+              },
+              "required": ["board_id", "item_name"],
+              "visible": ["board_id", "item_name", "column_values"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query", "variables"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MONDAY__UPDATE_ITEM",
+    "description": "Update column values for an existing item in Monday.com including status, text, and custom fields.",
+    "tags": ["items", "update", "edit"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2",
+      "server_url": "https://api.monday.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "mutation { change_multiple_column_values(item_id: $item_id, board_id: $board_id, column_values: $column_values) { id name } }",
+              "description": "GraphQL mutation for updating item column values"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "item_id": {
+                  "type": "string",
+                  "description": "Item ID to update"
+                },
+                "board_id": {
+                  "type": "string",
+                  "description": "Board ID containing the item"
+                },
+                "column_values": {
+                  "type": "string",
+                  "description": "JSON string of column values to update"
+                }
+              },
+              "required": ["item_id", "board_id", "column_values"],
+              "visible": ["item_id", "board_id", "column_values"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query", "variables"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MONDAY__GET_USERS",
+    "description": "Retrieve users from Monday.com workspace with their profiles, roles, and activity status.",
+    "tags": ["users", "team", "workspace"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2",
+      "server_url": "https://api.monday.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "query { users(limit: $limit) { id name email enabled is_admin is_guest created_at } }",
+              "description": "GraphQL query for retrieving users"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "default": 25,
+                  "maximum": 100,
+                  "description": "Number of users to return"
+                }
+              },
+              "required": [],
+              "visible": ["limit"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MONDAY__CREATE_UPDATE",
+    "description": "Add an update or comment to an item in Monday.com for team collaboration and progress tracking.",
+    "tags": ["updates", "comments", "collaboration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2",
+      "server_url": "https://api.monday.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "mutation { create_update(item_id: $item_id, body: $body) { id body created_at creator { name } } }",
+              "description": "GraphQL mutation for creating an update"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "item_id": {
+                  "type": "string",
+                  "description": "Item ID to add update to"
+                },
+                "body": {
+                  "type": "string",
+                  "description": "Update content/message"
+                }
+              },
+              "required": ["item_id", "body"],
+              "visible": ["item_id", "body"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query", "variables"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MONDAY__GET_WORKSPACES",
+    "description": "Retrieve workspaces available in Monday.com account with their settings and team information.",
+    "tags": ["workspaces", "organization", "teams"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2",
+      "server_url": "https://api.monday.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "query { workspaces { id name kind description created_at users { id name email } } }",
+              "description": "GraphQL query for retrieving workspaces"
+            }
+          },
+          "required": ["query"],
+          "visible": [],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": [],
+      "additionalProperties": false
+    }
+  }
+]

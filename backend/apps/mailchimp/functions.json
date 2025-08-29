@@ -1,0 +1,593 @@
+[
+  {
+    "name": "MAILCHIMP__GET_LISTS",
+    "description": "Retrieve all audience lists from Mailchimp with their subscriber counts and campaign statistics.",
+    "tags": ["audiences", "lists", "subscribers"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/3.0/lists",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 1000,
+              "description": "Number of lists to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of lists to skip"
+            }
+          },
+          "required": [],
+          "visible": ["count", "offset"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__GET_LIST_MEMBERS",
+    "description": "Retrieve members from a specific Mailchimp audience list with their subscription status and details.",
+    "tags": ["members", "subscribers", "audience"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/3.0/lists/{list_id}/members",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "description": "The unique ID of the list"
+            }
+          },
+          "required": ["list_id"],
+          "visible": ["list_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 1000,
+              "description": "Number of members to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of members to skip"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["subscribed", "unsubscribed", "cleaned", "pending"],
+              "description": "Member subscription status filter"
+            }
+          },
+          "required": [],
+          "visible": ["count", "offset", "status"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__ADD_LIST_MEMBER",
+    "description": "Add a new member to a Mailchimp audience list with email address and merge fields.",
+    "tags": ["members", "subscribe", "add"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/lists/{list_id}/members",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "description": "The unique ID of the list"
+            }
+          },
+          "required": ["list_id"],
+          "visible": ["list_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "email_address": {
+              "type": "string",
+              "format": "email",
+              "description": "Email address for the subscriber"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["subscribed", "pending"],
+              "default": "subscribed",
+              "description": "Subscriber status"
+            },
+            "merge_fields": {
+              "type": "object",
+              "properties": {
+                "FNAME": {
+                  "type": "string",
+                  "description": "First name"
+                },
+                "LNAME": {
+                  "type": "string",
+                  "description": "Last name"
+                }
+              },
+              "required": [],
+              "visible": ["FNAME", "LNAME"],
+              "description": "Merge field data for the subscriber",
+              "additionalProperties": false
+            }
+          },
+          "required": ["email_address", "status"],
+          "visible": ["email_address", "status", "merge_fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__GET_CAMPAIGNS",
+    "description": "Retrieve email campaigns from Mailchimp with their status, statistics, and settings.",
+    "tags": ["campaigns", "emails", "marketing"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/3.0/campaigns",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 1000,
+              "description": "Number of campaigns to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of campaigns to skip"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["save", "paused", "schedule", "sending", "sent"],
+              "description": "Campaign status filter"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["regular", "plaintext", "absplit", "rss", "variate"],
+              "description": "Campaign type filter"
+            }
+          },
+          "required": [],
+          "visible": ["count", "offset", "status", "type"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__CREATE_CAMPAIGN",
+    "description": "Create a new email campaign in Mailchimp with content, settings, and audience targeting.",
+    "tags": ["campaigns", "create", "email"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/campaigns",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["regular", "plaintext", "absplit", "rss", "variate"],
+              "default": "regular",
+              "description": "Campaign type"
+            },
+            "recipients": {
+              "type": "object",
+              "properties": {
+                "list_id": {
+                  "type": "string",
+                  "description": "List ID to send the campaign to"
+                }
+              },
+              "required": ["list_id"],
+              "visible": ["list_id"],
+              "additionalProperties": false
+            },
+            "settings": {
+              "type": "object",
+              "properties": {
+                "subject_line": {
+                  "type": "string",
+                  "description": "Campaign subject line"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Campaign title (internal)"
+                },
+                "from_name": {
+                  "type": "string",
+                  "description": "From name for the campaign"
+                },
+                "reply_to": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Reply-to email address"
+                }
+              },
+              "required": ["subject_line", "from_name", "reply_to"],
+              "visible": ["subject_line", "title", "from_name", "reply_to"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["type", "recipients", "settings"],
+          "visible": ["type", "recipients", "settings"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__SET_CAMPAIGN_CONTENT",
+    "description": "Set the HTML content for a Mailchimp campaign with templates and personalization options.",
+    "tags": ["campaigns", "content", "html"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/3.0/campaigns/{campaign_id}/content",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "campaign_id": {
+              "type": "string",
+              "description": "The unique ID of the campaign"
+            }
+          },
+          "required": ["campaign_id"],
+          "visible": ["campaign_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "html": {
+              "type": "string",
+              "description": "HTML content for the campaign"
+            },
+            "plain_text": {
+              "type": "string",
+              "description": "Plain text content for the campaign"
+            }
+          },
+          "required": [],
+          "visible": ["html", "plain_text"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__SEND_CAMPAIGN",
+    "description": "Send a prepared Mailchimp campaign to its target audience immediately.",
+    "tags": ["campaigns", "send", "deliver"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/campaigns/{campaign_id}/actions/send",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "campaign_id": {
+              "type": "string",
+              "description": "The unique ID of the campaign to send"
+            }
+          },
+          "required": ["campaign_id"],
+          "visible": ["campaign_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__GET_CAMPAIGN_REPORTS",
+    "description": "Retrieve detailed performance reports for sent Mailchimp campaigns including opens, clicks, and bounces.",
+    "tags": ["reports", "analytics", "performance"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/3.0/reports/{campaign_id}",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "campaign_id": {
+              "type": "string",
+              "description": "The unique ID of the campaign"
+            }
+          },
+          "required": ["campaign_id"],
+          "visible": ["campaign_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__GET_AUTOMATIONS",
+    "description": "Retrieve marketing automation workflows from Mailchimp with their triggers and performance data.",
+    "tags": ["automations", "workflows", "triggers"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/3.0/automations",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 1000,
+              "description": "Number of automations to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of automations to skip"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["save", "paused", "sending"],
+              "description": "Automation status filter"
+            }
+          },
+          "required": [],
+          "visible": ["count", "offset", "status"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__CREATE_LIST",
+    "description": "Create a new audience list in Mailchimp with contact information and compliance settings.",
+    "tags": ["lists", "audiences", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/lists",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the list"
+            },
+            "contact": {
+              "type": "object",
+              "properties": {
+                "company": {
+                  "type": "string",
+                  "description": "Company name"
+                },
+                "address1": {
+                  "type": "string",
+                  "description": "Street address"
+                },
+                "city": {
+                  "type": "string",
+                  "description": "City"
+                },
+                "state": {
+                  "type": "string",
+                  "description": "State/province"
+                },
+                "zip": {
+                  "type": "string",
+                  "description": "Postal code"
+                },
+                "country": {
+                  "type": "string",
+                  "description": "Country code (ISO 3166-1 alpha-2)"
+                }
+              },
+              "required": ["company", "address1", "city", "state", "zip", "country"],
+              "visible": ["company", "address1", "city", "state", "zip", "country"],
+              "additionalProperties": false
+            },
+            "permission_reminder": {
+              "type": "string",
+              "description": "Permission reminder text"
+            },
+            "campaign_defaults": {
+              "type": "object",
+              "properties": {
+                "from_name": {
+                  "type": "string",
+                  "description": "Default from name"
+                },
+                "from_email": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Default from email"
+                },
+                "subject": {
+                  "type": "string",
+                  "description": "Default subject line"
+                },
+                "language": {
+                  "type": "string",
+                  "default": "en",
+                  "description": "Language for the list"
+                }
+              },
+              "required": ["from_name", "from_email", "subject", "language"],
+              "visible": ["from_name", "from_email", "subject", "language"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["name", "contact", "permission_reminder", "campaign_defaults"],
+          "visible": ["name", "contact", "permission_reminder", "campaign_defaults"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  }
+]

@@ -1,0 +1,19 @@
+{
+  "name": "LINEAR",
+  "display_name": "Linear",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/linear.svg",
+  "provider": "Linear",
+  "version": "1.0.0",
+  "description": "Linear is a modern issue tracking and project management tool designed for software development teams. This integration enables AI agents to create, update, and manage issues, projects, and workflows with streamlined team collaboration.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["Issue Tracking", "Project Management", "Development"],
+  "visibility": "public",
+  "active": true
+}

@@ -1,0 +1,30 @@
+{
+  "name": "LINKEDIN",
+  "display_name": "LinkedIn",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/linkedin.svg",
+  "provider": "LinkedIn Corporation",
+  "version": "2.0.0",
+  "description": "LinkedIn API integration for professional networking, posting content, managing company pages, and accessing professional data. Enables programmatic access to LinkedIn's professional network and business features.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_LINKEDIN_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_LINKEDIN_CLIENT_SECRET }}",
+      "scope": "openid profile email w_member_social r_liteprofile r_emailaddress rw_organization_admin r_organization_social w_organization_social",
+      "authorize_url": "https://www.linkedin.com/oauth/v2/authorization",
+      "access_token_url": "https://www.linkedin.com/oauth/v2/accessToken",
+      "refresh_token_url": "https://www.linkedin.com/oauth/v2/accessToken"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Social Media",
+    "Professional Networking",
+    "Business",
+    "Marketing"
+  ],
+  "visibility": "public",
+  "active": true
+}

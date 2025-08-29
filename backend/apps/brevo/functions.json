@@ -1,0 +1,681 @@
+[
+  {
+    "name": "BREVO__SEND_TRANSACTIONAL_EMAIL",
+    "description": "Send a transactional email to one or multiple recipients with customizable content, templates, and attachments.",
+    "tags": ["email", "transactional", "send"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v3/smtp/email",
+      "server_url": "https://api.brevo.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "sender": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Sender's name"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Sender's email address"
+                }
+              },
+              "required": ["email"],
+              "visible": ["name", "email"],
+              "additionalProperties": false
+            },
+            "to": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Recipient's email address"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Recipient's name"
+                  }
+                },
+                "required": ["email"],
+                "visible": ["email", "name"]
+              },
+              "description": "List of recipients"
+            },
+            "subject": {
+              "type": "string",
+              "description": "Email subject line"
+            },
+            "htmlContent": {
+              "type": "string",
+              "description": "HTML content of the email"
+            },
+            "textContent": {
+              "type": "string",
+              "description": "Plain text content of the email"
+            },
+            "templateId": {
+              "type": "integer",
+              "description": "ID of the template to use"
+            },
+            "params": {
+              "type": "object",
+              "properties": {
+                "FIRSTNAME": {
+                  "type": "string",
+                  "description": "First name parameter"
+                },
+                "LASTNAME": {
+                  "type": "string", 
+                  "description": "Last name parameter"
+                }
+              },
+              "required": [],
+              "visible": ["FIRSTNAME", "LASTNAME"],
+              "additionalProperties": true,
+              "description": "Parameters to personalize the email template"
+            }
+          },
+          "required": ["sender", "to"],
+          "visible": ["sender", "to", "subject", "htmlContent", "textContent", "templateId", "params"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BREVO__SEND_SMS",
+    "description": "Send a transactional SMS message to one or multiple recipients with customizable content.",
+    "tags": ["sms", "transactional", "send"],
+    "visibility": "public", 
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v3/transactionalSMS/sms",
+      "server_url": "https://api.brevo.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["transactional"],
+              "default": "transactional",
+              "description": "Type of SMS"
+            },
+            "message": {
+              "type": "string",
+              "description": "Content of the SMS message"
+            },
+            "sender": {
+              "type": "string",
+              "description": "Name of the sender"
+            },
+            "recipient": {
+              "type": "string",
+              "description": "Mobile number to send SMS to (with country code)"
+            }
+          },
+          "required": ["message", "recipient"],
+          "visible": ["type", "message", "sender", "recipient"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BREVO__CREATE_CONTACT",
+    "description": "Create a new contact in the Brevo database with email, phone, and custom attributes.",
+    "tags": ["contacts", "create", "crm"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v3/contacts",
+      "server_url": "https://api.brevo.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "format": "email",
+              "description": "Email address of the contact"
+            },
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "FIRSTNAME": {
+                  "type": "string",
+                  "description": "First name of the contact"
+                },
+                "LASTNAME": {
+                  "type": "string",
+                  "description": "Last name of the contact"
+                },
+                "SMS": {
+                  "type": "string",
+                  "description": "Phone number with country code"
+                }
+              },
+              "required": [],
+              "visible": ["FIRSTNAME", "LASTNAME", "SMS"],
+              "additionalProperties": false
+            },
+            "listIds": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "IDs of the lists to add the contact to"
+            },
+            "updateEnabled": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether to update the contact if it already exists"
+            }
+          },
+          "required": ["email"],
+          "visible": ["email", "attributes", "listIds", "updateEnabled"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BREVO__GET_CONTACTS",
+    "description": "Retrieve a list of all contacts from the Brevo database with filtering and pagination options.",
+    "tags": ["contacts", "list", "crm"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v3/contacts",
+      "server_url": "https://api.brevo.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 50,
+              "maximum": 1000,
+              "description": "Number of contacts per page"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Index of the first document on the page"
+            },
+            "modifiedSince": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Filter by modification date"
+            },
+            "sort": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "desc",
+              "description": "Sort order for contacts"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "offset", "modifiedSince", "sort"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BREVO__UPDATE_CONTACT",
+    "description": "Update an existing contact's information including email, attributes, and list subscriptions.",
+    "tags": ["contacts", "update", "crm"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/v3/contacts/{identifier}",
+      "server_url": "https://api.brevo.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "identifier": {
+              "type": "string",
+              "description": "Email address or ID of the contact to update"
+            }
+          },
+          "required": ["identifier"],
+          "visible": ["identifier"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "attributes": {
+              "type": "object",
+              "properties": {
+                "FIRSTNAME": {
+                  "type": "string",
+                  "description": "First name of the contact"
+                },
+                "LASTNAME": {
+                  "type": "string",
+                  "description": "Last name of the contact"
+                },
+                "SMS": {
+                  "type": "string",
+                  "description": "Phone number with country code"
+                }
+              },
+              "required": [],
+              "visible": ["FIRSTNAME", "LASTNAME", "SMS"],
+              "additionalProperties": false
+            },
+            "listIds": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "IDs of the lists to add the contact to"
+            },
+            "unlinkListIds": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "IDs of the lists to remove the contact from"
+            }
+          },
+          "required": [],
+          "visible": ["attributes", "listIds", "unlinkListIds"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BREVO__GET_EMAIL_CAMPAIGNS",
+    "description": "Retrieve all email campaigns with their status, statistics, and configuration details.",
+    "tags": ["campaigns", "email", "marketing"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v3/emailCampaigns",
+      "server_url": "https://api.brevo.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["classic", "trigger"],
+              "description": "Type of campaign to filter by"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["draft", "sent", "archive", "queued", "suspended"],
+              "description": "Status of campaigns to filter by"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 50,
+              "maximum": 1000,
+              "description": "Number of campaigns per page"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Index of the first campaign on the page"
+            }
+          },
+          "required": [],
+          "visible": ["type", "status", "limit", "offset"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BREVO__CREATE_EMAIL_CAMPAIGN",
+    "description": "Create a new email marketing campaign with recipients, content, and scheduling options.",
+    "tags": ["campaigns", "email", "create", "marketing"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v3/emailCampaigns",
+      "server_url": "https://api.brevo.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the campaign"
+            },
+            "subject": {
+              "type": "string",
+              "description": "Subject line of the campaign"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["classic", "trigger"],
+              "default": "classic",
+              "description": "Type of campaign"
+            },
+            "htmlContent": {
+              "type": "string",
+              "description": "HTML content of the campaign"
+            },
+            "textContent": {
+              "type": "string",
+              "description": "Plain text content of the campaign"
+            },
+            "sender": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Sender's name"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Sender's email address"
+                }
+              },
+              "required": ["email"],
+              "visible": ["name", "email"],
+              "additionalProperties": false
+            },
+            "recipients": {
+              "type": "object",
+              "properties": {
+                "listIds": {
+                  "type": "array",
+                  "items": {
+                    "type": "integer"
+                  },
+                  "description": "List IDs to send the campaign to"
+                }
+              },
+              "required": [],
+              "visible": ["listIds"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["name", "subject", "sender"],
+          "visible": ["name", "subject", "type", "htmlContent", "textContent", "sender", "recipients"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BREVO__GET_LISTS",
+    "description": "Retrieve all contact lists with their details including subscriber count and creation date.",
+    "tags": ["lists", "contacts", "segments"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v3/contacts/lists",
+      "server_url": "https://api.brevo.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 50,
+              "description": "Number of lists per page"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Index of the first list on the page"
+            },
+            "sort": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "desc",
+              "description": "Sort order for lists"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "offset", "sort"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BREVO__CREATE_LIST",
+    "description": "Create a new contact list for organizing and segmenting your contacts for targeted campaigns.",
+    "tags": ["lists", "create", "segments"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v3/contacts/lists",
+      "server_url": "https://api.brevo.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the contact list"
+            },
+            "folderId": {
+              "type": "integer",
+              "description": "ID of the folder to create the list in"
+            }
+          },
+          "required": ["name"],
+          "visible": ["name", "folderId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BREVO__GET_ACCOUNT_INFO",
+    "description": "Retrieve account information including plan details, credits remaining, and account limits.",
+    "tags": ["account", "info", "credits"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v3/account",
+      "server_url": "https://api.brevo.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BREVO__GET_EMAIL_STATISTICS", 
+    "description": "Get email campaign statistics including opens, clicks, bounces, and unsubscribes for performance analysis.",
+    "tags": ["statistics", "email", "analytics"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v3/emailCampaigns/{campaignId}/statistics",
+      "server_url": "https://api.brevo.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "campaignId": {
+              "type": "string",
+              "description": "ID of the email campaign to get statistics for"
+            }
+          },
+          "required": ["campaignId"],
+          "visible": ["campaignId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  }
+]

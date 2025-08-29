@@ -1,0 +1,716 @@
+[
+  {
+    "name": "DOCUSIGN__CREATE_ENVELOPE",
+    "description": "Create a new envelope with documents and recipients for electronic signature collection.",
+    "tags": ["envelope", "create", "signature", "documents"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            }
+          },
+          "required": ["account_id"],
+          "visible": ["account_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "emailSubject": {
+              "type": "string",
+              "description": "Subject line for the signature request email"
+            },
+            "emailMessage": {
+              "type": "string",
+              "description": "Message body for the signature request email"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["draft", "sent"],
+              "default": "sent",
+              "description": "Initial status of the envelope"
+            },
+            "documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "documentBase64": {
+                    "type": "string",
+                    "description": "Base64 encoded document content"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Document name"
+                  },
+                  "fileExtension": {
+                    "type": "string",
+                    "description": "File extension (pdf, docx, etc.)"
+                  },
+                  "documentId": {
+                    "type": "string",
+                    "description": "Unique identifier for the document"
+                  }
+                },
+                "required": ["documentBase64", "name", "documentId"],
+                "visible": ["documentBase64", "name", "fileExtension", "documentId"]
+              },
+              "description": "Array of documents to include in the envelope"
+            },
+            "recipients": {
+              "type": "object",
+              "properties": {
+                "signers": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Signer's email address"
+                      },
+                      "name": {
+                        "type": "string",
+                        "description": "Signer's full name"
+                      },
+                      "recipientId": {
+                        "type": "string",
+                        "description": "Unique identifier for the recipient"
+                      },
+                      "routingOrder": {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Order in which recipient should sign"
+                      }
+                    },
+                    "required": ["email", "name", "recipientId"],
+                    "visible": ["email", "name", "recipientId", "routingOrder"]
+                  },
+                  "description": "Array of signers for the envelope"
+                }
+              },
+              "required": ["signers"],
+              "visible": ["signers"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["emailSubject", "documents", "recipients"],
+          "visible": ["emailSubject", "emailMessage", "status", "documents", "recipients"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__GET_ENVELOPE_STATUS",
+    "description": "Retrieve the current status and details of an envelope including recipient information and document status.",
+    "tags": ["envelope", "status", "tracking"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes/{envelope_id}",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "envelope_id": {
+              "type": "string",
+              "description": "Unique identifier for the envelope"
+            }
+          },
+          "required": ["account_id", "envelope_id"],
+          "visible": ["account_id", "envelope_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__LIST_ENVELOPES",
+    "description": "Retrieve a list of envelopes for the account with filtering options by status, date, and other criteria.",
+    "tags": ["envelopes", "list", "filter"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            }
+          },
+          "required": ["account_id"],
+          "visible": ["account_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["completed", "created", "declined", "delivered", "sent", "signed", "voided"],
+              "description": "Filter by envelope status"
+            },
+            "from_date": {
+              "type": "string",
+              "format": "date",
+              "description": "Start date for filtering envelopes (YYYY-MM-DD)"
+            },
+            "to_date": {
+              "type": "string",
+              "format": "date",
+              "description": "End date for filtering envelopes (YYYY-MM-DD)"
+            },
+            "count": {
+              "type": "integer",
+              "default": 100,
+              "maximum": 100,
+              "description": "Number of envelopes to return"
+            },
+            "start_position": {
+              "type": "integer",
+              "default": 0,
+              "description": "Starting position for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["status", "from_date", "to_date", "count", "start_position"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__GET_ENVELOPE_RECIPIENTS",
+    "description": "Retrieve information about all recipients of an envelope including their signature status and details.",
+    "tags": ["envelope", "recipients", "status"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes/{envelope_id}/recipients",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "envelope_id": {
+              "type": "string",
+              "description": "Unique identifier for the envelope"
+            }
+          },
+          "required": ["account_id", "envelope_id"],
+          "visible": ["account_id", "envelope_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__ADD_RECIPIENT",
+    "description": "Add one or more recipients to an existing envelope for signature collection.",
+    "tags": ["envelope", "recipients", "add"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes/{envelope_id}/recipients",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "envelope_id": {
+              "type": "string",
+              "description": "Unique identifier for the envelope"
+            }
+          },
+          "required": ["account_id", "envelope_id"],
+          "visible": ["account_id", "envelope_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "signers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Signer's email address"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Signer's full name"
+                  },
+                  "recipientId": {
+                    "type": "string",
+                    "description": "Unique identifier for the recipient"
+                  },
+                  "routingOrder": {
+                    "type": "integer",
+                    "default": 1,
+                    "description": "Order in which recipient should sign"
+                  }
+                },
+                "required": ["email", "name", "recipientId"],
+                "visible": ["email", "name", "recipientId", "routingOrder"]
+              },
+              "description": "Array of signers to add to the envelope"
+            }
+          },
+          "required": ["signers"],
+          "visible": ["signers"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__GET_DOCUMENT",
+    "description": "Download a document from a completed envelope, useful for retrieving signed documents.",
+    "tags": ["document", "download", "signed"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes/{envelope_id}/documents/{document_id}",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "envelope_id": {
+              "type": "string",
+              "description": "Unique identifier for the envelope"
+            },
+            "document_id": {
+              "type": "string",
+              "description": "Unique identifier for the document"
+            }
+          },
+          "required": ["account_id", "envelope_id", "document_id"],
+          "visible": ["account_id", "envelope_id", "document_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "certificate": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include completion certificate"
+            }
+          },
+          "required": [],
+          "visible": ["certificate"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__CREATE_TEMPLATE",
+    "description": "Create a reusable template with predefined documents, recipients, and signature fields for streamlined envelope creation.",
+    "tags": ["template", "create", "reusable"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/restapi/v2.1/accounts/{account_id}/templates",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            }
+          },
+          "required": ["account_id"],
+          "visible": ["account_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the template"
+            },
+            "description": {
+              "type": "string",
+              "description": "Description of the template"
+            },
+            "emailSubject": {
+              "type": "string",
+              "description": "Default email subject for envelopes created from this template"
+            },
+            "documents": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "documentBase64": {
+                    "type": "string",
+                    "description": "Base64 encoded document content"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Document name"
+                  },
+                  "fileExtension": {
+                    "type": "string",
+                    "description": "File extension (pdf, docx, etc.)"
+                  },
+                  "documentId": {
+                    "type": "string",
+                    "description": "Unique identifier for the document"
+                  }
+                },
+                "required": ["documentBase64", "name", "documentId"],
+                "visible": ["documentBase64", "name", "fileExtension", "documentId"]
+              },
+              "description": "Array of documents to include in the template"
+            }
+          },
+          "required": ["name", "emailSubject"],
+          "visible": ["name", "description", "emailSubject", "documents"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__LIST_TEMPLATES",
+    "description": "Retrieve a list of all templates available in the account for creating envelopes.",
+    "tags": ["templates", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/templates",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            }
+          },
+          "required": ["account_id"],
+          "visible": ["account_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "default": 20,
+              "maximum": 100,
+              "description": "Number of templates to return"
+            },
+            "start_position": {
+              "type": "integer",
+              "default": 0,
+              "description": "Starting position for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["count", "start_position"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__CREATE_ENVELOPE_FROM_TEMPLATE",
+    "description": "Create an envelope using an existing template, allowing for quick document creation with predefined settings.",
+    "tags": ["envelope", "template", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            }
+          },
+          "required": ["account_id"],
+          "visible": ["account_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "templateId": {
+              "type": "string",
+              "description": "ID of the template to use"
+            },
+            "templateRoles": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Recipient's email address"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Recipient's full name"
+                  },
+                  "roleName": {
+                    "type": "string",
+                    "description": "Role name as defined in the template"
+                  }
+                },
+                "required": ["email", "name", "roleName"],
+                "visible": ["email", "name", "roleName"]
+              },
+              "description": "Recipients mapped to template roles"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["draft", "sent"],
+              "default": "sent",
+              "description": "Initial status of the envelope"
+            },
+            "emailSubject": {
+              "type": "string",
+              "description": "Override the template's default email subject"
+            }
+          },
+          "required": ["templateId", "templateRoles"],
+          "visible": ["templateId", "templateRoles", "status", "emailSubject"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__VOID_ENVELOPE",
+    "description": "Void an envelope to cancel the signature process and prevent further action on the documents.",
+    "tags": ["envelope", "void", "cancel"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes/{envelope_id}",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "envelope_id": {
+              "type": "string",
+              "description": "Unique identifier for the envelope to void"
+            }
+          },
+          "required": ["account_id", "envelope_id"],
+          "visible": ["account_id", "envelope_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["voided"],
+              "default": "voided",
+              "description": "Status to set the envelope to"
+            },
+            "voidedReason": {
+              "type": "string",
+              "description": "Reason for voiding the envelope"
+            }
+          },
+          "required": ["status"],
+          "visible": ["status", "voidedReason"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  }
+]

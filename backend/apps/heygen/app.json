@@ -1,0 +1,19 @@
+{
+  "name": "HEYGEN",
+  "display_name": "HeyGen",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/heygen.svg",
+  "provider": "HeyGen",
+  "version": "2.0.0",
+  "description": "HeyGen is an AI-powered video generation platform that creates realistic avatar videos with natural speech and lifelike movements. This integration enables AI agents to generate custom videos, manage avatars, translate content, and create personalized video messages at scale.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "X-Api-Key",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["AI Video Generation", "Avatar", "Text-to-Speech", "Video"],
+  "visibility": "public",
+  "active": true
+}

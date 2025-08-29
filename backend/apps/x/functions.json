@@ -1180,14 +1180,233 @@
         }
       },
       "required": ["header", "body"],
-    "visible": ["body"],
-    "additionalProperties": false
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__DELETE_POST",
+    "description": "Delete a specific post by its ID. Permanently removes the post from X.com.",
+    "tags": ["posts", "delete", "manage"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/2/tweets/{id}",
+      "server_url": "https://api.x.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the post to delete"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__GET_USER_MENTIONS",
+    "description": "Get posts that mention a specific user. Returns timeline of mentions for the user.",
+    "tags": ["users", "mentions", "timeline"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/2/users/{id}/mentions",
+      "server_url": "https://api.twitter.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the user whose mentions to retrieve"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "max_results": {
+              "type": "integer",
+              "description": "Maximum number of mentions to return (5-100, default: 10)",
+              "default": 10,
+              "minimum": 5,
+              "maximum": 100
+            },
+            "tweet.fields": {
+              "type": "string",
+              "description": "Comma-separated list of tweet fields to include",
+              "default": "id,text,author_id,created_at,public_metrics,context_annotations"
+            },
+            "user.fields": {
+              "type": "string",
+              "description": "Comma-separated list of user fields to include",
+              "default": "id,name,username"
+            },
+            "expansions": {
+              "type": "string",
+              "description": "Comma-separated list of expansion fields",
+              "default": "author_id"
+            }
+          },
+          "required": [],
+          "visible": ["max_results", "tweet.fields", "user.fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__GET_USER_LIKED_POSTS",
+    "description": "Get posts that a specific user has liked. Returns timeline of liked posts.",
+    "tags": ["users", "likes", "posts"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/2/users/{id}/liked_tweets",
+      "server_url": "https://api.twitter.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the user whose liked posts to retrieve"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "max_results": {
+              "type": "integer",
+              "description": "Maximum number of liked posts to return (5-100, default: 10)",
+              "default": 10,
+              "minimum": 5,
+              "maximum": 100
+            },
+            "tweet.fields": {
+              "type": "string",
+              "description": "Comma-separated list of tweet fields to include",
+              "default": "id,text,author_id,created_at,public_metrics"
+            },
+            "user.fields": {
+              "type": "string",
+              "description": "Comma-separated list of user fields to include",
+              "default": "id,name,username"
+            },
+            "expansions": {
+              "type": "string",
+              "description": "Comma-separated list of expansion fields",
+              "default": "author_id"
+            }
+          },
+          "required": [],
+          "visible": ["max_results", "tweet.fields", "user.fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__GET_POST_LIKING_USERS",
+    "description": "Get users who have liked a specific post. Returns user information for those who liked the post.",
+    "tags": ["posts", "likes", "users"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/2/tweets/{id}/liking_users",
+      "server_url": "https://api.twitter.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the post to get liking users for"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "max_results": {
+              "type": "integer",
+              "description": "Maximum number of users to return (1-100, default: 100)",
+              "default": 100,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "user.fields": {
+              "type": "string",
+              "description": "Comma-separated list of user fields to include",
+              "default": "id,name,username,public_metrics"
+            }
+          },
+          "required": [],
+          "visible": ["max_results", "user.fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
     }
   },
   {
     "name": "X__LIKE_POST",
-    "description": "Like a post on behalf of the authenticated user. Requires the user's ID and the ID of the post to like.",
-    "tags": ["posts", "likes", "social"],
+    "description": "Like a specific post. Adds the post to the authenticated user's liked posts.",
+    "tags": ["posts", "likes", "engage"],
     "visibility": "public",
     "active": true,
     "protocol": "rest",
@@ -1199,6 +1418,19 @@
     "parameters": {
       "type": "object",
       "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the authenticated user"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
         "header": {
           "type": "object",
           "description": "HTTP headers",
@@ -1210,19 +1442,6 @@
           },
           "required": ["Content-Type"],
           "visible": [],
-          "additionalProperties": false
-        },
-        "path": {
-          "type": "object",
-          "description": "Path parameters",
-          "properties": {
-            "id": {
-              "type": "string",
-              "description": "The ID of the user performing the like"
-            }
-          },
-          "required": ["id"],
-          "visible": ["id"],
           "additionalProperties": false
         },
         "body": {
@@ -1239,8 +1458,574 @@
           "additionalProperties": false
         }
       },
-      "required": ["header", "path", "body"],
+      "required": ["path", "header", "body"],
       "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__UNLIKE_POST",
+    "description": "Unlike a specific post. Removes the post from the authenticated user's liked posts.",
+    "tags": ["posts", "likes", "engage"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/2/users/{id}/likes/{tweet_id}",
+      "server_url": "https://api.x.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the authenticated user"
+            },
+            "tweet_id": {
+              "type": "string",
+              "description": "The ID of the post to unlike"
+            }
+          },
+          "required": ["id", "tweet_id"],
+          "visible": ["id", "tweet_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__REPOST",
+    "description": "Repost (retweet) a specific post. Shares the post to the authenticated user's timeline.",
+    "tags": ["posts", "repost", "retweet", "engage"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/users/{id}/retweets",
+      "server_url": "https://api.x.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the authenticated user"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "HTTP headers",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body for reposting",
+          "properties": {
+            "tweet_id": {
+              "type": "string",
+              "description": "The ID of the post to repost"
+            }
+          },
+          "required": ["tweet_id"],
+          "visible": ["tweet_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__UNREPOST",
+    "description": "Remove a repost (unretweet) of a specific post. Removes the repost from the authenticated user's timeline.",
+    "tags": ["posts", "repost", "retweet", "engage"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/2/users/{id}/retweets/{source_tweet_id}",
+      "server_url": "https://api.x.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the authenticated user"
+            },
+            "source_tweet_id": {
+              "type": "string",
+              "description": "The ID of the original post that was reposted"
+            }
+          },
+          "required": ["id", "source_tweet_id"],
+          "visible": ["id", "source_tweet_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__GET_USER_FOLLOWING",
+    "description": "Get users that a specific user is following. Returns list of users being followed.",
+    "tags": ["users", "following", "relationships"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/2/users/{id}/following",
+      "server_url": "https://api.twitter.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the user whose following list to retrieve"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "max_results": {
+              "type": "integer",
+              "description": "Maximum number of users to return (1-1000, default: 100)",
+              "default": 100,
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "user.fields": {
+              "type": "string",
+              "description": "Comma-separated list of user fields to include",
+              "default": "id,name,username,description,public_metrics,verified"
+            }
+          },
+          "required": [],
+          "visible": ["max_results", "user.fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__GET_USER_FOLLOWERS",
+    "description": "Get users that follow a specific user. Returns list of followers.",
+    "tags": ["users", "followers", "relationships"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/2/users/{id}/followers",
+      "server_url": "https://api.twitter.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the user whose followers to retrieve"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "max_results": {
+              "type": "integer",
+              "description": "Maximum number of users to return (1-1000, default: 100)",
+              "default": 100,
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "user.fields": {
+              "type": "string",
+              "description": "Comma-separated list of user fields to include",
+              "default": "id,name,username,description,public_metrics,verified"
+            }
+          },
+          "required": [],
+          "visible": ["max_results", "user.fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__FOLLOW_USER",
+    "description": "Follow a specific user. Adds the user to the authenticated user's following list.",
+    "tags": ["users", "follow", "relationships"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/users/{id}/following",
+      "server_url": "https://api.x.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the authenticated user"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "HTTP headers",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body for following a user",
+          "properties": {
+            "target_user_id": {
+              "type": "string",
+              "description": "The ID of the user to follow"
+            }
+          },
+          "required": ["target_user_id"],
+          "visible": ["target_user_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__UNFOLLOW_USER",
+    "description": "Unfollow a specific user. Removes the user from the authenticated user's following list.",
+    "tags": ["users", "unfollow", "relationships"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/2/users/{id}/following/{target_user_id}",
+      "server_url": "https://api.x.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the authenticated user"
+            },
+            "target_user_id": {
+              "type": "string",
+              "description": "The ID of the user to unfollow"
+            }
+          },
+          "required": ["id", "target_user_id"],
+          "visible": ["id", "target_user_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__GET_USER_BOOKMARKS",
+    "description": "Get posts that a specific user has bookmarked. Returns timeline of bookmarked posts.",
+    "tags": ["users", "bookmarks", "posts"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/2/users/{id}/bookmarks",
+      "server_url": "https://api.twitter.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the user whose bookmarks to retrieve"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters",
+          "properties": {
+            "max_results": {
+              "type": "integer",
+              "description": "Maximum number of bookmarked posts to return (1-100, default: 10)",
+              "default": 10,
+              "minimum": 1,
+              "maximum": 100
+            },
+            "tweet.fields": {
+              "type": "string",
+              "description": "Comma-separated list of tweet fields to include",
+              "default": "id,text,author_id,created_at,public_metrics"
+            },
+            "user.fields": {
+              "type": "string",
+              "description": "Comma-separated list of user fields to include",
+              "default": "id,name,username"
+            },
+            "expansions": {
+              "type": "string",
+              "description": "Comma-separated list of expansion fields",
+              "default": "author_id"
+            }
+          },
+          "required": [],
+          "visible": ["max_results", "tweet.fields", "user.fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__ADD_BOOKMARK",
+    "description": "Add a post to the authenticated user's bookmarks. Saves the post for later reading.",
+    "tags": ["posts", "bookmarks", "save"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/users/{id}/bookmarks",
+      "server_url": "https://api.x.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the authenticated user"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "description": "HTTP headers",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body for adding a bookmark",
+          "properties": {
+            "tweet_id": {
+              "type": "string",
+              "description": "The ID of the post to bookmark"
+            }
+          },
+          "required": ["tweet_id"],
+          "visible": ["tweet_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__REMOVE_BOOKMARK",
+    "description": "Remove a post from the authenticated user's bookmarks. Unsaves the post.",
+    "tags": ["posts", "bookmarks", "remove"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/2/users/{id}/bookmarks/{tweet_id}",
+      "server_url": "https://api.x.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the authenticated user"
+            },
+            "tweet_id": {
+              "type": "string",
+              "description": "The ID of the post to remove from bookmarks"
+            }
+          },
+          "required": ["id", "tweet_id"],
+          "visible": ["id", "tweet_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "X__UPLOAD_MEDIA",
+    "description": "Upload media (image, video, GIF) to X. Returns media ID that can be used in posts. Supports JPEG, PNG, WEBP, GIF, MP4 formats.",
+    "tags": ["media", "upload", "images", "videos"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/media/upload",
+      "server_url": "https://api.x.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "description": "HTTP headers",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "multipart/form-data"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body for media upload",
+          "properties": {
+            "media": {
+              "type": "string",
+              "format": "binary",
+              "description": "The media file to upload (image, video, or GIF)"
+            },
+            "media_category": {
+              "type": "string",
+              "description": "Category of media being uploaded",
+              "enum": ["tweet_image", "tweet_video", "tweet_gif", "dm_image", "dm_video", "dm_gif"],
+              "default": "tweet_image"
+            },
+            "alt_text": {
+              "type": "string",
+              "description": "Alternative text description for accessibility (max 1000 characters)",
+              "maxLength": 1000
+            }
+          },
+          "required": ["media"],
+          "visible": ["media", "media_category", "alt_text"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
       "additionalProperties": false
     }
   }

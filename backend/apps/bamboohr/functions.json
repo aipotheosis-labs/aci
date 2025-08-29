@@ -1,0 +1,659 @@
+[
+  {
+    "name": "BAMBOOHR__GET_EMPLOYEE_DIRECTORY",
+    "description": "Get a directory of all employees in the company with basic information like names, departments, and contact details.",
+    "tags": ["employees", "directory", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/gateway.php/{company_domain}/v1/employees/directory",
+      "server_url": "https://api.bamboohr.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "company_domain": {
+              "type": "string",
+              "description": "Company subdomain in BambooHR"
+            }
+          },
+          "required": ["company_domain"],
+          "visible": ["company_domain"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BAMBOOHR__GET_EMPLOYEE",
+    "description": "Get detailed information about a specific employee by their ID, including personal details, job information, and custom fields.",
+    "tags": ["employee", "details", "profile"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/gateway.php/{company_domain}/v1/employees/{employee_id}",
+      "server_url": "https://api.bamboohr.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "company_domain": {
+              "type": "string",
+              "description": "Company subdomain in BambooHR"
+            },
+            "employee_id": {
+              "type": "string",
+              "description": "Unique identifier for the employee"
+            }
+          },
+          "required": ["company_domain", "employee_id"],
+          "visible": ["company_domain", "employee_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "fields": {
+              "type": "string",
+              "description": "Comma-separated list of fields to include in response"
+            }
+          },
+          "required": [],
+          "visible": ["fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BAMBOOHR__ADD_EMPLOYEE",
+    "description": "Add a new employee to the BambooHR system with their basic information and job details.",
+    "tags": ["employee", "create", "onboarding"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/gateway.php/{company_domain}/v1/employees/",
+      "server_url": "https://api.bamboohr.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "company_domain": {
+              "type": "string",
+              "description": "Company subdomain in BambooHR"
+            }
+          },
+          "required": ["company_domain"],
+          "visible": ["company_domain"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string",
+              "description": "Employee's first name"
+            },
+            "lastName": {
+              "type": "string",
+              "description": "Employee's last name"
+            },
+            "workEmail": {
+              "type": "string",
+              "format": "email",
+              "description": "Employee's work email address"
+            },
+            "department": {
+              "type": "string",
+              "description": "Department the employee belongs to"
+            },
+            "jobTitle": {
+              "type": "string",
+              "description": "Employee's job title"
+            },
+            "hireDate": {
+              "type": "string",
+              "format": "date",
+              "description": "Employee's hire date (YYYY-MM-DD format)"
+            }
+          },
+          "required": ["firstName", "lastName"],
+          "visible": ["firstName", "lastName", "workEmail", "department", "jobTitle", "hireDate"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BAMBOOHR__UPDATE_EMPLOYEE",
+    "description": "Update existing employee information including personal details, job information, and custom fields.",
+    "tags": ["employee", "update", "edit"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/gateway.php/{company_domain}/v1/employees/{employee_id}",
+      "server_url": "https://api.bamboohr.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "company_domain": {
+              "type": "string",
+              "description": "Company subdomain in BambooHR"
+            },
+            "employee_id": {
+              "type": "string",
+              "description": "Unique identifier for the employee to update"
+            }
+          },
+          "required": ["company_domain", "employee_id"],
+          "visible": ["company_domain", "employee_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "firstName": {
+              "type": "string",
+              "description": "Employee's first name"
+            },
+            "lastName": {
+              "type": "string",
+              "description": "Employee's last name"
+            },
+            "workEmail": {
+              "type": "string",
+              "format": "email",
+              "description": "Employee's work email address"
+            },
+            "department": {
+              "type": "string",
+              "description": "Department the employee belongs to"
+            },
+            "jobTitle": {
+              "type": "string",
+              "description": "Employee's job title"
+            }
+          },
+          "required": [],
+          "visible": ["firstName", "lastName", "workEmail", "department", "jobTitle"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BAMBOOHR__GET_TIME_OFF_REQUESTS",
+    "description": "Retrieve time-off requests for employees, including pending, approved, and denied requests within a date range.",
+    "tags": ["time-off", "requests", "list", "pto"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/gateway.php/{company_domain}/v1/time_off/requests/",
+      "server_url": "https://api.bamboohr.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "company_domain": {
+              "type": "string",
+              "description": "Company subdomain in BambooHR"
+            }
+          },
+          "required": ["company_domain"],
+          "visible": ["company_domain"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "start": {
+              "type": "string",
+              "format": "date",
+              "description": "Start date for time-off requests (YYYY-MM-DD)"
+            },
+            "end": {
+              "type": "string",
+              "format": "date",
+              "description": "End date for time-off requests (YYYY-MM-DD)"
+            },
+            "type": {
+              "type": "string",
+              "description": "Type of time-off (vacation, sick, etc.)"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["approved", "denied", "superceded", "requested", "canceled"],
+              "description": "Status of time-off requests to filter by"
+            }
+          },
+          "required": [],
+          "visible": ["start", "end", "type", "status"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BAMBOOHR__CREATE_TIME_OFF_REQUEST",
+    "description": "Create a new time-off request for an employee, specifying dates, type, and reason.",
+    "tags": ["time-off", "create", "request", "pto"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/api/gateway.php/{company_domain}/v1/time_off/requests/",
+      "server_url": "https://api.bamboohr.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "company_domain": {
+              "type": "string",
+              "description": "Company subdomain in BambooHR"
+            }
+          },
+          "required": ["company_domain"],
+          "visible": ["company_domain"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "employeeId": {
+              "type": "string",
+              "description": "ID of the employee requesting time off"
+            },
+            "start": {
+              "type": "string",
+              "format": "date",
+              "description": "Start date of time off (YYYY-MM-DD)"
+            },
+            "end": {
+              "type": "string",
+              "format": "date", 
+              "description": "End date of time off (YYYY-MM-DD)"
+            },
+            "timeOffTypeId": {
+              "type": "string",
+              "description": "ID of the time-off type (vacation, sick, etc.)"
+            },
+            "amount": {
+              "type": "number",
+              "description": "Amount of time off in hours"
+            },
+            "notes": {
+              "type": "string",
+              "description": "Optional notes or reason for the time off request"
+            }
+          },
+          "required": ["employeeId", "start", "end", "timeOffTypeId"],
+          "visible": ["employeeId", "start", "end", "timeOffTypeId", "amount", "notes"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BAMBOOHR__UPDATE_TIME_OFF_REQUEST_STATUS",
+    "description": "Update the status of a time-off request (approve, deny, or cancel) with optional comments.",
+    "tags": ["time-off", "approve", "deny", "status"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/api/gateway.php/{company_domain}/v1/time_off/requests/{request_id}/status",
+      "server_url": "https://api.bamboohr.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "company_domain": {
+              "type": "string",
+              "description": "Company subdomain in BambooHR"
+            },
+            "request_id": {
+              "type": "string",
+              "description": "ID of the time-off request to update"
+            }
+          },
+          "required": ["company_domain", "request_id"],
+          "visible": ["company_domain", "request_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["approved", "denied", "canceled"],
+              "description": "New status for the time-off request"
+            },
+            "note": {
+              "type": "string",
+              "description": "Optional note explaining the status change"
+            }
+          },
+          "required": ["status"],
+          "visible": ["status", "note"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BAMBOOHR__GET_WHOS_OUT",
+    "description": "Get a list of employees who are currently out or will be out on specified dates, including the reason and duration.",
+    "tags": ["time-off", "whos-out", "availability"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/gateway.php/{company_domain}/v1/time_off/whos_out/",
+      "server_url": "https://api.bamboohr.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "company_domain": {
+              "type": "string",
+              "description": "Company subdomain in BambooHR"
+            }
+          },
+          "required": ["company_domain"],
+          "visible": ["company_domain"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "start": {
+              "type": "string",
+              "format": "date",
+              "description": "Start date to check who's out (YYYY-MM-DD)"
+            },
+            "end": {
+              "type": "string",
+              "format": "date",
+              "description": "End date to check who's out (YYYY-MM-DD)"
+            }
+          },
+          "required": [],
+          "visible": ["start", "end"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BAMBOOHR__GET_TIME_OFF_POLICIES",
+    "description": "Retrieve all available time-off policies and types configured in the system (vacation, sick leave, etc.).",
+    "tags": ["time-off", "policies", "types"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/gateway.php/{company_domain}/v1/meta/time_off/policies/",
+      "server_url": "https://api.bamboohr.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "company_domain": {
+              "type": "string",
+              "description": "Company subdomain in BambooHR"
+            }
+          },
+          "required": ["company_domain"],
+          "visible": ["company_domain"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BAMBOOHR__GENERATE_CUSTOM_REPORT",
+    "description": "Generate a custom report with specified employee fields and filters to get comprehensive HR data and insights.",
+    "tags": ["reports", "custom", "analytics", "data"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/gateway.php/{company_domain}/v1/reports/custom",
+      "server_url": "https://api.bamboohr.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "company_domain": {
+              "type": "string",
+              "description": "Company subdomain in BambooHR"
+            }
+          },
+          "required": ["company_domain"],
+          "visible": ["company_domain"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Title for the custom report"
+            },
+            "fields": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Array of field names to include in the report"
+            },
+            "filters": {
+              "type": "object",
+              "properties": {},
+              "required": [],
+              "visible": [],
+              "additionalProperties": false,
+              "description": "Optional filters to apply to the report data"
+            },
+            "format": {
+              "type": "string",
+              "enum": ["JSON", "XML", "CSV"],
+              "default": "JSON",
+              "description": "Output format for the report"
+            }
+          },
+          "required": ["fields"],
+          "visible": ["title", "fields", "filters", "format"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "BAMBOOHR__GET_COMPANY_REPORT",
+    "description": "Retrieve a pre-existing company report by its ID to get structured HR data and analytics.",
+    "tags": ["reports", "company", "analytics"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/gateway.php/{company_domain}/v1/reports/{report_id}",
+      "server_url": "https://api.bamboohr.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "company_domain": {
+              "type": "string",
+              "description": "Company subdomain in BambooHR"
+            },
+            "report_id": {
+              "type": "string",
+              "description": "ID of the company report to retrieve"
+            }
+          },
+          "required": ["company_domain", "report_id"],
+          "visible": ["company_domain", "report_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "format": {
+              "type": "string",
+              "enum": ["JSON", "XML", "CSV"],
+              "default": "JSON",
+              "description": "Output format for the report"
+            }
+          },
+          "required": [],
+          "visible": ["format"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  }
+]

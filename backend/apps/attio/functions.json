@@ -1,0 +1,778 @@
+[
+  {
+    "name": "ATTIO__LIST_RECORDS",
+    "description": "Query and list records (people, companies, or other objects) with filtering and sorting options.",
+    "tags": ["records", "query", "list", "search"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2/objects/{object}/records/query",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "object": {
+              "type": "string",
+              "description": "The object type to query (e.g., 'people', 'companies')",
+              "enum": ["people", "companies", "deals", "opportunities"]
+            }
+          },
+          "required": ["object"],
+          "visible": ["object"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "description": "Maximum number of records to return",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 500
+            },
+            "offset": {
+              "type": "integer",
+              "description": "Number of records to skip",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          "required": [],
+          "visible": ["limit", "offset"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ATTIO__CREATE_RECORD",
+    "description": "Create a new record (person, company, or other object type) in Attio.",
+    "tags": ["records", "create", "add"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2/objects/{object}/records",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "object": {
+              "type": "string",
+              "description": "The object type to create (e.g., 'people', 'companies')",
+              "enum": ["people", "companies", "deals", "opportunities"]
+            }
+          },
+          "required": ["object"],
+          "visible": ["object"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "object",
+              "description": "The record data to create",
+              "properties": {
+                "values": {
+                  "type": "object",
+                  "description": "Attribute values for the new record",
+                  "properties": {},
+                  "required": [],
+                  "visible": [],
+                  "additionalProperties": true
+                }
+              },
+              "required": ["values"],
+              "visible": ["values"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["data"],
+          "visible": ["data"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ATTIO__GET_RECORD",
+    "description": "Retrieve a specific record by its ID from any object type (people, companies, etc.).",
+    "tags": ["records", "get", "retrieve"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v2/objects/{object}/records/{record_id}",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "object": {
+              "type": "string",
+              "description": "The object type (e.g., 'people', 'companies')",
+              "enum": ["people", "companies", "deals", "opportunities"]
+            },
+            "record_id": {
+              "type": "string",
+              "description": "Unique identifier of the record to retrieve"
+            }
+          },
+          "required": ["object", "record_id"],
+          "visible": ["object", "record_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ATTIO__UPDATE_RECORD",
+    "description": "Update an existing record by its ID. Use PATCH to modify specific values.",
+    "tags": ["records", "update", "modify"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/v2/objects/{object}/records/{record_id}",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "object": {
+              "type": "string",
+              "description": "The object type (e.g., 'people', 'companies')",
+              "enum": ["people", "companies", "deals", "opportunities"]
+            },
+            "record_id": {
+              "type": "string",
+              "description": "Unique identifier of the record to update"
+            }
+          },
+          "required": ["object", "record_id"],
+          "visible": ["object", "record_id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "object",
+              "description": "The record data to update",
+              "properties": {
+                "values": {
+                  "type": "object",
+                  "description": "Attribute values to update",
+                  "properties": {},
+                  "required": [],
+                  "visible": [],
+                  "additionalProperties": true
+                }
+              },
+              "required": ["values"],
+              "visible": ["values"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["data"],
+          "visible": ["data"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ATTIO__LIST_WORKSPACE_MEMBERS",
+    "description": "Get a list of all workspace members and their details.",
+    "tags": ["workspace", "members", "users", "team"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v2/workspace_members",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header"],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ATTIO__CREATE_NOTE",
+    "description": "Create a new note and associate it with one or more records.",
+    "tags": ["notes", "create", "content"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2/notes",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Title of the note"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "Content of the note as plain text"
+                }
+              },
+              "required": ["content"],
+              "visible": ["title", "content"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["data"],
+          "visible": ["data"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ATTIO__CREATE_TASK",
+    "description": "Create a new task and optionally associate it with records.",
+    "tags": ["tasks", "create", "todo"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2/tasks",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "object",
+              "properties": {
+                "content": {
+                  "type": "string",
+                  "description": "The task content/description"
+                },
+                "deadline_at": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "ISO 8601 timestamp for when the task is due"
+                }
+              },
+              "required": ["content"],
+              "visible": ["content", "deadline_at"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["data"],
+          "visible": ["data"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ATTIO__LIST_OBJECTS",
+    "description": "List all system-defined and user-defined objects in your workspace.",
+    "tags": ["objects", "schema", "configuration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v2/objects",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header"],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ATTIO__GET_OBJECT",
+    "description": "Get a single object by its ID or slug to understand its schema and configuration.",
+    "tags": ["objects", "schema", "configuration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v2/objects/{object}",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "object": {
+              "type": "string",
+              "description": "The object ID or slug to retrieve (e.g., 'people', 'companies')"
+            }
+          },
+          "required": ["object"],
+          "visible": ["object"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ATTIO__LIST_ALL_LISTS",
+    "description": "List all lists that your access token has access to for organizing records.",
+    "tags": ["lists", "organization", "collections"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v2/lists",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header"],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ATTIO__CREATE_LIST",
+    "description": "Create a new list to organize and categorize records in your workspace.",
+    "tags": ["lists", "create", "organization"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2/lists",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the list"
+                },
+                "parent_object": {
+                  "type": "string",
+                  "description": "The object type this list is associated with"
+                },
+                "workspace_access": {
+                  "type": "string",
+                  "description": "Workspace access level for the list"
+                }
+              },
+              "required": ["name"],
+              "visible": ["name", "parent_object", "workspace_access"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["data"],
+          "visible": ["data"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ATTIO__LIST_ENTRIES",
+    "description": "List entries in a specific list with filtering and sorting options.",
+    "tags": ["lists", "entries", "query"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2/lists/{list}/entries/query",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "string",
+              "description": "The list ID to query entries from"
+            }
+          },
+          "required": ["list"],
+          "visible": ["list"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "description": "Maximum number of entries to return",
+              "default": 25,
+              "minimum": 1,
+              "maximum": 500
+            },
+            "offset": {
+              "type": "integer",
+              "description": "Number of entries to skip",
+              "default": 0,
+              "minimum": 0
+            }
+          },
+          "required": [],
+          "visible": ["limit", "offset"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ATTIO__CREATE_LIST_ENTRY",
+    "description": "Add a record to a specific list.",
+    "tags": ["lists", "entries", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2/lists/{list}/entries",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "list": {
+              "type": "string",
+              "description": "The list ID to add the entry to"
+            }
+          },
+          "required": ["list"],
+          "visible": ["list"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "data": {
+              "type": "object",
+              "properties": {
+                "parent_record": {
+                  "type": "object",
+                  "properties": {
+                    "target_object": {
+                      "type": "string",
+                      "description": "The object type of the record to add"
+                    },
+                    "target_record_id": {
+                      "type": "string",
+                      "description": "The ID of the record to add to the list"
+                    }
+                  },
+                  "required": ["target_object", "target_record_id"],
+                  "visible": ["target_object", "target_record_id"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["parent_record"],
+              "visible": ["parent_record"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["data"],
+          "visible": ["data"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "ATTIO__DELETE_RECORD",
+    "description": "Delete a specific record by its ID from any object type.",
+    "tags": ["records", "delete", "remove"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/v2/objects/{object}/records/{record_id}",
+      "server_url": "https://api.attio.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "object": {
+              "type": "string",
+              "description": "The object type (e.g., 'people', 'companies')",
+              "enum": ["people", "companies", "deals", "opportunities"]
+            },
+            "record_id": {
+              "type": "string",
+              "description": "Unique identifier of the record to delete"
+            }
+          },
+          "required": ["object", "record_id"],
+          "visible": ["object", "record_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  }
+]

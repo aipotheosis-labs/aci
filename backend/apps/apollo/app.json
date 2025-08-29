@@ -1,0 +1,25 @@
+{
+  "name": "APOLLO",
+  "display_name": "Apollo.io",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/apollo.svg",
+  "provider": "Apollo.io",
+  "version": "v1",
+  "description": "Apollo.io is a comprehensive sales intelligence platform providing access to 210M+ contacts and 35M+ companies. Use Apollo's API to find prospects, enrich data, manage accounts and contacts, create deals, run sequences, and track sales activities.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "X-Api-Key",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Sales",
+    "CRM",
+    "Lead Generation", 
+    "Business Intelligence",
+    "Prospecting"
+  ],
+  "visibility": "public",
+  "active": true
+}

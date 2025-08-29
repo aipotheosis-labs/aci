@@ -1,0 +1,353 @@
+[
+  {
+    "name": "HEYGEN__GENERATE_VIDEO",
+    "description": "Generate an AI avatar video with custom script, voice, and background settings.",
+    "tags": ["video", "generate", "avatar", "ai"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2/video/generate",
+      "server_url": "https://api.heygen.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "video_inputs": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "character": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": ["avatar"],
+                        "default": "avatar"
+                      },
+                      "avatar_id": {
+                        "type": "string",
+                        "description": "ID of the avatar to use"
+                      }
+                    },
+                    "required": ["type", "avatar_id"],
+                    "visible": ["type", "avatar_id"],
+                    "additionalProperties": false
+                  },
+                  "voice": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": ["text"],
+                        "default": "text"
+                      },
+                      "input_text": {
+                        "type": "string",
+                        "description": "Script text for the avatar to speak"
+                      },
+                      "voice_id": {
+                        "type": "string",
+                        "description": "ID of the voice to use"
+                      }
+                    },
+                    "required": ["type", "input_text"],
+                    "visible": ["type", "input_text", "voice_id"],
+                    "additionalProperties": false
+                  },
+                  "background": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": ["color", "image"],
+                        "default": "color"
+                      },
+                      "value": {
+                        "type": "string",
+                        "description": "Background color (hex) or image URL"
+                      }
+                    },
+                    "required": ["type"],
+                    "visible": ["type", "value"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["character", "voice"],
+                "visible": ["character", "voice", "background"]
+              },
+              "description": "Array of video input configurations"
+            },
+            "dimension": {
+              "type": "object",
+              "properties": {
+                "width": {
+                  "type": "integer",
+                  "default": 1280,
+                  "description": "Video width in pixels"
+                },
+                "height": {
+                  "type": "integer",
+                  "default": 720,
+                  "description": "Video height in pixels"
+                }
+              },
+              "required": [],
+              "visible": ["width", "height"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["video_inputs"],
+          "visible": ["video_inputs", "dimension"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HEYGEN__GET_VIDEO_STATUS",
+    "description": "Check the generation status of a video and retrieve download URL when ready.",
+    "tags": ["video", "status", "check"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/video_status.get",
+      "server_url": "https://api.heygen.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "video_id": {
+              "type": "string",
+              "description": "ID of the video to check status for"
+            }
+          },
+          "required": ["video_id"],
+          "visible": ["video_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["query"],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HEYGEN__LIST_AVATARS",
+    "description": "Retrieve a list of all available AI avatars for video generation.",
+    "tags": ["avatars", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/avatar.list",
+      "server_url": "https://api.heygen.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HEYGEN__LIST_VOICES",
+    "description": "Retrieve a list of all available voices for text-to-speech in videos.",
+    "tags": ["voices", "list", "tts"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/voice.list",
+      "server_url": "https://api.heygen.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HEYGEN__CREATE_STREAMING_SESSION",
+    "description": "Create a new real-time streaming session for interactive avatar conversations.",
+    "tags": ["streaming", "session", "create", "real-time"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/streaming.new",
+      "server_url": "https://api.heygen.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "avatar_id": {
+              "type": "string",
+              "description": "ID of the avatar to use for streaming"
+            },
+            "voice_id": {
+              "type": "string",
+              "description": "ID of the voice to use for streaming"
+            }
+          },
+          "required": ["avatar_id"],
+          "visible": ["avatar_id", "voice_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HEYGEN__START_STREAMING",
+    "description": "Start the streaming session to begin real-time avatar interaction.",
+    "tags": ["streaming", "start", "real-time"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/streaming.start",
+      "server_url": "https://api.heygen.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "session_id": {
+              "type": "string",
+              "description": "ID of the streaming session to start"
+            }
+          },
+          "required": ["session_id"],
+          "visible": ["session_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HEYGEN__TRANSLATE_VIDEO",
+    "description": "Translate an existing video to a different language while maintaining the avatar's lip-sync.",
+    "tags": ["video", "translate", "language"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/video_translate.translate",
+      "server_url": "https://api.heygen.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "video_url": {
+              "type": "string",
+              "format": "uri",
+              "description": "URL of the video to translate"
+            },
+            "target_language": {
+              "type": "string",
+              "description": "Target language code (e.g., 'es', 'fr', 'de')"
+            },
+            "voice_id": {
+              "type": "string",
+              "description": "Voice ID for the target language"
+            },
+            "translate_audio_only": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether to translate only audio without changing avatar"
+            }
+          },
+          "required": ["video_url", "target_language"],
+          "visible": ["video_url", "target_language", "voice_id", "translate_audio_only"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  }
+]

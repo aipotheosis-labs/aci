@@ -1,0 +1,19 @@
+{
+  "name": "WEBFLOW",
+  "display_name": "Webflow",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/webflow.svg",
+  "provider": "Webflow, Inc.",
+  "version": "2.0.0",
+  "description": "Webflow Data API enables developers to seamlessly interact with and manage Webflow site resources including CMS collections, pages, forms, assets, ecommerce, and more. Supports full CRUD operations for comprehensive site management.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["Website Builder", "CMS", "Ecommerce", "Design"],
+  "visibility": "public",
+  "active": true
+}

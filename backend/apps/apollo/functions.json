@@ -1,0 +1,1911 @@
+[
+    {
+        "name": "APOLLO__PEOPLE_SEARCH",
+        "description": "Search for people in Apollo's database of 210M+ contacts using demographic and professional filters",
+        "tags": [
+            "apollo",
+            "people",
+            "search",
+            "prospects"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/mixed_people/search",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Search parameters for finding people",
+                    "properties": {
+                        "q_keywords": {
+                            "type": "string",
+                            "description": "Search keywords for job titles, skills, or other profile information"
+                        },
+                        "person_titles": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of job titles to filter by"
+                        },
+                        "organization_names": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of company names to filter by"
+                        },
+                        "person_locations": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of locations to filter by (city, state, country)"
+                        },
+                        "organization_locations": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of company locations to filter by"
+                        },
+                        "person_seniorities": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of seniority levels (e.g., 'junior', 'senior', 'manager', 'director', 'vp', 'c_level')"
+                        },
+                        "organization_industry_tag_ids": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of industry IDs to filter companies by"
+                        },
+                        "organization_num_employees_ranges": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of employee count ranges (e.g., '1,10', '11,50', '51,200', '201,500', '501,1000', '1001,5000', '5001,10000', '10000+')"
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination (default: 1)",
+                            "default": 1
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Number of results per page (max 100, default: 25)",
+                            "default": 25,
+                            "maximum": 100
+                        }
+                    },
+                    "required": [],
+                    "additionalProperties": false,
+                    "visible": [
+                        "q_keywords",
+                        "person_titles",
+                        "organization_names",
+                        "person_locations",
+                        "organization_locations", 
+                        "person_seniorities",
+                        "organization_industry_tag_ids",
+                        "organization_num_employees_ranges",
+                        "page",
+                        "per_page"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__ORGANIZATION_SEARCH", 
+        "description": "Search for companies in Apollo's database of 35M+ organizations using various filters",
+        "tags": [
+            "apollo",
+            "organization",
+            "company",
+            "search"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/mixed_companies/search",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Search parameters for finding organizations",
+                    "properties": {
+                        "q_organization_name": {
+                            "type": "string",
+                            "description": "Organization name keywords to search for"
+                        },
+                        "organization_locations": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of locations to filter by (city, state, country)"
+                        },
+                        "organization_industry_tag_ids": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of industry IDs to filter by"
+                        },
+                        "organization_num_employees_ranges": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of employee count ranges"
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination (default: 1)",
+                            "default": 1
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Number of results per page (max 100, default: 25)",
+                            "default": 25,
+                            "maximum": 100
+                        }
+                    },
+                    "required": [],
+                    "additionalProperties": false,
+                    "visible": [
+                        "q_organization_name",
+                        "organization_locations",
+                        "organization_industry_tag_ids",
+                        "organization_num_employees_ranges",
+                        "page",
+                        "per_page"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__PEOPLE_ENRICHMENT",
+        "description": "Enrich person data with additional contact information and details",
+        "tags": [
+            "apollo",
+            "people", 
+            "enrichment",
+            "contact"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/people/enrich",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Person information for enrichment",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Apollo person ID"
+                        },
+                        "first_name": {
+                            "type": "string", 
+                            "description": "Person's first name"
+                        },
+                        "last_name": {
+                            "type": "string",
+                            "description": "Person's last name"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Person's full name"
+                        },
+                        "email": {
+                            "type": "string",
+                            "description": "Person's email address"
+                        },
+                        "hashed_email": {
+                            "type": "string",
+                            "description": "SHA256 hash of the person's email"
+                        },
+                        "organization_name": {
+                            "type": "string",
+                            "description": "Name of the person's current organization"
+                        },
+                        "domain": {
+                            "type": "string",
+                            "description": "Domain of the person's organization"
+                        },
+                        "linkedin_url": {
+                            "type": "string",
+                            "description": "LinkedIn profile URL of the person"
+                        },
+                        "reveal_phone_number": {
+                            "type": "boolean",
+                            "description": "Whether to reveal phone number (requires webhook_url)",
+                            "default": false
+                        },
+                        "webhook_url": {
+                            "type": "string",
+                            "description": "Webhook URL (required if reveal_phone_number is true)"
+                        }
+                    },
+                    "required": [],
+                    "additionalProperties": false,
+                    "visible": [
+                        "id",
+                        "first_name",
+                        "last_name", 
+                        "name",
+                        "email",
+                        "hashed_email",
+                        "organization_name",
+                        "domain",
+                        "linkedin_url",
+                        "reveal_phone_number",
+                        "webhook_url"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__BULK_PEOPLE_ENRICHMENT",
+        "description": "Use to enrich multiple person profiles simultaneously with comprehensive data from Apollo's database",
+        "tags": [
+            "apollo",
+            "people", 
+            "enrichment",
+            "bulk",
+            "batch"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/people/bulk_enrich",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Array of people for bulk enrichment",
+                    "properties": {
+                        "people": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "first_name": {"type": "string"},
+                                    "last_name": {"type": "string"},
+                                    "email": {"type": "string"},
+                                    "organization_name": {"type": "string"},
+                                    "domain": {"type": "string"}
+                                }
+                            },
+                            "description": "Array of people objects to enrich (max 10)"
+                        },
+                        "reveal_phone_numbers": {
+                            "type": "boolean",
+                            "description": "Whether to reveal phone numbers (requires webhook_url)",
+                            "default": false
+                        },
+                        "webhook_url": {
+                            "type": "string",
+                            "description": "Webhook URL (required if reveal_phone_numbers is true)"
+                        }
+                    },
+                    "required": ["people"],
+                    "additionalProperties": false,
+                    "visible": [
+                        "people",
+                        "reveal_phone_numbers",
+                        "webhook_url"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__ORGANIZATION_ENRICHMENT",
+        "description": "Enrich organization data with additional company information and details",
+        "tags": [
+            "apollo",
+            "organization",
+            "enrichment",
+            "company"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/organizations/enrich",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Organization information for enrichment",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Apollo organization ID"
+                        },
+                        "domain": {
+                            "type": "string",
+                            "description": "Organization domain name"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Organization name"
+                        }
+                    },
+                    "required": [],
+                    "additionalProperties": false,
+                    "visible": [
+                        "id",
+                        "domain",
+                        "name"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "query"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__BULK_ORGANIZATION_ENRICHMENT",
+        "description": "Enriches data for up to 10 organizations simultaneously by providing a list of their base company domains",
+        "tags": [
+            "apollo",
+            "organization",
+            "enrichment",
+            "bulk",
+            "batch"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/organizations/bulk_enrich",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Array of organization domains for bulk enrichment",
+                    "properties": {
+                        "domains": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of base company domains (max 10, e.g., 'apollo.io', not 'www.apollo.io')"
+                        }
+                    },
+                    "required": ["domains"],
+                    "additionalProperties": false,
+                    "visible": [
+                        "domains"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__CREATE_CONTACT",
+        "description": "Create a new contact in Apollo CRM",
+        "tags": [
+            "apollo",
+            "contact",
+            "create",
+            "crm"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/contacts",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Contact information",
+                    "properties": {
+                        "first_name": {
+                            "type": "string",
+                            "description": "Contact's first name"
+                        },
+                        "last_name": {
+                            "type": "string",
+                            "description": "Contact's last name"
+                        },
+                        "email": {
+                            "type": "string",
+                            "description": "Contact's email address"
+                        },
+                        "organization_name": {
+                            "type": "string",
+                            "description": "Name of the contact's organization"
+                        },
+                        "title": {
+                            "type": "string",
+                            "description": "Contact's job title"
+                        },
+                        "present_raw_address": {
+                            "type": "string",
+                            "description": "Contact's address"
+                        },
+                        "phone_numbers": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of phone numbers"
+                        },
+                        "label_names": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of label names to assign to the contact"
+                        },
+                        "account_id": {
+                            "type": "string",
+                            "description": "Account ID to link to an organization"
+                        },
+                        "contact_stage_id": {
+                            "type": "string",
+                            "description": "Contact stage ID for sales stage"
+                        }
+                    },
+                    "required": [
+                        "first_name",
+                        "last_name",
+                        "email"
+                    ],
+                    "additionalProperties": false,
+                    "visible": [
+                        "first_name",
+                        "last_name",
+                        "email",
+                        "organization_name",
+                        "title",
+                        "present_raw_address",
+                        "phone_numbers",
+                        "label_names",
+                        "account_id",
+                        "contact_stage_id"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__SEARCH_CONTACTS",
+        "description": "Search for existing contacts in Apollo CRM",
+        "tags": [
+            "apollo",
+            "contact",
+            "search",
+            "crm"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/contacts/search",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Contact search parameters",
+                    "properties": {
+                        "q_keywords": {
+                            "type": "string",
+                            "description": "Keywords to search for in contact information"
+                        },
+                        "contact_stage_ids": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of contact stage IDs to filter by"
+                        },
+                        "contact_owner_ids": {
+                            "type": "array", 
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of contact owner user IDs to filter by"
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination (default: 1)",
+                            "default": 1
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Number of results per page (max 200, default: 25)",
+                            "default": 25,
+                            "maximum": 200
+                        }
+                    },
+                    "required": [],
+                    "additionalProperties": false,
+                    "visible": [
+                        "q_keywords",
+                        "contact_stage_ids",
+                        "contact_owner_ids",
+                        "page",
+                        "per_page"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__CREATE_ACCOUNT",
+        "description": "Create a new account in Apollo CRM",
+        "tags": [
+            "apollo",
+            "account",
+            "create",
+            "crm"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/accounts",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Account information",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Account name"
+                        },
+                        "domain": {
+                            "type": "string",
+                            "description": "Account domain"
+                        },
+                        "phone_number": {
+                            "type": "string",
+                            "description": "Account phone number"
+                        },
+                        "raw_address": {
+                            "type": "string",
+                            "description": "Account address"
+                        },
+                        "label_names": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of label names to assign to the account"
+                        },
+                        "owner_id": {
+                            "type": "string",
+                            "description": "Owner user ID (must be valid existing ID)"
+                        },
+                        "account_stage_id": {
+                            "type": "string",
+                            "description": "Account stage ID (must be valid existing ID)"
+                        }
+                    },
+                    "required": [
+                        "name"
+                    ],
+                    "additionalProperties": false,
+                    "visible": [
+                        "name",
+                        "domain",
+                        "phone_number",
+                        "raw_address",
+                        "label_names",
+                        "owner_id",
+                        "account_stage_id"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__SEARCH_ACCOUNTS", 
+        "description": "Search for existing accounts in Apollo CRM",
+        "tags": [
+            "apollo",
+            "account",
+            "search",
+            "crm"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/accounts/search",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Account search parameters",
+                    "properties": {
+                        "q_keywords": {
+                            "type": "string",
+                            "description": "Keywords to search for in account information"
+                        },
+                        "account_stage_ids": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of account stage IDs to filter by"
+                        },
+                        "account_owner_ids": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of account owner user IDs to filter by"
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination (default: 1)",
+                            "default": 1
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Number of results per page (max 200, default: 25)",
+                            "default": 25,
+                            "maximum": 200
+                        }
+                    },
+                    "required": [],
+                    "additionalProperties": false,
+                    "visible": [
+                        "q_keywords",
+                        "account_stage_ids",
+                        "account_owner_ids",
+                        "page",
+                        "per_page"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__BULK_UPDATE_ACCOUNT_STAGE",
+        "description": "Bulk updates the stage for specified existing Apollo.io accounts, moving them to a valid new account stage",
+        "tags": [
+            "apollo",
+            "account",
+            "update",
+            "stage",
+            "bulk"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/accounts/bulk_update",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Bulk account stage update parameters",
+                    "properties": {
+                        "account_ids": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of account IDs to update"
+                        },
+                        "account_stage_id": {
+                            "type": "string",
+                            "description": "New account stage ID (must be valid existing stage ID)"
+                        }
+                    },
+                    "required": ["account_ids", "account_stage_id"],
+                    "additionalProperties": false,
+                    "visible": [
+                        "account_ids",
+                        "account_stage_id"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__LIST_ACCOUNT_STAGES",
+        "description": "Retrieves all available Apollo.io account stages, each including its unique ID and name",
+        "tags": [
+            "apollo",
+            "account",
+            "stages",
+            "list"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/account_stages",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": []
+        }
+    },
+    {
+        "name": "APOLLO__LIST_CONTACT_STAGES",
+        "description": "Retrieves all available contact stages from an Apollo account, including their unique IDs and names",
+        "tags": [
+            "apollo",
+            "contact",
+            "stages",
+            "list"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/contact_stages",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": []
+        }
+    },
+    {
+        "name": "APOLLO__CREATE_DEAL",
+        "description": "Creates a new sales opportunity (deal) in Apollo.io; all provided IDs must be valid existing Apollo identifiers",
+        "tags": [
+            "apollo",
+            "deal",
+            "opportunity",
+            "create",
+            "sales"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/opportunities",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Deal information",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Deal name"
+                        },
+                        "amount": {
+                            "type": "number",
+                            "description": "Deal value amount"
+                        },
+                        "close_date": {
+                            "type": "string",
+                            "description": "Expected close date (YYYY-MM-DD format)"
+                        },
+                        "owner_id": {
+                            "type": "string",
+                            "description": "Owner user ID (must be valid existing ID)"
+                        },
+                        "account_id": {
+                            "type": "string",
+                            "description": "Account ID (must be valid existing ID)"
+                        },
+                        "opportunity_stage_id": {
+                            "type": "string",
+                            "description": "Opportunity stage ID (must be valid existing ID)"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Deal description"
+                        }
+                    },
+                    "required": ["name"],
+                    "additionalProperties": false,
+                    "visible": [
+                        "name",
+                        "amount",
+                        "close_date",
+                        "owner_id",
+                        "account_id",
+                        "opportunity_stage_id",
+                        "description"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__LIST_DEALS",
+        "description": "Retrieves a list of deals from Apollo, using Apollo's default sort order if 'sort by field' is omitted",
+        "tags": [
+            "apollo",
+            "deal",
+            "opportunity",
+            "list"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/opportunities",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Deal listing parameters",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination (default: 1)",
+                            "default": 1
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Number of results per page (max 200, default: 25)",
+                            "default": 25,
+                            "maximum": 200
+                        },
+                        "sort_by_field": {
+                            "type": "string",
+                            "description": "Field to sort by (optional, uses Apollo's default if omitted)"
+                        },
+                        "sort_ascending": {
+                            "type": "boolean",
+                            "description": "Sort order (true for ascending, false for descending)",
+                            "default": true
+                        }
+                    },
+                    "required": [],
+                    "additionalProperties": false,
+                    "visible": [
+                        "page",
+                        "per_page",
+                        "sort_by_field",
+                        "sort_ascending"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "query"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__GET_OPPORTUNITY_STAGES",
+        "description": "Retrieves all configured opportunity (deal) stages from the Apollo.io account",
+        "tags": [
+            "apollo",
+            "opportunity",
+            "stages",
+            "deals"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/opportunity_stages",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": []
+        }
+    },
+    {
+        "name": "APOLLO__CREATE_TASK",
+        "description": "Creates a distinct Apollo.io task for each contact ID in contact IDs, assigning them to user ID; not for free plan users and repeated calls create duplicate tasks",
+        "tags": [
+            "apollo",
+            "task",
+            "create",
+            "contact"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/tasks",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Task creation parameters",
+                    "properties": {
+                        "contact_ids": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of contact IDs to create tasks for"
+                        },
+                        "user_id": {
+                            "type": "string",
+                            "description": "User ID to assign the tasks to"
+                        },
+                        "note": {
+                            "type": "string",
+                            "description": "Task note/description"
+                        },
+                        "due_at": {
+                            "type": "string",
+                            "description": "Task due date (ISO 8601 format)"
+                        },
+                        "priority": {
+                            "type": "string",
+                            "enum": ["high", "medium", "low"],
+                            "description": "Task priority level"
+                        }
+                    },
+                    "required": ["contact_ids", "user_id"],
+                    "additionalProperties": false,
+                    "visible": [
+                        "contact_ids",
+                        "user_id",
+                        "note",
+                        "due_at",
+                        "priority"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__ADD_CONTACTS_TO_SEQUENCE",
+        "description": "Adds contacts to a specified Apollo email sequence by initiating an asynchronous background job and returning its details",
+        "tags": [
+            "apollo",
+            "sequence",
+            "contacts",
+            "email",
+            "outreach"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/emailer_campaigns/add_contact_ids",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Sequence addition parameters",
+                    "properties": {
+                        "emailer_campaign_id": {
+                            "type": "string",
+                            "description": "ID of the email sequence/campaign"
+                        },
+                        "contact_ids": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of contact IDs to add to the sequence"
+                        },
+                        "send_email_from_email_account_id": {
+                            "type": "string",
+                            "description": "Email account ID to send from"
+                        }
+                    },
+                    "required": ["emailer_campaign_id", "contact_ids"],
+                    "additionalProperties": false,
+                    "visible": [
+                        "emailer_campaign_id",
+                        "contact_ids",
+                        "send_email_from_email_account_id"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "body"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__SEARCH_SEQUENCES",
+        "description": "Search for email sequences in Apollo",
+        "tags": [
+            "apollo",
+            "sequence",
+            "search",
+            "email",
+            "campaigns"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/emailer_campaigns/search",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Sequence search parameters",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination (default: 1)",
+                            "default": 1
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Number of results per page (max 200, default: 25)",
+                            "default": 25,
+                            "maximum": 200
+                        }
+                    },
+                    "required": [],
+                    "additionalProperties": false,
+                    "visible": [
+                        "page",
+                        "per_page"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__GET_ORGANIZATION_JOB_POSTINGS",
+        "description": "Retrieves paginated job postings for a specified organization by its ID, optionally filtering by domain; ensure organization ID is a valid identifier",
+        "tags": [
+            "apollo",
+            "organization",
+            "jobs",
+            "postings"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/organizations/job_postings",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Job postings search parameters",
+                    "properties": {
+                        "organization_id": {
+                            "type": "string",
+                            "description": "Organization ID (required, must be valid identifier)"
+                        },
+                        "domain": {
+                            "type": "string",
+                            "description": "Optional domain filter"
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination (default: 1)",
+                            "default": 1
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Number of results per page (max 100, default: 25)",
+                            "default": 25,
+                            "maximum": 100
+                        }
+                    },
+                    "required": ["organization_id"],
+                    "additionalProperties": false,
+                    "visible": [
+                        "organization_id",
+                        "domain",
+                        "page",
+                        "per_page"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header",
+                "query"
+            ],
+            "visible": [
+                "query"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__GET_LABELS",
+        "description": "Retrieves all labels from Apollo.io, used for organizing contacts and accounts",
+        "tags": [
+            "apollo",
+            "labels",
+            "organization"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/labels",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": []
+        }
+    },
+    {
+        "name": "APOLLO__GET_TYPED_CUSTOM_FIELDS",
+        "description": "Retrieves all typed custom field definitions available in the Apollo.io instance, detailing their types and configurations",
+        "tags": [
+            "apollo",
+            "custom",
+            "fields",
+            "configuration"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/typed_custom_fields",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": []
+        }
+    },
+    {
+        "name": "APOLLO__LIST_EMAIL_ACCOUNTS",
+        "description": "Retrieves all email accounts and their details for the authenticated user; takes no parameters",
+        "tags": [
+            "apollo",
+            "email",
+            "accounts",
+            "list"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/email_accounts",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": []
+        }
+    },
+    {
+        "name": "APOLLO__GET_USERS",
+        "description": "Retrieves a list of all users (teammates) associated with the Apollo account, supporting pagination via page and per page parameters",
+        "tags": [
+            "apollo",
+            "users",
+            "list",
+            "teammates"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v1/users",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "query": {
+                    "type": "object",
+                    "description": "User listing parameters",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination (default: 1)",
+                            "default": 1
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "description": "Number of results per page (max 200, default: 25)",
+                            "default": 25,
+                            "maximum": 200
+                        }
+                    },
+                    "required": [],
+                    "additionalProperties": false,
+                    "visible": [
+                        "page",
+                        "per_page"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "query"
+            ]
+        }
+    },
+    {
+        "name": "APOLLO__API_USAGE_STATS",
+        "description": "View API usage statistics and credit consumption",
+        "tags": [
+            "apollo",
+            "usage",
+            "stats",
+            "credits"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v1/usage_stats",
+            "server_url": "https://api.apollo.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content-Type header",
+                            "default": "application/json"
+                        }
+                    },
+                    "additionalProperties": false,
+                    "required": [
+                        "Content-Type"
+                    ],
+                    "visible": []
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Usage statistics parameters",
+                    "properties": {
+                        "start_date": {
+                            "type": "string",
+                            "description": "Start date for usage stats (YYYY-MM-DD format)"
+                        },
+                        "end_date": {
+                            "type": "string", 
+                            "description": "End date for usage stats (YYYY-MM-DD format)"
+                        }
+                    },
+                    "required": [],
+                    "additionalProperties": false,
+                    "visible": [
+                        "start_date",
+                        "end_date"
+                    ]
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "header"
+            ],
+            "visible": [
+                "body"
+            ]
+        }
+    }
+]

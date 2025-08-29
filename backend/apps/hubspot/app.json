@@ -1,0 +1,25 @@
+{
+  "name": "HUBSPOT",
+  "display_name": "HubSpot",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/hubspot.svg",
+  "provider": "HubSpot, Inc.",
+  "version": "3.0.0",
+  "description": "HubSpot is a comprehensive CRM and inbound marketing platform that provides tools for sales, marketing, customer service, and content management. This integration enables AI agents to manage contacts, deals, companies, tickets, and marketing campaigns while tracking customer interactions and sales pipelines.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ HUBSPOT_CLIENT_ID }}",
+      "client_secret": "{{ HUBSPOT_CLIENT_SECRET }}",
+      "scope": "crm.objects.contacts.read crm.objects.contacts.write crm.objects.deals.read crm.objects.deals.write crm.objects.companies.read crm.objects.companies.write",
+      "authorize_url": "https://app.hubspot.com/oauth/authorize",
+      "access_token_url": "https://api.hubapi.com/oauth/v1/token",
+      "refresh_token_url": "https://api.hubapi.com/oauth/v1/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["CRM", "Marketing", "Sales", "Customer Service"],
+  "visibility": "public",
+  "active": true
+}

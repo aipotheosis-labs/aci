@@ -1,0 +1,599 @@
+[
+  {
+    "name": "LINEAR__GET_ISSUES",
+    "description": "Retrieve issues from Linear with filtering options for teams, assignees, status, and labels.",
+    "tags": ["issues", "tasks", "project management"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/graphql",
+      "server_url": "https://api.linear.app"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "query Issues($first: Int, $filter: IssueFilter) { issues(first: $first, filter: $filter) { nodes { id title description state { name } assignee { name } team { name } labels { nodes { name } } createdAt updatedAt } } }",
+              "description": "GraphQL query for retrieving issues"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "first": {
+                  "type": "integer",
+                  "default": 10,
+                  "maximum": 50,
+                  "description": "Number of issues to retrieve"
+                },
+                "filter": {
+                  "type": "object",
+                  "properties": {
+                    "team": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "object",
+                          "properties": {
+                            "eq": {
+                              "type": "string",
+                              "description": "Team ID to filter by"
+                            }
+                          },
+                          "required": [],
+                          "visible": ["eq"],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [],
+                      "visible": ["id"],
+                      "additionalProperties": false
+                    },
+                    "assignee": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "object",
+                          "properties": {
+                            "eq": {
+                              "type": "string",
+                              "description": "Assignee ID to filter by"
+                            }
+                          },
+                          "required": [],
+                          "visible": ["eq"],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [],
+                      "visible": ["id"],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [],
+                  "visible": ["team", "assignee"],
+                  "description": "Filter conditions for issues",
+                  "additionalProperties": false
+                }
+              },
+              "required": [],
+              "visible": ["first", "filter"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__CREATE_ISSUE",
+    "description": "Create a new issue in Linear with title, description, team assignment, and optional labels.",
+    "tags": ["issues", "create", "task"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/graphql",
+      "server_url": "https://api.linear.app"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "mutation IssueCreate($input: IssueCreateInput!) { issueCreate(input: $input) { success issue { id title description state { name } team { name } } } }",
+              "description": "GraphQL mutation for creating an issue"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "input": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "description": "Issue title"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Issue description"
+                    },
+                    "teamId": {
+                      "type": "string",
+                      "description": "Team ID to assign the issue to"
+                    },
+                    "assigneeId": {
+                      "type": "string",
+                      "description": "User ID to assign the issue to"
+                    },
+                    "priority": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 4,
+                      "description": "Issue priority (0=No priority, 1=Urgent, 2=High, 3=Medium, 4=Low)"
+                    }
+                  },
+                  "required": ["title", "teamId"],
+                  "visible": ["title", "description", "teamId", "assigneeId", "priority"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["input"],
+              "visible": ["input"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query", "variables"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__UPDATE_ISSUE",
+    "description": "Update an existing issue in Linear with new title, description, status, or assignee.",
+    "tags": ["issues", "update", "edit"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/graphql",
+      "server_url": "https://api.linear.app"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "mutation IssueUpdate($id: String!, $input: IssueUpdateInput!) { issueUpdate(id: $id, input: $input) { success issue { id title description state { name } assignee { name } } } }",
+              "description": "GraphQL mutation for updating an issue"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Issue ID to update"
+                },
+                "input": {
+                  "type": "object",
+                  "properties": {
+                    "title": {
+                      "type": "string",
+                      "description": "New issue title"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "New issue description"
+                    },
+                    "stateId": {
+                      "type": "string",
+                      "description": "New state ID for the issue"
+                    },
+                    "assigneeId": {
+                      "type": "string",
+                      "description": "New assignee ID"
+                    }
+                  },
+                  "required": [],
+                  "visible": ["title", "description", "stateId", "assigneeId"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["id", "input"],
+              "visible": ["id", "input"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query", "variables"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__GET_TEAMS",
+    "description": "Retrieve teams from Linear workspace with their details and member information.",
+    "tags": ["teams", "workspace", "organization"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/graphql",
+      "server_url": "https://api.linear.app"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "query Teams { teams { nodes { id name description key members { nodes { id name email } } states { nodes { id name type } } } } }",
+              "description": "GraphQL query for retrieving teams"
+            }
+          },
+          "required": ["query"],
+          "visible": [],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__GET_PROJECTS",
+    "description": "Retrieve projects from Linear with their progress, milestones, and team assignments.",
+    "tags": ["projects", "milestones", "planning"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/graphql",
+      "server_url": "https://api.linear.app"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "query Projects($first: Int) { projects(first: $first) { nodes { id name description state progress targetDate teams { nodes { name } } issues { nodes { title state { name } } } } } }",
+              "description": "GraphQL query for retrieving projects"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "first": {
+                  "type": "integer",
+                  "default": 10,
+                  "maximum": 50,
+                  "description": "Number of projects to retrieve"
+                }
+              },
+              "required": [],
+              "visible": ["first"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__CREATE_PROJECT",
+    "description": "Create a new project in Linear with name, description, target date, and team assignments.",
+    "tags": ["projects", "create", "planning"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/graphql",
+      "server_url": "https://api.linear.app"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "mutation ProjectCreate($input: ProjectCreateInput!) { projectCreate(input: $input) { success project { id name description state targetDate } } }",
+              "description": "GraphQL mutation for creating a project"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "input": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Project name"
+                    },
+                    "description": {
+                      "type": "string",
+                      "description": "Project description"
+                    },
+                    "targetDate": {
+                      "type": "string",
+                      "format": "date",
+                      "description": "Project target completion date (ISO format)"
+                    },
+                    "teamIds": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Array of team IDs to assign to the project"
+                    }
+                  },
+                  "required": ["name"],
+                  "visible": ["name", "description", "targetDate", "teamIds"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["input"],
+              "visible": ["input"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query", "variables"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__GET_COMMENTS",
+    "description": "Retrieve comments for a specific issue in Linear with author details and timestamps.",
+    "tags": ["comments", "discussion", "collaboration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/graphql",
+      "server_url": "https://api.linear.app"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "query Comments($issueId: String!, $first: Int) { issue(id: $issueId) { comments(first: $first) { nodes { id body user { name email } createdAt updatedAt } } } }",
+              "description": "GraphQL query for retrieving issue comments"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "issueId": {
+                  "type": "string",
+                  "description": "Issue ID to get comments for"
+                },
+                "first": {
+                  "type": "integer",
+                  "default": 20,
+                  "maximum": 50,
+                  "description": "Number of comments to retrieve"
+                }
+              },
+              "required": ["issueId"],
+              "visible": ["issueId", "first"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query", "variables"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__CREATE_COMMENT",
+    "description": "Create a comment on an issue in Linear to facilitate team discussion and collaboration.",
+    "tags": ["comments", "create", "discussion"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/graphql",
+      "server_url": "https://api.linear.app"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "default": "mutation CommentCreate($input: CommentCreateInput!) { commentCreate(input: $input) { success comment { id body user { name } createdAt } } }",
+              "description": "GraphQL mutation for creating a comment"
+            },
+            "variables": {
+              "type": "object",
+              "properties": {
+                "input": {
+                  "type": "object",
+                  "properties": {
+                    "body": {
+                      "type": "string",
+                      "description": "Comment text content"
+                    },
+                    "issueId": {
+                      "type": "string",
+                      "description": "Issue ID to comment on"
+                    }
+                  },
+                  "required": ["body", "issueId"],
+                  "visible": ["body", "issueId"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["input"],
+              "visible": ["input"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query", "variables"],
+          "visible": ["variables"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  }
+]

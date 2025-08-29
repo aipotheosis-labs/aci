@@ -1,0 +1,390 @@
+[
+  {
+    "name": "HUBSPOT__GET_CONTACTS",
+    "description": "Retrieve a list of contacts from HubSpot CRM with filtering and property options.",
+    "tags": ["contacts", "crm", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/crm/v3/objects/contacts",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100,
+              "description": "Number of contacts to return"
+            },
+            "properties": {
+              "type": "string",
+              "description": "Comma-separated list of properties to return"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "properties"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__CREATE_CONTACT",
+    "description": "Create a new contact in HubSpot CRM with specified properties and information.",
+    "tags": ["contacts", "crm", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/crm/v3/objects/contacts",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "properties": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Contact's email address"
+                },
+                "firstname": {
+                  "type": "string",
+                  "description": "Contact's first name"
+                },
+                "lastname": {
+                  "type": "string",
+                  "description": "Contact's last name"
+                },
+                "phone": {
+                  "type": "string",
+                  "description": "Contact's phone number"
+                },
+                "company": {
+                  "type": "string",
+                  "description": "Contact's company name"
+                }
+              },
+              "required": ["email"],
+              "visible": ["email", "firstname", "lastname", "phone", "company"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["properties"],
+          "visible": ["properties"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__GET_DEALS",
+    "description": "Retrieve a list of deals from HubSpot CRM with their properties and pipeline information.",
+    "tags": ["deals", "crm", "sales"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/crm/v3/objects/deals",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100,
+              "description": "Number of deals to return"
+            },
+            "properties": {
+              "type": "string",
+              "description": "Comma-separated list of properties to return"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "properties"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__CREATE_DEAL",
+    "description": "Create a new deal in HubSpot CRM with specified properties, amount, and pipeline stage.",
+    "tags": ["deals", "crm", "create", "sales"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/crm/v3/objects/deals",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "properties": {
+              "type": "object",
+              "properties": {
+                "dealname": {
+                  "type": "string",
+                  "description": "Name of the deal"
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Deal amount in cents"
+                },
+                "dealstage": {
+                  "type": "string",
+                  "description": "Current stage of the deal"
+                },
+                "pipeline": {
+                  "type": "string",
+                  "description": "Pipeline ID for the deal"
+                }
+              },
+              "required": ["dealname"],
+              "visible": ["dealname", "amount", "dealstage", "pipeline"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["properties"],
+          "visible": ["properties"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__GET_COMPANIES",
+    "description": "Retrieve a list of companies from HubSpot CRM with their properties and information.",
+    "tags": ["companies", "crm", "organizations"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/crm/v3/objects/companies",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100,
+              "description": "Number of companies to return"
+            },
+            "properties": {
+              "type": "string",
+              "description": "Comma-separated list of properties to return"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "properties"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__CREATE_COMPANY",
+    "description": "Create a new company in HubSpot CRM with specified properties and information.",
+    "tags": ["companies", "crm", "create", "organizations"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/crm/v3/objects/companies",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "properties": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Company name"
+                },
+                "domain": {
+                  "type": "string",
+                  "description": "Company domain/website"
+                },
+                "industry": {
+                  "type": "string",
+                  "description": "Company industry"
+                },
+                "phone": {
+                  "type": "string",
+                  "description": "Company phone number"
+                }
+              },
+              "required": ["name"],
+              "visible": ["name", "domain", "industry", "phone"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["properties"],
+          "visible": ["properties"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__SEARCH_CRM",
+    "description": "Search across HubSpot CRM objects (contacts, companies, deals) using filters and queries.",
+    "tags": ["search", "crm", "filter"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/crm/v3/objects/{object_type}/search",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "object_type": {
+              "type": "string",
+              "enum": ["contacts", "companies", "deals"],
+              "description": "Type of CRM object to search"
+            }
+          },
+          "required": ["object_type"],
+          "visible": ["object_type"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Search query string"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100,
+              "description": "Number of results to return"
+            },
+            "properties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Properties to include in results"
+            }
+          },
+          "required": [],
+          "visible": ["query", "limit", "properties"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  }
+]

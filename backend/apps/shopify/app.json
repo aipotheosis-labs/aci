@@ -1,0 +1,19 @@
+{
+  "name": "SHOPIFY",
+  "display_name": "Shopify",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/shopify.svg",
+  "provider": "Shopify Inc.",
+  "version": "2023.10",
+  "description": "Shopify is a leading e-commerce platform that enables businesses to create, customize, and manage online stores. This integration allows AI agents to manage products, orders, customers, inventory, and store analytics for comprehensive e-commerce automation.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "X-Shopify-Access-Token",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["E-commerce", "Online Store", "Inventory Management"],
+  "visibility": "public",
+  "active": true
+}
