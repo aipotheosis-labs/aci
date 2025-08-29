@@ -2,13 +2,11 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
-from openai import OpenAI
 from pydantic import BaseModel
 
 from aci.common.enums import FunctionDefinitionFormat
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.function import OpenAIResponsesFunctionDefinition
-from aci.server import config
 from aci.server import dependencies as deps
 from aci.server.agent.prompt import (
     ClientMessage,
@@ -19,7 +17,6 @@ from aci.server.routes.functions import get_functions_definitions
 
 router = APIRouter()
 logger = get_logger(__name__)
-openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
 
 
 class AgentChat(BaseModel):

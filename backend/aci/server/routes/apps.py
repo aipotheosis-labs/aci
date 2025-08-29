@@ -1,19 +1,14 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
-from openai import OpenAI
 
 from aci.common.db import crud
 from aci.common.embeddings import generate_embedding
 from aci.common.enums import Visibility
 from aci.common.exceptions import AppNotFound
 from aci.common.logging_setup import get_logger
-from aci.common.schemas.app import (
-    AppBasic,
-    AppDetails,
-    AppsList,
-    AppsSearch,
-)
+from aci.common.openai_client import create_openai_client
+from aci.common.schemas.app import AppBasic, AppDetails, AppsList, AppsSearch
 from aci.common.schemas.function import BasicFunctionDefinition, FunctionDetails
 from aci.common.schemas.security_scheme import SecuritySchemesPublic
 from aci.server import config
@@ -22,7 +17,7 @@ from aci.server import dependencies as deps
 logger = get_logger(__name__)
 router = APIRouter()
 # TODO: will this be a bottleneck and problem if high concurrent requests from users?
-openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
+openai_client = create_openai_client(api_key=config.OPENAI_API_KEY)
 
 
 @router.get("", response_model_exclude_none=True)
