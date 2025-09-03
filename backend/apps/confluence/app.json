@@ -1,0 +1,30 @@
+{
+  "name": "CONFLUENCE",
+  "display_name": "Confluence",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/confluence.svg",
+  "provider": "Atlassian",
+  "version": "1.0.0",
+  "description": "Confluence is a team workspace where knowledge and collaboration meet. This integration provides comprehensive content management capabilities for creating, organizing, and maintaining team documentation, project spaces, and knowledge bases.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_CONFLUENCE_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_CONFLUENCE_APP_CLIENT_SECRET }}",
+      "scope": "read:confluence-content.all write:confluence-content read:confluence-space.summary write:confluence-space read:confluence-user read:confluence-props write:confluence-props read:confluence-groups",
+      "authorize_url": "https://auth.atlassian.com/authorize",
+      "access_token_url": "https://auth.atlassian.com/oauth/token",
+      "refresh_token_url": "https://auth.atlassian.com/oauth/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Documentation",
+    "Knowledge Management",
+    "Collaboration",
+    "Productivity"
+  ],
+  "visibility": "public",
+  "active": true
+}

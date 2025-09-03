@@ -386,5 +386,962 @@
       "visible": ["path", "body"],
       "additionalProperties": false
     }
+  },
+  {
+    "name": "HUBSPOT__UPDATE_CONTACT",
+    "description": "Update an existing contact's properties and information in HubSpot CRM",
+    "tags": ["contacts", "update", "crm"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/crm/v3/objects/contacts/{contact_id}",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "contact_id": {
+              "type": "string",
+              "description": "HubSpot ID of the contact to update"
+            }
+          },
+          "required": ["contact_id"],
+          "visible": ["contact_id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "properties": {
+              "type": "object",
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Updated email address"
+                },
+                "firstname": {
+                  "type": "string",
+                  "description": "Updated first name"
+                },
+                "lastname": {
+                  "type": "string",
+                  "description": "Updated last name"
+                },
+                "phone": {
+                  "type": "string",
+                  "description": "Updated phone number"
+                },
+                "company": {
+                  "type": "string",
+                  "description": "Updated company name"
+                },
+                "lifecyclestage": {
+                  "type": "string",
+                  "description": "Contact's lifecycle stage (subscriber, lead, opportunity, customer)"
+                }
+              },
+              "required": [],
+              "visible": ["email", "firstname", "lastname", "phone", "company", "lifecyclestage"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["properties"],
+          "visible": ["properties"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__UPDATE_DEAL",
+    "description": "Update an existing deal's properties, stage, and amount in HubSpot CRM",
+    "tags": ["deals", "update", "crm", "sales"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/crm/v3/objects/deals/{deal_id}",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "deal_id": {
+              "type": "string",
+              "description": "HubSpot ID of the deal to update"
+            }
+          },
+          "required": ["deal_id"],
+          "visible": ["deal_id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "properties": {
+              "type": "object",
+              "properties": {
+                "dealname": {
+                  "type": "string",
+                  "description": "Updated deal name"
+                },
+                "amount": {
+                  "type": "string",
+                  "description": "Updated deal amount"
+                },
+                "dealstage": {
+                  "type": "string",
+                  "description": "Updated deal stage"
+                },
+                "closedate": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Updated expected close date"
+                },
+                "pipeline": {
+                  "type": "string",
+                  "description": "Updated pipeline ID"
+                }
+              },
+              "required": [],
+              "visible": ["dealname", "amount", "dealstage", "closedate", "pipeline"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["properties"],
+          "visible": ["properties"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__UPDATE_COMPANY",
+    "description": "Update an existing company's properties and information in HubSpot CRM",
+    "tags": ["companies", "update", "crm"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/crm/v3/objects/companies/{company_id}",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "company_id": {
+              "type": "string",
+              "description": "HubSpot ID of the company to update"
+            }
+          },
+          "required": ["company_id"],
+          "visible": ["company_id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "properties": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Updated company name"
+                },
+                "domain": {
+                  "type": "string",
+                  "description": "Updated company domain"
+                },
+                "industry": {
+                  "type": "string",
+                  "description": "Updated company industry"
+                },
+                "phone": {
+                  "type": "string",
+                  "description": "Updated company phone"
+                },
+                "city": {
+                  "type": "string",
+                  "description": "Company city"
+                },
+                "state": {
+                  "type": "string",
+                  "description": "Company state"
+                }
+              },
+              "required": [],
+              "visible": ["name", "domain", "industry", "phone", "city", "state"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["properties"],
+          "visible": ["properties"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__GET_TICKETS",
+    "description": "Retrieve customer service tickets from HubSpot Service Hub with status and priority information",
+    "tags": ["tickets", "service", "support"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/crm/v3/objects/tickets",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100,
+              "description": "Number of tickets to return"
+            },
+            "properties": {
+              "type": "string",
+              "description": "Comma-separated list of properties to return"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "properties"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__CREATE_TICKET",
+    "description": "Create a new customer service ticket in HubSpot Service Hub with priority and assignment details",
+    "tags": ["tickets", "create", "service", "support"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/crm/v3/objects/tickets",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "properties": {
+              "type": "object",
+              "properties": {
+                "subject": {
+                  "type": "string",
+                  "description": "Ticket subject line"
+                },
+                "content": {
+                  "type": "string",
+                  "description": "Detailed description of the ticket"
+                },
+                "hs_pipeline": {
+                  "type": "string",
+                  "description": "Service pipeline ID"
+                },
+                "hs_pipeline_stage": {
+                  "type": "string",
+                  "description": "Current stage of the ticket"
+                },
+                "hs_ticket_priority": {
+                  "type": "string",
+                  "description": "Ticket priority level (HIGH, MEDIUM, LOW)"
+                },
+                "hubspot_owner_id": {
+                  "type": "string",
+                  "description": "ID of the HubSpot user assigned to this ticket"
+                }
+              },
+              "required": ["subject"],
+              "visible": ["subject", "content", "hs_pipeline", "hs_pipeline_stage", "hs_ticket_priority", "hubspot_owner_id"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["properties"],
+          "visible": ["properties"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__GET_WORKFLOWS",
+    "description": "Retrieve automation workflows from HubSpot with their trigger conditions and actions",
+    "tags": ["workflows", "automation", "marketing"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/automation/v4/workflows",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100,
+              "description": "Number of workflows to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of workflows to skip for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "offset"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__GET_FORMS",
+    "description": "Retrieve HubSpot forms with their field configurations and submission settings for lead capture",
+    "tags": ["forms", "marketing", "lead-capture"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/marketing/v3/forms/",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100,
+              "description": "Number of forms to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of forms to skip for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "offset"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__GET_EMAIL_CAMPAIGNS",
+    "description": "Retrieve email marketing campaigns from HubSpot with performance metrics and send statistics",
+    "tags": ["email", "campaigns", "marketing"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/marketing/v3/marketing-emails",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100,
+              "description": "Number of email campaigns to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of campaigns to skip for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "offset"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__CREATE_EMAIL_CAMPAIGN",
+    "description": "Create a new email marketing campaign in HubSpot with content, recipients, and scheduling options",
+    "tags": ["email", "create", "campaigns", "marketing"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/marketing/v3/marketing-emails",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the email campaign"
+            },
+            "subject": {
+              "type": "string",
+              "description": "Email subject line"
+            },
+            "fromName": {
+              "type": "string",
+              "description": "Sender name for the email"
+            },
+            "fromEmail": {
+              "type": "string",
+              "format": "email",
+              "description": "Sender email address"
+            },
+            "replyTo": {
+              "type": "string",
+              "format": "email",
+              "description": "Reply-to email address"
+            },
+            "htmlContent": {
+              "type": "string",
+              "description": "HTML content of the email"
+            },
+            "textContent": {
+              "type": "string",
+              "description": "Plain text version of the email"
+            }
+          },
+          "required": ["name", "subject", "fromName", "fromEmail"],
+          "visible": ["name", "subject", "fromName", "fromEmail", "replyTo", "htmlContent", "textContent"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__GET_LISTS",
+    "description": "Retrieve contact lists from HubSpot with their membership criteria and contact counts for segmentation",
+    "tags": ["lists", "segmentation", "contacts"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/crm/v3/lists/",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100,
+              "description": "Number of lists to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of lists to skip for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["count", "offset"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__CREATE_LIST",
+    "description": "Create a new contact list in HubSpot with filtering criteria for targeted marketing and segmentation",
+    "tags": ["lists", "create", "segmentation", "marketing"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/crm/v3/lists/",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the contact list"
+            },
+            "objectTypeId": {
+              "type": "string",
+              "default": "0-1",
+              "description": "Object type ID (0-1 for contacts)"
+            },
+            "processingType": {
+              "type": "string",
+              "enum": ["MANUAL", "SNAPSHOT", "DYNAMIC"],
+              "description": "How the list membership is determined"
+            },
+            "customProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Custom properties to include in the list"
+            }
+          },
+          "required": ["name", "objectTypeId"],
+          "visible": ["name", "objectTypeId", "processingType", "customProperties"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__GET_ANALYTICS_REPORTS",
+    "description": "Retrieve analytics reports and performance metrics from HubSpot for marketing and sales activities",
+    "tags": ["analytics", "reports", "metrics"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/reports/v2/reports",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100,
+              "description": "Number of reports to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of reports to skip for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "offset"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__CREATE_NOTE",
+    "description": "Create a note and associate it with contacts, companies, or deals in HubSpot CRM for activity tracking",
+    "tags": ["notes", "create", "activities", "crm"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/crm/v3/objects/notes",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "properties": {
+              "type": "object",
+              "properties": {
+                "hs_note_body": {
+                  "type": "string",
+                  "description": "Content of the note"
+                },
+                "hs_timestamp": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Timestamp for the note"
+                },
+                "hubspot_owner_id": {
+                  "type": "string",
+                  "description": "ID of the HubSpot user creating the note"
+                }
+              },
+              "required": ["hs_note_body"],
+              "visible": ["hs_note_body", "hs_timestamp", "hubspot_owner_id"],
+              "additionalProperties": false
+            },
+            "associations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "to": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "description": "ID of the object to associate with"
+                      }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                  },
+                  "types": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "associationCategory": {
+                          "type": "string",
+                          "description": "Association category"
+                        },
+                        "associationTypeId": {
+                          "type": "integer",
+                          "description": "Association type ID"
+                        }
+                      },
+                      "required": ["associationCategory", "associationTypeId"],
+                      "visible": ["associationCategory", "associationTypeId"],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": ["to", "types"],
+                "visible": ["to", "types"],
+                "additionalProperties": false
+              },
+              "description": "Objects to associate this note with"
+            }
+          },
+          "required": ["properties"],
+          "visible": ["properties", "associations"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__GET_OWNERS",
+    "description": "Retrieve HubSpot team members and owners for assignment to contacts, deals, and tickets",
+    "tags": ["owners", "team", "users"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/crm/v3/owners/",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 100,
+              "description": "Number of owners to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of owners to skip for pagination"
+            },
+            "email": {
+              "type": "string",
+              "description": "Filter owners by email address"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "offset", "email"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__GET_PIPELINES",
+    "description": "Retrieve sales and service pipelines from HubSpot with their stages and probability settings",
+    "tags": ["pipelines", "sales", "stages"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/crm/v3/pipelines/{object_type}",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "object_type": {
+              "type": "string",
+              "enum": ["deals", "tickets"],
+              "description": "Type of object to get pipelines for"
+            }
+          },
+          "required": ["object_type"],
+          "visible": ["object_type"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "HUBSPOT__CREATE_TASK",
+    "description": "Create a task or activity in HubSpot and associate it with contacts, companies, or deals for follow-up tracking",
+    "tags": ["tasks", "create", "activities", "follow-up"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/crm/v3/objects/tasks",
+      "server_url": "https://api.hubapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "properties": {
+              "type": "object",
+              "properties": {
+                "hs_task_subject": {
+                  "type": "string",
+                  "description": "Subject of the task"
+                },
+                "hs_task_body": {
+                  "type": "string",
+                  "description": "Detailed description of the task"
+                },
+                "hs_task_status": {
+                  "type": "string",
+                  "enum": ["NOT_STARTED", "IN_PROGRESS", "COMPLETED", "WAITING", "DEFERRED"],
+                  "description": "Current status of the task"
+                },
+                "hs_task_priority": {
+                  "type": "string",
+                  "enum": ["LOW", "MEDIUM", "HIGH"],
+                  "description": "Priority level of the task"
+                },
+                "hs_task_due_date": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Due date and time for the task"
+                },
+                "hubspot_owner_id": {
+                  "type": "string",
+                  "description": "ID of the HubSpot user assigned to this task"
+                }
+              },
+              "required": ["hs_task_subject"],
+              "visible": ["hs_task_subject", "hs_task_body", "hs_task_status", "hs_task_priority", "hs_task_due_date", "hubspot_owner_id"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["properties"],
+          "visible": ["properties"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
   }
 ]

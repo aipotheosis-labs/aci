@@ -589,5 +589,1356 @@
       "visible": ["body"],
       "additionalProperties": false
     }
+  },
+  {
+    "name": "MAILCHIMP__DELETE_LIST",
+    "description": "Permanently delete an audience list from Mailchimp along with all its members and associated data.",
+    "tags": ["lists", "delete", "remove"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/3.0/lists/{list_id}",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "description": "The unique ID of the list to delete"
+            }
+          },
+          "required": ["list_id"],
+          "visible": ["list_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__UPDATE_LIST_MEMBER",
+    "description": "Update an existing member in a Mailchimp audience list with new information or subscription status.",
+    "tags": ["members", "update", "edit"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/3.0/lists/{list_id}/members/{subscriber_hash}",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "description": "The unique ID of the list"
+            },
+            "subscriber_hash": {
+              "type": "string",
+              "description": "MD5 hash of the member's email address"
+            }
+          },
+          "required": ["list_id", "subscriber_hash"],
+          "visible": ["list_id", "subscriber_hash"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["subscribed", "unsubscribed", "cleaned", "pending"],
+              "description": "Updated subscription status"
+            },
+            "merge_fields": {
+              "type": "object",
+              "properties": {
+                "FNAME": {
+                  "type": "string",
+                  "description": "Updated first name"
+                },
+                "LNAME": {
+                  "type": "string",
+                  "description": "Updated last name"
+                }
+              },
+              "required": [],
+              "visible": ["FNAME", "LNAME"],
+              "description": "Updated merge field data",
+              "additionalProperties": false
+            }
+          },
+          "required": [],
+          "visible": ["status", "merge_fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__DELETE_LIST_MEMBER",
+    "description": "Permanently delete a member from a Mailchimp audience list, removing all their data and history.",
+    "tags": ["members", "delete", "remove"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/3.0/lists/{list_id}/members/{subscriber_hash}",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "description": "The unique ID of the list"
+            },
+            "subscriber_hash": {
+              "type": "string",
+              "description": "MD5 hash of the member's email address"
+            }
+          },
+          "required": ["list_id", "subscriber_hash"],
+          "visible": ["list_id", "subscriber_hash"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__GET_LIST_MEMBER",
+    "description": "Retrieve detailed information about a specific member in a Mailchimp audience list.",
+    "tags": ["members", "details", "subscriber"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/3.0/lists/{list_id}/members/{subscriber_hash}",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "description": "The unique ID of the list"
+            },
+            "subscriber_hash": {
+              "type": "string",
+              "description": "MD5 hash of the member's email address"
+            }
+          },
+          "required": ["list_id", "subscriber_hash"],
+          "visible": ["list_id", "subscriber_hash"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__DELETE_CAMPAIGN",
+    "description": "Permanently delete a campaign from Mailchimp, removing it and all associated data.",
+    "tags": ["campaigns", "delete", "remove"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/3.0/campaigns/{campaign_id}",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "campaign_id": {
+              "type": "string",
+              "description": "The unique ID of the campaign to delete"
+            }
+          },
+          "required": ["campaign_id"],
+          "visible": ["campaign_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__UPDATE_CAMPAIGN",
+    "description": "Update an existing campaign in Mailchimp with new settings, content, or audience targeting.",
+    "tags": ["campaigns", "update", "edit"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/3.0/campaigns/{campaign_id}",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "campaign_id": {
+              "type": "string",
+              "description": "The unique ID of the campaign"
+            }
+          },
+          "required": ["campaign_id"],
+          "visible": ["campaign_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "settings": {
+              "type": "object",
+              "properties": {
+                "subject_line": {
+                  "type": "string",
+                  "description": "Updated campaign subject line"
+                },
+                "title": {
+                  "type": "string",
+                  "description": "Updated campaign title (internal)"
+                },
+                "from_name": {
+                  "type": "string",
+                  "description": "Updated from name"
+                },
+                "reply_to": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Updated reply-to email address"
+                }
+              },
+              "required": [],
+              "visible": ["subject_line", "title", "from_name", "reply_to"],
+              "additionalProperties": false
+            }
+          },
+          "required": [],
+          "visible": ["settings"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__PAUSE_CAMPAIGN",
+    "description": "Pause a scheduled or sending campaign in Mailchimp to make changes or stop delivery.",
+    "tags": ["campaigns", "pause", "control"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/campaigns/{campaign_id}/actions/pause",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "campaign_id": {
+              "type": "string",
+              "description": "The unique ID of the campaign to pause"
+            }
+          },
+          "required": ["campaign_id"],
+          "visible": ["campaign_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__RESUME_CAMPAIGN",
+    "description": "Resume a paused campaign in Mailchimp to continue sending to the target audience.",
+    "tags": ["campaigns", "resume", "control"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/campaigns/{campaign_id}/actions/resume",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "campaign_id": {
+              "type": "string",
+              "description": "The unique ID of the campaign to resume"
+            }
+          },
+          "required": ["campaign_id"],
+          "visible": ["campaign_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__SCHEDULE_CAMPAIGN",
+    "description": "Schedule a campaign to be sent at a specific time in Mailchimp with timezone settings.",
+    "tags": ["campaigns", "schedule", "timing"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/campaigns/{campaign_id}/actions/schedule",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "campaign_id": {
+              "type": "string",
+              "description": "The unique ID of the campaign to schedule"
+            }
+          },
+          "required": ["campaign_id"],
+          "visible": ["campaign_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "schedule_time": {
+              "type": "string",
+              "format": "date-time",
+              "description": "When to send the campaign (ISO 8601)"
+            },
+            "timewarp": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether to use Timewarp feature"
+            },
+            "batch_delivery": {
+              "type": "object",
+              "properties": {
+                "batch_delay": {
+                  "type": "integer",
+                  "description": "Number of minutes between batches"
+                },
+                "batch_count": {
+                  "type": "integer",
+                  "description": "Number of batches to send"
+                }
+              },
+              "required": [],
+              "visible": ["batch_delay", "batch_count"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["schedule_time"],
+          "visible": ["schedule_time", "timewarp", "batch_delivery"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__UNSCHEDULE_CAMPAIGN",
+    "description": "Unschedule a scheduled campaign in Mailchimp, returning it to draft status for further editing.",
+    "tags": ["campaigns", "unschedule", "draft"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/campaigns/{campaign_id}/actions/unschedule",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "campaign_id": {
+              "type": "string",
+              "description": "The unique ID of the campaign to unschedule"
+            }
+          },
+          "required": ["campaign_id"],
+          "visible": ["campaign_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__GET_TEMPLATES",
+    "description": "Retrieve email templates from Mailchimp account for use in campaigns and automations.",
+    "tags": ["templates", "design", "email"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/3.0/templates",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 1000,
+              "description": "Number of templates to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of templates to skip"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["user", "base", "gallery"],
+              "description": "Template type filter"
+            },
+            "category": {
+              "type": "string",
+              "description": "Template category filter"
+            }
+          },
+          "required": [],
+          "visible": ["count", "offset", "type", "category"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__CREATE_TEMPLATE",
+    "description": "Create a new email template in Mailchimp with HTML content and design settings.",
+    "tags": ["templates", "create", "design"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/templates",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Template name"
+            },
+            "html": {
+              "type": "string",
+              "description": "HTML content for the template"
+            },
+            "folder_id": {
+              "type": "string",
+              "description": "Template folder ID for organization"
+            }
+          },
+          "required": ["name", "html"],
+          "visible": ["name", "html", "folder_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__DELETE_TEMPLATE",
+    "description": "Permanently delete an email template from Mailchimp account.",
+    "tags": ["templates", "delete", "remove"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/3.0/templates/{template_id}",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "template_id": {
+              "type": "string",
+              "description": "The unique ID of the template to delete"
+            }
+          },
+          "required": ["template_id"],
+          "visible": ["template_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__GET_SEGMENTS",
+    "description": "Retrieve audience segments from a Mailchimp list for targeted marketing campaigns.",
+    "tags": ["segments", "targeting", "audience"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/3.0/lists/{list_id}/segments",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "description": "The unique ID of the list"
+            }
+          },
+          "required": ["list_id"],
+          "visible": ["list_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 1000,
+              "description": "Number of segments to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of segments to skip"
+            }
+          },
+          "required": [],
+          "visible": ["count", "offset"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__CREATE_SEGMENT",
+    "description": "Create a new audience segment in Mailchimp with specific conditions and targeting rules.",
+    "tags": ["segments", "create", "targeting"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/lists/{list_id}/segments",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "description": "The unique ID of the list"
+            }
+          },
+          "required": ["list_id"],
+          "visible": ["list_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Segment name"
+            },
+            "static_segment": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Array of email addresses for static segment"
+            },
+            "options": {
+              "type": "object",
+              "properties": {
+                "match": {
+                  "type": "string",
+                  "enum": ["any", "all"],
+                  "description": "Whether to match any or all conditions"
+                },
+                "conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "field": {
+                        "type": "string",
+                        "description": "Field to evaluate"
+                      },
+                      "op": {
+                        "type": "string",
+                        "description": "Condition operator"
+                      },
+                      "value": {
+                        "type": "string",
+                        "description": "Value to match against"
+                      }
+                    },
+                    "additionalProperties": false
+                  },
+                  "description": "Segment conditions"
+                }
+              },
+              "required": [],
+              "visible": ["match", "conditions"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["name"],
+          "visible": ["name", "static_segment", "options"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__DELETE_SEGMENT",
+    "description": "Delete an audience segment from a Mailchimp list permanently.",
+    "tags": ["segments", "delete", "remove"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/3.0/lists/{list_id}/segments/{segment_id}",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "description": "The unique ID of the list"
+            },
+            "segment_id": {
+              "type": "string",
+              "description": "The unique ID of the segment to delete"
+            }
+          },
+          "required": ["list_id", "segment_id"],
+          "visible": ["list_id", "segment_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__GET_TAGS",
+    "description": "Retrieve all tags from a Mailchimp audience list for subscriber organization and segmentation.",
+    "tags": ["tags", "labels", "organization"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/3.0/lists/{list_id}/segments",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "description": "The unique ID of the list"
+            }
+          },
+          "required": ["list_id"],
+          "visible": ["list_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "default": "static",
+              "description": "Segment type to filter by"
+            },
+            "count": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 1000,
+              "description": "Number of tags to return"
+            }
+          },
+          "required": [],
+          "visible": ["type", "count"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__ADD_MEMBER_TAGS",
+    "description": "Add tags to a member in a Mailchimp audience list for better organization and targeting.",
+    "tags": ["tags", "members", "add"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/lists/{list_id}/members/{subscriber_hash}/tags",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "description": "The unique ID of the list"
+            },
+            "subscriber_hash": {
+              "type": "string",
+              "description": "MD5 hash of the member's email address"
+            }
+          },
+          "required": ["list_id", "subscriber_hash"],
+          "visible": ["list_id", "subscriber_hash"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Tag name"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["active", "inactive"],
+                    "description": "Tag status"
+                  }
+                },
+                "required": ["name", "status"],
+                "additionalProperties": false
+              },
+              "description": "Array of tags to add or update"
+            }
+          },
+          "required": ["tags"],
+          "visible": ["tags"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__GET_ACCOUNT_INFO",
+    "description": "Retrieve general account information from Mailchimp including plan details, contact info, and settings.",
+    "tags": ["account", "info", "settings"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/3.0",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__BATCH_SUBSCRIBE_MEMBERS",
+    "description": "Add or update multiple members to a Mailchimp list in a single batch operation for efficiency.",
+    "tags": ["members", "batch", "subscribe"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/lists/{list_id}",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "list_id": {
+              "type": "string",
+              "description": "The unique ID of the list"
+            }
+          },
+          "required": ["list_id"],
+          "visible": ["list_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "members": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "email_address": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Email address for the subscriber"
+                  },
+                  "status": {
+                    "type": "string",
+                    "enum": ["subscribed", "pending"],
+                    "description": "Subscriber status"
+                  },
+                  "merge_fields": {
+                    "type": "object",
+                    "properties": {
+                      "FNAME": {
+                        "type": "string",
+                        "description": "First name"
+                      },
+                      "LNAME": {
+                        "type": "string",
+                        "description": "Last name"
+                      }
+                    },
+                    "required": [],
+                    "visible": ["FNAME", "LNAME"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["email_address", "status"],
+                "additionalProperties": false
+              },
+              "description": "Array of members to add or update"
+            },
+            "update_existing": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether to update existing members"
+            }
+          },
+          "required": ["members"],
+          "visible": ["members", "update_existing"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__GET_CLICK_REPORTS",
+    "description": "Retrieve click tracking reports for a campaign in Mailchimp with link performance data.",
+    "tags": ["reports", "clicks", "tracking"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/3.0/reports/{campaign_id}/click-details",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "campaign_id": {
+              "type": "string",
+              "description": "The unique ID of the campaign"
+            }
+          },
+          "required": ["campaign_id"],
+          "visible": ["campaign_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 1000,
+              "description": "Number of click details to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of click details to skip"
+            }
+          },
+          "required": [],
+          "visible": ["count", "offset"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__GET_OPEN_REPORTS",
+    "description": "Retrieve open tracking reports for a campaign in Mailchimp with subscriber engagement data.",
+    "tags": ["reports", "opens", "engagement"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/3.0/reports/{campaign_id}/open-details",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "campaign_id": {
+              "type": "string",
+              "description": "The unique ID of the campaign"
+            }
+          },
+          "required": ["campaign_id"],
+          "visible": ["campaign_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 1000,
+              "description": "Number of open details to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of open details to skip"
+            }
+          },
+          "required": [],
+          "visible": ["count", "offset"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__GET_UNSUBSCRIBE_REPORTS",
+    "description": "Retrieve unsubscribe reports for a campaign in Mailchimp to analyze opt-out patterns and reasons.",
+    "tags": ["reports", "unsubscribes", "opt-out"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/3.0/reports/{campaign_id}/unsubscribed",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "campaign_id": {
+              "type": "string",
+              "description": "The unique ID of the campaign"
+            }
+          },
+          "required": ["campaign_id"],
+          "visible": ["campaign_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 1000,
+              "description": "Number of unsubscribe details to return"
+            },
+            "offset": {
+              "type": "integer",
+              "default": 0,
+              "description": "Number of unsubscribe details to skip"
+            }
+          },
+          "required": [],
+          "visible": ["count", "offset"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__CREATE_AUTOMATION",
+    "description": "Create a new marketing automation workflow in Mailchimp with triggers and email sequences.",
+    "tags": ["automations", "create", "workflows"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/automations",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "recipients": {
+              "type": "object",
+              "properties": {
+                "list_id": {
+                  "type": "string",
+                  "description": "List ID for the automation"
+                }
+              },
+              "required": ["list_id"],
+              "visible": ["list_id"],
+              "additionalProperties": false
+            },
+            "settings": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "Automation title"
+                },
+                "from_name": {
+                  "type": "string",
+                  "description": "Default from name for automation emails"
+                },
+                "reply_to": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Default reply-to email"
+                }
+              },
+              "required": ["title", "from_name", "reply_to"],
+              "visible": ["title", "from_name", "reply_to"],
+              "additionalProperties": false
+            },
+            "trigger_settings": {
+              "type": "object",
+              "properties": {
+                "workflow_type": {
+                  "type": "string",
+                  "enum": ["abandonedCart", "welcomeSeries", "dateBasedDrip"],
+                  "description": "Type of automation workflow"
+                }
+              },
+              "required": ["workflow_type"],
+              "visible": ["workflow_type"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["recipients", "settings", "trigger_settings"],
+          "visible": ["recipients", "settings", "trigger_settings"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__START_AUTOMATION",
+    "description": "Start a paused automation workflow in Mailchimp to begin sending emails to triggered subscribers.",
+    "tags": ["automations", "start", "activate"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/automations/{workflow_id}/actions/start-all-emails",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "workflow_id": {
+              "type": "string",
+              "description": "The unique ID of the automation workflow"
+            }
+          },
+          "required": ["workflow_id"],
+          "visible": ["workflow_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "MAILCHIMP__PAUSE_AUTOMATION",
+    "description": "Pause an active automation workflow in Mailchimp to stop sending emails to new triggers.",
+    "tags": ["automations", "pause", "stop"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/3.0/automations/{workflow_id}/actions/pause-all-emails",
+      "server_url": "https://{dc}.api.mailchimp.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "workflow_id": {
+              "type": "string",
+              "description": "The unique ID of the automation workflow"
+            }
+          },
+          "required": ["workflow_id"],
+          "visible": ["workflow_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
   }
 ]

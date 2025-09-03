@@ -475,5 +475,1568 @@
             "visible": ["path", "body"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "AIRTABLE__LIST_RECORDS",
+        "description": "List records in a table with filtering, sorting, and pagination options.",
+        "tags": ["records", "list", "data"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/{base_id}/{table_id_or_name}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base"
+                        },
+                        "table_id_or_name": {
+                            "type": "string",
+                            "description": "ID or name of the table"
+                        }
+                    },
+                    "required": ["base_id", "table_id_or_name"],
+                    "visible": ["base_id", "table_id_or_name"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "maxRecords": {
+                            "type": "integer",
+                            "maximum": 100,
+                            "description": "Maximum number of records to return"
+                        },
+                        "pageSize": {
+                            "type": "integer",
+                            "maximum": 100,
+                            "description": "Number of records per page"
+                        },
+                        "filterByFormula": {
+                            "type": "string",
+                            "description": "Formula to filter records"
+                        },
+                        "view": {
+                            "type": "string",
+                            "description": "View name or ID to use"
+                        },
+                        "sort": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "field": {
+                                        "type": "string",
+                                        "description": "Field name to sort by"
+                                    },
+                                    "direction": {
+                                        "type": "string",
+                                        "enum": ["asc", "desc"],
+                                        "description": "Sort direction"
+                                    }
+                                },
+                                "required": ["field"],
+                                "visible": ["field", "direction"],
+                                "additionalProperties": false
+                            },
+                            "description": "Sort criteria"
+                        },
+                        "fields": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Specific fields to include"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["maxRecords", "pageSize", "filterByFormula", "view", "sort", "fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__CREATE_RECORDS",
+        "description": "Create one or more records in a table with field data.",
+        "tags": ["records", "create", "data"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/{base_id}/{table_id_or_name}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base"
+                        },
+                        "table_id_or_name": {
+                            "type": "string",
+                            "description": "ID or name of the table"
+                        }
+                    },
+                    "required": ["base_id", "table_id_or_name"],
+                    "visible": ["base_id", "table_id_or_name"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "records": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "fields": {
+                                        "type": "object",
+                                        "description": "Field values for the record",
+                                        "additionalProperties": true
+                                    }
+                                },
+                                "required": ["fields"],
+                                "visible": ["fields"],
+                                "additionalProperties": false
+                            },
+                            "description": "Array of records to create"
+                        },
+                        "typecast": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Automatically format field values"
+                        }
+                    },
+                    "required": ["records"],
+                    "visible": ["records", "typecast"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__UPDATE_RECORDS",
+        "description": "Update one or more existing records in a table with new field data.",
+        "tags": ["records", "update", "data"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/{base_id}/{table_id_or_name}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base"
+                        },
+                        "table_id_or_name": {
+                            "type": "string",
+                            "description": "ID or name of the table"
+                        }
+                    },
+                    "required": ["base_id", "table_id_or_name"],
+                    "visible": ["base_id", "table_id_or_name"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "records": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "description": "Record ID to update"
+                                    },
+                                    "fields": {
+                                        "type": "object",
+                                        "description": "Field values to update",
+                                        "additionalProperties": true
+                                    }
+                                },
+                                "required": ["id", "fields"],
+                                "visible": ["id", "fields"],
+                                "additionalProperties": false
+                            },
+                            "description": "Array of records to update"
+                        },
+                        "typecast": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Automatically format field values"
+                        }
+                    },
+                    "required": ["records"],
+                    "visible": ["records", "typecast"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__DELETE_RECORDS",
+        "description": "Delete one or more records from a table by their record IDs.",
+        "tags": ["records", "delete", "data"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/{base_id}/{table_id_or_name}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base"
+                        },
+                        "table_id_or_name": {
+                            "type": "string",
+                            "description": "ID or name of the table"
+                        }
+                    },
+                    "required": ["base_id", "table_id_or_name"],
+                    "visible": ["base_id", "table_id_or_name"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "records[]": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Array of record IDs to delete"
+                        }
+                    },
+                    "required": ["records[]"],
+                    "visible": ["records[]"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "query"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__GET_RECORD",
+        "description": "Retrieve a specific record from a table by its ID.",
+        "tags": ["records", "get", "data"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/{base_id}/{table_id_or_name}/{record_id}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base"
+                        },
+                        "table_id_or_name": {
+                            "type": "string",
+                            "description": "ID or name of the table"
+                        },
+                        "record_id": {
+                            "type": "string",
+                            "description": "ID of the record to retrieve"
+                        }
+                    },
+                    "required": ["base_id", "table_id_or_name", "record_id"],
+                    "visible": ["base_id", "table_id_or_name", "record_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__DELETE_TABLE",
+        "description": "Delete a table from a specific base in Airtable permanently.",
+        "tags": ["table", "delete", "meta"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/meta/bases/{base_id}/tables/{table_id}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base containing the table"
+                        },
+                        "table_id": {
+                            "type": "string",
+                            "description": "ID of the table to delete"
+                        }
+                    },
+                    "required": ["base_id", "table_id"],
+                    "visible": ["base_id", "table_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__CREATE_FIELD",
+        "description": "Create a new field in an existing table with specific type and configuration.",
+        "tags": ["field", "create", "meta"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/meta/bases/{base_id}/tables/{table_id}/fields",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base containing the table"
+                        },
+                        "table_id": {
+                            "type": "string",
+                            "description": "ID of the table to create field in"
+                        }
+                    },
+                    "required": ["base_id", "table_id"],
+                    "visible": ["base_id", "table_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Field creation parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the new field"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description of the new field"
+                        },
+                        "type": {
+                            "type": "string",
+                            "description": "Type of the field",
+                            "enum": [
+                                "autoNumber", "barcode", "button", "checkbox", "count", "createdBy", "createdTime",
+                                "currency", "date", "dateTime", "duration", "email", "formula", "lastModifiedBy",
+                                "lastModifiedTime", "lookup", "multilineText", "multipleAttachments",
+                                "multipleCollaborators", "multipleRecordLinks", "multipleSelects", "number",
+                                "percent", "phoneNumber", "rating", "richText", "rollup", "singleCollaborator",
+                                "singleLineText", "singleSelect", "url"
+                            ]
+                        },
+                        "options": {
+                            "type": "object",
+                            "description": "Additional options for the field based on its type",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": ["name", "type"],
+                    "visible": ["name", "description", "type", "options"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__UPDATE_FIELD",
+        "description": "Update an existing field in a table with new configuration or properties.",
+        "tags": ["field", "update", "meta"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/meta/bases/{base_id}/tables/{table_id}/fields/{field_id}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base containing the table"
+                        },
+                        "table_id": {
+                            "type": "string",
+                            "description": "ID of the table containing the field"
+                        },
+                        "field_id": {
+                            "type": "string",
+                            "description": "ID of the field to update"
+                        }
+                    },
+                    "required": ["base_id", "table_id", "field_id"],
+                    "visible": ["base_id", "table_id", "field_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Field update parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "New name for the field"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "New description for the field"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "description"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__CREATE_WEBHOOK",
+        "description": "Create a new webhook for a base to receive real-time notifications when records are modified.",
+        "tags": ["webhook", "create", "automation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/bases/{base_id}/webhooks",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base to create webhook for"
+                        }
+                    },
+                    "required": ["base_id"],
+                    "visible": ["base_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Webhook creation parameters",
+                    "properties": {
+                        "notificationUrl": {
+                            "type": "string",
+                            "description": "URL to send webhook notifications to"
+                        },
+                        "specification": {
+                            "type": "object",
+                            "description": "Webhook specification defining what triggers notifications",
+                            "properties": {
+                                "options": {
+                                    "type": "object",
+                                    "description": "Options for the webhook",
+                                    "properties": {
+                                        "filters": {
+                                            "type": "object",
+                                            "description": "Filters for the webhook",
+                                            "properties": {
+                                                "dataTypes": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string",
+                                                        "enum": ["tableData", "tableSchema"]
+                                                    },
+                                                    "description": "Types of data changes to track"
+                                                },
+                                                "recordChangeScope": {
+                                                    "type": "string",
+                                                    "enum": ["tblAll"],
+                                                    "description": "Scope of record changes to track"
+                                                }
+                                            },
+                                            "additionalProperties": false
+                                        }
+                                    },
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": ["options"],
+                            "visible": ["options"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["notificationUrl", "specification"],
+                    "visible": ["notificationUrl", "specification"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__DELETE_WEBHOOK",
+        "description": "Delete an existing webhook from a base to stop receiving notifications.",
+        "tags": ["webhook", "delete", "automation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/bases/{base_id}/webhooks/{webhook_id}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base containing the webhook"
+                        },
+                        "webhook_id": {
+                            "type": "string",
+                            "description": "ID of the webhook to delete"
+                        }
+                    },
+                    "required": ["base_id", "webhook_id"],
+                    "visible": ["base_id", "webhook_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__GET_WEBHOOK_PAYLOADS",
+        "description": "Retrieve webhook payload history for a specific webhook to track triggered events.",
+        "tags": ["webhook", "payloads", "history"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/bases/{base_id}/webhooks/{webhook_id}/payloads",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base containing the webhook"
+                        },
+                        "webhook_id": {
+                            "type": "string",
+                            "description": "ID of the webhook to get payloads for"
+                        }
+                    },
+                    "required": ["base_id", "webhook_id"],
+                    "visible": ["base_id", "webhook_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering webhook payloads",
+                    "properties": {
+                        "cursor": {
+                            "type": "string",
+                            "description": "Pagination cursor for retrieving next set of payloads"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Maximum number of payloads to return"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["cursor", "limit"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__SEARCH_RECORDS",
+        "description": "Search for records across multiple tables in a base using text search and filters.",
+        "tags": ["records", "search", "data"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/{base_id}/listRecords",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base to search in"
+                        }
+                    },
+                    "required": ["base_id"],
+                    "visible": ["base_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "requests": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "tableIdOrName": {
+                                        "type": "string",
+                                        "description": "ID or name of table to search"
+                                    },
+                                    "filterByFormula": {
+                                        "type": "string",
+                                        "description": "Formula to filter records"
+                                    }
+                                },
+                                "required": ["tableIdOrName"],
+                                "visible": ["tableIdOrName", "filterByFormula"],
+                                "additionalProperties": false
+                            },
+                            "description": "Array of search requests across tables"
+                        }
+                    },
+                    "required": ["requests"],
+                    "visible": ["requests"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__CREATE_VIEW",
+        "description": "Create a new view in a table for organizing and filtering data display.",
+        "tags": ["view", "create", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/meta/bases/{base_id}/tables/{table_id}/views",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base containing the table"
+                        },
+                        "table_id": {
+                            "type": "string",
+                            "description": "ID of the table to create view in"
+                        }
+                    },
+                    "required": ["base_id", "table_id"],
+                    "visible": ["base_id", "table_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "View creation parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the new view"
+                        },
+                        "type": {
+                            "type": "string",
+                            "enum": ["grid", "form", "calendar", "gallery", "kanban"],
+                            "description": "Type of view to create"
+                        }
+                    },
+                    "required": ["name", "type"],
+                    "visible": ["name", "type"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__UPDATE_VIEW",
+        "description": "Update an existing view in a table to modify its configuration, filters, or sorting.",
+        "tags": ["view", "update", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/meta/bases/{base_id}/tables/{table_id}/views/{view_id}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base containing the table"
+                        },
+                        "table_id": {
+                            "type": "string",
+                            "description": "ID of the table containing the view"
+                        },
+                        "view_id": {
+                            "type": "string",
+                            "description": "ID of the view to update"
+                        }
+                    },
+                    "required": ["base_id", "table_id", "view_id"],
+                    "visible": ["base_id", "table_id", "view_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "View update parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "New name for the view"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__DELETE_VIEW",
+        "description": "Delete a view from a table to remove custom data organization and filters.",
+        "tags": ["view", "delete", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/meta/bases/{base_id}/tables/{table_id}/views/{view_id}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base containing the table"
+                        },
+                        "table_id": {
+                            "type": "string",
+                            "description": "ID of the table containing the view"
+                        },
+                        "view_id": {
+                            "type": "string",
+                            "description": "ID of the view to delete"
+                        }
+                    },
+                    "required": ["base_id", "table_id", "view_id"],
+                    "visible": ["base_id", "table_id", "view_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__BATCH_UPDATE_RECORDS",
+        "description": "Perform bulk update operations on multiple records efficiently using batch processing.",
+        "tags": ["records", "batch", "update"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/{base_id}/{table_id_or_name}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base"
+                        },
+                        "table_id_or_name": {
+                            "type": "string",
+                            "description": "ID or name of the table"
+                        }
+                    },
+                    "required": ["base_id", "table_id_or_name"],
+                    "visible": ["base_id", "table_id_or_name"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "records": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "id": {
+                                        "type": "string",
+                                        "description": "Record ID to update"
+                                    },
+                                    "fields": {
+                                        "type": "object",
+                                        "description": "Field values to update",
+                                        "additionalProperties": true
+                                    }
+                                },
+                                "required": ["id", "fields"],
+                                "visible": ["id", "fields"],
+                                "additionalProperties": false
+                            },
+                            "description": "Array of records to update (up to 10)"
+                        },
+                        "typecast": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Automatically format field values"
+                        }
+                    },
+                    "required": ["records"],
+                    "visible": ["records", "typecast"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__GET_ATTACHMENTS",
+        "description": "Retrieve file attachments from records in a table for document and media management.",
+        "tags": ["attachments", "files", "media"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/{base_id}/{table_id_or_name}/{record_id}/attachments",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base"
+                        },
+                        "table_id_or_name": {
+                            "type": "string",
+                            "description": "ID or name of the table"
+                        },
+                        "record_id": {
+                            "type": "string",
+                            "description": "ID of the record containing attachments"
+                        }
+                    },
+                    "required": ["base_id", "table_id_or_name", "record_id"],
+                    "visible": ["base_id", "table_id_or_name", "record_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__CREATE_COMMENT",
+        "description": "Add a comment to a specific record for team collaboration and communication.",
+        "tags": ["comments", "collaboration", "communication"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/{base_id}/{table_id_or_name}/{record_id}/comments",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base"
+                        },
+                        "table_id_or_name": {
+                            "type": "string",
+                            "description": "ID or name of the table"
+                        },
+                        "record_id": {
+                            "type": "string",
+                            "description": "ID of the record to comment on"
+                        }
+                    },
+                    "required": ["base_id", "table_id_or_name", "record_id"],
+                    "visible": ["base_id", "table_id_or_name", "record_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "text": {
+                            "type": "string",
+                            "description": "Comment text content"
+                        }
+                    },
+                    "required": ["text"],
+                    "visible": ["text"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__LIST_COMMENTS",
+        "description": "Retrieve all comments for a specific record to track collaboration history.",
+        "tags": ["comments", "list", "collaboration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/{base_id}/{table_id_or_name}/{record_id}/comments",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base"
+                        },
+                        "table_id_or_name": {
+                            "type": "string",
+                            "description": "ID or name of the table"
+                        },
+                        "record_id": {
+                            "type": "string",
+                            "description": "ID of the record to get comments for"
+                        }
+                    },
+                    "required": ["base_id", "table_id_or_name", "record_id"],
+                    "visible": ["base_id", "table_id_or_name", "record_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "offset": {
+                            "type": "string",
+                            "description": "Pagination offset for comments"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["offset"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__UPDATE_COMMENT",
+        "description": "Update the text content of an existing comment on a record.",
+        "tags": ["comments", "update", "collaboration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/{base_id}/{table_id_or_name}/{record_id}/comments/{comment_id}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base"
+                        },
+                        "table_id_or_name": {
+                            "type": "string",
+                            "description": "ID or name of the table"
+                        },
+                        "record_id": {
+                            "type": "string",
+                            "description": "ID of the record containing the comment"
+                        },
+                        "comment_id": {
+                            "type": "string",
+                            "description": "ID of the comment to update"
+                        }
+                    },
+                    "required": ["base_id", "table_id_or_name", "record_id", "comment_id"],
+                    "visible": ["base_id", "table_id_or_name", "record_id", "comment_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "text": {
+                            "type": "string",
+                            "description": "Updated comment text content"
+                        }
+                    },
+                    "required": ["text"],
+                    "visible": ["text"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__DELETE_COMMENT",
+        "description": "Delete a comment from a record to remove collaboration notes.",
+        "tags": ["comments", "delete", "collaboration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/{base_id}/{table_id_or_name}/{record_id}/comments/{comment_id}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base"
+                        },
+                        "table_id_or_name": {
+                            "type": "string",
+                            "description": "ID or name of the table"
+                        },
+                        "record_id": {
+                            "type": "string",
+                            "description": "ID of the record containing the comment"
+                        },
+                        "comment_id": {
+                            "type": "string",
+                            "description": "ID of the comment to delete"
+                        }
+                    },
+                    "required": ["base_id", "table_id_or_name", "record_id", "comment_id"],
+                    "visible": ["base_id", "table_id_or_name", "record_id", "comment_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__CREATE_BASE",
+        "description": "Create a new base workspace for organizing related tables and data.",
+        "tags": ["base", "create", "workspace"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/meta/bases",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Base creation parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the new base"
+                        },
+                        "workspaceId": {
+                            "type": "string",
+                            "description": "ID of the workspace to create the base in"
+                        },
+                        "tables": {
+                            "type": "array",
+                            "description": "Initial tables to create in the base",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Name of the table"
+                                    },
+                                    "description": {
+                                        "type": "string",
+                                        "description": "Description of the table"
+                                    },
+                                    "fields": {
+                                        "type": "array",
+                                        "description": "Fields to create in the table",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string",
+                                                    "description": "Name of the field"
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "description": "Type of the field"
+                                                }
+                                            },
+                                            "required": ["name", "type"],
+                                            "visible": ["name", "type"],
+                                            "additionalProperties": false
+                                        }
+                                    }
+                                },
+                                "required": ["name", "fields"],
+                                "visible": ["name", "description", "fields"],
+                                "additionalProperties": false
+                            }
+                        }
+                    },
+                    "required": ["name", "workspaceId", "tables"],
+                    "visible": ["name", "workspaceId", "tables"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__LIST_COLLABORATORS",
+        "description": "List all collaborators with access to a base including their roles and permissions.",
+        "tags": ["collaborators", "users", "permissions"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/meta/bases/{base_id}/collaborators",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base to list collaborators for"
+                        }
+                    },
+                    "required": ["base_id"],
+                    "visible": ["base_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__GET_WORKSPACE",
+        "description": "Retrieve workspace information including access permissions and base organization.",
+        "tags": ["workspace", "organization", "info"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/meta/workspaces/{workspace_id}",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "workspace_id": {
+                            "type": "string",
+                            "description": "ID of the workspace to retrieve"
+                        }
+                    },
+                    "required": ["workspace_id"],
+                    "visible": ["workspace_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__LIST_WORKSPACES",
+        "description": "List all workspaces accessible to the authenticated user for organization management.",
+        "tags": ["workspace", "list", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/meta/workspaces",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for listing workspaces",
+                    "properties": {
+                        "include": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": ["collaborators", "inviteLinks"]
+                            },
+                            "description": "Additional information to include in response"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["include"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__DUPLICATE_TABLE",
+        "description": "Duplicate an existing table within a base including its structure and data.",
+        "tags": ["table", "duplicate", "copy"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/meta/bases/{base_id}/tables/{table_id}/duplicate",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base containing the table"
+                        },
+                        "table_id": {
+                            "type": "string",
+                            "description": "ID of the table to duplicate"
+                        }
+                    },
+                    "required": ["base_id", "table_id"],
+                    "visible": ["base_id", "table_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Table duplication parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name for the duplicated table"
+                        },
+                        "includeData": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Whether to include existing records in the duplicate"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name", "includeData"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__GET_BASE_COLLABORATORS",
+        "description": "Retrieve detailed information about collaborators in a specific base.",
+        "tags": ["base", "collaborators", "users"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/meta/bases/{base_id}/collaborators",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base to get collaborators for"
+                        }
+                    },
+                    "required": ["base_id"],
+                    "visible": ["base_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "AIRTABLE__BATCH_CREATE_RECORDS",
+        "description": "Create multiple records efficiently using batch processing for large data imports.",
+        "tags": ["records", "batch", "create", "import"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/{base_id}/{table_id_or_name}/listRecords",
+            "server_url": "https://api.airtable.com/v0"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "base_id": {
+                            "type": "string",
+                            "description": "ID of the base"
+                        },
+                        "table_id_or_name": {
+                            "type": "string",
+                            "description": "ID or name of the table"
+                        }
+                    },
+                    "required": ["base_id", "table_id_or_name"],
+                    "visible": ["base_id", "table_id_or_name"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "records": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "fields": {
+                                        "type": "object",
+                                        "description": "Field values for the record",
+                                        "additionalProperties": true
+                                    }
+                                },
+                                "required": ["fields"],
+                                "visible": ["fields"],
+                                "additionalProperties": false
+                            },
+                            "description": "Array of records to create (up to 10 per request)"
+                        },
+                        "typecast": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Automatically format field values"
+                        }
+                    },
+                    "required": ["records"],
+                    "visible": ["records", "typecast"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
     }
 ]

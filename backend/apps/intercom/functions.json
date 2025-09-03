@@ -1,0 +1,1846 @@
+[
+    {
+        "name": "INTERCOM__GET_CONTACTS",
+        "description": "Retrieve all contacts from Intercom for customer relationship management and communication tracking",
+        "tags": ["contacts", "users", "crm", "customers"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/contacts",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Page number for pagination"
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 150,
+                            "description": "Number of contacts per page"
+                        },
+                        "order": {
+                            "type": "string",
+                            "enum": ["asc", "desc"],
+                            "default": "asc",
+                            "description": "Sort order for results"
+                        },
+                        "sort": {
+                            "type": "string",
+                            "enum": ["created_at", "updated_at", "signed_up_at", "last_request_at", "last_seen_at", "name", "email"],
+                            "default": "created_at",
+                            "description": "Field to sort contacts by"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page", "per_page", "order", "sort"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__CREATE_CONTACT",
+        "description": "Create new contacts in Intercom for customer relationship management and communication tracking",
+        "tags": ["contacts", "create", "users", "customers"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/contacts",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "role": {
+                            "type": "string",
+                            "enum": ["user", "lead"],
+                            "description": "Role of the contact (user or lead)"
+                        },
+                        "email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Email address of the contact"
+                        },
+                        "phone": {
+                            "type": "string",
+                            "description": "Phone number of the contact"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Full name of the contact"
+                        },
+                        "avatar": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL to avatar image"
+                        },
+                        "signed_up_at": {
+                            "type": "integer",
+                            "description": "Unix timestamp when user signed up"
+                        },
+                        "last_seen_at": {
+                            "type": "integer",
+                            "description": "Unix timestamp when user was last seen"
+                        },
+                        "owner_id": {
+                            "type": "integer",
+                            "description": "ID of the admin assigned to this contact"
+                        },
+                        "unsubscribed_from_emails": {
+                            "type": "boolean",
+                            "description": "Whether contact unsubscribed from marketing emails"
+                        },
+                        "custom_attributes": {
+                            "type": "object",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "description": "Custom attributes for the contact",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": ["role"],
+                    "visible": ["role", "email", "phone", "name", "avatar", "signed_up_at", "last_seen_at", "owner_id", "unsubscribed_from_emails", "custom_attributes"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__UPDATE_CONTACT",
+        "description": "Update existing contact information and attributes in Intercom for customer data management",
+        "tags": ["contacts", "update", "customers", "management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/contacts/{id}",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier of the contact to update"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "role": {
+                            "type": "string",
+                            "enum": ["user", "lead"],
+                            "description": "Updated role of the contact"
+                        },
+                        "email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Updated email address"
+                        },
+                        "phone": {
+                            "type": "string",
+                            "description": "Updated phone number"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Updated full name"
+                        },
+                        "avatar": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Updated avatar image URL"
+                        },
+                        "signed_up_at": {
+                            "type": "integer",
+                            "description": "Updated signup timestamp"
+                        },
+                        "last_seen_at": {
+                            "type": "integer",
+                            "description": "Updated last seen timestamp"
+                        },
+                        "owner_id": {
+                            "type": "integer",
+                            "description": "Updated assigned admin ID"
+                        },
+                        "unsubscribed_from_emails": {
+                            "type": "boolean",
+                            "description": "Updated email subscription status"
+                        },
+                        "custom_attributes": {
+                            "type": "object",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "description": "Updated custom attributes",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": [],
+                    "visible": ["role", "email", "phone", "name", "avatar", "signed_up_at", "last_seen_at", "owner_id", "unsubscribed_from_emails", "custom_attributes"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__GET_CONVERSATIONS",
+        "description": "Retrieve customer conversations for support ticket management and communication history tracking",
+        "tags": ["conversations", "support", "messages", "history"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/conversations",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Page number for pagination"
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 150,
+                            "description": "Number of conversations per page"
+                        },
+                        "order": {
+                            "type": "string",
+                            "enum": ["asc", "desc"],
+                            "default": "desc",
+                            "description": "Sort order for conversations"
+                        },
+                        "sort": {
+                            "type": "string",
+                            "enum": ["created_at", "updated_at", "waiting_since"],
+                            "default": "updated_at",
+                            "description": "Field to sort conversations by"
+                        },
+                        "display_as": {
+                            "type": "string",
+                            "enum": ["plaintext", "html"],
+                            "default": "plaintext",
+                            "description": "Format for conversation content"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page", "per_page", "order", "sort", "display_as"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__CREATE_CONVERSATION",
+        "description": "Start new conversations with customers for proactive support and engagement communication",
+        "tags": ["conversations", "create", "support", "engagement"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/conversations",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "from": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["admin", "user", "contact"],
+                                    "description": "Type of sender"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "description": "ID of the sender"
+                                }
+                            },
+                            "required": ["type", "id"],
+                            "visible": ["type", "id"],
+                            "additionalProperties": false
+                        },
+                        "body": {
+                            "type": "string",
+                            "description": "Message content for the conversation"
+                        },
+                        "message_type": {
+                            "type": "string",
+                            "enum": ["email", "inapp", "facebook", "twitter"],
+                            "default": "email",
+                            "description": "Type of message to send"
+                        },
+                        "subject": {
+                            "type": "string",
+                            "description": "Subject line for email messages"
+                        },
+                        "template": {
+                            "type": "string",
+                            "enum": ["personal", "plain"],
+                            "default": "personal",
+                            "description": "Message template to use"
+                        }
+                    },
+                    "required": ["from", "body"],
+                    "visible": ["from", "body", "message_type", "subject", "template"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__REPLY_TO_CONVERSATION",
+        "description": "Reply to existing customer conversations for ongoing support and communication management",
+        "tags": ["conversations", "reply", "support", "messages"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/conversations/{id}/reply",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier of the conversation to reply to"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "message_type": {
+                            "type": "string",
+                            "enum": ["comment", "note"],
+                            "description": "Type of reply (comment visible to user, note internal only)"
+                        },
+                        "type": {
+                            "type": "string",
+                            "enum": ["admin", "user", "contact"],
+                            "description": "Type of sender replying"
+                        },
+                        "admin_id": {
+                            "type": "string",
+                            "description": "ID of admin sending the reply"
+                        },
+                        "body": {
+                            "type": "string",
+                            "description": "Content of the reply message"
+                        },
+                        "attachment_urls": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "uri"
+                            },
+                            "description": "URLs of attachments to include in reply"
+                        },
+                        "intercom_user_id": {
+                            "type": "string",
+                            "description": "Intercom user ID if replying as user"
+                        }
+                    },
+                    "required": ["message_type", "type", "body"],
+                    "visible": ["message_type", "type", "admin_id", "body", "attachment_urls", "intercom_user_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__GET_COMPANIES",
+        "description": "Retrieve company information from Intercom for B2B customer relationship and account management",
+        "tags": ["companies", "accounts", "b2b", "organizations"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/companies",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Page number for pagination"
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 150,
+                            "description": "Number of companies per page"
+                        },
+                        "order": {
+                            "type": "string",
+                            "enum": ["asc", "desc"],
+                            "default": "asc",
+                            "description": "Sort order for results"
+                        },
+                        "sort": {
+                            "type": "string",
+                            "enum": ["created_at", "updated_at", "name", "company_id"],
+                            "default": "created_at",
+                            "description": "Field to sort companies by"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page", "per_page", "order", "sort"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__CREATE_COMPANY",
+        "description": "Create company records in Intercom for B2B customer account management and organization tracking",
+        "tags": ["companies", "create", "b2b", "accounts"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/companies",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "Unique identifier for the company in your system"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the company"
+                        },
+                        "website": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Company website URL"
+                        },
+                        "plan": {
+                            "type": "string",
+                            "description": "Subscription plan or tier"
+                        },
+                        "size": {
+                            "type": "integer",
+                            "description": "Number of employees at the company"
+                        },
+                        "industry": {
+                            "type": "string",
+                            "description": "Industry the company operates in"
+                        },
+                        "created_at": {
+                            "type": "integer",
+                            "description": "Unix timestamp when company was created"
+                        },
+                        "monthly_spend": {
+                            "type": "number",
+                            "description": "Monthly revenue from this company"
+                        },
+                        "custom_attributes": {
+                            "type": "object",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "description": "Custom attributes for the company",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["company_id", "name", "website", "plan", "size", "industry", "created_at", "monthly_spend", "custom_attributes"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__GET_ADMINS",
+        "description": "Retrieve admin users and team members for Intercom workspace management and assignment tracking",
+        "tags": ["admins", "team", "users", "management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/admins",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__SEND_MESSAGE",
+        "description": "Send targeted messages to customers for marketing campaigns, announcements, and proactive communication",
+        "tags": ["messages", "send", "marketing", "communication"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/messages",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "message_type": {
+                            "type": "string",
+                            "enum": ["email", "inapp"],
+                            "description": "Type of message to send"
+                        },
+                        "subject": {
+                            "type": "string",
+                            "description": "Subject line for the message"
+                        },
+                        "body": {
+                            "type": "string",
+                            "description": "Content of the message"
+                        },
+                        "template": {
+                            "type": "string",
+                            "enum": ["personal", "plain"],
+                            "default": "personal",
+                            "description": "Message template to use"
+                        },
+                        "from": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["admin"],
+                                    "description": "Type of sender"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "description": "ID of the admin sending message"
+                                }
+                            },
+                            "required": ["type", "id"],
+                            "visible": ["type", "id"],
+                            "additionalProperties": false
+                        },
+                        "to": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["user", "contact"],
+                                    "description": "Type of recipient"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "description": "ID of the recipient"
+                                }
+                            },
+                            "required": ["type", "id"],
+                            "visible": ["type", "id"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["message_type", "body", "from", "to"],
+                    "visible": ["message_type", "subject", "body", "template", "from", "to"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__GET_TAGS",
+        "description": "Retrieve tags for organizing and categorizing contacts, companies, and conversations in Intercom",
+        "tags": ["tags", "organization", "categorization", "management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/tags",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__CREATE_TAG",
+        "description": "Create tags for organizing and categorizing customer data and conversations in Intercom workspace",
+        "tags": ["tags", "create", "organization", "categorization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/tags",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the tag to create"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__TAG_CONTACT",
+        "description": "Apply tags to contacts for organization, segmentation, and targeted communication campaigns",
+        "tags": ["tags", "apply", "contacts", "segmentation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/contacts/{contact_id}/tags",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "contact_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the contact to tag"
+                        }
+                    },
+                    "required": ["contact_id"],
+                    "visible": ["contact_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "ID of the tag to apply"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__GET_SEGMENTS",
+        "description": "Retrieve customer segments for targeted marketing campaigns and audience analysis in Intercom",
+        "tags": ["segments", "audiences", "targeting", "marketing"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/segments",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "include_count": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include user count for each segment"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["include_count"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__GET_NOTES",
+        "description": "Retrieve notes attached to contacts for internal team communication and customer context tracking",
+        "tags": ["notes", "internal", "context", "team"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/notes",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Page number for pagination"
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 150,
+                            "description": "Number of notes per page"
+                        },
+                        "order": {
+                            "type": "string",
+                            "enum": ["asc", "desc"],
+                            "default": "desc",
+                            "description": "Sort order for notes"
+                        },
+                        "sort": {
+                            "type": "string",
+                            "enum": ["created_at", "updated_at"],
+                            "default": "created_at",
+                            "description": "Field to sort notes by"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page", "per_page", "order", "sort"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__CREATE_NOTE",
+        "description": "Create internal notes for contacts to share team insights and customer context information",
+        "tags": ["notes", "create", "internal", "team"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/notes",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "admin_id": {
+                            "type": "string",
+                            "description": "ID of admin creating the note"
+                        },
+                        "body": {
+                            "type": "string",
+                            "description": "Content of the internal note"
+                        },
+                        "contact": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["contact"],
+                                    "description": "Type of object (contact)"
+                                },
+                                "id": {
+                                    "type": "string",
+                                    "description": "ID of the contact to attach note to"
+                                }
+                            },
+                            "required": ["type", "id"],
+                            "visible": ["type", "id"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["admin_id", "body", "contact"],
+                    "visible": ["admin_id", "body", "contact"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__SEARCH_CONVERSATIONS",
+        "description": "Search customer conversations using filters and keywords for support analytics and conversation discovery",
+        "tags": ["search", "conversations", "analytics", "discovery"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/conversations/search",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "object",
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["AND", "OR"],
+                                    "default": "AND",
+                                    "description": "Logical operator for combining filters"
+                                },
+                                "operands": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "field": {
+                                                "type": "string",
+                                                "description": "Field to filter on (e.g., 'state', 'assignee_id', 'tag_id')"
+                                            },
+                                            "operator": {
+                                                "type": "string",
+                                                "enum": ["=", "!=", "IN", "NIN", ">", "<", "~", "!~"],
+                                                "description": "Comparison operator"
+                                            },
+                                            "value": {
+                                                "type": "string",
+                                                "description": "Value to compare against"
+                                            }
+                                        },
+                                        "required": ["field", "operator", "value"],
+                                        "visible": ["field", "operator", "value"],
+                                        "additionalProperties": false
+                                    },
+                                    "description": "Filter conditions to apply"
+                                }
+                            },
+                            "required": ["operands"],
+                            "visible": ["operator", "operands"],
+                            "additionalProperties": false
+                        },
+                        "pagination": {
+                            "type": "object",
+                            "properties": {
+                                "per_page": {
+                                    "type": "integer",
+                                    "default": 20,
+                                    "maximum": 150,
+                                    "description": "Number of conversations per page"
+                                },
+                                "starting_after": {
+                                    "type": "string",
+                                    "description": "Cursor for pagination"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["per_page", "starting_after"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query"],
+                    "visible": ["query", "pagination"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__SEARCH_CONTACTS",
+        "description": "Search contacts using advanced filters for customer segmentation and targeted outreach campaigns",
+        "tags": ["search", "contacts", "segmentation", "targeting"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/contacts/search",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "object",
+                            "properties": {
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["AND", "OR"],
+                                    "default": "AND",
+                                    "description": "Logical operator for combining filters"
+                                },
+                                "operands": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "field": {
+                                                "type": "string",
+                                                "description": "Field to filter on (e.g., 'email', 'name', 'created_at', 'role')"
+                                            },
+                                            "operator": {
+                                                "type": "string",
+                                                "enum": ["=", "!=", "IN", "NIN", ">", "<", "~", "!~"],
+                                                "description": "Comparison operator"
+                                            },
+                                            "value": {
+                                                "type": "string",
+                                                "description": "Value to compare against"
+                                            }
+                                        },
+                                        "required": ["field", "operator", "value"],
+                                        "visible": ["field", "operator", "value"],
+                                        "additionalProperties": false
+                                    },
+                                    "description": "Filter conditions to apply"
+                                }
+                            },
+                            "required": ["operands"],
+                            "visible": ["operator", "operands"],
+                            "additionalProperties": false
+                        },
+                        "pagination": {
+                            "type": "object",
+                            "properties": {
+                                "per_page": {
+                                    "type": "integer",
+                                    "default": 50,
+                                    "maximum": 150,
+                                    "description": "Number of contacts per page"
+                                },
+                                "starting_after": {
+                                    "type": "string",
+                                    "description": "Cursor for pagination"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["per_page", "starting_after"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query"],
+                    "visible": ["query", "pagination"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__GET_EVENTS",
+        "description": "Retrieve customer events and activity tracking for behavior analysis and engagement insights",
+        "tags": ["events", "activity", "behavior", "tracking"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/events",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": ["user", "contact"],
+                            "description": "Type of entity that performed events"
+                        },
+                        "intercom_user_id": {
+                            "type": "string",
+                            "description": "Intercom user ID to get events for"
+                        },
+                        "user_id": {
+                            "type": "string",
+                            "description": "External user ID to get events for"
+                        },
+                        "email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Email address to get events for"
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 100,
+                            "description": "Number of events per page"
+                        }
+                    },
+                    "required": ["type"],
+                    "visible": ["type", "intercom_user_id", "user_id", "email", "per_page"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__CREATE_EVENT",
+        "description": "Track custom events for customer behavior analysis, product usage monitoring, and engagement scoring",
+        "tags": ["events", "create", "tracking", "behavior"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/events",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "event_name": {
+                            "type": "string",
+                            "description": "Name of the event to track"
+                        },
+                        "created_at": {
+                            "type": "integer",
+                            "description": "Unix timestamp when event occurred"
+                        },
+                        "user_id": {
+                            "type": "string",
+                            "description": "External user ID who performed the event"
+                        },
+                        "intercom_user_id": {
+                            "type": "string",
+                            "description": "Intercom user ID who performed the event"
+                        },
+                        "email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Email of user who performed the event"
+                        },
+                        "metadata": {
+                            "type": "object",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "description": "Custom metadata for the event",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": ["event_name", "created_at"],
+                    "visible": ["event_name", "created_at", "user_id", "intercom_user_id", "email", "metadata"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__GET_DATA_ATTRIBUTES",
+        "description": "Retrieve data attributes configuration for custom fields and contact/company metadata management",
+        "tags": ["attributes", "custom", "fields", "metadata"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/data_attributes",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "model": {
+                            "type": "string",
+                            "enum": ["contact", "company"],
+                            "description": "Model to get attributes for"
+                        },
+                        "include_archived": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include archived data attributes"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["model", "include_archived"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__CREATE_DATA_ATTRIBUTE",
+        "description": "Create custom data attributes for enhanced contact and company information tracking and segmentation",
+        "tags": ["attributes", "create", "custom", "tracking"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/data_attributes",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the data attribute"
+                        },
+                        "model": {
+                            "type": "string",
+                            "enum": ["contact", "company"],
+                            "description": "Model this attribute applies to"
+                        },
+                        "data_type": {
+                            "type": "string",
+                            "enum": ["string", "integer", "float", "boolean", "date"],
+                            "description": "Data type for the attribute"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description of what this attribute tracks"
+                        },
+                        "options": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Predefined options for the attribute (for select/multiselect types)"
+                        },
+                        "full_name": {
+                            "type": "string",
+                            "description": "Full name with namespace (automatically generated if not provided)"
+                        },
+                        "label": {
+                            "type": "string",
+                            "description": "Human-readable label for the attribute"
+                        }
+                    },
+                    "required": ["name", "model", "data_type"],
+                    "visible": ["name", "model", "data_type", "description", "options", "full_name", "label"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__ASSIGN_CONVERSATION",
+        "description": "Assign conversations to specific team members for workload distribution and responsibility tracking",
+        "tags": ["conversations", "assign", "team", "management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/conversations/{id}/parts",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier of the conversation to assign"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "message_type": {
+                            "type": "string",
+                            "enum": ["assignment"],
+                            "description": "Type of action (assignment)"
+                        },
+                        "type": {
+                            "type": "string",
+                            "enum": ["admin"],
+                            "description": "Type of assignee"
+                        },
+                        "admin_id": {
+                            "type": "string",
+                            "description": "ID of admin to assign conversation to"
+                        },
+                        "assignee_id": {
+                            "type": "string",
+                            "description": "ID of team member to assign to"
+                        }
+                    },
+                    "required": ["message_type", "type", "assignee_id"],
+                    "visible": ["message_type", "type", "admin_id", "assignee_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__CLOSE_CONVERSATION",
+        "description": "Close customer conversations to mark support tickets as resolved and update conversation status",
+        "tags": ["conversations", "close", "resolve", "status"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/conversations/{id}/parts",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier of the conversation to close"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "message_type": {
+                            "type": "string",
+                            "enum": ["close"],
+                            "description": "Type of action (close conversation)"
+                        },
+                        "type": {
+                            "type": "string",
+                            "enum": ["admin"],
+                            "description": "Type of user closing conversation"
+                        },
+                        "admin_id": {
+                            "type": "string",
+                            "description": "ID of admin closing the conversation"
+                        }
+                    },
+                    "required": ["message_type", "type", "admin_id"],
+                    "visible": ["message_type", "type", "admin_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__GET_HELP_CENTER_COLLECTIONS",
+        "description": "Retrieve help center article collections for knowledge base management and self-service support",
+        "tags": ["help", "collections", "knowledge", "support"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/help_center/collections",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Page number for pagination"
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 150,
+                            "description": "Number of collections per page"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page", "per_page"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__GET_ARTICLES",
+        "description": "Retrieve help center articles for knowledge base content management and customer self-service",
+        "tags": ["articles", "help", "knowledge", "content"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/articles",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Page number for pagination"
+                        },
+                        "per_page": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 150,
+                            "description": "Number of articles per page"
+                        },
+                        "order": {
+                            "type": "string",
+                            "enum": ["asc", "desc"],
+                            "default": "asc",
+                            "description": "Sort order for articles"
+                        },
+                        "sort": {
+                            "type": "string",
+                            "enum": ["created_at", "updated_at", "title"],
+                            "default": "created_at",
+                            "description": "Field to sort articles by"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page", "per_page", "order", "sort"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__CREATE_ARTICLE",
+        "description": "Create help center articles for building knowledge base content and customer self-service resources",
+        "tags": ["articles", "create", "help", "content"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/articles",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "description": "Title of the help article"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Brief description of the article"
+                        },
+                        "body": {
+                            "type": "string",
+                            "description": "HTML content of the article"
+                        },
+                        "author_id": {
+                            "type": "string",
+                            "description": "ID of admin authoring the article"
+                        },
+                        "state": {
+                            "type": "string",
+                            "enum": ["draft", "published"],
+                            "default": "draft",
+                            "description": "Publication state of the article"
+                        },
+                        "parent_id": {
+                            "type": "string",
+                            "description": "ID of parent collection for the article"
+                        },
+                        "parent_type": {
+                            "type": "string",
+                            "enum": ["collection"],
+                            "description": "Type of parent (collection)"
+                        },
+                        "translated_content": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["article_content"],
+                                    "description": "Type of translated content"
+                                },
+                                "title": {
+                                    "type": "string",
+                                    "description": "Translated title"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "Translated description"
+                                },
+                                "body": {
+                                    "type": "string",
+                                    "description": "Translated HTML content"
+                                },
+                                "author_id": {
+                                    "type": "string",
+                                    "description": "ID of translator admin"
+                                },
+                                "state": {
+                                    "type": "string",
+                                    "enum": ["draft", "published"],
+                                    "description": "Publication state of translation"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["type", "title", "description", "body", "author_id", "state"],
+                            "description": "Translated content for internationalization",
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["title", "body", "author_id"],
+                    "visible": ["title", "description", "body", "author_id", "state", "parent_id", "parent_type", "translated_content"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__UPDATE_ARTICLE",
+        "description": "Update help center articles for maintaining current knowledge base content and customer support resources",
+        "tags": ["articles", "update", "help", "maintenance"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/articles/{id}",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "id": {
+                            "type": "string",
+                            "description": "Unique identifier of the article to update"
+                        }
+                    },
+                    "required": ["id"],
+                    "visible": ["id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "description": "Updated title of the article"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Updated description"
+                        },
+                        "body": {
+                            "type": "string",
+                            "description": "Updated HTML content"
+                        },
+                        "author_id": {
+                            "type": "string",
+                            "description": "Updated author admin ID"
+                        },
+                        "state": {
+                            "type": "string",
+                            "enum": ["draft", "published"],
+                            "description": "Updated publication state"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["title", "description", "body", "author_id", "state"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "INTERCOM__GET_SUBSCRIPTION_TYPES",
+        "description": "Retrieve subscription types for managing customer email preferences and communication settings",
+        "tags": ["subscriptions", "email", "preferences", "communication"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/subscription_types",
+            "server_url": "https://api.intercom.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    }
+]

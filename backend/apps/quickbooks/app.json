@@ -1,0 +1,29 @@
+{
+  "name": "QUICKBOOKS",
+  "display_name": "QuickBooks",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/quickbooks.svg",
+  "provider": "Intuit Inc.",
+  "version": "1.0.0",
+  "description": "QuickBooks is a comprehensive accounting software platform that helps businesses manage finances, invoicing, payments, and payroll. This integration provides complete financial management capabilities for automated accounting workflows and business intelligence.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_QUICKBOOKS_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_QUICKBOOKS_APP_CLIENT_SECRET }}",
+      "scope": "com.intuit.quickbooks.accounting",
+      "authorize_url": "https://appcenter.intuit.com/connect/oauth2",
+      "access_token_url": "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer",
+      "refresh_token_url": "https://oauth.platform.intuit.com/oauth2/v1/tokens/bearer"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Accounting",
+    "Finance",
+    "Business Management"
+  ],
+  "visibility": "public",
+  "active": true
+}

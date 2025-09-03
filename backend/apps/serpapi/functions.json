@@ -666,5 +666,325 @@
             "visible": ["query"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "SERPAPI__GOOGLE_VIDEOS",
+        "description": "Search for videos using Google Videos API",
+        "tags": ["videos", "search", "google"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/search.json",
+            "server_url": "https://serpapi.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the http request",
+                    "properties": {
+                        "engine": {
+                            "type": "string",
+                            "description": "Search engine",
+                            "default": "google_videos"
+                        },
+                        "q": {
+                            "type": "string",
+                            "description": "Video search query"
+                        },
+                        "num": {
+                            "type": "integer",
+                            "description": "Number of videos to return",
+                            "default": 10
+                        },
+                        "safe": {
+                            "type": "string",
+                            "description": "Safe search filter",
+                            "default": "active"
+                        },
+                        "device": {
+                            "type": "string",
+                            "description": "Device to use for results (desktop, tablet, mobile)",
+                            "default": "desktop"
+                        },
+                        "no_cache": {
+                            "type": "boolean",
+                            "description": "Force fresh results instead of cached ones",
+                            "default": false
+                        },
+                        "async": {
+                            "type": "boolean",
+                            "description": "Submit search asynchronously",
+                            "default": false
+                        },
+                        "output": {
+                            "type": "string",
+                            "description": "Output format (json, html)",
+                            "default": "json"
+                        },
+                        "gl": {
+                            "type": "string",
+                            "description": "Country to search from",
+                            "default": "us"
+                        },
+                        "hl": {
+                            "type": "string",
+                            "description": "Search language",
+                            "default": "en"
+                        },
+                        "google_domain": {
+                            "type": "string",
+                            "description": "Google domain",
+                            "default": "google.com"
+                        },
+                        "location": {
+                            "type": "string",
+                            "description": "Search location",
+                            "default": "United States"
+                        },
+                        "tbm": {
+                            "type": "string",
+                            "description": "Search type (vid for videos)",
+                            "default": "vid"
+                        },
+                        "tbs": {
+                            "type": "string",
+                            "description": "Time range filter (qdr:d, qdr:w, qdr:m, qdr:y)"
+                        },
+                        "dur": {
+                            "type": "string",
+                            "description": "Duration filter (short, medium, long)"
+                        },
+                        "chips": {
+                            "type": "string",
+                            "description": "Video quality filter (high, cc)"
+                        }
+                    },
+                    "required": ["engine", "q"],
+                    "visible": ["engine", "q", "num", "safe", "device", "no_cache", "async", "output", "gl", "hl", "google_domain", "location", "tbs", "dur", "chips"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SERPAPI__GOOGLE_SHOPPING",
+        "description": "Search for products using Google Shopping API",
+        "tags": ["shopping", "products", "google"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/search.json",
+            "server_url": "https://serpapi.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the http request",
+                    "properties": {
+                        "engine": {
+                            "type": "string",
+                            "description": "Search engine",
+                            "default": "google_shopping"
+                        },
+                        "q": {
+                            "type": "string",
+                            "description": "Product search query"
+                        },
+                        "num": {
+                            "type": "integer",
+                            "description": "Number of products to return",
+                            "default": 10
+                        },
+                        "safe": {
+                            "type": "string",
+                            "description": "Safe search filter",
+                            "default": "active"
+                        },
+                        "device": {
+                            "type": "string",
+                            "description": "Device to use for results (desktop, tablet, mobile)",
+                            "default": "desktop"
+                        },
+                        "no_cache": {
+                            "type": "boolean",
+                            "description": "Force fresh results instead of cached ones",
+                            "default": false
+                        },
+                        "async": {
+                            "type": "boolean",
+                            "description": "Submit search asynchronously",
+                            "default": false
+                        },
+                        "output": {
+                            "type": "string",
+                            "description": "Output format (json, html)",
+                            "default": "json"
+                        },
+                        "gl": {
+                            "type": "string",
+                            "description": "Country to search from",
+                            "default": "us"
+                        },
+                        "hl": {
+                            "type": "string",
+                            "description": "Search language",
+                            "default": "en"
+                        },
+                        "google_domain": {
+                            "type": "string",
+                            "description": "Google domain",
+                            "default": "google.com"
+                        },
+                        "location": {
+                            "type": "string",
+                            "description": "Search location",
+                            "default": "United States"
+                        },
+                        "tbm": {
+                            "type": "string",
+                            "description": "Search type (shop for shopping)",
+                            "default": "shop"
+                        },
+                        "tbs": {
+                            "type": "string",
+                            "description": "Filter parameters (price range, shipping, etc.)"
+                        },
+                        "prds": {
+                            "type": "string",
+                            "description": "Product-specific filter parameters"
+                        }
+                    },
+                    "required": ["engine", "q"],
+                    "visible": ["engine", "q", "num", "safe", "device", "no_cache", "async", "output", "gl", "hl", "google_domain", "location", "tbs", "prds"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SERPAPI__BING_SEARCH",
+        "description": "Perform web searches using Bing Search API",
+        "tags": ["search", "web", "bing"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/search.json",
+            "server_url": "https://serpapi.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the http request",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept header",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for the http request",
+                    "properties": {
+                        "engine": {
+                            "type": "string",
+                            "description": "Search engine",
+                            "default": "bing"
+                        },
+                        "q": {
+                            "type": "string",
+                            "description": "Search query"
+                        },
+                        "cc": {
+                            "type": "string",
+                            "description": "Country code for search results",
+                            "default": "US"
+                        },
+                        "location": {
+                            "type": "string",
+                            "description": "Search location",
+                            "default": "United States"
+                        },
+                        "count": {
+                            "type": "integer",
+                            "description": "Number of results to return",
+                            "default": 10
+                        },
+                        "first": {
+                            "type": "integer",
+                            "description": "Starting position for results",
+                            "default": 1
+                        },
+                        "safesearch": {
+                            "type": "string",
+                            "description": "Safe search filter",
+                            "enum": ["Off", "Moderate", "Strict"],
+                            "default": "Moderate"
+                        },
+                        "freshness": {
+                            "type": "string",
+                            "description": "Time-based filter for results",
+                            "enum": ["Day", "Week", "Month"]
+                        }
+                    },
+                    "required": ["engine", "q"],
+                    "visible": ["engine", "q", "cc", "location", "count", "first", "safesearch", "freshness"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
     }
 ]

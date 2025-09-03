@@ -1,0 +1,39 @@
+{
+  "name": "WHATSAPP",
+  "display_name": "WhatsApp Business API",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/whatsapp.svg",
+  "provider": "Meta Platforms, Inc.",
+  "version": "v20.0",
+  "description": "WhatsApp Business API enables businesses to communicate with customers at scale through the world's most popular messaging platform. This integration allows AI agents to send and receive messages, manage customer conversations, handle media files, create message templates, and automate customer support workflows with comprehensive messaging capabilities.",
+  "security_schemes": {
+    "bearer_token": {
+      "type": "http",
+      "scheme": "bearer",
+      "description": "WhatsApp Business API access token from Meta Business Platform"
+    }
+  },
+  "default_security_credentials_by_scheme": {
+    "bearer_token": {
+      "credentials": {
+        "token": {
+          "type": "string",
+          "description": "Your WhatsApp Business API access token",
+          "visibility": "invisible"
+        },
+        "phone_number_id": {
+          "type": "string", 
+          "description": "Your WhatsApp Business phone number ID",
+          "visibility": "visible"
+        },
+        "business_account_id": {
+          "type": "string",
+          "description": "Your WhatsApp Business Account ID", 
+          "visibility": "visible"
+        }
+      }
+    }
+  },
+  "categories": ["Communication", "Customer Support", "Marketing"],
+  "visibility": "public",
+  "active": true
+}

@@ -1,0 +1,28 @@
+{
+  "name": "SALESFORCE",
+  "display_name": "Salesforce",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/salesforce.svg",
+  "provider": "Salesforce",
+  "version": "1.0.0",
+  "description": "Salesforce is the world's leading customer relationship management (CRM) platform. This integration enables comprehensive access to sales, marketing, and service data including accounts, contacts, leads, opportunities, cases, and campaigns.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_SALESFORCE_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_SALESFORCE_APP_CLIENT_SECRET }}",
+      "scope": "api refresh_token",
+      "authorize_url": "https://login.salesforce.com/services/oauth2/authorize",
+      "access_token_url": "https://login.salesforce.com/services/oauth2/token",
+      "refresh_token_url": "https://login.salesforce.com/services/oauth2/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "CRM",
+    "Sales"
+  ],
+  "visibility": "public",
+  "active": true
+}

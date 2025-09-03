@@ -671,5 +671,1141 @@
       ],
       "additionalProperties": false
     }
+  },
+  {
+    "name": "FIGMA__POST_COMMENT",
+    "description": "Posts a new comment on a specific location or node within a Figma file. Supports thread creation and collaboration workflows.",
+    "tags": [
+      "figma",
+      "comments",
+      "collaboration",
+      "Starter",
+      "Professional",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/files/{file_key}/comments",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file to post a comment on."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Comment data to post",
+          "properties": {
+            "message": {
+              "type": "string",
+              "description": "The text content of the comment."
+            },
+            "client_meta": {
+              "type": "object",
+              "description": "Position and node information for the comment.",
+              "properties": {
+                "x": {
+                  "type": "number",
+                  "description": "X coordinate where the comment is placed."
+                },
+                "y": {
+                  "type": "number",
+                  "description": "Y coordinate where the comment is placed."
+                },
+                "node_id": {
+                  "type": "string",
+                  "description": "The node ID where the comment is anchored."
+                }
+              },
+              "required": [],
+              "visible": [
+                "x",
+                "y",
+                "node_id"
+              ],
+              "additionalProperties": false
+            },
+            "comment_id": {
+              "type": "string",
+              "description": "ID of parent comment for replies (optional)."
+            }
+          },
+          "required": [
+            "message"
+          ],
+          "visible": [
+            "message",
+            "client_meta",
+            "comment_id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path",
+        "body"
+      ],
+      "visible": [
+        "path",
+        "body"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__DELETE_COMMENT",
+    "description": "Deletes a specific comment from a Figma file. Requires appropriate permissions and comment ownership or team admin rights.",
+    "tags": [
+      "figma",
+      "comments",
+      "collaboration",
+      "moderation",
+      "Starter",
+      "Professional",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/v1/files/{file_key}/comments/{comment_id}",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file containing the comment."
+            },
+            "comment_id": {
+              "type": "string",
+              "description": "The ID of the comment to delete."
+            }
+          },
+          "required": [
+            "file_key",
+            "comment_id"
+          ],
+          "visible": [
+            "file_key",
+            "comment_id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_TEAM_COMPONENTS",
+    "description": "Retrieves a paginated list of published components from a team's library. Essential for managing design systems and component libraries.",
+    "tags": [
+      "figma",
+      "teams",
+      "components",
+      "library",
+      "design-system",
+      "Professional",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/teams/{team_id}/components",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "team_id": {
+              "type": "string",
+              "description": "The ID of the team whose components are to be retrieved."
+            }
+          },
+          "required": [
+            "team_id"
+          ],
+          "visible": [
+            "team_id"
+          ],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters",
+          "properties": {
+            "page_size": {
+              "type": "integer",
+              "description": "Number of components to return per page (max 100)."
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination to get next set of results."
+            }
+          },
+          "required": [],
+          "visible": [
+            "page_size",
+            "cursor"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path",
+        "query"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_TEAM_STYLES",
+    "description": "Retrieves a paginated list of published styles from a team's library. Includes color, text, effect, and layout grid styles.",
+    "tags": [
+      "figma",
+      "teams",
+      "styles",
+      "library",
+      "design-system",
+      "Professional",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/teams/{team_id}/styles",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "team_id": {
+              "type": "string",
+              "description": "The ID of the team whose styles are to be retrieved."
+            }
+          },
+          "required": [
+            "team_id"
+          ],
+          "visible": [
+            "team_id"
+          ],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters",
+          "properties": {
+            "page_size": {
+              "type": "integer",
+              "description": "Number of styles to return per page (max 100)."
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination to get next set of results."
+            }
+          },
+          "required": [],
+          "visible": [
+            "page_size",
+            "cursor"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path",
+        "query"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_USER_ME",
+    "description": "Returns information about the current user including profile details, team memberships, and access permissions.",
+    "tags": [
+      "figma",
+      "user",
+      "profile",
+      "authentication",
+      "Starter",
+      "Professional",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/me",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_LIBRARY_ANALYTICS_COMPONENT_ACTIONS",
+    "description": "Retrieves analytics data for component usage in a library, including detach events and usage patterns. Available for Organization and Enterprise plans.",
+    "tags": [
+      "figma",
+      "analytics",
+      "library",
+      "components",
+      "usage-tracking",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/analytics/libraries/{file_key}/component/actions",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the library file to get analytics for."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters",
+          "properties": {
+            "start_date": {
+              "type": "string",
+              "description": "Start date for analytics data in YYYY-MM-DD format."
+            },
+            "end_date": {
+              "type": "string",
+              "description": "End date for analytics data in YYYY-MM-DD format."
+            },
+            "component_key": {
+              "type": "string",
+              "description": "Specific component key to filter analytics."
+            }
+          },
+          "required": [],
+          "visible": [
+            "start_date",
+            "end_date",
+            "component_key"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path",
+        "query"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_LIBRARY_ANALYTICS_STYLE_USAGES",
+    "description": "Retrieves analytics data for style usage in a library, including usage counts and adoption patterns. Available for Organization and Enterprise plans.",
+    "tags": [
+      "figma",
+      "analytics",
+      "library",
+      "styles",
+      "usage-tracking",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/analytics/libraries/{file_key}/style/usages",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the library file to get analytics for."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters",
+          "properties": {
+            "start_date": {
+              "type": "string",
+              "description": "Start date for analytics data in YYYY-MM-DD format."
+            },
+            "end_date": {
+              "type": "string",
+              "description": "End date for analytics data in YYYY-MM-DD format."
+            },
+            "style_key": {
+              "type": "string",
+              "description": "Specific style key to filter analytics."
+            }
+          },
+          "required": [],
+          "visible": [
+            "start_date",
+            "end_date",
+            "style_key"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path",
+        "query"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__CREATE_WEBHOOK",
+    "description": "Creates a new webhook subscription for a team, project, or file to receive real-time notifications about changes and events.",
+    "tags": [
+      "figma",
+      "webhooks",
+      "automation",
+      "notifications",
+      "Professional",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2/webhooks",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "Webhook configuration data",
+          "properties": {
+            "event_type": {
+              "type": "string",
+              "description": "Type of event to subscribe to (FILE_UPDATE, FILE_DELETE, FILE_VERSION_UPDATE, LIBRARY_PUBLISH, FILE_COMMENT).",
+              "enum": [
+                "FILE_UPDATE",
+                "FILE_DELETE",
+                "FILE_VERSION_UPDATE",
+                "LIBRARY_PUBLISH",
+                "FILE_COMMENT"
+              ]
+            },
+            "team_id": {
+              "type": "string",
+              "description": "Team ID for team-level webhooks."
+            },
+            "endpoint": {
+              "type": "string",
+              "description": "HTTPS URL that will receive webhook notifications."
+            },
+            "passcode": {
+              "type": "string",
+              "description": "Optional secret key for webhook verification."
+            },
+            "description": {
+              "type": "string",
+              "description": "Optional description of the webhook's purpose."
+            }
+          },
+          "required": [
+            "event_type",
+            "endpoint"
+          ],
+          "visible": [
+            "event_type",
+            "team_id",
+            "endpoint",
+            "passcode",
+            "description"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "body"
+      ],
+      "visible": [
+        "body"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_WEBHOOKS",
+    "description": "Retrieves a list of all webhooks configured for the authenticated user or team, including their status and configuration.",
+    "tags": [
+      "figma",
+      "webhooks",
+      "automation",
+      "Professional",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v2/webhooks",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters",
+          "properties": {
+            "team_id": {
+              "type": "string",
+              "description": "Filter webhooks by team ID."
+            }
+          },
+          "required": [],
+          "visible": [
+            "team_id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": [
+        "query"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__DELETE_WEBHOOK",
+    "description": "Deletes a specific webhook by its ID, stopping all future notifications for that webhook subscription.",
+    "tags": [
+      "figma",
+      "webhooks",
+      "automation",
+      "management",
+      "Professional",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/v2/webhooks/{webhook_id}",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "webhook_id": {
+              "type": "string",
+              "description": "The ID of the webhook to delete."
+            }
+          },
+          "required": [
+            "webhook_id"
+          ],
+          "visible": [
+            "webhook_id"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_VARIABLES",
+    "description": "Retrieves local variables from a Figma file including collections, modes, and variable values. Available only for Enterprise organizations.",
+    "tags": [
+      "figma",
+      "variables",
+      "design-tokens",
+      "design-system",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/files/{file_key}/variables/local",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file to get variables from."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_PUBLISHED_VARIABLES",
+    "description": "Retrieves published variables from a Figma file that are available to other files as a library. Enterprise feature for design token management.",
+    "tags": [
+      "figma",
+      "variables",
+      "design-tokens",
+      "library",
+      "design-system",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/files/{file_key}/variables/published",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file to get published variables from."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__POST_VARIABLES",
+    "description": "Creates or updates variables in a Figma file. Allows for programmatic management of design tokens and variable collections. Enterprise only.",
+    "tags": [
+      "figma",
+      "variables",
+      "design-tokens",
+      "automation",
+      "design-system",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/files/{file_key}/variables",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file to modify variables in."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Variable collection and variable data",
+          "properties": {
+            "variableCollections": {
+              "type": "array",
+              "description": "Array of variable collections to create or update.",
+              "items": {
+                "type": "object",
+                "description": "Variable collection definition",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "description": "Action to perform (CREATE, UPDATE, DELETE).",
+                    "enum": ["CREATE", "UPDATE", "DELETE"]
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "Collection ID for update/delete operations."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the variable collection."
+                  },
+                  "modes": {
+                    "type": "array",
+                    "description": "Array of mode definitions for the collection.",
+                    "items": {
+                      "type": "object",
+                      "description": "Mode definition",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "description": "Name of the mode."
+                        }
+                      },
+                      "required": [],
+                      "visible": ["name"],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [],
+                "visible": ["action", "id", "name", "modes"],
+                "additionalProperties": false
+              }
+            },
+            "variables": {
+              "type": "array",
+              "description": "Array of variables to create or update.",
+              "items": {
+                "type": "object",
+                "description": "Variable definition",
+                "properties": {
+                  "action": {
+                    "type": "string",
+                    "description": "Action to perform (CREATE, UPDATE, DELETE).",
+                    "enum": ["CREATE", "UPDATE", "DELETE"]
+                  },
+                  "id": {
+                    "type": "string",
+                    "description": "Variable ID for update/delete operations."
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of the variable."
+                  },
+                  "variableCollectionId": {
+                    "type": "string",
+                    "description": "ID of the collection this variable belongs to."
+                  },
+                  "resolvedType": {
+                    "type": "string",
+                    "description": "Type of the variable (COLOR, FLOAT, STRING, BOOLEAN).",
+                    "enum": ["COLOR", "FLOAT", "STRING", "BOOLEAN"]
+                  }
+                },
+                "required": [],
+                "visible": ["action", "id", "name", "variableCollectionId", "resolvedType"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [],
+          "visible": [
+            "variableCollections",
+            "variables"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path",
+        "body"
+      ],
+      "visible": [
+        "path",
+        "body"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_DEV_RESOURCES",
+    "description": "Retrieves development resources and annotations from a Figma file, including code snippets, links, and implementation notes for developers.",
+    "tags": [
+      "figma",
+      "dev-mode",
+      "development",
+      "code-generation",
+      "Professional",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/files/{file_key}/dev_resources",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file to get dev resources from."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters",
+          "properties": {
+            "node_ids": {
+              "type": "string",
+              "description": "Comma-separated list of node IDs to filter dev resources."
+            }
+          },
+          "required": [],
+          "visible": [
+            "node_ids"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path",
+        "query"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__CREATE_DEV_RESOURCE",
+    "description": "Creates a new development resource or annotation on a node in a Figma file. Enables automated documentation for developers.",
+    "tags": [
+      "figma",
+      "dev-mode",
+      "development",
+      "automation",
+      "documentation",
+      "Professional",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/files/{file_key}/dev_resources",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file to add dev resources to."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Dev resource data",
+          "properties": {
+            "node_id": {
+              "type": "string",
+              "description": "The node ID to attach the dev resource to."
+            },
+            "dev_resource": {
+              "type": "object",
+              "description": "Development resource content",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Name of the development resource."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "URL link for the dev resource."
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Description or code snippet content."
+                }
+              },
+              "required": [
+                "name"
+              ],
+              "visible": [
+                "name",
+                "url",
+                "description"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "required": [
+            "node_id",
+            "dev_resource"
+          ],
+          "visible": [
+            "node_id",
+            "dev_resource"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path",
+        "body"
+      ],
+      "visible": [
+        "path",
+        "body"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "FIGMA__GET_PROTOTYPE_LINKS",
+    "description": "Retrieves prototype interaction links and flow configurations from a Figma file for testing and presentation purposes.",
+    "tags": [
+      "figma",
+      "prototyping",
+      "interactions",
+      "flow",
+      "presentation",
+      "Starter",
+      "Professional",
+      "Organization",
+      "Enterprise"
+    ],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/files/{file_key}/prototype",
+      "server_url": "https://api.figma.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters",
+          "properties": {
+            "file_key": {
+              "type": "string",
+              "description": "The key of the file to get prototype data from."
+            }
+          },
+          "required": [
+            "file_key"
+          ],
+          "visible": [
+            "file_key"
+          ],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters",
+          "properties": {
+            "node_id": {
+              "type": "string",
+              "description": "Starting node ID for prototype flow."
+            },
+            "scaling": {
+              "type": "string",
+              "description": "Scaling mode for prototype (FILL, FIT, etc.)."
+            },
+            "hotspot_hints": {
+              "type": "boolean",
+              "description": "Whether to show hotspot hints in prototype."
+            }
+          },
+          "required": [],
+          "visible": [
+            "node_id",
+            "scaling",
+            "hotspot_hints"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "path"
+      ],
+      "visible": [
+        "path",
+        "query"
+      ],
+      "additionalProperties": false
+    }
   }
 ]

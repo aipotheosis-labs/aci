@@ -165,5 +165,832 @@
             "visible": ["path"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_COPY",
+        "description": "Creates a copy of an existing Google Document with optional title modification for template usage and document duplication.",
+        "tags": ["documents", "copy", "templates"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/files/{documentId}/copy",
+            "server_url": "https://www.googleapis.com/drive"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the document to copy"
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Copy parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name for the copied document"
+                        },
+                        "parents": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Parent folder IDs for the copy"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "parents"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_SHARE",
+        "description": "Share a Google Document with specific users or make it publicly accessible with configurable permission levels for collaboration.",
+        "tags": ["documents", "sharing", "permissions"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/files/{documentId}/permissions",
+            "server_url": "https://www.googleapis.com/drive"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the document to share"
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Sharing parameters",
+                    "properties": {
+                        "role": {
+                            "type": "string",
+                            "enum": ["reader", "commenter", "writer"],
+                            "description": "Permission level for the user",
+                            "default": "reader"
+                        },
+                        "type": {
+                            "type": "string",
+                            "enum": ["user", "group", "domain", "anyone"],
+                            "description": "Type of permission",
+                            "default": "user"
+                        },
+                        "emailAddress": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Email address to share with (required for user/group type)"
+                        },
+                        "domain": {
+                            "type": "string",
+                            "description": "Domain name (required for domain type)"
+                        },
+                        "sendNotificationEmail": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Send notification email to user"
+                        },
+                        "emailMessage": {
+                            "type": "string",
+                            "description": "Custom message to include in notification email"
+                        }
+                    },
+                    "required": ["role", "type"],
+                    "visible": ["role", "type", "emailAddress", "domain", "sendNotificationEmail", "emailMessage"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_EXPORT",
+        "description": "Export a Google Document to various formats including PDF, DOCX, ODT, RTF, TXT, and HTML for document sharing and archival.",
+        "tags": ["documents", "export", "formats"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/files/{documentId}/export",
+            "server_url": "https://www.googleapis.com/drive"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the document to export"
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "mimeType": {
+                            "type": "string",
+                            "enum": ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/vnd.oasis.opendocument.text", "application/rtf", "text/plain", "text/html", "application/epub+zip"],
+                            "description": "Export format MIME type",
+                            "default": "application/pdf"
+                        }
+                    },
+                    "required": ["mimeType"],
+                    "visible": ["mimeType"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "query"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_LIST",
+        "description": "List Google Documents in Drive with filtering, search, and sorting options for document discovery and management.",
+        "tags": ["documents", "list", "search"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/files",
+            "server_url": "https://www.googleapis.com/drive"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "description": "Search query (e.g., 'mimeType=\"application/vnd.google-apps.document\"')",
+                            "default": "mimeType='application/vnd.google-apps.document'"
+                        },
+                        "pageSize": {
+                            "type": "integer",
+                            "description": "Maximum number of files to return",
+                            "default": 10,
+                            "maximum": 1000
+                        },
+                        "pageToken": {
+                            "type": "string",
+                            "description": "Token for pagination"
+                        },
+                        "orderBy": {
+                            "type": "string",
+                            "enum": ["createdTime", "folder", "modifiedByMeTime", "modifiedTime", "name", "quotaBytesUsed", "recency", "sharedWithMeTime", "starred", "viewedByMeTime"],
+                            "description": "Sort order for results",
+                            "default": "modifiedTime desc"
+                        },
+                        "fields": {
+                            "type": "string",
+                            "description": "Fields to include in response",
+                            "default": "files(id,name,createdTime,modifiedTime,owners,permissions)"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["q", "pageSize", "pageToken", "orderBy", "fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_DELETE",
+        "description": "Move a Google Document to trash for cleanup and document lifecycle management.",
+        "tags": ["documents", "delete", "cleanup"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v3/files/{documentId}",
+            "server_url": "https://www.googleapis.com/drive"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the document to delete"
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_REVISIONS_LIST",
+        "description": "List all revisions of a Google Document to track changes, version history, and collaborative editing activities.",
+        "tags": ["documents", "revisions", "history"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/files/{documentId}/revisions",
+            "server_url": "https://www.googleapis.com/drive"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the document to get revisions for"
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "pageSize": {
+                            "type": "integer",
+                            "description": "Maximum number of revisions to return",
+                            "default": 200,
+                            "maximum": 1000
+                        },
+                        "pageToken": {
+                            "type": "string",
+                            "description": "Token for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["pageSize", "pageToken"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_COMMENTS_LIST",
+        "description": "List all comments on a Google Document for collaboration tracking, feedback management, and review processes.",
+        "tags": ["documents", "comments", "collaboration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/files/{documentId}/comments",
+            "server_url": "https://www.googleapis.com/drive"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the document to get comments for"
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "includeDeleted": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include deleted comments"
+                        },
+                        "pageSize": {
+                            "type": "integer",
+                            "description": "Maximum number of comments to return",
+                            "default": 20,
+                            "maximum": 100
+                        },
+                        "pageToken": {
+                            "type": "string",
+                            "description": "Token for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["includeDeleted", "pageSize", "pageToken"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_COMMENTS_CREATE",
+        "description": "Create a new comment on a Google Document for feedback, review, and collaborative editing processes.",
+        "tags": ["documents", "comments", "feedback"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/files/{documentId}/comments",
+            "server_url": "https://www.googleapis.com/drive"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the document to comment on"
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Comment creation parameters",
+                    "properties": {
+                        "content": {
+                            "type": "string",
+                            "description": "The text content of the comment"
+                        },
+                        "anchor": {
+                            "type": "string",
+                            "description": "Text selection anchor for the comment"
+                        }
+                    },
+                    "required": ["content"],
+                    "visible": ["content", "anchor"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_SUGGESTIONS_ACCEPT",
+        "description": "Accept suggestions in a Google Document to finalize collaborative edits and approve proposed changes.",
+        "tags": ["documents", "suggestions", "collaboration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/documents/{documentId}:batchUpdate",
+            "server_url": "https://docs.googleapis.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the document to accept suggestions in"
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Suggestion acceptance parameters",
+                    "properties": {
+                        "requests": {
+                            "type": "array",
+                            "description": "Array of accept suggestion requests",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "acceptSuggestion": {
+                                        "type": "object",
+                                        "properties": {
+                                            "suggestionId": {
+                                                "type": "string",
+                                                "description": "ID of the suggestion to accept"
+                                            }
+                                        },
+                                        "required": ["suggestionId"],
+                                        "additionalProperties": false
+                                    }
+                                },
+                                "required": ["acceptSuggestion"],
+                                "additionalProperties": false
+                            }
+                        }
+                    },
+                    "required": ["requests"],
+                    "visible": ["requests"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_FORMATTING_UPDATE",
+        "description": "Apply text formatting, styling, and layout changes to Google Documents including fonts, colors, alignment, and structure modifications.",
+        "tags": ["documents", "formatting", "styling"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/documents/{documentId}:batchUpdate",
+            "server_url": "https://docs.googleapis.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the document to format"
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Formatting update parameters",
+                    "properties": {
+                        "requests": {
+                            "type": "array",
+                            "description": "Array of formatting requests",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "updateTextStyle": {
+                                        "type": "object",
+                                        "properties": {
+                                            "range": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "startIndex": {
+                                                        "type": "integer",
+                                                        "description": "Start index for formatting"
+                                                    },
+                                                    "endIndex": {
+                                                        "type": "integer",
+                                                        "description": "End index for formatting"
+                                                    }
+                                                },
+                                                "required": ["startIndex", "endIndex"],
+                                                "additionalProperties": false
+                                            },
+                                            "textStyle": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "bold": {
+                                                        "type": "boolean",
+                                                        "description": "Make text bold"
+                                                    },
+                                                    "italic": {
+                                                        "type": "boolean",
+                                                        "description": "Make text italic"
+                                                    },
+                                                    "underline": {
+                                                        "type": "boolean",
+                                                        "description": "Underline text"
+                                                    },
+                                                    "fontSize": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "magnitude": {
+                                                                "type": "number",
+                                                                "description": "Font size value"
+                                                            },
+                                                            "unit": {
+                                                                "type": "string",
+                                                                "enum": ["PT"],
+                                                                "default": "PT"
+                                                            }
+                                                        },
+                                                        "additionalProperties": false
+                                                    },
+                                                    "foregroundColor": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "color": {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "rgbColor": {
+                                                                        "type": "object",
+                                                                        "properties": {
+                                                                            "red": {"type": "number", "minimum": 0, "maximum": 1},
+                                                                            "green": {"type": "number", "minimum": 0, "maximum": 1},
+                                                                            "blue": {"type": "number", "minimum": 0, "maximum": 1}
+                                                                        },
+                                                                        "additionalProperties": false
+                                                                    }
+                                                                },
+                                                                "additionalProperties": false
+                                                            }
+                                                        },
+                                                        "additionalProperties": false
+                                                    }
+                                                },
+                                                "additionalProperties": false
+                                            },
+                                            "fields": {
+                                                "type": "string",
+                                                "description": "Fields to update (e.g., 'bold,italic,fontSize')"
+                                            }
+                                        },
+                                        "required": ["range", "textStyle", "fields"],
+                                        "additionalProperties": false
+                                    }
+                                },
+                                "additionalProperties": true
+                            }
+                        }
+                    },
+                    "required": ["requests"],
+                    "visible": ["requests"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_REPLACE_TEXT",
+        "description": "Find and replace text throughout a Google Document for content updates, standardization, and bulk editing operations.",
+        "tags": ["documents", "text", "replace"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/documents/{documentId}:batchUpdate",
+            "server_url": "https://docs.googleapis.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the document to update text in"
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Text replacement parameters",
+                    "properties": {
+                        "requests": {
+                            "type": "array",
+                            "description": "Array of replace text requests",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "replaceAllText": {
+                                        "type": "object",
+                                        "properties": {
+                                            "containsText": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "text": {
+                                                        "type": "string",
+                                                        "description": "Text to find and replace"
+                                                    },
+                                                    "matchCase": {
+                                                        "type": "boolean",
+                                                        "default": false,
+                                                        "description": "Match case when searching"
+                                                    }
+                                                },
+                                                "required": ["text"],
+                                                "additionalProperties": false
+                                            },
+                                            "replaceText": {
+                                                "type": "string",
+                                                "description": "Replacement text"
+                                            }
+                                        },
+                                        "required": ["containsText", "replaceText"],
+                                        "additionalProperties": false
+                                    }
+                                },
+                                "required": ["replaceAllText"],
+                                "additionalProperties": false
+                            }
+                        }
+                    },
+                    "required": ["requests"],
+                    "visible": ["requests"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_PERMISSIONS_LIST",
+        "description": "List all permissions and sharing settings for a Google Document to manage access control and collaboration permissions.",
+        "tags": ["documents", "permissions", "sharing"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/files/{documentId}/permissions",
+            "server_url": "https://www.googleapis.com/drive"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the document to get permissions for"
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "pageSize": {
+                            "type": "integer",
+                            "description": "Maximum number of permissions to return",
+                            "default": 100,
+                            "maximum": 100
+                        },
+                        "pageToken": {
+                            "type": "string",
+                            "description": "Token for pagination"
+                        },
+                        "useDomainAdminAccess": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Use domain admin access for permissions"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["pageSize", "pageToken", "useDomainAdminAccess"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "GOOGLE_DOCS__DOCUMENTS_METADATA_UPDATE",
+        "description": "Update document metadata including title, description, and properties for better organization and searchability.",
+        "tags": ["documents", "metadata", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/v3/files/{documentId}",
+            "server_url": "https://www.googleapis.com/drive"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "documentId": {
+                            "type": "string",
+                            "description": "The ID of the document to update metadata for"
+                        }
+                    },
+                    "required": ["documentId"],
+                    "visible": ["documentId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Metadata update parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "New document title"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Document description"
+                        },
+                        "starred": {
+                            "type": "boolean",
+                            "description": "Star/unstar the document"
+                        },
+                        "parents": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Parent folder IDs to move document to"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "description", "starred", "parents"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
     }
 ]

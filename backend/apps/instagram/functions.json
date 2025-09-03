@@ -1,0 +1,1194 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Instagram Business API",
+    "version": "v20.0"
+  },
+  "servers": [
+    {
+      "url": "https://graph.facebook.com/v20.0"
+    }
+  ],
+  "paths": {
+    "/{instagram_account_id}/media": {
+      "get": {
+        "summary": "Get Instagram media posts",
+        "description": "Retrieve all published posts from the Instagram business account including photos, videos, carousels, and reels with engagement metrics.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {"type": "string", "default": "id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,like_count,comments_count"},
+            "description": "Comma-separated list of fields to return"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 25, "maximum": 100},
+            "description": "Number of media items to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of Instagram media",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "caption": {"type": "string"},
+                          "media_type": {"type": "string"},
+                          "media_url": {"type": "string"},
+                          "permalink": {"type": "string"},
+                          "thumbnail_url": {"type": "string"},
+                          "timestamp": {"type": "string"},
+                          "like_count": {"type": "integer"},
+                          "comments_count": {"type": "integer"}
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "paging": {"type": "object"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Instagram media post",
+        "description": "Publish a new photo, video, carousel, or reel to Instagram feed with caption, hashtags, and scheduling options.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image_url": {"type": "string"},
+                  "video_url": {"type": "string"},
+                  "caption": {"type": "string"},
+                  "location_id": {"type": "string"},
+                  "user_tags": {"type": "array"},
+                  "product_tags": {"type": "array"},
+                  "cover_url": {"type": "string"},
+                  "media_type": {"type": "string", "enum": ["IMAGE", "VIDEO", "CAROUSEL_ALBUM", "REELS"]},
+                  "children": {"type": "array", "items": {"type": "object"}}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Media creation container created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "string"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/media_publish": {
+      "post": {
+        "summary": "Publish created media",
+        "description": "Publish a previously created media container to make it visible on the Instagram feed.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "creation_id": {"type": "string"}
+                },
+                "required": ["creation_id"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Media published successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "string"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{media_id}": {
+      "get": {
+        "summary": "Get media details",
+        "description": "Retrieve detailed information about a specific Instagram post including engagement metrics, comments, and media properties.",
+        "parameters": [
+          {
+            "name": "media_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram media ID"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {"type": "string", "default": "id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count,insights"},
+            "description": "Fields to include in response"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Media details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "string"},
+                    "caption": {"type": "string"},
+                    "media_type": {"type": "string"},
+                    "media_url": {"type": "string"},
+                    "permalink": {"type": "string"},
+                    "timestamp": {"type": "string"},
+                    "like_count": {"type": "integer"},
+                    "comments_count": {"type": "integer"},
+                    "insights": {"type": "object"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Instagram post",
+        "description": "Remove a published Instagram post from the feed. This action cannot be undone.",
+        "parameters": [
+          {
+            "name": "media_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram media ID to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Media deleted successfully"
+          }
+        }
+      }
+    },
+    "/{media_id}/comments": {
+      "get": {
+        "summary": "Get post comments",
+        "description": "Retrieve all comments on a specific Instagram post with author information and engagement metrics for community management.",
+        "parameters": [
+          {
+            "name": "media_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram media ID"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {"type": "string", "default": "id,text,timestamp,username,like_count,replies"},
+            "description": "Fields to include for each comment"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of comments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "text": {"type": "string"},
+                          "timestamp": {"type": "string"},
+                          "username": {"type": "string"},
+                          "like_count": {"type": "integer"},
+                          "replies": {"type": "object"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{comment_id}/replies": {
+      "post": {
+        "summary": "Reply to comment",
+        "description": "Respond to a customer comment on Instagram posts for community engagement and customer service.",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram comment ID to reply to"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {"type": "string"}
+                },
+                "required": ["message"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Reply posted successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "string"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{comment_id}": {
+      "delete": {
+        "summary": "Delete comment or reply",
+        "description": "Remove inappropriate comments or replies from Instagram posts for content moderation and brand protection.",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram comment ID to delete"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Comment deleted successfully"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/stories": {
+      "post": {
+        "summary": "Create Instagram story",
+        "description": "Publish photos, videos, or interactive content to Instagram Stories with stickers, polls, and engagement features.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "image_url": {"type": "string"},
+                  "video_url": {"type": "string"},
+                  "media_type": {"type": "string", "enum": ["IMAGE", "VIDEO"]},
+                  "stickers": {"type": "array"},
+                  "location_id": {"type": "string"}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Story created successfully"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}": {
+      "get": {
+        "summary": "Get Instagram account info",
+        "description": "Retrieve Instagram business account profile information including follower count, biography, and account metrics.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {"type": "string", "default": "id,username,name,biography,website,followers_count,follows_count,media_count,profile_picture_url"},
+            "description": "Fields to include in account information"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Instagram account information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "string"},
+                    "username": {"type": "string"},
+                    "name": {"type": "string"},
+                    "biography": {"type": "string"},
+                    "website": {"type": "string"},
+                    "followers_count": {"type": "integer"},
+                    "follows_count": {"type": "integer"},
+                    "media_count": {"type": "integer"},
+                    "profile_picture_url": {"type": "string"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/insights": {
+      "get": {
+        "summary": "Get account insights",
+        "description": "Retrieve comprehensive analytics data including reach, impressions, profile views, and audience demographics for strategic planning.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          },
+          {
+            "name": "metric",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["audience_gender_age", "audience_locale", "audience_country", "reach", "impressions", "profile_views"]},
+            "description": "Specific metric to retrieve"
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["day", "week", "days_28"], "default": "day"},
+            "description": "Time period for insights data"
+          },
+          {
+            "name": "since",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"},
+            "description": "Start date for insights period"
+          },
+          {
+            "name": "until",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"},
+            "description": "End date for insights period"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account insights data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {"type": "string"},
+                          "period": {"type": "string"},
+                          "values": {"type": "array"},
+                          "title": {"type": "string"},
+                          "description": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{media_id}/insights": {
+      "get": {
+        "summary": "Get post insights",
+        "description": "Retrieve detailed engagement analytics for a specific Instagram post including reach, impressions, saves, and audience interactions.",
+        "parameters": [
+          {
+            "name": "media_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram media ID"
+          },
+          {
+            "name": "metric",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["engagement", "impressions", "reach", "saved", "video_views", "profile_views", "website_clicks"]},
+            "description": "Specific metric to retrieve for the post"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Post insights data"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/conversations": {
+      "get": {
+        "summary": "Get Instagram direct message conversations",
+        "description": "Retrieve all customer conversations in Instagram Direct Messages for customer support and engagement management.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          },
+          {
+            "name": "platform",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["instagram"], "default": "instagram"},
+            "description": "Platform for conversations"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of conversations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "updated_time": {"type": "string"},
+                          "participants": {"type": "object"},
+                          "messages": {"type": "object"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{conversation_id}/messages": {
+      "get": {
+        "summary": "Get conversation messages",
+        "description": "Retrieve message history from a specific Instagram Direct Message conversation with customer interaction details.",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram conversation ID"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {"type": "string", "default": "id,message,from,to,created_time,attachments"},
+            "description": "Fields to include in message data"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conversation messages"
+          }
+        }
+      },
+      "post": {
+        "summary": "Send direct message",
+        "description": "Send a direct message to an Instagram user for customer support, engagement, or automated responses.",
+        "parameters": [
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram conversation ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "recipient": {"type": "object"},
+                  "message": {
+                    "type": "object",
+                    "properties": {
+                      "text": {"type": "string"},
+                      "attachment": {"type": "object"}
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["recipient", "message"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message sent successfully"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/content_publishing_limit": {
+      "get": {
+        "summary": "Get publishing rate limits",
+        "description": "Check current rate limits and quotas for content publishing to ensure compliance with Instagram API restrictions.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Publishing rate limit information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "quota_usage": {"type": "integer"},
+                          "config": {"type": "object"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/tags": {
+      "get": {
+        "summary": "Get tagged media",
+        "description": "Retrieve posts where the business account has been tagged by other users for brand monitoring and engagement opportunities.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {"type": "string", "default": "id,caption,media_type,media_url,permalink,timestamp,username"},
+            "description": "Fields to include for tagged media"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of tagged media"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/product_catalog": {
+      "get": {
+        "summary": "Get product catalog",
+        "description": "Retrieve business product catalog for Instagram Shopping integration with product tagging and commerce features.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {"type": "string", "default": "id,name,product_count"},
+            "description": "Fields to include for catalog information"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product catalog information"
+          }
+        }
+      }
+    },
+    "/{catalog_id}/products": {
+      "get": {
+        "summary": "List catalog products",
+        "description": "Retrieve all products in the Instagram Shopping catalog with pricing, availability, and tagging information.",
+        "parameters": [
+          {
+            "name": "catalog_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Product catalog ID"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {"type": "string", "default": "id,name,price,description,image_url,availability,url"},
+            "description": "Product fields to include"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "price": {"type": "string"},
+                          "description": {"type": "string"},
+                          "image_url": {"type": "string"},
+                          "availability": {"type": "string"},
+                          "url": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/live_media": {
+      "post": {
+        "summary": "Create live video",
+        "description": "Start a live video broadcast on Instagram for real-time audience engagement and interactive content.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "media_type": {"type": "string", "enum": ["VIDEO"], "default": "VIDEO"},
+                  "broadcast_status": {"type": "string", "enum": ["LIVE"], "default": "LIVE"}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Live video created successfully"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/available_catalogs": {
+      "get": {
+        "summary": "Get available catalogs",
+        "description": "Retrieve all product catalogs available for Instagram Shopping integration and product tagging.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of available catalogs"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/content_publishing_limit": {
+      "get": {
+        "summary": "Check content publishing quotas",
+        "description": "Monitor current usage against Instagram API rate limits and publishing quotas to optimize posting schedules.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Publishing quota information"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/mentions": {
+      "get": {
+        "summary": "Get mention notifications",
+        "description": "Retrieve posts and stories where the business account has been mentioned for brand monitoring and engagement opportunities.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {"type": "string", "default": "id,media_type,media_url,permalink,timestamp,username,caption"},
+            "description": "Fields to include for mentioned media"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of mentions"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/business_discovery": {
+      "get": {
+        "summary": "Discover competitor accounts",
+        "description": "Research competitor Instagram accounts to analyze their content strategy, engagement rates, and audience insights for competitive analysis.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          },
+          {
+            "name": "username",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram username to research"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {"type": "string", "default": "biography,id,ig_id,followers_count,follows_count,media_count,name,profile_picture_url,username,website"},
+            "description": "Account fields to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Competitor account information"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/hashtag_search": {
+      "get": {
+        "summary": "Search hashtags",
+        "description": "Search for relevant hashtags and analyze their popularity, reach, and trending status for content optimization.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          },
+          {
+            "name": "q",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Hashtag search query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Hashtag search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{hashtag_id}/top_media": {
+      "get": {
+        "summary": "Get hashtag top posts",
+        "description": "Retrieve the most popular posts for a specific hashtag to understand trending content and engagement patterns.",
+        "parameters": [
+          {
+            "name": "hashtag_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram hashtag ID"
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID for context"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {"type": "string", "default": "id,media_type,media_url,permalink,timestamp,like_count,comments_count"},
+            "description": "Media fields to include"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Top hashtag media"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/webhooks": {
+      "post": {
+        "summary": "Configure Instagram webhooks",
+        "description": "Set up real-time webhook notifications for mentions, comments, direct messages, and story mentions for automated responses.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "callback_url": {"type": "string", "format": "uri"},
+                  "verify_token": {"type": "string"},
+                  "fields": {"type": "array", "items": {"type": "string", "enum": ["comments", "mentions", "messaging_seen", "messaging_handovers", "messaging_postbacks"]}}
+                },
+                "required": ["callback_url", "verify_token", "fields"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook configured successfully"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/content_publishing_limit": {
+      "get": {
+        "summary": "Get publishing rate limits",
+        "description": "Monitor current content publishing quotas and rate limits to optimize posting schedules and avoid API restrictions.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Publishing rate limit data"
+          }
+        }
+      }
+    },
+    "/{page_id}/instagram_accounts": {
+      "get": {
+        "summary": "Get connected Instagram accounts",
+        "description": "Retrieve Instagram business accounts connected to a Facebook Page for cross-platform social media management.",
+        "parameters": [
+          {
+            "name": "page_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Facebook Page ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Connected Instagram accounts"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/media_upload": {
+      "post": {
+        "summary": "Upload media to Instagram",
+        "description": "Upload photos or videos to Instagram for immediate or scheduled publishing with automatic format optimization.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "media": {"type": "string", "format": "binary"},
+                  "media_type": {"type": "string", "enum": ["IMAGE", "VIDEO", "REELS"]},
+                  "caption": {"type": "string"},
+                  "location_id": {"type": "string"},
+                  "user_tags": {"type": "array"},
+                  "product_tags": {"type": "array"}
+                },
+                "required": ["media", "media_type"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Media uploaded successfully"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/stories_archive": {
+      "get": {
+        "summary": "Get archived stories",
+        "description": "Retrieve archived Instagram Stories for content analysis, repurposing, and performance tracking.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {"type": "string", "default": "id,media_type,media_url,permalink,timestamp"},
+            "description": "Story fields to include"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of archived stories"
+          }
+        }
+      }
+    },
+    "/{instagram_account_id}/reels": {
+      "get": {
+        "summary": "Get Instagram Reels",
+        "description": "Retrieve all published Instagram Reels with engagement metrics and performance data for video content strategy.",
+        "parameters": [
+          {
+            "name": "instagram_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Instagram Business Account ID"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "schema": {"type": "string", "default": "id,caption,media_type,media_url,permalink,timestamp,like_count,comments_count,play_count"},
+            "description": "Reels fields to include"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of Instagram Reels"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://www.facebook.com/v20.0/dialog/oauth",
+            "tokenUrl": "https://graph.facebook.com/v20.0/oauth/access_token",
+            "scopes": {
+              "instagram_basic": "Read basic Instagram account information",
+              "instagram_content_publish": "Publish content to Instagram feed and stories",
+              "instagram_manage_comments": "Read and respond to comments on posts",
+              "instagram_manage_insights": "Read Instagram analytics and insights",
+              "instagram_manage_messages": "Send and receive Instagram direct messages",
+              "pages_read_engagement": "Read page engagement metrics",
+              "pages_show_list": "Read list of pages user manages",
+              "business_management": "Manage business settings and configuration"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "oauth2": ["instagram_basic", "instagram_content_publish", "instagram_manage_comments", "instagram_manage_insights", "instagram_manage_messages", "pages_read_engagement", "pages_show_list", "business_management"]
+    }
+  ]
+}

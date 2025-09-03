@@ -345,5 +345,391 @@
             ],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "CAL__GET_BOOKINGS",
+        "description": "Retrieve bookings from Cal.com calendar",
+        "tags": [
+            "booking",
+            "appointments"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/bookings",
+            "server_url": "https://api.cal.com",
+            "headers": {
+                "cal-api-version": "2024-06-11"
+            }
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "status": {
+                            "type": "string",
+                            "description": "Filter bookings by status",
+                            "enum": ["upcoming", "recurring", "past", "cancelled", "unconfirmed"],
+                            "example": "upcoming"
+                        },
+                        "afterStart": {
+                            "type": "string",
+                            "description": "Filter bookings starting after this date (ISO 8601)",
+                            "format": "date-time",
+                            "example": "2024-01-01T00:00:00Z"
+                        },
+                        "beforeEnd": {
+                            "type": "string",
+                            "description": "Filter bookings ending before this date (ISO 8601)",
+                            "format": "date-time",
+                            "example": "2024-12-31T23:59:59Z"
+                        },
+                        "take": {
+                            "type": "integer",
+                            "description": "Number of bookings to return",
+                            "minimum": 1,
+                            "maximum": 100,
+                            "default": 10
+                        },
+                        "skip": {
+                            "type": "integer",
+                            "description": "Number of bookings to skip for pagination",
+                            "minimum": 0,
+                            "default": 0
+                        }
+                    },
+                    "required": [],
+                    "visible": ["status", "afterStart", "beforeEnd", "take", "skip"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CAL__GET_BOOKING",
+        "description": "Retrieve a specific booking from Cal.com by ID",
+        "tags": [
+            "booking",
+            "appointment"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/bookings/{booking_uid}",
+            "server_url": "https://api.cal.com",
+            "headers": {
+                "cal-api-version": "2024-06-11"
+            }
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "booking_uid": {
+                            "type": "string",
+                            "description": "Unique identifier of the booking to retrieve",
+                            "example": "bkn_123abc"
+                        }
+                    },
+                    "required": ["booking_uid"],
+                    "visible": ["booking_uid"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CAL__CANCEL_BOOKING",
+        "description": "Cancel a booking in Cal.com",
+        "tags": [
+            "booking",
+            "cancel",
+            "appointment"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v2/bookings/{booking_uid}/cancel",
+            "server_url": "https://api.cal.com",
+            "headers": {
+                "cal-api-version": "2024-06-11"
+            }
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "booking_uid": {
+                            "type": "string",
+                            "description": "Unique identifier of the booking to cancel",
+                            "example": "bkn_123abc"
+                        }
+                    },
+                    "required": ["booking_uid"],
+                    "visible": ["booking_uid"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "reason": {
+                            "type": "string",
+                            "description": "Reason for cancellation",
+                            "example": "Meeting no longer needed"
+                        },
+                        "allRemainingBookings": {
+                            "type": "boolean",
+                            "description": "Cancel all remaining bookings in a recurring series",
+                            "default": false
+                        }
+                    },
+                    "required": [],
+                    "visible": ["reason", "allRemainingBookings"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CAL__GET_EVENT_TYPES",
+        "description": "Retrieve event types from Cal.com",
+        "tags": [
+            "event-types",
+            "calendar"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/event-types",
+            "server_url": "https://api.cal.com",
+            "headers": {
+                "cal-api-version": "2024-06-11"
+            }
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "usernames": {
+                            "type": "array",
+                            "description": "Filter by specific usernames",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "take": {
+                            "type": "integer",
+                            "description": "Number of event types to return",
+                            "minimum": 1,
+                            "maximum": 100,
+                            "default": 10
+                        },
+                        "skip": {
+                            "type": "integer",
+                            "description": "Number of event types to skip for pagination",
+                            "minimum": 0,
+                            "default": 0
+                        }
+                    },
+                    "required": [],
+                    "visible": ["usernames", "take", "skip"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CAL__CREATE_EVENT_TYPE",
+        "description": "Create a new event type in Cal.com",
+        "tags": [
+            "event-types",
+            "calendar"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/event-types",
+            "server_url": "https://api.cal.com",
+            "content_type": "application/json",
+            "headers": {
+                "cal-api-version": "2024-06-11"
+            }
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "description": "Title of the event type",
+                            "example": "30-minute Meeting"
+                        },
+                        "slug": {
+                            "type": "string",
+                            "description": "URL slug for the event type",
+                            "example": "30min"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description of the event type",
+                            "example": "A quick 30-minute meeting"
+                        },
+                        "length": {
+                            "type": "integer",
+                            "description": "Duration in minutes",
+                            "minimum": 1,
+                            "example": 30
+                        },
+                        "locations": {
+                            "type": "array",
+                            "description": "Meeting locations",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "type": {
+                                        "type": "string",
+                                        "description": "Location type",
+                                        "enum": ["inPerson", "link", "integrations:zoom", "integrations:google:meet"]
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "description": "Physical address or meeting link"
+                                    }
+                                },
+                                "required": ["type"],
+                                "visible": ["type", "address"],
+                                "additionalProperties": false
+                            }
+                        },
+                        "bookingFields": {
+                            "type": "array",
+                            "description": "Custom booking form fields",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Field name"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "description": "Field type",
+                                        "enum": ["name", "email", "phone", "address", "text", "textarea", "select", "multiselect", "number"]
+                                    },
+                                    "required": {
+                                        "type": "boolean",
+                                        "description": "Whether field is required"
+                                    }
+                                },
+                                "required": ["name", "type"],
+                                "visible": ["name", "type", "required"],
+                                "additionalProperties": false
+                            }
+                        }
+                    },
+                    "required": ["title", "slug", "length"],
+                    "visible": ["title", "slug", "description", "length", "locations", "bookingFields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CAL__GET_AVAILABILITY",
+        "description": "Get availability for a user or event type",
+        "tags": [
+            "availability",
+            "calendar",
+            "schedule"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/availability",
+            "server_url": "https://api.cal.com",
+            "headers": {
+                "cal-api-version": "2024-06-11"
+            }
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "username": {
+                            "type": "string",
+                            "description": "Username to check availability for",
+                            "example": "john-doe"
+                        },
+                        "eventTypeId": {
+                            "type": "integer",
+                            "description": "Event type ID to check availability for",
+                            "example": 12345
+                        },
+                        "startTime": {
+                            "type": "string",
+                            "description": "Start time for availability check (ISO 8601)",
+                            "format": "date-time",
+                            "example": "2024-01-15T09:00:00Z"
+                        },
+                        "endTime": {
+                            "type": "string",
+                            "description": "End time for availability check (ISO 8601)",
+                            "format": "date-time",
+                            "example": "2024-01-15T17:00:00Z"
+                        },
+                        "timeZone": {
+                            "type": "string",
+                            "description": "Timezone for availability check",
+                            "example": "America/New_York"
+                        }
+                    },
+                    "required": ["startTime", "endTime"],
+                    "visible": ["username", "eventTypeId", "startTime", "endTime", "timeZone"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
     }
 ]

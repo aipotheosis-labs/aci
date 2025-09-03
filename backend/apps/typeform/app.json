@@ -1,0 +1,31 @@
+{
+  "name": "TYPEFORM",
+  "display_name": "Typeform",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/typeform.svg",
+  "provider": "Typeform SL",
+  "version": "2024.1",
+  "description": "Typeform is a leading online form builder that enables creation of engaging surveys, questionnaires, and data collection forms. This integration allows AI agents to manage forms, collect responses, analyze data, and automate form-based workflows for comprehensive data gathering automation.",
+  "security_schemes": {
+    "oauth2": {
+      "type": "oauth2",
+      "flows": {
+        "authorizationCode": {
+          "authorizationUrl": "https://api.typeform.com/oauth/authorize",
+          "tokenUrl": "https://api.typeform.com/oauth/token",
+          "scopes": {
+            "accounts:read": "Read account information",
+            "forms:read": "Read forms and their structure",
+            "forms:write": "Create and modify forms",
+            "responses:read": "Read form responses and submissions",
+            "workspaces:read": "Read workspace information",
+            "workspaces:write": "Manage workspaces and their settings"
+          }
+        }
+      }
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["Forms", "Survey", "Data Collection"],
+  "visibility": "public",
+  "active": true
+}

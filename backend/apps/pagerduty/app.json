@@ -1,0 +1,30 @@
+{
+  "name": "PAGERDUTY",
+  "display_name": "PagerDuty",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/pagerduty.svg",
+  "provider": "PagerDuty, Inc.",
+  "version": "1.0.0",
+  "description": "PagerDuty is a digital operations management platform that empowers teams to proactively mitigate issues that matter to their business before customers are impacted. This integration provides comprehensive incident management, alerting, and on-call scheduling capabilities.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_PAGERDUTY_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_PAGERDUTY_APP_CLIENT_SECRET }}",
+      "scope": "read write",
+      "authorize_url": "https://app.pagerduty.com/oauth/authorize",
+      "access_token_url": "https://app.pagerduty.com/oauth/token",
+      "refresh_token_url": "https://app.pagerduty.com/oauth/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Incident Management",
+    "DevOps",
+    "Monitoring",
+    "Alerting"
+  ],
+  "visibility": "public",
+  "active": true
+}

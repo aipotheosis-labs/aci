@@ -1,0 +1,29 @@
+{
+  "name": "ZOOM",
+  "display_name": "Zoom",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/zoom.svg",
+  "provider": "Zoom Video Communications",
+  "version": "1.0.0",
+  "description": "Zoom is a video communications platform providing meetings, webinars, and collaboration tools. This integration enables comprehensive management of meetings, participants, recordings, and real-time communication features for remote collaboration.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_ZOOM_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_ZOOM_APP_CLIENT_SECRET }}",
+      "scope": "meeting:read meeting:write recording:read recording:write user:read user:write webinar:read webinar:write",
+      "authorize_url": "https://zoom.us/oauth/authorize",
+      "access_token_url": "https://zoom.us/oauth/token",
+      "refresh_token_url": "https://zoom.us/oauth/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Communication",
+    "Video Conferencing",
+    "Collaboration"
+  ],
+  "visibility": "public",
+  "active": true
+}

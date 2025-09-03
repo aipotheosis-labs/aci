@@ -373,5 +373,1427 @@
             ],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "CLICKUP__GET_TASKS",
+        "description": "Get tasks from a list, folder, or space with filtering and pagination options.",
+        "tags": ["tasks", "list", "project management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/list/{list_id}/task",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "list_id": {
+                            "type": "string",
+                            "description": "List ID to get tasks from"
+                        }
+                    },
+                    "required": ["list_id"],
+                    "visible": ["list_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "archived": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include archived tasks"
+                        },
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination"
+                        },
+                        "order_by": {
+                            "type": "string",
+                            "enum": ["id", "created", "updated", "due_date"],
+                            "description": "Field to order results by"
+                        },
+                        "reverse": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Reverse the order"
+                        },
+                        "subtasks": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include subtasks"
+                        },
+                        "statuses": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Filter by task statuses"
+                        },
+                        "include_closed": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include closed tasks"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["archived", "page", "order_by", "reverse", "subtasks", "statuses", "include_closed"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__CREATE_TASK",
+        "description": "Create a new task in a list with title, description, assignees, and due date.",
+        "tags": ["tasks", "create", "project management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/list/{list_id}/task",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "list_id": {
+                            "type": "string",
+                            "description": "List ID to create task in"
+                        }
+                    },
+                    "required": ["list_id"],
+                    "visible": ["list_id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Task name"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Task description"
+                        },
+                        "assignees": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "description": "Array of user IDs to assign"
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "Task status"
+                        },
+                        "priority": {
+                            "type": "integer",
+                            "enum": [1, 2, 3, 4],
+                            "description": "Task priority (1=urgent, 2=high, 3=normal, 4=low)"
+                        },
+                        "due_date": {
+                            "type": "integer",
+                            "description": "Due date timestamp (Unix milliseconds)"
+                        },
+                        "due_date_time": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Whether due date includes time"
+                        },
+                        "time_estimate": {
+                            "type": "integer",
+                            "description": "Time estimate in milliseconds"
+                        },
+                        "start_date": {
+                            "type": "integer",
+                            "description": "Start date timestamp (Unix milliseconds)"
+                        },
+                        "start_date_time": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Whether start date includes time"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name", "description", "assignees", "status", "priority", "due_date", "due_date_time", "time_estimate", "start_date", "start_date_time"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__UPDATE_TASK",
+        "description": "Update an existing task with new information, status, assignees, or due dates.",
+        "tags": ["tasks", "update", "project management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/task/{task_id}",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {
+                            "type": "string",
+                            "description": "Task ID to update"
+                        }
+                    },
+                    "required": ["task_id"],
+                    "visible": ["task_id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "New task name"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "New task description"
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "New task status"
+                        },
+                        "priority": {
+                            "type": "integer",
+                            "enum": [1, 2, 3, 4],
+                            "description": "New task priority"
+                        },
+                        "due_date": {
+                            "type": "integer",
+                            "description": "New due date timestamp"
+                        },
+                        "assignees": {
+                            "type": "object",
+                            "properties": {
+                                "add": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "integer"
+                                    },
+                                    "description": "User IDs to add as assignees"
+                                },
+                                "rem": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "integer"
+                                    },
+                                    "description": "User IDs to remove as assignees"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["add", "rem"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "description", "status", "priority", "due_date", "assignees"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__GET_TASK",
+        "description": "Retrieve a specific task by its ID with full details including subtasks and comments.",
+        "tags": ["tasks", "get", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/task/{task_id}",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {
+                            "type": "string",
+                            "description": "Task ID to retrieve"
+                        }
+                    },
+                    "required": ["task_id"],
+                    "visible": ["task_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "custom_task_ids": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Include custom task IDs"
+                        },
+                        "team_id": {
+                            "type": "string",
+                            "description": "Only used when custom_task_ids is true"
+                        },
+                        "include_subtasks": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include subtasks in response"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["custom_task_ids", "team_id", "include_subtasks"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__DELETE_TASK",
+        "description": "Delete a task by its ID from ClickUp workspace.",
+        "tags": ["tasks", "delete", "remove"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/task/{task_id}",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {
+                            "type": "string",
+                            "description": "Task ID to delete"
+                        }
+                    },
+                    "required": ["task_id"],
+                    "visible": ["task_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__CREATE_TASK_COMMENT",
+        "description": "Add a comment to a task for team collaboration and communication.",
+        "tags": ["comments", "tasks", "collaboration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/task/{task_id}/comment",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {
+                            "type": "string",
+                            "description": "Task ID to comment on"
+                        }
+                    },
+                    "required": ["task_id"],
+                    "visible": ["task_id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "comment_text": {
+                            "type": "string",
+                            "description": "Text content of the comment"
+                        },
+                        "assignee": {
+                            "type": "integer",
+                            "description": "User ID to assign with the comment"
+                        },
+                        "notify_all": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Notify all task assignees"
+                        }
+                    },
+                    "required": ["comment_text"],
+                    "visible": ["comment_text", "assignee", "notify_all"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__GET_LISTS",
+        "description": "Get all lists in a folder with their task counts and settings.",
+        "tags": ["lists", "folders", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/folder/{folder_id}/list",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "folder_id": {
+                            "type": "string",
+                            "description": "Folder ID to get lists from"
+                        }
+                    },
+                    "required": ["folder_id"],
+                    "visible": ["folder_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "archived": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include archived lists"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["archived"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__CREATE_LIST",
+        "description": "Create a new list in a folder for organizing tasks and projects.",
+        "tags": ["lists", "create", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/folder/{folder_id}/list",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "folder_id": {
+                            "type": "string",
+                            "description": "Folder ID to create list in"
+                        }
+                    },
+                    "required": ["folder_id"],
+                    "visible": ["folder_id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "List name"
+                        },
+                        "content": {
+                            "type": "string",
+                            "description": "List description"
+                        },
+                        "due_date": {
+                            "type": "integer",
+                            "description": "Due date timestamp for the list"
+                        },
+                        "due_date_time": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Whether due date includes time"
+                        },
+                        "priority": {
+                            "type": "integer",
+                            "enum": [1, 2, 3, 4],
+                            "description": "List priority"
+                        },
+                        "assignee": {
+                            "type": "integer",
+                            "description": "User ID to assign list to"
+                        },
+                        "status": {
+                            "type": "string",
+                            "description": "List status"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name", "content", "due_date", "due_date_time", "priority", "assignee", "status"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__GET_FOLDERS",
+        "description": "Get all folders in a space with their lists and task organization.",
+        "tags": ["folders", "spaces", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/space/{space_id}/folder",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "space_id": {
+                            "type": "string",
+                            "description": "Space ID to get folders from"
+                        }
+                    },
+                    "required": ["space_id"],
+                    "visible": ["space_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "archived": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include archived folders"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["archived"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__CREATE_FOLDER",
+        "description": "Create a new folder in a space for organizing lists and projects with hierarchical structure.",
+        "tags": ["folders", "create", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/space/{space_id}/folder",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "space_id": {
+                            "type": "string",
+                            "description": "Space ID to create folder in"
+                        }
+                    },
+                    "required": ["space_id"],
+                    "visible": ["space_id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Folder name"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__GET_TIME_TRACKING",
+        "description": "Retrieve time tracking entries for tasks, users, or projects with detailed time logs and productivity analytics.",
+        "tags": ["time-tracking", "productivity", "analytics"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/team/{team_id}/time_entries",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "team_id": {
+                            "type": "string",
+                            "description": "Team ID to get time entries for"
+                        }
+                    },
+                    "required": ["team_id"],
+                    "visible": ["team_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "start_date": {
+                            "type": "integer",
+                            "description": "Start date timestamp (Unix milliseconds)"
+                        },
+                        "end_date": {
+                            "type": "integer",
+                            "description": "End date timestamp (Unix milliseconds)"
+                        },
+                        "assignee": {
+                            "type": "integer",
+                            "description": "Filter by assignee user ID"
+                        },
+                        "include_task_tags": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include task tags in response"
+                        },
+                        "include_location_names": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include location names"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["start_date", "end_date", "assignee", "include_task_tags", "include_location_names"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__CREATE_TIME_ENTRY",
+        "description": "Log time for a specific task or project to track productivity and billable hours for project management.",
+        "tags": ["time-tracking", "logging", "productivity"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/team/{team_id}/time_entries",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "team_id": {
+                            "type": "string",
+                            "description": "Team ID to log time for"
+                        }
+                    },
+                    "required": ["team_id"],
+                    "visible": ["team_id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "description": {
+                            "type": "string",
+                            "description": "Description of the time entry"
+                        },
+                        "tags": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    }
+                                },
+                                "additionalProperties": false
+                            },
+                            "description": "Tags for time categorization"
+                        },
+                        "start": {
+                            "type": "integer",
+                            "description": "Start time timestamp (Unix milliseconds)"
+                        },
+                        "billable": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Whether time is billable"
+                        },
+                        "duration": {
+                            "type": "integer",
+                            "description": "Duration in milliseconds"
+                        },
+                        "assignee": {
+                            "type": "integer",
+                            "description": "User ID of the assignee"
+                        },
+                        "tid": {
+                            "type": "string",
+                            "description": "Task ID to log time against"
+                        }
+                    },
+                    "required": ["description", "start", "duration"],
+                    "visible": ["description", "tags", "start", "billable", "duration", "assignee", "tid"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__GET_TASK_COMMENTS",
+        "description": "Retrieve all comments on a specific task for collaboration tracking and communication history.",
+        "tags": ["comments", "tasks", "collaboration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/task/{task_id}/comment",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {
+                            "type": "string",
+                            "description": "Task ID to get comments for"
+                        }
+                    },
+                    "required": ["task_id"],
+                    "visible": ["task_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "custom_task_ids": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Include custom task IDs"
+                        },
+                        "team_id": {
+                            "type": "string",
+                            "description": "Team ID when using custom task IDs"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["custom_task_ids", "team_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__GET_CUSTOM_FIELDS",
+        "description": "Retrieve custom fields configuration for a list to understand available data fields and their types.",
+        "tags": ["custom-fields", "configuration", "metadata"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/list/{list_id}/field",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "list_id": {
+                            "type": "string",
+                            "description": "List ID to get custom fields for"
+                        }
+                    },
+                    "required": ["list_id"],
+                    "visible": ["list_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__GET_TEAM_MEMBERS",
+        "description": "Retrieve all team members in a workspace with their roles, permissions, and activity status for team management.",
+        "tags": ["team", "members", "users"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/team/{team_id}/member",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "team_id": {
+                            "type": "string",
+                            "description": "Team ID to get members for"
+                        }
+                    },
+                    "required": ["team_id"],
+                    "visible": ["team_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__CREATE_GOAL",
+        "description": "Create a new goal with targets, deadlines, and key results for objective tracking and team alignment.",
+        "tags": ["goals", "objectives", "planning"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/team/{team_id}/goal",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "team_id": {
+                            "type": "string",
+                            "description": "Team ID to create goal in"
+                        }
+                    },
+                    "required": ["team_id"],
+                    "visible": ["team_id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Goal name"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Goal description"
+                        },
+                        "due_date": {
+                            "type": "integer",
+                            "description": "Goal due date timestamp"
+                        },
+                        "priority": {
+                            "type": "integer",
+                            "enum": [1, 2, 3, 4],
+                            "description": "Goal priority level"
+                        },
+                        "color": {
+                            "type": "string",
+                            "description": "Goal color for visual organization"
+                        },
+                        "multiple_owners": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Allow multiple owners"
+                        },
+                        "owners": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            },
+                            "description": "Array of user IDs as goal owners"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name", "description", "due_date", "priority", "color", "multiple_owners", "owners"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__GET_WEBHOOKS",
+        "description": "List all configured webhooks for real-time notifications about task updates, project changes, and team activities.",
+        "tags": ["webhooks", "notifications", "automation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/team/{team_id}/webhook",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "team_id": {
+                            "type": "string",
+                            "description": "Team ID to get webhooks for"
+                        }
+                    },
+                    "required": ["team_id"],
+                    "visible": ["team_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__CREATE_WEBHOOK",
+        "description": "Create a webhook to receive real-time notifications for task updates, status changes, and project events for external system integration.",
+        "tags": ["webhooks", "automation", "notifications"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/team/{team_id}/webhook",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "team_id": {
+                            "type": "string",
+                            "description": "Team ID to create webhook for"
+                        }
+                    },
+                    "required": ["team_id"],
+                    "visible": ["team_id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "endpoint": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "Webhook endpoint URL"
+                        },
+                        "events": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": ["taskCreated", "taskUpdated", "taskDeleted", "taskStatusUpdated", "taskAssigneeUpdated", "taskDueDateUpdated", "taskPriorityUpdated", "listCreated", "listUpdated", "listDeleted", "folderCreated", "folderUpdated", "folderDeleted", "spaceCreated", "spaceUpdated", "spaceDeleted", "goalCreated", "goalUpdated", "goalDeleted", "keyResultCreated", "keyResultUpdated", "keyResultDeleted"]
+                            },
+                            "description": "Events to trigger webhook"
+                        }
+                    },
+                    "required": ["endpoint", "events"],
+                    "visible": ["endpoint", "events"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__GET_TASK_ATTACHMENTS",
+        "description": "Retrieve all file attachments for a specific task including documents, images, and other uploaded files.",
+        "tags": ["attachments", "files", "tasks"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/task/{task_id}/attachment",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {
+                            "type": "string",
+                            "description": "Task ID to get attachments for"
+                        }
+                    },
+                    "required": ["task_id"],
+                    "visible": ["task_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__CREATE_TASK_ATTACHMENT",
+        "description": "Upload a file attachment to a task for document sharing and collaboration within project context.",
+        "tags": ["attachments", "upload", "files"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/task/{task_id}/attachment",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {
+                            "type": "string",
+                            "description": "Task ID to attach file to"
+                        }
+                    },
+                    "required": ["task_id"],
+                    "visible": ["task_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "attachment": {
+                            "type": "string",
+                            "format": "binary",
+                            "description": "File to attach"
+                        },
+                        "filename": {
+                            "type": "string",
+                            "description": "Name for the uploaded file"
+                        }
+                    },
+                    "required": ["attachment"],
+                    "visible": ["attachment", "filename"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__GET_TASK_TEMPLATES",
+        "description": "Retrieve available task templates for standardized task creation and workflow automation across projects.",
+        "tags": ["templates", "tasks", "automation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/team/{team_id}/taskTemplate",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "team_id": {
+                            "type": "string",
+                            "description": "Team ID to get task templates for"
+                        }
+                    },
+                    "required": ["team_id"],
+                    "visible": ["team_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__GET_TASK_DEPENDENCIES",
+        "description": "Retrieve task dependencies and blocking relationships for project scheduling and workflow management.",
+        "tags": ["dependencies", "tasks", "scheduling"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/task/{task_id}/dependency",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {
+                            "type": "string",
+                            "description": "Task ID to get dependencies for"
+                        }
+                    },
+                    "required": ["task_id"],
+                    "visible": ["task_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__CREATE_TASK_DEPENDENCY",
+        "description": "Create task dependencies to establish workflow order and project scheduling constraints for effective project management.",
+        "tags": ["dependencies", "tasks", "workflow"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/task/{task_id}/dependency",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "task_id": {
+                            "type": "string",
+                            "description": "Task ID to create dependency for"
+                        }
+                    },
+                    "required": ["task_id"],
+                    "visible": ["task_id"],
+                    "additionalProperties": false
+                },
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "depends_on": {
+                            "type": "string",
+                            "description": "Task ID that this task depends on"
+                        },
+                        "dependency_of": {
+                            "type": "string",
+                            "description": "Task ID that depends on this task"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["depends_on", "dependency_of"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "header", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__GET_AUTOMATIONS",
+        "description": "Retrieve all automation rules configured in the workspace for workflow automation and productivity enhancement.",
+        "tags": ["automations", "workflow", "productivity"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/team/{team_id}/automation",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "team_id": {
+                            "type": "string",
+                            "description": "Team ID to get automations for"
+                        }
+                    },
+                    "required": ["team_id"],
+                    "visible": ["team_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "CLICKUP__GET_WORKSPACE_ANALYTICS",
+        "description": "Retrieve comprehensive workspace analytics including productivity metrics, task completion rates, and team performance data for strategic insights.",
+        "tags": ["analytics", "productivity", "metrics"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/team/{team_id}/analytics",
+            "server_url": "https://api.clickup.com/api/v2"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "team_id": {
+                            "type": "string",
+                            "description": "Team ID to get analytics for"
+                        }
+                    },
+                    "required": ["team_id"],
+                    "visible": ["team_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "start_date": {
+                            "type": "integer",
+                            "description": "Start date for analytics period (Unix timestamp)"
+                        },
+                        "end_date": {
+                            "type": "integer",
+                            "description": "End date for analytics period (Unix timestamp)"
+                        },
+                        "include_subtasks": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include subtasks in analytics"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["start_date", "end_date", "include_subtasks"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
     }
 ]

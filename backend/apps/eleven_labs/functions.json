@@ -617,5 +617,407 @@
             "visible": ["path", "query", "header", "body"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "ELEVEN_LABS__ADD_VOICE",
+        "description": "Add a new voice by uploading audio samples for voice cloning with custom labels and descriptions",
+        "tags": ["elevenlabs", "voice", "cloning", "upload"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/voices/add",
+            "server_url": "https://api.elevenlabs.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "The content type of the request",
+                            "default": "multipart/form-data"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": ["Content-Type"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name that identifies this voice. This will be displayed in the dropdown of the website."
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "How would you describe the voice?"
+                        },
+                        "labels": {
+                            "type": "string",
+                            "description": "Serialized labels dictionary for the voice."
+                        },
+                        "files": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "format": "binary"
+                            },
+                            "description": "One or more audio files to upload. Supported formats: mp3, wav, flac, ogg."
+                        }
+                    },
+                    "required": ["name", "files"],
+                    "visible": ["name", "description", "labels", "files"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["header", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ELEVEN_LABS__DELETE_VOICE",
+        "description": "Delete a specific voice from your account permanently",
+        "tags": ["elevenlabs", "voice", "delete"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v1/voices/{voice_id}",
+            "server_url": "https://api.elevenlabs.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "voice_id": {
+                            "type": "string",
+                            "description": "The ID of the voice to delete. Use the Get Voices endpoint to list all available voices."
+                        }
+                    },
+                    "required": ["voice_id"],
+                    "visible": ["voice_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ELEVEN_LABS__GET_USER_SUBSCRIPTION",
+        "description": "Get information about the user's subscription plan, limits, and usage quotas",
+        "tags": ["elevenlabs", "subscription", "usage", "limits"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/user/subscription",
+            "server_url": "https://api.elevenlabs.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ELEVEN_LABS__GET_USER_INFO",
+        "description": "Get information about the current user account and available features",
+        "tags": ["elevenlabs", "user", "account"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/user",
+            "server_url": "https://api.elevenlabs.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ELEVEN_LABS__GET_MODELS",
+        "description": "Get available AI models for text-to-speech synthesis with their capabilities and supported languages",
+        "tags": ["elevenlabs", "models", "capabilities"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/models",
+            "server_url": "https://api.elevenlabs.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ELEVEN_LABS__GET_HISTORY",
+        "description": "Get history of previous text-to-speech generations with pagination and filtering options",
+        "tags": ["elevenlabs", "history", "generations", "tracking"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/history",
+            "server_url": "https://api.elevenlabs.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters",
+                    "properties": {
+                        "page_size": {
+                            "type": "integer",
+                            "description": "How many history items to return at maximum. Can not exceed 1000.",
+                            "maximum": 1000,
+                            "default": 100
+                        },
+                        "start_after_history_item_id": {
+                            "type": "string",
+                            "description": "After which ID to start fetching, used for pagination. If not provided, fetches from the beginning."
+                        },
+                        "voice_id": {
+                            "type": "string",
+                            "description": "Voice ID to be filtered for, you can use GET https://api.elevenlabs.io/v1/voices to receive a list of voices and their IDs."
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page_size", "start_after_history_item_id", "voice_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ELEVEN_LABS__GET_HISTORY_ITEM_AUDIO",
+        "description": "Get the generated audio file for a specific history item",
+        "tags": ["elevenlabs", "history", "audio", "download"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/history/{history_item_id}/audio",
+            "server_url": "https://api.elevenlabs.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "history_item_id": {
+                            "type": "string",
+                            "description": "History item ID to be used, you can use GET https://api.elevenlabs.io/v1/history to receive a list of history items and their IDs."
+                        }
+                    },
+                    "required": ["history_item_id"],
+                    "visible": ["history_item_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ELEVEN_LABS__DELETE_HISTORY_ITEM",
+        "description": "Delete a specific history item and its associated audio file from your account",
+        "tags": ["elevenlabs", "history", "delete", "cleanup"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v1/history/{history_item_id}",
+            "server_url": "https://api.elevenlabs.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "history_item_id": {
+                            "type": "string",
+                            "description": "History item ID to be used, you can use GET https://api.elevenlabs.io/v1/history to receive a list of history items and their IDs."
+                        }
+                    },
+                    "required": ["history_item_id"],
+                    "visible": ["history_item_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ELEVEN_LABS__GET_PROJECTS",
+        "description": "Get a list of all projects associated with your account for organizing and managing voice content",
+        "tags": ["elevenlabs", "projects", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/projects",
+            "server_url": "https://api.elevenlabs.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ELEVEN_LABS__CREATE_PROJECT",
+        "description": "Create a new project to organize your voice content and manage access permissions",
+        "tags": ["elevenlabs", "projects", "create", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/projects/add",
+            "server_url": "https://api.elevenlabs.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Header parameters",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "The content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": ["Content-Type"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "The name of the project."
+                        },
+                        "default_title_voice_id": {
+                            "type": "string",
+                            "description": "The voice_id that corresponds to the default voice used for the title of the project."
+                        },
+                        "default_paragraph_voice_id": {
+                            "type": "string",
+                            "description": "The voice_id that corresponds to the default voice used for the paragraphs of the project."
+                        },
+                        "default_model_id": {
+                            "type": "string",
+                            "description": "The model_id of the model to be used for this project, you can query GET https://api.elevenlabs.io/v1/models to list all available models."
+                        },
+                        "quality_preset": {
+                            "type": "string",
+                            "enum": ["low", "standard", "high"],
+                            "description": "Output quality of the generated audio. Must be one of: low - 22kHz, standard - 44kHz, high - 44kHz. Defaults to 'high'.",
+                            "default": "high"
+                        },
+                        "title": {
+                            "type": "string",
+                            "description": "An optional name of the author of the project, this will be added as metadata to the mp3 file on project / chapter download."
+                        },
+                        "author": {
+                            "type": "string",
+                            "description": "An optional name of the author of the project, this will be added as metadata to the mp3 file on project / chapter download."
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "An optional description of the project."
+                        },
+                        "genres": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "An optional list of genres for the project."
+                        },
+                        "target_audience": {
+                            "type": "string",
+                            "enum": ["general", "kids"],
+                            "description": "An optional target audience of the project. Must be one of: general, kids. Defaults to 'general'.",
+                            "default": "general"
+                        },
+                        "language": {
+                            "type": "string",
+                            "description": "An optional language of the project. Defaults to 'en'.",
+                            "default": "en"
+                        },
+                        "content_type": {
+                            "type": "string",
+                            "description": "An optional content type of the project."
+                        },
+                        "original_publication_date": {
+                            "type": "string",
+                            "description": "An optional original publication date of the project in the format YYYY-MM-DD or YYYY."
+                        },
+                        "mature_content": {
+                            "type": "boolean",
+                            "description": "An optional mature content flag."
+                        },
+                        "isbn_number": {
+                            "type": "string",
+                            "description": "An optional ISBN number of the project you want to create, this will be added as metadata to the mp3 file on project / chapter download."
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name", "default_title_voice_id", "default_paragraph_voice_id", "default_model_id", "quality_preset", "title", "author", "description", "genres", "target_audience", "language", "content_type", "original_publication_date", "mature_content", "isbn_number"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["header", "body"],
+            "additionalProperties": false
+        }
     }
 ]

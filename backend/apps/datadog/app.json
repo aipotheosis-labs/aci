@@ -1,0 +1,30 @@
+{
+  "name": "DATADOG",
+  "display_name": "Datadog",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/datadog.svg",
+  "provider": "Datadog, Inc.",
+  "version": "1.0.0",
+  "description": "Datadog is a monitoring and analytics platform for developers, IT operations teams, and business users in the cloud age. This integration provides comprehensive monitoring, alerting, and observability capabilities for infrastructure, applications, and security.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "DD-API-KEY",
+      "description": "Datadog API key for authentication"
+    },
+    "app_key": {
+      "location": "header",
+      "name": "DD-APPLICATION-KEY",
+      "description": "Datadog application key for enhanced API access"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Monitoring",
+    "DevOps",
+    "Analytics",
+    "Observability",
+    "Security"
+  ],
+  "visibility": "public",
+  "active": true
+}

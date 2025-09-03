@@ -1,0 +1,33 @@
+{
+  "name": "INSTAGRAM",
+  "display_name": "Instagram Business API",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/instagram.svg",
+  "provider": "Meta Platforms, Inc.",
+  "version": "v20.0",
+  "description": "Instagram Business API provides comprehensive social media management capabilities for businesses to manage their Instagram presence. This integration enables AI agents to publish posts, manage stories, analyze engagement metrics, handle direct messages, manage business profiles, and automate content workflows for effective social media marketing and customer engagement.",
+  "security_schemes": {
+    "oauth2": {
+      "type": "oauth2",
+      "flows": {
+        "authorizationCode": {
+          "authorizationUrl": "https://www.facebook.com/v20.0/dialog/oauth",
+          "tokenUrl": "https://graph.facebook.com/v20.0/oauth/access_token",
+          "scopes": {
+            "instagram_basic": "Read basic Instagram account information",
+            "instagram_content_publish": "Publish content to Instagram feed and stories",
+            "instagram_manage_comments": "Read and respond to comments on posts",
+            "instagram_manage_insights": "Read Instagram analytics and insights",
+            "instagram_manage_messages": "Send and receive Instagram direct messages",
+            "pages_read_engagement": "Read page engagement metrics",
+            "pages_show_list": "Read list of pages user manages",
+            "business_management": "Manage business settings and configuration"
+          }
+        }
+      }
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["Social Media", "Marketing", "Analytics"],
+  "visibility": "public",
+  "active": true
+}

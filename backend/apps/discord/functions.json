@@ -18,5 +18,1906 @@
       "visible": [],
       "additionalProperties": false
     }
+  },
+  {
+    "name": "DISCORD__SEND_MESSAGE",
+    "description": "Send a message to a Discord channel with text, embeds, and file attachments.",
+    "tags": ["message", "send", "chat"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/channels/{channel_id}/messages",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID to send message to"
+            }
+          },
+          "required": ["channel_id"],
+          "visible": ["channel_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string",
+              "description": "Message content (up to 2000 characters)"
+            },
+            "embeds": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Embed title"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Embed description"
+                  },
+                  "color": {
+                    "type": "integer",
+                    "description": "Embed color (decimal)"
+                  }
+                },
+                "required": [],
+                "visible": ["title", "description", "color"],
+                "additionalProperties": false
+              },
+              "description": "Rich embed objects"
+            }
+          },
+          "required": [],
+          "visible": ["content", "embeds"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_CHANNEL_MESSAGES",
+    "description": "Retrieve messages from a Discord channel with filtering and pagination options.",
+    "tags": ["messages", "history", "channel"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/channels/{channel_id}/messages",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID to get messages from"
+            }
+          },
+          "required": ["channel_id"],
+          "visible": ["channel_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 50,
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Number of messages to return"
+            },
+            "before": {
+              "type": "string",
+              "description": "Get messages before this message ID"
+            },
+            "after": {
+              "type": "string",
+              "description": "Get messages after this message ID"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "before", "after"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_GUILD_CHANNELS",
+    "description": "Get a list of all channels in a Discord server with their types and permissions.",
+    "tags": ["channels", "server", "guild"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/guilds/{guild_id}/channels",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            }
+          },
+          "required": ["guild_id"],
+          "visible": ["guild_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__CREATE_CHANNEL",
+    "description": "Create a new channel in a Discord server with specified name, type, and permissions.",
+    "tags": ["channel", "create", "server"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/guilds/{guild_id}/channels",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            }
+          },
+          "required": ["guild_id"],
+          "visible": ["guild_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Channel name (2-100 characters)"
+            },
+            "type": {
+              "type": "integer",
+              "enum": [0, 1, 2, 4, 5, 10, 11, 12, 13, 15],
+              "default": 0,
+              "description": "Channel type (0=text, 1=dm, 2=voice, 4=category, etc.)"
+            },
+            "topic": {
+              "type": "string",
+              "description": "Channel topic/description"
+            },
+            "position": {
+              "type": "integer",
+              "description": "Sorting position of the channel"
+            }
+          },
+          "required": ["name"],
+          "visible": ["name", "type", "topic", "position"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_GUILD_MEMBERS",
+    "description": "Get a list of guild members with their roles and user information.",
+    "tags": ["members", "users", "guild"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/guilds/{guild_id}/members",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            }
+          },
+          "required": ["guild_id"],
+          "visible": ["guild_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 1,
+              "minimum": 1,
+              "maximum": 1000,
+              "description": "Number of members to return"
+            },
+            "after": {
+              "type": "string",
+              "description": "Get members after this user ID"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "after"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__ADD_GUILD_MEMBER_ROLE",
+    "description": "Add a role to a guild member in Discord server.",
+    "tags": ["roles", "permissions", "members"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/guilds/{guild_id}/members/{user_id}/roles/{role_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            },
+            "user_id": {
+              "type": "string",
+              "description": "User ID to add role to"
+            },
+            "role_id": {
+              "type": "string",
+              "description": "Role ID to add"
+            }
+          },
+          "required": ["guild_id", "user_id", "role_id"],
+          "visible": ["guild_id", "user_id", "role_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_GUILD_ROLES",
+    "description": "Get all roles in a Discord server with their permissions and member counts.",
+    "tags": ["roles", "permissions", "server"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/guilds/{guild_id}/roles",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            }
+          },
+          "required": ["guild_id"],
+          "visible": ["guild_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__CREATE_WEBHOOK",
+    "description": "Create a webhook for a Discord channel to send automated messages.",
+    "tags": ["webhook", "automation", "integration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/channels/{channel_id}/webhooks",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID to create webhook for"
+            }
+          },
+          "required": ["channel_id"],
+          "visible": ["channel_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Webhook name"
+            },
+            "avatar": {
+              "type": "string",
+              "description": "Base64 encoded avatar image"
+            }
+          },
+          "required": ["name"],
+          "visible": ["name", "avatar"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__DELETE_MESSAGE",
+    "description": "Delete a message from a Discord channel by message ID.",
+    "tags": ["message", "delete", "moderation"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/messages/{message_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID containing the message"
+            },
+            "message_id": {
+              "type": "string",
+              "description": "Message ID to delete"
+            }
+          },
+          "required": ["channel_id", "message_id"],
+          "visible": ["channel_id", "message_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__EDIT_MESSAGE",
+    "description": "Edit an existing message in a Discord channel with new content or embeds.",
+    "tags": ["message", "edit", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/channels/{channel_id}/messages/{message_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID containing the message"
+            },
+            "message_id": {
+              "type": "string",
+              "description": "Message ID to edit"
+            }
+          },
+          "required": ["channel_id", "message_id"],
+          "visible": ["channel_id", "message_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "content": {
+              "type": "string",
+              "description": "New message content"
+            },
+            "embeds": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Embed title"
+                  },
+                  "description": {
+                    "type": "string",
+                    "description": "Embed description"
+                  },
+                  "color": {
+                    "type": "integer",
+                    "description": "Embed color (decimal)"
+                  }
+                },
+                "additionalProperties": false
+              },
+              "description": "Rich embed objects"
+            }
+          },
+          "required": [],
+          "visible": ["content", "embeds"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_GUILD_INFO",
+    "description": "Retrieve detailed information about a Discord server including name, member count, and settings.",
+    "tags": ["guild", "server", "info"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/guilds/{guild_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            }
+          },
+          "required": ["guild_id"],
+          "visible": ["guild_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "with_counts": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include approximate member and presence counts"
+            }
+          },
+          "required": [],
+          "visible": ["with_counts"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__CREATE_ROLE",
+    "description": "Create a new role in a Discord server with specified permissions and appearance settings.",
+    "tags": ["roles", "create", "permissions"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/guilds/{guild_id}/roles",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            }
+          },
+          "required": ["guild_id"],
+          "visible": ["guild_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Role name"
+            },
+            "permissions": {
+              "type": "string",
+              "description": "Bitwise value of enabled/disabled permissions"
+            },
+            "color": {
+              "type": "integer",
+              "description": "RGB color value (0-16777215)"
+            },
+            "hoist": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether role should be displayed separately in member list"
+            },
+            "mentionable": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether role is mentionable"
+            }
+          },
+          "required": [],
+          "visible": ["name", "permissions", "color", "hoist", "mentionable"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__UPDATE_ROLE",
+    "description": "Update an existing role in a Discord server with new permissions, name, or appearance settings.",
+    "tags": ["roles", "update", "permissions"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/roles/{role_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            },
+            "role_id": {
+              "type": "string",
+              "description": "Role ID to update"
+            }
+          },
+          "required": ["guild_id", "role_id"],
+          "visible": ["guild_id", "role_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Updated role name"
+            },
+            "permissions": {
+              "type": "string",
+              "description": "Updated bitwise value of enabled/disabled permissions"
+            },
+            "color": {
+              "type": "integer",
+              "description": "Updated RGB color value (0-16777215)"
+            },
+            "hoist": {
+              "type": "boolean",
+              "description": "Whether role should be displayed separately in member list"
+            },
+            "mentionable": {
+              "type": "boolean",
+              "description": "Whether role is mentionable"
+            }
+          },
+          "required": [],
+          "visible": ["name", "permissions", "color", "hoist", "mentionable"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__DELETE_ROLE",
+    "description": "Delete a role from a Discord server permanently, removing it from all members.",
+    "tags": ["roles", "delete", "permissions"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/roles/{role_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            },
+            "role_id": {
+              "type": "string",
+              "description": "Role ID to delete"
+            }
+          },
+          "required": ["guild_id", "role_id"],
+          "visible": ["guild_id", "role_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__REMOVE_GUILD_MEMBER_ROLE",
+    "description": "Remove a role from a guild member in Discord server, revoking associated permissions.",
+    "tags": ["roles", "permissions", "members"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/members/{user_id}/roles/{role_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            },
+            "user_id": {
+              "type": "string",
+              "description": "User ID to remove role from"
+            },
+            "role_id": {
+              "type": "string",
+              "description": "Role ID to remove"
+            }
+          },
+          "required": ["guild_id", "user_id", "role_id"],
+          "visible": ["guild_id", "user_id", "role_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_GUILD_MEMBER",
+    "description": "Retrieve detailed information about a specific guild member including roles and join date.",
+    "tags": ["members", "user", "details"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/guilds/{guild_id}/members/{user_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            },
+            "user_id": {
+              "type": "string",
+              "description": "User ID to get member info for"
+            }
+          },
+          "required": ["guild_id", "user_id"],
+          "visible": ["guild_id", "user_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__UPDATE_GUILD_MEMBER",
+    "description": "Update a guild member in Discord server with new nickname, roles, or moderation settings.",
+    "tags": ["members", "update", "moderation"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/guilds/{guild_id}/members/{user_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            },
+            "user_id": {
+              "type": "string",
+              "description": "User ID to update"
+            }
+          },
+          "required": ["guild_id", "user_id"],
+          "visible": ["guild_id", "user_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "nick": {
+              "type": "string",
+              "description": "New nickname for the member"
+            },
+            "roles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Array of role IDs to assign to the member"
+            },
+            "mute": {
+              "type": "boolean",
+              "description": "Whether the member is muted in voice channels"
+            },
+            "deaf": {
+              "type": "boolean",
+              "description": "Whether the member is deafened in voice channels"
+            },
+            "channel_id": {
+              "type": "string",
+              "description": "Voice channel ID to move member to"
+            }
+          },
+          "required": [],
+          "visible": ["nick", "roles", "mute", "deaf", "channel_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__KICK_GUILD_MEMBER",
+    "description": "Remove (kick) a member from a Discord server, allowing them to rejoin with invite link.",
+    "tags": ["members", "kick", "moderation"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/members/{user_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            },
+            "user_id": {
+              "type": "string",
+              "description": "User ID to kick from server"
+            }
+          },
+          "required": ["guild_id", "user_id"],
+          "visible": ["guild_id", "user_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__BAN_GUILD_MEMBER",
+    "description": "Ban a member from a Discord server, preventing them from rejoining and optionally deleting their messages.",
+    "tags": ["members", "ban", "moderation"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/guilds/{guild_id}/bans/{user_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            },
+            "user_id": {
+              "type": "string",
+              "description": "User ID to ban from server"
+            }
+          },
+          "required": ["guild_id", "user_id"],
+          "visible": ["guild_id", "user_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "delete_message_days": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 7,
+              "description": "Number of days of messages to delete (0-7)"
+            },
+            "reason": {
+              "type": "string",
+              "description": "Reason for the ban (for audit log)"
+            }
+          },
+          "required": [],
+          "visible": ["delete_message_days", "reason"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__UNBAN_GUILD_MEMBER",
+    "description": "Unban a previously banned user from a Discord server, allowing them to rejoin.",
+    "tags": ["members", "unban", "moderation"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/bans/{user_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            },
+            "user_id": {
+              "type": "string",
+              "description": "User ID to unban"
+            }
+          },
+          "required": ["guild_id", "user_id"],
+          "visible": ["guild_id", "user_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_GUILD_BANS",
+    "description": "Retrieve all banned users from a Discord server with ban reasons and timestamps.",
+    "tags": ["bans", "moderation", "guild"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/guilds/{guild_id}/bans",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            }
+          },
+          "required": ["guild_id"],
+          "visible": ["guild_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 1000,
+              "minimum": 1,
+              "maximum": 1000,
+              "description": "Number of bans to return"
+            },
+            "before": {
+              "type": "string",
+              "description": "Get bans before this user ID"
+            },
+            "after": {
+              "type": "string",
+              "description": "Get bans after this user ID"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "before", "after"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__UPDATE_CHANNEL",
+    "description": "Update a Discord channel with new name, topic, permissions, or other settings.",
+    "tags": ["channel", "update", "settings"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/channels/{channel_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID to update"
+            }
+          },
+          "required": ["channel_id"],
+          "visible": ["channel_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Updated channel name"
+            },
+            "topic": {
+              "type": "string",
+              "description": "Updated channel topic/description"
+            },
+            "nsfw": {
+              "type": "boolean",
+              "description": "Whether the channel is marked as NSFW"
+            },
+            "position": {
+              "type": "integer",
+              "description": "Updated sorting position of the channel"
+            },
+            "bitrate": {
+              "type": "integer",
+              "description": "Bitrate for voice channels"
+            },
+            "user_limit": {
+              "type": "integer",
+              "description": "User limit for voice channels"
+            }
+          },
+          "required": [],
+          "visible": ["name", "topic", "nsfw", "position", "bitrate", "user_limit"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__DELETE_CHANNEL",
+    "description": "Delete a channel from a Discord server permanently, removing all messages and history.",
+    "tags": ["channel", "delete", "remove"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/channels/{channel_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID to delete"
+            }
+          },
+          "required": ["channel_id"],
+          "visible": ["channel_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_CHANNEL_INFO",
+    "description": "Retrieve detailed information about a specific Discord channel including permissions and settings.",
+    "tags": ["channel", "info", "details"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/channels/{channel_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID to get information for"
+            }
+          },
+          "required": ["channel_id"],
+          "visible": ["channel_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__ADD_REACTION",
+    "description": "Add an emoji reaction to a message in a Discord channel for engagement and feedback.",
+    "tags": ["reactions", "emoji", "engagement"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID containing the message"
+            },
+            "message_id": {
+              "type": "string",
+              "description": "Message ID to react to"
+            },
+            "emoji": {
+              "type": "string",
+              "description": "Emoji to react with (URL encoded)"
+            }
+          },
+          "required": ["channel_id", "message_id", "emoji"],
+          "visible": ["channel_id", "message_id", "emoji"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__REMOVE_REACTION",
+    "description": "Remove an emoji reaction from a message in a Discord channel.",
+    "tags": ["reactions", "emoji", "remove"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/messages/{message_id}/reactions/{emoji}/@me",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID containing the message"
+            },
+            "message_id": {
+              "type": "string",
+              "description": "Message ID to remove reaction from"
+            },
+            "emoji": {
+              "type": "string",
+              "description": "Emoji reaction to remove (URL encoded)"
+            }
+          },
+          "required": ["channel_id", "message_id", "emoji"],
+          "visible": ["channel_id", "message_id", "emoji"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__PIN_MESSAGE",
+    "description": "Pin a message in a Discord channel to make it easily accessible to all members.",
+    "tags": ["messages", "pin", "highlight"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/channels/{channel_id}/pins/{message_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID containing the message"
+            },
+            "message_id": {
+              "type": "string",
+              "description": "Message ID to pin"
+            }
+          },
+          "required": ["channel_id", "message_id"],
+          "visible": ["channel_id", "message_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__UNPIN_MESSAGE",
+    "description": "Unpin a message from a Discord channel, removing it from the pinned messages list.",
+    "tags": ["messages", "unpin", "remove"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/channels/{channel_id}/pins/{message_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID containing the message"
+            },
+            "message_id": {
+              "type": "string",
+              "description": "Message ID to unpin"
+            }
+          },
+          "required": ["channel_id", "message_id"],
+          "visible": ["channel_id", "message_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_PINNED_MESSAGES",
+    "description": "Retrieve all pinned messages from a Discord channel for quick access to important information.",
+    "tags": ["messages", "pinned", "important"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/channels/{channel_id}/pins",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID to get pinned messages from"
+            }
+          },
+          "required": ["channel_id"],
+          "visible": ["channel_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__CREATE_GUILD_INVITE",
+    "description": "Create an invite link for a Discord server with customizable expiration and usage limits.",
+    "tags": ["invite", "server", "link"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/channels/{channel_id}/invites",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "channel_id": {
+              "type": "string",
+              "description": "Channel ID to create invite for"
+            }
+          },
+          "required": ["channel_id"],
+          "visible": ["channel_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "max_age": {
+              "type": "integer",
+              "default": 86400,
+              "description": "Duration of invite in seconds (0 = never expire)"
+            },
+            "max_uses": {
+              "type": "integer",
+              "default": 0,
+              "description": "Maximum number of uses (0 = unlimited)"
+            },
+            "temporary": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether this invite only grants temporary membership"
+            },
+            "unique": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether this invite is unique"
+            }
+          },
+          "required": [],
+          "visible": ["max_age", "max_uses", "temporary", "unique"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_GUILD_INVITES",
+    "description": "Retrieve all active invites for a Discord server with usage statistics and expiration info.",
+    "tags": ["invites", "server", "links"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/guilds/{guild_id}/invites",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            }
+          },
+          "required": ["guild_id"],
+          "visible": ["guild_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__DELETE_INVITE",
+    "description": "Delete an invite from a Discord server, making the invite link invalid.",
+    "tags": ["invite", "delete", "revoke"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/invites/{invite_code}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "invite_code": {
+              "type": "string",
+              "description": "Invite code to delete"
+            }
+          },
+          "required": ["invite_code"],
+          "visible": ["invite_code"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_GUILD_EMOJIS",
+    "description": "Retrieve all custom emojis from a Discord server for use in messages and reactions.",
+    "tags": ["emojis", "server", "custom"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/guilds/{guild_id}/emojis",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            }
+          },
+          "required": ["guild_id"],
+          "visible": ["guild_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__CREATE_GUILD_EMOJI",
+    "description": "Create a new custom emoji in a Discord server for use in messages and reactions.",
+    "tags": ["emoji", "create", "custom"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/guilds/{guild_id}/emojis",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            }
+          },
+          "required": ["guild_id"],
+          "visible": ["guild_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name for the emoji (2-32 characters)"
+            },
+            "image": {
+              "type": "string",
+              "description": "Base64 encoded image data for the emoji"
+            },
+            "roles": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Array of role IDs that can use this emoji (empty for everyone)"
+            }
+          },
+          "required": ["name", "image"],
+          "visible": ["name", "image", "roles"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__DELETE_GUILD_EMOJI",
+    "description": "Delete a custom emoji from a Discord server permanently.",
+    "tags": ["emoji", "delete", "custom"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/guilds/{guild_id}/emojis/{emoji_id}",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            },
+            "emoji_id": {
+              "type": "string",
+              "description": "Emoji ID to delete"
+            }
+          },
+          "required": ["guild_id", "emoji_id"],
+          "visible": ["guild_id", "emoji_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_CURRENT_USER_GUILDS",
+    "description": "Retrieve all Discord servers that the current user is a member of with basic information.",
+    "tags": ["guilds", "servers", "user"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/users/@me/guilds",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "properties": {
+            "before": {
+              "type": "string",
+              "description": "Get guilds before this guild ID"
+            },
+            "after": {
+              "type": "string",
+              "description": "Get guilds after this guild ID"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 200,
+              "minimum": 1,
+              "maximum": 200,
+              "description": "Number of guilds to return"
+            },
+            "with_counts": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include approximate member and presence counts"
+            }
+          },
+          "required": [],
+          "visible": ["before", "after", "limit", "with_counts"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__SEND_DM",
+    "description": "Send a direct message to a Discord user privately outside of server channels.",
+    "tags": ["dm", "direct", "private"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/users/@me/channels",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "recipient_id": {
+              "type": "string",
+              "description": "User ID to send DM to"
+            }
+          },
+          "required": ["recipient_id"],
+          "visible": ["recipient_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DISCORD__GET_AUDIT_LOG",
+    "description": "Retrieve audit log entries from a Discord server to track administrative actions and changes.",
+    "tags": ["audit", "log", "moderation"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/guilds/{guild_id}/audit-logs",
+      "server_url": "https://discord.com/api/v10"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "guild_id": {
+              "type": "string",
+              "description": "Guild (server) ID"
+            }
+          },
+          "required": ["guild_id"],
+          "visible": ["guild_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "user_id": {
+              "type": "string",
+              "description": "Filter by user who made the changes"
+            },
+            "action_type": {
+              "type": "integer",
+              "description": "Filter by audit log action type"
+            },
+            "before": {
+              "type": "string",
+              "description": "Get entries before this entry ID"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 50,
+              "minimum": 1,
+              "maximum": 100,
+              "description": "Number of audit log entries to return"
+            }
+          },
+          "required": [],
+          "visible": ["user_id", "action_type", "before", "limit"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
   }
 ]

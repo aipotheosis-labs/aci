@@ -377,5 +377,647 @@
             "additionalProperties": false
         },
         "response": {}
+    },
+    {
+        "name": "CALENDLY__CREATE_WEBHOOK",
+        "description": "Create a webhook subscription to receive notifications when events occur in your Calendly account",
+        "tags": ["calendar", "webhooks", "notifications"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/webhook_subscriptions",
+            "server_url": "https://api.calendly.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "HTTP request headers",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        },
+                        "content-type": {
+                            "type": "string",
+                            "description": "Content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        }
+                    },
+                    "required": ["accept", "content-type"],
+                    "visible": ["accept", "content-type"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The URL where webhook notifications will be sent"
+                        },
+                        "events": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": ["invitee.created", "invitee.canceled", "invitee_no_show.created", "invitee_no_show.deleted"]
+                            },
+                            "description": "List of events to subscribe to"
+                        },
+                        "organization": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The organization URI. Format: https://api.calendly.com/organizations/{uuid}"
+                        },
+                        "user": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The user URI. Format: https://api.calendly.com/users/{uuid}"
+                        },
+                        "scope": {
+                            "type": "string",
+                            "enum": ["organization", "user"],
+                            "description": "Scope of the webhook subscription"
+                        },
+                        "signing_key": {
+                            "type": "string",
+                            "description": "Optional signing key for webhook verification"
+                        }
+                    },
+                    "required": ["url", "events", "scope"],
+                    "visible": ["url", "events", "organization", "user", "scope", "signing_key"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["header", "body"],
+            "additionalProperties": false
+        },
+        "response": {}
+    },
+    {
+        "name": "CALENDLY__LIST_WEBHOOKS",
+        "description": "List all webhook subscriptions for your organization or user",
+        "tags": ["calendar", "webhooks", "notifications"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/webhook_subscriptions",
+            "server_url": "https://api.calendly.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "HTTP request headers",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": ["accept"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "URL query parameters",
+                    "properties": {
+                        "organization": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The organization URI. Format: https://api.calendly.com/organizations/{uuid}"
+                        },
+                        "user": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The user URI. Format: https://api.calendly.com/users/{uuid}"
+                        },
+                        "scope": {
+                            "type": "string",
+                            "enum": ["organization", "user"],
+                            "description": "Scope of the webhook subscriptions to list"
+                        },
+                        "page_token": {
+                            "type": "string",
+                            "description": "Token to retrieve the next page of results"
+                        },
+                        "count": {
+                            "type": "integer",
+                            "description": "Number of results per page",
+                            "default": 10,
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    "required": ["scope"],
+                    "visible": ["organization", "user", "scope", "page_token", "count"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "query"],
+            "visible": ["header", "query"],
+            "additionalProperties": false
+        },
+        "response": {}
+    },
+    {
+        "name": "CALENDLY__DELETE_WEBHOOK",
+        "description": "Delete a specific webhook subscription",
+        "tags": ["calendar", "webhooks", "notifications"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/webhook_subscriptions/{webhook_uuid}",
+            "server_url": "https://api.calendly.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "HTTP request headers",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": ["accept"],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "URL path parameters",
+                    "properties": {
+                        "webhook_uuid": {
+                            "type": "string",
+                            "description": "The UUID of the webhook subscription to delete",
+                            "format": "uuid"
+                        }
+                    },
+                    "required": ["webhook_uuid"],
+                    "visible": ["webhook_uuid"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["header", "path"],
+            "additionalProperties": false
+        },
+        "response": {}
+    },
+    {
+        "name": "CALENDLY__GET_EVENT_TYPE_DETAILS",
+        "description": "Get detailed information about a specific event type including availability and scheduling settings",
+        "tags": ["calendar", "event-types", "scheduling", "availability"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/event_types/{uuid}",
+            "server_url": "https://api.calendly.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "HTTP request headers",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": ["accept"],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "URL path parameters",
+                    "properties": {
+                        "uuid": {
+                            "type": "string",
+                            "description": "The UUID of the event type to retrieve",
+                            "format": "uuid"
+                        }
+                    },
+                    "required": ["uuid"],
+                    "visible": ["uuid"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["header", "path"],
+            "additionalProperties": false
+        },
+        "response": {}
+    },
+    {
+        "name": "CALENDLY__LIST_ORGANIZATION_MEMBERSHIPS",
+        "description": "Get organization memberships for a specific user to understand their role and permissions",
+        "tags": ["calendar", "organization", "team", "memberships"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/organization_memberships",
+            "server_url": "https://api.calendly.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "HTTP request headers",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": ["accept"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "URL query parameters",
+                    "properties": {
+                        "user": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The URI of the user to list memberships for. Format: https://api.calendly.com/users/{uuid}"
+                        },
+                        "organization": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The URI of the organization to list memberships for. Format: https://api.calendly.com/organizations/{uuid}"
+                        },
+                        "email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Filter by email address"
+                        },
+                        "page_token": {
+                            "type": "string",
+                            "description": "Token to retrieve the next page of results"
+                        },
+                        "count": {
+                            "type": "integer",
+                            "description": "Number of results per page",
+                            "default": 10,
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    "required": [],
+                    "visible": ["user", "organization", "email", "page_token", "count"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "query"],
+            "visible": ["header", "query"],
+            "additionalProperties": false
+        },
+        "response": {}
+    },
+    {
+        "name": "CALENDLY__CANCEL_SCHEDULED_EVENT",
+        "description": "Cancel a specific scheduled event and optionally notify invitees with a reason",
+        "tags": ["calendar", "events", "cancellation", "scheduling"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/scheduled_events/{uuid}/cancellation",
+            "server_url": "https://api.calendly.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "HTTP request headers",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        },
+                        "content-type": {
+                            "type": "string",
+                            "description": "Content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        }
+                    },
+                    "required": ["accept", "content-type"],
+                    "visible": ["accept", "content-type"],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "description": "URL path parameters",
+                    "properties": {
+                        "uuid": {
+                            "type": "string",
+                            "description": "The UUID of the event to cancel",
+                            "format": "uuid"
+                        }
+                    },
+                    "required": ["uuid"],
+                    "visible": ["uuid"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body",
+                    "properties": {
+                        "reason": {
+                            "type": "string",
+                            "description": "Optional reason for cancellation that will be included in the notification to invitees"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["reason"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["header", "path", "body"],
+            "additionalProperties": false
+        },
+        "response": {}
+    },
+    {
+        "name": "CALENDLY__GET_EVENT_TYPE_AVAILABLE_TIMES",
+        "description": "Get available time slots for a specific event type within a date range for booking appointments",
+        "tags": ["calendar", "event-types", "availability", "scheduling", "booking"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/event_type_available_times",
+            "server_url": "https://api.calendly.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "HTTP request headers",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": ["accept"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "URL query parameters",
+                    "properties": {
+                        "event_type": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The URI of the event type to get available times for. Format: https://api.calendly.com/event_types/{uuid}"
+                        },
+                        "start_time": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Start of the date range to check for availability"
+                        },
+                        "end_time": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "End of the date range to check for availability"
+                        }
+                    },
+                    "required": ["event_type", "start_time", "end_time"],
+                    "visible": ["event_type", "start_time", "end_time"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "query"],
+            "visible": ["header", "query"],
+            "additionalProperties": false
+        },
+        "response": {}
+    },
+    {
+        "name": "CALENDLY__MARK_INVITEE_NO_SHOW",
+        "description": "Mark an invitee as no-show for a scheduled event with optional notes",
+        "tags": ["calendar", "invitees", "events", "tracking", "no-show"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/invitee_no_shows",
+            "server_url": "https://api.calendly.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "HTTP request headers",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        },
+                        "content-type": {
+                            "type": "string",
+                            "description": "Content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        }
+                    },
+                    "required": ["accept", "content-type"],
+                    "visible": ["accept", "content-type"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body",
+                    "properties": {
+                        "invitee": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The URI of the invitee to mark as no-show. Format: https://api.calendly.com/scheduled_events/{uuid}/invitees/{uuid}"
+                        }
+                    },
+                    "required": ["invitee"],
+                    "visible": ["invitee"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["header", "body"],
+            "additionalProperties": false
+        },
+        "response": {}
+    },
+    {
+        "name": "CALENDLY__GET_ROUTING_FORMS",
+        "description": "List routing forms that help direct users to appropriate event types based on their responses",
+        "tags": ["calendar", "routing-forms", "qualification", "automation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/routing_forms",
+            "server_url": "https://api.calendly.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "HTTP request headers",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": ["accept"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "URL query parameters",
+                    "properties": {
+                        "organization": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The organization URI to list routing forms for. Format: https://api.calendly.com/organizations/{uuid}"
+                        },
+                        "page_token": {
+                            "type": "string",
+                            "description": "Token to retrieve the next page of results"
+                        },
+                        "count": {
+                            "type": "integer",
+                            "description": "Number of results per page",
+                            "default": 10,
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    "required": ["organization"],
+                    "visible": ["organization", "page_token", "count"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "query"],
+            "visible": ["header", "query"],
+            "additionalProperties": false
+        },
+        "response": {}
+    },
+    {
+        "name": "CALENDLY__GET_ROUTING_FORM_SUBMISSIONS",
+        "description": "Get submissions for a specific routing form to analyze user qualification and routing decisions",
+        "tags": ["calendar", "routing-forms", "submissions", "analytics", "qualification"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/routing_form_submissions",
+            "server_url": "https://api.calendly.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "HTTP request headers",
+                    "properties": {
+                        "accept": {
+                            "type": "string",
+                            "description": "Accept content type",
+                            "default": "application/json",
+                            "enum": ["application/json"]
+                        }
+                    },
+                    "required": ["accept"],
+                    "visible": ["accept"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "URL query parameters",
+                    "properties": {
+                        "form": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "The routing form URI to get submissions for. Format: https://api.calendly.com/routing_forms/{uuid}"
+                        },
+                        "page_token": {
+                            "type": "string",
+                            "description": "Token to retrieve the next page of results"
+                        },
+                        "count": {
+                            "type": "integer",
+                            "description": "Number of results per page",
+                            "default": 10,
+                            "minimum": 1,
+                            "maximum": 100
+                        }
+                    },
+                    "required": ["form"],
+                    "visible": ["form", "page_token", "count"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "query"],
+            "visible": ["header", "query"],
+            "additionalProperties": false
+        },
+        "response": {}
     }
 ]

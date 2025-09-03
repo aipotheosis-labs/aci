@@ -1,0 +1,34 @@
+{
+  "name": "ZAPIER",
+  "display_name": "Zapier",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/zapier.svg",
+  "provider": "Zapier",
+  "version": "1.0.0",
+  "description": "Zapier is a workflow automation platform that connects apps and automates repetitive tasks. This integration enables creation and management of Zaps (automated workflows), triggers, actions, and webhook-based automation between different applications.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_ZAPIER_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_ZAPIER_APP_CLIENT_SECRET }}",
+      "scope": "zap:read zap:write trigger:read action:read webhook:read webhook:write",
+      "authorize_url": "https://zapier.com/oauth/authorize/",
+      "access_token_url": "https://zapier.com/oauth/token/",
+      "refresh_token_url": "https://zapier.com/oauth/token/"
+    },
+    "api_key": {
+      "location": "header",
+      "name": "X-API-Key",
+      "prefix": null
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Automation",
+    "Productivity",
+    "Integration"
+  ],
+  "visibility": "public",
+  "active": true
+}

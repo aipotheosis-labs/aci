@@ -280,5 +280,1846 @@
           "visible": ["path"],
           "additionalProperties": false
         }
+      },
+      {
+        "name": "ASANA__UPDATE_TASK",
+        "description": "Update an existing task in Asana with new information such as name, notes, assignee, due date, and completion status.",
+        "tags": ["asana", "task", "update"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "PUT",
+          "path": "/tasks/{task_gid}",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task to update.",
+                  "example": "1209945202952112"
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "body": {
+              "type": "object",
+              "description": "Body parameters for updating a task",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Task update data",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The updated name of the task.",
+                      "example": "Updated Task Name"
+                    },
+                    "notes": {
+                      "type": "string",
+                      "description": "Updated notes or description for the task.",
+                      "example": "Updated task description."
+                    },
+                    "assignee": {
+                      "type": "string",
+                      "description": "The updated assignee of the task. Can be a user ID or 'me'.",
+                      "example": "me"
+                    },
+                    "due_date": {
+                      "type": "string",
+                      "description": "The updated due date of the task in YYYY-MM-DD format.",
+                      "example": "2025-04-20"
+                    },
+                    "completed": {
+                      "type": "boolean",
+                      "description": "Whether the task is completed.",
+                      "example": true
+                    }
+                  },
+                  "required": [],
+                  "visible": ["name", "notes", "assignee", "due_date", "completed"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path", "body"],
+          "visible": ["path", "body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_TASK",
+        "description": "Retrieve detailed information about a specific task by its globally unique identifier.",
+        "tags": ["asana", "task"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/tasks/{task_gid}",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task.",
+                  "example": "1209945202952112"
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response.",
+                  "example": "name,notes,assignee,due_date,completed"
+                }
+              },
+              "required": [],
+              "visible": ["opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__LIST_PROJECTS",
+        "description": "List all projects in a workspace that are accessible to the authenticated user.",
+        "tags": ["asana", "project"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/workspaces/{workspace_gid}/projects",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "workspace_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the workspace."
+                }
+              },
+              "required": ["workspace_gid"],
+              "visible": ["workspace_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of projects to return.",
+                  "example": 50
+                },
+                "archived": {
+                  "type": "boolean",
+                  "description": "Only return archived projects if true.",
+                  "example": false
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response.",
+                  "example": "name,owner,due_date,created_at"
+                }
+              },
+              "required": [],
+              "visible": ["limit", "archived", "opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_PROJECT",
+        "description": "Retrieve detailed information about a specific project by its globally unique identifier.",
+        "tags": ["asana", "project"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/projects/{project_gid}",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "project_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the project."
+                }
+              },
+              "required": ["project_gid"],
+              "visible": ["project_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response.",
+                  "example": "name,notes,owner,due_date,created_at,team"
+                }
+              },
+              "required": [],
+              "visible": ["opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__CREATE_PROJECT",
+        "description": "Create a new project in a specific workspace with customizable settings.",
+        "tags": ["asana", "project", "create"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/projects",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "body": {
+              "type": "object",
+              "description": "Body parameters for creating a project",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Project creation data",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the project.",
+                      "example": "My New Project"
+                    },
+                    "notes": {
+                      "type": "string",
+                      "description": "Description or notes for the project.",
+                      "example": "This is a project for managing tasks."
+                    },
+                    "workspace": {
+                      "type": "string",
+                      "description": "Globally unique identifier for the workspace.",
+                      "example": "1209945202952124"
+                    },
+                    "team": {
+                      "type": "string",
+                      "description": "Globally unique identifier for the team this project belongs to.",
+                      "example": "1209945202952125"
+                    },
+                    "privacy_setting": {
+                      "type": "string",
+                      "description": "The privacy setting of the project.",
+                      "enum": ["public_to_workspace", "public_to_team", "private"],
+                      "example": "public_to_team"
+                    },
+                    "due_date": {
+                      "type": "string",
+                      "description": "The due date of the project in YYYY-MM-DD format.",
+                      "example": "2025-06-30"
+                    }
+                  },
+                  "required": ["name", "workspace"],
+                  "visible": ["name", "notes", "workspace", "team", "privacy_setting", "due_date"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["body"],
+          "visible": ["body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__LIST_PROJECT_TASKS",
+        "description": "Retrieve all tasks within a specific project with filtering and pagination options.",
+        "tags": ["asana", "project", "task"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/projects/{project_gid}/tasks",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "project_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the project."
+                }
+              },
+              "required": ["project_gid"],
+              "visible": ["project_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "completed_since": {
+                  "type": "string",
+                  "description": "Only return tasks that are incomplete or completed since this time.",
+                  "example": "2023-01-01T00:00:00.000Z"
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response.",
+                  "example": "name,assignee,due_date,completed"
+                },
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of tasks to return.",
+                  "example": 50
+                }
+              },
+              "required": [],
+              "visible": ["completed_since", "opt_fields", "limit"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__SEARCH_TASKS",
+        "description": "Search for tasks across all accessible workspaces and projects using text queries and filters.",
+        "tags": ["asana", "task", "search"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/workspaces/{workspace_gid}/tasks/search",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "workspace_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the workspace."
+                }
+              },
+              "required": ["workspace_gid"],
+              "visible": ["workspace_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "text": {
+                  "type": "string",
+                  "description": "Text to search for in task names and notes.",
+                  "example": "urgent"
+                },
+                "assignee.any": {
+                  "type": "string",
+                  "description": "Comma-separated list of user IDs to filter by assignee."
+                },
+                "projects.any": {
+                  "type": "string",
+                  "description": "Comma-separated list of project IDs to filter by."
+                },
+                "completed": {
+                  "type": "boolean",
+                  "description": "Filter by completion status.",
+                  "example": false
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response.",
+                  "example": "name,assignee,due_date,projects"
+                },
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of tasks to return.",
+                  "example": 50
+                }
+              },
+              "required": [],
+              "visible": ["text", "assignee.any", "projects.any", "completed", "opt_fields", "limit"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__LIST_WORKSPACES",
+        "description": "List all workspaces accessible to the authenticated user.",
+        "tags": ["asana", "workspace"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/workspaces",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of workspaces to return.",
+                  "example": 50
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response.",
+                  "example": "name,email_domains,is_organization"
+                }
+              },
+              "required": [],
+              "visible": ["limit", "opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": [],
+          "visible": ["query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__ADD_TASK_TO_PROJECT",
+        "description": "Add an existing task to a project, allowing tasks to be part of multiple projects.",
+        "tags": ["asana", "task", "project"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/tasks/{task_gid}/addProject",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task.",
+                  "example": "1209945202952112"
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "body": {
+              "type": "object",
+              "description": "Body parameters for adding task to project",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Project assignment data",
+                  "properties": {
+                    "project": {
+                      "type": "string",
+                      "description": "Globally unique identifier for the project.",
+                      "example": "1209945202952113"
+                    },
+                    "insert_after": {
+                      "type": "string",
+                      "description": "Task to insert this task after in the project. Use null to insert at the beginning.",
+                      "example": "1209945202952114"
+                    }
+                  },
+                  "required": ["project"],
+                  "visible": ["project", "insert_after"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path", "body"],
+          "visible": ["path", "body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__REMOVE_TASK_FROM_PROJECT",
+        "description": "Remove a task from a project in Asana while keeping the task accessible in other projects.",
+        "tags": ["asana", "task", "project"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/tasks/{task_gid}/removeProject",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task."
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "body": {
+              "type": "object",
+              "description": "Body parameters for removing task from project",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Project removal data",
+                  "properties": {
+                    "project": {
+                      "type": "string",
+                      "description": "Globally unique identifier for the project."
+                    }
+                  },
+                  "required": ["project"],
+                  "visible": ["project"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path", "body"],
+          "visible": ["path", "body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__UPDATE_PROJECT",
+        "description": "Update an existing project in Asana with new name, description, settings, or team assignment.",
+        "tags": ["asana", "project", "update"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "PUT",
+          "path": "/projects/{project_gid}",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "project_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the project."
+                }
+              },
+              "required": ["project_gid"],
+              "visible": ["project_gid"],
+              "additionalProperties": false
+            },
+            "body": {
+              "type": "object",
+              "description": "Body parameters for updating a project",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Project update data",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Updated name of the project."
+                    },
+                    "notes": {
+                      "type": "string",
+                      "description": "Updated description or notes for the project."
+                    },
+                    "archived": {
+                      "type": "boolean",
+                      "description": "Whether the project is archived."
+                    },
+                    "due_date": {
+                      "type": "string",
+                      "description": "Updated due date of the project in YYYY-MM-DD format."
+                    },
+                    "privacy_setting": {
+                      "type": "string",
+                      "enum": ["public_to_workspace", "public_to_team", "private"],
+                      "description": "Updated privacy setting of the project."
+                    }
+                  },
+                  "required": [],
+                  "visible": ["name", "notes", "archived", "due_date", "privacy_setting"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path", "body"],
+          "visible": ["path", "body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__DELETE_PROJECT",
+        "description": "Delete a project from Asana permanently, removing it and all associated tasks from the workspace.",
+        "tags": ["asana", "project", "delete"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "DELETE",
+          "path": "/projects/{project_gid}",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "project_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the project."
+                }
+              },
+              "required": ["project_gid"],
+              "visible": ["project_gid"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_TEAMS",
+        "description": "Retrieve teams in a workspace that are accessible to the authenticated user.",
+        "tags": ["asana", "team", "workspace"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/workspaces/{workspace_gid}/teams",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "workspace_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the workspace."
+                }
+              },
+              "required": ["workspace_gid"],
+              "visible": ["workspace_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of teams to return."
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response."
+                }
+              },
+              "required": [],
+              "visible": ["limit", "opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_TEAM_MEMBERS",
+        "description": "Retrieve all members of a specific team in Asana with their roles and access levels.",
+        "tags": ["asana", "team", "members"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/teams/{team_gid}/users",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "team_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the team."
+                }
+              },
+              "required": ["team_gid"],
+              "visible": ["team_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of users to return."
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response."
+                }
+              },
+              "required": [],
+              "visible": ["limit", "opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__CREATE_SUBTASK",
+        "description": "Create a subtask under an existing task in Asana for more detailed work breakdown.",
+        "tags": ["asana", "task", "subtask"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/tasks/{task_gid}/subtasks",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the parent task."
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "body": {
+              "type": "object",
+              "description": "Body parameters for creating a subtask",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Subtask creation data",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the subtask."
+                    },
+                    "notes": {
+                      "type": "string",
+                      "description": "Additional notes or description for the subtask."
+                    },
+                    "assignee": {
+                      "type": "string",
+                      "description": "The assignee of the subtask. Can be a user ID or 'me'."
+                    },
+                    "due_date": {
+                      "type": "string",
+                      "description": "The due date of the subtask in YYYY-MM-DD format."
+                    }
+                  },
+                  "required": ["name"],
+                  "visible": ["name", "notes", "assignee", "due_date"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path", "body"],
+          "visible": ["path", "body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_SUBTASKS",
+        "description": "Retrieve all subtasks for a specific task in Asana with their completion status and details.",
+        "tags": ["asana", "task", "subtask"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/tasks/{task_gid}/subtasks",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the parent task."
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response."
+                },
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of subtasks to return."
+                }
+              },
+              "required": [],
+              "visible": ["opt_fields", "limit"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__CREATE_TASK_COMMENT",
+        "description": "Add a comment to a task in Asana for collaboration and progress tracking.",
+        "tags": ["asana", "task", "comment"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/tasks/{task_gid}/stories",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task."
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "body": {
+              "type": "object",
+              "description": "Body parameters for creating a comment",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Comment creation data",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "description": "The text content of the comment."
+                    },
+                    "html_text": {
+                      "type": "string",
+                      "description": "HTML formatted text content of the comment."
+                    }
+                  },
+                  "required": ["text"],
+                  "visible": ["text", "html_text"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path", "body"],
+          "visible": ["path", "body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_TASK_COMMENTS",
+        "description": "Retrieve all comments and stories for a specific task in Asana to track collaboration history.",
+        "tags": ["asana", "task", "comment"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/tasks/{task_gid}/stories",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task."
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of stories to return."
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response."
+                }
+              },
+              "required": [],
+              "visible": ["limit", "opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__CREATE_PROJECT_STATUS_UPDATE",
+        "description": "Create a status update for a project in Asana to communicate progress and milestones to stakeholders.",
+        "tags": ["asana", "project", "status"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/projects/{project_gid}/project_statuses",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "project_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the project."
+                }
+              },
+              "required": ["project_gid"],
+              "visible": ["project_gid"],
+              "additionalProperties": false
+            },
+            "body": {
+              "type": "object",
+              "description": "Body parameters for creating project status",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Project status creation data",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "description": "The text content of the status update."
+                    },
+                    "color": {
+                      "type": "string",
+                      "enum": ["green", "yellow", "red"],
+                      "description": "Color indicator for project status."
+                    },
+                    "html_text": {
+                      "type": "string",
+                      "description": "HTML formatted text content of the status update."
+                    }
+                  },
+                  "required": ["text", "color"],
+                  "visible": ["text", "color", "html_text"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path", "body"],
+          "visible": ["path", "body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_PROJECT_STATUSES",
+        "description": "Retrieve all status updates for a project in Asana to track progress history and milestones.",
+        "tags": ["asana", "project", "status"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/projects/{project_gid}/project_statuses",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "project_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the project."
+                }
+              },
+              "required": ["project_gid"],
+              "visible": ["project_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of status updates to return."
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response."
+                }
+              },
+              "required": [],
+              "visible": ["limit", "opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_TASK_ATTACHMENTS",
+        "description": "Retrieve all attachments for a specific task in Asana including files, links, and documents.",
+        "tags": ["asana", "task", "attachments"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/tasks/{task_gid}/attachments",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task."
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of attachments to return."
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response."
+                }
+              },
+              "required": [],
+              "visible": ["limit", "opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__CREATE_ATTACHMENT",
+        "description": "Upload an attachment to a task in Asana, supporting various file types for documentation.",
+        "tags": ["asana", "task", "attachment"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/attachments",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "body": {
+              "type": "object",
+              "description": "Body parameters for creating an attachment",
+              "properties": {
+                "file": {
+                  "type": "string",
+                  "format": "binary",
+                  "description": "File to upload as attachment."
+                },
+                "parent": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task to attach to."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Name for the attachment."
+                }
+              },
+              "required": ["file", "parent"],
+              "visible": ["file", "parent", "name"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["body"],
+          "visible": ["body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_CUSTOM_FIELDS",
+        "description": "Retrieve custom fields available in a workspace for enhanced task and project metadata.",
+        "tags": ["asana", "custom_fields", "workspace"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/workspaces/{workspace_gid}/custom_fields",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "workspace_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the workspace."
+                }
+              },
+              "required": ["workspace_gid"],
+              "visible": ["workspace_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of custom fields to return."
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response."
+                }
+              },
+              "required": [],
+              "visible": ["limit", "opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__UPDATE_TASK_CUSTOM_FIELD",
+        "description": "Update the value of a custom field on a specific task in Asana for enhanced metadata tracking.",
+        "tags": ["asana", "task", "custom_field"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "PUT",
+          "path": "/tasks/{task_gid}",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task."
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "body": {
+              "type": "object",
+              "description": "Body parameters for updating custom field",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Custom field update data",
+                  "properties": {
+                    "custom_fields": {
+                      "type": "object",
+                      "description": "Object mapping custom field GIDs to their new values.",
+                      "additionalProperties": {
+                        "type": "string"
+                      }
+                    }
+                  },
+                  "required": ["custom_fields"],
+                  "visible": ["custom_fields"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path", "body"],
+          "visible": ["path", "body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_PORTFOLIOS",
+        "description": "Retrieve portfolios in a workspace for high-level project organization and tracking.",
+        "tags": ["asana", "portfolio", "workspace"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/workspaces/{workspace_gid}/portfolios",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "workspace_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the workspace."
+                }
+              },
+              "required": ["workspace_gid"],
+              "visible": ["workspace_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of portfolios to return."
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response."
+                }
+              },
+              "required": [],
+              "visible": ["limit", "opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__CREATE_PORTFOLIO",
+        "description": "Create a new portfolio in Asana for organizing and tracking multiple related projects.",
+        "tags": ["asana", "portfolio", "create"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/portfolios",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "body": {
+              "type": "object",
+              "description": "Body parameters for creating a portfolio",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Portfolio creation data",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the portfolio."
+                    },
+                    "workspace": {
+                      "type": "string",
+                      "description": "Globally unique identifier for the workspace."
+                    },
+                    "public": {
+                      "type": "boolean",
+                      "description": "Whether the portfolio is public to the workspace."
+                    },
+                    "color": {
+                      "type": "string",
+                      "enum": ["dark-pink", "dark-green", "dark-blue", "dark-red", "dark-teal", "dark-brown", "dark-orange", "dark-purple", "dark-warm-gray"],
+                      "description": "Color for the portfolio."
+                    }
+                  },
+                  "required": ["name", "workspace"],
+                  "visible": ["name", "workspace", "public", "color"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["body"],
+          "visible": ["body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__ADD_PROJECT_TO_PORTFOLIO",
+        "description": "Add an existing project to a portfolio in Asana for better organization and oversight.",
+        "tags": ["asana", "portfolio", "project"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/portfolios/{portfolio_gid}/addItem",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "portfolio_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the portfolio."
+                }
+              },
+              "required": ["portfolio_gid"],
+              "visible": ["portfolio_gid"],
+              "additionalProperties": false
+            },
+            "body": {
+              "type": "object",
+              "description": "Body parameters for adding project to portfolio",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Project addition data",
+                  "properties": {
+                    "item": {
+                      "type": "string",
+                      "description": "Globally unique identifier for the project to add."
+                    },
+                    "insert_after": {
+                      "type": "string",
+                      "description": "Project to insert this project after. Use null for beginning."
+                    }
+                  },
+                  "required": ["item"],
+                  "visible": ["item", "insert_after"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path", "body"],
+          "visible": ["path", "body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_TASK_DEPENDENCIES",
+        "description": "Retrieve dependencies for a specific task in Asana to understand task relationships and blocking issues.",
+        "tags": ["asana", "task", "dependencies"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/tasks/{task_gid}/dependencies",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task."
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of dependencies to return."
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response."
+                }
+              },
+              "required": [],
+              "visible": ["limit", "opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__ADD_TASK_DEPENDENCY",
+        "description": "Add a dependency relationship between tasks in Asana to enforce proper task sequencing.",
+        "tags": ["asana", "task", "dependencies"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/tasks/{task_gid}/addDependencies",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task."
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "body": {
+              "type": "object",
+              "description": "Body parameters for adding dependencies",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Dependency addition data",
+                  "properties": {
+                    "dependencies": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "Array of task GIDs that this task depends on."
+                    }
+                  },
+                  "required": ["dependencies"],
+                  "visible": ["dependencies"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path", "body"],
+          "visible": ["path", "body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_TASK_TAGS",
+        "description": "Retrieve all tags associated with a specific task in Asana for categorization and filtering.",
+        "tags": ["asana", "task", "tags"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/tasks/{task_gid}/tags",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task."
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of tags to return."
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response."
+                }
+              },
+              "required": [],
+              "visible": ["limit", "opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__ADD_TAG_TO_TASK",
+        "description": "Add a tag to a task in Asana for better categorization and project organization.",
+        "tags": ["asana", "task", "tag"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/tasks/{task_gid}/addTag",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "task_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the task."
+                }
+              },
+              "required": ["task_gid"],
+              "visible": ["task_gid"],
+              "additionalProperties": false
+            },
+            "body": {
+              "type": "object",
+              "description": "Body parameters for adding tag to task",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Tag addition data",
+                  "properties": {
+                    "tag": {
+                      "type": "string",
+                      "description": "Globally unique identifier for the tag to add."
+                    }
+                  },
+                  "required": ["tag"],
+                  "visible": ["tag"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path", "body"],
+          "visible": ["path", "body"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__GET_WORKSPACE_TAGS",
+        "description": "Retrieve all tags available in a workspace in Asana for task categorization and organization.",
+        "tags": ["asana", "tags", "workspace"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "GET",
+          "path": "/workspaces/{workspace_gid}/tags",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "path": {
+              "type": "object",
+              "description": "Path parameters",
+              "properties": {
+                "workspace_gid": {
+                  "type": "string",
+                  "description": "Globally unique identifier for the workspace."
+                }
+              },
+              "required": ["workspace_gid"],
+              "visible": ["workspace_gid"],
+              "additionalProperties": false
+            },
+            "query": {
+              "type": "object",
+              "description": "Query parameters",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "description": "Maximum number of tags to return."
+                },
+                "opt_fields": {
+                  "type": "string",
+                  "description": "Comma-separated list of fields to include in the response."
+                }
+              },
+              "required": [],
+              "visible": ["limit", "opt_fields"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "query"],
+          "additionalProperties": false
+        }
+      },
+      {
+        "name": "ASANA__CREATE_TAG",
+        "description": "Create a new tag in Asana workspace for categorizing tasks and improving organization.",
+        "tags": ["asana", "tag", "create"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+          "method": "POST",
+          "path": "/tags",
+          "server_url": "https://app.asana.com/api/1.0"
+        },
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "body": {
+              "type": "object",
+              "description": "Body parameters for creating a tag",
+              "properties": {
+                "data": {
+                  "type": "object",
+                  "description": "Tag creation data",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "The name of the tag."
+                    },
+                    "workspace": {
+                      "type": "string",
+                      "description": "Globally unique identifier for the workspace."
+                    },
+                    "color": {
+                      "type": "string",
+                      "enum": ["dark-pink", "dark-green", "dark-blue", "dark-red", "dark-teal", "dark-brown", "dark-orange", "dark-purple", "dark-warm-gray"],
+                      "description": "Color for the tag."
+                    },
+                    "notes": {
+                      "type": "string",
+                      "description": "Notes or description for the tag."
+                    }
+                  },
+                  "required": ["name", "workspace"],
+                  "visible": ["name", "workspace", "color", "notes"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["data"],
+              "visible": ["data"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["body"],
+          "visible": ["body"],
+          "additionalProperties": false
+        }
       }
   ]

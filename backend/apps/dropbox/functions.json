@@ -1,0 +1,1346 @@
+[
+  {
+    "name": "DROPBOX__LIST_FOLDER",
+    "description": "List files and folders in a Dropbox directory. This allows browsing and discovering content within the user's Dropbox account.",
+    "tags": ["dropbox", "files", "folders", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/files/list_folder",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The folder listing request",
+          "properties": {
+            "path": {
+              "type": "string",
+              "default": "",
+              "description": "The path to list (empty string for root folder)"
+            },
+            "recursive": {
+              "type": "boolean",
+              "default": false,
+              "description": "List files recursively in all subfolders"
+            },
+            "include_media_info": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include media metadata for photo and video files"
+            },
+            "include_deleted": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include deleted files in the listing"
+            },
+            "include_has_explicit_shared_members": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include sharing information"
+            },
+            "include_mounted_folders": {
+              "type": "boolean",
+              "default": true,
+              "description": "Include mounted shared folders"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 10,
+              "maximum": 2000,
+              "description": "Maximum number of entries to return"
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "recursive", "include_media_info", "include_deleted", "include_has_explicit_shared_members", "include_mounted_folders", "limit"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__LIST_FOLDER_CONTINUE",
+    "description": "Continue listing files from a previous list_folder request using a cursor. This enables pagination through large directories.",
+    "tags": ["dropbox", "files", "pagination", "continue"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/files/list_folder/continue",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The pagination request",
+          "properties": {
+            "cursor": {
+              "type": "string",
+              "description": "Cursor returned by list_folder or previous list_folder/continue"
+            }
+          },
+          "required": ["cursor"],
+          "visible": ["cursor"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__GET_METADATA",
+    "description": "Get metadata for a file or folder in Dropbox including size, modification date, and sharing information.",
+    "tags": ["dropbox", "metadata", "file", "info"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/files/get_metadata",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The metadata request",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "The path to the file or folder"
+            },
+            "include_media_info": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include media metadata for photo and video files"
+            },
+            "include_deleted": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include deleted file information"
+            },
+            "include_has_explicit_shared_members": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include sharing information"
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "include_media_info", "include_deleted", "include_has_explicit_shared_members"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__DOWNLOAD_FILE",
+    "description": "Download a file from Dropbox. This retrieves the file content for local processing or storage.",
+    "tags": ["dropbox", "download", "file", "content"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/files/download",
+      "server_url": "https://content.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "description": "Headers including file path",
+          "properties": {
+            "Dropbox-API-Arg": {
+              "type": "string",
+              "description": "JSON string with download parameters: {\"path\": \"/path/to/file.txt\"}"
+            }
+          },
+          "required": ["Dropbox-API-Arg"],
+          "visible": ["Dropbox-API-Arg"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header"],
+      "visible": ["header"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__UPLOAD_FILE",
+    "description": "Upload a file to Dropbox. This allows storing content in the user's Dropbox account with optional overwrite settings.",
+    "tags": ["dropbox", "upload", "file", "store"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/files/upload",
+      "server_url": "https://content.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "description": "Headers including upload parameters",
+          "properties": {
+            "Dropbox-API-Arg": {
+              "type": "string",
+              "description": "JSON string with upload parameters: {\"path\": \"/path/to/file.txt\", \"mode\": \"overwrite\", \"autorename\": true}"
+            },
+            "Content-Type": {
+              "type": "string",
+              "default": "application/octet-stream",
+              "description": "Content type of the file being uploaded"
+            }
+          },
+          "required": ["Dropbox-API-Arg", "Content-Type"],
+          "visible": ["Dropbox-API-Arg", "Content-Type"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "string",
+          "description": "The file content to upload (binary data)"
+        }
+      },
+      "required": ["header", "body"],
+      "visible": ["header", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__CREATE_FOLDER",
+    "description": "Create a new folder in Dropbox for organizing files and content. This allows structuring data within the user's account.",
+    "tags": ["dropbox", "folder", "create", "organize"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/files/create_folder_v2",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The folder creation request",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "The path where the folder should be created"
+            },
+            "autorename": {
+              "type": "boolean",
+              "default": false,
+              "description": "Automatically rename if folder already exists"
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "autorename"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__DELETE_FILE",
+    "description": "Delete a file or folder from Dropbox. The item is moved to trash and can be restored by the user through the web interface.",
+    "tags": ["dropbox", "delete", "file", "folder"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/files/delete_v2",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The deletion request",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "The path to the file or folder to delete"
+            }
+          },
+          "required": ["path"],
+          "visible": ["path"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__MOVE_FILE",
+    "description": "Move or rename a file or folder in Dropbox to a new location or name. This allows reorganizing content within the account.",
+    "tags": ["dropbox", "move", "rename", "organize"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/files/move_v2",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The move request",
+          "properties": {
+            "from_path": {
+              "type": "string",
+              "description": "Current path of the file or folder"
+            },
+            "to_path": {
+              "type": "string",
+              "description": "New path for the file or folder"
+            },
+            "allow_shared_folder": {
+              "type": "boolean",
+              "default": false,
+              "description": "Allow moving shared folders"
+            },
+            "autorename": {
+              "type": "boolean",
+              "default": false,
+              "description": "Automatically rename if destination already exists"
+            },
+            "allow_ownership_transfer": {
+              "type": "boolean",
+              "default": false,
+              "description": "Allow transferring ownership during move"
+            }
+          },
+          "required": ["from_path", "to_path"],
+          "visible": ["from_path", "to_path", "allow_shared_folder", "autorename", "allow_ownership_transfer"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__COPY_FILE",
+    "description": "Copy a file or folder in Dropbox to a new location. This creates a duplicate of the content at the specified destination.",
+    "tags": ["dropbox", "copy", "duplicate", "file"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/files/copy_v2",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The copy request",
+          "properties": {
+            "from_path": {
+              "type": "string",
+              "description": "Path of the file or folder to copy"
+            },
+            "to_path": {
+              "type": "string",
+              "description": "Destination path for the copy"
+            },
+            "allow_shared_folder": {
+              "type": "boolean",
+              "default": false,
+              "description": "Allow copying shared folders"
+            },
+            "autorename": {
+              "type": "boolean",
+              "default": false,
+              "description": "Automatically rename if destination already exists"
+            },
+            "allow_ownership_transfer": {
+              "type": "boolean",
+              "default": false,
+              "description": "Allow transferring ownership during copy"
+            }
+          },
+          "required": ["from_path", "to_path"],
+          "visible": ["from_path", "to_path", "allow_shared_folder", "autorename", "allow_ownership_transfer"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__SEARCH_FILES",
+    "description": "Search for files and folders in Dropbox by name, content, or other criteria. This enables finding content across the entire account.",
+    "tags": ["dropbox", "search", "files", "query"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/files/search_v2",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The search request",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "The search query string"
+            },
+            "options": {
+              "type": "object",
+              "description": "Search options",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "description": "Limit search to specific folder path"
+                },
+                "max_results": {
+                  "type": "integer",
+                  "default": 100,
+                  "maximum": 1000,
+                  "description": "Maximum number of search results"
+                },
+                "order_by": {
+                  "type": "string",
+                  "enum": ["relevance", "last_modified_time"],
+                  "default": "relevance",
+                  "description": "How to order search results"
+                },
+                "file_status": {
+                  "type": "string",
+                  "enum": ["active", "deleted"],
+                  "default": "active",
+                  "description": "Filter by file status"
+                },
+                "filename_only": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Search only in filenames, not file content"
+                },
+                "file_extensions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Filter results by file extensions"
+                },
+                "file_categories": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["image", "document", "pdf", "spreadsheet", "presentation", "audio", "video", "folder", "paper", "others"]
+                  },
+                  "description": "Filter results by file categories"
+                }
+              },
+              "required": [],
+              "visible": ["path", "max_results", "order_by", "file_status", "filename_only", "file_extensions", "file_categories"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["query"],
+          "visible": ["query", "options"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__CREATE_SHARED_LINK",
+    "description": "Create a shared link for a file or folder in Dropbox. This generates a URL that can be shared with others for access to the content.",
+    "tags": ["dropbox", "sharing", "link", "access"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/sharing/create_shared_link_with_settings",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The shared link request",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "The path to share"
+            },
+            "settings": {
+              "type": "object",
+              "description": "Sharing settings",
+              "properties": {
+                "requested_visibility": {
+                  "type": "string",
+                  "enum": ["public", "team_only", "password"],
+                  "default": "public",
+                  "description": "Visibility level for the shared link"
+                },
+                "link_password": {
+                  "type": "string",
+                  "description": "Password for password-protected links"
+                },
+                "expires": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Expiration date for the shared link (ISO 8601)"
+                },
+                "audience": {
+                  "type": "string",
+                  "enum": ["public", "team", "members"],
+                  "default": "public",
+                  "description": "Intended audience for the link"
+                },
+                "access": {
+                  "type": "string",
+                  "enum": ["viewer", "editor", "max"],
+                  "default": "viewer",
+                  "description": "Access level granted by the link"
+                }
+              },
+              "required": [],
+              "visible": ["requested_visibility", "link_password", "expires", "audience", "access"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "settings"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__LIST_SHARED_LINKS",
+    "description": "List shared links created in Dropbox for managing access and permissions to files and folders.",
+    "tags": ["dropbox", "sharing", "links", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/sharing/list_shared_links",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The shared links request",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Filter links by file or folder path (optional)"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination"
+            },
+            "direct_only": {
+              "type": "boolean",
+              "default": false,
+              "description": "Return only direct links to the specified path"
+            }
+          },
+          "required": [],
+          "visible": ["path", "cursor", "direct_only"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__REVOKE_SHARED_LINK",
+    "description": "Revoke a shared link in Dropbox to remove access for anyone who has the URL. This helps manage security and access control.",
+    "tags": ["dropbox", "sharing", "revoke", "security"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/sharing/revoke_shared_link",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The revoke request",
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "description": "The shared link URL to revoke"
+            }
+          },
+          "required": ["url"],
+          "visible": ["url"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__GET_SHARED_LINK_METADATA",
+    "description": "Get metadata for a shared link including access permissions, expiration, and file information.",
+    "tags": ["dropbox", "sharing", "link", "metadata"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/sharing/get_shared_link_metadata",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The shared link metadata request",
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "description": "The shared link URL"
+            },
+            "path": {
+              "type": "string",
+              "description": "Specific path within the shared link (for folder links)"
+            },
+            "link_password": {
+              "type": "string",
+              "description": "Password for password-protected links"
+            }
+          },
+          "required": ["url"],
+          "visible": ["url", "path", "link_password"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__LIST_SHARED_FOLDERS",
+    "description": "List shared folders that the user is a member of in Dropbox. This shows collaborative spaces and team folders.",
+    "tags": ["dropbox", "sharing", "folders", "collaboration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/sharing/list_folders",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The shared folders request",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 100,
+              "maximum": 1000,
+              "description": "Maximum number of shared folders to return"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination"
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["change_options", "disable_viewer_info", "change_viewer_info", "unshare", "relinquish_membership", "share_link", "create_link", "create_view_link", "create_edit_link"]
+              },
+              "description": "Filter folders by available actions"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "cursor", "actions"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__SHARE_FOLDER",
+    "description": "Share a folder with other users in Dropbox. This creates collaborative spaces where multiple users can access and edit content.",
+    "tags": ["dropbox", "sharing", "folder", "collaborate"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/sharing/share_folder",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The folder sharing request",
+          "properties": {
+            "path": {
+              "type": "string",
+              "description": "Path to the folder to share"
+            },
+            "member_policy": {
+              "type": "string",
+              "enum": ["team", "anyone"],
+              "default": "anyone",
+              "description": "Who can be added as members"
+            },
+            "acl_update_policy": {
+              "type": "string",
+              "enum": ["owner", "editors"],
+              "default": "owner",
+              "description": "Who can change folder permissions"
+            },
+            "shared_link_policy": {
+              "type": "string",
+              "enum": ["anyone", "team", "members"],
+              "default": "anyone",
+              "description": "Who can create shared links"
+            },
+            "force_async": {
+              "type": "boolean",
+              "default": false,
+              "description": "Force asynchronous processing"
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["change_options", "disable_viewer_info", "change_viewer_info", "unshare", "relinquish_membership", "share_link", "create_link"]
+              },
+              "description": "Available actions for the shared folder"
+            }
+          },
+          "required": ["path"],
+          "visible": ["path", "member_policy", "acl_update_policy", "shared_link_policy", "force_async", "actions"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__ADD_FOLDER_MEMBER",
+    "description": "Add a member to a shared folder in Dropbox. This allows inviting users to collaborate on shared content with specified permissions.",
+    "tags": ["dropbox", "sharing", "member", "invite"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/sharing/add_folder_member",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The add member request",
+          "properties": {
+            "shared_folder_id": {
+              "type": "string",
+              "description": "ID of the shared folder"
+            },
+            "members": {
+              "type": "array",
+              "description": "Members to add to the folder",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "member": {
+                    "type": "object",
+                    "description": "Member information",
+                    "properties": {
+                      ".tag": {
+                        "type": "string",
+                        "enum": ["email"],
+                        "default": "email",
+                        "description": "Member type"
+                      },
+                      "email": {
+                        "type": "string",
+                        "format": "email",
+                        "description": "Email address of the member to add"
+                      }
+                    },
+                    "required": [".tag", "email"],
+                    "visible": [".tag", "email"],
+                    "additionalProperties": false
+                  },
+                  "access_level": {
+                    "type": "string",
+                    "enum": ["owner", "editor", "viewer", "viewer_no_comment"],
+                    "default": "editor",
+                    "description": "Access level for the member"
+                  }
+                },
+                "required": ["member", "access_level"],
+                "visible": ["member", "access_level"],
+                "additionalProperties": false
+              }
+            },
+            "quiet": {
+              "type": "boolean",
+              "default": false,
+              "description": "Don't send email notification to new members"
+            },
+            "custom_message": {
+              "type": "string",
+              "description": "Custom message to include in invitation email"
+            }
+          },
+          "required": ["shared_folder_id", "members"],
+          "visible": ["shared_folder_id", "members", "quiet", "custom_message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__REMOVE_FOLDER_MEMBER",
+    "description": "Remove a member from a shared folder in Dropbox. This revokes their access to the shared content.",
+    "tags": ["dropbox", "sharing", "member", "remove"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/sharing/remove_folder_member",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The remove member request",
+          "properties": {
+            "shared_folder_id": {
+              "type": "string",
+              "description": "ID of the shared folder"
+            },
+            "member": {
+              "type": "object",
+              "description": "Member to remove",
+              "properties": {
+                ".tag": {
+                  "type": "string",
+                  "enum": ["email"],
+                  "default": "email",
+                  "description": "Member type"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Email address of the member to remove"
+                }
+              },
+              "required": [".tag", "email"],
+              "visible": [".tag", "email"],
+              "additionalProperties": false
+            },
+            "leave_a_copy": {
+              "type": "boolean",
+              "default": false,
+              "description": "Allow member to keep a copy of the folder contents"
+            }
+          },
+          "required": ["shared_folder_id", "member"],
+          "visible": ["shared_folder_id", "member", "leave_a_copy"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__GET_FOLDER_MEMBERS",
+    "description": "List members of a shared folder in Dropbox including their access levels and permissions.",
+    "tags": ["dropbox", "sharing", "members", "permissions"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/sharing/list_folder_members",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The folder members request",
+          "properties": {
+            "shared_folder_id": {
+              "type": "string",
+              "description": "ID of the shared folder"
+            },
+            "actions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["change_options", "disable_viewer_info", "change_viewer_info", "unshare", "relinquish_membership", "share_link"]
+              },
+              "description": "Filter members by available actions"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 1000,
+              "description": "Maximum number of members to return"
+            }
+          },
+          "required": ["shared_folder_id"],
+          "visible": ["shared_folder_id", "actions", "limit"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__UPDATE_FOLDER_MEMBER",
+    "description": "Update a member's access level in a shared folder. This allows changing permissions from viewer to editor or vice versa.",
+    "tags": ["dropbox", "sharing", "member", "permissions"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/sharing/update_folder_member",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The member update request",
+          "properties": {
+            "shared_folder_id": {
+              "type": "string",
+              "description": "ID of the shared folder"
+            },
+            "member": {
+              "type": "object",
+              "description": "Member to update",
+              "properties": {
+                ".tag": {
+                  "type": "string",
+                  "enum": ["email"],
+                  "default": "email",
+                  "description": "Member type"
+                },
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "description": "Email address of the member to update"
+                }
+              },
+              "required": [".tag", "email"],
+              "visible": [".tag", "email"],
+              "additionalProperties": false
+            },
+            "access_level": {
+              "type": "string",
+              "enum": ["owner", "editor", "viewer", "viewer_no_comment"],
+              "description": "New access level for the member"
+            }
+          },
+          "required": ["shared_folder_id", "member", "access_level"],
+          "visible": ["shared_folder_id", "member", "access_level"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__GET_SPACE_USAGE",
+    "description": "Get current space usage information for the Dropbox account including used space, allocated space, and quota details.",
+    "tags": ["dropbox", "space", "usage", "quota"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/users/get_space_usage",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The space usage request (empty object)",
+          "properties": {},
+          "required": [],
+          "visible": [],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__GET_CURRENT_ACCOUNT",
+    "description": "Get information about the current Dropbox user account including name, email, and account type.",
+    "tags": ["dropbox", "account", "user", "profile"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/users/get_current_account",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The account request (empty object)",
+          "properties": {},
+          "required": [],
+          "visible": [],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__CREATE_FILE_REQUEST",
+    "description": "Create a file request in Dropbox that allows others to upload files to your account through a shared URL without needing a Dropbox account.",
+    "tags": ["dropbox", "file_request", "upload", "sharing"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/file_requests/create",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The file request configuration",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Title for the file request"
+            },
+            "destination": {
+              "type": "string",
+              "description": "Dropbox path where uploaded files will be stored"
+            },
+            "deadline": {
+              "type": "object",
+              "description": "Deadline for the file request",
+              "properties": {
+                "deadline": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Deadline date and time (ISO 8601)"
+                },
+                "allow_late_uploads": {
+                  "type": "string",
+                  "enum": ["seven_days", "one_day", "two_days", "three_days"],
+                  "description": "Allow late uploads after deadline"
+                }
+              },
+              "required": ["deadline"],
+              "visible": ["deadline", "allow_late_uploads"],
+              "additionalProperties": false
+            },
+            "open": {
+              "type": "boolean",
+              "default": true,
+              "description": "Whether the file request is open for submissions"
+            },
+            "description": {
+              "type": "string",
+              "description": "Description of what files are being requested"
+            }
+          },
+          "required": ["title", "destination"],
+          "visible": ["title", "destination", "deadline", "open", "description"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__LIST_FILE_REQUESTS",
+    "description": "List file requests created in Dropbox for managing incoming file uploads and submissions from external users.",
+    "tags": ["dropbox", "file_requests", "list", "uploads"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/file_requests/list_v2",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The file requests listing request",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 100,
+              "maximum": 1000,
+              "description": "Maximum number of file requests to return"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "cursor"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__GET_FILE_REQUEST",
+    "description": "Get detailed information about a specific file request including submissions, deadline, and configuration.",
+    "tags": ["dropbox", "file_request", "details"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/file_requests/get",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The file request details request",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "ID of the file request"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__UPDATE_FILE_REQUEST",
+    "description": "Update a file request configuration including title, deadline, and open/closed status for managing file collection workflows.",
+    "tags": ["dropbox", "file_request", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/file_requests/update",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The file request update",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "ID of the file request to update"
+            },
+            "title": {
+              "type": "string",
+              "description": "Updated title for the file request"
+            },
+            "destination": {
+              "type": "string",
+              "description": "Updated destination path for uploaded files"
+            },
+            "deadline": {
+              "type": "object",
+              "description": "Updated deadline configuration",
+              "properties": {
+                "deadline": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Updated deadline date and time"
+                },
+                "allow_late_uploads": {
+                  "type": "string",
+                  "enum": ["seven_days", "one_day", "two_days", "three_days"],
+                  "description": "Updated late upload policy"
+                }
+              },
+              "required": [],
+              "visible": ["deadline", "allow_late_uploads"],
+              "additionalProperties": false
+            },
+            "open": {
+              "type": "boolean",
+              "description": "Updated open/closed status"
+            },
+            "description": {
+              "type": "string",
+              "description": "Updated description"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id", "title", "destination", "deadline", "open", "description"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DROPBOX__DELETE_FILE_REQUEST",
+    "description": "Delete a file request from Dropbox. This permanently removes the request and stops accepting new file submissions.",
+    "tags": ["dropbox", "file_request", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/2/file_requests/delete",
+      "server_url": "https://api.dropboxapi.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The file request deletion",
+          "properties": {
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Array of file request IDs to delete"
+            }
+          },
+          "required": ["ids"],
+          "visible": ["ids"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  }
+]

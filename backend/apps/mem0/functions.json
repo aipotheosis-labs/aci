@@ -328,5 +328,621 @@
             "visible": ["path"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "MEM0__DELETE_ALL_MEMORIES",
+        "description": "Delete all memories for a specific user or agent to reset their memory state",
+        "tags": ["memories", "delete", "reset"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v1/memories/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "filters": {
+                            "type": "object",
+                            "properties": {
+                                "user_id": {
+                                    "type": "string",
+                                    "description": "Delete all memories for a specific user ID"
+                                },
+                                "agent_id": {
+                                    "type": "string",
+                                    "description": "Delete all memories for a specific agent ID"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["user_id", "agent_id"],
+                            "description": "Filters to specify which memories to delete",
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["filters"],
+                    "visible": ["filters"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEM0__CREATE_MEMORY_COLLECTION",
+        "description": "Create a new memory collection to organize related memories by theme, project, or context",
+        "tags": ["memories", "collections", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/collections/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the memory collection"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Optional description of the collection's purpose"
+                        },
+                        "user_id": {
+                            "type": "string",
+                            "description": "User ID who owns this collection"
+                        },
+                        "metadata": {
+                            "type": "object",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "description": "Additional metadata for the collection",
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["name", "user_id"],
+                    "visible": ["name", "description", "user_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEM0__LIST_MEMORY_COLLECTIONS",
+        "description": "List all memory collections for a user with their metadata and memory counts",
+        "tags": ["memories", "collections", "list"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/collections/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "user_id": {
+                            "type": "string",
+                            "description": "Filter collections by user ID"
+                        },
+                        "page": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Page number for pagination"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "default": 50,
+                            "description": "Number of collections per page"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["user_id", "page", "page_size"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEM0__ADD_MEMORY_TO_COLLECTION",
+        "description": "Add an existing memory to a specific collection for better organization",
+        "tags": ["memories", "collections", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/collections/{collection_id}/memories/{memory_id}/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "collection_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the collection"
+                        },
+                        "memory_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the memory to add"
+                        }
+                    },
+                    "required": ["collection_id", "memory_id"],
+                    "visible": ["collection_id", "memory_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEM0__GET_MEMORY_ANALYTICS",
+        "description": "Get analytics and insights about memory usage patterns, retrieval frequency, and knowledge growth",
+        "tags": ["memories", "analytics", "insights", "usage"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/analytics/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "filters": {
+                            "type": "object",
+                            "properties": {
+                                "user_id": {
+                                    "type": "string",
+                                    "description": "Get analytics for a specific user"
+                                },
+                                "agent_id": {
+                                    "type": "string",
+                                    "description": "Get analytics for a specific agent"
+                                },
+                                "date_range": {
+                                    "type": "object",
+                                    "properties": {
+                                        "start_date": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "description": "Start date for analytics period"
+                                        },
+                                        "end_date": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "description": "End date for analytics period"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["start_date", "end_date"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": [],
+                            "visible": ["user_id", "agent_id", "date_range"],
+                            "additionalProperties": false
+                        },
+                        "metrics": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": ["memory_count", "retrieval_frequency", "growth_rate", "topic_distribution", "engagement_score"]
+                            },
+                            "description": "Specific metrics to include in analytics"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["filters", "metrics"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEM0__CREATE_KNOWLEDGE_GRAPH",
+        "description": "Create a knowledge graph connecting related memories to visualize relationships and patterns",
+        "tags": ["memories", "knowledge", "graph", "relationships", "visualization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/knowledge-graphs/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "user_id": {
+                            "type": "string",
+                            "description": "User ID to create knowledge graph for"
+                        },
+                        "filters": {
+                            "type": "object",
+                            "properties": {
+                                "topic": {
+                                    "type": "string",
+                                    "description": "Filter memories by specific topic"
+                                },
+                                "date_range": {
+                                    "type": "object",
+                                    "properties": {
+                                        "start_date": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "description": "Start date for memory inclusion"
+                                        },
+                                        "end_date": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "description": "End date for memory inclusion"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["start_date", "end_date"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": [],
+                            "visible": ["topic", "date_range"],
+                            "additionalProperties": false
+                        },
+                        "relationship_threshold": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 1,
+                            "default": 0.7,
+                            "description": "Minimum similarity threshold for creating relationships between memories"
+                        }
+                    },
+                    "required": ["user_id"],
+                    "visible": ["user_id", "filters", "relationship_threshold"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEM0__GET_MEMORY_INSIGHTS",
+        "description": "Get AI-powered insights and patterns from memories to understand trends and knowledge gaps",
+        "tags": ["memories", "insights", "ai", "patterns", "analysis"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/insights/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "user_id": {
+                            "type": "string",
+                            "description": "User ID to generate insights for"
+                        },
+                        "insight_types": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": ["trends", "gaps", "connections", "topics", "sentiment"]
+                            },
+                            "description": "Types of insights to generate"
+                        },
+                        "context": {
+                            "type": "string",
+                            "description": "Optional context or question to guide insight generation"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "default": 10,
+                            "description": "Maximum number of insights to return"
+                        }
+                    },
+                    "required": ["user_id"],
+                    "visible": ["user_id", "insight_types", "context", "limit"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEM0__CREATE_MEMORY_ORGANIZATION",
+        "description": "Create an organization to manage shared memories across multiple users and agents",
+        "tags": ["memories", "organization", "sharing", "collaboration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/organizations/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the organization"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description of the organization's purpose"
+                        },
+                        "owner_id": {
+                            "type": "string",
+                            "description": "User ID of the organization owner"
+                        },
+                        "settings": {
+                            "type": "object",
+                            "properties": {
+                                "memory_sharing": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Allow memory sharing within organization"
+                                },
+                                "auto_categorization": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Enable automatic memory categorization"
+                                },
+                                "retention_policy": {
+                                    "type": "object",
+                                    "properties": {
+                                        "duration": {
+                                            "type": "integer",
+                                            "description": "Memory retention duration in days"
+                                        },
+                                        "auto_delete": {
+                                            "type": "boolean",
+                                            "default": false,
+                                            "description": "Automatically delete old memories"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["duration", "auto_delete"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": [],
+                            "visible": ["memory_sharing", "auto_categorization", "retention_policy"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["name", "owner_id"],
+                    "visible": ["name", "description", "owner_id", "settings"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "MEM0__EXPORT_MEMORIES",
+        "description": "Export memories in various formats (JSON, CSV, XML) for backup, migration, or analysis purposes",
+        "tags": ["memories", "export", "backup", "migration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/export/",
+            "server_url": "https://api.mem0.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "filters": {
+                            "type": "object",
+                            "properties": {
+                                "user_id": {
+                                    "type": "string",
+                                    "description": "Export memories for a specific user"
+                                },
+                                "agent_id": {
+                                    "type": "string",
+                                    "description": "Export memories for a specific agent"
+                                },
+                                "collection_id": {
+                                    "type": "string",
+                                    "description": "Export memories from a specific collection"
+                                },
+                                "date_range": {
+                                    "type": "object",
+                                    "properties": {
+                                        "start_date": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "description": "Start date for export"
+                                        },
+                                        "end_date": {
+                                            "type": "string",
+                                            "format": "date",
+                                            "description": "End date for export"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["start_date", "end_date"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": [],
+                            "visible": ["user_id", "agent_id", "collection_id", "date_range"],
+                            "additionalProperties": false
+                        },
+                        "format": {
+                            "type": "string",
+                            "enum": ["json", "csv", "xml"],
+                            "default": "json",
+                            "description": "Export format"
+                        },
+                        "include_metadata": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Include metadata in the export"
+                        }
+                    },
+                    "required": ["filters"],
+                    "visible": ["filters", "format", "include_metadata"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
     }
 ]

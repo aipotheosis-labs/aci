@@ -583,5 +583,822 @@
 			],
 			"additionalProperties": false
 		}
+	},
+	{
+		"name": "ACTIVE_CAMPAIGN__LIST_CONTACTS",
+		"description": "Retrieves a list of contacts from ActiveCampaign. Supports filtering by email, list membership, and other criteria with pagination support.",
+		"tags": [
+			"activecampaign",
+			"contacts"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "GET",
+			"server_url": "https://{account_name}.api-us1.com",
+			"path": "/api/3/contacts"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters for the URL",
+					"properties": {
+						"account_name": {
+							"type": "string",
+							"description": "Your ActiveCampaign account name"
+						}
+					},
+					"required": [
+						"account_name"
+					],
+					"visible": [
+						"account_name"
+					],
+					"additionalProperties": false
+				},
+				"query": {
+					"type": "object",
+					"description": "Query parameters for filtering",
+					"properties": {
+						"limit": {
+							"type": "integer",
+							"description": "Number of contacts to return (max 100)"
+						},
+						"offset": {
+							"type": "integer",
+							"description": "Offset for pagination"
+						},
+						"email": {
+							"type": "string",
+							"description": "Filter by email address"
+						},
+						"listid": {
+							"type": "string",
+							"description": "Filter by list ID"
+						}
+					},
+					"required": [],
+					"visible": [
+						"limit",
+						"offset",
+						"email",
+						"listid"
+					],
+					"additionalProperties": false
+				},
+				"header": {
+					"type": "object",
+					"description": "Header parameters",
+					"properties": {
+						"Content-Type": {
+							"type": "string",
+							"description": "Content type header",
+							"default": "application/json"
+						}
+					},
+					"required": [],
+					"visible": [],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path",
+				"header"
+			],
+			"visible": [
+				"path",
+				"query"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "ACTIVE_CAMPAIGN__DELETE_CONTACT",
+		"description": "Deletes a contact from ActiveCampaign using the contact ID. This permanently removes the contact and all associated data.",
+		"tags": [
+			"activecampaign",
+			"contacts"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "DELETE",
+			"server_url": "https://{account_name}.api-us1.com",
+			"path": "/api/3/contacts/{contact_id}"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters for the URL",
+					"properties": {
+						"account_name": {
+							"type": "string",
+							"description": "Your ActiveCampaign account name"
+						},
+						"contact_id": {
+							"type": "string",
+							"description": "The ID of the contact to delete"
+						}
+					},
+					"required": [
+						"account_name",
+						"contact_id"
+					],
+					"visible": [
+						"account_name",
+						"contact_id"
+					],
+					"additionalProperties": false
+				},
+				"header": {
+					"type": "object",
+					"description": "Header parameters",
+					"properties": {
+						"Content-Type": {
+							"type": "string",
+							"description": "Content type header",
+							"default": "application/json"
+						}
+					},
+					"required": [],
+					"visible": [],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path",
+				"header"
+			],
+			"visible": [
+				"path"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "ACTIVE_CAMPAIGN__LIST_LISTS",
+		"description": "Retrieves all lists from ActiveCampaign. Returns list metadata including name, creation date, and subscriber counts with pagination support.",
+		"tags": [
+			"activecampaign",
+			"lists"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "GET",
+			"server_url": "https://{account_name}.api-us1.com",
+			"path": "/api/3/lists"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters for the URL",
+					"properties": {
+						"account_name": {
+							"type": "string",
+							"description": "Your ActiveCampaign account name"
+						}
+					},
+					"required": [
+						"account_name"
+					],
+					"visible": [
+						"account_name"
+					],
+					"additionalProperties": false
+				},
+				"query": {
+					"type": "object",
+					"description": "Query parameters for filtering",
+					"properties": {
+						"limit": {
+							"type": "integer",
+							"description": "Number of lists to return (max 100)"
+						},
+						"offset": {
+							"type": "integer",
+							"description": "Offset for pagination"
+						}
+					},
+					"required": [],
+					"visible": [
+						"limit",
+						"offset"
+					],
+					"additionalProperties": false
+				},
+				"header": {
+					"type": "object",
+					"description": "Header parameters",
+					"properties": {
+						"Content-Type": {
+							"type": "string",
+							"description": "Content type header",
+							"default": "application/json"
+						}
+					},
+					"required": [],
+					"visible": [],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path",
+				"header"
+			],
+			"visible": [
+				"path",
+				"query"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "ACTIVE_CAMPAIGN__RETRIEVE_LIST",
+		"description": "Retrieves details of a specific list from ActiveCampaign using the list ID. Returns list metadata and configuration settings.",
+		"tags": [
+			"activecampaign",
+			"lists"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "GET",
+			"server_url": "https://{account_name}.api-us1.com",
+			"path": "/api/3/lists/{list_id}"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters for the URL",
+					"properties": {
+						"account_name": {
+							"type": "string",
+							"description": "Your ActiveCampaign account name"
+						},
+						"list_id": {
+							"type": "string",
+							"description": "The ID of the list to retrieve"
+						}
+					},
+					"required": [
+						"account_name",
+						"list_id"
+					],
+					"visible": [
+						"account_name",
+						"list_id"
+					],
+					"additionalProperties": false
+				},
+				"header": {
+					"type": "object",
+					"description": "Header parameters",
+					"properties": {
+						"Content-Type": {
+							"type": "string",
+							"description": "Content type header",
+							"default": "application/json"
+						}
+					},
+					"required": [],
+					"visible": [],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path",
+				"header"
+			],
+			"visible": [
+				"path"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "ACTIVE_CAMPAIGN__UPDATE_LIST",
+		"description": "Updates an existing list in ActiveCampaign using the list ID. Allows modification of list name, sender details, and configuration settings.",
+		"tags": [
+			"activecampaign",
+			"lists"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "PUT",
+			"server_url": "https://{account_name}.api-us1.com",
+			"path": "/api/3/lists/{list_id}"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters for the URL",
+					"properties": {
+						"account_name": {
+							"type": "string",
+							"description": "Your ActiveCampaign account name"
+						},
+						"list_id": {
+							"type": "string",
+							"description": "The ID of the list to update"
+						}
+					},
+					"required": [
+						"account_name",
+						"list_id"
+					],
+					"visible": [
+						"account_name",
+						"list_id"
+					],
+					"additionalProperties": false
+				},
+				"body": {
+					"type": "object",
+					"description": "The request body containing updated list data",
+					"properties": {
+						"list": {
+							"type": "object",
+							"description": "List object with updated details",
+							"properties": {
+								"name": {
+									"type": "string",
+									"description": "Name of the list"
+								},
+								"stringid": {
+									"type": "string",
+									"description": "Unique string identifier for the list"
+								},
+								"sender_url": {
+									"type": "string",
+									"description": "URL displayed in the footer of the email"
+								},
+								"sender_reminder": {
+									"type": "string",
+									"description": "Reminder message displayed in the footer of the email"
+								}
+							},
+							"required": [],
+							"visible": [
+								"name",
+								"stringid",
+								"sender_url",
+								"sender_reminder"
+							],
+							"additionalProperties": false
+						}
+					},
+					"required": [
+						"list"
+					],
+					"visible": [
+						"list"
+					],
+					"additionalProperties": false
+				},
+				"header": {
+					"type": "object",
+					"description": "Header parameters",
+					"properties": {
+						"Content-Type": {
+							"type": "string",
+							"description": "Content type header",
+							"default": "application/json"
+						}
+					},
+					"required": [],
+					"visible": [],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path",
+				"body",
+				"header"
+			],
+			"visible": [
+				"path",
+				"body"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "ACTIVE_CAMPAIGN__DELETE_LIST",
+		"description": "Deletes a list from ActiveCampaign using the list ID. This permanently removes the list and unsubscribes all contacts from it.",
+		"tags": [
+			"activecampaign",
+			"lists"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "DELETE",
+			"server_url": "https://{account_name}.api-us1.com",
+			"path": "/api/3/lists/{list_id}"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters for the URL",
+					"properties": {
+						"account_name": {
+							"type": "string",
+							"description": "Your ActiveCampaign account name"
+						},
+						"list_id": {
+							"type": "string",
+							"description": "The ID of the list to delete"
+						}
+					},
+					"required": [
+						"account_name",
+						"list_id"
+					],
+					"visible": [
+						"account_name",
+						"list_id"
+					],
+					"additionalProperties": false
+				},
+				"header": {
+					"type": "object",
+					"description": "Header parameters",
+					"properties": {
+						"Content-Type": {
+							"type": "string",
+							"description": "Content type header",
+							"default": "application/json"
+						}
+					},
+					"required": [],
+					"visible": [],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path",
+				"header"
+			],
+			"visible": [
+				"path"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "ACTIVE_CAMPAIGN__LIST_CAMPAIGNS",
+		"description": "Retrieves all email campaigns from ActiveCampaign. Returns campaign metadata including name, status, type, and performance metrics with pagination support.",
+		"tags": [
+			"activecampaign",
+			"campaigns",
+			"email"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "GET",
+			"server_url": "https://{account_name}.api-us1.com",
+			"path": "/api/3/campaigns"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters for the URL",
+					"properties": {
+						"account_name": {
+							"type": "string",
+							"description": "Your ActiveCampaign account name"
+						}
+					},
+					"required": [
+						"account_name"
+					],
+					"visible": [
+						"account_name"
+					],
+					"additionalProperties": false
+				},
+				"query": {
+					"type": "object",
+					"description": "Query parameters for filtering",
+					"properties": {
+						"limit": {
+							"type": "integer",
+							"description": "Number of campaigns to return (max 100)"
+						},
+						"offset": {
+							"type": "integer",
+							"description": "Offset for pagination"
+						},
+						"orders[name]": {
+							"type": "string",
+							"description": "Order by name (ASC or DESC)",
+							"enum": ["ASC", "DESC"]
+						}
+					},
+					"required": [],
+					"visible": [
+						"limit",
+						"offset",
+						"orders[name]"
+					],
+					"additionalProperties": false
+				},
+				"header": {
+					"type": "object",
+					"description": "Header parameters",
+					"properties": {
+						"Content-Type": {
+							"type": "string",
+							"description": "Content type header",
+							"default": "application/json"
+						}
+					},
+					"required": [],
+					"visible": [],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path",
+				"header"
+			],
+			"visible": [
+				"path",
+				"query"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "ACTIVE_CAMPAIGN__RETRIEVE_CAMPAIGN",
+		"description": "Retrieves details of a specific campaign from ActiveCampaign using the campaign ID. Returns campaign configuration, content, and statistics.",
+		"tags": [
+			"activecampaign",
+			"campaigns",
+			"email"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "GET",
+			"server_url": "https://{account_name}.api-us1.com",
+			"path": "/api/3/campaigns/{campaign_id}"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters for the URL",
+					"properties": {
+						"account_name": {
+							"type": "string",
+							"description": "Your ActiveCampaign account name"
+						},
+						"campaign_id": {
+							"type": "string",
+							"description": "The ID of the campaign to retrieve"
+						}
+					},
+					"required": [
+						"account_name",
+						"campaign_id"
+					],
+					"visible": [
+						"account_name",
+						"campaign_id"
+					],
+					"additionalProperties": false
+				},
+				"header": {
+					"type": "object",
+					"description": "Header parameters",
+					"properties": {
+						"Content-Type": {
+							"type": "string",
+							"description": "Content type header",
+							"default": "application/json"
+						}
+					},
+					"required": [],
+					"visible": [],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path",
+				"header"
+			],
+			"visible": [
+				"path"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "ACTIVE_CAMPAIGN__LIST_AUTOMATIONS",
+		"description": "Retrieves all automation campaigns from ActiveCampaign. Returns automation metadata including name, status, triggers, and performance metrics with pagination support.",
+		"tags": [
+			"activecampaign",
+			"automations",
+			"workflows"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "GET",
+			"server_url": "https://{account_name}.api-us1.com",
+			"path": "/api/3/automations"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters for the URL",
+					"properties": {
+						"account_name": {
+							"type": "string",
+							"description": "Your ActiveCampaign account name"
+						}
+					},
+					"required": [
+						"account_name"
+					],
+					"visible": [
+						"account_name"
+					],
+					"additionalProperties": false
+				},
+				"query": {
+					"type": "object",
+					"description": "Query parameters for filtering",
+					"properties": {
+						"limit": {
+							"type": "integer",
+							"description": "Number of automations to return (max 100)"
+						},
+						"offset": {
+							"type": "integer",
+							"description": "Offset for pagination"
+						}
+					},
+					"required": [],
+					"visible": [
+						"limit",
+						"offset"
+					],
+					"additionalProperties": false
+				},
+				"header": {
+					"type": "object",
+					"description": "Header parameters",
+					"properties": {
+						"Content-Type": {
+							"type": "string",
+							"description": "Content type header",
+							"default": "application/json"
+						}
+					},
+					"required": [],
+					"visible": [],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path",
+				"header"
+			],
+			"visible": [
+				"path",
+				"query"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "ACTIVE_CAMPAIGN__ADD_CONTACT_TO_AUTOMATION",
+		"description": "Adds a contact to an automation workflow in ActiveCampaign. This triggers the automation sequence for the specified contact.",
+		"tags": [
+			"activecampaign",
+			"automations",
+			"contacts"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "POST",
+			"server_url": "https://{account_name}.api-us1.com",
+			"path": "/api/3/contactAutomations"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters for the URL",
+					"properties": {
+						"account_name": {
+							"type": "string",
+							"description": "Your ActiveCampaign account name"
+						}
+					},
+					"required": [
+						"account_name"
+					],
+					"visible": [
+						"account_name"
+					],
+					"additionalProperties": false
+				},
+				"body": {
+					"type": "object",
+					"description": "The request body containing contact automation data",
+					"properties": {
+						"contactAutomation": {
+							"type": "object",
+							"description": "Contact automation object",
+							"properties": {
+								"contact": {
+									"type": "string",
+									"description": "The ID of the contact"
+								},
+								"automation": {
+									"type": "string",
+									"description": "The ID of the automation"
+								}
+							},
+							"required": [
+								"contact",
+								"automation"
+							],
+							"visible": [
+								"contact",
+								"automation"
+							],
+							"additionalProperties": false
+						}
+					},
+					"required": [
+						"contactAutomation"
+					],
+					"visible": [
+						"contactAutomation"
+					],
+					"additionalProperties": false
+				},
+				"header": {
+					"type": "object",
+					"description": "Header parameters",
+					"properties": {
+						"Content-Type": {
+							"type": "string",
+							"description": "Content type header",
+							"default": "application/json"
+						}
+					},
+					"required": [],
+					"visible": [],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path",
+				"body",
+				"header"
+			],
+			"visible": [
+				"path",
+				"body"
+			],
+			"additionalProperties": false
+		}
 	}
 ]

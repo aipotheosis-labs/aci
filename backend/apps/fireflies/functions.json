@@ -441,5 +441,616 @@
             "visible": ["body"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "FIREFLIES__SEARCH_TRANSCRIPTS",
+        "description": "Search for specific content within meeting transcripts using keywords and filters",
+        "tags": [
+            "meetings",
+            "transcripts",
+            "search",
+            "content"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL query and variables for searching transcripts",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL query to search transcripts",
+                            "default": "query SearchTranscripts($keyword: String, $start_date: DateTime, $end_date: DateTime, $limit: Int, $skip: Int) { search(keyword: $keyword, start_date: $start_date, end_date: $end_date, limit: $limit, skip: $skip) { id title date duration sentences { speaker_id text start_time end_time } } }"
+                        },
+                        "variables": {
+                            "type": "object",
+                            "description": "Variables for the GraphQL query",
+                            "properties": {
+                                "keyword": {
+                                    "type": "string",
+                                    "description": "Search keyword or phrase to find in transcript content"
+                                },
+                                "start_date": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "Start date for search range (ISO 8601 format)"
+                                },
+                                "end_date": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "End date for search range (ISO 8601 format)"
+                                },
+                                "limit": {
+                                    "type": "integer",
+                                    "description": "Maximum number of search results to return (default: 10, maximum: 50)",
+                                    "default": 10,
+                                    "maximum": 50
+                                },
+                                "skip": {
+                                    "type": "integer",
+                                    "description": "Number of results to skip for pagination"
+                                }
+                            },
+                            "required": ["keyword"],
+                            "visible": ["keyword", "start_date", "end_date", "limit", "skip"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query", "variables"],
+                    "visible": ["variables"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIREFLIES__GET_MEETING_ANALYTICS",
+        "description": "Get advanced analytics and insights for meetings including speaker talk time, sentiment analysis, and engagement metrics",
+        "tags": [
+            "meetings",
+            "analytics",
+            "insights",
+            "sentiment",
+            "engagement"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL query and variables for meeting analytics",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL query to get meeting analytics",
+                            "default": "query GetMeetingAnalytics($transcriptId: String!) { analytics(transcript_id: $transcriptId) { speaker_stats { speaker_id total_talk_time percentage_of_meeting word_count } sentiment_analysis { overall_sentiment positive_keywords negative_keywords } engagement_metrics { questions_asked action_items_count } } }"
+                        },
+                        "variables": {
+                            "type": "object",
+                            "description": "Variables for the GraphQL query",
+                            "properties": {
+                                "transcriptId": {
+                                    "type": "string",
+                                    "description": "ID of the transcript to get analytics for"
+                                }
+                            },
+                            "required": ["transcriptId"],
+                            "visible": ["transcriptId"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query", "variables"],
+                    "visible": ["variables"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIREFLIES__GENERATE_CUSTOM_SUMMARY",
+        "description": "Generate custom summaries for meetings based on specific topics or questions using AI",
+        "tags": [
+            "meetings",
+            "summary",
+            "ai",
+            "custom",
+            "topics"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL mutation and variables for generating custom summary",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL mutation to generate custom summary",
+                            "default": "mutation GenerateCustomSummary($transcriptId: String!, $prompt: String!, $focus_areas: [String]) { generateCustomSummary(transcript_id: $transcriptId, prompt: $prompt, focus_areas: $focus_areas) { summary key_points action_items } }"
+                        },
+                        "variables": {
+                            "type": "object",
+                            "description": "Variables for the GraphQL mutation",
+                            "properties": {
+                                "transcriptId": {
+                                    "type": "string",
+                                    "description": "ID of the transcript to generate summary for"
+                                },
+                                "prompt": {
+                                    "type": "string",
+                                    "description": "Custom prompt or question to guide the summary generation"
+                                },
+                                "focus_areas": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "description": "Specific areas or topics to focus on in the summary"
+                                }
+                            },
+                            "required": ["transcriptId", "prompt"],
+                            "visible": ["transcriptId", "prompt", "focus_areas"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query", "variables"],
+                    "visible": ["variables"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIREFLIES__GET_TEAM_INSIGHTS",
+        "description": "Get team-wide insights and analytics across multiple meetings to track collaboration patterns and productivity",
+        "tags": [
+            "team",
+            "insights",
+            "analytics",
+            "collaboration",
+            "productivity"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL query and variables for team insights",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL query to get team insights",
+                            "default": "query GetTeamInsights($startDate: DateTime, $endDate: DateTime, $teamMembers: [String]) { teamInsights(start_date: $startDate, end_date: $endDate, team_members: $teamMembers) { meeting_frequency average_meeting_duration top_speakers most_active_days collaboration_score } }"
+                        },
+                        "variables": {
+                            "type": "object",
+                            "description": "Variables for the GraphQL query",
+                            "properties": {
+                                "startDate": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "Start date for insights analysis (ISO 8601 format)"
+                                },
+                                "endDate": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "description": "End date for insights analysis (ISO 8601 format)"
+                                },
+                                "teamMembers": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "description": "List of team member emails to include in analysis"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["startDate", "endDate", "teamMembers"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query"],
+                    "visible": ["variables"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIREFLIES__CREATE_SOUNDBITE",
+        "description": "Create audio soundbites from specific parts of meeting transcripts for easy sharing and reference",
+        "tags": [
+            "meetings",
+            "soundbites",
+            "audio",
+            "sharing",
+            "clips"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL mutation and variables for creating soundbite",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL mutation to create soundbite",
+                            "default": "mutation CreateSoundbite($transcriptId: String!, $startTime: Float!, $endTime: Float!, $title: String) { createSoundbite(transcript_id: $transcriptId, start_time: $startTime, end_time: $endTime, title: $title) { id url duration title } }"
+                        },
+                        "variables": {
+                            "type": "object",
+                            "description": "Variables for the GraphQL mutation",
+                            "properties": {
+                                "transcriptId": {
+                                    "type": "string",
+                                    "description": "ID of the transcript to create soundbite from"
+                                },
+                                "startTime": {
+                                    "type": "number",
+                                    "description": "Start time of the soundbite in seconds"
+                                },
+                                "endTime": {
+                                    "type": "number",
+                                    "description": "End time of the soundbite in seconds"
+                                },
+                                "title": {
+                                    "type": "string",
+                                    "description": "Optional title for the soundbite"
+                                }
+                            },
+                            "required": ["transcriptId", "startTime", "endTime"],
+                            "visible": ["transcriptId", "startTime", "endTime", "title"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query", "variables"],
+                    "visible": ["variables"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIREFLIES__GET_INTEGRATIONS",
+        "description": "Get list of available integrations and their configuration status for connecting with other tools",
+        "tags": [
+            "integrations",
+            "connections",
+            "tools",
+            "setup"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL query for integrations",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL query to get integrations",
+                            "default": "{ integrations { name type status configuration_url supported_features } }"
+                        }
+                    },
+                    "required": ["query"],
+                    "visible": ["query"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIREFLIES__UPDATE_MEETING_NOTES",
+        "description": "Update or add custom notes to a meeting transcript for better organization and context",
+        "tags": [
+            "meetings",
+            "notes",
+            "update",
+            "organization",
+            "context"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL mutation and variables for updating meeting notes",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL mutation to update meeting notes",
+                            "default": "mutation UpdateMeetingNotes($transcriptId: String!, $notes: String!, $tags: [String]) { updateMeetingNotes(transcript_id: $transcriptId, notes: $notes, tags: $tags) { id notes tags } }"
+                        },
+                        "variables": {
+                            "type": "object",
+                            "description": "Variables for the GraphQL mutation",
+                            "properties": {
+                                "transcriptId": {
+                                    "type": "string",
+                                    "description": "ID of the transcript to update notes for"
+                                },
+                                "notes": {
+                                    "type": "string",
+                                    "description": "Custom notes to add to the meeting"
+                                },
+                                "tags": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "description": "Optional tags to categorize the meeting"
+                                }
+                            },
+                            "required": ["transcriptId", "notes"],
+                            "visible": ["transcriptId", "notes", "tags"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query", "variables"],
+                    "visible": ["variables"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "FIREFLIES__EXPORT_TRANSCRIPT",
+        "description": "Export meeting transcript in various formats (PDF, DOCX, CSV, JSON) for sharing and archival purposes",
+        "tags": [
+            "meetings",
+            "export",
+            "transcript",
+            "formats",
+            "sharing"
+        ],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/graphql",
+            "server_url": "https://api.fireflies.ai"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "GraphQL mutation and variables for exporting transcript",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "GraphQL mutation to export transcript",
+                            "default": "mutation ExportTranscript($transcriptId: String!, $format: ExportFormat!, $includeTimestamps: Boolean, $includeSpeakerLabels: Boolean) { exportTranscript(transcript_id: $transcriptId, format: $format, include_timestamps: $includeTimestamps, include_speaker_labels: $includeSpeakerLabels) { download_url expires_at } }"
+                        },
+                        "variables": {
+                            "type": "object",
+                            "description": "Variables for the GraphQL mutation",
+                            "properties": {
+                                "transcriptId": {
+                                    "type": "string",
+                                    "description": "ID of the transcript to export"
+                                },
+                                "format": {
+                                    "type": "string",
+                                    "enum": ["PDF", "DOCX", "CSV", "JSON", "TXT", "SRT", "VTT"],
+                                    "description": "Export format for the transcript"
+                                },
+                                "includeTimestamps": {
+                                    "type": "boolean",
+                                    "description": "Whether to include timestamps in the export",
+                                    "default": true
+                                },
+                                "includeSpeakerLabels": {
+                                    "type": "boolean",
+                                    "description": "Whether to include speaker labels in the export",
+                                    "default": true
+                                }
+                            },
+                            "required": ["transcriptId", "format"],
+                            "visible": ["transcriptId", "format", "includeTimestamps", "includeSpeakerLabels"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["query", "variables"],
+                    "visible": ["variables"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
     }
 ]

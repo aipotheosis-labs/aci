@@ -1,0 +1,39 @@
+{
+  "name": "TABLEAU",
+  "display_name": "Tableau",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/tableau.svg",
+  "provider": "Salesforce, Inc.",
+  "version": "3.23",
+  "description": "Tableau is the industry-leading business intelligence and data visualization platform that helps organizations see and understand their data. This integration enables AI agents to create and manage dashboards, generate reports, automate data refreshes, share insights, and perform comprehensive analytics operations for data-driven decision making across enterprise environments.",
+  "security_schemes": {
+    "personal_access_token": {
+      "type": "http",
+      "scheme": "bearer",
+      "description": "Tableau Server Personal Access Token for API authentication"
+    }
+  },
+  "default_security_credentials_by_scheme": {
+    "personal_access_token": {
+      "credentials": {
+        "token": {
+          "type": "string",
+          "description": "Your Tableau Server Personal Access Token",
+          "visibility": "invisible"
+        },
+        "server_url": {
+          "type": "string",
+          "description": "Your Tableau Server URL (e.g., https://your-server.tableau.com)",
+          "visibility": "visible"
+        },
+        "site_id": {
+          "type": "string",
+          "description": "Tableau Site ID (leave empty for default site)",
+          "visibility": "visible"
+        }
+      }
+    }
+  },
+  "categories": ["Analytics", "Business Intelligence", "Data Visualization"],
+  "visibility": "public",
+  "active": true
+}

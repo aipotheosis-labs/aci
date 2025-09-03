@@ -1,0 +1,30 @@
+{
+  "name": "DROPBOX",
+  "display_name": "Dropbox",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/dropbox.svg",
+  "provider": "Dropbox, Inc.",
+  "version": "1.0.0",
+  "description": "Dropbox is a cloud storage service that allows users to store, sync, and share files across devices. This integration provides comprehensive file management, sharing, and collaboration capabilities for automated workflows and content management.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_DROPBOX_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_DROPBOX_APP_CLIENT_SECRET }}",
+      "scope": "files.metadata.read files.metadata.write files.content.read files.content.write sharing.read sharing.write file_requests.read file_requests.write",
+      "authorize_url": "https://www.dropbox.com/oauth2/authorize",
+      "access_token_url": "https://api.dropboxapi.com/oauth2/token",
+      "refresh_token_url": "https://api.dropboxapi.com/oauth2/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "File Storage",
+    "Cloud Storage",
+    "Collaboration",
+    "Productivity"
+  ],
+  "visibility": "public",
+  "active": true
+}

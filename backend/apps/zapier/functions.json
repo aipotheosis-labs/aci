@@ -1,0 +1,1008 @@
+[
+    {
+        "name": "ZAPIER__GET_ZAPS",
+        "description": "Retrieve all automation workflows (Zaps) from Zapier account with their trigger and action configurations",
+        "tags": ["zaps", "workflows", "automation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/zaps",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 100,
+                            "description": "Number of Zaps to return"
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "default": 0,
+                            "description": "Number of Zaps to skip for pagination"
+                        },
+                        "status": {
+                            "type": "string",
+                            "enum": ["on", "off", "draft"],
+                            "description": "Filter Zaps by their status"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["limit", "offset", "status"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__CREATE_ZAP",
+        "description": "Create a new automation workflow (Zap) in Zapier with trigger and action configurations",
+        "tags": ["zaps", "create", "workflows", "automation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/zaps",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the Zap workflow"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description of what the Zap does"
+                        },
+                        "trigger": {
+                            "type": "object",
+                            "properties": {
+                                "app": {
+                                    "type": "string",
+                                    "description": "App that triggers the Zap"
+                                },
+                                "trigger_type": {
+                                    "type": "string",
+                                    "description": "Type of trigger event"
+                                },
+                                "config": {
+                                    "type": "object",
+                                    "properties": {},
+                                    "required": [],
+                                    "visible": [],
+                                    "description": "Configuration for the trigger",
+                                    "additionalProperties": true
+                                }
+                            },
+                            "required": ["app", "trigger_type"],
+                            "visible": ["app", "trigger_type", "config"],
+                            "additionalProperties": false
+                        },
+                        "actions": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "app": {
+                                        "type": "string",
+                                        "description": "App to perform the action"
+                                    },
+                                    "action_type": {
+                                        "type": "string",
+                                        "description": "Type of action to perform"
+                                    },
+                                    "config": {
+                                        "type": "object",
+                                        "properties": {},
+                                        "required": [],
+                                        "visible": [],
+                                        "description": "Configuration for the action",
+                                        "additionalProperties": true
+                                    }
+                                },
+                                "required": ["app", "action_type"],
+                                "visible": ["app", "action_type", "config"],
+                                "additionalProperties": false
+                            },
+                            "description": "Actions to perform when triggered"
+                        }
+                    },
+                    "required": ["name", "trigger"],
+                    "visible": ["name", "description", "trigger", "actions"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__UPDATE_ZAP",
+        "description": "Update an existing Zap workflow configuration including triggers, actions, and status",
+        "tags": ["zaps", "update", "workflows"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/v1/zaps/{zap_id}",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "zap_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the Zap to update"
+                        }
+                    },
+                    "required": ["zap_id"],
+                    "visible": ["zap_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Updated name of the Zap"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Updated description"
+                        },
+                        "status": {
+                            "type": "string",
+                            "enum": ["on", "off", "draft"],
+                            "description": "Status of the Zap"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "description", "status"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__DELETE_ZAP",
+        "description": "Delete a specific Zap workflow from Zapier account to remove automation",
+        "tags": ["zaps", "delete", "workflows"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v1/zaps/{zap_id}",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "zap_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the Zap to delete"
+                        }
+                    },
+                    "required": ["zap_id"],
+                    "visible": ["zap_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__GET_ZAP_RUNS",
+        "description": "Retrieve execution history and logs for a specific Zap workflow including success and error details",
+        "tags": ["zaps", "runs", "execution", "logs"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/zaps/{zap_id}/runs",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "zap_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the Zap"
+                        }
+                    },
+                    "required": ["zap_id"],
+                    "visible": ["zap_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 100,
+                            "description": "Number of runs to return"
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "default": 0,
+                            "description": "Number of runs to skip for pagination"
+                        },
+                        "status": {
+                            "type": "string",
+                            "enum": ["success", "error", "halted"],
+                            "description": "Filter runs by status"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["limit", "offset", "status"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__SEND_WEBHOOK",
+        "description": "Send a webhook payload to trigger Zapier workflows that listen for webhook events",
+        "tags": ["webhooks", "send", "trigger"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/hooks/catch/{hook_id}/",
+            "server_url": "https://hooks.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "hook_id": {
+                            "type": "string",
+                            "description": "Unique webhook hook identifier from Zapier"
+                        }
+                    },
+                    "required": ["hook_id"],
+                    "visible": ["hook_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "data": {
+                            "type": "object",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "description": "Custom data payload to send to the webhook",
+                            "additionalProperties": true
+                        },
+                        "event_type": {
+                            "type": "string",
+                            "description": "Type of event being triggered"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Timestamp of the event"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["data", "event_type", "timestamp"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__GET_APPS",
+        "description": "Retrieve available applications and integrations in Zapier platform with their triggers and actions",
+        "tags": ["apps", "integrations", "platform"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/apps",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 100,
+                            "description": "Number of apps to return"
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "default": 0,
+                            "description": "Number of apps to skip for pagination"
+                        },
+                        "search": {
+                            "type": "string",
+                            "description": "Search for apps by name or description"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["limit", "offset", "search"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__GET_TRIGGERS",
+        "description": "Retrieve available trigger events for a specific app in Zapier platform for workflow automation",
+        "tags": ["triggers", "events", "apps"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/apps/{app_id}/triggers",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "app_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the app to get triggers for"
+                        }
+                    },
+                    "required": ["app_id"],
+                    "visible": ["app_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__GET_ACTIONS",
+        "description": "Retrieve available action events for a specific app in Zapier platform for workflow automation",
+        "tags": ["actions", "events", "apps"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/apps/{app_id}/actions",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "app_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the app to get actions for"
+                        }
+                    },
+                    "required": ["app_id"],
+                    "visible": ["app_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__TEST_ZAP",
+        "description": "Test a Zap workflow by triggering it manually to verify the automation works correctly",
+        "tags": ["zaps", "test", "validation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/zaps/{zap_id}/test",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "zap_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the Zap to test"
+                        }
+                    },
+                    "required": ["zap_id"],
+                    "visible": ["zap_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "test_data": {
+                            "type": "object",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "description": "Sample data to use for testing the Zap",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": [],
+                    "visible": ["test_data"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__TOGGLE_ZAP",
+        "description": "Turn a Zap workflow on or off to start or stop automation execution",
+        "tags": ["zaps", "toggle", "enable", "disable"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/v1/zaps/{zap_id}",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "zap_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the Zap to toggle"
+                        }
+                    },
+                    "required": ["zap_id"],
+                    "visible": ["zap_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "status": {
+                            "type": "string",
+                            "enum": ["on", "off"],
+                            "description": "New status for the Zap (on to enable, off to disable)"
+                        }
+                    },
+                    "required": ["status"],
+                    "visible": ["status"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__CREATE_WEBHOOK_SUBSCRIPTION",
+        "description": "Create a webhook subscription to receive real-time notifications when specific events occur in connected apps",
+        "tags": ["webhooks", "create", "subscriptions", "notifications"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/subscriptions",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "target_url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL to send webhook notifications to"
+                        },
+                        "event": {
+                            "type": "string",
+                            "description": "Event type to subscribe to"
+                        },
+                        "app_id": {
+                            "type": "string",
+                            "description": "App to monitor for events"
+                        },
+                        "filters": {
+                            "type": "object",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "description": "Filters to apply to webhook events",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": ["target_url", "event"],
+                    "visible": ["target_url", "event", "app_id", "filters"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__GET_WEBHOOK_SUBSCRIPTIONS",
+        "description": "Retrieve all webhook subscriptions for monitoring automation trigger events and notifications",
+        "tags": ["webhooks", "subscriptions", "list"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/subscriptions",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 100,
+                            "description": "Number of subscriptions to return"
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "default": 0,
+                            "description": "Number of subscriptions to skip for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["limit", "offset"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__DELETE_WEBHOOK_SUBSCRIPTION",
+        "description": "Delete a webhook subscription to stop receiving notifications for specific events",
+        "tags": ["webhooks", "delete", "subscriptions"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v1/subscriptions/{subscription_id}",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "subscription_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the webhook subscription to delete"
+                        }
+                    },
+                    "required": ["subscription_id"],
+                    "visible": ["subscription_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__GET_CONNECTIONS",
+        "description": "Retrieve all connected app accounts and their authentication status for workflow creation",
+        "tags": ["connections", "auth", "accounts"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/connections",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 100,
+                            "description": "Number of connections to return"
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "default": 0,
+                            "description": "Number of connections to skip for pagination"
+                        },
+                        "app_id": {
+                            "type": "string",
+                            "description": "Filter connections by specific app"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["limit", "offset", "app_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__CREATE_CONNECTION",
+        "description": "Create a new app connection in Zapier to authenticate and connect third-party services for automation",
+        "tags": ["connections", "create", "auth"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/connections",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "app_id": {
+                            "type": "string",
+                            "description": "App to create connection for"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Name for this connection"
+                        },
+                        "auth_data": {
+                            "type": "object",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "description": "Authentication data required by the app",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": ["app_id", "name"],
+                    "visible": ["app_id", "name", "auth_data"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__GET_TASK_HISTORY",
+        "description": "Retrieve task execution history across all Zaps for monitoring automation performance and troubleshooting",
+        "tags": ["tasks", "history", "execution", "monitoring"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/tasks",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "limit": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 100,
+                            "description": "Number of task executions to return"
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "default": 0,
+                            "description": "Number of tasks to skip for pagination"
+                        },
+                        "status": {
+                            "type": "string",
+                            "enum": ["success", "error", "halted", "held"],
+                            "description": "Filter tasks by execution status"
+                        },
+                        "zap_id": {
+                            "type": "string",
+                            "description": "Filter tasks by specific Zap workflow"
+                        },
+                        "start_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Start date for task history range"
+                        },
+                        "end_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "End date for task history range"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["limit", "offset", "status", "zap_id", "start_date", "end_date"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__CREATE_CUSTOM_WEBHOOK",
+        "description": "Create a custom webhook endpoint for receiving data from external applications to trigger Zapier workflows",
+        "tags": ["webhooks", "create", "custom", "endpoints"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v1/hooks",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name for the webhook endpoint"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description of what this webhook receives"
+                        },
+                        "event_type": {
+                            "type": "string",
+                            "description": "Type of event this webhook handles"
+                        },
+                        "target_app": {
+                            "type": "string",
+                            "description": "Target app to connect this webhook to"
+                        },
+                        "filters": {
+                            "type": "object",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "description": "Filters to apply to incoming webhook data",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": ["name", "event_type"],
+                    "visible": ["name", "description", "event_type", "target_app", "filters"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZAPIER__GET_USAGE_STATS",
+        "description": "Retrieve Zapier account usage statistics including task consumption, Zap counts, and billing information",
+        "tags": ["usage", "stats", "billing", "analytics"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/usage",
+            "server_url": "https://api.zapier.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "start_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Start date for usage period"
+                        },
+                        "end_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "End date for usage period"
+                        },
+                        "granularity": {
+                            "type": "string",
+                            "enum": ["daily", "weekly", "monthly"],
+                            "default": "daily",
+                            "description": "Granularity of usage statistics"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["start_date", "end_date", "granularity"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    }
+]

@@ -366,5 +366,1023 @@
             ],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "POSTHOG__CAPTURE_EVENT",
+        "description": "Capture custom events with properties for user behavior tracking and analytics",
+        "tags": ["events", "tracking", "analytics"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/capture/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Event data to capture",
+                    "properties": {
+                        "api_key": {
+                            "type": "string",
+                            "description": "Your PostHog project API key"
+                        },
+                        "event": {
+                            "type": "string",
+                            "description": "Name of the event to track"
+                        },
+                        "distinct_id": {
+                            "type": "string",
+                            "description": "Unique identifier for the user or session"
+                        },
+                        "properties": {
+                            "type": "object",
+                            "properties": {},
+                            "required": [],
+                            "visible": [],
+                            "description": "Custom properties associated with the event",
+                            "additionalProperties": true
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "ISO timestamp when the event occurred (optional, defaults to current time)"
+                        }
+                    },
+                    "required": ["api_key", "event", "distinct_id"],
+                    "visible": ["api_key", "event", "distinct_id", "properties", "timestamp"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__GET_EVENTS",
+        "description": "Retrieve events from PostHog with filtering and pagination for analysis",
+        "tags": ["events", "analytics", "data"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/projects/{project_id}/events/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": ["project_id"],
+                    "visible": ["project_id"],
+                    "properties": {
+                        "project_id": {
+                            "type": "string",
+                            "description": "Project ID to get events from"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering events",
+                    "properties": {
+                        "event": {
+                            "type": "string",
+                            "description": "Filter by specific event name"
+                        },
+                        "distinct_id": {
+                            "type": "string",
+                            "description": "Filter by specific user distinct ID"
+                        },
+                        "after": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Get events after this timestamp"
+                        },
+                        "before": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Get events before this timestamp"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Maximum number of events to return",
+                            "default": 100,
+                            "maximum": 1000
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "description": "Number of events to skip for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["event", "distinct_id", "after", "before", "limit", "offset"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__CREATE_FEATURE_FLAG",
+        "description": "Create a feature flag to control feature rollouts and A/B testing experiments",
+        "tags": ["feature-flags", "experiments", "rollouts"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/projects/{project_id}/feature_flags/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": ["project_id"],
+                    "visible": ["project_id"],
+                    "properties": {
+                        "project_id": {
+                            "type": "string",
+                            "description": "Project ID to create feature flag in"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Feature flag configuration",
+                    "properties": {
+                        "key": {
+                            "type": "string",
+                            "description": "Unique key for the feature flag"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Human-readable name for the feature flag"
+                        },
+                        "filters": {
+                            "type": "object",
+                            "properties": {
+                                "groups": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "properties": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "rollout_percentage": {
+                                                "type": "number",
+                                                "minimum": 0,
+                                                "maximum": 100
+                                            }
+                                        },
+                                        "required": [],
+                                        "visible": [],
+                                        "additionalProperties": false
+                                    },
+                                    "description": "Groups of users to target with different rollout percentages"
+                                },
+                                "multivariate": {
+                                    "type": "object",
+                                    "properties": {
+                                        "variants": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "key": {
+                                                        "type": "string"
+                                                    },
+                                                    "name": {
+                                                        "type": "string"
+                                                    },
+                                                    "rollout_percentage": {
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "required": [],
+                                                "visible": [],
+                                                "additionalProperties": false
+                                            }
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": [],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": [],
+                            "visible": ["groups", "multivariate"],
+                            "additionalProperties": false
+                        },
+                        "active": {
+                            "type": "boolean",
+                            "description": "Whether the feature flag is active",
+                            "default": true
+                        }
+                    },
+                    "required": ["key", "name"],
+                    "visible": ["key", "name", "filters", "active"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__LIST_FEATURE_FLAGS",
+        "description": "List all feature flags in a project with their current status and configuration",
+        "tags": ["feature-flags", "list"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/projects/{project_id}/feature_flags/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": ["project_id"],
+                    "visible": ["project_id"],
+                    "properties": {
+                        "project_id": {
+                            "type": "string",
+                            "description": "Project ID to list feature flags from"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering",
+                    "properties": {
+                        "limit": {
+                            "type": "integer",
+                            "description": "Maximum number of feature flags to return",
+                            "default": 20
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "description": "Number of feature flags to skip for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["limit", "offset"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__UPDATE_FEATURE_FLAG",
+        "description": "Update an existing feature flag's configuration, rollout percentage, or targeting rules",
+        "tags": ["feature-flags", "update"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/api/projects/{project_id}/feature_flags/{id}/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": ["project_id", "id"],
+                    "visible": ["project_id", "id"],
+                    "properties": {
+                        "project_id": {
+                            "type": "string",
+                            "description": "Project ID containing the feature flag"
+                        },
+                        "id": {
+                            "type": "string",
+                            "description": "Feature flag ID to update"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Updated feature flag configuration",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Updated name for the feature flag"
+                        },
+                        "filters": {
+                            "type": "object",
+                            "properties": {
+                                "groups": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object"
+                                    },
+                                    "description": "Updated targeting groups"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["groups"],
+                            "additionalProperties": false
+                        },
+                        "active": {
+                            "type": "boolean",
+                            "description": "Whether the feature flag is active"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "filters", "active"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__DELETE_FEATURE_FLAG",
+        "description": "Delete a feature flag from the project permanently",
+        "tags": ["feature-flags", "delete"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/api/projects/{project_id}/feature_flags/{id}/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": ["project_id", "id"],
+                    "visible": ["project_id", "id"],
+                    "properties": {
+                        "project_id": {
+                            "type": "string",
+                            "description": "Project ID containing the feature flag"
+                        },
+                        "id": {
+                            "type": "string",
+                            "description": "Feature flag ID to delete"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__CREATE_COHORT",
+        "description": "Create a user cohort based on events and properties for targeted analysis and feature flags",
+        "tags": ["cohorts", "segmentation", "users"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/projects/{project_id}/cohorts/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": ["project_id"],
+                    "visible": ["project_id"],
+                    "properties": {
+                        "project_id": {
+                            "type": "string",
+                            "description": "Project ID to create cohort in"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Cohort configuration",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the cohort"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description of the cohort"
+                        },
+                        "groups": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "properties": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "key": {
+                                                    "type": "string"
+                                                },
+                                                "value": {
+                                                    "type": "string"
+                                                },
+                                                "operator": {
+                                                    "type": "string",
+                                                    "enum": ["exact", "is_not", "contains", "regex"]
+                                                },
+                                                "type": {
+                                                    "type": "string",
+                                                    "enum": ["event", "person"]
+                                                }
+                                            },
+                                            "required": [],
+                                            "visible": [],
+                                            "additionalProperties": false
+                                        }
+                                    }
+                                },
+                                "required": [],
+                                "visible": [],
+                                "additionalProperties": false
+                            },
+                            "description": "Groups of conditions that define the cohort"
+                        },
+                        "is_static": {
+                            "type": "boolean",
+                            "description": "Whether this is a static cohort (doesn't update automatically)",
+                            "default": false
+                        }
+                    },
+                    "required": ["name", "groups"],
+                    "visible": ["name", "description", "groups", "is_static"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__LIST_COHORTS",
+        "description": "List all cohorts in a project with their definitions and member counts",
+        "tags": ["cohorts", "list"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/projects/{project_id}/cohorts/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": ["project_id"],
+                    "visible": ["project_id"],
+                    "properties": {
+                        "project_id": {
+                            "type": "string",
+                            "description": "Project ID to list cohorts from"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__CREATE_DASHBOARD",
+        "description": "Create a new dashboard to organize insights and visualizations for data analysis",
+        "tags": ["dashboards", "insights", "visualization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/projects/{project_id}/dashboards/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": ["project_id"],
+                    "visible": ["project_id"],
+                    "properties": {
+                        "project_id": {
+                            "type": "string",
+                            "description": "Project ID to create dashboard in"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Dashboard configuration",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the dashboard"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description of the dashboard's purpose"
+                        },
+                        "tags": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Tags to categorize the dashboard"
+                        },
+                        "is_shared": {
+                            "type": "boolean",
+                            "description": "Whether the dashboard is shared with team members",
+                            "default": false
+                        },
+                        "creation_mode": {
+                            "type": "string",
+                            "enum": ["default", "template", "duplicate"],
+                            "description": "How the dashboard was created",
+                            "default": "default"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name", "description", "tags", "is_shared", "creation_mode"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__LIST_DASHBOARDS",
+        "description": "List all dashboards in a project with their metadata and tile counts",
+        "tags": ["dashboards", "list"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/projects/{project_id}/dashboards/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": ["project_id"],
+                    "visible": ["project_id"],
+                    "properties": {
+                        "project_id": {
+                            "type": "string",
+                            "description": "Project ID to list dashboards from"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering",
+                    "properties": {
+                        "limit": {
+                            "type": "integer",
+                            "description": "Maximum number of dashboards to return",
+                            "default": 20
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "description": "Number of dashboards to skip for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["limit", "offset"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__CREATE_INSIGHT",
+        "description": "Create a new insight (chart/analysis) to visualize data trends, funnels, retention, or paths",
+        "tags": ["insights", "analytics", "visualization", "trends"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/projects/{project_id}/insights/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": ["project_id"],
+                    "visible": ["project_id"],
+                    "properties": {
+                        "project_id": {
+                            "type": "string",
+                            "description": "Project ID to create insight in"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Insight configuration",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the insight"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description of what the insight shows"
+                        },
+                        "filters": {
+                            "type": "object",
+                            "properties": {
+                                "insight": {
+                                    "type": "string",
+                                    "enum": ["TRENDS", "FUNNELS", "RETENTION", "PATHS", "LIFECYCLE", "STICKINESS"],
+                                    "description": "Type of insight to create"
+                                },
+                                "events": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "string"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "type": {
+                                                "type": "string",
+                                                "enum": ["events", "actions"]
+                                            }
+                                        },
+                                        "required": [],
+                                        "visible": [],
+                                        "additionalProperties": false
+                                    },
+                                    "description": "Events to analyze in the insight"
+                                },
+                                "date_from": {
+                                    "type": "string",
+                                    "description": "Start date for analysis (e.g., '-30d', '2024-01-01')"
+                                },
+                                "date_to": {
+                                    "type": "string",
+                                    "description": "End date for analysis (e.g., '-1d', '2024-01-31')"
+                                },
+                                "interval": {
+                                    "type": "string",
+                                    "enum": ["hour", "day", "week", "month"],
+                                    "description": "Time interval for grouping data"
+                                }
+                            },
+                            "required": ["insight"],
+                            "visible": ["insight", "events", "date_from", "date_to", "interval"],
+                            "additionalProperties": false
+                        },
+                        "tags": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "Tags to categorize the insight"
+                        }
+                    },
+                    "required": ["filters"],
+                    "visible": ["name", "description", "filters", "tags"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "POSTHOG__GET_SESSION_RECORDINGS",
+        "description": "Get session recordings to analyze user behavior and identify UX issues",
+        "tags": ["sessions", "recordings", "user-behavior", "ux"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/projects/{project_id}/session_recordings/",
+            "server_url": "https://us.i.posthog.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "description": "Headers for the HTTP request",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "description": "Content type of the request",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "required": ["project_id"],
+                    "visible": ["project_id"],
+                    "properties": {
+                        "project_id": {
+                            "type": "string",
+                            "description": "Project ID to get recordings from"
+                        }
+                    },
+                    "description": "Path parameters",
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering recordings",
+                    "properties": {
+                        "distinct_id": {
+                            "type": "string",
+                            "description": "Filter by specific user distinct ID"
+                        },
+                        "date_from": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Get recordings from this date onwards"
+                        },
+                        "date_to": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Get recordings up to this date"
+                        },
+                        "duration_type_filter": {
+                            "type": "string",
+                            "enum": ["duration", "active_seconds"],
+                            "description": "Type of duration filter to apply"
+                        },
+                        "session_recording_duration": {
+                            "type": "object",
+                            "properties": {
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["recording", "active_seconds"]
+                                },
+                                "key": {
+                                    "type": "string",
+                                    "enum": ["duration", "active_seconds"]
+                                },
+                                "value": {
+                                    "type": "integer"
+                                },
+                                "operator": {
+                                    "type": "string",
+                                    "enum": ["gt", "lt"]
+                                }
+                            },
+                            "required": [],
+                            "visible": [],
+                            "additionalProperties": false,
+                            "description": "Duration filter for recordings"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "description": "Maximum number of recordings to return",
+                            "default": 50
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "description": "Number of recordings to skip for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["distinct_id", "date_from", "date_to", "duration_type_filter", "session_recording_duration", "limit", "offset"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
     }
 ]

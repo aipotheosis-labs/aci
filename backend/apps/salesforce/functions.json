@@ -1,0 +1,1038 @@
+[
+    {
+        "name": "SALESFORCE__GET_ACCOUNTS",
+        "description": "Retrieve all company accounts from Salesforce CRM with filtering and pagination options",
+        "tags": ["accounts", "companies", "customers"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/services/data/v61.0/query/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "default": "SELECT Id, Name, BillingStreet, BillingCity, BillingState, BillingCountry, Phone, Website, Industry, AnnualRevenue, NumberOfEmployees, Type, CreatedDate, LastModifiedDate FROM Account ORDER BY Name LIMIT 100",
+                            "description": "SOQL query to retrieve accounts with specific fields and conditions"
+                        }
+                    },
+                    "required": ["q"],
+                    "visible": ["q"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__CREATE_ACCOUNT",
+        "description": "Create a new company account in Salesforce CRM with billing information and company details",
+        "tags": ["accounts", "create", "companies"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/services/data/v61.0/sobjects/Account/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Name": {
+                            "type": "string",
+                            "description": "Company name for the new account"
+                        },
+                        "BillingStreet": {
+                            "type": "string",
+                            "description": "Street address for billing"
+                        },
+                        "BillingCity": {
+                            "type": "string",
+                            "description": "City for billing address"
+                        },
+                        "BillingState": {
+                            "type": "string",
+                            "description": "State for billing address"
+                        },
+                        "BillingCountry": {
+                            "type": "string",
+                            "description": "Country for billing address"
+                        },
+                        "BillingPostalCode": {
+                            "type": "string",
+                            "description": "Postal code for billing address"
+                        },
+                        "Phone": {
+                            "type": "string",
+                            "description": "Company phone number"
+                        },
+                        "Website": {
+                            "type": "string",
+                            "description": "Company website URL"
+                        },
+                        "Industry": {
+                            "type": "string",
+                            "description": "Industry classification for the company"
+                        },
+                        "AnnualRevenue": {
+                            "type": "number",
+                            "description": "Annual revenue of the company"
+                        },
+                        "NumberOfEmployees": {
+                            "type": "integer",
+                            "description": "Number of employees at the company"
+                        },
+                        "Type": {
+                            "type": "string",
+                            "description": "Account type (Customer, Partner, Prospect, etc.)"
+                        },
+                        "Description": {
+                            "type": "string",
+                            "description": "Additional description or notes about the account"
+                        }
+                    },
+                    "required": ["Name"],
+                    "visible": ["Name", "BillingStreet", "BillingCity", "BillingState", "BillingCountry", "BillingPostalCode", "Phone", "Website", "Industry", "AnnualRevenue", "NumberOfEmployees", "Type", "Description"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__GET_CONTACTS",
+        "description": "Retrieve all contacts from Salesforce CRM with their account associations and contact information",
+        "tags": ["contacts", "people", "customers"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/services/data/v61.0/query/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "default": "SELECT Id, FirstName, LastName, Email, Phone, AccountId, Account.Name, Title, Department, LeadSource, CreatedDate, LastModifiedDate FROM Contact ORDER BY LastName LIMIT 100",
+                            "description": "SOQL query to retrieve contacts with specific fields and account relationship"
+                        }
+                    },
+                    "required": ["q"],
+                    "visible": ["q"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__CREATE_CONTACT",
+        "description": "Create a new contact in Salesforce CRM and associate them with an existing account",
+        "tags": ["contacts", "create", "people"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/services/data/v61.0/sobjects/Contact/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "FirstName": {
+                            "type": "string",
+                            "description": "First name of the contact"
+                        },
+                        "LastName": {
+                            "type": "string",
+                            "description": "Last name of the contact"
+                        },
+                        "Email": {
+                            "type": "string",
+                            "description": "Email address of the contact"
+                        },
+                        "Phone": {
+                            "type": "string",
+                            "description": "Phone number of the contact"
+                        },
+                        "AccountId": {
+                            "type": "string",
+                            "description": "Salesforce ID of the associated account"
+                        },
+                        "Title": {
+                            "type": "string",
+                            "description": "Job title of the contact"
+                        },
+                        "Department": {
+                            "type": "string",
+                            "description": "Department the contact works in"
+                        },
+                        "LeadSource": {
+                            "type": "string",
+                            "description": "Source where this contact was acquired"
+                        },
+                        "Description": {
+                            "type": "string",
+                            "description": "Additional notes about the contact"
+                        }
+                    },
+                    "required": ["LastName"],
+                    "visible": ["FirstName", "LastName", "Email", "Phone", "AccountId", "Title", "Department", "LeadSource", "Description"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__GET_LEADS",
+        "description": "Retrieve all sales leads from Salesforce CRM with their qualification status and source information",
+        "tags": ["leads", "prospects", "sales"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/services/data/v61.0/query/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "default": "SELECT Id, FirstName, LastName, Email, Phone, Company, Title, LeadSource, Status, Rating, Industry, AnnualRevenue, NumberOfEmployees, CreatedDate, LastModifiedDate FROM Lead ORDER BY CreatedDate DESC LIMIT 100",
+                            "description": "SOQL query to retrieve leads with qualification and company information"
+                        }
+                    },
+                    "required": ["q"],
+                    "visible": ["q"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__CREATE_LEAD",
+        "description": "Create a new sales lead in Salesforce CRM with contact information and qualification details",
+        "tags": ["leads", "create", "prospects"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/services/data/v61.0/sobjects/Lead/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "FirstName": {
+                            "type": "string",
+                            "description": "First name of the lead"
+                        },
+                        "LastName": {
+                            "type": "string",
+                            "description": "Last name of the lead"
+                        },
+                        "Email": {
+                            "type": "string",
+                            "description": "Email address of the lead"
+                        },
+                        "Phone": {
+                            "type": "string",
+                            "description": "Phone number of the lead"
+                        },
+                        "Company": {
+                            "type": "string",
+                            "description": "Company name where the lead works"
+                        },
+                        "Title": {
+                            "type": "string",
+                            "description": "Job title of the lead"
+                        },
+                        "LeadSource": {
+                            "type": "string",
+                            "description": "Source where this lead was acquired (Website, Referral, Trade Show, etc.)"
+                        },
+                        "Status": {
+                            "type": "string",
+                            "description": "Lead qualification status (Open, Working, Qualified, Unqualified)"
+                        },
+                        "Rating": {
+                            "type": "string",
+                            "description": "Lead rating (Hot, Warm, Cold)"
+                        },
+                        "Industry": {
+                            "type": "string",
+                            "description": "Industry classification"
+                        },
+                        "AnnualRevenue": {
+                            "type": "number",
+                            "description": "Annual revenue of the lead's company"
+                        },
+                        "NumberOfEmployees": {
+                            "type": "integer",
+                            "description": "Number of employees at the lead's company"
+                        }
+                    },
+                    "required": ["LastName", "Company"],
+                    "visible": ["FirstName", "LastName", "Email", "Phone", "Company", "Title", "LeadSource", "Status", "Rating", "Industry", "AnnualRevenue", "NumberOfEmployees"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__GET_OPPORTUNITIES",
+        "description": "Retrieve sales opportunities with deal information, stages, and revenue forecasts from Salesforce",
+        "tags": ["opportunities", "deals", "sales", "pipeline"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/services/data/v61.0/query/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "default": "SELECT Id, Name, AccountId, Account.Name, Amount, CloseDate, StageName, Probability, LeadSource, Type, NextStep, Description, CreatedDate, LastModifiedDate FROM Opportunity ORDER BY CloseDate DESC LIMIT 100",
+                            "description": "SOQL query to retrieve opportunities with account relationships and sales stages"
+                        }
+                    },
+                    "required": ["q"],
+                    "visible": ["q"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__CREATE_OPPORTUNITY",
+        "description": "Create a new sales opportunity in Salesforce CRM with deal details and revenue projections",
+        "tags": ["opportunities", "create", "deals"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/services/data/v61.0/sobjects/Opportunity/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Name": {
+                            "type": "string",
+                            "description": "Name of the opportunity/deal"
+                        },
+                        "AccountId": {
+                            "type": "string",
+                            "description": "Salesforce ID of the associated account"
+                        },
+                        "Amount": {
+                            "type": "number",
+                            "description": "Expected revenue amount from this opportunity"
+                        },
+                        "CloseDate": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Expected close date for the opportunity"
+                        },
+                        "StageName": {
+                            "type": "string",
+                            "description": "Current stage of the opportunity (Prospecting, Qualification, Proposal, Closed Won, etc.)"
+                        },
+                        "Probability": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 100,
+                            "description": "Probability of closing this opportunity (0-100%)"
+                        },
+                        "LeadSource": {
+                            "type": "string",
+                            "description": "Source where this opportunity originated"
+                        },
+                        "Type": {
+                            "type": "string",
+                            "description": "Type of opportunity (New Customer, Existing Customer - Upgrade, etc.)"
+                        },
+                        "NextStep": {
+                            "type": "string",
+                            "description": "Next action required to progress this opportunity"
+                        },
+                        "Description": {
+                            "type": "string",
+                            "description": "Detailed description of the opportunity"
+                        }
+                    },
+                    "required": ["Name", "CloseDate", "StageName"],
+                    "visible": ["Name", "AccountId", "Amount", "CloseDate", "StageName", "Probability", "LeadSource", "Type", "NextStep", "Description"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__GET_CASES",
+        "description": "Retrieve customer service cases from Salesforce with status, priority, and resolution tracking",
+        "tags": ["cases", "support", "service"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/services/data/v61.0/query/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "default": "SELECT Id, CaseNumber, Subject, Description, Status, Priority, Origin, Type, AccountId, Account.Name, ContactId, Contact.Name, OwnerId, CreatedDate, ClosedDate FROM Case ORDER BY CreatedDate DESC LIMIT 100",
+                            "description": "SOQL query to retrieve cases with account and contact relationships"
+                        }
+                    },
+                    "required": ["q"],
+                    "visible": ["q"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__CREATE_CASE",
+        "description": "Create a new customer service case in Salesforce with priority and assignment details",
+        "tags": ["cases", "create", "support"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/services/data/v61.0/sobjects/Case/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Subject": {
+                            "type": "string",
+                            "description": "Brief summary of the case issue"
+                        },
+                        "Description": {
+                            "type": "string",
+                            "description": "Detailed description of the case"
+                        },
+                        "Status": {
+                            "type": "string",
+                            "description": "Case status (New, Working, Escalated, Closed)"
+                        },
+                        "Priority": {
+                            "type": "string",
+                            "description": "Case priority level (High, Medium, Low)"
+                        },
+                        "Origin": {
+                            "type": "string",
+                            "description": "How the case was created (Phone, Email, Web, Chat)"
+                        },
+                        "Type": {
+                            "type": "string",
+                            "description": "Type of case (Problem, Question, Feature Request)"
+                        },
+                        "AccountId": {
+                            "type": "string",
+                            "description": "Salesforce ID of the associated account"
+                        },
+                        "ContactId": {
+                            "type": "string",
+                            "description": "Salesforce ID of the associated contact"
+                        }
+                    },
+                    "required": ["Subject"],
+                    "visible": ["Subject", "Description", "Status", "Priority", "Origin", "Type", "AccountId", "ContactId"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__UPDATE_OPPORTUNITY_STAGE",
+        "description": "Update the stage and probability of an existing sales opportunity in Salesforce pipeline",
+        "tags": ["opportunities", "update", "pipeline"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/services/data/v61.0/sobjects/Opportunity/{opportunity_id}",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "opportunity_id": {
+                            "type": "string",
+                            "description": "Salesforce ID of the opportunity to update"
+                        }
+                    },
+                    "required": ["opportunity_id"],
+                    "visible": ["opportunity_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "StageName": {
+                            "type": "string",
+                            "description": "New stage name for the opportunity"
+                        },
+                        "Probability": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 100,
+                            "description": "Updated probability percentage (0-100%)"
+                        },
+                        "Amount": {
+                            "type": "number",
+                            "description": "Updated opportunity amount"
+                        },
+                        "CloseDate": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Updated expected close date"
+                        },
+                        "NextStep": {
+                            "type": "string",
+                            "description": "Next action required for this opportunity"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["StageName", "Probability", "Amount", "CloseDate", "NextStep"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__GET_CAMPAIGNS",
+        "description": "Retrieve marketing campaigns from Salesforce with performance metrics and member counts",
+        "tags": ["campaigns", "marketing", "outreach"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/services/data/v61.0/query/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "default": "SELECT Id, Name, Type, Status, StartDate, EndDate, ExpectedRevenue, ActualCost, NumberOfLeads, NumberOfContacts, NumberOfOpportunities, Description, CreatedDate FROM Campaign ORDER BY StartDate DESC LIMIT 100",
+                            "description": "SOQL query to retrieve campaigns with performance metrics"
+                        }
+                    },
+                    "required": ["q"],
+                    "visible": ["q"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__CREATE_CAMPAIGN",
+        "description": "Create a new marketing campaign in Salesforce with budget and timeline information",
+        "tags": ["campaigns", "create", "marketing"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/services/data/v61.0/sobjects/Campaign/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Name": {
+                            "type": "string",
+                            "description": "Name of the marketing campaign"
+                        },
+                        "Type": {
+                            "type": "string",
+                            "description": "Type of campaign (Email, Webinar, Trade Show, Advertisement, etc.)"
+                        },
+                        "Status": {
+                            "type": "string",
+                            "description": "Campaign status (Planned, In Progress, Completed, Aborted)"
+                        },
+                        "StartDate": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Campaign start date"
+                        },
+                        "EndDate": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Campaign end date"
+                        },
+                        "ExpectedRevenue": {
+                            "type": "number",
+                            "description": "Expected revenue from the campaign"
+                        },
+                        "BudgetedCost": {
+                            "type": "number",
+                            "description": "Budgeted cost for the campaign"
+                        },
+                        "ActualCost": {
+                            "type": "number",
+                            "description": "Actual cost spent on the campaign"
+                        },
+                        "Description": {
+                            "type": "string",
+                            "description": "Detailed description of the campaign goals and strategy"
+                        }
+                    },
+                    "required": ["Name", "Type", "Status"],
+                    "visible": ["Name", "Type", "Status", "StartDate", "EndDate", "ExpectedRevenue", "BudgetedCost", "ActualCost", "Description"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__CONVERT_LEAD",
+        "description": "Convert a qualified lead into an account, contact, and optionally an opportunity in Salesforce",
+        "tags": ["leads", "convert", "accounts", "opportunities"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/services/data/v61.0/process/conversions/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "leadId": {
+                            "type": "string",
+                            "description": "Salesforce ID of the lead to convert"
+                        },
+                        "convertedStatus": {
+                            "type": "string",
+                            "description": "Status to set for the converted lead (typically 'Qualified')"
+                        },
+                        "accountId": {
+                            "type": "string",
+                            "description": "Existing account ID to associate with, or leave blank to create new account"
+                        },
+                        "contactId": {
+                            "type": "string",
+                            "description": "Existing contact ID to merge with, or leave blank to create new contact"
+                        },
+                        "createOpportunity": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Whether to create an opportunity during conversion"
+                        },
+                        "opportunityName": {
+                            "type": "string",
+                            "description": "Name for the new opportunity (required if createOpportunity is true)"
+                        },
+                        "ownerId": {
+                            "type": "string",
+                            "description": "User ID to assign ownership of converted records"
+                        }
+                    },
+                    "required": ["leadId", "convertedStatus"],
+                    "visible": ["leadId", "convertedStatus", "accountId", "contactId", "createOpportunity", "opportunityName", "ownerId"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__SEARCH_RECORDS",
+        "description": "Perform global search across all Salesforce objects to find records matching text criteria",
+        "tags": ["search", "global", "records"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/services/data/v61.0/search/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "description": "SOSL (Salesforce Object Search Language) query to search across multiple objects"
+                        }
+                    },
+                    "required": ["q"],
+                    "visible": ["q"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__GET_USER_INFO",
+        "description": "Retrieve information about the current authenticated Salesforce user including permissions and org details",
+        "tags": ["user", "authentication", "permissions"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/services/oauth2/userinfo",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__GET_ORGANIZATION_INFO",
+        "description": "Retrieve Salesforce organization information including limits, features, and configuration details",
+        "tags": ["organization", "limits", "configuration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/services/data/v61.0/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__GET_REPORTS",
+        "description": "Retrieve available Salesforce reports with metadata and execution capabilities for data analysis",
+        "tags": ["reports", "analytics", "data"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/services/data/v61.0/analytics/reports/",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "description": "Search term to filter reports by name or description"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["q"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "SALESFORCE__RUN_REPORT",
+        "description": "Execute a specific Salesforce report and retrieve the results for analysis and decision making",
+        "tags": ["reports", "execute", "analytics"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/services/data/v61.0/analytics/reports/{report_id}",
+            "server_url": "{{ SALESFORCE_INSTANCE_URL }}"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "report_id": {
+                            "type": "string",
+                            "description": "Salesforce ID of the report to execute"
+                        }
+                    },
+                    "required": ["report_id"],
+                    "visible": ["report_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "reportMetadata": {
+                            "type": "object",
+                            "properties": {
+                                "reportFilters": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "column": {
+                                                "type": "string",
+                                                "description": "Field name to filter on"
+                                            },
+                                            "operator": {
+                                                "type": "string",
+                                                "description": "Filter operator (equals, not equal to, greater than, etc.)"
+                                            },
+                                            "value": {
+                                                "type": "string",
+                                                "description": "Filter value"
+                                            }
+                                        },
+                                        "required": ["column", "operator", "value"],
+                                        "visible": ["column", "operator", "value"],
+                                        "additionalProperties": false
+                                    },
+                                    "description": "Filters to apply to the report execution"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["reportFilters"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": [],
+                    "visible": ["reportMetadata"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    }
+]

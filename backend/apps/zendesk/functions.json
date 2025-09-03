@@ -1,0 +1,1966 @@
+[
+    {
+        "name": "ZENDESK__CREATE_TICKET",
+        "description": "Create a new support ticket in Zendesk with customer information, priority, and initial description.",
+        "tags": ["tickets", "create", "support"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v2/tickets",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Ticket creation parameters",
+                    "properties": {
+                        "ticket": {
+                            "type": "object",
+                            "description": "Ticket details",
+                            "properties": {
+                                "subject": {
+                                    "type": "string",
+                                    "description": "Subject line of the ticket"
+                                },
+                                "comment": {
+                                    "type": "object",
+                                    "description": "Initial comment for the ticket",
+                                    "properties": {
+                                        "body": {
+                                            "type": "string",
+                                            "description": "Content of the initial comment"
+                                        },
+                                        "html_body": {
+                                            "type": "string",
+                                            "description": "HTML content of the comment"
+                                        },
+                                        "public": {
+                                            "type": "boolean",
+                                            "default": true,
+                                            "description": "Whether the comment is public"
+                                        }
+                                    },
+                                    "required": ["body"],
+                                    "visible": ["body", "html_body", "public"],
+                                    "additionalProperties": false
+                                },
+                                "requester": {
+                                    "type": "object",
+                                    "description": "Requester information",
+                                    "properties": {
+                                        "name": {
+                                            "type": "string",
+                                            "description": "Name of the requester"
+                                        },
+                                        "email": {
+                                            "type": "string",
+                                            "description": "Email of the requester"
+                                        }
+                                    },
+                                    "required": ["email"],
+                                    "visible": ["name", "email"],
+                                    "additionalProperties": false
+                                },
+                                "priority": {
+                                    "type": "string",
+                                    "enum": ["low", "normal", "high", "urgent"],
+                                    "description": "Priority level of the ticket"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "enum": ["new", "open", "pending", "hold", "solved", "closed"],
+                                    "description": "Status of the ticket"
+                                },
+                                "type": {
+                                    "type": "string",
+                                    "enum": ["problem", "incident", "question", "task"],
+                                    "description": "Type of the ticket"
+                                },
+                                "assignee_id": {
+                                    "type": "integer",
+                                    "description": "ID of the agent assigned to the ticket"
+                                },
+                                "group_id": {
+                                    "type": "integer",
+                                    "description": "ID of the group assigned to the ticket"
+                                },
+                                "tags": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                    "description": "Array of tags to add to the ticket"
+                                }
+                            },
+                            "required": ["subject", "comment"],
+                            "visible": ["subject", "comment", "requester", "priority", "status", "type", "assignee_id", "group_id", "tags"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["ticket"],
+                    "visible": ["ticket"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__LIST_TICKETS",
+        "description": "Retrieve a list of tickets with filtering, sorting, and pagination options for ticket management.",
+        "tags": ["tickets", "list", "support"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/tickets",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering tickets",
+                    "properties": {
+                        "external_id": {
+                            "type": "string",
+                            "description": "Filter by external ID"
+                        },
+                        "sort_by": {
+                            "type": "string",
+                            "enum": ["assignee", "assignee.name", "created_at", "group", "id", "locale", "requester", "requester.name", "status", "subject", "updated_at"],
+                            "description": "Sort tickets by specified field"
+                        },
+                        "sort_order": {
+                            "type": "string",
+                            "enum": ["asc", "desc"],
+                            "description": "Sort order for results"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["external_id", "sort_by", "sort_order"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__GET_TICKET",
+        "description": "Retrieve detailed information about a specific ticket including comments, metrics, and custom fields.",
+        "tags": ["tickets", "get", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/tickets/{ticket_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "ticket_id": {
+                            "type": "integer",
+                            "description": "ID of the ticket to retrieve"
+                        }
+                    },
+                    "required": ["ticket_id"],
+                    "visible": ["ticket_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for additional ticket information",
+                    "properties": {
+                        "include": {
+                            "type": "string",
+                            "description": "Include additional information (comma-separated): comment_count, dates, latest_comment, metric_events, sla_policy, sharing_agreements"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["include"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__UPDATE_TICKET",
+        "description": "Update an existing ticket with new status, priority, assignee, or other properties.",
+        "tags": ["tickets", "update", "support"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/api/v2/tickets/{ticket_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "ticket_id": {
+                            "type": "integer",
+                            "description": "ID of the ticket to update"
+                        }
+                    },
+                    "required": ["ticket_id"],
+                    "visible": ["ticket_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Ticket update parameters",
+                    "properties": {
+                        "ticket": {
+                            "type": "object",
+                            "description": "Ticket properties to update",
+                            "properties": {
+                                "subject": {
+                                    "type": "string",
+                                    "description": "Updated subject line"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "enum": ["new", "open", "pending", "hold", "solved", "closed"],
+                                    "description": "Updated status"
+                                },
+                                "priority": {
+                                    "type": "string",
+                                    "enum": ["low", "normal", "high", "urgent"],
+                                    "description": "Updated priority level"
+                                },
+                                "assignee_id": {
+                                    "type": "integer",
+                                    "description": "ID of the agent to assign the ticket to"
+                                },
+                                "group_id": {
+                                    "type": "integer",
+                                    "description": "ID of the group to assign the ticket to"
+                                },
+                                "tags": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                    "description": "Array of tags for the ticket"
+                                },
+                                "comment": {
+                                    "type": "object",
+                                    "description": "Add a comment to the ticket",
+                                    "properties": {
+                                        "body": {
+                                            "type": "string",
+                                            "description": "Content of the comment"
+                                        },
+                                        "public": {
+                                            "type": "boolean",
+                                            "default": true,
+                                            "description": "Whether the comment is public"
+                                        }
+                                    },
+                                    "required": ["body"],
+                                    "visible": ["body", "public"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": [],
+                            "visible": ["subject", "status", "priority", "assignee_id", "group_id", "tags", "comment"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["ticket"],
+                    "visible": ["ticket"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__DELETE_TICKET",
+        "description": "Delete a ticket permanently from Zendesk for cleanup and data management.",
+        "tags": ["tickets", "delete", "cleanup"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/api/v2/tickets/{ticket_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "ticket_id": {
+                            "type": "integer",
+                            "description": "ID of the ticket to delete"
+                        }
+                    },
+                    "required": ["ticket_id"],
+                    "visible": ["ticket_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__LIST_USERS",
+        "description": "Retrieve a list of users including customers, agents, and administrators with their roles and permissions.",
+        "tags": ["users", "list", "management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/users",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering users",
+                    "properties": {
+                        "role": {
+                            "type": "string",
+                            "enum": ["end-user", "agent", "admin"],
+                            "description": "Filter users by role"
+                        },
+                        "permission_set": {
+                            "type": "integer",
+                            "description": "Filter users by permission set ID"
+                        },
+                        "external_id": {
+                            "type": "string",
+                            "description": "Filter by external ID"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["role", "permission_set", "external_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__CREATE_USER",
+        "description": "Create a new user account in Zendesk with specified role and contact information.",
+        "tags": ["users", "create", "management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v2/users",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "User creation parameters",
+                    "properties": {
+                        "user": {
+                            "type": "object",
+                            "description": "User details",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Name of the user"
+                                },
+                                "email": {
+                                    "type": "string",
+                                    "description": "Email address of the user"
+                                },
+                                "role": {
+                                    "type": "string",
+                                    "enum": ["end-user", "agent", "admin"],
+                                    "default": "end-user",
+                                    "description": "Role of the user"
+                                },
+                                "verified": {
+                                    "type": "boolean",
+                                    "default": false,
+                                    "description": "Whether the user's email is verified"
+                                },
+                                "phone": {
+                                    "type": "string",
+                                    "description": "Phone number of the user"
+                                },
+                                "time_zone": {
+                                    "type": "string",
+                                    "description": "Time zone of the user"
+                                },
+                                "locale": {
+                                    "type": "string",
+                                    "description": "Locale preference of the user"
+                                }
+                            },
+                            "required": ["name", "email"],
+                            "visible": ["name", "email", "role", "verified", "phone", "time_zone", "locale"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["user"],
+                    "visible": ["user"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__GET_USER",
+        "description": "Retrieve detailed information about a specific user including their profile and activity.",
+        "tags": ["users", "get", "profile"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/users/{user_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "user_id": {
+                            "type": "integer",
+                            "description": "ID of the user to retrieve"
+                        }
+                    },
+                    "required": ["user_id"],
+                    "visible": ["user_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__UPDATE_USER",
+        "description": "Update user information including role, contact details, and preferences.",
+        "tags": ["users", "update", "profile"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/api/v2/users/{user_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "user_id": {
+                            "type": "integer",
+                            "description": "ID of the user to update"
+                        }
+                    },
+                    "required": ["user_id"],
+                    "visible": ["user_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "User update parameters",
+                    "properties": {
+                        "user": {
+                            "type": "object",
+                            "description": "User properties to update",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Updated name"
+                                },
+                                "email": {
+                                    "type": "string",
+                                    "description": "Updated email address"
+                                },
+                                "role": {
+                                    "type": "string",
+                                    "enum": ["end-user", "agent", "admin"],
+                                    "description": "Updated role"
+                                },
+                                "phone": {
+                                    "type": "string",
+                                    "description": "Updated phone number"
+                                },
+                                "notes": {
+                                    "type": "string",
+                                    "description": "Notes about the user"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["name", "email", "role", "phone", "notes"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["user"],
+                    "visible": ["user"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__LIST_GROUPS",
+        "description": "Retrieve all agent groups in the Zendesk instance for organization and assignment management.",
+        "tags": ["groups", "list", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/groups",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__CREATE_GROUP",
+        "description": "Create a new agent group for organizing support teams and managing ticket assignments.",
+        "tags": ["groups", "create", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v2/groups",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Group creation parameters",
+                    "properties": {
+                        "group": {
+                            "type": "object",
+                            "description": "Group details",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Name of the group"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "Description of the group"
+                                }
+                            },
+                            "required": ["name"],
+                            "visible": ["name", "description"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["group"],
+                    "visible": ["group"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__GET_GROUP",
+        "description": "Retrieve detailed information about a specific group including members and settings.",
+        "tags": ["groups", "get", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/groups/{group_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "group_id": {
+                            "type": "integer",
+                            "description": "ID of the group to retrieve"
+                        }
+                    },
+                    "required": ["group_id"],
+                    "visible": ["group_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__UPDATE_GROUP",
+        "description": "Update group information including name, description, and member assignments.",
+        "tags": ["groups", "update", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/api/v2/groups/{group_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "group_id": {
+                            "type": "integer",
+                            "description": "ID of the group to update"
+                        }
+                    },
+                    "required": ["group_id"],
+                    "visible": ["group_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Group update parameters",
+                    "properties": {
+                        "group": {
+                            "type": "object",
+                            "description": "Group properties to update",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Updated name"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "Updated description"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["name", "description"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["group"],
+                    "visible": ["group"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__DELETE_GROUP",
+        "description": "Delete an agent group from Zendesk permanently for organizational cleanup.",
+        "tags": ["groups", "delete", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/api/v2/groups/{group_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "group_id": {
+                            "type": "integer",
+                            "description": "ID of the group to delete"
+                        }
+                    },
+                    "required": ["group_id"],
+                    "visible": ["group_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__LIST_ORGANIZATIONS",
+        "description": "Retrieve organizations for customer account management and grouping related users.",
+        "tags": ["organizations", "list", "customers"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/organizations",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering organizations",
+                    "properties": {
+                        "external_id": {
+                            "type": "string",
+                            "description": "Filter by external ID"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["external_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__CREATE_ORGANIZATION",
+        "description": "Create a new organization for grouping customers and managing enterprise accounts.",
+        "tags": ["organizations", "create", "customers"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v2/organizations",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Organization creation parameters",
+                    "properties": {
+                        "organization": {
+                            "type": "object",
+                            "description": "Organization details",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Name of the organization"
+                                },
+                                "details": {
+                                    "type": "string",
+                                    "description": "Details about the organization"
+                                },
+                                "notes": {
+                                    "type": "string",
+                                    "description": "Internal notes about the organization"
+                                },
+                                "external_id": {
+                                    "type": "string",
+                                    "description": "External ID for integration purposes"
+                                }
+                            },
+                            "required": ["name"],
+                            "visible": ["name", "details", "notes", "external_id"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["organization"],
+                    "visible": ["organization"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__GET_ORGANIZATION",
+        "description": "Retrieve detailed information about a specific organization including members and settings.",
+        "tags": ["organizations", "get", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/organizations/{organization_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "organization_id": {
+                            "type": "integer",
+                            "description": "ID of the organization to retrieve"
+                        }
+                    },
+                    "required": ["organization_id"],
+                    "visible": ["organization_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__UPDATE_ORGANIZATION",
+        "description": "Update organization information including name, details, and custom fields.",
+        "tags": ["organizations", "update", "customers"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/api/v2/organizations/{organization_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "organization_id": {
+                            "type": "integer",
+                            "description": "ID of the organization to update"
+                        }
+                    },
+                    "required": ["organization_id"],
+                    "visible": ["organization_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Organization update parameters",
+                    "properties": {
+                        "organization": {
+                            "type": "object",
+                            "description": "Organization properties to update",
+                            "properties": {
+                                "name": {
+                                    "type": "string",
+                                    "description": "Updated name"
+                                },
+                                "details": {
+                                    "type": "string",
+                                    "description": "Updated details"
+                                },
+                                "notes": {
+                                    "type": "string",
+                                    "description": "Updated notes"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["name", "details", "notes"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["organization"],
+                    "visible": ["organization"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__DELETE_ORGANIZATION",
+        "description": "Delete an organization permanently from Zendesk for account cleanup.",
+        "tags": ["organizations", "delete", "cleanup"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/api/v2/organizations/{organization_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "organization_id": {
+                            "type": "integer",
+                            "description": "ID of the organization to delete"
+                        }
+                    },
+                    "required": ["organization_id"],
+                    "visible": ["organization_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__LIST_TICKET_COMMENTS",
+        "description": "Retrieve all comments and conversation history for a specific ticket.",
+        "tags": ["comments", "list", "conversation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/tickets/{ticket_id}/comments",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "ticket_id": {
+                            "type": "integer",
+                            "description": "ID of the ticket to get comments for"
+                        }
+                    },
+                    "required": ["ticket_id"],
+                    "visible": ["ticket_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering comments",
+                    "properties": {
+                        "include_inline_images": {
+                            "type": "boolean",
+                            "description": "Include inline images in comment bodies"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["include_inline_images"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__CREATE_TICKET_COMMENT",
+        "description": "Add a new comment to an existing ticket for ongoing customer communication.",
+        "tags": ["comments", "create", "conversation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/api/v2/tickets/{ticket_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "ticket_id": {
+                            "type": "integer",
+                            "description": "ID of the ticket to comment on"
+                        }
+                    },
+                    "required": ["ticket_id"],
+                    "visible": ["ticket_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Comment creation parameters",
+                    "properties": {
+                        "ticket": {
+                            "type": "object",
+                            "description": "Ticket update with new comment",
+                            "properties": {
+                                "comment": {
+                                    "type": "object",
+                                    "description": "Comment to add",
+                                    "properties": {
+                                        "body": {
+                                            "type": "string",
+                                            "description": "Content of the comment"
+                                        },
+                                        "html_body": {
+                                            "type": "string",
+                                            "description": "HTML content of the comment"
+                                        },
+                                        "public": {
+                                            "type": "boolean",
+                                            "default": true,
+                                            "description": "Whether the comment is public"
+                                        }
+                                    },
+                                    "required": ["body"],
+                                    "visible": ["body", "html_body", "public"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": ["comment"],
+                            "visible": ["comment"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["ticket"],
+                    "visible": ["ticket"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__SEARCH_TICKETS",
+        "description": "Search for tickets using advanced search queries and filters for efficient ticket management.",
+        "tags": ["tickets", "search", "query"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/search",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Search query parameters",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "Search query string (e.g., 'type:ticket status:open')"
+                        },
+                        "sort_by": {
+                            "type": "string",
+                            "enum": ["created_at", "updated_at", "priority", "status", "ticket_type"],
+                            "description": "Field to sort results by"
+                        },
+                        "sort_order": {
+                            "type": "string",
+                            "enum": ["asc", "desc"],
+                            "description": "Sort order for results"
+                        }
+                    },
+                    "required": ["query"],
+                    "visible": ["query", "sort_by", "sort_order"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__LIST_ARTICLES",
+        "description": "Retrieve knowledge base articles for self-service support and documentation management.",
+        "tags": ["articles", "knowledge-base", "documentation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/help_center/articles",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering articles",
+                    "properties": {
+                        "locale": {
+                            "type": "string",
+                            "description": "Filter articles by locale"
+                        },
+                        "category": {
+                            "type": "integer",
+                            "description": "Filter by category ID"
+                        },
+                        "section": {
+                            "type": "integer",
+                            "description": "Filter by section ID"
+                        },
+                        "sort_by": {
+                            "type": "string",
+                            "enum": ["created_at", "updated_at", "position", "title"],
+                            "description": "Field to sort articles by"
+                        },
+                        "sort_order": {
+                            "type": "string",
+                            "enum": ["asc", "desc"],
+                            "description": "Sort order for results"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["locale", "category", "section", "sort_by", "sort_order"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__CREATE_ARTICLE",
+        "description": "Create a new knowledge base article for self-service support documentation.",
+        "tags": ["articles", "knowledge-base", "create"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v2/help_center/sections/{section_id}/articles",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "section_id": {
+                            "type": "integer",
+                            "description": "ID of the section to create article in"
+                        }
+                    },
+                    "required": ["section_id"],
+                    "visible": ["section_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Article creation parameters",
+                    "properties": {
+                        "article": {
+                            "type": "object",
+                            "description": "Article details",
+                            "properties": {
+                                "title": {
+                                    "type": "string",
+                                    "description": "Title of the article"
+                                },
+                                "body": {
+                                    "type": "string",
+                                    "description": "Content body of the article"
+                                },
+                                "locale": {
+                                    "type": "string",
+                                    "description": "Locale of the article"
+                                },
+                                "user_segment_id": {
+                                    "type": "integer",
+                                    "description": "User segment the article is visible to"
+                                },
+                                "permission_group_id": {
+                                    "type": "integer",
+                                    "description": "Permission group for article access"
+                                }
+                            },
+                            "required": ["title", "body"],
+                            "visible": ["title", "body", "locale", "user_segment_id", "permission_group_id"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["article"],
+                    "visible": ["article"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__GET_ARTICLE",
+        "description": "Retrieve a specific knowledge base article with its content and metadata.",
+        "tags": ["articles", "knowledge-base", "get"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/help_center/articles/{article_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "article_id": {
+                            "type": "integer",
+                            "description": "ID of the article to retrieve"
+                        }
+                    },
+                    "required": ["article_id"],
+                    "visible": ["article_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for article retrieval",
+                    "properties": {
+                        "locale": {
+                            "type": "string",
+                            "description": "Locale for the article content"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["locale"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__UPDATE_ARTICLE",
+        "description": "Update an existing knowledge base article with new content, title, or metadata.",
+        "tags": ["articles", "knowledge-base", "update"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/api/v2/help_center/articles/{article_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "article_id": {
+                            "type": "integer",
+                            "description": "ID of the article to update"
+                        }
+                    },
+                    "required": ["article_id"],
+                    "visible": ["article_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Article update parameters",
+                    "properties": {
+                        "article": {
+                            "type": "object",
+                            "description": "Article properties to update",
+                            "properties": {
+                                "title": {
+                                    "type": "string",
+                                    "description": "Updated title"
+                                },
+                                "body": {
+                                    "type": "string",
+                                    "description": "Updated content body"
+                                },
+                                "locale": {
+                                    "type": "string",
+                                    "description": "Updated locale"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["title", "body", "locale"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["article"],
+                    "visible": ["article"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__DELETE_ARTICLE",
+        "description": "Delete a knowledge base article permanently from the help center.",
+        "tags": ["articles", "knowledge-base", "delete"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/api/v2/help_center/articles/{article_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "article_id": {
+                            "type": "integer",
+                            "description": "ID of the article to delete"
+                        }
+                    },
+                    "required": ["article_id"],
+                    "visible": ["article_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__LIST_MACROS",
+        "description": "Retrieve automation macros for streamlining repetitive ticket actions and responses.",
+        "tags": ["macros", "automation", "templates"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/macros",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering macros",
+                    "properties": {
+                        "access": {
+                            "type": "string",
+                            "enum": ["personal", "shared"],
+                            "description": "Filter by macro access level"
+                        },
+                        "active": {
+                            "type": "boolean",
+                            "description": "Filter by active status"
+                        },
+                        "category": {
+                            "type": "integer",
+                            "description": "Filter by category ID"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["access", "active", "category"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__APPLY_MACRO",
+        "description": "Apply an automation macro to a ticket for quick standardized actions and responses.",
+        "tags": ["macros", "automation", "apply"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/tickets/{ticket_id}/macros/{macro_id}/apply",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "ticket_id": {
+                            "type": "integer",
+                            "description": "ID of the ticket to apply macro to"
+                        },
+                        "macro_id": {
+                            "type": "integer",
+                            "description": "ID of the macro to apply"
+                        }
+                    },
+                    "required": ["ticket_id", "macro_id"],
+                    "visible": ["ticket_id", "macro_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__GET_TICKET_METRICS",
+        "description": "Retrieve performance metrics for a ticket including resolution time, agent touches, and SLA status.",
+        "tags": ["metrics", "analytics", "performance"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/tickets/{ticket_id}/metrics",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "ticket_id": {
+                            "type": "integer",
+                            "description": "ID of the ticket to get metrics for"
+                        }
+                    },
+                    "required": ["ticket_id"],
+                    "visible": ["ticket_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__LIST_TICKET_AUDITS",
+        "description": "Retrieve audit trail and change history for a ticket to track all modifications.",
+        "tags": ["audits", "history", "tracking"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/tickets/{ticket_id}/audits",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "ticket_id": {
+                            "type": "integer",
+                            "description": "ID of the ticket to get audit history for"
+                        }
+                    },
+                    "required": ["ticket_id"],
+                    "visible": ["ticket_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__CREATE_WEBHOOK",
+        "description": "Create webhooks for real-time notifications of ticket events and status changes.",
+        "tags": ["webhooks", "automation", "notifications"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v2/webhooks",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Webhook creation parameters",
+                    "properties": {
+                        "webhook": {
+                            "type": "object",
+                            "description": "Webhook configuration",
+                            "properties": {
+                                "endpoint": {
+                                    "type": "string",
+                                    "description": "URL endpoint to send webhook notifications"
+                                },
+                                "http_method": {
+                                    "type": "string",
+                                    "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"],
+                                    "default": "POST",
+                                    "description": "HTTP method for webhook calls"
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "description": "Name of the webhook"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "description": "Description of the webhook purpose"
+                                },
+                                "status": {
+                                    "type": "string",
+                                    "enum": ["active", "inactive"],
+                                    "default": "active",
+                                    "description": "Status of the webhook"
+                                },
+                                "subscriptions": {
+                                    "type": "array",
+                                    "items": {"type": "string"},
+                                    "description": "Array of event types to subscribe to"
+                                }
+                            },
+                            "required": ["endpoint", "name", "subscriptions"],
+                            "visible": ["endpoint", "http_method", "name", "description", "status", "subscriptions"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["webhook"],
+                    "visible": ["webhook"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__LIST_WEBHOOKS",
+        "description": "Retrieve all configured webhooks for monitoring automation and integration status.",
+        "tags": ["webhooks", "list", "automation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/webhooks",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__DELETE_WEBHOOK",
+        "description": "Delete a webhook to stop receiving notifications for specific events.",
+        "tags": ["webhooks", "delete", "automation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/api/v2/webhooks/{webhook_id}",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "webhook_id": {
+                            "type": "string",
+                            "description": "ID of the webhook to delete"
+                        }
+                    },
+                    "required": ["webhook_id"],
+                    "visible": ["webhook_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__GET_SATISFACTION_RATINGS",
+        "description": "Retrieve customer satisfaction ratings and feedback for tickets and agent performance analysis.",
+        "tags": ["satisfaction", "ratings", "analytics"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/satisfaction_ratings",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering satisfaction ratings",
+                    "properties": {
+                        "score": {
+                            "type": "string",
+                            "enum": ["offered", "unoffered", "received", "received_with_comment", "received_without_comment", "good", "bad"],
+                            "description": "Filter by satisfaction score type"
+                        },
+                        "start_time": {
+                            "type": "string",
+                            "description": "Start time for rating period (ISO 8601 format)"
+                        },
+                        "end_time": {
+                            "type": "string",
+                            "description": "End time for rating period (ISO 8601 format)"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["score", "start_time", "end_time"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__LIST_SLA_POLICIES",
+        "description": "Retrieve Service Level Agreement policies for managing customer response and resolution commitments.",
+        "tags": ["sla", "policies", "service-level"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/sla_policies",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__GET_TICKET_TAGS",
+        "description": "Retrieve all tags associated with a specific ticket for categorization and filtering.",
+        "tags": ["tags", "categorization", "tickets"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/tickets/{ticket_id}/tags",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "ticket_id": {
+                            "type": "integer",
+                            "description": "ID of the ticket to get tags for"
+                        }
+                    },
+                    "required": ["ticket_id"],
+                    "visible": ["ticket_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__ADD_TICKET_TAGS",
+        "description": "Add tags to a ticket for better categorization and automated workflow triggers.",
+        "tags": ["tags", "add", "categorization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/api/v2/tickets/{ticket_id}/tags",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "ticket_id": {
+                            "type": "integer",
+                            "description": "ID of the ticket to add tags to"
+                        }
+                    },
+                    "required": ["ticket_id"],
+                    "visible": ["ticket_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Tags to add",
+                    "properties": {
+                        "tags": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "Array of tag names to add to the ticket"
+                        }
+                    },
+                    "required": ["tags"],
+                    "visible": ["tags"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__REMOVE_TICKET_TAGS",
+        "description": "Remove specific tags from a ticket to update categorization and trigger workflows.",
+        "tags": ["tags", "remove", "categorization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/api/v2/tickets/{ticket_id}/tags",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "ticket_id": {
+                            "type": "integer",
+                            "description": "ID of the ticket to remove tags from"
+                        }
+                    },
+                    "required": ["ticket_id"],
+                    "visible": ["ticket_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Tags to remove",
+                    "properties": {
+                        "tags": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "Array of tag names to remove from the ticket"
+                        }
+                    },
+                    "required": ["tags"],
+                    "visible": ["tags"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__GET_INCREMENTAL_TICKETS",
+        "description": "Retrieve tickets that have been created or updated since a specific timestamp for synchronization.",
+        "tags": ["tickets", "incremental", "sync"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/api/v2/incremental/tickets",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for incremental ticket retrieval",
+                    "properties": {
+                        "start_time": {
+                            "type": "integer",
+                            "description": "Unix timestamp to start retrieving tickets from"
+                        },
+                        "cursor": {
+                            "type": "string",
+                            "description": "Cursor for pagination in incremental exports"
+                        },
+                        "include": {
+                            "type": "string",
+                            "description": "Include additional information (e.g., comment_count)"
+                        }
+                    },
+                    "required": ["start_time"],
+                    "visible": ["start_time", "cursor", "include"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZENDESK__MERGE_TICKETS",
+        "description": "Merge multiple related tickets into a single ticket for better case management.",
+        "tags": ["tickets", "merge", "consolidation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/api/v2/tickets/{ticket_id}/merge",
+            "server_url": "https://{subdomain}.zendesk.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "ticket_id": {
+                            "type": "integer",
+                            "description": "ID of the target ticket to merge into"
+                        }
+                    },
+                    "required": ["ticket_id"],
+                    "visible": ["ticket_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Merge parameters",
+                    "properties": {
+                        "ids": {
+                            "type": "array",
+                            "items": {"type": "integer"},
+                            "description": "Array of ticket IDs to merge into the target ticket"
+                        },
+                        "target_comment": {
+                            "type": "string",
+                            "description": "Comment to add to the target ticket about the merge"
+                        },
+                        "source_comment": {
+                            "type": "string",
+                            "description": "Comment to add to source tickets about the merge"
+                        }
+                    },
+                    "required": ["ids"],
+                    "visible": ["ids", "target_comment", "source_comment"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    }
+]

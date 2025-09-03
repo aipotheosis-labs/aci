@@ -1506,4 +1506,806 @@
             "additionalProperties": false
         }
     }
+  },
+  {
+    "name": "VERCEL__GET_TEAMS",
+    "description": "Retrieve teams accessible to the authenticated user in Vercel for organization and collaboration management.",
+    "tags": ["teams", "organization", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v2/teams",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for the http request",
+          "properties": {
+            "limit": {
+              "type": "number",
+              "description": "Maximum number of teams to return"
+            },
+            "since": {
+              "type": "number",
+              "description": "Get teams created after this timestamp"
+            },
+            "until": {
+              "type": "number",
+              "description": "Get teams created before this timestamp"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "since", "until"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__GET_TEAM_MEMBERS",
+    "description": "Retrieve members of a Vercel team with their roles, permissions, and activity status.",
+    "tags": ["teams", "members", "users"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/teams/{teamId}/members",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the http request",
+          "properties": {
+            "teamId": {
+              "type": "string",
+              "description": "The team identifier"
+            }
+          },
+          "required": ["teamId"],
+          "visible": ["teamId"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for the http request",
+          "properties": {
+            "limit": {
+              "type": "number",
+              "description": "Maximum number of members to return"
+            },
+            "role": {
+              "type": "string",
+              "enum": ["OWNER", "MEMBER"],
+              "description": "Filter members by role"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "role"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__GET_USER",
+    "description": "Retrieve the authenticated user's profile information and account details from Vercel.",
+    "tags": ["user", "profile", "account"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v2/user",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__DELETE_DEPLOYMENT",
+    "description": "Delete a specific deployment from Vercel by its ID or URL.",
+    "tags": ["deployment", "delete", "cleanup"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/v13/deployments/{idOrUrl}",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the http request",
+          "properties": {
+            "idOrUrl": {
+              "type": "string",
+              "description": "The unique identifier or hostname of the deployment to delete"
+            }
+          },
+          "required": ["idOrUrl"],
+          "visible": ["idOrUrl"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for the http request",
+          "properties": {
+            "teamId": {
+              "type": "string",
+              "description": "The Team identifier to perform the request on behalf of"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team slug to perform the request on behalf of"
+            }
+          },
+          "required": [],
+          "visible": ["teamId", "slug"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__CANCEL_DEPLOYMENT",
+    "description": "Cancel a running deployment in Vercel to stop the build process.",
+    "tags": ["deployment", "cancel", "stop"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PATCH",
+      "path": "/v12/deployments/{id}/cancel",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the http request",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The deployment ID to cancel"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for the http request",
+          "properties": {
+            "teamId": {
+              "type": "string",
+              "description": "The Team identifier to perform the request on behalf of"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team slug to perform the request on behalf of"
+            }
+          },
+          "required": [],
+          "visible": ["teamId", "slug"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__GET_ALIASES",
+    "description": "Retrieve deployment aliases (custom domains) from Vercel with their configurations and status.",
+    "tags": ["aliases", "domains", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v4/aliases",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for filtering aliases",
+          "properties": {
+            "domain": {
+              "type": "string",
+              "description": "Filter aliases by domain name"
+            },
+            "limit": {
+              "type": "number",
+              "description": "Maximum number of aliases to return"
+            },
+            "projectId": {
+              "type": "string",
+              "description": "Filter aliases by project ID"
+            },
+            "teamId": {
+              "type": "string",
+              "description": "The Team identifier to perform the request on behalf of"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team slug to perform the request on behalf of"
+            }
+          },
+          "required": [],
+          "visible": ["domain", "limit", "projectId", "teamId", "slug"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__CREATE_ALIAS",
+    "description": "Create a new alias for a Vercel deployment to assign custom domains or subdomains.",
+    "tags": ["aliases", "domains", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v2/aliases",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "Request body parameters for creating an alias",
+          "properties": {
+            "alias": {
+              "type": "string",
+              "description": "The alias hostname or custom domain"
+            },
+            "deploymentId": {
+              "type": "string",
+              "description": "The deployment ID to assign the alias to"
+            }
+          },
+          "required": ["alias", "deploymentId"],
+          "visible": ["alias", "deploymentId"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for the http request",
+          "properties": {
+            "teamId": {
+              "type": "string",
+              "description": "The Team identifier to perform the request on behalf of"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team slug to perform the request on behalf of"
+            }
+          },
+          "required": [],
+          "visible": ["teamId", "slug"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__DELETE_ALIAS",
+    "description": "Delete an alias from Vercel to remove custom domain assignment from a deployment.",
+    "tags": ["aliases", "domains", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/v2/aliases/{id}",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the http request",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The alias ID to delete"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for the http request",
+          "properties": {
+            "teamId": {
+              "type": "string",
+              "description": "The Team identifier to perform the request on behalf of"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team slug to perform the request on behalf of"
+            }
+          },
+          "required": [],
+          "visible": ["teamId", "slug"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__GET_SECRETS",
+    "description": "Retrieve secrets stored in Vercel for secure environment variable management.",
+    "tags": ["secrets", "security", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v3/secrets",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for filtering secrets",
+          "properties": {
+            "teamId": {
+              "type": "string",
+              "description": "The Team identifier to perform the request on behalf of"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team slug to perform the request on behalf of"
+            }
+          },
+          "required": [],
+          "visible": ["teamId", "slug"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__CREATE_SECRET",
+    "description": "Create a new secret in Vercel for secure storage of sensitive configuration values.",
+    "tags": ["secrets", "security", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v3/secrets",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "Request body parameters for creating a secret",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the secret"
+            },
+            "value": {
+              "type": "string",
+              "description": "Value of the secret"
+            }
+          },
+          "required": ["name", "value"],
+          "visible": ["name", "value"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for the http request",
+          "properties": {
+            "teamId": {
+              "type": "string",
+              "description": "The Team identifier to perform the request on behalf of"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team slug to perform the request on behalf of"
+            }
+          },
+          "required": [],
+          "visible": ["teamId", "slug"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__DELETE_SECRET",
+    "description": "Delete a secret from Vercel to remove sensitive configuration values.",
+    "tags": ["secrets", "security", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/v3/secrets/{name}",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the http request",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The secret name to delete"
+            }
+          },
+          "required": ["name"],
+          "visible": ["name"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for the http request",
+          "properties": {
+            "teamId": {
+              "type": "string",
+              "description": "The Team identifier to perform the request on behalf of"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team slug to perform the request on behalf of"
+            }
+          },
+          "required": [],
+          "visible": ["teamId", "slug"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__GET_DEPLOYMENT_FILES",
+    "description": "Retrieve files from a Vercel deployment to inspect build artifacts and static assets.",
+    "tags": ["deployment", "files", "artifacts"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v6/deployments/{id}/files",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the http request",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The deployment ID to get files from"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for filtering files",
+          "properties": {
+            "limit": {
+              "type": "number",
+              "description": "Maximum number of files to return"
+            },
+            "teamId": {
+              "type": "string",
+              "description": "The Team identifier to perform the request on behalf of"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team slug to perform the request on behalf of"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "teamId", "slug"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__GET_CHECKS",
+    "description": "Retrieve status checks for a Vercel deployment including build, test, and security validations.",
+    "tags": ["checks", "validation", "status"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v1/deployments/{id}/checks",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the http request",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The deployment ID to get checks for"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for the http request",
+          "properties": {
+            "teamId": {
+              "type": "string",
+              "description": "The Team identifier to perform the request on behalf of"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team slug to perform the request on behalf of"
+            }
+          },
+          "required": [],
+          "visible": ["teamId", "slug"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__REDEPLOY",
+    "description": "Trigger a redeployment of an existing Vercel deployment with the same configuration.",
+    "tags": ["deployment", "redeploy", "restart"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v13/deployments",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "Request body parameters for redeployment",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Project name for the redeployment"
+            },
+            "deploymentId": {
+              "type": "string",
+              "description": "ID of the deployment to redeploy"
+            },
+            "target": {
+              "type": "string",
+              "enum": ["production", "preview"],
+              "description": "Target environment for redeployment"
+            }
+          },
+          "required": ["name", "deploymentId"],
+          "visible": ["name", "deploymentId", "target"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for the http request",
+          "properties": {
+            "teamId": {
+              "type": "string",
+              "description": "The Team identifier to perform the request on behalf of"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team slug to perform the request on behalf of"
+            }
+          },
+          "required": [],
+          "visible": ["teamId", "slug"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__PROMOTE_DEPLOYMENT_TO_PRODUCTION",
+    "description": "Promote a preview deployment to production in Vercel to make it the live version.",
+    "tags": ["deployment", "promote", "production"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/v1/deployments/{id}/promote",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the http request",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The deployment ID to promote to production"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for the http request",
+          "properties": {
+            "teamId": {
+              "type": "string",
+              "description": "The Team identifier to perform the request on behalf of"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team slug to perform the request on behalf of"
+            }
+          },
+          "required": [],
+          "visible": ["teamId", "slug"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "VERCEL__GET_LOGS",
+    "description": "Retrieve runtime logs from a Vercel deployment for debugging and monitoring application behavior.",
+    "tags": ["logs", "runtime", "debugging"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/v2/deployments/{id}/logs",
+      "server_url": "https://api.vercel.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "Path parameters for the http request",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The deployment ID to get logs from"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Optional query parameters for filtering logs",
+          "properties": {
+            "follow": {
+              "type": "string",
+              "enum": ["0", "1"],
+              "description": "Whether to follow logs in real-time"
+            },
+            "limit": {
+              "type": "number",
+              "description": "Maximum number of log entries to return"
+            },
+            "since": {
+              "type": "number",
+              "description": "Timestamp to get logs from"
+            },
+            "until": {
+              "type": "number",
+              "description": "Timestamp to get logs until"
+            },
+            "teamId": {
+              "type": "string",
+              "description": "The Team identifier to perform the request on behalf of"
+            },
+            "slug": {
+              "type": "string",
+              "description": "The Team slug to perform the request on behalf of"
+            }
+          },
+          "required": [],
+          "visible": ["follow", "limit", "since", "until", "teamId", "slug"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  }
 ]

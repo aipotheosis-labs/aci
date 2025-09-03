@@ -1,0 +1,1714 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Tableau Server REST API",
+    "version": "3.23"
+  },
+  "servers": [
+    {
+      "url": "{server_url}/api/{api_version}",
+      "variables": {
+        "server_url": {
+          "default": "https://your-server.tableau.com"
+        },
+        "api_version": {
+          "default": "3.23"
+        }
+      }
+    }
+  ],
+  "paths": {
+    "/sites": {
+      "get": {
+        "summary": "List sites on server",
+        "description": "Retrieve all sites available on the Tableau Server for multi-tenant environment management and site discovery.",
+        "responses": {
+          "200": {
+            "description": "List of sites",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sites": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "contentUrl": {"type": "string"},
+                          "adminMode": {"type": "string"},
+                          "state": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/workbooks": {
+      "get": {
+        "summary": "List workbooks on site",
+        "description": "Retrieve all workbooks available on a specific Tableau site with metadata, ownership, and access permissions for dashboard management.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {"type": "integer", "default": 100, "maximum": 1000},
+            "description": "Number of workbooks per page"
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1},
+            "description": "Page number for pagination"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "Filter expression for workbooks (e.g., name:eq:Sales Dashboard)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of workbooks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "workbooks": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "description": {"type": "string"},
+                          "contentUrl": {"type": "string"},
+                          "showTabs": {"type": "boolean"},
+                          "size": {"type": "integer"},
+                          "createdAt": {"type": "string"},
+                          "updatedAt": {"type": "string"},
+                          "owner": {"type": "object"},
+                          "project": {"type": "object"},
+                          "tags": {"type": "array"}
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "pagination": {"type": "object"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Publish workbook",
+        "description": "Upload and publish a new workbook (.twbx file) to Tableau Server with project assignment and permission configuration.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tableau_workbook": {"type": "string", "format": "binary"},
+                  "name": {"type": "string"},
+                  "project_id": {"type": "string"},
+                  "description": {"type": "string"},
+                  "show_tabs": {"type": "boolean", "default": true},
+                  "overwrite": {"type": "boolean", "default": false}
+                },
+                "required": ["tableau_workbook", "name", "project_id"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Workbook published successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "workbook": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "string"},
+                        "name": {"type": "string"},
+                        "contentUrl": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/workbooks/{workbook_id}": {
+      "get": {
+        "summary": "Get workbook details",
+        "description": "Retrieve detailed information about a specific workbook including views, data sources, and permission settings.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "workbook_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Workbook ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Workbook details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "workbook": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "string"},
+                        "name": {"type": "string"},
+                        "description": {"type": "string"},
+                        "contentUrl": {"type": "string"},
+                        "views": {"type": "array"},
+                        "dataSources": {"type": "array"},
+                        "owner": {"type": "object"},
+                        "project": {"type": "object"}
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update workbook",
+        "description": "Update workbook metadata including name, description, project assignment, and visibility settings for better organization.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "workbook_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Workbook ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "workbook": {
+                    "type": "object",
+                    "properties": {
+                      "name": {"type": "string"},
+                      "description": {"type": "string"},
+                      "showTabs": {"type": "boolean"},
+                      "project": {"type": "object", "properties": {"id": {"type": "string"}}, "additionalProperties": false}
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Workbook updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete workbook",
+        "description": "Remove a workbook from Tableau Server permanently. This action cannot be undone.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "workbook_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Workbook ID to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Workbook deleted successfully"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/workbooks/{workbook_id}/views": {
+      "get": {
+        "summary": "Get workbook views",
+        "description": "Retrieve all views (dashboards and worksheets) within a workbook with usage statistics and access information.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "workbook_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Workbook ID"
+          },
+          {
+            "name": "includeUsageStatistics",
+            "in": "query",
+            "schema": {"type": "boolean", "default": false},
+            "description": "Include view usage statistics"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of views in workbook",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "views": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "contentUrl": {"type": "string"},
+                          "viewUrlName": {"type": "string"},
+                          "createdAt": {"type": "string"},
+                          "updatedAt": {"type": "string"},
+                          "workbook": {"type": "object"},
+                          "owner": {"type": "object"},
+                          "project": {"type": "object"},
+                          "usage": {"type": "object"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/views/{view_id}/image": {
+      "get": {
+        "summary": "Get view as image",
+        "description": "Generate and download a high-resolution image of a Tableau view for reporting, sharing, and automated content creation.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "view_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "View ID"
+          },
+          {
+            "name": "resolution",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["high", "standard"], "default": "high"},
+            "description": "Image resolution quality"
+          },
+          {
+            "name": "maxAge",
+            "in": "query",
+            "schema": {"type": "integer", "default": 1},
+            "description": "Cache age in minutes"
+          },
+          {
+            "name": "vf_*",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "View filter parameters (vf_field_name=value)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "View image",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/views/{view_id}/pdf": {
+      "get": {
+        "summary": "Get view as PDF",
+        "description": "Generate and download a PDF export of a Tableau view for professional reporting and document sharing.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "view_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "View ID"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["A3", "A4", "A5", "B4", "B5", "Executive", "Folio", "Ledger", "Legal", "Letter", "Note", "Quarto", "Tabloid"], "default": "A4"},
+            "description": "PDF page size"
+          },
+          {
+            "name": "orientation",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["Portrait", "Landscape"], "default": "Portrait"},
+            "description": "PDF orientation"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "View PDF",
+            "content": {
+              "application/pdf": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/datasources": {
+      "get": {
+        "summary": "List data sources",
+        "description": "Retrieve all published data sources on the site with connection details, refresh schedules, and usage information.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {"type": "integer", "default": 100},
+            "description": "Number of data sources per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of data sources",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "datasources": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "description": {"type": "string"},
+                          "contentUrl": {"type": "string"},
+                          "type": {"type": "string"},
+                          "createdAt": {"type": "string"},
+                          "updatedAt": {"type": "string"},
+                          "owner": {"type": "object"},
+                          "project": {"type": "object"},
+                          "tags": {"type": "array"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Publish data source",
+        "description": "Upload and publish a new data source (.tds or .tdsx file) to Tableau Server for shared analytics and dashboard creation.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tableau_datasource": {"type": "string", "format": "binary"},
+                  "name": {"type": "string"},
+                  "project_id": {"type": "string"},
+                  "description": {"type": "string"},
+                  "overwrite": {"type": "boolean", "default": false}
+                },
+                "required": ["tableau_datasource", "name", "project_id"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Data source published successfully"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/datasources/{datasource_id}/refresh": {
+      "post": {
+        "summary": "Refresh data source",
+        "description": "Trigger an immediate refresh of a published data source to update all connected workbooks with latest data.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "datasource_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Data source ID"
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Refresh job started",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "job": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "string"},
+                        "mode": {"type": "string"},
+                        "type": {"type": "string"},
+                        "createdAt": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/projects": {
+      "get": {
+        "summary": "List projects",
+        "description": "Retrieve all projects on the site for organizing workbooks, data sources, and managing access permissions hierarchically.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of projects",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "projects": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "description": {"type": "string"},
+                          "createdAt": {"type": "string"},
+                          "updatedAt": {"type": "string"},
+                          "parentProjectId": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create project",
+        "description": "Create a new project for organizing related workbooks and data sources with configurable access permissions.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "project": {
+                    "type": "object",
+                    "properties": {
+                      "name": {"type": "string"},
+                      "description": {"type": "string"},
+                      "parentProjectId": {"type": "string"}
+                    },
+                    "required": ["name"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["project"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Project created successfully"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/users": {
+      "get": {
+        "summary": "List users on site",
+        "description": "Retrieve all users with access to the Tableau site including their roles, last login, and permission levels for user management.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {"type": "integer", "default": 100},
+            "description": "Number of users per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of users",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "users": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "siteRole": {"type": "string"},
+                          "locale": {"type": "string"},
+                          "language": {"type": "string"},
+                          "lastLogin": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Add user to site",
+        "description": "Invite a new user to the Tableau site with specified role and permissions for team collaboration and access management.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "name": {"type": "string"},
+                      "siteRole": {"type": "string", "enum": ["Viewer", "Explorer", "ExplorerCanPublish", "SiteAdministratorExplorer", "SiteAdministratorCreator", "Creator", "ServerAdministrator"]},
+                      "authSetting": {"type": "string", "enum": ["ServerDefault", "SAML", "OpenID"]}
+                    },
+                    "required": ["name", "siteRole"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["user"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "User added successfully"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/schedules": {
+      "get": {
+        "summary": "List refresh schedules",
+        "description": "Retrieve all data refresh schedules configured on the site for automated data source updates and extract refreshes.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of schedules",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "schedules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "state": {"type": "string"},
+                          "priority": {"type": "integer"},
+                          "createdAt": {"type": "string"},
+                          "updatedAt": {"type": "string"},
+                          "type": {"type": "string"},
+                          "frequency": {"type": "string"},
+                          "nextRunAt": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create refresh schedule",
+        "description": "Create a new automated refresh schedule for data sources and extracts with customizable frequency and timing.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "schedule": {
+                    "type": "object",
+                    "properties": {
+                      "name": {"type": "string"},
+                      "priority": {"type": "integer", "minimum": 1, "maximum": 100},
+                      "type": {"type": "string", "enum": ["Extract", "Subscription"]},
+                      "frequency": {"type": "string", "enum": ["Hourly", "Daily", "Weekly", "Monthly"]},
+                      "frequencyDetails": {"type": "object"}
+                    },
+                    "required": ["name", "priority", "type", "frequency"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["schedule"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Schedule created successfully"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/jobs": {
+      "get": {
+        "summary": "List background jobs",
+        "description": "Monitor all background jobs including data refreshes, extracts, and subscriptions with status and progress tracking.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "Filter jobs by status, type, or date"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of background jobs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "backgroundJobs": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "type": {"type": "string"},
+                          "status": {"type": "string"},
+                          "createdAt": {"type": "string"},
+                          "startedAt": {"type": "string"},
+                          "endedAt": {"type": "string"},
+                          "priority": {"type": "integer"},
+                          "subtitle": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/jobs/{job_id}": {
+      "get": {
+        "summary": "Get job details",
+        "description": "Retrieve detailed information about a specific background job including progress, logs, and completion status.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Background job ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job details and status"
+          }
+        }
+      },
+      "put": {
+        "summary": "Cancel job",
+        "description": "Cancel a running background job such as data refresh or extract creation to free up server resources.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "job_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Background job ID to cancel"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Job cancelled successfully"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/subscriptions": {
+      "get": {
+        "summary": "List subscriptions",
+        "description": "Retrieve all email subscriptions configured for dashboards and views with scheduling and recipient information.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of subscriptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "subscriptions": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "subject": {"type": "string"},
+                          "user": {"type": "object"},
+                          "schedule": {"type": "object"},
+                          "content": {"type": "object"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create subscription",
+        "description": "Create automated email subscriptions for dashboards and views with customizable schedules and recipient lists.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "subscription": {
+                    "type": "object",
+                    "properties": {
+                      "subject": {"type": "string"},
+                      "message": {"type": "string"},
+                      "user": {"type": "object", "properties": {"id": {"type": "string"}}, "additionalProperties": false},
+                      "schedule": {"type": "object", "properties": {"id": {"type": "string"}}, "additionalProperties": false},
+                      "content": {"type": "object"}
+                    },
+                    "required": ["subject", "user", "schedule", "content"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["subscription"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Subscription created successfully"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/groups": {
+      "get": {
+        "summary": "List user groups",
+        "description": "Retrieve all user groups on the site for managing permissions and access control at scale.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of groups",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "groups": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "domain": {"type": "object"},
+                          "minimumSiteRole": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create user group",
+        "description": "Create a new user group for simplified permission management and role-based access control across projects.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "group": {
+                    "type": "object",
+                    "properties": {
+                      "name": {"type": "string"},
+                      "minimumSiteRole": {"type": "string", "enum": ["Viewer", "Explorer", "ExplorerCanPublish", "SiteAdministratorExplorer", "SiteAdministratorCreator", "Creator"]}
+                    },
+                    "required": ["name"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["group"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Group created successfully"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/extracts": {
+      "get": {
+        "summary": "List extract refresh tasks",
+        "description": "Retrieve all extract refresh tasks and their schedules for monitoring data freshness and performance optimization.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of extract refresh tasks"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/extracts/{extract_id}/refresh": {
+      "post": {
+        "summary": "Refresh extract",
+        "description": "Trigger an immediate refresh of a specific extract to update dashboard data with the latest information from source systems.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "extract_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Extract ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {"type": "string", "enum": ["FullRefresh", "IncrementalRefresh"], "default": "FullRefresh"}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Extract refresh started"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/workbooks/{workbook_id}/connections": {
+      "get": {
+        "summary": "Get workbook data connections",
+        "description": "Retrieve all data connections used by a workbook for troubleshooting, security audits, and connection management.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "workbook_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Workbook ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of workbook connections",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "connections": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "type": {"type": "string"},
+                          "serverAddress": {"type": "string"},
+                          "serverPort": {"type": "string"},
+                          "username": {"type": "string"},
+                          "embedPassword": {"type": "boolean"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update connection",
+        "description": "Modify data connection credentials, server addresses, or authentication settings for workbook data sources.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "workbook_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Workbook ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "connection": {
+                    "type": "object",
+                    "properties": {
+                      "serverAddress": {"type": "string"},
+                      "serverPort": {"type": "string"},
+                      "username": {"type": "string"},
+                      "password": {"type": "string"},
+                      "embedPassword": {"type": "boolean"}
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["connection"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Connection updated successfully"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/favorites": {
+      "get": {
+        "summary": "Get user favorites",
+        "description": "Retrieve favorite workbooks, views, and data sources for the authenticated user for quick access and personalization.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of user favorites"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/favorites/{favorite_id}": {
+      "put": {
+        "summary": "Add to favorites",
+        "description": "Add a workbook, view, or data source to the user's favorites list for quick access and organization.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "favorite_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "ID of the item to favorite"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "type": {"type": "string", "enum": ["workbook", "view", "datasource"]},
+                  "label": {"type": "string"}
+                },
+                "required": ["type"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Item added to favorites"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove from favorites",
+        "description": "Remove a workbook, view, or data source from the user's favorites list.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "favorite_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "ID of the favorite item to remove"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Item removed from favorites"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/metrics": {
+      "get": {
+        "summary": "List metrics",
+        "description": "Retrieve all metrics created on the site for KPI tracking and automated monitoring of business performance indicators.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of metrics"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create metric",
+        "description": "Create a new metric for tracking key performance indicators with automated alerts and threshold monitoring.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "metric": {
+                    "type": "object",
+                    "properties": {
+                      "name": {"type": "string"},
+                      "description": {"type": "string"},
+                      "definition": {"type": "string"},
+                      "project": {"type": "object", "properties": {"id": {"type": "string"}}, "additionalProperties": false}
+                    },
+                    "required": ["name", "definition"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["metric"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Metric created successfully"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/flows": {
+      "get": {
+        "summary": "List Tableau Prep flows",
+        "description": "Retrieve all data preparation flows created with Tableau Prep for automated data cleaning and transformation workflows.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of flows",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "flows": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "description": {"type": "string"},
+                          "createdAt": {"type": "string"},
+                          "updatedAt": {"type": "string"},
+                          "owner": {"type": "object"},
+                          "project": {"type": "object"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/flows/{flow_id}/run": {
+      "post": {
+        "summary": "Run data preparation flow",
+        "description": "Execute a Tableau Prep flow to process and transform data according to the defined preparation steps and output specifications.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "flow_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Flow ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "flowRunSpec": {
+                    "type": "object",
+                    "properties": {
+                      "flowOutputSteps": {"type": "array"}
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Flow execution started"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/tasks/extractRefreshes": {
+      "get": {
+        "summary": "List extract refresh tasks",
+        "description": "Retrieve all scheduled extract refresh tasks with execution history and next run information for data automation monitoring.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of extract refresh tasks"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create extract refresh task",
+        "description": "Schedule automated extract refreshes for data sources to maintain data freshness with configurable frequency and timing.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "extractRefresh": {
+                    "type": "object",
+                    "properties": {
+                      "datasource": {"type": "object", "properties": {"id": {"type": "string"}}, "additionalProperties": false},
+                      "schedule": {"type": "object", "properties": {"id": {"type": "string"}}, "additionalProperties": false},
+                      "type": {"type": "string", "enum": ["FullRefresh", "IncrementalRefresh"]}
+                    },
+                    "required": ["datasource", "schedule"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["extractRefresh"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Extract refresh task created"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/webhooks": {
+      "get": {
+        "summary": "List webhooks",
+        "description": "Retrieve all configured webhooks for real-time notifications about workbook updates, data refreshes, and user activities.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of webhooks"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create webhook",
+        "description": "Configure webhook notifications for Tableau events including workbook publishes, data refreshes, and user activities for external system integration.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "webhook": {
+                    "type": "object",
+                    "properties": {
+                      "name": {"type": "string"},
+                      "url": {"type": "string", "format": "uri"},
+                      "event": {"type": "string", "enum": ["api-refresh-started", "api-refresh-succeeded", "api-refresh-failed", "webhook-source-event"]},
+                      "isEnabled": {"type": "boolean", "default": true}
+                    },
+                    "required": ["name", "url", "event"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["webhook"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Webhook created successfully"
+          }
+        }
+      }
+    },
+    "/sites/{site_id}/webhooks/{webhook_id}": {
+      "delete": {
+        "summary": "Delete webhook",
+        "description": "Remove a webhook configuration to stop receiving notifications for the specified Tableau events.",
+        "parameters": [
+          {
+            "name": "site_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Tableau site ID"
+          },
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Webhook ID to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Webhook deleted successfully"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "personal_access_token": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "security": [
+    {
+      "personal_access_token": []
+    }
+  ]
+}

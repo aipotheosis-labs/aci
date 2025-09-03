@@ -1,0 +1,2546 @@
+[
+    {
+        "name": "QUICKBOOKS__GET_CUSTOMERS",
+        "description": "Retrieve all customers from QuickBooks for customer relationship and invoice management tracking",
+        "tags": ["customers", "clients", "crm", "invoicing"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/customers",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fetchAll": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Fetch all customers or use pagination"
+                        },
+                        "maxresults": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 1000,
+                            "description": "Maximum number of customers to return"
+                        },
+                        "startposition": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Starting position for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fetchAll", "maxresults", "startposition"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__CREATE_CUSTOMER",
+        "description": "Create new customers in QuickBooks for invoice and payment management tracking",
+        "tags": ["customers", "create", "clients", "invoicing"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/company/{company_id}/customer",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        },
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type", "Accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Customer": {
+                            "type": "object",
+                            "properties": {
+                                "Name": {
+                                    "type": "string",
+                                    "description": "Customer name (required)"
+                                },
+                                "CompanyName": {
+                                    "type": "string",
+                                    "description": "Company name if different from customer name"
+                                },
+                                "ContactInfo": {
+                                    "type": "object",
+                                    "properties": {
+                                        "EmailAddr": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Address": {
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "description": "Email address"
+                                                }
+                                            },
+                                            "required": [],
+                                            "visible": ["Address"],
+                                            "additionalProperties": false
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["EmailAddr"],
+                                    "additionalProperties": false
+                                },
+                                "BillAddr": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Line1": {
+                                            "type": "string",
+                                            "description": "Address line 1"
+                                        },
+                                        "City": {
+                                            "type": "string",
+                                            "description": "City"
+                                        },
+                                        "Country": {
+                                            "type": "string",
+                                            "description": "Country"
+                                        },
+                                        "CountrySubDivisionCode": {
+                                            "type": "string",
+                                            "description": "State/Province code"
+                                        },
+                                        "PostalCode": {
+                                            "type": "string",
+                                            "description": "ZIP/Postal code"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["Line1", "City", "Country", "CountrySubDivisionCode", "PostalCode"],
+                                    "description": "Billing address",
+                                    "additionalProperties": false
+                                },
+                                "Notes": {
+                                    "type": "string",
+                                    "description": "Notes about the customer"
+                                }
+                            },
+                            "required": ["Name"],
+                            "visible": ["Name", "CompanyName", "ContactInfo", "BillAddr", "Notes"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["Customer"],
+                    "visible": ["Customer"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_INVOICES",
+        "description": "Retrieve invoices from QuickBooks for accounts receivable management and revenue tracking analysis",
+        "tags": ["invoices", "billing", "revenue", "receivables"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/invoices",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fetchAll": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Fetch all invoices or use pagination"
+                        },
+                        "maxresults": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 1000,
+                            "description": "Maximum number of invoices to return"
+                        },
+                        "startposition": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Starting position for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fetchAll", "maxresults", "startposition"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__CREATE_INVOICE",
+        "description": "Create invoices in QuickBooks for billing customers and managing accounts receivable workflows",
+        "tags": ["invoices", "create", "billing", "receivables"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/company/{company_id}/invoice",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        },
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type", "Accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Invoice": {
+                            "type": "object",
+                            "properties": {
+                                "CustomerRef": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Customer ID reference"
+                                        }
+                                    },
+                                    "required": ["value"],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                },
+                                "Line": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "Amount": {
+                                                "type": "number",
+                                                "description": "Line item amount"
+                                            },
+                                            "DetailType": {
+                                                "type": "string",
+                                                "enum": ["SalesItemLineDetail"],
+                                                "description": "Type of line detail"
+                                            },
+                                            "SalesItemLineDetail": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "ItemRef": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "value": {
+                                                                "type": "string",
+                                                                "description": "Item ID reference"
+                                                            }
+                                                        },
+                                                        "required": ["value"],
+                                                        "visible": ["value"],
+                                                        "additionalProperties": false
+                                                    },
+                                                    "Qty": {
+                                                        "type": "number",
+                                                        "description": "Quantity of items"
+                                                    }
+                                                },
+                                                "required": ["ItemRef"],
+                                                "visible": ["ItemRef", "Qty"],
+                                                "additionalProperties": false
+                                            }
+                                        },
+                                        "required": ["Amount", "DetailType", "SalesItemLineDetail"],
+                                        "visible": ["Amount", "DetailType", "SalesItemLineDetail"],
+                                        "additionalProperties": false
+                                    },
+                                    "description": "Invoice line items"
+                                },
+                                "DueDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Due date for the invoice"
+                                },
+                                "TxnDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Transaction date"
+                                },
+                                "DocNumber": {
+                                    "type": "string",
+                                    "description": "Invoice number"
+                                },
+                                "PrivateNote": {
+                                    "type": "string",
+                                    "description": "Private note for internal use"
+                                },
+                                "CustomerMemo": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Customer-facing memo"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": ["CustomerRef", "Line"],
+                            "visible": ["CustomerRef", "Line", "DueDate", "TxnDate", "DocNumber", "PrivateNote", "CustomerMemo"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["Invoice"],
+                    "visible": ["Invoice"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__UPDATE_INVOICE",
+        "description": "Update existing invoices in QuickBooks for billing adjustments and payment status management",
+        "tags": ["invoices", "update", "billing", "adjustments"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/company/{company_id}/invoice",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        },
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type", "Accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Invoice": {
+                            "type": "object",
+                            "properties": {
+                                "Id": {
+                                    "type": "string",
+                                    "description": "Invoice ID to update"
+                                },
+                                "SyncToken": {
+                                    "type": "string",
+                                    "description": "Sync token for optimistic locking"
+                                },
+                                "CustomerRef": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Customer ID reference"
+                                        }
+                                    },
+                                    "required": ["value"],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                },
+                                "Line": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "Amount": {
+                                                "type": "number",
+                                                "description": "Updated line amount"
+                                            },
+                                            "DetailType": {
+                                                "type": "string",
+                                                "enum": ["SalesItemLineDetail"],
+                                                "description": "Type of line detail"
+                                            }
+                                        },
+                                        "required": [],
+                                        "visible": ["Amount", "DetailType"],
+                                        "additionalProperties": true
+                                    },
+                                    "description": "Updated invoice line items"
+                                },
+                                "DueDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Updated due date"
+                                },
+                                "TxnDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Updated transaction date"
+                                },
+                                "PrivateNote": {
+                                    "type": "string",
+                                    "description": "Updated private note"
+                                }
+                            },
+                            "required": ["Id", "SyncToken"],
+                            "visible": ["Id", "SyncToken", "CustomerRef", "Line", "DueDate", "TxnDate", "PrivateNote"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["Invoice"],
+                    "visible": ["Invoice"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_PAYMENTS",
+        "description": "Retrieve payment records from QuickBooks for cash flow analysis and accounts receivable tracking",
+        "tags": ["payments", "cash flow", "receivables", "transactions"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/payments",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fetchAll": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Fetch all payments or use pagination"
+                        },
+                        "maxresults": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 1000,
+                            "description": "Maximum number of payments to return"
+                        },
+                        "startposition": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Starting position for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fetchAll", "maxresults", "startposition"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__CREATE_PAYMENT",
+        "description": "Record payments in QuickBooks for invoice settlements and accounts receivable management",
+        "tags": ["payments", "create", "settlements", "receivables"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/company/{company_id}/payment",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        },
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type", "Accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Payment": {
+                            "type": "object",
+                            "properties": {
+                                "CustomerRef": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Customer ID who made payment"
+                                        }
+                                    },
+                                    "required": ["value"],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                },
+                                "TotalAmt": {
+                                    "type": "number",
+                                    "description": "Total payment amount"
+                                },
+                                "TxnDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Payment transaction date"
+                                },
+                                "PaymentMethodRef": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Payment method ID reference"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                },
+                                "Line": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "Amount": {
+                                                "type": "number",
+                                                "description": "Amount applied to invoice"
+                                            },
+                                            "LinkedTxn": {
+                                                "type": "array",
+                                                "items": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "TxnId": {
+                                                            "type": "string",
+                                                            "description": "Invoice ID being paid"
+                                                        },
+                                                        "TxnType": {
+                                                            "type": "string",
+                                                            "enum": ["Invoice"],
+                                                            "description": "Transaction type"
+                                                        }
+                                                    },
+                                                    "required": ["TxnId", "TxnType"],
+                                                    "visible": ["TxnId", "TxnType"],
+                                                    "additionalProperties": false
+                                                },
+                                                "description": "Linked transactions for this payment"
+                                            }
+                                        },
+                                        "required": ["Amount"],
+                                        "visible": ["Amount", "LinkedTxn"],
+                                        "additionalProperties": false
+                                    },
+                                    "description": "Payment application lines"
+                                },
+                                "PrivateNote": {
+                                    "type": "string",
+                                    "description": "Private note about the payment"
+                                }
+                            },
+                            "required": ["CustomerRef", "TotalAmt"],
+                            "visible": ["CustomerRef", "TotalAmt", "TxnDate", "PaymentMethodRef", "Line", "PrivateNote"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["Payment"],
+                    "visible": ["Payment"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_ITEMS",
+        "description": "Retrieve products and services from QuickBooks for inventory management and invoice line items",
+        "tags": ["items", "products", "services", "inventory"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/items",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fetchAll": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Fetch all items or use pagination"
+                        },
+                        "maxresults": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 1000,
+                            "description": "Maximum number of items to return"
+                        },
+                        "startposition": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Starting position for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fetchAll", "maxresults", "startposition"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__CREATE_ITEM",
+        "description": "Create products and services in QuickBooks for inventory management and invoicing workflows",
+        "tags": ["items", "create", "products", "services"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/company/{company_id}/item",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        },
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type", "Accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Item": {
+                            "type": "object",
+                            "properties": {
+                                "Name": {
+                                    "type": "string",
+                                    "description": "Item name (required)"
+                                },
+                                "Type": {
+                                    "type": "string",
+                                    "enum": ["Inventory", "NonInventory", "Service"],
+                                    "description": "Type of item"
+                                },
+                                "IncomeAccountRef": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Income account ID reference"
+                                        }
+                                    },
+                                    "required": ["value"],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                },
+                                "UnitPrice": {
+                                    "type": "number",
+                                    "description": "Unit price of the item"
+                                },
+                                "Description": {
+                                    "type": "string",
+                                    "description": "Description of the item"
+                                },
+                                "Active": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Whether item is active"
+                                },
+                                "Taxable": {
+                                    "type": "boolean",
+                                    "default": false,
+                                    "description": "Whether item is taxable"
+                                }
+                            },
+                            "required": ["Name", "Type"],
+                            "visible": ["Name", "Type", "IncomeAccountRef", "UnitPrice", "Description", "Active", "Taxable"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["Item"],
+                    "visible": ["Item"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_EXPENSES",
+        "description": "Retrieve expense transactions from QuickBooks for cost tracking and financial analysis reporting",
+        "tags": ["expenses", "costs", "transactions", "financial"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/purchases",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fetchAll": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Fetch all expenses or use pagination"
+                        },
+                        "maxresults": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 1000,
+                            "description": "Maximum number of expenses to return"
+                        },
+                        "startposition": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Starting position for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fetchAll", "maxresults", "startposition"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__CREATE_EXPENSE",
+        "description": "Record expense transactions in QuickBooks for cost tracking and financial management workflows",
+        "tags": ["expenses", "create", "costs", "tracking"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/company/{company_id}/purchase",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        },
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type", "Accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Purchase": {
+                            "type": "object",
+                            "properties": {
+                                "PaymentType": {
+                                    "type": "string",
+                                    "enum": ["Cash", "Check", "CreditCard"],
+                                    "description": "Payment method used"
+                                },
+                                "AccountRef": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Account ID reference for payment"
+                                        }
+                                    },
+                                    "required": ["value"],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                },
+                                "Line": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "Amount": {
+                                                "type": "number",
+                                                "description": "Amount of the expense line"
+                                            },
+                                            "DetailType": {
+                                                "type": "string",
+                                                "enum": ["AccountBasedExpenseLineDetail"],
+                                                "description": "Type of expense detail"
+                                            },
+                                            "AccountBasedExpenseLineDetail": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "AccountRef": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "value": {
+                                                                "type": "string",
+                                                                "description": "Expense account ID"
+                                                            }
+                                                        },
+                                                        "required": ["value"],
+                                                        "visible": ["value"],
+                                                        "additionalProperties": false
+                                                    }
+                                                },
+                                                "required": ["AccountRef"],
+                                                "visible": ["AccountRef"],
+                                                "additionalProperties": false
+                                            }
+                                        },
+                                        "required": ["Amount", "DetailType", "AccountBasedExpenseLineDetail"],
+                                        "visible": ["Amount", "DetailType", "AccountBasedExpenseLineDetail"],
+                                        "additionalProperties": false
+                                    },
+                                    "description": "Expense line items"
+                                },
+                                "TxnDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Transaction date"
+                                },
+                                "PrivateNote": {
+                                    "type": "string",
+                                    "description": "Private note for expense"
+                                }
+                            },
+                            "required": ["PaymentType", "AccountRef", "Line"],
+                            "visible": ["PaymentType", "AccountRef", "Line", "TxnDate", "PrivateNote"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["Purchase"],
+                    "visible": ["Purchase"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_ACCOUNTS",
+        "description": "Retrieve chart of accounts from QuickBooks for financial categorization and reporting structure",
+        "tags": ["accounts", "chart", "financial", "categorization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/accounts",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fetchAll": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Fetch all accounts or use pagination"
+                        },
+                        "maxresults": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 1000,
+                            "description": "Maximum number of accounts to return"
+                        },
+                        "startposition": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Starting position for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fetchAll", "maxresults", "startposition"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__CREATE_ACCOUNT",
+        "description": "Create new accounts in QuickBooks chart of accounts for financial categorization and reporting",
+        "tags": ["accounts", "create", "chart", "financial"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/company/{company_id}/account",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        },
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type", "Accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Account": {
+                            "type": "object",
+                            "properties": {
+                                "Name": {
+                                    "type": "string",
+                                    "description": "Account name (required)"
+                                },
+                                "AccountType": {
+                                    "type": "string",
+                                    "enum": ["Bank", "Other Current Asset", "Fixed Asset", "Other Asset", "Accounts Receivable", "Equity", "Expense", "Other Expense", "Cost of Goods Sold", "Accounts Payable", "Other Current Liability", "Long Term Liability", "Income", "Other Income"],
+                                    "description": "Type of account"
+                                },
+                                "AccountSubType": {
+                                    "type": "string",
+                                    "description": "Sub-type for more specific categorization"
+                                },
+                                "Description": {
+                                    "type": "string",
+                                    "description": "Description of the account"
+                                },
+                                "Active": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Whether account is active"
+                                },
+                                "Classification": {
+                                    "type": "string",
+                                    "enum": ["Asset", "Equity", "Expense", "Liability", "Revenue"],
+                                    "description": "High-level classification of account"
+                                }
+                            },
+                            "required": ["Name", "AccountType"],
+                            "visible": ["Name", "AccountType", "AccountSubType", "Description", "Active", "Classification"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["Account"],
+                    "visible": ["Account"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_VENDORS",
+        "description": "Retrieve vendor information from QuickBooks for supplier management and accounts payable tracking",
+        "tags": ["vendors", "suppliers", "payables", "procurement"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/vendors",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fetchAll": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Fetch all vendors or use pagination"
+                        },
+                        "maxresults": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 1000,
+                            "description": "Maximum number of vendors to return"
+                        },
+                        "startposition": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Starting position for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fetchAll", "maxresults", "startposition"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__CREATE_VENDOR",
+        "description": "Create vendor records in QuickBooks for supplier management and accounts payable workflows",
+        "tags": ["vendors", "create", "suppliers", "payables"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/company/{company_id}/vendor",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        },
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type", "Accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Vendor": {
+                            "type": "object",
+                            "properties": {
+                                "Name": {
+                                    "type": "string",
+                                    "description": "Vendor name (required)"
+                                },
+                                "CompanyName": {
+                                    "type": "string",
+                                    "description": "Company name of vendor"
+                                },
+                                "ContactInfo": {
+                                    "type": "object",
+                                    "properties": {
+                                        "EmailAddr": {
+                                            "type": "object",
+                                            "properties": {
+                                                "Address": {
+                                                    "type": "string",
+                                                    "format": "email",
+                                                    "description": "Vendor email address"
+                                                }
+                                            },
+                                            "required": [],
+                                            "visible": ["Address"],
+                                            "additionalProperties": false
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["EmailAddr"],
+                                    "additionalProperties": false
+                                },
+                                "BillAddr": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Line1": {
+                                            "type": "string",
+                                            "description": "Address line 1"
+                                        },
+                                        "City": {
+                                            "type": "string",
+                                            "description": "City"
+                                        },
+                                        "Country": {
+                                            "type": "string",
+                                            "description": "Country"
+                                        },
+                                        "CountrySubDivisionCode": {
+                                            "type": "string",
+                                            "description": "State/Province code"
+                                        },
+                                        "PostalCode": {
+                                            "type": "string",
+                                            "description": "ZIP/Postal code"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["Line1", "City", "Country", "CountrySubDivisionCode", "PostalCode"],
+                                    "description": "Vendor address",
+                                    "additionalProperties": false
+                                },
+                                "TaxIdentifier": {
+                                    "type": "string",
+                                    "description": "Tax ID or SSN of vendor"
+                                },
+                                "TermRef": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Payment terms ID reference"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                },
+                                "Active": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Whether vendor is active"
+                                }
+                            },
+                            "required": ["Name"],
+                            "visible": ["Name", "CompanyName", "ContactInfo", "BillAddr", "TaxIdentifier", "TermRef", "Active"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["Vendor"],
+                    "visible": ["Vendor"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_ESTIMATES",
+        "description": "Retrieve estimates and quotes from QuickBooks for sales pipeline and proposal management tracking",
+        "tags": ["estimates", "quotes", "sales", "proposals"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/estimates",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fetchAll": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Fetch all estimates or use pagination"
+                        },
+                        "maxresults": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 1000,
+                            "description": "Maximum number of estimates to return"
+                        },
+                        "startposition": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Starting position for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fetchAll", "maxresults", "startposition"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__CREATE_ESTIMATE",
+        "description": "Create estimates and quotes in QuickBooks for sales proposals and customer pricing management",
+        "tags": ["estimates", "create", "quotes", "sales"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/company/{company_id}/estimate",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        },
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type", "Accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Estimate": {
+                            "type": "object",
+                            "properties": {
+                                "CustomerRef": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Customer ID reference"
+                                        }
+                                    },
+                                    "required": ["value"],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                },
+                                "Line": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "Amount": {
+                                                "type": "number",
+                                                "description": "Line item amount"
+                                            },
+                                            "DetailType": {
+                                                "type": "string",
+                                                "enum": ["SalesItemLineDetail"],
+                                                "description": "Type of line detail"
+                                            },
+                                            "SalesItemLineDetail": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "ItemRef": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "value": {
+                                                                "type": "string",
+                                                                "description": "Item ID reference"
+                                                            }
+                                                        },
+                                                        "required": ["value"],
+                                                        "visible": ["value"],
+                                                        "additionalProperties": false
+                                                    },
+                                                    "Qty": {
+                                                        "type": "number",
+                                                        "description": "Quantity of items"
+                                                    }
+                                                },
+                                                "required": ["ItemRef"],
+                                                "visible": ["ItemRef", "Qty"],
+                                                "additionalProperties": false
+                                            }
+                                        },
+                                        "required": ["Amount", "DetailType", "SalesItemLineDetail"],
+                                        "visible": ["Amount", "DetailType", "SalesItemLineDetail"],
+                                        "additionalProperties": false
+                                    },
+                                    "description": "Estimate line items"
+                                },
+                                "ExpirationDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Expiration date for the estimate"
+                                },
+                                "TxnDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Transaction date"
+                                },
+                                "DocNumber": {
+                                    "type": "string",
+                                    "description": "Estimate number"
+                                },
+                                "PrivateNote": {
+                                    "type": "string",
+                                    "description": "Private note for internal use"
+                                },
+                                "CustomerMemo": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Customer-facing memo"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": ["CustomerRef", "Line"],
+                            "visible": ["CustomerRef", "Line", "ExpirationDate", "TxnDate", "DocNumber", "PrivateNote", "CustomerMemo"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["Estimate"],
+                    "visible": ["Estimate"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_BILLS",
+        "description": "Retrieve bills from QuickBooks for accounts payable management and expense tracking analysis",
+        "tags": ["bills", "payables", "expenses", "vendor"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/bills",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fetchAll": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Fetch all bills or use pagination"
+                        },
+                        "maxresults": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 1000,
+                            "description": "Maximum number of bills to return"
+                        },
+                        "startposition": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Starting position for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fetchAll", "maxresults", "startposition"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__CREATE_BILL",
+        "description": "Create bills in QuickBooks for vendor invoice tracking and accounts payable management",
+        "tags": ["bills", "create", "vendor", "payables"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/company/{company_id}/bill",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        },
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type", "Accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Bill": {
+                            "type": "object",
+                            "properties": {
+                                "VendorRef": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Vendor ID reference"
+                                        }
+                                    },
+                                    "required": ["value"],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                },
+                                "Line": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "Amount": {
+                                                "type": "number",
+                                                "description": "Line item amount"
+                                            },
+                                            "DetailType": {
+                                                "type": "string",
+                                                "enum": ["AccountBasedExpenseLineDetail"],
+                                                "description": "Type of line detail"
+                                            },
+                                            "AccountBasedExpenseLineDetail": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "AccountRef": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "value": {
+                                                                "type": "string",
+                                                                "description": "Expense account ID"
+                                                            }
+                                                        },
+                                                        "required": ["value"],
+                                                        "visible": ["value"],
+                                                        "additionalProperties": false
+                                                    }
+                                                },
+                                                "required": ["AccountRef"],
+                                                "visible": ["AccountRef"],
+                                                "additionalProperties": false
+                                            }
+                                        },
+                                        "required": ["Amount", "DetailType", "AccountBasedExpenseLineDetail"],
+                                        "visible": ["Amount", "DetailType", "AccountBasedExpenseLineDetail"],
+                                        "additionalProperties": false
+                                    },
+                                    "description": "Bill line items"
+                                },
+                                "DueDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Due date for bill payment"
+                                },
+                                "TxnDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Transaction date"
+                                },
+                                "DocNumber": {
+                                    "type": "string",
+                                    "description": "Vendor's invoice/bill number"
+                                },
+                                "PrivateNote": {
+                                    "type": "string",
+                                    "description": "Private note about the bill"
+                                }
+                            },
+                            "required": ["VendorRef", "Line"],
+                            "visible": ["VendorRef", "Line", "DueDate", "TxnDate", "DocNumber", "PrivateNote"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["Bill"],
+                    "visible": ["Bill"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_EMPLOYEES",
+        "description": "Retrieve employee information from QuickBooks for payroll management and HR administration",
+        "tags": ["employees", "payroll", "hr", "staff"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/employees",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fetchAll": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Fetch all employees or use pagination"
+                        },
+                        "maxresults": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 1000,
+                            "description": "Maximum number of employees to return"
+                        },
+                        "startposition": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Starting position for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fetchAll", "maxresults", "startposition"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__CREATE_EMPLOYEE",
+        "description": "Create employee records in QuickBooks for payroll setup and HR management workflows",
+        "tags": ["employees", "create", "payroll", "hr"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/company/{company_id}/employee",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        },
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type", "Accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "Employee": {
+                            "type": "object",
+                            "properties": {
+                                "Name": {
+                                    "type": "string",
+                                    "description": "Employee name (required)"
+                                },
+                                "EmployeeNumber": {
+                                    "type": "string",
+                                    "description": "Employee identification number"
+                                },
+                                "SSN": {
+                                    "type": "string",
+                                    "description": "Social Security Number"
+                                },
+                                "PrimaryAddr": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Line1": {
+                                            "type": "string",
+                                            "description": "Address line 1"
+                                        },
+                                        "City": {
+                                            "type": "string",
+                                            "description": "City"
+                                        },
+                                        "Country": {
+                                            "type": "string",
+                                            "description": "Country"
+                                        },
+                                        "CountrySubDivisionCode": {
+                                            "type": "string",
+                                            "description": "State/Province code"
+                                        },
+                                        "PostalCode": {
+                                            "type": "string",
+                                            "description": "ZIP/Postal code"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["Line1", "City", "Country", "CountrySubDivisionCode", "PostalCode"],
+                                    "description": "Employee address",
+                                    "additionalProperties": false
+                                },
+                                "PrimaryEmailAddr": {
+                                    "type": "object",
+                                    "properties": {
+                                        "Address": {
+                                            "type": "string",
+                                            "format": "email",
+                                            "description": "Employee email address"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["Address"],
+                                    "additionalProperties": false
+                                },
+                                "HiredDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Date employee was hired"
+                                },
+                                "ReleasedDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Date employee was terminated"
+                                },
+                                "Active": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Whether employee is active"
+                                }
+                            },
+                            "required": ["Name"],
+                            "visible": ["Name", "EmployeeNumber", "SSN", "PrimaryAddr", "PrimaryEmailAddr", "HiredDate", "ReleasedDate", "Active"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["Employee"],
+                    "visible": ["Employee"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_COMPANY_INFO",
+        "description": "Retrieve company information and settings from QuickBooks for business configuration and reporting setup",
+        "tags": ["company", "info", "settings", "configuration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/companyinfo/{company_id}",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_TAX_AGENCIES",
+        "description": "Retrieve tax agencies from QuickBooks for tax compliance and reporting management workflows",
+        "tags": ["tax", "agencies", "compliance", "reporting"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/taxagencies",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fetchAll": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Fetch all tax agencies or use pagination"
+                        },
+                        "maxresults": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 1000,
+                            "description": "Maximum number of tax agencies to return"
+                        },
+                        "startposition": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Starting position for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fetchAll", "maxresults", "startposition"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__RUN_REPORT",
+        "description": "Generate financial reports from QuickBooks for business intelligence, analytics, and regulatory compliance",
+        "tags": ["reports", "financial", "analytics", "compliance"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/reports/{report_name}",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        },
+                        "report_name": {
+                            "type": "string",
+                            "enum": ["ProfitAndLoss", "BalanceSheet", "CashFlow", "TrialBalance", "AgedReceivables", "AgedPayables", "VendorBalances", "CustomerBalances"],
+                            "description": "Type of financial report to generate"
+                        }
+                    },
+                    "required": ["company_id", "report_name"],
+                    "visible": ["company_id", "report_name"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "start_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Start date for report period (YYYY-MM-DD)"
+                        },
+                        "end_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "End date for report period (YYYY-MM-DD)"
+                        },
+                        "accounting_method": {
+                            "type": "string",
+                            "enum": ["Cash", "Accrual"],
+                            "default": "Accrual",
+                            "description": "Accounting method for report"
+                        },
+                        "summarize_column_by": {
+                            "type": "string",
+                            "enum": ["Days", "Weeks", "Months", "Quarters", "Years", "Customers", "Vendors", "Classes", "Departments"],
+                            "description": "How to summarize columns in report"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["start_date", "end_date", "accounting_method", "summarize_column_by"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_TIME_ACTIVITIES",
+        "description": "Retrieve time tracking activities from QuickBooks for project billing and employee hour management",
+        "tags": ["time", "activities", "tracking", "billing"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/timeactivities",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fetchAll": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Fetch all time activities or use pagination"
+                        },
+                        "maxresults": {
+                            "type": "integer",
+                            "default": 20,
+                            "maximum": 1000,
+                            "description": "Maximum number of time activities to return"
+                        },
+                        "startposition": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Starting position for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fetchAll", "maxresults", "startposition"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__CREATE_TIME_ACTIVITY",
+        "description": "Record time activities in QuickBooks for project tracking, employee hours, and billable time management",
+        "tags": ["time", "create", "tracking", "billable"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/company/{company_id}/timeactivity",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        },
+                        "Accept": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type", "Accept"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "TimeActivity": {
+                            "type": "object",
+                            "properties": {
+                                "NameOf": {
+                                    "type": "string",
+                                    "enum": ["Employee", "Vendor"],
+                                    "description": "Type of entity performing work"
+                                },
+                                "EmployeeRef": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Employee ID reference"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                },
+                                "VendorRef": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Vendor ID reference"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                },
+                                "CustomerRef": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Customer ID this time is billed to"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                },
+                                "ItemRef": {
+                                    "type": "object",
+                                    "properties": {
+                                        "value": {
+                                            "type": "string",
+                                            "description": "Service item ID for billing"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["value"],
+                                    "additionalProperties": false
+                                },
+                                "BillableStatus": {
+                                    "type": "string",
+                                    "enum": ["Billable", "NotBillable", "HasBeenBilled"],
+                                    "description": "Billing status of the time"
+                                },
+                                "TxnDate": {
+                                    "type": "string",
+                                    "format": "date",
+                                    "description": "Date of time activity"
+                                },
+                                "StartTime": {
+                                    "type": "string",
+                                    "description": "Start time (HH:MM:SS format)"
+                                },
+                                "EndTime": {
+                                    "type": "string",
+                                    "description": "End time (HH:MM:SS format)"
+                                },
+                                "Hours": {
+                                    "type": "integer",
+                                    "description": "Number of hours worked"
+                                },
+                                "Minutes": {
+                                    "type": "integer",
+                                    "description": "Number of minutes worked"
+                                },
+                                "Description": {
+                                    "type": "string",
+                                    "description": "Description of work performed"
+                                },
+                                "HourlyRate": {
+                                    "type": "number",
+                                    "description": "Hourly rate for billing"
+                                }
+                            },
+                            "required": ["NameOf"],
+                            "visible": ["NameOf", "EmployeeRef", "VendorRef", "CustomerRef", "ItemRef", "BillableStatus", "TxnDate", "StartTime", "EndTime", "Hours", "Minutes", "Description", "HourlyRate"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["TimeActivity"],
+                    "visible": ["TimeActivity"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__SEND_INVOICE",
+        "description": "Send invoices via email to customers directly from QuickBooks for automated billing workflows",
+        "tags": ["invoices", "send", "email", "billing"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v3/company/{company_id}/invoice/{invoice_id}/send",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/octet-stream"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        },
+                        "invoice_id": {
+                            "type": "string",
+                            "description": "Invoice ID to send"
+                        }
+                    },
+                    "required": ["company_id", "invoice_id"],
+                    "visible": ["company_id", "invoice_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "sendTo": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Email address to send invoice to (optional - uses customer email if not specified)"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["sendTo"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_PROFIT_AND_LOSS",
+        "description": "Generate profit and loss statements from QuickBooks for financial performance analysis and reporting",
+        "tags": ["reports", "profit", "loss", "performance"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/reports/ProfitAndLoss",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "start_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Start date for P&L period (YYYY-MM-DD)"
+                        },
+                        "end_date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "End date for P&L period (YYYY-MM-DD)"
+                        },
+                        "accounting_method": {
+                            "type": "string",
+                            "enum": ["Cash", "Accrual"],
+                            "default": "Accrual",
+                            "description": "Accounting method for report"
+                        },
+                        "summarize_column_by": {
+                            "type": "string",
+                            "enum": ["Days", "Weeks", "Months", "Quarters", "Years"],
+                            "description": "Period summarization for columns"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["start_date", "end_date", "accounting_method", "summarize_column_by"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "QUICKBOOKS__GET_BALANCE_SHEET",
+        "description": "Generate balance sheet reports from QuickBooks for financial position analysis and asset tracking",
+        "tags": ["reports", "balance", "assets", "financial"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v3/company/{company_id}/reports/BalanceSheet",
+            "server_url": "https://sandbox-quickbooks.api.intuit.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "company_id": {
+                            "type": "string",
+                            "description": "QuickBooks company ID"
+                        }
+                    },
+                    "required": ["company_id"],
+                    "visible": ["company_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "date": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Date for balance sheet snapshot (YYYY-MM-DD)"
+                        },
+                        "accounting_method": {
+                            "type": "string",
+                            "enum": ["Cash", "Accrual"],
+                            "default": "Accrual",
+                            "description": "Accounting method for report"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["date", "accounting_method"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    }
+]

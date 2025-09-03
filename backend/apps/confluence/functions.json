@@ -1,0 +1,1952 @@
+[
+  {
+    "name": "CONFLUENCE__GET_SPACES",
+    "description": "Get all Confluence spaces accessible to the authenticated user. This returns a list of spaces that contain pages and content.",
+    "tags": ["confluence", "spaces", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/spaces",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering and pagination",
+          "properties": {
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "integer"
+              },
+              "description": "Filter spaces by specific IDs"
+            },
+            "keys": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter spaces by keys"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["global", "personal"],
+              "description": "Filter by space type"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["current", "archived"],
+              "description": "Filter by space status"
+            },
+            "labels": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter spaces by labels"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 25,
+              "description": "Maximum number of spaces to return (default 25, max 250)"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination to get next set of results"
+            }
+          },
+          "required": [],
+          "visible": ["ids", "keys", "type", "status", "labels", "limit", "cursor"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_SPACE",
+    "description": "Get detailed information about a specific Confluence space including description, permissions, and metadata.",
+    "tags": ["confluence", "space", "details"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/spaces/{id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID or key of the space"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for response customization",
+          "properties": {
+            "description-format": {
+              "type": "string",
+              "enum": ["plain", "view"],
+              "default": "plain",
+              "description": "Format for the space description"
+            }
+          },
+          "required": [],
+          "visible": ["description-format"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__CREATE_SPACE",
+    "description": "Create a new Confluence space for organizing content. This allows creating personal or team spaces for documentation and collaboration.",
+    "tags": ["confluence", "space", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/wiki/api/v2/spaces",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The space configuration",
+          "properties": {
+            "key": {
+              "type": "string",
+              "description": "A unique identifier for the space (3-255 chars, alphanumeric)"
+            },
+            "name": {
+              "type": "string",
+              "description": "The display name of the space"
+            },
+            "description": {
+              "type": "object",
+              "description": "The description of the space",
+              "properties": {
+                "plain": {
+                  "type": "object",
+                  "description": "Plain text description",
+                  "properties": {
+                    "value": {
+                      "type": "string",
+                      "description": "The description text"
+                    },
+                    "representation": {
+                      "type": "string",
+                      "enum": ["plain"],
+                      "default": "plain"
+                    }
+                  },
+                  "required": ["value"],
+                  "visible": ["value", "representation"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["plain"],
+              "visible": ["plain"],
+              "additionalProperties": false
+            },
+            "type": {
+              "type": "string",
+              "enum": ["global", "personal"],
+              "default": "global",
+              "description": "The type of space to create"
+            }
+          },
+          "required": ["key", "name"],
+          "visible": ["key", "name", "description", "type"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__UPDATE_SPACE",
+    "description": "Update properties of a Confluence space such as name and description. This allows modifying space metadata.",
+    "tags": ["confluence", "space", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/wiki/api/v2/spaces/{id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID or key of the space to update"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "The space updates",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "The updated display name of the space"
+            },
+            "description": {
+              "type": "object",
+              "description": "The updated description of the space",
+              "properties": {
+                "plain": {
+                  "type": "object",
+                  "description": "Plain text description",
+                  "properties": {
+                    "value": {
+                      "type": "string",
+                      "description": "The description text"
+                    },
+                    "representation": {
+                      "type": "string",
+                      "enum": ["plain"],
+                      "default": "plain"
+                    }
+                  },
+                  "required": ["value"],
+                  "visible": ["value", "representation"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["plain"],
+              "visible": ["plain"],
+              "additionalProperties": false
+            }
+          },
+          "required": [],
+          "visible": ["name", "description"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__DELETE_SPACE",
+    "description": "Delete a Confluence space. This permanently removes the space and all its content including pages and attachments.",
+    "tags": ["confluence", "space", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/wiki/api/v2/spaces/{id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID or key of the space to delete"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_PAGES",
+    "description": "Get pages from Confluence with advanced filtering options. This allows finding content across spaces and by various criteria.",
+    "tags": ["confluence", "pages", "content", "search"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/pages",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering and customization",
+          "properties": {
+            "id": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter pages by specific IDs"
+            },
+            "space-id": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter pages by space IDs"
+            },
+            "title": {
+              "type": "string",
+              "description": "Filter pages by title (exact match)"
+            },
+            "body-format": {
+              "type": "string",
+              "enum": ["storage", "atlas_doc_format", "view"],
+              "default": "storage",
+              "description": "Format for page body content"
+            },
+            "include-labels": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include page labels in response"
+            },
+            "status": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["current", "trashed", "historical", "draft"]
+              },
+              "description": "Filter pages by status"
+            },
+            "sort": {
+              "type": "string",
+              "enum": ["id", "created-date", "modified-date", "title"],
+              "default": "id",
+              "description": "Sort pages by specified field"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 25,
+              "description": "Maximum number of pages to return (default 25, max 250)"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination to get next set of results"
+            }
+          },
+          "required": [],
+          "visible": ["id", "space-id", "title", "body-format", "include-labels", "status", "sort", "limit", "cursor"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_PAGE",
+    "description": "Get detailed information about a specific Confluence page including content, metadata, and version information.",
+    "tags": ["confluence", "page", "content", "details"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/pages/{id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the page"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for response customization",
+          "properties": {
+            "body-format": {
+              "type": "string",
+              "enum": ["storage", "atlas_doc_format", "view"],
+              "default": "storage",
+              "description": "Format for page body content"
+            },
+            "include-labels": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include page labels in response"
+            },
+            "include-properties": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include content properties in response"
+            },
+            "include-operations": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include available operations for the page"
+            },
+            "include-children": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include child pages in response"
+            },
+            "include-ancestors": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include ancestor pages in response"
+            },
+            "version": {
+              "type": "integer",
+              "description": "Get a specific version of the page"
+            }
+          },
+          "required": [],
+          "visible": ["body-format", "include-labels", "include-properties", "include-operations", "include-children", "include-ancestors", "version"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__CREATE_PAGE",
+    "description": "Create a new page in a Confluence space. This allows adding new documentation, articles, or content to organize team knowledge.",
+    "tags": ["confluence", "page", "create", "content"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/wiki/api/v2/pages",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The page content and metadata",
+          "properties": {
+            "spaceId": {
+              "type": "string",
+              "description": "The ID of the space where the page will be created"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["current", "draft"],
+              "default": "current",
+              "description": "The status of the page"
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the page"
+            },
+            "parentId": {
+              "type": "string",
+              "description": "The ID of the parent page (optional, creates top-level page if omitted)"
+            },
+            "body": {
+              "type": "object",
+              "description": "The page content",
+              "properties": {
+                "representation": {
+                  "type": "string",
+                  "enum": ["storage", "atlas_doc_format"],
+                  "default": "storage",
+                  "description": "The format of the page body"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "The actual page content"
+                }
+              },
+              "required": ["representation", "value"],
+              "visible": ["representation", "value"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["spaceId", "title", "body"],
+          "visible": ["spaceId", "status", "title", "parentId", "body"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__UPDATE_PAGE",
+    "description": "Update an existing Confluence page with new content or metadata. This allows editing pages, updating documentation, and revising content.",
+    "tags": ["confluence", "page", "update", "edit"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/wiki/api/v2/pages/{id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the page to update"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "The page updates",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the page (must match path parameter)"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["current", "draft"],
+              "description": "The status of the page"
+            },
+            "title": {
+              "type": "string",
+              "description": "The updated title of the page"
+            },
+            "body": {
+              "type": "object",
+              "description": "The updated page content",
+              "properties": {
+                "representation": {
+                  "type": "string",
+                  "enum": ["storage", "atlas_doc_format"],
+                  "default": "storage",
+                  "description": "The format of the page body"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "The updated page content"
+                }
+              },
+              "required": ["representation", "value"],
+              "visible": ["representation", "value"],
+              "additionalProperties": false
+            },
+            "version": {
+              "type": "object",
+              "description": "Version information for conflict resolution",
+              "properties": {
+                "number": {
+                  "type": "integer",
+                  "description": "The current version number of the page"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Optional message describing the change"
+                }
+              },
+              "required": ["number"],
+              "visible": ["number", "message"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["id", "status", "title", "body", "version"],
+          "visible": ["id", "status", "title", "body", "version"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__DELETE_PAGE",
+    "description": "Delete a Confluence page. This moves the page to trash where it can be recovered by space administrators.",
+    "tags": ["confluence", "page", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/wiki/api/v2/pages/{id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the page to delete"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_PAGE_CHILDREN",
+    "description": "Get child pages of a specific Confluence page. This allows exploring the page hierarchy and finding related content.",
+    "tags": ["confluence", "pages", "children", "hierarchy"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/pages/{id}/children",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the parent page"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering and customization",
+          "properties": {
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination to get next set of results"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 25,
+              "description": "Maximum number of child pages to return (default 25, max 250)"
+            },
+            "sort": {
+              "type": "string",
+              "enum": ["id", "created-date", "modified-date", "title"],
+              "default": "id",
+              "description": "Sort child pages by specified field"
+            }
+          },
+          "required": [],
+          "visible": ["cursor", "limit", "sort"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__SEARCH_CONTENT",
+    "description": "Search for content across Confluence using full-text search. This allows finding pages, blog posts, and other content by keywords, titles, or authors.",
+    "tags": ["confluence", "search", "content", "query"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/search",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Search parameters",
+          "properties": {
+            "cql": {
+              "type": "string",
+              "description": "Confluence Query Language (CQL) search expression (e.g., 'type=page AND space=DEV')"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination to get next set of results"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 25,
+              "description": "Maximum number of results to return (default 25, max 250)"
+            },
+            "include-archived-spaces": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include results from archived spaces"
+            }
+          },
+          "required": ["cql"],
+          "visible": ["cql", "cursor", "limit", "include-archived-spaces"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["query"],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_LABELS",
+    "description": "Get all labels used across Confluence content. This helps discover available labels for organizing and categorizing content.",
+    "tags": ["confluence", "labels", "organization"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/labels",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering and pagination",
+          "properties": {
+            "ids": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter labels by specific IDs"
+            },
+            "prefix": {
+              "type": "string",
+              "description": "Filter labels by name prefix"
+            },
+            "sort": {
+              "type": "string",
+              "enum": ["name", "-name", "id", "-id"],
+              "default": "name",
+              "description": "Sort labels by name or ID (ascending or descending)"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 25,
+              "description": "Maximum number of labels to return (default 25, max 250)"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination to get next set of results"
+            }
+          },
+          "required": [],
+          "visible": ["ids", "prefix", "sort", "limit", "cursor"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_PAGE_LABELS",
+    "description": "Get all labels assigned to a specific Confluence page. This shows how the page is categorized and organized.",
+    "tags": ["confluence", "page", "labels"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/pages/{id}/labels",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the page"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering and pagination",
+          "properties": {
+            "prefix": {
+              "type": "string",
+              "description": "Filter labels by name prefix"
+            },
+            "sort": {
+              "type": "string",
+              "enum": ["name", "-name", "id", "-id"],
+              "default": "name",
+              "description": "Sort labels by name or ID"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 25,
+              "description": "Maximum number of labels to return"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["prefix", "sort", "limit", "cursor"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__ADD_PAGE_LABELS",
+    "description": "Add labels to a Confluence page for categorization and organization. This helps with content discovery and organization.",
+    "tags": ["confluence", "page", "labels", "add"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/wiki/api/v2/pages/{id}/labels",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the page"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "array",
+          "description": "Array of labels to add to the page",
+          "items": {
+            "type": "object",
+            "properties": {
+              "prefix": {
+                "type": "string",
+                "enum": ["global", "team"],
+                "default": "global",
+                "description": "The label prefix type"
+              },
+              "name": {
+                "type": "string",
+                "description": "The name of the label"
+              }
+            },
+            "required": ["name"],
+            "visible": ["prefix", "name"],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__REMOVE_PAGE_LABEL",
+    "description": "Remove a specific label from a Confluence page. This allows managing page categorization and organization.",
+    "tags": ["confluence", "page", "labels", "remove"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/wiki/api/v2/pages/{id}/labels/{label_id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the page"
+            },
+            "label_id": {
+              "type": "string",
+              "description": "The ID of the label to remove"
+            }
+          },
+          "required": ["id", "label_id"],
+          "visible": ["id", "label_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_PAGE_COMMENTS",
+    "description": "Get comments on a Confluence page. This allows viewing discussions and feedback on page content.",
+    "tags": ["confluence", "page", "comments", "discussion"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/pages/{id}/footer-comments",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the page"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering and customization",
+          "properties": {
+            "body-format": {
+              "type": "string",
+              "enum": ["storage", "atlas_doc_format", "view"],
+              "default": "storage",
+              "description": "Format for comment body content"
+            },
+            "sort": {
+              "type": "string",
+              "enum": ["created-date", "-created-date"],
+              "default": "created-date",
+              "description": "Sort comments by creation date"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 25,
+              "description": "Maximum number of comments to return"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["body-format", "sort", "limit", "cursor"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__CREATE_PAGE_COMMENT",
+    "description": "Add a comment to a Confluence page. This allows providing feedback, asking questions, or starting discussions about page content.",
+    "tags": ["confluence", "page", "comments", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/wiki/api/v2/pages/{id}/footer-comments",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the page to comment on"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "The comment content",
+          "properties": {
+            "body": {
+              "type": "object",
+              "description": "The comment body",
+              "properties": {
+                "representation": {
+                  "type": "string",
+                  "enum": ["storage", "atlas_doc_format"],
+                  "default": "storage",
+                  "description": "The format of the comment body"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "The comment content"
+                }
+              },
+              "required": ["representation", "value"],
+              "visible": ["representation", "value"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["body"],
+          "visible": ["body"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_COMMENT",
+    "description": "Get detailed information about a specific comment including content and metadata.",
+    "tags": ["confluence", "comment", "details"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/footer-comments/{id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the comment"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for response customization",
+          "properties": {
+            "body-format": {
+              "type": "string",
+              "enum": ["storage", "atlas_doc_format", "view"],
+              "default": "storage",
+              "description": "Format for comment body content"
+            },
+            "include-properties": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include content properties in response"
+            },
+            "include-operations": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include available operations for the comment"
+            }
+          },
+          "required": [],
+          "visible": ["body-format", "include-properties", "include-operations"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__UPDATE_COMMENT",
+    "description": "Update an existing comment on a Confluence page. This allows editing comment content and metadata.",
+    "tags": ["confluence", "comment", "update", "edit"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/wiki/api/v2/footer-comments/{id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the comment to update"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "The comment updates",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the comment (must match path parameter)"
+            },
+            "body": {
+              "type": "object",
+              "description": "The updated comment body",
+              "properties": {
+                "representation": {
+                  "type": "string",
+                  "enum": ["storage", "atlas_doc_format"],
+                  "default": "storage",
+                  "description": "The format of the comment body"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "The updated comment content"
+                }
+              },
+              "required": ["representation", "value"],
+              "visible": ["representation", "value"],
+              "additionalProperties": false
+            },
+            "version": {
+              "type": "object",
+              "description": "Version information for conflict resolution",
+              "properties": {
+                "number": {
+                  "type": "integer",
+                  "description": "The current version number of the comment"
+                }
+              },
+              "required": ["number"],
+              "visible": ["number"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["id", "body", "version"],
+          "visible": ["id", "body", "version"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__DELETE_COMMENT",
+    "description": "Delete a comment from a Confluence page. This permanently removes the comment from the page discussion.",
+    "tags": ["confluence", "comment", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/wiki/api/v2/footer-comments/{id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the comment to delete"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_ATTACHMENTS",
+    "description": "Get attachments from Confluence pages or across the entire instance. This allows finding and managing files, images, and documents.",
+    "tags": ["confluence", "attachments", "files"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/attachments",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering attachments",
+          "properties": {
+            "id": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter attachments by specific IDs"
+            },
+            "entity-id": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter attachments by parent entity ID (page ID)"
+            },
+            "filename": {
+              "type": "string",
+              "description": "Filter by filename (supports wildcards)"
+            },
+            "media-type": {
+              "type": "string",
+              "description": "Filter by media type (e.g., 'image/png', 'application/pdf')"
+            },
+            "sort": {
+              "type": "string",
+              "enum": ["id", "-id", "created-date", "-created-date", "filename", "-filename"],
+              "default": "id",
+              "description": "Sort attachments by specified field"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 25,
+              "description": "Maximum number of attachments to return"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["id", "entity-id", "filename", "media-type", "sort", "limit", "cursor"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__CREATE_ATTACHMENT",
+    "description": "Upload an attachment to a Confluence page. This allows adding files, images, and documents to pages for reference and sharing.",
+    "tags": ["confluence", "attachment", "upload", "files"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/wiki/api/v2/attachments",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The attachment upload data",
+          "properties": {
+            "attachments": {
+              "type": "array",
+              "description": "Array of attachments to upload",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "filename": {
+                    "type": "string",
+                    "description": "The name of the file"
+                  },
+                  "content": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "The file content (binary data)"
+                  },
+                  "contentType": {
+                    "type": "string",
+                    "description": "The MIME type of the file"
+                  }
+                },
+                "required": ["filename", "content", "contentType"],
+                "visible": ["filename", "content", "contentType"],
+                "additionalProperties": false
+              }
+            },
+            "pageId": {
+              "type": "string",
+              "description": "The ID of the page to attach files to"
+            }
+          },
+          "required": ["attachments", "pageId"],
+          "visible": ["attachments", "pageId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__DELETE_ATTACHMENT",
+    "description": "Delete an attachment from a Confluence page. This permanently removes the file from the page.",
+    "tags": ["confluence", "attachment", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/wiki/api/v2/attachments/{id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the attachment to delete"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_SPACE_PAGES",
+    "description": "Get all pages within a specific Confluence space. This allows exploring all content within a space for documentation management.",
+    "tags": ["confluence", "space", "pages", "content"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/spaces/{id}/pages",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID or key of the space"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering and customization",
+          "properties": {
+            "depth": {
+              "type": "string",
+              "enum": ["all", "root"],
+              "default": "all",
+              "description": "Include all pages or only root-level pages"
+            },
+            "sort": {
+              "type": "string",
+              "enum": ["id", "created-date", "modified-date", "title"],
+              "default": "id",
+              "description": "Sort pages by specified field"
+            },
+            "status": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["current", "trashed", "historical", "draft"]
+              },
+              "description": "Filter pages by status"
+            },
+            "title": {
+              "type": "string",
+              "description": "Filter pages by title (exact match)"
+            },
+            "body-format": {
+              "type": "string",
+              "enum": ["storage", "atlas_doc_format", "view"],
+              "default": "storage",
+              "description": "Format for page body content"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 25,
+              "description": "Maximum number of pages to return"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["depth", "sort", "status", "title", "body-format", "limit", "cursor"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_SPACE_PERMISSIONS",
+    "description": "Get permissions for a Confluence space. This shows who has access to the space and what they can do.",
+    "tags": ["confluence", "space", "permissions", "access"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/spaces/{id}/permissions",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID or key of the space"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering permissions",
+          "properties": {
+            "limit": {
+              "type": "integer",
+              "default": 200,
+              "description": "Maximum number of permissions to return"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["limit", "cursor"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_BLOG_POSTS",
+    "description": "Get blog posts from Confluence spaces. This allows finding and managing blog content for announcements and updates.",
+    "tags": ["confluence", "blog", "posts", "content"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/blogposts",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering blog posts",
+          "properties": {
+            "id": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter blog posts by specific IDs"
+            },
+            "space-id": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Filter blog posts by space IDs"
+            },
+            "title": {
+              "type": "string",
+              "description": "Filter blog posts by title (exact match)"
+            },
+            "body-format": {
+              "type": "string",
+              "enum": ["storage", "atlas_doc_format", "view"],
+              "default": "storage",
+              "description": "Format for blog post body content"
+            },
+            "include-labels": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include blog post labels in response"
+            },
+            "status": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["current", "trashed", "historical", "draft"]
+              },
+              "description": "Filter blog posts by status"
+            },
+            "sort": {
+              "type": "string",
+              "enum": ["id", "created-date", "modified-date", "title"],
+              "default": "id",
+              "description": "Sort blog posts by specified field"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 25,
+              "description": "Maximum number of blog posts to return"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["id", "space-id", "title", "body-format", "include-labels", "status", "sort", "limit", "cursor"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__CREATE_BLOG_POST",
+    "description": "Create a new blog post in a Confluence space. This allows publishing announcements, updates, and news to the team.",
+    "tags": ["confluence", "blog", "create", "publish"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/wiki/api/v2/blogposts",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The blog post content and metadata",
+          "properties": {
+            "spaceId": {
+              "type": "string",
+              "description": "The ID of the space where the blog post will be created"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["current", "draft"],
+              "default": "current",
+              "description": "The status of the blog post"
+            },
+            "title": {
+              "type": "string",
+              "description": "The title of the blog post"
+            },
+            "body": {
+              "type": "object",
+              "description": "The blog post content",
+              "properties": {
+                "representation": {
+                  "type": "string",
+                  "enum": ["storage", "atlas_doc_format"],
+                  "default": "storage",
+                  "description": "The format of the blog post body"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "The actual blog post content"
+                }
+              },
+              "required": ["representation", "value"],
+              "visible": ["representation", "value"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["spaceId", "title", "body"],
+          "visible": ["spaceId", "status", "title", "body"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__UPDATE_BLOG_POST",
+    "description": "Update an existing Confluence blog post with new content or metadata. This allows editing published announcements and updates.",
+    "tags": ["confluence", "blog", "update", "edit"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/wiki/api/v2/blogposts/{id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the blog post to update"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "The blog post updates",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the blog post (must match path parameter)"
+            },
+            "status": {
+              "type": "string",
+              "enum": ["current", "draft"],
+              "description": "The status of the blog post"
+            },
+            "title": {
+              "type": "string",
+              "description": "The updated title of the blog post"
+            },
+            "body": {
+              "type": "object",
+              "description": "The updated blog post content",
+              "properties": {
+                "representation": {
+                  "type": "string",
+                  "enum": ["storage", "atlas_doc_format"],
+                  "default": "storage",
+                  "description": "The format of the blog post body"
+                },
+                "value": {
+                  "type": "string",
+                  "description": "The updated blog post content"
+                }
+              },
+              "required": ["representation", "value"],
+              "visible": ["representation", "value"],
+              "additionalProperties": false
+            },
+            "version": {
+              "type": "object",
+              "description": "Version information for conflict resolution",
+              "properties": {
+                "number": {
+                  "type": "integer",
+                  "description": "The current version number of the blog post"
+                },
+                "message": {
+                  "type": "string",
+                  "description": "Optional message describing the change"
+                }
+              },
+              "required": ["number"],
+              "visible": ["number", "message"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["id", "status", "title", "body", "version"],
+          "visible": ["id", "status", "title", "body", "version"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__DELETE_BLOG_POST",
+    "description": "Delete a Confluence blog post. This moves the blog post to trash where it can be recovered by space administrators.",
+    "tags": ["confluence", "blog", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/wiki/api/v2/blogposts/{id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the blog post to delete"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_USER_DETAILS",
+    "description": "Get information about a Confluence user including profile data and account details.",
+    "tags": ["confluence", "user", "profile"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/users/{account_id}",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "The account ID of the user"
+            }
+          },
+          "required": ["account_id"],
+          "visible": ["account_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_CURRENT_USER",
+    "description": "Get information about the currently authenticated user including profile and permissions.",
+    "tags": ["confluence", "user", "current", "profile"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/users/me",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "CONFLUENCE__GET_PAGE_VERSIONS",
+    "description": "Get version history for a Confluence page. This allows tracking changes and accessing previous versions of page content.",
+    "tags": ["confluence", "page", "versions", "history"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/wiki/api/v2/pages/{id}/versions",
+      "server_url": "https://api.atlassian.com/ex/confluence/{cloudid}"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "id": {
+              "type": "string",
+              "description": "The ID of the page"
+            }
+          },
+          "required": ["id"],
+          "visible": ["id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering versions",
+          "properties": {
+            "body-format": {
+              "type": "string",
+              "enum": ["storage", "atlas_doc_format", "view"],
+              "default": "storage",
+              "description": "Format for version body content"
+            },
+            "sort": {
+              "type": "string",
+              "enum": ["modified-date", "-modified-date"],
+              "default": "-modified-date",
+              "description": "Sort versions by modification date"
+            },
+            "limit": {
+              "type": "integer",
+              "default": 25,
+              "description": "Maximum number of versions to return"
+            },
+            "cursor": {
+              "type": "string",
+              "description": "Cursor for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["body-format", "sort", "limit", "cursor"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  }
+]

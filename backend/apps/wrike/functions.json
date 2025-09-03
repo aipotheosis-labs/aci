@@ -427,5 +427,480 @@
             "visible": ["path", "body"],
             "additionalProperties": false
         }
+    },
+    {
+        "name": "WRIKE__DELETE_TASK",
+        "description": "Delete a specific task in Wrike by ID",
+        "tags": ["wrike", "tasks"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/tasks/{taskId}",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "taskId": {
+                            "type": "string",
+                            "description": "ID of the task to delete"
+                        }
+                    },
+                    "required": ["taskId"],
+                    "visible": ["taskId"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "WRIKE__GET_COMMENTS",
+        "description": "Retrieve comments for a specific task or folder in Wrike",
+        "tags": ["wrike", "comments"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/comments",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering comments",
+                    "properties": {
+                        "taskId": {
+                            "type": "string",
+                            "description": "ID of the task to retrieve comments from"
+                        },
+                        "folderId": {
+                            "type": "string",
+                            "description": "ID of the folder to retrieve comments from"
+                        },
+                        "fromDate": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Start date for comment retrieval (ISO 8601)"
+                        },
+                        "toDate": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "End date for comment retrieval (ISO 8601)"
+                        },
+                        "updatedDate": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Filter by last update date (ISO 8601)"
+                        },
+                        "pageSize": {
+                            "type": "integer",
+                            "description": "Number of comments to return per page (max 1000)",
+                            "maximum": 1000
+                        },
+                        "nextPageToken": {
+                            "type": "string",
+                            "description": "Token for retrieving the next page of results"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["taskId", "folderId", "fromDate", "toDate", "updatedDate", "pageSize", "nextPageToken"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "WRIKE__CREATE_COMMENT",
+        "description": "Create a comment on a task or folder in Wrike",
+        "tags": ["wrike", "comments"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/comments",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "text": {
+                            "type": "string",
+                            "description": "Text content of the comment"
+                        },
+                        "taskId": {
+                            "type": "string",
+                            "description": "ID of the task to comment on"
+                        },
+                        "folderId": {
+                            "type": "string",
+                            "description": "ID of the folder to comment on"
+                        },
+                        "plainText": {
+                            "type": "boolean",
+                            "description": "Whether the comment text is plain text (true) or rich text (false)",
+                            "default": false
+                        }
+                    },
+                    "required": ["text"],
+                    "visible": ["text", "taskId", "folderId", "plainText"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "WRIKE__UPDATE_COMMENT",
+        "description": "Update an existing comment in Wrike",
+        "tags": ["wrike", "comments"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/comments/{commentId}",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "commentId": {
+                            "type": "string",
+                            "description": "ID of the comment to update"
+                        }
+                    },
+                    "required": ["commentId"],
+                    "visible": ["commentId"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "text": {
+                            "type": "string",
+                            "description": "Updated text content of the comment"
+                        },
+                        "plainText": {
+                            "type": "boolean",
+                            "description": "Whether the comment text is plain text (true) or rich text (false)",
+                            "default": false
+                        }
+                    },
+                    "required": ["text"],
+                    "visible": ["text", "plainText"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "WRIKE__DELETE_COMMENT",
+        "description": "Delete a comment in Wrike",
+        "tags": ["wrike", "comments"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/comments/{commentId}",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "commentId": {
+                            "type": "string",
+                            "description": "ID of the comment to delete"
+                        }
+                    },
+                    "required": ["commentId"],
+                    "visible": ["commentId"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "WRIKE__GET_USERS",
+        "description": "Retrieve users and their information from Wrike",
+        "tags": ["wrike", "users"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/contacts",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering users",
+                    "properties": {
+                        "me": {
+                            "type": "boolean",
+                            "description": "Get current user's information only",
+                            "default": false
+                        },
+                        "metadata": {
+                            "type": "array",
+                            "description": "Metadata fields to include",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "fields": {
+                            "type": "array",
+                            "description": "Fields to include in the response",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [],
+                    "visible": ["me", "metadata", "fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "WRIKE__GET_WORKFLOWS",
+        "description": "Retrieve workflows from Wrike account",
+        "tags": ["wrike", "workflows"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/workflows",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering workflows",
+                    "properties": {
+                        "fields": {
+                            "type": "array",
+                            "description": "Fields to include in the response",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "WRIKE__GET_CUSTOM_FIELDS",
+        "description": "Retrieve custom fields from Wrike account",
+        "tags": ["wrike", "custom-fields"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/customfields",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering custom fields",
+                    "properties": {
+                        "fields": {
+                            "type": "array",
+                            "description": "Fields to include in the response",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "WRIKE__GET_TIME_LOG",
+        "description": "Retrieve time tracking entries from Wrike",
+        "tags": ["wrike", "time-tracking"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/timelogs",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering time logs",
+                    "properties": {
+                        "contactId": {
+                            "type": "string",
+                            "description": "ID of the user to retrieve time logs for"
+                        },
+                        "taskId": {
+                            "type": "string",
+                            "description": "ID of the task to retrieve time logs for"
+                        },
+                        "folderId": {
+                            "type": "string",
+                            "description": "ID of the folder to retrieve time logs for"
+                        },
+                        "createdDate": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Filter by creation date (ISO 8601)"
+                        },
+                        "updatedDate": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Filter by last update date (ISO 8601)"
+                        },
+                        "trackedDate": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Filter by the date the time was tracked (YYYY-MM-DD)"
+                        },
+                        "pageSize": {
+                            "type": "integer",
+                            "description": "Number of time logs to return per page (max 1000)",
+                            "maximum": 1000
+                        },
+                        "nextPageToken": {
+                            "type": "string",
+                            "description": "Token for retrieving the next page of results"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["contactId", "taskId", "folderId", "createdDate", "updatedDate", "trackedDate", "pageSize", "nextPageToken"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "WRIKE__CREATE_TIME_LOG",
+        "description": "Create a time tracking entry in Wrike",
+        "tags": ["wrike", "time-tracking"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/timelogs",
+            "server_url": "https://www.wrike.com/api/v4"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Request body parameters",
+                    "properties": {
+                        "taskId": {
+                            "type": "string",
+                            "description": "ID of the task to track time for"
+                        },
+                        "comment": {
+                            "type": "string",
+                            "description": "Comment or description for the time entry"
+                        },
+                        "hours": {
+                            "type": "number",
+                            "description": "Number of hours tracked",
+                            "minimum": 0
+                        },
+                        "trackedDate": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Date the time was tracked (YYYY-MM-DD)"
+                        },
+                        "categoryId": {
+                            "type": "string",
+                            "description": "ID of the time tracking category"
+                        },
+                        "plainText": {
+                            "type": "boolean",
+                            "description": "Whether the comment is plain text (true) or rich text (false)",
+                            "default": false
+                        }
+                    },
+                    "required": ["taskId", "hours", "trackedDate"],
+                    "visible": ["taskId", "comment", "hours", "trackedDate", "categoryId", "plainText"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
     }
 ]

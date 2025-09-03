@@ -1,0 +1,1269 @@
+[
+    {
+        "name": "ADOBE__LIST_LIBRARIES",
+        "description": "Retrieve all Creative Cloud Libraries for managing shared design assets and brand elements.",
+        "tags": ["libraries", "assets", "collaboration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/libraries",
+            "server_url": "https://cc-libraries.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering libraries",
+                    "properties": {
+                        "limit": {
+                            "type": "integer",
+                            "maximum": 100,
+                            "description": "Maximum number of libraries to return"
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "description": "Pagination offset"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["limit", "offset"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__CREATE_LIBRARY",
+        "description": "Create a new Creative Cloud Library for organizing design assets and team collaboration.",
+        "tags": ["libraries", "create", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/libraries",
+            "server_url": "https://cc-libraries.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Library creation parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the library"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description of the library purpose"
+                        },
+                        "collaboration": {
+                            "type": "string",
+                            "enum": ["invite_only", "public_link"],
+                            "description": "Collaboration mode for the library"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name", "description", "collaboration"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__GET_LIBRARY",
+        "description": "Retrieve detailed information about a specific Creative Cloud Library including assets and metadata.",
+        "tags": ["libraries", "get", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/libraries/{library_id}",
+            "server_url": "https://cc-libraries.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "library_id": {
+                            "type": "string",
+                            "description": "ID of the library to retrieve"
+                        }
+                    },
+                    "required": ["library_id"],
+                    "visible": ["library_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__UPDATE_LIBRARY",
+        "description": "Update library information including name, description, and collaboration settings.",
+        "tags": ["libraries", "update", "settings"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/v2/libraries/{library_id}",
+            "server_url": "https://cc-libraries.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "library_id": {
+                            "type": "string",
+                            "description": "ID of the library to update"
+                        }
+                    },
+                    "required": ["library_id"],
+                    "visible": ["library_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Library update parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Updated library name"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Updated description"
+                        },
+                        "collaboration": {
+                            "type": "string",
+                            "enum": ["invite_only", "public_link"],
+                            "description": "Updated collaboration mode"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "description", "collaboration"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__DELETE_LIBRARY",
+        "description": "Delete a Creative Cloud Library permanently including all contained assets.",
+        "tags": ["libraries", "delete", "cleanup"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v2/libraries/{library_id}",
+            "server_url": "https://cc-libraries.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "library_id": {
+                            "type": "string",
+                            "description": "ID of the library to delete"
+                        }
+                    },
+                    "required": ["library_id"],
+                    "visible": ["library_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__LIST_LIBRARY_ASSETS",
+        "description": "Retrieve all assets in a Creative Cloud Library including colors, graphics, and text styles.",
+        "tags": ["assets", "list", "library"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/libraries/{library_id}/elements",
+            "server_url": "https://cc-libraries.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "library_id": {
+                            "type": "string",
+                            "description": "ID of the library to get assets from"
+                        }
+                    },
+                    "required": ["library_id"],
+                    "visible": ["library_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering assets",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": ["application/vnd.adobe.element.color+dcx", "application/vnd.adobe.element.characterstyle+dcx", "application/vnd.adobe.element.brush+dcx"],
+                            "description": "Filter by asset type"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "maximum": 100,
+                            "description": "Maximum number of assets to return"
+                        },
+                        "offset": {
+                            "type": "integer",
+                            "description": "Pagination offset"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["type", "limit", "offset"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__CREATE_LIBRARY_ASSET",
+        "description": "Add a new asset to a Creative Cloud Library such as colors, graphics, or character styles.",
+        "tags": ["assets", "create", "library"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/libraries/{library_id}/elements",
+            "server_url": "https://cc-libraries.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "library_id": {
+                            "type": "string",
+                            "description": "ID of the library to add asset to"
+                        }
+                    },
+                    "required": ["library_id"],
+                    "visible": ["library_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Asset creation parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the asset"
+                        },
+                        "type": {
+                            "type": "string",
+                            "enum": ["application/vnd.adobe.element.color+dcx", "application/vnd.adobe.element.characterstyle+dcx", "application/vnd.adobe.element.brush+dcx"],
+                            "description": "Type of asset to create"
+                        },
+                        "data": {
+                            "type": "object",
+                            "description": "Asset data based on type",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": ["name", "type", "data"],
+                    "visible": ["name", "type", "data"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__GET_LIBRARY_ASSET",
+        "description": "Retrieve detailed information about a specific asset in a Creative Cloud Library.",
+        "tags": ["assets", "get", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/libraries/{library_id}/elements/{element_id}",
+            "server_url": "https://cc-libraries.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "library_id": {
+                            "type": "string",
+                            "description": "ID of the library"
+                        },
+                        "element_id": {
+                            "type": "string",
+                            "description": "ID of the asset to retrieve"
+                        }
+                    },
+                    "required": ["library_id", "element_id"],
+                    "visible": ["library_id", "element_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__UPDATE_LIBRARY_ASSET",
+        "description": "Update an existing asset in a Creative Cloud Library with new data or metadata.",
+        "tags": ["assets", "update", "library"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/v2/libraries/{library_id}/elements/{element_id}",
+            "server_url": "https://cc-libraries.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "library_id": {
+                            "type": "string",
+                            "description": "ID of the library"
+                        },
+                        "element_id": {
+                            "type": "string",
+                            "description": "ID of the asset to update"
+                        }
+                    },
+                    "required": ["library_id", "element_id"],
+                    "visible": ["library_id", "element_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Asset update parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Updated name for the asset"
+                        },
+                        "data": {
+                            "type": "object",
+                            "description": "Updated asset data",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "data"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__DELETE_LIBRARY_ASSET",
+        "description": "Delete an asset from a Creative Cloud Library to manage storage and organization.",
+        "tags": ["assets", "delete", "cleanup"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v2/libraries/{library_id}/elements/{element_id}",
+            "server_url": "https://cc-libraries.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "library_id": {
+                            "type": "string",
+                            "description": "ID of the library"
+                        },
+                        "element_id": {
+                            "type": "string",
+                            "description": "ID of the asset to delete"
+                        }
+                    },
+                    "required": ["library_id", "element_id"],
+                    "visible": ["library_id", "element_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__UPLOAD_ASSET",
+        "description": "Upload a creative file or asset to Creative Cloud for storage and collaboration.",
+        "tags": ["upload", "assets", "files"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/storage/assets",
+            "server_url": "https://cc-collab.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Asset upload parameters",
+                    "properties": {
+                        "createRevision": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Whether to create a new revision"
+                        },
+                        "assetId": {
+                            "type": "string",
+                            "description": "ID for the asset (for updates)"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the asset"
+                        },
+                        "folder": {
+                            "type": "string",
+                            "description": "Folder path for the asset"
+                        },
+                        "file": {
+                            "type": "string",
+                            "format": "binary",
+                            "description": "File content to upload"
+                        }
+                    },
+                    "required": ["name", "file"],
+                    "visible": ["createRevision", "assetId", "name", "folder", "file"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__LIST_ASSETS",
+        "description": "Retrieve all Creative Cloud assets with filtering and search capabilities for asset management.",
+        "tags": ["assets", "list", "files"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/storage/assets",
+            "server_url": "https://cc-collab.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering assets",
+                    "properties": {
+                        "path": {
+                            "type": "string",
+                            "description": "Folder path to list assets from"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "maximum": 100,
+                            "description": "Maximum number of assets to return"
+                        },
+                        "cursor": {
+                            "type": "string",
+                            "description": "Pagination cursor"
+                        },
+                        "mimeType": {
+                            "type": "string",
+                            "description": "Filter by MIME type (e.g., 'image/jpeg', 'application/pdf')"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["path", "limit", "cursor", "mimeType"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__GET_ASSET",
+        "description": "Retrieve detailed information about a specific Creative Cloud asset including metadata and download links.",
+        "tags": ["assets", "get", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/storage/assets/{asset_id}",
+            "server_url": "https://cc-collab.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "asset_id": {
+                            "type": "string",
+                            "description": "ID of the asset to retrieve"
+                        }
+                    },
+                    "required": ["asset_id"],
+                    "visible": ["asset_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__UPDATE_ASSET",
+        "description": "Update asset metadata including name, description, and tags for better organization.",
+        "tags": ["assets", "update", "metadata"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/v2/storage/assets/{asset_id}",
+            "server_url": "https://cc-collab.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "asset_id": {
+                            "type": "string",
+                            "description": "ID of the asset to update"
+                        }
+                    },
+                    "required": ["asset_id"],
+                    "visible": ["asset_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Asset update parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Updated name for the asset"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Updated description"
+                        },
+                        "tags": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "Tags for asset organization"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "description", "tags"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__DELETE_ASSET",
+        "description": "Delete a Creative Cloud asset permanently from storage and libraries.",
+        "tags": ["assets", "delete", "cleanup"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v2/storage/assets/{asset_id}",
+            "server_url": "https://cc-collab.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "asset_id": {
+                            "type": "string",
+                            "description": "ID of the asset to delete"
+                        }
+                    },
+                    "required": ["asset_id"],
+                    "visible": ["asset_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__CREATE_PHOTOSHOP_JOB",
+        "description": "Create automated Photoshop processing jobs for image editing, format conversion, and batch operations.",
+        "tags": ["photoshop", "automation", "image-processing"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/pie/psdService/photoshopActions",
+            "server_url": "https://image.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Photoshop job parameters",
+                    "properties": {
+                        "inputs": {
+                            "type": "array",
+                            "description": "Input files for processing",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "href": {
+                                        "type": "string",
+                                        "description": "URL or path to input file"
+                                    },
+                                    "storage": {
+                                        "type": "string",
+                                        "enum": ["adobe", "external", "azure", "dropbox"],
+                                        "description": "Storage type for the input"
+                                    }
+                                },
+                                "required": ["href", "storage"],
+                                "visible": ["href", "storage"],
+                                "additionalProperties": false
+                            }
+                        },
+                        "outputs": {
+                            "type": "array",
+                            "description": "Output configuration",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "href": {
+                                        "type": "string",
+                                        "description": "Output location URL or path"
+                                    },
+                                    "storage": {
+                                        "type": "string",
+                                        "enum": ["adobe", "external", "azure", "dropbox"],
+                                        "description": "Storage type for output"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": ["image/jpeg", "image/png", "image/tiff", "application/vnd.adobe.photoshop"],
+                                        "description": "Output format"
+                                    }
+                                },
+                                "required": ["href", "storage", "type"],
+                                "visible": ["href", "storage", "type"],
+                                "additionalProperties": false
+                            }
+                        },
+                        "options": {
+                            "type": "object",
+                            "description": "Processing options",
+                            "properties": {
+                                "actions": {
+                                    "type": "array",
+                                    "description": "Photoshop actions to execute",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "href": {
+                                                "type": "string",
+                                                "description": "URL to action file"
+                                            },
+                                            "storage": {
+                                                "type": "string",
+                                                "enum": ["adobe", "external"],
+                                                "description": "Storage location of action file"
+                                            }
+                                        },
+                                        "required": ["href", "storage"],
+                                        "visible": ["href", "storage"],
+                                        "additionalProperties": false
+                                    }
+                                }
+                            },
+                            "required": [],
+                            "visible": ["actions"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["inputs", "outputs"],
+                    "visible": ["inputs", "outputs", "options"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__GET_PHOTOSHOP_JOB_STATUS",
+        "description": "Check the status and progress of an automated Photoshop processing job.",
+        "tags": ["photoshop", "status", "jobs"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/pie/psdService/status/{job_id}",
+            "server_url": "https://image.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "job_id": {
+                            "type": "string",
+                            "description": "ID of the Photoshop job to check"
+                        }
+                    },
+                    "required": ["job_id"],
+                    "visible": ["job_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__CREATE_LIGHTROOM_EDIT",
+        "description": "Apply automated photo editing presets and adjustments using Lightroom processing.",
+        "tags": ["lightroom", "photo-editing", "presets"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/lrService/autoTone",
+            "server_url": "https://image.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Lightroom editing parameters",
+                    "properties": {
+                        "inputs": {
+                            "type": "array",
+                            "description": "Input images for editing",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "href": {
+                                        "type": "string",
+                                        "description": "URL to input image file"
+                                    },
+                                    "storage": {
+                                        "type": "string",
+                                        "enum": ["adobe", "external", "azure", "dropbox"],
+                                        "description": "Storage type for input"
+                                    }
+                                },
+                                "required": ["href", "storage"],
+                                "visible": ["href", "storage"],
+                                "additionalProperties": false
+                            }
+                        },
+                        "outputs": {
+                            "type": "array",
+                            "description": "Output configuration for edited images",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "href": {
+                                        "type": "string",
+                                        "description": "Output location for edited image"
+                                    },
+                                    "storage": {
+                                        "type": "string",
+                                        "enum": ["adobe", "external", "azure", "dropbox"],
+                                        "description": "Storage type for output"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": ["image/jpeg", "image/png", "image/tiff"],
+                                        "description": "Output image format"
+                                    }
+                                },
+                                "required": ["href", "storage", "type"],
+                                "visible": ["href", "storage", "type"],
+                                "additionalProperties": false
+                            }
+                        }
+                    },
+                    "required": ["inputs", "outputs"],
+                    "visible": ["inputs", "outputs"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__CREATE_PDF_OPERATION",
+        "description": "Perform PDF operations like merging, splitting, converting, and OCR using Adobe PDF Services.",
+        "tags": ["pdf", "documents", "conversion"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/operation/pdfjobs",
+            "server_url": "https://pdf-services.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "PDF operation parameters",
+                    "properties": {
+                        "assetID": {
+                            "type": "string",
+                            "description": "ID of the PDF asset to operate on"
+                        },
+                        "operation": {
+                            "type": "string",
+                            "enum": ["createpdf", "exportpdf", "combinepdf", "splitpdf", "ocr", "compressPDF"],
+                            "description": "Type of PDF operation to perform"
+                        },
+                        "params": {
+                            "type": "object",
+                            "description": "Operation-specific parameters",
+                            "additionalProperties": true
+                        }
+                    },
+                    "required": ["assetID", "operation"],
+                    "visible": ["assetID", "operation", "params"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__GET_PDF_JOB_STATUS",
+        "description": "Check the status and progress of PDF processing operations for document workflows.",
+        "tags": ["pdf", "status", "jobs"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/operation/pdfjobs/{job_id}",
+            "server_url": "https://pdf-services.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "job_id": {
+                            "type": "string",
+                            "description": "ID of the PDF job to check"
+                        }
+                    },
+                    "required": ["job_id"],
+                    "visible": ["job_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__LIST_FONTS",
+        "description": "Retrieve available Adobe Fonts for typography and design consistency across projects.",
+        "tags": ["fonts", "typography", "design"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v1/fonts",
+            "server_url": "https://typekit.adobe.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for font search",
+                    "properties": {
+                        "q": {
+                            "type": "string",
+                            "description": "Search query for font names"
+                        },
+                        "classification": {
+                            "type": "string",
+                            "enum": ["serif", "sans-serif", "slab-serif", "script", "blackletter", "monospaced", "hand", "decorative"],
+                            "description": "Font classification filter"
+                        },
+                        "language": {
+                            "type": "string",
+                            "description": "Language support filter"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "maximum": 100,
+                            "description": "Maximum number of fonts to return"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["q", "classification", "language", "limit"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__GET_USER_PROFILE",
+        "description": "Retrieve authenticated user's Adobe profile information and Creative Cloud subscription details.",
+        "tags": ["user", "profile", "account"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/profile",
+            "server_url": "https://cc-collab.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__LIST_SHARED_ASSETS",
+        "description": "Retrieve assets shared with the user through Creative Cloud collaboration features.",
+        "tags": ["assets", "shared", "collaboration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/assets/shared",
+            "server_url": "https://cc-collab.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering shared assets",
+                    "properties": {
+                        "limit": {
+                            "type": "integer",
+                            "maximum": 100,
+                            "description": "Maximum number of shared assets to return"
+                        },
+                        "cursor": {
+                            "type": "string",
+                            "description": "Pagination cursor"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["limit", "cursor"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__CREATE_SHARE_LINK",
+        "description": "Create shareable links for Creative Cloud assets to enable external collaboration and review.",
+        "tags": ["sharing", "collaboration", "links"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/assets/{asset_id}/share",
+            "server_url": "https://cc-collab.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "asset_id": {
+                            "type": "string",
+                            "description": "ID of the asset to share"
+                        }
+                    },
+                    "required": ["asset_id"],
+                    "visible": ["asset_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Share link parameters",
+                    "properties": {
+                        "permissions": {
+                            "type": "string",
+                            "enum": ["view", "comment", "edit"],
+                            "description": "Permission level for shared link"
+                        },
+                        "expiration": {
+                            "type": "string",
+                            "description": "Expiration date for share link (ISO 8601 format)"
+                        },
+                        "password": {
+                            "type": "string",
+                            "description": "Optional password protection for link"
+                        }
+                    },
+                    "required": ["permissions"],
+                    "visible": ["permissions", "expiration", "password"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__GET_ASSET_COMMENTS",
+        "description": "Retrieve comments and feedback on Creative Cloud assets for collaboration and review workflows.",
+        "tags": ["comments", "feedback", "collaboration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/assets/{asset_id}/comments",
+            "server_url": "https://cc-collab.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "asset_id": {
+                            "type": "string",
+                            "description": "ID of the asset to get comments for"
+                        }
+                    },
+                    "required": ["asset_id"],
+                    "visible": ["asset_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__CREATE_ASSET_COMMENT",
+        "description": "Add comments and feedback to Creative Cloud assets for collaborative review processes.",
+        "tags": ["comments", "create", "feedback"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/assets/{asset_id}/comments",
+            "server_url": "https://cc-collab.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "asset_id": {
+                            "type": "string",
+                            "description": "ID of the asset to comment on"
+                        }
+                    },
+                    "required": ["asset_id"],
+                    "visible": ["asset_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Comment creation parameters",
+                    "properties": {
+                        "text": {
+                            "type": "string",
+                            "description": "Comment text content"
+                        },
+                        "annotation": {
+                            "type": "object",
+                            "description": "Visual annotation data for specific location on asset",
+                            "properties": {
+                                "x": {
+                                    "type": "number",
+                                    "description": "X coordinate for annotation"
+                                },
+                                "y": {
+                                    "type": "number",
+                                    "description": "Y coordinate for annotation"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["x", "y"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["text"],
+                    "visible": ["text", "annotation"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ADOBE__GET_CREATIVE_CLOUD_USAGE",
+        "description": "Retrieve Creative Cloud storage usage and subscription analytics for account management.",
+        "tags": ["usage", "analytics", "storage"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/usage",
+            "server_url": "https://cc-collab.adobe.io"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for usage analytics",
+                    "properties": {
+                        "timeframe": {
+                            "type": "string",
+                            "enum": ["day", "week", "month", "year"],
+                            "description": "Timeframe for usage statistics"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["timeframe"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    }
+]

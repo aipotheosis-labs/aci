@@ -237,5 +237,1389 @@
         "header"
       ]
     }
+  },
+  {
+    "name": "JIRA__CREATE_ISSUE",
+    "description": "Create a new issue in Jira with project assignment, issue type, and detailed information for tracking",
+    "tags": ["issues", "create", "tickets"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/ex/jira/{cloudid}/rest/api/3/issue",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            },
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            }
+          },
+          "required": ["cloudid"],
+          "visible": ["cloudid"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "fields": {
+              "type": "object",
+              "properties": {
+                "project": {
+                  "type": "object",
+                  "properties": {
+                    "key": {
+                      "type": "string",
+                      "description": "Project key where the issue will be created"
+                    }
+                  },
+                  "required": ["key"],
+                  "visible": ["key"],
+                  "additionalProperties": false
+                },
+                "summary": {
+                  "type": "string",
+                  "description": "Brief summary of the issue"
+                },
+                "description": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "default": "doc"
+                    },
+                    "version": {
+                      "type": "integer",
+                      "default": 1
+                    },
+                    "content": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "default": "paragraph"
+                          },
+                          "content": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "default": "text"
+                                },
+                                "text": {
+                                  "type": "string",
+                                  "description": "Description text content"
+                                }
+                              },
+                              "required": ["type", "text"],
+                              "visible": ["type", "text"],
+                              "additionalProperties": false
+                            }
+                          }
+                        },
+                        "required": ["type", "content"],
+                        "visible": ["type", "content"],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": ["type", "version", "content"],
+                  "visible": ["type", "version", "content"],
+                  "description": "Detailed description of the issue in Atlassian Document Format",
+                  "additionalProperties": false
+                },
+                "issuetype": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Issue type (Bug, Story, Task, Epic, etc.)"
+                    }
+                  },
+                  "required": ["name"],
+                  "visible": ["name"],
+                  "additionalProperties": false
+                },
+                "priority": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Priority level (Highest, High, Medium, Low, Lowest)"
+                    }
+                  },
+                  "required": ["name"],
+                  "visible": ["name"],
+                  "additionalProperties": false
+                },
+                "assignee": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Assignee user ID"
+                    }
+                  },
+                  "required": ["id"],
+                  "visible": ["id"],
+                  "additionalProperties": false
+                },
+                "reporter": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Reporter user ID"
+                    }
+                  },
+                  "required": ["id"],
+                  "visible": ["id"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["project", "summary", "issuetype"],
+              "visible": ["project", "summary", "description", "issuetype", "priority", "assignee", "reporter"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["fields"],
+          "visible": ["fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__UPDATE_ISSUE",
+    "description": "Update an existing issue's fields, status, assignment, or other properties in Jira",
+    "tags": ["issues", "update", "modify"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/ex/jira/{cloudid}/rest/api/3/issue/{issue_key}",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            },
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            },
+            "issue_key": {
+              "type": "string",
+              "description": "Issue key or ID to update (e.g., PROJECT-123)"
+            }
+          },
+          "required": ["cloudid", "issue_key"],
+          "visible": ["cloudid", "issue_key"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "fields": {
+              "type": "object",
+              "properties": {
+                "summary": {
+                  "type": "string",
+                  "description": "Updated issue summary"
+                },
+                "priority": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Updated priority level"
+                    }
+                  },
+                  "required": ["name"],
+                  "visible": ["name"],
+                  "additionalProperties": false
+                },
+                "assignee": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "Updated assignee user ID"
+                    }
+                  },
+                  "required": ["id"],
+                  "visible": ["id"],
+                  "additionalProperties": false
+                }
+              },
+              "required": [],
+              "visible": ["summary", "priority", "assignee"],
+              "additionalProperties": false
+            }
+          },
+          "required": [],
+          "visible": ["fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__GET_ISSUE",
+    "description": "Retrieve detailed information about a specific issue in Jira including fields, comments, and attachments",
+    "tags": ["issues", "details", "get"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/ex/jira/{cloudid}/rest/api/3/issue/{issue_key}",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": [],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            },
+            "issue_key": {
+              "type": "string",
+              "description": "Issue key or ID to retrieve (e.g., PROJECT-123)"
+            }
+          },
+          "required": ["cloudid", "issue_key"],
+          "visible": ["cloudid", "issue_key"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "expand": {
+              "type": "string",
+              "description": "Expand additional information (changelog, comments, attachments)",
+              "default": "changelog,comments,attachments"
+            },
+            "fields": {
+              "type": "string",
+              "description": "Comma-separated list of fields to include",
+              "default": "*all"
+            }
+          },
+          "required": [],
+          "visible": ["expand", "fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__TRANSITION_ISSUE",
+    "description": "Transition an issue through workflow states (To Do → In Progress → Done) in Jira",
+    "tags": ["issues", "transition", "workflow", "status"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/ex/jira/{cloudid}/rest/api/3/issue/{issue_key}/transitions",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            },
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            },
+            "issue_key": {
+              "type": "string",
+              "description": "Issue key to transition (e.g., PROJECT-123)"
+            }
+          },
+          "required": ["cloudid", "issue_key"],
+          "visible": ["cloudid", "issue_key"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "transition": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Transition ID to execute"
+                }
+              },
+              "required": ["id"],
+              "visible": ["id"],
+              "additionalProperties": false
+            },
+            "fields": {
+              "type": "object",
+              "properties": {
+                "resolution": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string",
+                      "description": "Resolution name (Fixed, Won't Do, Duplicate, etc.)"
+                    }
+                  },
+                  "required": ["name"],
+                  "visible": ["name"],
+                  "additionalProperties": false
+                },
+                "assignee": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "description": "New assignee user ID"
+                    }
+                  },
+                  "required": ["id"],
+                  "visible": ["id"],
+                  "additionalProperties": false
+                }
+              },
+              "required": [],
+              "visible": ["resolution", "assignee"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["transition"],
+          "visible": ["transition", "fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__ADD_COMMENT",
+    "description": "Add a comment to an existing issue in Jira for collaboration and communication tracking",
+    "tags": ["comments", "create", "issues", "collaboration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/ex/jira/{cloudid}/rest/api/3/issue/{issue_key}/comment",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            },
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            },
+            "issue_key": {
+              "type": "string",
+              "description": "Issue key to add comment to (e.g., PROJECT-123)"
+            }
+          },
+          "required": ["cloudid", "issue_key"],
+          "visible": ["cloudid", "issue_key"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "body": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "default": "doc"
+                },
+                "version": {
+                  "type": "integer",
+                  "default": 1
+                },
+                "content": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "default": "paragraph"
+                      },
+                      "content": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "default": "text"
+                            },
+                            "text": {
+                              "type": "string",
+                              "description": "Comment text content"
+                            }
+                          },
+                          "required": ["type", "text"],
+                          "visible": ["type", "text"],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": ["type", "content"],
+                    "visible": ["type", "content"],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": ["type", "version", "content"],
+              "visible": ["type", "version", "content"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["body"],
+          "visible": ["body"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__GET_BOARDS",
+    "description": "Retrieve agile boards from Jira Software for scrum and kanban workflow management",
+    "tags": ["boards", "agile", "scrum", "kanban"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/ex/jira/{cloudid}/rest/agile/1.0/board",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": [],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            }
+          },
+          "required": ["cloudid"],
+          "visible": ["cloudid"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "startAt": {
+              "type": "integer",
+              "default": 0,
+              "description": "Starting index for pagination"
+            },
+            "maxResults": {
+              "type": "integer",
+              "default": 50,
+              "description": "Maximum number of boards to return"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["scrum", "kanban", "simple"],
+              "description": "Filter boards by type"
+            },
+            "name": {
+              "type": "string",
+              "description": "Filter boards by name"
+            },
+            "projectKeyOrId": {
+              "type": "string",
+              "description": "Filter boards by project"
+            }
+          },
+          "required": [],
+          "visible": ["startAt", "maxResults", "type", "name", "projectKeyOrId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__GET_SPRINTS",
+    "description": "Retrieve sprints from a Jira agile board for scrum project management and iteration planning",
+    "tags": ["sprints", "agile", "scrum", "iterations"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/ex/jira/{cloudid}/rest/agile/1.0/board/{board_id}/sprint",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": [],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            },
+            "board_id": {
+              "type": "string",
+              "description": "Board ID to get sprints from"
+            }
+          },
+          "required": ["cloudid", "board_id"],
+          "visible": ["cloudid", "board_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "startAt": {
+              "type": "integer",
+              "default": 0,
+              "description": "Starting index for pagination"
+            },
+            "maxResults": {
+              "type": "integer",
+              "default": 50,
+              "description": "Maximum number of sprints to return"
+            },
+            "state": {
+              "type": "string",
+              "enum": ["future", "active", "closed"],
+              "description": "Filter sprints by state"
+            }
+          },
+          "required": [],
+          "visible": ["startAt", "maxResults", "state"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__CREATE_SPRINT",
+    "description": "Create a new sprint in Jira agile board for organizing work iterations and development cycles",
+    "tags": ["sprints", "create", "agile", "planning"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/ex/jira/{cloudid}/rest/agile/1.0/sprint",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            },
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            }
+          },
+          "required": ["cloudid"],
+          "visible": ["cloudid"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the sprint"
+            },
+            "goal": {
+              "type": "string",
+              "description": "Sprint goal or objective"
+            },
+            "startDate": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Sprint start date and time"
+            },
+            "endDate": {
+              "type": "string",
+              "format": "date-time",
+              "description": "Sprint end date and time"
+            },
+            "originBoardId": {
+              "type": "integer",
+              "description": "Board ID where this sprint belongs"
+            }
+          },
+          "required": ["name", "originBoardId"],
+          "visible": ["name", "goal", "startDate", "endDate", "originBoardId"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__GET_USERS",
+    "description": "Retrieve users from Jira instance for assignment and collaboration management",
+    "tags": ["users", "team", "assignees"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/ex/jira/{cloudid}/rest/api/3/users/search",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": [],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            }
+          },
+          "required": ["cloudid"],
+          "visible": ["cloudid"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Query string to search users by name or email"
+            },
+            "startAt": {
+              "type": "integer",
+              "default": 0,
+              "description": "Starting index for pagination"
+            },
+            "maxResults": {
+              "type": "integer",
+              "default": 50,
+              "description": "Maximum number of users to return"
+            }
+          },
+          "required": [],
+          "visible": ["query", "startAt", "maxResults"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__GET_ISSUE_TYPES",
+    "description": "Retrieve available issue types (Bug, Story, Task, Epic) for creating and categorizing issues in Jira",
+    "tags": ["issue-types", "metadata", "configuration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/ex/jira/{cloudid}/rest/api/3/issuetype",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": [],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            }
+          },
+          "required": ["cloudid"],
+          "visible": ["cloudid"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__GET_PRIORITIES",
+    "description": "Retrieve available priority levels (Highest, High, Medium, Low, Lowest) for issue prioritization in Jira",
+    "tags": ["priorities", "metadata", "configuration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/ex/jira/{cloudid}/rest/api/3/priority",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": [],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            }
+          },
+          "required": ["cloudid"],
+          "visible": ["cloudid"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__GET_WORKFLOWS",
+    "description": "Retrieve workflow schemes and transitions for understanding issue lifecycle and status management in Jira",
+    "tags": ["workflows", "transitions", "status", "lifecycle"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/ex/jira/{cloudid}/rest/api/3/workflow/search",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": [],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            }
+          },
+          "required": ["cloudid"],
+          "visible": ["cloudid"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "startAt": {
+              "type": "integer",
+              "default": 0,
+              "description": "Starting index for pagination"
+            },
+            "maxResults": {
+              "type": "integer",
+              "default": 50,
+              "description": "Maximum number of workflows to return"
+            },
+            "workflowName": {
+              "type": "string",
+              "description": "Filter workflows by name"
+            }
+          },
+          "required": [],
+          "visible": ["startAt", "maxResults", "workflowName"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__GET_SPRINT_ISSUES",
+    "description": "Retrieve all issues assigned to a specific sprint for sprint planning and progress tracking",
+    "tags": ["sprints", "issues", "agile", "planning"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/ex/jira/{cloudid}/rest/agile/1.0/sprint/{sprint_id}/issue",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": [],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            },
+            "sprint_id": {
+              "type": "string",
+              "description": "Sprint ID to get issues from"
+            }
+          },
+          "required": ["cloudid", "sprint_id"],
+          "visible": ["cloudid", "sprint_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "startAt": {
+              "type": "integer",
+              "default": 0,
+              "description": "Starting index for pagination"
+            },
+            "maxResults": {
+              "type": "integer",
+              "default": 50,
+              "description": "Maximum number of issues to return"
+            },
+            "jql": {
+              "type": "string",
+              "description": "Additional JQL filter for issues"
+            },
+            "fields": {
+              "type": "string",
+              "description": "Comma-separated list of fields to include",
+              "default": "summary,status,assignee,priority,issuetype"
+            }
+          },
+          "required": [],
+          "visible": ["startAt", "maxResults", "jql", "fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__CREATE_PROJECT",
+    "description": "Create a new project in Jira with specified configuration, lead, and project type for team organization",
+    "tags": ["projects", "create", "setup"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/ex/jira/{cloudid}/rest/api/3/project",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            },
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            }
+          },
+          "required": ["cloudid"],
+          "visible": ["cloudid"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "key": {
+              "type": "string",
+              "description": "Project key (short uppercase identifier)"
+            },
+            "name": {
+              "type": "string",
+              "description": "Project name"
+            },
+            "projectTypeKey": {
+              "type": "string",
+              "enum": ["software", "service_desk", "business"],
+              "description": "Type of project to create"
+            },
+            "projectTemplateKey": {
+              "type": "string",
+              "description": "Template to use for project creation"
+            },
+            "description": {
+              "type": "string",
+              "description": "Project description"
+            },
+            "leadAccountId": {
+              "type": "string",
+              "description": "Account ID of the project lead"
+            },
+            "url": {
+              "type": "string",
+              "description": "Project URL"
+            },
+            "assigneeType": {
+              "type": "string",
+              "enum": ["PROJECT_LEAD", "UNASSIGNED"],
+              "description": "Default assignee for new issues"
+            }
+          },
+          "required": ["key", "name", "projectTypeKey"],
+          "visible": ["key", "name", "projectTypeKey", "projectTemplateKey", "description", "leadAccountId", "url", "assigneeType"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__GET_ISSUE_TRANSITIONS",
+    "description": "Get available workflow transitions for a specific issue to understand possible status changes",
+    "tags": ["transitions", "workflow", "status", "issues"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/ex/jira/{cloudid}/rest/api/3/issue/{issue_key}/transitions",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": [],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            },
+            "issue_key": {
+              "type": "string",
+              "description": "Issue key to get transitions for (e.g., PROJECT-123)"
+            }
+          },
+          "required": ["cloudid", "issue_key"],
+          "visible": ["cloudid", "issue_key"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "expand": {
+              "type": "string",
+              "description": "Expand additional information about transitions",
+              "default": "transitions.fields"
+            }
+          },
+          "required": [],
+          "visible": ["expand"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__ASSIGN_ISSUE_TO_SPRINT",
+    "description": "Add issues to a specific sprint for agile planning and iteration management in Jira",
+    "tags": ["sprints", "issues", "assign", "planning"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/ex/jira/{cloudid}/rest/agile/1.0/sprint/{sprint_id}/issue",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            },
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            },
+            "sprint_id": {
+              "type": "string",
+              "description": "Sprint ID to assign issues to"
+            }
+          },
+          "required": ["cloudid", "sprint_id"],
+          "visible": ["cloudid", "sprint_id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "issues": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Array of issue keys to assign to the sprint"
+            }
+          },
+          "required": ["issues"],
+          "visible": ["issues"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["header", "path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "JIRA__GET_BOARD_ISSUES",
+    "description": "Retrieve all issues on a specific agile board with their current status and assignment information",
+    "tags": ["boards", "issues", "agile", "kanban"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/ex/jira/{cloudid}/rest/agile/1.0/board/{board_id}/issue",
+      "server_url": "https://api.atlassian.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "header": {
+          "type": "object",
+          "properties": {
+            "Accept": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": [],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "path": {
+          "type": "object",
+          "properties": {
+            "cloudid": {
+              "type": "string",
+              "description": "Atlassian Cloud ID for your Jira site"
+            },
+            "board_id": {
+              "type": "string",
+              "description": "Board ID to get issues from"
+            }
+          },
+          "required": ["cloudid", "board_id"],
+          "visible": ["cloudid", "board_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "startAt": {
+              "type": "integer",
+              "default": 0,
+              "description": "Starting index for pagination"
+            },
+            "maxResults": {
+              "type": "integer",
+              "default": 50,
+              "description": "Maximum number of issues to return"
+            },
+            "jql": {
+              "type": "string",
+              "description": "Additional JQL filter for issues"
+            },
+            "fields": {
+              "type": "string",
+              "description": "Comma-separated list of fields to include",
+              "default": "summary,status,assignee,priority,issuetype"
+            }
+          },
+          "required": [],
+          "visible": ["startAt", "maxResults", "jql", "fields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
   }
 ]

@@ -1,0 +1,1646 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Canva API",
+    "version": "1.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.canva.com/rest/v1"
+    }
+  ],
+  "paths": {
+    "/designs": {
+      "get": {
+        "summary": "List all designs in the team",
+        "description": "Retrieve a list of all designs accessible to the authenticated user, with filtering and pagination options.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "Search query to filter designs by name or content"
+          },
+          {
+            "name": "owner_id",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "Filter designs by owner user ID"
+          },
+          {
+            "name": "folder_id",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "Filter designs by folder ID"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 20, "maximum": 100},
+            "description": "Number of designs to return per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of designs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "title": {"type": "string"},
+                          "thumbnail": {"type": "string"},
+                          "created_at": {"type": "string"},
+                          "updated_at": {"type": "string"},
+                          "owner": {"type": "object"},
+                          "folder_id": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "continuation": {"type": "string"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new design from template",
+        "description": "Create a new design from a specified template or create a blank design with custom dimensions.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "design_type": {"type": "string", "enum": ["presentation", "poster", "social-media", "document", "video", "website", "custom"]},
+                  "template_id": {"type": "string"},
+                  "title": {"type": "string"},
+                  "folder_id": {"type": "string"},
+                  "width": {"type": "integer"},
+                  "height": {"type": "integer"}
+                },
+                "required": ["design_type", "title"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Design created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "design": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "string"},
+                        "title": {"type": "string"},
+                        "edit_url": {"type": "string"},
+                        "thumbnail": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/designs/{design_id}": {
+      "get": {
+        "summary": "Get design details",
+        "description": "Retrieve detailed information about a specific design including metadata, sharing settings, and collaboration data.",
+        "parameters": [
+          {
+            "name": "design_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the design"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Design details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "string"},
+                    "title": {"type": "string"},
+                    "description": {"type": "string"},
+                    "thumbnail": {"type": "string"},
+                    "edit_url": {"type": "string"},
+                    "view_url": {"type": "string"},
+                    "created_at": {"type": "string"},
+                    "updated_at": {"type": "string"},
+                    "owner": {"type": "object"},
+                    "folder_id": {"type": "string"},
+                    "permissions": {"type": "object"},
+                    "collaborators": {"type": "array"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update design metadata",
+        "description": "Update design title, description, folder location, and other metadata properties.",
+        "parameters": [
+          {
+            "name": "design_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the design"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {"type": "string"},
+                  "description": {"type": "string"},
+                  "folder_id": {"type": "string"}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Design updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a design",
+        "description": "Permanently delete a design from the team workspace. This action cannot be undone.",
+        "parameters": [
+          {
+            "name": "design_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the design to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Design deleted successfully"
+          }
+        }
+      }
+    },
+    "/designs/{design_id}/export": {
+      "post": {
+        "summary": "Export design to file format",
+        "description": "Export a design to various file formats including PNG, JPG, PDF, SVG, GIF, and MP4 for videos.",
+        "parameters": [
+          {
+            "name": "design_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the design"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file_type": {"type": "string", "enum": ["png", "jpg", "pdf", "svg", "gif", "mp4", "pptx"]},
+                  "quality": {"type": "string", "enum": ["low", "medium", "high"], "default": "high"},
+                  "pages": {"type": "array", "items": {"type": "integer"}},
+                  "include_bleed": {"type": "boolean", "default": false},
+                  "transparent_background": {"type": "boolean", "default": false}
+                },
+                "required": ["file_type"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Export job created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "job": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "string"},
+                        "status": {"type": "string"},
+                        "url": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/designs/{design_id}/share": {
+      "post": {
+        "summary": "Share design with team members",
+        "description": "Share a design with specific team members or generate a public sharing link with configurable permissions.",
+        "parameters": [
+          {
+            "name": "design_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the design"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "recipient_emails": {"type": "array", "items": {"type": "string", "format": "email"}},
+                  "permission": {"type": "string", "enum": ["view", "comment", "edit"], "default": "view"},
+                  "message": {"type": "string"},
+                  "create_link": {"type": "boolean", "default": false},
+                  "link_expiry": {"type": "string", "format": "date-time"}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Design shared successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "share_url": {"type": "string"},
+                    "permissions": {"type": "object"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/templates": {
+      "get": {
+        "summary": "Browse available templates",
+        "description": "Search and browse Canva's extensive template library with filtering by category, style, and design type.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "Search query for template content or style"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["social-media", "presentation", "poster", "flyer", "business-card", "logo", "video", "document"]},
+            "description": "Template category filter"
+          },
+          {
+            "name": "color",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "Filter templates by primary color"
+          },
+          {
+            "name": "style",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["minimalist", "bold", "elegant", "playful", "professional", "creative"]},
+            "description": "Filter templates by design style"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 20, "maximum": 100},
+            "description": "Number of templates to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of templates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "title": {"type": "string"},
+                          "thumbnail": {"type": "string"},
+                          "category": {"type": "string"},
+                          "tags": {"type": "array", "items": {"type": "string"}},
+                          "is_premium": {"type": "boolean"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/folders": {
+      "get": {
+        "summary": "List all folders",
+        "description": "Retrieve all folders in the team workspace with hierarchical organization and metadata.",
+        "parameters": [
+          {
+            "name": "parent_folder_id",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "Filter folders by parent folder ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of folders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "parent_folder_id": {"type": "string"},
+                          "created_at": {"type": "string"},
+                          "item_count": {"type": "integer"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new folder",
+        "description": "Create a new folder for organizing designs and assets with optional parent folder nesting.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "parent_folder_id": {"type": "string"}
+                },
+                "required": ["name"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Folder created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "folder": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "string"},
+                        "name": {"type": "string"},
+                        "parent_folder_id": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/folders/{folder_id}": {
+      "get": {
+        "summary": "Get folder details and contents",
+        "description": "Retrieve detailed information about a folder including its contents, metadata, and organization.",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the folder"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Folder details and contents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "string"},
+                    "name": {"type": "string"},
+                    "parent_folder_id": {"type": "string"},
+                    "created_at": {"type": "string"},
+                    "designs": {"type": "array"},
+                    "subfolders": {"type": "array"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update folder",
+        "description": "Update folder name, description, or move to a different parent folder.",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the folder"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "parent_folder_id": {"type": "string"}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Folder updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete folder",
+        "description": "Delete a folder and optionally move its contents to another folder or delete them permanently.",
+        "parameters": [
+          {
+            "name": "folder_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the folder to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Folder deleted successfully"
+          }
+        }
+      }
+    },
+    "/brand/templates": {
+      "get": {
+        "summary": "Get brand templates",
+        "description": "Retrieve brand-specific templates and layouts that maintain brand consistency across all designs.",
+        "responses": {
+          "200": {
+            "description": "List of brand templates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "thumbnail": {"type": "string"},
+                          "category": {"type": "string"},
+                          "brand_kit_id": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create brand template",
+        "description": "Create a new brand template from an existing design to ensure consistent branding across team projects.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "design_id": {"type": "string"},
+                  "category": {"type": "string"},
+                  "brand_kit_id": {"type": "string"},
+                  "description": {"type": "string"}
+                },
+                "required": ["name", "design_id"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Brand template created successfully"
+          }
+        }
+      }
+    },
+    "/brand/kits": {
+      "get": {
+        "summary": "Get brand kits",
+        "description": "Retrieve all brand kits containing logos, colors, fonts, and brand guidelines for consistent design.",
+        "responses": {
+          "200": {
+            "description": "List of brand kits",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "colors": {"type": "array"},
+                          "fonts": {"type": "array"},
+                          "logos": {"type": "array"},
+                          "created_at": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create new brand kit",
+        "description": "Create a comprehensive brand kit with colors, fonts, logos, and brand guidelines for team consistency.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "colors": {"type": "array", "items": {"type": "string"}},
+                  "font_combinations": {"type": "array"},
+                  "logo_ids": {"type": "array", "items": {"type": "string"}}
+                },
+                "required": ["name"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Brand kit created successfully"
+          }
+        }
+      }
+    },
+    "/brand/kits/{kit_id}": {
+      "get": {
+        "summary": "Get brand kit details",
+        "description": "Retrieve detailed information about a specific brand kit including all assets and guidelines.",
+        "parameters": [
+          {
+            "name": "kit_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the brand kit"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Brand kit details"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update brand kit",
+        "description": "Update brand kit colors, fonts, logos, and other brand elements to maintain current brand standards.",
+        "parameters": [
+          {
+            "name": "kit_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the brand kit"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "colors": {"type": "array", "items": {"type": "string"}},
+                  "font_combinations": {"type": "array"},
+                  "logo_ids": {"type": "array", "items": {"type": "string"}}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Brand kit updated successfully"
+          }
+        }
+      }
+    },
+    "/assets": {
+      "get": {
+        "summary": "List uploaded assets",
+        "description": "Retrieve all uploaded assets including images, videos, and graphics available for use in designs.",
+        "parameters": [
+          {
+            "name": "asset_type",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["image", "video", "audio", "graphic"]},
+            "description": "Filter assets by type"
+          },
+          {
+            "name": "tag",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "Filter assets by tag"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 20, "maximum": 100},
+            "description": "Number of assets to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of assets",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "type": {"type": "string"},
+                          "url": {"type": "string"},
+                          "thumbnail": {"type": "string"},
+                          "file_size": {"type": "integer"},
+                          "created_at": {"type": "string"},
+                          "tags": {"type": "array", "items": {"type": "string"}}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Upload new asset",
+        "description": "Upload images, videos, or graphics to the team asset library for use across all design projects.",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {"type": "string", "format": "binary"},
+                  "name": {"type": "string"},
+                  "tags": {"type": "array", "items": {"type": "string"}},
+                  "folder_id": {"type": "string"}
+                },
+                "required": ["file"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Asset uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "asset": {
+                      "type": "object",
+                      "properties": {
+                        "id": {"type": "string"},
+                        "name": {"type": "string"},
+                        "url": {"type": "string"},
+                        "thumbnail": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/assets/{asset_id}": {
+      "get": {
+        "summary": "Get asset details",
+        "description": "Retrieve detailed metadata and usage information for a specific uploaded asset.",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the asset"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Asset details"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update asset metadata",
+        "description": "Update asset name, tags, and organization to improve discoverability and management.",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the asset"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "tags": {"type": "array", "items": {"type": "string"}},
+                  "folder_id": {"type": "string"}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Asset updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete asset",
+        "description": "Remove an asset from the team library. This will affect any designs currently using this asset.",
+        "parameters": [
+          {
+            "name": "asset_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the asset to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Asset deleted successfully"
+          }
+        }
+      }
+    },
+    "/team": {
+      "get": {
+        "summary": "Get team information",
+        "description": "Retrieve team details including members, roles, subscription status, and usage statistics.",
+        "responses": {
+          "200": {
+            "description": "Team information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "string"},
+                    "name": {"type": "string"},
+                    "plan": {"type": "string"},
+                    "member_count": {"type": "integer"},
+                    "storage_used": {"type": "integer"},
+                    "storage_limit": {"type": "integer"},
+                    "created_at": {"type": "string"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/team/members": {
+      "get": {
+        "summary": "List team members",
+        "description": "Get all team members with their roles, permissions, and activity status for team management.",
+        "responses": {
+          "200": {
+            "description": "List of team members",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "email": {"type": "string"},
+                          "display_name": {"type": "string"},
+                          "role": {"type": "string"},
+                          "status": {"type": "string"},
+                          "joined_at": {"type": "string"},
+                          "last_active": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Invite team member",
+        "description": "Send an invitation to join the team with specified role and permissions.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {"type": "string", "format": "email"},
+                  "role": {"type": "string", "enum": ["admin", "editor", "viewer"], "default": "editor"},
+                  "message": {"type": "string"}
+                },
+                "required": ["email"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Invitation sent successfully"
+          }
+        }
+      }
+    },
+    "/team/members/{member_id}": {
+      "patch": {
+        "summary": "Update team member role",
+        "description": "Change a team member's role and permissions within the workspace.",
+        "parameters": [
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the team member"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "role": {"type": "string", "enum": ["admin", "editor", "viewer"]}
+                },
+                "required": ["role"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Member role updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove team member",
+        "description": "Remove a team member from the workspace and revoke their access to all team resources.",
+        "parameters": [
+          {
+            "name": "member_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the team member to remove"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Team member removed successfully"
+          }
+        }
+      }
+    },
+    "/comments": {
+      "get": {
+        "summary": "Get comments for a design",
+        "description": "Retrieve all comments and feedback on a specific design for collaboration and review processes.",
+        "parameters": [
+          {
+            "name": "design_id",
+            "in": "query",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Design ID to get comments for"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of comments",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "message": {"type": "string"},
+                          "author": {"type": "object"},
+                          "created_at": {"type": "string"},
+                          "resolved": {"type": "boolean"},
+                          "position": {"type": "object"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Add comment to design",
+        "description": "Add a comment or feedback to a specific location on a design for collaborative review and iteration.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "design_id": {"type": "string"},
+                  "message": {"type": "string"},
+                  "position": {
+                    "type": "object",
+                    "properties": {
+                      "x": {"type": "number"},
+                      "y": {"type": "number"}
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["design_id", "message"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Comment added successfully"
+          }
+        }
+      }
+    },
+    "/comments/{comment_id}": {
+      "patch": {
+        "summary": "Update comment",
+        "description": "Edit comment text or mark comment as resolved to track feedback completion status.",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the comment"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": {"type": "string"},
+                  "resolved": {"type": "boolean"}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Comment updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete comment",
+        "description": "Remove a comment from a design. This action cannot be undone.",
+        "parameters": [
+          {
+            "name": "comment_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the comment to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Comment deleted successfully"
+          }
+        }
+      }
+    },
+    "/presentations": {
+      "get": {
+        "summary": "List presentations",
+        "description": "Retrieve all presentation designs with slide management and collaboration features.",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 20},
+            "description": "Number of presentations to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of presentations"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create presentation",
+        "description": "Create a new presentation with customizable slides, layouts, and collaborative editing features.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "title": {"type": "string"},
+                  "template_id": {"type": "string"},
+                  "slide_count": {"type": "integer", "default": 1},
+                  "folder_id": {"type": "string"}
+                },
+                "required": ["title"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Presentation created successfully"
+          }
+        }
+      }
+    },
+    "/presentations/{presentation_id}/slides": {
+      "get": {
+        "summary": "Get presentation slides",
+        "description": "Retrieve all slides from a presentation with content, layout, and ordering information.",
+        "parameters": [
+          {
+            "name": "presentation_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the presentation"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of slides"
+          }
+        }
+      },
+      "post": {
+        "summary": "Add slide to presentation",
+        "description": "Add a new slide to an existing presentation with specified layout and content template.",
+        "parameters": [
+          {
+            "name": "presentation_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the presentation"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "layout": {"type": "string", "enum": ["title", "content", "image", "comparison", "blank"]},
+                  "position": {"type": "integer"},
+                  "template_id": {"type": "string"}
+                },
+                "required": ["layout"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Slide added successfully"
+          }
+        }
+      }
+    },
+    "/analytics/designs": {
+      "get": {
+        "summary": "Get design analytics",
+        "description": "Retrieve analytics data for design performance including views, downloads, and engagement metrics.",
+        "parameters": [
+          {
+            "name": "design_id",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "Filter analytics for specific design"
+          },
+          {
+            "name": "date_from",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"},
+            "description": "Start date for analytics period"
+          },
+          {
+            "name": "date_to",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"},
+            "description": "End date for analytics period"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Design analytics data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "views": {"type": "integer"},
+                    "downloads": {"type": "integer"},
+                    "shares": {"type": "integer"},
+                    "comments": {"type": "integer"},
+                    "performance_score": {"type": "number"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analytics/team": {
+      "get": {
+        "summary": "Get team analytics",
+        "description": "Retrieve team-wide analytics including productivity metrics, collaboration data, and design usage patterns.",
+        "parameters": [
+          {
+            "name": "period",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["day", "week", "month", "quarter"], "default": "month"},
+            "description": "Analytics period to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Team analytics data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "total_designs": {"type": "integer"},
+                    "active_collaborators": {"type": "integer"},
+                    "designs_created": {"type": "integer"},
+                    "designs_exported": {"type": "integer"},
+                    "brand_consistency_score": {"type": "number"},
+                    "popular_templates": {"type": "array"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/automations": {
+      "get": {
+        "summary": "List design automations",
+        "description": "Retrieve all automated design workflows and batch processing jobs for scale content creation.",
+        "responses": {
+          "200": {
+            "description": "List of automations"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create design automation",
+        "description": "Set up automated design generation workflows for bulk content creation with data-driven personalization.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "template_id": {"type": "string"},
+                  "data_source": {"type": "string"},
+                  "output_format": {"type": "string", "enum": ["png", "jpg", "pdf"]},
+                  "schedule": {"type": "string"}
+                },
+                "required": ["name", "template_id"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Automation created successfully"
+          }
+        }
+      }
+    },
+    "/automations/{automation_id}": {
+      "get": {
+        "summary": "Get automation details",
+        "description": "Retrieve detailed information about a specific automation including status, configuration, and execution history.",
+        "parameters": [
+          {
+            "name": "automation_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the automation"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Automation details"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update automation",
+        "description": "Modify automation settings, schedule, or data sources for optimized workflow performance.",
+        "parameters": [
+          {
+            "name": "automation_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the automation"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "schedule": {"type": "string"},
+                  "data_source": {"type": "string"},
+                  "is_active": {"type": "boolean"}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Automation updated successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete automation",
+        "description": "Remove an automation workflow and stop all scheduled executions.",
+        "parameters": [
+          {
+            "name": "automation_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the automation to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Automation deleted successfully"
+          }
+        }
+      }
+    },
+    "/print-products": {
+      "get": {
+        "summary": "List available print products",
+        "description": "Browse Canva's print-on-demand products including business cards, posters, apparel, and promotional items.",
+        "parameters": [
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["business-cards", "posters", "flyers", "apparel", "mugs", "calendars", "books"]},
+            "description": "Filter print products by category"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of print products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "category": {"type": "string"},
+                          "price_range": {"type": "object"},
+                          "customizable": {"type": "boolean"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/print-products/{product_id}/orders": {
+      "post": {
+        "summary": "Order print product",
+        "description": "Place an order for physical print products using Canva designs with shipping and customization options.",
+        "parameters": [
+          {
+            "name": "product_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the print product"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "design_id": {"type": "string"},
+                  "quantity": {"type": "integer", "minimum": 1},
+                  "shipping_address": {"type": "object"},
+                  "customizations": {"type": "object"}
+                },
+                "required": ["design_id", "quantity", "shipping_address"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Print order placed successfully"
+          }
+        }
+      }
+    },
+    "/webhooks": {
+      "get": {
+        "summary": "List webhooks",
+        "description": "Retrieve all configured webhooks for real-time notifications about design events and team activity.",
+        "responses": {
+          "200": {
+            "description": "List of webhooks"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create webhook",
+        "description": "Set up webhook notifications for design events, exports, comments, and team collaboration activities.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "url": {"type": "string", "format": "uri"},
+                  "events": {"type": "array", "items": {"type": "string", "enum": ["design.created", "design.updated", "design.exported", "comment.added", "team.member_added"]}},
+                  "secret": {"type": "string"}
+                },
+                "required": ["url", "events"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Webhook created successfully"
+          }
+        }
+      }
+    },
+    "/webhooks/{webhook_id}": {
+      "delete": {
+        "summary": "Delete webhook",
+        "description": "Remove a webhook configuration and stop receiving notifications for the specified events.",
+        "parameters": [
+          {
+            "name": "webhook_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the webhook to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Webhook deleted successfully"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "oauth2": {
+        "type": "oauth2",
+        "flows": {
+          "authorizationCode": {
+            "authorizationUrl": "https://www.canva.com/api/oauth/authorize",
+            "tokenUrl": "https://api.canva.com/rest/v1/oauth/token",
+            "scopes": {
+              "design:read": "Read designs and templates",
+              "design:write": "Create and modify designs",
+              "asset:read": "Read brand assets and uploads",
+              "asset:write": "Upload and manage brand assets",
+              "folder:read": "Read folder structure and organization",
+              "folder:write": "Create and manage folders",
+              "team:read": "Read team information and members",
+              "team:write": "Manage team settings and permissions",
+              "brand:read": "Read brand kits and guidelines",
+              "brand:write": "Manage brand kits and guidelines",
+              "export:write": "Export designs to various formats"
+            }
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "oauth2": ["design:read", "design:write", "asset:read", "asset:write", "folder:read", "folder:write", "team:read", "team:write", "brand:read", "brand:write", "export:write"]
+    }
+  ]
+}

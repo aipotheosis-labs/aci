@@ -1,0 +1,1449 @@
+[
+    {
+        "name": "TRELLO__GET_BOARDS",
+        "description": "Retrieve all Trello boards for project overview and workspace management across teams",
+        "tags": ["boards", "projects", "workspace", "management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/1/members/me/boards",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "filter": {
+                            "type": "string",
+                            "enum": ["all", "closed", "members", "open", "organization", "public", "starred"],
+                            "default": "open",
+                            "description": "Filter boards by status or type"
+                        },
+                        "fields": {
+                            "type": "string",
+                            "default": "name,closed,id,url,desc,dateLastActivity",
+                            "description": "Fields to include in board response"
+                        },
+                        "lists": {
+                            "type": "string",
+                            "enum": ["all", "closed", "none", "open"],
+                            "default": "none",
+                            "description": "Whether to include lists in response"
+                        },
+                        "organization": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include organization information"
+                        },
+                        "organization_fields": {
+                            "type": "string",
+                            "default": "name,displayName",
+                            "description": "Organization fields to include"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["filter", "fields", "lists", "organization", "organization_fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__CREATE_BOARD",
+        "description": "Create new Trello boards for project initialization and team collaboration workspace setup",
+        "tags": ["boards", "create", "projects", "workspace"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/1/boards",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the board to create"
+                        },
+                        "desc": {
+                            "type": "string",
+                            "description": "Description of the board purpose"
+                        },
+                        "idOrganization": {
+                            "type": "string",
+                            "description": "Organization ID to create board under"
+                        },
+                        "idBoardSource": {
+                            "type": "string",
+                            "description": "Board ID to copy structure from"
+                        },
+                        "keepFromSource": {
+                            "type": "string",
+                            "enum": ["cards", "none"],
+                            "default": "none",
+                            "description": "What to copy from source board"
+                        },
+                        "powerUps": {
+                            "type": "string",
+                            "enum": ["all", "calendar", "cardAging", "recap", "voting"],
+                            "description": "Power-ups to enable on the board"
+                        },
+                        "prefs_permissionLevel": {
+                            "type": "string",
+                            "enum": ["org", "private", "public"],
+                            "default": "private",
+                            "description": "Permission level for the board"
+                        },
+                        "prefs_voting": {
+                            "type": "string",
+                            "enum": ["disabled", "members", "observers", "org", "public"],
+                            "default": "disabled",
+                            "description": "Who can vote on cards"
+                        },
+                        "prefs_comments": {
+                            "type": "string",
+                            "enum": ["disabled", "members", "observers", "org", "public"],
+                            "default": "members",
+                            "description": "Who can comment on cards"
+                        },
+                        "prefs_invitations": {
+                            "type": "string",
+                            "enum": ["admins", "members"],
+                            "default": "members",
+                            "description": "Who can invite new members"
+                        },
+                        "prefs_selfJoin": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Allow organization members to join board"
+                        },
+                        "prefs_cardCovers": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Enable card covers"
+                        },
+                        "prefs_background": {
+                            "type": "string",
+                            "description": "Background color or image for board"
+                        },
+                        "prefs_cardAging": {
+                            "type": "string",
+                            "enum": ["pirate", "regular"],
+                            "default": "regular",
+                            "description": "Card aging power-up setting"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name", "desc", "idOrganization", "idBoardSource", "keepFromSource", "powerUps", "prefs_permissionLevel", "prefs_voting", "prefs_comments", "prefs_invitations", "prefs_selfJoin", "prefs_cardCovers", "prefs_background", "prefs_cardAging"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__GET_LISTS",
+        "description": "Retrieve lists from Trello boards for workflow column management and task organization tracking",
+        "tags": ["lists", "workflow", "columns", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/1/boards/{board_id}/lists",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "board_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the board to get lists from"
+                        }
+                    },
+                    "required": ["board_id"],
+                    "visible": ["board_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "filter": {
+                            "type": "string",
+                            "enum": ["all", "closed", "none", "open"],
+                            "default": "open",
+                            "description": "Filter lists by status"
+                        },
+                        "fields": {
+                            "type": "string",
+                            "default": "name,closed,id,pos",
+                            "description": "Fields to include in list response"
+                        },
+                        "cards": {
+                            "type": "string",
+                            "enum": ["all", "closed", "none", "open"],
+                            "default": "none",
+                            "description": "Whether to include cards in response"
+                        },
+                        "card_fields": {
+                            "type": "string",
+                            "default": "name,closed,id,pos",
+                            "description": "Fields to include for cards if included"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["filter", "fields", "cards", "card_fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__CREATE_LIST",
+        "description": "Create lists in Trello boards for workflow columns and task categorization organization",
+        "tags": ["lists", "create", "workflow", "columns"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/1/lists",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the list to create"
+                        },
+                        "idBoard": {
+                            "type": "string",
+                            "description": "Board ID to create list in"
+                        },
+                        "pos": {
+                            "type": "string",
+                            "default": "bottom",
+                            "description": "Position of list (top, bottom, or number)"
+                        }
+                    },
+                    "required": ["name", "idBoard"],
+                    "visible": ["name", "idBoard", "pos"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__GET_CARDS",
+        "description": "Retrieve cards from Trello boards for task management and project progress tracking analysis",
+        "tags": ["cards", "tasks", "tracking", "progress"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/1/boards/{board_id}/cards",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "board_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the board to get cards from"
+                        }
+                    },
+                    "required": ["board_id"],
+                    "visible": ["board_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "filter": {
+                            "type": "string",
+                            "enum": ["all", "closed", "none", "open", "visible"],
+                            "default": "open",
+                            "description": "Filter cards by status"
+                        },
+                        "fields": {
+                            "type": "string",
+                            "default": "name,desc,closed,id,pos,due,dueComplete,dateLastActivity,url",
+                            "description": "Fields to include in card response"
+                        },
+                        "members": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include member information"
+                        },
+                        "member_fields": {
+                            "type": "string",
+                            "default": "fullName,username",
+                            "description": "Member fields to include"
+                        },
+                        "attachments": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include card attachments"
+                        },
+                        "attachment_fields": {
+                            "type": "string",
+                            "default": "name,url",
+                            "description": "Attachment fields to include"
+                        },
+                        "checklists": {
+                            "type": "string",
+                            "enum": ["all", "none"],
+                            "default": "none",
+                            "description": "Include checklists in response"
+                        },
+                        "checklist_fields": {
+                            "type": "string",
+                            "default": "name,pos",
+                            "description": "Checklist fields to include"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["filter", "fields", "members", "member_fields", "attachments", "attachment_fields", "checklists", "checklist_fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__CREATE_CARD",
+        "description": "Create cards in Trello for task creation and project item tracking with detailed information",
+        "tags": ["cards", "create", "tasks", "items"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/1/cards",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the card to create"
+                        },
+                        "desc": {
+                            "type": "string",
+                            "description": "Description of the card"
+                        },
+                        "idList": {
+                            "type": "string",
+                            "description": "List ID to create card in"
+                        },
+                        "pos": {
+                            "type": "string",
+                            "default": "bottom",
+                            "description": "Position of card (top, bottom, or number)"
+                        },
+                        "due": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Due date for the card (ISO 8601 format)"
+                        },
+                        "dueComplete": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Whether the card is complete"
+                        },
+                        "idMembers": {
+                            "type": "string",
+                            "description": "Comma-separated list of member IDs to assign"
+                        },
+                        "idLabels": {
+                            "type": "string",
+                            "description": "Comma-separated list of label IDs to apply"
+                        },
+                        "urlSource": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL source for the card"
+                        },
+                        "fileSource": {
+                            "type": "string",
+                            "description": "File to attach to the card"
+                        },
+                        "idCardSource": {
+                            "type": "string",
+                            "description": "Card ID to copy from"
+                        },
+                        "keepFromSource": {
+                            "type": "string",
+                            "default": "all",
+                            "description": "What to copy from source card"
+                        }
+                    },
+                    "required": ["name", "idList"],
+                    "visible": ["name", "desc", "idList", "pos", "due", "dueComplete", "idMembers", "idLabels", "urlSource", "fileSource", "idCardSource", "keepFromSource"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__UPDATE_CARD",
+        "description": "Update existing Trello cards for task management, status changes, and assignment modifications",
+        "tags": ["cards", "update", "tasks", "management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/1/cards/{card_id}",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "card_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the card to update"
+                        }
+                    },
+                    "required": ["card_id"],
+                    "visible": ["card_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Updated name of the card"
+                        },
+                        "desc": {
+                            "type": "string",
+                            "description": "Updated description"
+                        },
+                        "closed": {
+                            "type": "boolean",
+                            "description": "Whether to archive the card"
+                        },
+                        "idMembers": {
+                            "type": "string",
+                            "description": "Comma-separated list of member IDs to assign"
+                        },
+                        "idAttachmentCover": {
+                            "type": "string",
+                            "description": "Attachment ID to use as cover"
+                        },
+                        "idList": {
+                            "type": "string",
+                            "description": "List ID to move card to"
+                        },
+                        "idLabels": {
+                            "type": "string",
+                            "description": "Comma-separated list of label IDs"
+                        },
+                        "pos": {
+                            "type": "string",
+                            "description": "New position in list"
+                        },
+                        "due": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Updated due date (ISO 8601 format)"
+                        },
+                        "dueComplete": {
+                            "type": "boolean",
+                            "description": "Updated completion status"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "desc", "closed", "idMembers", "idAttachmentCover", "idList", "idLabels", "pos", "due", "dueComplete"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__GET_MEMBERS",
+        "description": "Retrieve board members and collaborators for team management and assignment tracking in Trello",
+        "tags": ["members", "team", "collaborators", "assignments"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/1/boards/{board_id}/members",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "board_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the board to get members from"
+                        }
+                    },
+                    "required": ["board_id"],
+                    "visible": ["board_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "filter": {
+                            "type": "string",
+                            "enum": ["all", "admins", "none", "normal", "owners"],
+                            "default": "all",
+                            "description": "Filter members by role"
+                        },
+                        "fields": {
+                            "type": "string",
+                            "default": "fullName,username,id",
+                            "description": "Fields to include in member response"
+                        },
+                        "activity": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include recent activity"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["filter", "fields", "activity"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__ADD_MEMBER_TO_BOARD",
+        "description": "Add members to Trello boards for team collaboration and project access management",
+        "tags": ["members", "add", "collaboration", "access"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/1/boards/{board_id}/members/{member_id}",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "board_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the board"
+                        },
+                        "member_id": {
+                            "type": "string",
+                            "description": "Member ID to add to board"
+                        }
+                    },
+                    "required": ["board_id", "member_id"],
+                    "visible": ["board_id", "member_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": ["admin", "normal", "observer"],
+                            "default": "normal",
+                            "description": "Member role on the board"
+                        },
+                        "allowBillableGuest": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Allow billable guest access"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["type", "allowBillableGuest"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__GET_CHECKLISTS",
+        "description": "Retrieve checklists from Trello cards for task breakdown and completion tracking management",
+        "tags": ["checklists", "subtasks", "tracking", "completion"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/1/cards/{card_id}/checklists",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "card_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the card to get checklists from"
+                        }
+                    },
+                    "required": ["card_id"],
+                    "visible": ["card_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fields": {
+                            "type": "string",
+                            "default": "name,pos,id",
+                            "description": "Fields to include in checklist response"
+                        },
+                        "checkItems": {
+                            "type": "string",
+                            "enum": ["all", "none"],
+                            "default": "all",
+                            "description": "Include checklist items in response"
+                        },
+                        "checkItem_fields": {
+                            "type": "string",
+                            "default": "name,state,pos",
+                            "description": "Fields to include for checklist items"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fields", "checkItems", "checkItem_fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__CREATE_CHECKLIST",
+        "description": "Create checklists in Trello cards for task breakdown and subtask management organization",
+        "tags": ["checklists", "create", "subtasks", "breakdown"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/1/checklists",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "idCard": {
+                            "type": "string",
+                            "description": "Card ID to create checklist in"
+                        },
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the checklist"
+                        },
+                        "pos": {
+                            "type": "string",
+                            "default": "bottom",
+                            "description": "Position of checklist (top, bottom, or number)"
+                        },
+                        "idChecklistSource": {
+                            "type": "string",
+                            "description": "Checklist ID to copy from"
+                        }
+                    },
+                    "required": ["idCard", "name"],
+                    "visible": ["idCard", "name", "pos", "idChecklistSource"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__CREATE_CHECKLIST_ITEM",
+        "description": "Add items to Trello checklists for detailed task breakdown and progress tracking management",
+        "tags": ["checklist", "items", "subtasks", "progress"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/1/checklists/{checklist_id}/checkItems",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "checklist_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the checklist to add item to"
+                        }
+                    },
+                    "required": ["checklist_id"],
+                    "visible": ["checklist_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the checklist item"
+                        },
+                        "pos": {
+                            "type": "string",
+                            "default": "bottom",
+                            "description": "Position of item (top, bottom, or number)"
+                        },
+                        "checked": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Whether the item is checked"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name", "pos", "checked"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "query"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__UPDATE_CHECKLIST_ITEM",
+        "description": "Update checklist items in Trello for task completion status and progress tracking management",
+        "tags": ["checklist", "update", "completion", "progress"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/1/cards/{card_id}/checkItem/{check_item_id}",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "card_id": {
+                            "type": "string",
+                            "description": "Card ID containing the checklist"
+                        },
+                        "check_item_id": {
+                            "type": "string",
+                            "description": "Checklist item ID to update"
+                        }
+                    },
+                    "required": ["card_id", "check_item_id"],
+                    "visible": ["card_id", "check_item_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Updated name of checklist item"
+                        },
+                        "state": {
+                            "type": "string",
+                            "enum": ["complete", "incomplete"],
+                            "description": "Updated completion state"
+                        },
+                        "pos": {
+                            "type": "string",
+                            "description": "Updated position of item"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "state", "pos"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__GET_LABELS",
+        "description": "Retrieve labels from Trello boards for task categorization and visual organization management",
+        "tags": ["labels", "categorization", "organization", "visual"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/1/boards/{board_id}/labels",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "board_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the board to get labels from"
+                        }
+                    },
+                    "required": ["board_id"],
+                    "visible": ["board_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fields": {
+                            "type": "string",
+                            "default": "name,color,id",
+                            "description": "Fields to include in label response"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 1000,
+                            "description": "Maximum number of labels to return"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fields", "limit"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__CREATE_LABEL",
+        "description": "Create labels in Trello boards for task categorization and visual organization systems",
+        "tags": ["labels", "create", "categorization", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/1/labels",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the label to create"
+                        },
+                        "color": {
+                            "type": "string",
+                            "enum": ["yellow", "purple", "blue", "red", "green", "orange", "black", "sky", "pink", "lime"],
+                            "description": "Color of the label"
+                        },
+                        "idBoard": {
+                            "type": "string",
+                            "description": "Board ID to create label in"
+                        }
+                    },
+                    "required": ["name", "color", "idBoard"],
+                    "visible": ["name", "color", "idBoard"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__ADD_COMMENT",
+        "description": "Add comments to Trello cards for team communication and task discussion collaboration",
+        "tags": ["comments", "communication", "discussion", "collaboration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/1/cards/{card_id}/actions/comments",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "card_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the card to comment on"
+                        }
+                    },
+                    "required": ["card_id"],
+                    "visible": ["card_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "text": {
+                            "type": "string",
+                            "description": "Text content of the comment"
+                        }
+                    },
+                    "required": ["text"],
+                    "visible": ["text"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "query"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__GET_ATTACHMENTS",
+        "description": "Retrieve attachments from Trello cards for file management and document tracking workflows",
+        "tags": ["attachments", "files", "documents", "management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/1/cards/{card_id}/attachments",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "card_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the card to get attachments from"
+                        }
+                    },
+                    "required": ["card_id"],
+                    "visible": ["card_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "fields": {
+                            "type": "string",
+                            "default": "name,url,bytes,date,id",
+                            "description": "Fields to include in attachment response"
+                        },
+                        "filter": {
+                            "type": "string",
+                            "default": "all",
+                            "description": "Filter attachments by type"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["fields", "filter"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__ADD_ATTACHMENT",
+        "description": "Add attachments to Trello cards for file sharing and document collaboration workflows",
+        "tags": ["attachments", "add", "files", "sharing"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/1/cards/{card_id}/attachments",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "card_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the card to add attachment to"
+                        }
+                    },
+                    "required": ["card_id"],
+                    "visible": ["card_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the attachment"
+                        },
+                        "url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL of the file or link to attach"
+                        },
+                        "file": {
+                            "type": "string",
+                            "description": "File to upload as attachment"
+                        },
+                        "mimeType": {
+                            "type": "string",
+                            "description": "MIME type of the file"
+                        },
+                        "setCover": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Set this attachment as card cover"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "url", "file", "mimeType", "setCover"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__GET_ACTIONS",
+        "description": "Retrieve activity history and actions from Trello boards for audit trail and activity monitoring",
+        "tags": ["actions", "activity", "history", "audit"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/1/boards/{board_id}/actions",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "board_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the board to get actions from"
+                        }
+                    },
+                    "required": ["board_id"],
+                    "visible": ["board_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "filter": {
+                            "type": "string",
+                            "default": "all",
+                            "description": "Filter actions by type (e.g., 'createCard,updateCard')"
+                        },
+                        "fields": {
+                            "type": "string",
+                            "default": "type,date,data,memberCreator",
+                            "description": "Fields to include in action response"
+                        },
+                        "limit": {
+                            "type": "integer",
+                            "default": 50,
+                            "maximum": 1000,
+                            "description": "Maximum number of actions to return"
+                        },
+                        "page": {
+                            "type": "integer",
+                            "default": 0,
+                            "description": "Page number for pagination"
+                        },
+                        "since": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Only return actions since this date (ISO 8601)"
+                        },
+                        "before": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Only return actions before this date (ISO 8601)"
+                        },
+                        "member": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Include member information in actions"
+                        },
+                        "member_fields": {
+                            "type": "string",
+                            "default": "fullName,username",
+                            "description": "Member fields to include"
+                        },
+                        "memberCreator": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Include action creator information"
+                        },
+                        "memberCreator_fields": {
+                            "type": "string",
+                            "default": "fullName,username",
+                            "description": "Creator fields to include"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["filter", "fields", "limit", "page", "since", "before", "member", "member_fields", "memberCreator", "memberCreator_fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__ARCHIVE_CARD",
+        "description": "Archive Trello cards to remove from active workflow while preserving task history and data",
+        "tags": ["cards", "archive", "workflow", "cleanup"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/1/cards/{card_id}/closed",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "card_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the card to archive"
+                        }
+                    },
+                    "required": ["card_id"],
+                    "visible": ["card_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "value": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Set to true to archive card, false to restore"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["value"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__MOVE_CARD",
+        "description": "Move Trello cards between lists for workflow progression and task status management tracking",
+        "tags": ["cards", "move", "workflow", "status"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/1/cards/{card_id}/idList",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "card_id": {
+                            "type": "string",
+                            "description": "Unique identifier of the card to move"
+                        }
+                    },
+                    "required": ["card_id"],
+                    "visible": ["card_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "value": {
+                            "type": "string",
+                            "description": "List ID to move card to"
+                        }
+                    },
+                    "required": ["value"],
+                    "visible": ["value"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "query"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__SEARCH_CARDS",
+        "description": "Search for cards across Trello boards using queries for task discovery and project management",
+        "tags": ["search", "cards", "discovery", "management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/1/search",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "query": {
+                            "type": "string",
+                            "description": "Search query string"
+                        },
+                        "idBoards": {
+                            "type": "string",
+                            "description": "Comma-separated board IDs to search in"
+                        },
+                        "idOrganizations": {
+                            "type": "string",
+                            "description": "Comma-separated organization IDs to search in"
+                        },
+                        "idCards": {
+                            "type": "string",
+                            "description": "Comma-separated card IDs to search in"
+                        },
+                        "modelTypes": {
+                            "type": "string",
+                            "default": "cards",
+                            "description": "Types of objects to search for (boards,cards,organizations,members)"
+                        },
+                        "board_fields": {
+                            "type": "string",
+                            "default": "name,id",
+                            "description": "Board fields to include in results"
+                        },
+                        "boards_limit": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 1000,
+                            "description": "Maximum number of boards to return"
+                        },
+                        "card_fields": {
+                            "type": "string",
+                            "default": "name,id,pos,due,closed",
+                            "description": "Card fields to include in results"
+                        },
+                        "cards_limit": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 1000,
+                            "description": "Maximum number of cards to return"
+                        },
+                        "cards_page": {
+                            "type": "integer",
+                            "default": 0,
+                            "description": "Page number for card results"
+                        },
+                        "card_board": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include board information for cards"
+                        },
+                        "card_list": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include list information for cards"
+                        },
+                        "card_members": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include member information for cards"
+                        },
+                        "card_stickers": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include sticker information for cards"
+                        },
+                        "card_attachments": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include attachment information for cards"
+                        },
+                        "organization_fields": {
+                            "type": "string",
+                            "default": "name,displayName",
+                            "description": "Organization fields to include"
+                        },
+                        "organizations_limit": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 1000,
+                            "description": "Maximum number of organizations to return"
+                        },
+                        "member_fields": {
+                            "type": "string",
+                            "default": "fullName,username",
+                            "description": "Member fields to include"
+                        },
+                        "members_limit": {
+                            "type": "integer",
+                            "default": 10,
+                            "maximum": 1000,
+                            "description": "Maximum number of members to return"
+                        },
+                        "partial": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Return partial matches"
+                        }
+                    },
+                    "required": ["query"],
+                    "visible": ["query", "idBoards", "idOrganizations", "idCards", "modelTypes", "board_fields", "boards_limit", "card_fields", "cards_limit", "cards_page", "card_board", "card_list", "card_members", "card_stickers", "card_attachments", "organization_fields", "organizations_limit", "member_fields", "members_limit", "partial"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TRELLO__GET_ORGANIZATIONS",
+        "description": "Retrieve organizations and teams from Trello for workspace management and team coordination",
+        "tags": ["organizations", "teams", "workspace", "coordination"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/1/members/me/organizations",
+            "server_url": "https://api.trello.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "filter": {
+                            "type": "string",
+                            "enum": ["all", "members", "none", "public"],
+                            "default": "all",
+                            "description": "Filter organizations by visibility"
+                        },
+                        "fields": {
+                            "type": "string",
+                            "default": "name,displayName,desc,id,url",
+                            "description": "Fields to include in organization response"
+                        },
+                        "paid_account": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Include paid account information"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["filter", "fields", "paid_account"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    }
+]

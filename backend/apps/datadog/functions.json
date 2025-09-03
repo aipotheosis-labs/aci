@@ -1,0 +1,2249 @@
+[
+  {
+    "name": "DATADOG__GET_METRICS",
+    "description": "Query metrics from Datadog using the metrics API. This allows retrieving time series data for monitoring and analysis of application and infrastructure performance.",
+    "tags": ["datadog", "metrics", "query", "timeseries"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/query",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for metrics data",
+          "properties": {
+            "from": {
+              "type": "integer",
+              "description": "Start time as Unix timestamp (seconds since epoch)"
+            },
+            "to": {
+              "type": "integer",
+              "description": "End time as Unix timestamp (seconds since epoch)"
+            },
+            "query": {
+              "type": "string",
+              "description": "Datadog metric query (e.g., 'avg:system.cpu.user{*}')"
+            }
+          },
+          "required": ["from", "to", "query"],
+          "visible": ["from", "to", "query"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["query"],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__LIST_ACTIVE_METRICS",
+    "description": "List active metrics in Datadog from the last hour. This helps discover available metrics for monitoring and alerting.",
+    "tags": ["datadog", "metrics", "active", "discovery"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/metrics",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering metrics",
+          "properties": {
+            "from": {
+              "type": "integer",
+              "description": "Start time as Unix timestamp (defaults to 1 hour ago)"
+            },
+            "host": {
+              "type": "string",
+              "description": "Filter metrics by hostname"
+            },
+            "tag_filter": {
+              "type": "string",
+              "description": "Filter metrics by tags (e.g., 'env:prod')"
+            }
+          },
+          "required": ["from"],
+          "visible": ["from", "host", "tag_filter"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["query"],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__GET_METRIC_METADATA",
+    "description": "Get metadata for a specific metric including description, type, unit, and per_unit information.",
+    "tags": ["datadog", "metrics", "metadata"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/metrics/{metric_name}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "metric_name": {
+              "type": "string",
+              "description": "The name of the metric"
+            }
+          },
+          "required": ["metric_name"],
+          "visible": ["metric_name"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__UPDATE_METRIC_METADATA",
+    "description": "Update metadata for a custom metric including description, type, and unit information. This helps with metric documentation and organization.",
+    "tags": ["datadog", "metrics", "metadata", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/api/v1/metrics/{metric_name}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "metric_name": {
+              "type": "string",
+              "description": "The name of the metric"
+            }
+          },
+          "required": ["metric_name"],
+          "visible": ["metric_name"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "The metric metadata to update",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Description of what the metric measures"
+            },
+            "short_name": {
+              "type": "string",
+              "description": "A short name for the metric"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["count", "rate", "gauge", "distribution"],
+              "description": "The type of metric"
+            },
+            "unit": {
+              "type": "string",
+              "description": "Unit of measurement (e.g., 'byte', 'second', 'request')"
+            },
+            "per_unit": {
+              "type": "string",
+              "description": "Per unit for rate metrics (e.g., 'second' for 'requests per second')"
+            }
+          },
+          "required": [],
+          "visible": ["description", "short_name", "type", "unit", "per_unit"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__SUBMIT_METRICS",
+    "description": "Submit custom metrics to Datadog. This allows sending application and business metrics for monitoring and alerting.",
+    "tags": ["datadog", "metrics", "submit", "custom"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/v1/series",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The metrics data to submit",
+          "properties": {
+            "series": {
+              "type": "array",
+              "description": "Array of metric series to submit",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "metric": {
+                    "type": "string",
+                    "description": "The name of the metric"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["count", "rate", "gauge", "distribution"],
+                    "default": "gauge",
+                    "description": "The type of metric"
+                  },
+                  "points": {
+                    "type": "array",
+                    "description": "Array of [timestamp, value] pairs",
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "number"
+                      },
+                      "minItems": 2,
+                      "maxItems": 2
+                    }
+                  },
+                  "tags": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "Tags to associate with the metric (e.g., ['env:prod', 'service:api'])"
+                  },
+                  "host": {
+                    "type": "string",
+                    "description": "Hostname associated with the metric"
+                  },
+                  "interval": {
+                    "type": "integer",
+                    "description": "Interval in seconds between metric points"
+                  }
+                },
+                "required": ["metric", "points"],
+                "visible": ["metric", "type", "points", "tags", "host", "interval"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": ["series"],
+          "visible": ["series"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__LIST_DASHBOARDS",
+    "description": "List all dashboards in Datadog including timeboards and screenboards for monitoring visualization and analysis.",
+    "tags": ["datadog", "dashboards", "list", "visualization"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/dashboard",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering dashboards",
+          "properties": {
+            "filter[shared]": {
+              "type": "boolean",
+              "description": "Filter dashboards by shared status"
+            },
+            "filter[deleted]": {
+              "type": "boolean",
+              "description": "Include deleted dashboards"
+            },
+            "count": {
+              "type": "integer",
+              "default": 100,
+              "description": "Maximum number of dashboards to return"
+            },
+            "start": {
+              "type": "integer",
+              "default": 0,
+              "description": "Starting position for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["filter[shared]", "filter[deleted]", "count", "start"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__GET_DASHBOARD",
+    "description": "Get detailed information about a specific Datadog dashboard including widgets, layout, and configuration.",
+    "tags": ["datadog", "dashboard", "details"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/dashboard/{dashboard_id}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "dashboard_id": {
+              "type": "string",
+              "description": "The ID of the dashboard"
+            }
+          },
+          "required": ["dashboard_id"],
+          "visible": ["dashboard_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__CREATE_DASHBOARD",
+    "description": "Create a new dashboard in Datadog for monitoring and visualization. This allows building custom monitoring views for teams and applications.",
+    "tags": ["datadog", "dashboard", "create", "visualization"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/v1/dashboard",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The dashboard configuration",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "The title of the dashboard"
+            },
+            "description": {
+              "type": "string",
+              "description": "The description of the dashboard"
+            },
+            "layout_type": {
+              "type": "string",
+              "enum": ["ordered", "free"],
+              "default": "ordered",
+              "description": "Layout type for the dashboard"
+            },
+            "is_read_only": {
+              "type": "boolean",
+              "default": false,
+              "description": "Whether the dashboard is read-only"
+            },
+            "notify_list": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "List of email addresses or @mentions to notify on dashboard changes"
+            },
+            "template_variables": {
+              "type": "array",
+              "description": "Dashboard template variables for dynamic filtering",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Variable name"
+                  },
+                  "prefix": {
+                    "type": "string",
+                    "description": "Tag prefix for the variable"
+                  },
+                  "default": {
+                    "type": "string",
+                    "description": "Default value for the variable"
+                  }
+                },
+                "required": ["name"],
+                "visible": ["name", "prefix", "default"],
+                "additionalProperties": false
+              }
+            },
+            "widgets": {
+              "type": "array",
+              "description": "Dashboard widgets configuration",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "definition": {
+                    "type": "object",
+                    "description": "Widget definition including type and requests",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": ["timeseries", "query_value", "toplist", "alert_graph"],
+                        "description": "Type of widget"
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Widget title"
+                      },
+                      "requests": {
+                        "type": "array",
+                        "description": "Data requests for the widget",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "q": {
+                              "type": "string",
+                              "description": "Metric query"
+                            },
+                            "display_type": {
+                              "type": "string",
+                              "enum": ["line", "area", "bars"],
+                              "default": "line",
+                              "description": "Display type for timeseries"
+                            }
+                          },
+                          "required": ["q"],
+                          "visible": ["q", "display_type"],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": ["type", "requests"],
+                    "visible": ["type", "title", "requests"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["definition"],
+                "visible": ["definition"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": ["title", "layout_type", "widgets"],
+          "visible": ["title", "description", "layout_type", "is_read_only", "notify_list", "template_variables", "widgets"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__UPDATE_DASHBOARD",
+    "description": "Update an existing Datadog dashboard including title, widgets, and configuration. This allows modifying monitoring views and visualizations.",
+    "tags": ["datadog", "dashboard", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/api/v1/dashboard/{dashboard_id}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "dashboard_id": {
+              "type": "string",
+              "description": "The ID of the dashboard to update"
+            }
+          },
+          "required": ["dashboard_id"],
+          "visible": ["dashboard_id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "The dashboard updates",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Updated title of the dashboard"
+            },
+            "description": {
+              "type": "string",
+              "description": "Updated description of the dashboard"
+            },
+            "is_read_only": {
+              "type": "boolean",
+              "description": "Updated read-only status"
+            },
+            "notify_list": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Updated notification list"
+            },
+            "widgets": {
+              "type": "array",
+              "description": "Updated widgets configuration",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "definition": {
+                    "type": "object",
+                    "description": "Widget definition",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": ["timeseries", "query_value", "toplist", "alert_graph"],
+                        "description": "Type of widget"
+                      },
+                      "title": {
+                        "type": "string",
+                        "description": "Widget title"
+                      },
+                      "requests": {
+                        "type": "array",
+                        "description": "Data requests for the widget",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "q": {
+                              "type": "string",
+                              "description": "Metric query"
+                            }
+                          },
+                          "required": ["q"],
+                          "visible": ["q"],
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "required": ["type", "requests"],
+                    "visible": ["type", "title", "requests"],
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["definition"],
+                "visible": ["definition"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [],
+          "visible": ["title", "description", "is_read_only", "notify_list", "widgets"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__DELETE_DASHBOARD",
+    "description": "Delete a Datadog dashboard. This permanently removes the dashboard and its configuration.",
+    "tags": ["datadog", "dashboard", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/api/v1/dashboard/{dashboard_id}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "dashboard_id": {
+              "type": "string",
+              "description": "The ID of the dashboard to delete"
+            }
+          },
+          "required": ["dashboard_id"],
+          "visible": ["dashboard_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__LIST_MONITORS",
+    "description": "List monitors in Datadog for alerting and notification management. Monitors define conditions that trigger alerts when thresholds are met.",
+    "tags": ["datadog", "monitors", "alerts", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/monitor",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering monitors",
+          "properties": {
+            "group_states": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["all", "alert", "warn", "no data", "skipped", "unknown", "ok"]
+              },
+              "description": "Filter monitors by group states"
+            },
+            "name": {
+              "type": "string",
+              "description": "Filter monitors by name pattern"
+            },
+            "tags": {
+              "type": "string",
+              "description": "Filter monitors by tags (comma-separated)"
+            },
+            "monitor_tags": {
+              "type": "string",
+              "description": "Filter monitors by monitor tags (comma-separated)"
+            },
+            "with_downtimes": {
+              "type": "boolean",
+              "description": "Include monitors that have associated downtimes"
+            },
+            "id_offset": {
+              "type": "integer",
+              "description": "Monitor ID offset for pagination"
+            },
+            "page": {
+              "type": "integer",
+              "default": 0,
+              "description": "Page number for pagination"
+            },
+            "page_size": {
+              "type": "integer",
+              "default": 100,
+              "description": "Number of monitors per page (max 1000)"
+            }
+          },
+          "required": [],
+          "visible": ["group_states", "name", "tags", "monitor_tags", "with_downtimes", "id_offset", "page", "page_size"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__GET_MONITOR",
+    "description": "Get detailed information about a specific Datadog monitor including configuration, thresholds, and current status.",
+    "tags": ["datadog", "monitor", "alert", "details"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/monitor/{monitor_id}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "monitor_id": {
+              "type": "integer",
+              "description": "The ID of the monitor"
+            }
+          },
+          "required": ["monitor_id"],
+          "visible": ["monitor_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for response customization",
+          "properties": {
+            "group_states": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": ["all", "alert", "warn", "no data", "skipped", "unknown", "ok"]
+              },
+              "description": "Comma-separated list of group states to include"
+            },
+            "with_downtimes": {
+              "type": "boolean",
+              "description": "Include downtime information"
+            }
+          },
+          "required": [],
+          "visible": ["group_states", "with_downtimes"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__CREATE_MONITOR",
+    "description": "Create a new monitor in Datadog for alerting on metric thresholds, anomalies, or conditions. This enables proactive monitoring and incident response.",
+    "tags": ["datadog", "monitor", "create", "alert"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/v1/monitor",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The monitor configuration",
+          "properties": {
+            "type": {
+              "type": "string",
+              "enum": ["composite", "event alert", "log alert", "metric alert", "process alert", "query alert", "service check", "synthetics alert", "trace-analytics alert"],
+              "description": "Type of monitor to create"
+            },
+            "name": {
+              "type": "string",
+              "description": "Name of the monitor"
+            },
+            "query": {
+              "type": "string",
+              "description": "Monitor query (e.g., 'avg(last_5m):avg:system.cpu.user{*} > 0.8')"
+            },
+            "message": {
+              "type": "string",
+              "description": "Message to include with notifications, supports @mentions"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tags to associate with the monitor"
+            },
+            "options": {
+              "type": "object",
+              "description": "Monitor options and thresholds",
+              "properties": {
+                "thresholds": {
+                  "type": "object",
+                  "description": "Alert thresholds",
+                  "properties": {
+                    "critical": {
+                      "type": "number",
+                      "description": "Critical threshold value"
+                    },
+                    "warning": {
+                      "type": "number",
+                      "description": "Warning threshold value"
+                    },
+                    "ok": {
+                      "type": "number",
+                      "description": "OK threshold value"
+                    }
+                  },
+                  "required": [],
+                  "visible": ["critical", "warning", "ok"],
+                  "additionalProperties": false
+                },
+                "notify_audit": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Include audit events in notifications"
+                },
+                "timeout_h": {
+                  "type": "integer",
+                  "description": "Hours after which monitor will timeout"
+                },
+                "require_full_window": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Require full evaluation window for alerting"
+                },
+                "notify_no_data": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Notify when monitor stops receiving data"
+                },
+                "renotify_interval": {
+                  "type": "integer",
+                  "description": "Minutes between re-notifications"
+                },
+                "escalation_message": {
+                  "type": "string",
+                  "description": "Message for escalation notifications"
+                }
+              },
+              "required": [],
+              "visible": ["thresholds", "notify_audit", "timeout_h", "require_full_window", "notify_no_data", "renotify_interval", "escalation_message"],
+              "additionalProperties": false
+            },
+            "priority": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5,
+              "description": "Monitor priority (1-5, where 1 is highest priority)"
+            }
+          },
+          "required": ["type", "name", "query"],
+          "visible": ["type", "name", "query", "message", "tags", "options", "priority"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__UPDATE_MONITOR",
+    "description": "Update an existing Datadog monitor configuration including query, thresholds, and notification settings.",
+    "tags": ["datadog", "monitor", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/api/v1/monitor/{monitor_id}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "monitor_id": {
+              "type": "integer",
+              "description": "The ID of the monitor to update"
+            }
+          },
+          "required": ["monitor_id"],
+          "visible": ["monitor_id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "The monitor updates",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Updated name of the monitor"
+            },
+            "query": {
+              "type": "string",
+              "description": "Updated monitor query"
+            },
+            "message": {
+              "type": "string",
+              "description": "Updated message for notifications"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Updated tags for the monitor"
+            },
+            "options": {
+              "type": "object",
+              "description": "Updated monitor options",
+              "properties": {
+                "thresholds": {
+                  "type": "object",
+                  "description": "Updated alert thresholds",
+                  "properties": {
+                    "critical": {
+                      "type": "number",
+                      "description": "Critical threshold value"
+                    },
+                    "warning": {
+                      "type": "number",
+                      "description": "Warning threshold value"
+                    }
+                  },
+                  "required": [],
+                  "visible": ["critical", "warning"],
+                  "additionalProperties": false
+                },
+                "notify_no_data": {
+                  "type": "boolean",
+                  "description": "Updated no-data notification setting"
+                },
+                "renotify_interval": {
+                  "type": "integer",
+                  "description": "Updated re-notification interval"
+                }
+              },
+              "required": [],
+              "visible": ["thresholds", "notify_no_data", "renotify_interval"],
+              "additionalProperties": false
+            }
+          },
+          "required": [],
+          "visible": ["name", "query", "message", "tags", "options"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__DELETE_MONITOR",
+    "description": "Delete a Datadog monitor. This permanently removes the monitor and stops all associated alerting.",
+    "tags": ["datadog", "monitor", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/api/v1/monitor/{monitor_id}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "monitor_id": {
+              "type": "integer",
+              "description": "The ID of the monitor to delete"
+            }
+          },
+          "required": ["monitor_id"],
+          "visible": ["monitor_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for deletion",
+          "properties": {
+            "force": {
+              "type": "boolean",
+              "default": false,
+              "description": "Force deletion even if monitor has dependencies"
+            }
+          },
+          "required": [],
+          "visible": ["force"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__MUTE_MONITOR",
+    "description": "Mute a Datadog monitor to temporarily disable alerting. This is useful during maintenance or when alerts are expected.",
+    "tags": ["datadog", "monitor", "mute", "silence"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/v1/monitor/{monitor_id}/mute",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "monitor_id": {
+              "type": "integer",
+              "description": "The ID of the monitor to mute"
+            }
+          },
+          "required": ["monitor_id"],
+          "visible": ["monitor_id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Mute options",
+          "properties": {
+            "scope": {
+              "type": "string",
+              "description": "Scope of the mute (e.g., 'host:web01' or '*' for all)"
+            },
+            "end": {
+              "type": "integer",
+              "description": "Unix timestamp when mute should end (optional, permanent mute if omitted)"
+            }
+          },
+          "required": [],
+          "visible": ["scope", "end"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__UNMUTE_MONITOR",
+    "description": "Unmute a previously muted Datadog monitor to restore alerting functionality.",
+    "tags": ["datadog", "monitor", "unmute", "restore"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/v1/monitor/{monitor_id}/unmute",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "monitor_id": {
+              "type": "integer",
+              "description": "The ID of the monitor to unmute"
+            }
+          },
+          "required": ["monitor_id"],
+          "visible": ["monitor_id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "Unmute options",
+          "properties": {
+            "scope": {
+              "type": "string",
+              "description": "Scope to unmute (e.g., 'host:web01' or '*' for all)"
+            },
+            "all_scopes": {
+              "type": "boolean",
+              "default": false,
+              "description": "Unmute all scopes for the monitor"
+            }
+          },
+          "required": [],
+          "visible": ["scope", "all_scopes"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__LIST_HOSTS",
+    "description": "List hosts reporting to Datadog including metadata, tags, and last seen information for infrastructure monitoring.",
+    "tags": ["datadog", "hosts", "infrastructure", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/hosts",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering hosts",
+          "properties": {
+            "filter": {
+              "type": "string",
+              "description": "Filter hosts by hostname pattern"
+            },
+            "sort_field": {
+              "type": "string",
+              "enum": ["status", "apps", "cpu", "iowait", "load"],
+              "default": "status",
+              "description": "Field to sort hosts by"
+            },
+            "sort_dir": {
+              "type": "string",
+              "enum": ["asc", "desc"],
+              "default": "asc",
+              "description": "Sort direction"
+            },
+            "start": {
+              "type": "integer",
+              "default": 0,
+              "description": "Starting position for pagination"
+            },
+            "count": {
+              "type": "integer",
+              "default": 100,
+              "description": "Maximum number of hosts to return"
+            },
+            "from": {
+              "type": "integer",
+              "description": "Unix timestamp for filtering hosts that reported after this time"
+            },
+            "include_muted_hosts_data": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include data for muted hosts"
+            },
+            "include_hosts_metadata": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include host metadata in response"
+            }
+          },
+          "required": [],
+          "visible": ["filter", "sort_field", "sort_dir", "start", "count", "from", "include_muted_hosts_data", "include_hosts_metadata"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__GET_HOST",
+    "description": "Get detailed information about a specific host including metadata, tags, and metrics for infrastructure monitoring and troubleshooting.",
+    "tags": ["datadog", "host", "infrastructure", "details"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/hosts/{host_name}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "host_name": {
+              "type": "string",
+              "description": "The hostname to retrieve information for"
+            }
+          },
+          "required": ["host_name"],
+          "visible": ["host_name"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for response customization",
+          "properties": {
+            "from": {
+              "type": "integer",
+              "description": "Unix timestamp for historical data start"
+            },
+            "source": {
+              "type": "string",
+              "description": "Source of the host data (agent, aws, etc.)"
+            }
+          },
+          "required": [],
+          "visible": ["from", "source"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__SEARCH_LOGS",
+    "description": "Search logs in Datadog using queries and filters. This allows analyzing log data for troubleshooting, monitoring, and security analysis.",
+    "tags": ["datadog", "logs", "search", "analysis"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/v2/logs/events/search",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The log search configuration",
+          "properties": {
+            "filter": {
+              "type": "object",
+              "description": "Search filters",
+              "properties": {
+                "query": {
+                  "type": "string",
+                  "description": "Log search query (e.g., 'status:error service:web')"
+                },
+                "from": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "Start time for log search (ISO 8601)"
+                },
+                "to": {
+                  "type": "string",
+                  "format": "date-time",
+                  "description": "End time for log search (ISO 8601)"
+                },
+                "indexes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Log indexes to search in"
+                }
+              },
+              "required": ["from", "to"],
+              "visible": ["query", "from", "to", "indexes"],
+              "additionalProperties": false
+            },
+            "sort": {
+              "type": "string",
+              "enum": ["timestamp", "-timestamp"],
+              "default": "-timestamp",
+              "description": "Sort order for log results"
+            },
+            "page": {
+              "type": "object",
+              "description": "Pagination options",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "default": 50,
+                  "maximum": 1000,
+                  "description": "Maximum number of logs to return"
+                },
+                "cursor": {
+                  "type": "string",
+                  "description": "Pagination cursor for next page"
+                }
+              },
+              "required": [],
+              "visible": ["limit", "cursor"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["filter"],
+          "visible": ["filter", "sort", "page"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__LIST_DOWNTIMES",
+    "description": "List scheduled downtimes in Datadog that suppress monitor alerts during maintenance windows or planned outages.",
+    "tags": ["datadog", "downtime", "maintenance", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/downtime",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering downtimes",
+          "properties": {
+            "current_only": {
+              "type": "boolean",
+              "default": false,
+              "description": "Return only currently active downtimes"
+            },
+            "with_creator": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include creator information in response"
+            }
+          },
+          "required": [],
+          "visible": ["current_only", "with_creator"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__CREATE_DOWNTIME",
+    "description": "Schedule a downtime in Datadog to suppress monitor alerts during maintenance or planned outages. This prevents false alerts during known issues.",
+    "tags": ["datadog", "downtime", "maintenance", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/v1/downtime",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The downtime configuration",
+          "properties": {
+            "scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Scope of the downtime (tags, host names, service names)"
+            },
+            "start": {
+              "type": "integer",
+              "description": "Unix timestamp when downtime starts (optional, defaults to now)"
+            },
+            "end": {
+              "type": "integer",
+              "description": "Unix timestamp when downtime ends (optional for indefinite downtime)"
+            },
+            "timezone": {
+              "type": "string",
+              "default": "UTC",
+              "description": "Timezone for the downtime"
+            },
+            "message": {
+              "type": "string",
+              "description": "Message to explain the downtime"
+            },
+            "monitor_id": {
+              "type": "integer",
+              "description": "Specific monitor ID to mute (optional, omit to mute all monitors matching scope)"
+            },
+            "monitor_tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Monitor tags to match for muting"
+            },
+            "mute_first_recovery_notification": {
+              "type": "boolean",
+              "default": false,
+              "description": "Mute the first recovery notification during downtime"
+            }
+          },
+          "required": ["scope"],
+          "visible": ["scope", "start", "end", "timezone", "message", "monitor_id", "monitor_tags", "mute_first_recovery_notification"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__UPDATE_DOWNTIME",
+    "description": "Update an existing Datadog downtime including scope, time period, and message. This allows modifying planned maintenance windows.",
+    "tags": ["datadog", "downtime", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/api/v1/downtime/{downtime_id}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "downtime_id": {
+              "type": "integer",
+              "description": "The ID of the downtime to update"
+            }
+          },
+          "required": ["downtime_id"],
+          "visible": ["downtime_id"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "The downtime updates",
+          "properties": {
+            "scope": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Updated scope of the downtime"
+            },
+            "start": {
+              "type": "integer",
+              "description": "Updated start time as Unix timestamp"
+            },
+            "end": {
+              "type": "integer",
+              "description": "Updated end time as Unix timestamp"
+            },
+            "message": {
+              "type": "string",
+              "description": "Updated message for the downtime"
+            }
+          },
+          "required": [],
+          "visible": ["scope", "start", "end", "message"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__CANCEL_DOWNTIME",
+    "description": "Cancel an active or scheduled Datadog downtime to restore normal monitor alerting functionality.",
+    "tags": ["datadog", "downtime", "cancel", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/api/v1/downtime/{downtime_id}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "downtime_id": {
+              "type": "integer",
+              "description": "The ID of the downtime to cancel"
+            }
+          },
+          "required": ["downtime_id"],
+          "visible": ["downtime_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__LIST_TAGS",
+    "description": "List all tags available in Datadog for filtering and grouping hosts, metrics, and other resources.",
+    "tags": ["datadog", "tags", "metadata", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/tags/hosts",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering tags",
+          "properties": {
+            "source": {
+              "type": "string",
+              "description": "Source of the tags (e.g., 'chef', 'puppet', 'users')"
+            }
+          },
+          "required": [],
+          "visible": ["source"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__GET_HOST_TAGS",
+    "description": "Get tags for a specific host in Datadog. This shows how the host is categorized and can be used for filtering and monitoring.",
+    "tags": ["datadog", "host", "tags", "metadata"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/tags/hosts/{host_name}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "host_name": {
+              "type": "string",
+              "description": "The hostname to retrieve tags for"
+            }
+          },
+          "required": ["host_name"],
+          "visible": ["host_name"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering tags",
+          "properties": {
+            "source": {
+              "type": "string",
+              "description": "Source of the tags to retrieve"
+            }
+          },
+          "required": [],
+          "visible": ["source"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__UPDATE_HOST_TAGS",
+    "description": "Update tags for a specific host in Datadog. This allows managing host categorization and organization for monitoring and filtering.",
+    "tags": ["datadog", "host", "tags", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/api/v1/tags/hosts/{host_name}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "host_name": {
+              "type": "string",
+              "description": "The hostname to update tags for"
+            }
+          },
+          "required": ["host_name"],
+          "visible": ["host_name"],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "description": "The tag updates",
+          "properties": {
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Array of tags to assign to the host (replaces existing tags)"
+            }
+          },
+          "required": ["tags"],
+          "visible": ["tags"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__CREATE_EVENT",
+    "description": "Create an event in Datadog to track deployments, incidents, or other important occurrences. Events appear on dashboards and can trigger notifications.",
+    "tags": ["datadog", "events", "create", "tracking"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/v1/events",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The event data",
+          "properties": {
+            "title": {
+              "type": "string",
+              "description": "Title of the event"
+            },
+            "text": {
+              "type": "string",
+              "description": "Text content of the event (supports markdown)"
+            },
+            "date_happened": {
+              "type": "integer",
+              "description": "Unix timestamp when event occurred (defaults to now)"
+            },
+            "priority": {
+              "type": "string",
+              "enum": ["normal", "low"],
+              "default": "normal",
+              "description": "Priority level of the event"
+            },
+            "alert_type": {
+              "type": "string",
+              "enum": ["error", "warning", "info", "success"],
+              "default": "info",
+              "description": "Alert type classification"
+            },
+            "aggregation_key": {
+              "type": "string",
+              "description": "Key for grouping similar events"
+            },
+            "source_type_name": {
+              "type": "string",
+              "description": "Source type that generated the event"
+            },
+            "host": {
+              "type": "string",
+              "description": "Host associated with the event"
+            },
+            "device_name": {
+              "type": "string",
+              "description": "Device name associated with the event"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tags to associate with the event"
+            }
+          },
+          "required": ["title", "text"],
+          "visible": ["title", "text", "date_happened", "priority", "alert_type", "aggregation_key", "source_type_name", "host", "device_name", "tags"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__LIST_EVENTS",
+    "description": "List events in Datadog with filtering options by time, priority, sources, and tags for event timeline analysis.",
+    "tags": ["datadog", "events", "list", "timeline"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/events",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering events",
+          "properties": {
+            "start": {
+              "type": "integer",
+              "description": "Unix timestamp for start of search range"
+            },
+            "end": {
+              "type": "integer",
+              "description": "Unix timestamp for end of search range"
+            },
+            "priority": {
+              "type": "string",
+              "enum": ["normal", "low"],
+              "description": "Filter events by priority"
+            },
+            "sources": {
+              "type": "string",
+              "description": "Comma-separated list of source names"
+            },
+            "tags": {
+              "type": "string",
+              "description": "Comma-separated list of tags to filter by"
+            },
+            "unaggregated": {
+              "type": "boolean",
+              "default": false,
+              "description": "Return unaggregated events"
+            },
+            "exclude_aggregate": {
+              "type": "boolean",
+              "default": false,
+              "description": "Exclude aggregate events"
+            },
+            "page": {
+              "type": "integer",
+              "default": 0,
+              "description": "Page number for pagination"
+            }
+          },
+          "required": ["start", "end"],
+          "visible": ["start", "end", "priority", "sources", "tags", "unaggregated", "exclude_aggregate", "page"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["query"],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__GET_EVENT",
+    "description": "Get detailed information about a specific Datadog event including content, metadata, and associated resources.",
+    "tags": ["datadog", "event", "details"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/events/{event_id}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "event_id": {
+              "type": "integer",
+              "description": "The ID of the event"
+            }
+          },
+          "required": ["event_id"],
+          "visible": ["event_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__LIST_SERVICE_DEPENDENCIES",
+    "description": "List service dependencies in Datadog APM to understand service relationships and communication patterns for application monitoring.",
+    "tags": ["datadog", "apm", "services", "dependencies"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/service_dependencies",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering dependencies",
+          "properties": {
+            "start": {
+              "type": "integer",
+              "description": "Unix timestamp for start of analysis period"
+            },
+            "end": {
+              "type": "integer",
+              "description": "Unix timestamp for end of analysis period"
+            },
+            "primary_tag": {
+              "type": "string",
+              "description": "Primary tag for service grouping (e.g., 'env')"
+            }
+          },
+          "required": ["start", "end"],
+          "visible": ["start", "end", "primary_tag"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["query"],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__LIST_SERVICES",
+    "description": "List services monitored by Datadog APM including performance metrics and service catalog information for application observability.",
+    "tags": ["datadog", "apm", "services", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/apm/services",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering services",
+          "properties": {
+            "start": {
+              "type": "integer",
+              "description": "Unix timestamp for start of analysis period"
+            },
+            "end": {
+              "type": "integer",
+              "description": "Unix timestamp for end of analysis period"
+            },
+            "env": {
+              "type": "string",
+              "description": "Environment to filter services by"
+            },
+            "service": {
+              "type": "string",
+              "description": "Specific service name to filter by"
+            }
+          },
+          "required": ["start", "end"],
+          "visible": ["start", "end", "env", "service"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["query"],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__GET_SERVICE_PERFORMANCE",
+    "description": "Get performance statistics for a specific service including latency, throughput, and error rates from Datadog APM.",
+    "tags": ["datadog", "apm", "service", "performance"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/apm/service/{service_name}/stats",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "service_name": {
+              "type": "string",
+              "description": "The name of the service"
+            }
+          },
+          "required": ["service_name"],
+          "visible": ["service_name"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "description": "Query parameters for performance data",
+          "properties": {
+            "start": {
+              "type": "integer",
+              "description": "Unix timestamp for start of analysis period"
+            },
+            "end": {
+              "type": "integer",
+              "description": "Unix timestamp for end of analysis period"
+            },
+            "env": {
+              "type": "string",
+              "description": "Environment to analyze"
+            },
+            "primary_tag": {
+              "type": "string",
+              "description": "Primary tag for grouping (e.g., 'version')"
+            }
+          },
+          "required": ["start", "end"],
+          "visible": ["start", "end", "env", "primary_tag"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "query"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__CREATE_SYNTHETICS_TEST",
+    "description": "Create a synthetic test in Datadog for monitoring website or API availability and performance from multiple global locations.",
+    "tags": ["datadog", "synthetics", "monitoring", "create"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/api/v1/synthetics/tests",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "body": {
+          "type": "object",
+          "description": "The synthetic test configuration",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the synthetic test"
+            },
+            "type": {
+              "type": "string",
+              "enum": ["api", "browser"],
+              "description": "Type of synthetic test"
+            },
+            "subtype": {
+              "type": "string",
+              "enum": ["http", "ssl", "tcp", "dns", "icmp", "websocket"],
+              "description": "Subtype for API tests"
+            },
+            "config": {
+              "type": "object",
+              "description": "Test configuration",
+              "properties": {
+                "request": {
+                  "type": "object",
+                  "description": "Request configuration for API tests",
+                  "properties": {
+                    "method": {
+                      "type": "string",
+                      "enum": ["GET", "POST", "PUT", "DELETE", "PATCH"],
+                      "default": "GET",
+                      "description": "HTTP method for the test"
+                    },
+                    "url": {
+                      "type": "string",
+                      "format": "uri",
+                      "description": "URL to test"
+                    },
+                    "timeout": {
+                      "type": "integer",
+                      "default": 60,
+                      "description": "Timeout for the request in seconds"
+                    }
+                  },
+                  "required": ["url"],
+                  "visible": ["method", "url", "timeout"],
+                  "additionalProperties": false
+                },
+                "assertions": {
+                  "type": "array",
+                  "description": "Test assertions to validate response",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string",
+                        "enum": ["statusCode", "responseTime", "header", "body"],
+                        "description": "Type of assertion"
+                      },
+                      "operator": {
+                        "type": "string",
+                        "enum": ["is", "isNot", "lessThan", "contains", "doesNotContain"],
+                        "description": "Comparison operator"
+                      },
+                      "target": {
+                        "type": "number",
+                        "description": "Target value for comparison"
+                      }
+                    },
+                    "required": ["type", "operator"],
+                    "visible": ["type", "operator", "target"],
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": ["request", "assertions"],
+              "visible": ["request", "assertions"],
+              "additionalProperties": false
+            },
+            "locations": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Test locations (e.g., ['aws:us-east-1', 'aws:eu-west-1'])"
+            },
+            "options": {
+              "type": "object",
+              "description": "Test options",
+              "properties": {
+                "tick_every": {
+                  "type": "integer",
+                  "default": 900,
+                  "description": "Frequency of test execution in seconds"
+                },
+                "retry": {
+                  "type": "object",
+                  "description": "Retry configuration",
+                  "properties": {
+                    "count": {
+                      "type": "integer",
+                      "default": 0,
+                      "description": "Number of retries"
+                    },
+                    "interval": {
+                      "type": "integer",
+                      "default": 300,
+                      "description": "Interval between retries in milliseconds"
+                    }
+                  },
+                  "required": [],
+                  "visible": ["count", "interval"],
+                  "additionalProperties": false
+                },
+                "monitor_options": {
+                  "type": "object",
+                  "description": "Monitor alerting options",
+                  "properties": {
+                    "renotify_interval": {
+                      "type": "integer",
+                      "description": "Minutes between re-notifications"
+                    }
+                  },
+                  "required": [],
+                  "visible": ["renotify_interval"],
+                  "additionalProperties": false
+                }
+              },
+              "required": [],
+              "visible": ["tick_every", "retry", "monitor_options"],
+              "additionalProperties": false
+            },
+            "message": {
+              "type": "string",
+              "description": "Message for notifications when test fails"
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "Tags to associate with the test"
+            }
+          },
+          "required": ["name", "type", "config", "locations"],
+          "visible": ["name", "type", "subtype", "config", "locations", "options", "message", "tags"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["body"],
+      "visible": ["body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__LIST_SYNTHETICS_TESTS",
+    "description": "List all synthetic tests configured in Datadog for monitoring website and API availability across global locations.",
+    "tags": ["datadog", "synthetics", "tests", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/synthetics/tests",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "object",
+          "description": "Query parameters for filtering tests",
+          "properties": {
+            "page_size": {
+              "type": "integer",
+              "default": 100,
+              "description": "Number of tests to return per page"
+            },
+            "page_number": {
+              "type": "integer",
+              "default": 0,
+              "description": "Page number for pagination"
+            }
+          },
+          "required": [],
+          "visible": ["page_size", "page_number"],
+          "additionalProperties": false
+        }
+      },
+      "required": [],
+      "visible": ["query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__GET_SYNTHETICS_TEST",
+    "description": "Get detailed information about a specific synthetic test including configuration, locations, and recent results.",
+    "tags": ["datadog", "synthetics", "test", "details"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/api/v1/synthetics/tests/{public_id}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "public_id": {
+              "type": "string",
+              "description": "The public ID of the synthetic test"
+            }
+          },
+          "required": ["public_id"],
+          "visible": ["public_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DATADOG__DELETE_SYNTHETICS_TEST",
+    "description": "Delete a synthetic test from Datadog. This permanently removes the test and stops monitoring from all configured locations.",
+    "tags": ["datadog", "synthetics", "test", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/api/v1/synthetics/tests/{public_id}",
+      "server_url": "https://api.datadoghq.com"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "description": "The path parameters",
+          "properties": {
+            "public_id": {
+              "type": "string",
+              "description": "The public ID of the synthetic test to delete"
+            }
+          },
+          "required": ["public_id"],
+          "visible": ["public_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  }
+]

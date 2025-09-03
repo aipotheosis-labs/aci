@@ -1,0 +1,1391 @@
+[
+    {
+        "name": "TYPEFORM__LIST_FORMS",
+        "description": "Retrieve all forms in the authenticated account with metadata and status information.",
+        "tags": ["forms", "list", "management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/forms",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering forms",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "maximum": 200,
+                            "description": "Number of forms per page"
+                        },
+                        "search": {
+                            "type": "string",
+                            "description": "Search forms by title"
+                        },
+                        "workspace_id": {
+                            "type": "string",
+                            "description": "Filter forms by workspace ID"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page", "page_size", "search", "workspace_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__CREATE_FORM",
+        "description": "Create a new form with questions, design settings, and configuration options.",
+        "tags": ["forms", "create", "builder"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/forms",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Form creation parameters",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "description": "Title of the form"
+                        },
+                        "workspace": {
+                            "type": "object",
+                            "description": "Workspace assignment",
+                            "properties": {
+                                "href": {
+                                    "type": "string",
+                                    "description": "Workspace URL reference"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["href"],
+                            "additionalProperties": false
+                        },
+                        "settings": {
+                            "type": "object",
+                            "description": "Form settings and behavior",
+                            "properties": {
+                                "language": {
+                                    "type": "string",
+                                    "default": "en",
+                                    "description": "Language code for the form"
+                                },
+                                "progress_bar": {
+                                    "type": "string",
+                                    "enum": ["percentage", "proportion"],
+                                    "description": "Type of progress bar to show"
+                                },
+                                "show_progress_bar": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Whether to show progress bar"
+                                },
+                                "show_typeform_branding": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Whether to show Typeform branding"
+                                },
+                                "meta": {
+                                    "type": "object",
+                                    "description": "Meta settings for SEO and sharing",
+                                    "properties": {
+                                        "allow_indexing": {
+                                            "type": "boolean",
+                                            "default": false,
+                                            "description": "Allow search engines to index the form"
+                                        }
+                                    },
+                                    "required": [],
+                                    "visible": ["allow_indexing"],
+                                    "additionalProperties": false
+                                }
+                            },
+                            "required": [],
+                            "visible": ["language", "progress_bar", "show_progress_bar", "show_typeform_branding", "meta"],
+                            "additionalProperties": false
+                        },
+                        "fields": {
+                            "type": "array",
+                            "description": "Array of questions/fields in the form",
+                            "items": {
+                                "type": "object",
+                                "description": "Field configuration",
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "description": "Question title"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": ["short_text", "long_text", "multiple_choice", "yes_no", "email", "number", "dropdown", "date", "file_upload", "payment"],
+                                        "description": "Type of question field"
+                                    },
+                                    "ref": {
+                                        "type": "string",
+                                        "description": "Reference ID for the field"
+                                    },
+                                    "required": {
+                                        "type": "boolean",
+                                        "default": false,
+                                        "description": "Whether the field is required"
+                                    },
+                                    "properties": {
+                                        "type": "object",
+                                        "description": "Field-specific properties",
+                                        "additionalProperties": true
+                                    }
+                                },
+                                "required": ["title", "type"],
+                                "visible": ["title", "type", "ref", "required", "properties"],
+                                "additionalProperties": false
+                            }
+                        }
+                    },
+                    "required": ["title"],
+                    "visible": ["title", "workspace", "settings", "fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__GET_FORM",
+        "description": "Retrieve detailed information about a specific form including structure and settings.",
+        "tags": ["forms", "get", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/forms/{form_id}",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "form_id": {
+                            "type": "string",
+                            "description": "ID of the form to retrieve"
+                        }
+                    },
+                    "required": ["form_id"],
+                    "visible": ["form_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__UPDATE_FORM",
+        "description": "Update an existing form's title, settings, questions, and configuration.",
+        "tags": ["forms", "update", "builder"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/forms/{form_id}",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "form_id": {
+                            "type": "string",
+                            "description": "ID of the form to update"
+                        }
+                    },
+                    "required": ["form_id"],
+                    "visible": ["form_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Form update parameters",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "description": "Updated title of the form"
+                        },
+                        "settings": {
+                            "type": "object",
+                            "description": "Updated form settings",
+                            "properties": {
+                                "is_public": {
+                                    "type": "boolean",
+                                    "description": "Whether the form is publicly accessible"
+                                },
+                                "show_progress_bar": {
+                                    "type": "boolean",
+                                    "description": "Whether to show progress bar"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["is_public", "show_progress_bar"],
+                            "additionalProperties": false
+                        },
+                        "fields": {
+                            "type": "array",
+                            "description": "Updated array of fields",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            }
+                        }
+                    },
+                    "required": [],
+                    "visible": ["title", "settings", "fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__DELETE_FORM",
+        "description": "Delete a form permanently including all associated responses and data.",
+        "tags": ["forms", "delete", "cleanup"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/forms/{form_id}",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "form_id": {
+                            "type": "string",
+                            "description": "ID of the form to delete"
+                        }
+                    },
+                    "required": ["form_id"],
+                    "visible": ["form_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__GET_FORM_RESPONSES",
+        "description": "Retrieve all responses submitted to a form with filtering and pagination options.",
+        "tags": ["responses", "data", "submissions"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/forms/{form_id}/responses",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "form_id": {
+                            "type": "string",
+                            "description": "ID of the form to get responses for"
+                        }
+                    },
+                    "required": ["form_id"],
+                    "visible": ["form_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for filtering responses",
+                    "properties": {
+                        "page_size": {
+                            "type": "integer",
+                            "maximum": 1000,
+                            "description": "Number of responses per page"
+                        },
+                        "since": {
+                            "type": "string",
+                            "description": "Retrieve responses submitted since this date (ISO 8601 format)"
+                        },
+                        "until": {
+                            "type": "string",
+                            "description": "Retrieve responses submitted until this date (ISO 8601 format)"
+                        },
+                        "after": {
+                            "type": "string",
+                            "description": "Retrieve responses after this token (pagination)"
+                        },
+                        "before": {
+                            "type": "string",
+                            "description": "Retrieve responses before this token (pagination)"
+                        },
+                        "included_response_ids": {
+                            "type": "string",
+                            "description": "Comma-separated list of response IDs to include"
+                        },
+                        "completed": {
+                            "type": "boolean",
+                            "description": "Filter by completion status"
+                        },
+                        "sort": {
+                            "type": "string",
+                            "enum": ["submitted_at", "submitted_at,desc"],
+                            "description": "Sort order for responses"
+                        },
+                        "query": {
+                            "type": "string",
+                            "description": "Search query for filtering responses by answer content"
+                        },
+                        "fields": {
+                            "type": "string",
+                            "description": "Comma-separated list of field IDs to include in response"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page_size", "since", "until", "after", "before", "included_response_ids", "completed", "sort", "query", "fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__DELETE_FORM_RESPONSES",
+        "description": "Delete specific responses from a form for data cleanup and privacy compliance.",
+        "tags": ["responses", "delete", "cleanup"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/forms/{form_id}/responses",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "form_id": {
+                            "type": "string",
+                            "description": "ID of the form to delete responses from"
+                        }
+                    },
+                    "required": ["form_id"],
+                    "visible": ["form_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for specifying responses to delete",
+                    "properties": {
+                        "included_tokens": {
+                            "type": "string",
+                            "description": "Comma-separated list of response tokens to delete"
+                        }
+                    },
+                    "required": ["included_tokens"],
+                    "visible": ["included_tokens"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "query"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__GET_FORM_INSIGHTS",
+        "description": "Retrieve analytics and insights for a form including completion rates and response statistics.",
+        "tags": ["analytics", "insights", "statistics"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/insights/{form_id}/summary",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "form_id": {
+                            "type": "string",
+                            "description": "ID of the form to get insights for"
+                        }
+                    },
+                    "required": ["form_id"],
+                    "visible": ["form_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__LIST_WORKSPACES",
+        "description": "Retrieve all workspaces accessible to the authenticated user for organization management.",
+        "tags": ["workspaces", "list", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/workspaces",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for workspace listing",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "maximum": 200,
+                            "description": "Number of workspaces per page"
+                        },
+                        "search": {
+                            "type": "string",
+                            "description": "Search workspaces by name"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page", "page_size", "search"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__CREATE_WORKSPACE",
+        "description": "Create a new workspace for organizing forms and managing team collaboration.",
+        "tags": ["workspaces", "create", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/workspaces",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Workspace creation parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the workspace"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__GET_WORKSPACE",
+        "description": "Retrieve detailed information about a specific workspace including members and settings.",
+        "tags": ["workspaces", "get", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/workspaces/{workspace_id}",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "workspace_id": {
+                            "type": "string",
+                            "description": "ID of the workspace to retrieve"
+                        }
+                    },
+                    "required": ["workspace_id"],
+                    "visible": ["workspace_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__UPDATE_WORKSPACE",
+        "description": "Update workspace information including name and settings for better organization.",
+        "tags": ["workspaces", "update", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/workspaces/{workspace_id}",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "workspace_id": {
+                            "type": "string",
+                            "description": "ID of the workspace to update"
+                        }
+                    },
+                    "required": ["workspace_id"],
+                    "visible": ["workspace_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Workspace update parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Updated name for the workspace"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__DELETE_WORKSPACE",
+        "description": "Delete a workspace permanently including all contained forms and data.",
+        "tags": ["workspaces", "delete", "cleanup"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/workspaces/{workspace_id}",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "workspace_id": {
+                            "type": "string",
+                            "description": "ID of the workspace to delete"
+                        }
+                    },
+                    "required": ["workspace_id"],
+                    "visible": ["workspace_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__LIST_THEMES",
+        "description": "Retrieve available themes for customizing form appearance and branding.",
+        "tags": ["themes", "design", "customization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/themes",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "description": "Query parameters for theme listing",
+                    "properties": {
+                        "page": {
+                            "type": "integer",
+                            "description": "Page number for pagination"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "maximum": 200,
+                            "description": "Number of themes per page"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page", "page_size"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__CREATE_THEME",
+        "description": "Create a custom theme for consistent branding across multiple forms.",
+        "tags": ["themes", "create", "branding"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/themes",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Theme creation parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Name of the theme"
+                        },
+                        "colors": {
+                            "type": "object",
+                            "description": "Color scheme for the theme",
+                            "properties": {
+                                "background": {
+                                    "type": "string",
+                                    "description": "Background color (hex code)"
+                                },
+                                "question": {
+                                    "type": "string",
+                                    "description": "Question text color (hex code)"
+                                },
+                                "answer": {
+                                    "type": "string",
+                                    "description": "Answer text color (hex code)"
+                                },
+                                "button": {
+                                    "type": "string",
+                                    "description": "Button color (hex code)"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["background", "question", "answer", "button"],
+                            "additionalProperties": false
+                        },
+                        "font": {
+                            "type": "string",
+                            "description": "Font family for the theme"
+                        }
+                    },
+                    "required": ["name"],
+                    "visible": ["name", "colors", "font"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__GET_THEME",
+        "description": "Retrieve detailed information about a specific theme including color schemes and fonts.",
+        "tags": ["themes", "get", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/themes/{theme_id}",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "theme_id": {
+                            "type": "string",
+                            "description": "ID of the theme to retrieve"
+                        }
+                    },
+                    "required": ["theme_id"],
+                    "visible": ["theme_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__UPDATE_THEME",
+        "description": "Update an existing theme's colors, fonts, and design elements for brand consistency.",
+        "tags": ["themes", "update", "branding"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/themes/{theme_id}",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "theme_id": {
+                            "type": "string",
+                            "description": "ID of the theme to update"
+                        }
+                    },
+                    "required": ["theme_id"],
+                    "visible": ["theme_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Theme update parameters",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "Updated name for the theme"
+                        },
+                        "colors": {
+                            "type": "object",
+                            "description": "Updated color scheme",
+                            "properties": {
+                                "background": {
+                                    "type": "string",
+                                    "description": "Background color (hex code)"
+                                },
+                                "question": {
+                                    "type": "string",
+                                    "description": "Question text color (hex code)"
+                                },
+                                "answer": {
+                                    "type": "string",
+                                    "description": "Answer text color (hex code)"
+                                },
+                                "button": {
+                                    "type": "string",
+                                    "description": "Button color (hex code)"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["background", "question", "answer", "button"],
+                            "additionalProperties": false
+                        },
+                        "font": {
+                            "type": "string",
+                            "description": "Updated font family"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["name", "colors", "font"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__DELETE_THEME",
+        "description": "Delete a custom theme permanently from the account.",
+        "tags": ["themes", "delete", "cleanup"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/themes/{theme_id}",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "theme_id": {
+                            "type": "string",
+                            "description": "ID of the theme to delete"
+                        }
+                    },
+                    "required": ["theme_id"],
+                    "visible": ["theme_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__LIST_IMAGES",
+        "description": "Retrieve uploaded images that can be used in forms for enhanced visual design.",
+        "tags": ["images", "assets", "media"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/images",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__UPLOAD_IMAGE",
+        "description": "Upload an image file to be used in forms for logos, backgrounds, or question illustrations.",
+        "tags": ["images", "upload", "media"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/images",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "object",
+                    "description": "Image upload parameters",
+                    "properties": {
+                        "image": {
+                            "type": "string",
+                            "format": "binary",
+                            "description": "Image file to upload (JPG, GIF, PNG)"
+                        },
+                        "file_name": {
+                            "type": "string",
+                            "description": "Name for the uploaded image file"
+                        }
+                    },
+                    "required": ["image"],
+                    "visible": ["image", "file_name"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__GET_IMAGE",
+        "description": "Retrieve information about a specific uploaded image including URL and metadata.",
+        "tags": ["images", "get", "details"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/images/{image_id}",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "image_id": {
+                            "type": "string",
+                            "description": "ID of the image to retrieve"
+                        }
+                    },
+                    "required": ["image_id"],
+                    "visible": ["image_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__DELETE_IMAGE",
+        "description": "Delete an uploaded image from the account to clean up unused assets.",
+        "tags": ["images", "delete", "cleanup"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/images/{image_id}",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "image_id": {
+                            "type": "string",
+                            "description": "ID of the image to delete"
+                        }
+                    },
+                    "required": ["image_id"],
+                    "visible": ["image_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__CREATE_WEBHOOK_TAG",
+        "description": "Create webhook tags for organizing and filtering webhook notifications by event types.",
+        "tags": ["webhooks", "tags", "organization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/webhooks/{webhook_id}/tags",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "webhook_id": {
+                            "type": "string",
+                            "description": "ID of the webhook to add tags to"
+                        }
+                    },
+                    "required": ["webhook_id"],
+                    "visible": ["webhook_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Tags to add to webhook",
+                    "properties": {
+                        "tags": {
+                            "type": "array",
+                            "items": {"type": "string"},
+                            "description": "Array of tag names to add to the webhook"
+                        }
+                    },
+                    "required": ["tags"],
+                    "visible": ["tags"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__GET_ACCOUNT_INFO",
+        "description": "Retrieve account information including plan details, usage limits, and user profile.",
+        "tags": ["account", "profile", "info"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/me",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "required": [],
+            "visible": [],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__DUPLICATE_FORM",
+        "description": "Create a copy of an existing form with all questions, settings, and design elements.",
+        "tags": ["forms", "duplicate", "copy"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/forms/{form_id}/copy",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "form_id": {
+                            "type": "string",
+                            "description": "ID of the form to duplicate"
+                        }
+                    },
+                    "required": ["form_id"],
+                    "visible": ["form_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Duplication parameters",
+                    "properties": {
+                        "workspace_href": {
+                            "type": "string",
+                            "description": "Workspace URL to copy the form to"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["workspace_href"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__GET_FORM_MESSAGES",
+        "description": "Retrieve customizable messages for a form including welcome screen, thank you page, and error messages.",
+        "tags": ["messages", "customization", "text"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/forms/{form_id}/messages",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "form_id": {
+                            "type": "string",
+                            "description": "ID of the form to get messages for"
+                        }
+                    },
+                    "required": ["form_id"],
+                    "visible": ["form_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__UPDATE_FORM_MESSAGES",
+        "description": "Update welcome screens, thank you pages, and other form messages for better user experience.",
+        "tags": ["messages", "update", "customization"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/forms/{form_id}/messages",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "form_id": {
+                            "type": "string",
+                            "description": "ID of the form to update messages for"
+                        }
+                    },
+                    "required": ["form_id"],
+                    "visible": ["form_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Messages update parameters",
+                    "properties": {
+                        "label": {
+                            "type": "string",
+                            "description": "Label for the message screen"
+                        },
+                        "description": {
+                            "type": "string",
+                            "description": "Description or content for the message"
+                        },
+                        "button_text": {
+                            "type": "string",
+                            "description": "Text for action buttons"
+                        },
+                        "show_button": {
+                            "type": "boolean",
+                            "description": "Whether to show action button"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["label", "description", "button_text", "show_button"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__CREATE_WEBHOOK_ENDPOINT",
+        "description": "Create a webhook endpoint for receiving real-time form submission notifications.",
+        "tags": ["webhooks", "endpoints", "automation"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PUT",
+            "path": "/forms/{form_id}/webhooks/{webhook_tag}",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "form_id": {
+                            "type": "string",
+                            "description": "ID of the form to create webhook for"
+                        },
+                        "webhook_tag": {
+                            "type": "string",
+                            "description": "Unique tag for the webhook"
+                        }
+                    },
+                    "required": ["form_id", "webhook_tag"],
+                    "visible": ["form_id", "webhook_tag"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "description": "Webhook endpoint configuration",
+                    "properties": {
+                        "url": {
+                            "type": "string",
+                            "description": "URL endpoint to send webhook notifications"
+                        },
+                        "enabled": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Whether the webhook is enabled"
+                        },
+                        "secret": {
+                            "type": "string",
+                            "description": "Secret key for webhook verification"
+                        },
+                        "verify_ssl": {
+                            "type": "boolean",
+                            "default": true,
+                            "description": "Whether to verify SSL certificates"
+                        }
+                    },
+                    "required": ["url"],
+                    "visible": ["url", "enabled", "secret", "verify_ssl"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__GET_FORM_WEBHOOKS",
+        "description": "Retrieve all webhook configurations for a specific form to monitor automation setup.",
+        "tags": ["webhooks", "list", "form"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/forms/{form_id}/webhooks",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "form_id": {
+                            "type": "string",
+                            "description": "ID of the form to get webhooks for"
+                        }
+                    },
+                    "required": ["form_id"],
+                    "visible": ["form_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "TYPEFORM__DELETE_FORM_WEBHOOK",
+        "description": "Delete a specific webhook from a form to stop receiving submission notifications.",
+        "tags": ["webhooks", "delete", "form"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/forms/{form_id}/webhooks/{webhook_tag}",
+            "server_url": "https://api.typeform.com"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "description": "Path parameters",
+                    "properties": {
+                        "form_id": {
+                            "type": "string",
+                            "description": "ID of the form containing the webhook"
+                        },
+                        "webhook_tag": {
+                            "type": "string",
+                            "description": "Tag of the webhook to delete"
+                        }
+                    },
+                    "required": ["form_id", "webhook_tag"],
+                    "visible": ["form_id", "webhook_tag"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    }
+]

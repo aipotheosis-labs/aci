@@ -1,0 +1,1078 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "WhatsApp Business API",
+    "version": "v20.0"
+  },
+  "servers": [
+    {
+      "url": "https://graph.facebook.com/v20.0"
+    }
+  ],
+  "paths": {
+    "/{phone_number_id}/messages": {
+      "post": {
+        "summary": "Send message to customer",
+        "description": "Send text, media, or template messages to customers through WhatsApp Business API with delivery tracking.",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business phone number ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messaging_product": {"type": "string", "enum": ["whatsapp"], "default": "whatsapp"},
+                  "recipient_type": {"type": "string", "enum": ["individual"], "default": "individual"},
+                  "to": {"type": "string"},
+                  "type": {"type": "string", "enum": ["text", "template", "image", "document", "audio", "video", "location", "contacts"]},
+                  "text": {
+                    "type": "object",
+                    "properties": {
+                      "body": {"type": "string"},
+                      "preview_url": {"type": "boolean"}
+                    },
+                    "additionalProperties": false
+                  },
+                  "template": {
+                    "type": "object",
+                    "properties": {
+                      "name": {"type": "string"},
+                      "language": {"type": "object"},
+                      "components": {"type": "array"}
+                    },
+                    "additionalProperties": false
+                  },
+                  "image": {
+                    "type": "object",
+                    "properties": {
+                      "link": {"type": "string"},
+                      "caption": {"type": "string"}
+                    },
+                    "additionalProperties": false
+                  },
+                  "document": {
+                    "type": "object",
+                    "properties": {
+                      "link": {"type": "string"},
+                      "filename": {"type": "string"},
+                      "caption": {"type": "string"}
+                    },
+                    "additionalProperties": false
+                  }
+                },
+                "required": ["to", "type"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Message sent successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "messaging_product": {"type": "string"},
+                    "contacts": {"type": "array"},
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "message_status": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{phone_number_id}/media": {
+      "post": {
+        "summary": "Upload media file",
+        "description": "Upload images, documents, audio, or video files to use in WhatsApp messages with automatic format validation.",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business phone number ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {"type": "string", "format": "binary"},
+                  "type": {"type": "string", "enum": ["image", "document", "audio", "video"]},
+                  "messaging_product": {"type": "string", "enum": ["whatsapp"], "default": "whatsapp"}
+                },
+                "required": ["file", "type"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Media uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "string"},
+                    "url": {"type": "string"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{media_id}": {
+      "get": {
+        "summary": "Get media file URL",
+        "description": "Retrieve the download URL for a previously uploaded media file with expiration and access controls.",
+        "parameters": [
+          {
+            "name": "media_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the media file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Media file details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": {"type": "string"},
+                    "mime_type": {"type": "string"},
+                    "sha256": {"type": "string"},
+                    "file_size": {"type": "integer"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{business_account_id}/message_templates": {
+      "get": {
+        "summary": "List message templates",
+        "description": "Retrieve all approved message templates for automated customer communications and marketing campaigns.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["APPROVED", "PENDING", "REJECTED"]},
+            "description": "Filter templates by approval status"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["AUTHENTICATION", "MARKETING", "UTILITY"]},
+            "description": "Filter templates by category"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of message templates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "name": {"type": "string"},
+                          "status": {"type": "string"},
+                          "category": {"type": "string"},
+                          "language": {"type": "string"},
+                          "components": {"type": "array"}
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "paging": {"type": "object"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create message template",
+        "description": "Create a new message template for approval by WhatsApp with customizable content and variables for automated messaging.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {"type": "string"},
+                  "category": {"type": "string", "enum": ["AUTHENTICATION", "MARKETING", "UTILITY"]},
+                  "language": {"type": "string"},
+                  "components": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "type": {"type": "string", "enum": ["HEADER", "BODY", "FOOTER", "BUTTONS"]},
+                        "text": {"type": "string"},
+                        "format": {"type": "string"}
+                      },
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": ["name", "category", "language", "components"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Template created and submitted for approval"
+          }
+        }
+      }
+    },
+    "/{business_account_id}/message_templates/{template_id}": {
+      "get": {
+        "summary": "Get message template details",
+        "description": "Retrieve detailed information about a specific message template including approval status and usage statistics.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          },
+          {
+            "name": "template_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the message template"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Template details"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete message template",
+        "description": "Remove a message template from the business account. This action cannot be undone.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          },
+          {
+            "name": "template_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the template to delete"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Template deleted successfully"
+          }
+        }
+      }
+    },
+    "/{phone_number_id}/messages/{message_id}": {
+      "get": {
+        "summary": "Get message status",
+        "description": "Check the delivery status and read receipts for a sent message with detailed tracking information.",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business phone number ID"
+          },
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the message"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Message status details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "string"},
+                    "status": {"type": "string", "enum": ["sent", "delivered", "read", "failed"]},
+                    "timestamp": {"type": "string"},
+                    "recipient": {"type": "string"},
+                    "error": {"type": "object"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{phone_number_id}/conversations": {
+      "get": {
+        "summary": "List customer conversations",
+        "description": "Retrieve all active and recent customer conversations with message history and metadata for customer support management.",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business phone number ID"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 20, "maximum": 100},
+            "description": "Number of conversations to return"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["active", "archived", "all"]},
+            "description": "Filter conversations by status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of conversations",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "conversations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "customer_phone": {"type": "string"},
+                          "last_message": {"type": "object"},
+                          "message_count": {"type": "integer"},
+                          "status": {"type": "string"},
+                          "created_at": {"type": "string"},
+                          "updated_at": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "paging": {"type": "object"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{phone_number_id}/conversations/{conversation_id}/messages": {
+      "get": {
+        "summary": "Get conversation message history",
+        "description": "Retrieve complete message history for a customer conversation with chronological ordering and media attachments.",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business phone number ID"
+          },
+          {
+            "name": "conversation_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Unique identifier for the conversation"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 50},
+            "description": "Number of messages to return"
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "schema": {"type": "string"},
+            "description": "Cursor for pagination to get older messages"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Conversation message history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "messages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "from": {"type": "string"},
+                          "to": {"type": "string"},
+                          "type": {"type": "string"},
+                          "timestamp": {"type": "string"},
+                          "text": {"type": "object"},
+                          "media": {"type": "object"},
+                          "status": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    },
+                    "paging": {"type": "object"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{phone_number_id}/phone_numbers": {
+      "get": {
+        "summary": "Get phone number information",
+        "description": "Retrieve details about the WhatsApp Business phone number including verification status and capabilities.",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business phone number ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Phone number details",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "verified_name": {"type": "string"},
+                    "display_phone_number": {"type": "string"},
+                    "quality_rating": {"type": "string"},
+                    "platform": {"type": "string"},
+                    "throughput": {"type": "object"},
+                    "webhook_configuration": {"type": "object"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{business_account_id}/phone_numbers": {
+      "get": {
+        "summary": "List all business phone numbers",
+        "description": "Retrieve all phone numbers associated with the WhatsApp Business Account with their verification and capability status.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of phone numbers",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {"type": "string"},
+                          "verified_name": {"type": "string"},
+                          "display_phone_number": {"type": "string"},
+                          "quality_rating": {"type": "string"},
+                          "status": {"type": "string"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{phone_number_id}/webhooks": {
+      "post": {
+        "summary": "Configure webhook",
+        "description": "Set up webhook endpoint to receive real-time notifications for incoming messages, delivery statuses, and customer interactions.",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business phone number ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "callback_url": {"type": "string", "format": "uri"},
+                  "verify_token": {"type": "string"},
+                  "fields": {"type": "array", "items": {"type": "string", "enum": ["messages", "message_deliveries", "message_reads", "message_echoes"]}}
+                },
+                "required": ["callback_url", "verify_token", "fields"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Webhook configured successfully"
+          }
+        }
+      }
+    },
+    "/{business_account_id}/analytics": {
+      "get": {
+        "summary": "Get messaging analytics",
+        "description": "Retrieve comprehensive analytics including message volume, delivery rates, conversation metrics, and customer engagement data.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          },
+          {
+            "name": "start",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"},
+            "description": "Start date for analytics period"
+          },
+          {
+            "name": "end",
+            "in": "query",
+            "schema": {"type": "string", "format": "date"},
+            "description": "End date for analytics period"
+          },
+          {
+            "name": "granularity",
+            "in": "query",
+            "schema": {"type": "string", "enum": ["HOUR", "DAY", "MONTH"], "default": "DAY"},
+            "description": "Data granularity for analytics"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analytics data",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "analytics": {
+                      "type": "object",
+                      "properties": {
+                        "phone_numbers": {"type": "array"},
+                        "conversation_analytics": {"type": "object"},
+                        "sent": {"type": "integer"},
+                        "delivered": {"type": "integer"},
+                        "read": {"type": "integer"},
+                        "cost": {"type": "object"}
+                      },
+                      "additionalProperties": false
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{business_account_id}/commerce_settings": {
+      "get": {
+        "summary": "Get commerce settings",
+        "description": "Retrieve WhatsApp Business commerce configuration including catalog settings and shopping features.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Commerce settings"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update commerce settings",
+        "description": "Configure WhatsApp Business shopping features, product catalog integration, and payment options.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "is_catalog_visible": {"type": "boolean"},
+                  "is_cart_enabled": {"type": "boolean"},
+                  "catalog_id": {"type": "string"}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Commerce settings updated successfully"
+          }
+        }
+      }
+    },
+    "/{business_account_id}/subscribed_apps": {
+      "get": {
+        "summary": "List subscribed apps",
+        "description": "Retrieve all apps subscribed to receive webhook notifications for this WhatsApp Business Account.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of subscribed apps"
+          }
+        }
+      }
+    },
+    "/{phone_number_id}/register": {
+      "post": {
+        "summary": "Register phone number",
+        "description": "Register a phone number with WhatsApp Business API for message sending capabilities with verification process.",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business phone number ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messaging_product": {"type": "string", "enum": ["whatsapp"], "default": "whatsapp"},
+                  "pin": {"type": "string"}
+                },
+                "required": ["pin"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Phone number registered successfully"
+          }
+        }
+      }
+    },
+    "/{phone_number_id}/deregister": {
+      "post": {
+        "summary": "Deregister phone number",
+        "description": "Deregister a phone number from WhatsApp Business API to stop message sending capabilities.",
+        "parameters": [
+          {
+            "name": "phone_number_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business phone number ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "messaging_product": {"type": "string", "enum": ["whatsapp"], "default": "whatsapp"}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Phone number deregistered successfully"
+          }
+        }
+      }
+    },
+    "/{business_account_id}/uploads": {
+      "post": {
+        "summary": "Upload session start",
+        "description": "Initiate an upload session for large media files with resumable upload capabilities and progress tracking.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file_length": {"type": "integer"},
+                  "file_type": {"type": "string"},
+                  "file_name": {"type": "string"}
+                },
+                "required": ["file_length", "file_type"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Upload session created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {"type": "string"},
+                    "upload_url": {"type": "string"}
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{business_account_id}/contacts": {
+      "get": {
+        "summary": "List customer contacts",
+        "description": "Retrieve customer contact information and preferences for personalized messaging and segmentation.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {"type": "integer", "default": 20},
+            "description": "Number of contacts to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of contacts",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "contacts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "wa_id": {"type": "string"},
+                          "profile": {"type": "object"},
+                          "last_seen": {"type": "string"},
+                          "tags": {"type": "array"}
+                        },
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/{business_account_id}/contacts/{contact_id}/tags": {
+      "post": {
+        "summary": "Tag customer contact",
+        "description": "Add tags to customer contacts for segmentation, personalization, and automated workflow targeting.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          },
+          {
+            "name": "contact_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Customer contact identifier"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tags": {"type": "array", "items": {"type": "string"}}
+                },
+                "required": ["tags"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Contact tagged successfully"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Remove tags from contact",
+        "description": "Remove specific tags from a customer contact to update segmentation and targeting criteria.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          },
+          {
+            "name": "contact_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "Customer contact identifier"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "tags": {"type": "array", "items": {"type": "string"}}
+                },
+                "required": ["tags"],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Tags removed successfully"
+          }
+        }
+      }
+    },
+    "/{business_account_id}/business_profile": {
+      "get": {
+        "summary": "Get business profile",
+        "description": "Retrieve WhatsApp Business profile information including description, website, and contact details visible to customers.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Business profile information"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Update business profile",
+        "description": "Update business profile information including description, address, website, and hours to improve customer experience.",
+        "parameters": [
+          {
+            "name": "business_account_id",
+            "in": "path",
+            "required": true,
+            "schema": {"type": "string"},
+            "description": "WhatsApp Business Account ID"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "about": {"type": "string"},
+                  "address": {"type": "string"},
+                  "description": {"type": "string"},
+                  "email": {"type": "string", "format": "email"},
+                  "profile_picture_url": {"type": "string"},
+                  "websites": {"type": "array", "items": {"type": "string"}},
+                  "vertical": {"type": "string"}
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Business profile updated successfully"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearer_token": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    }
+  },
+  "security": [
+    {
+      "bearer_token": []
+    }
+  ]
+}

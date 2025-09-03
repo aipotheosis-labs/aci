@@ -712,5 +712,1090 @@
       "visible": ["path", "body"],
       "additionalProperties": false
     }
+  },
+  {
+    "name": "DOCUSIGN__GET_TEMPLATE",
+    "description": "Get detailed information about a specific DocuSign template including documents, recipients, and signature fields configuration.",
+    "tags": ["template", "details", "configuration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/templates/{template_id}",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "template_id": {
+              "type": "string",
+              "description": "Unique identifier for the template"
+            }
+          },
+          "required": ["account_id", "template_id"],
+          "visible": ["account_id", "template_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "include": {
+              "type": "string",
+              "description": "Additional template information to include (e.g., 'recipients')"
+            }
+          },
+          "required": [],
+          "visible": ["include"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__UPDATE_TEMPLATE",
+    "description": "Update an existing DocuSign template properties such as name, description, and email subject.",
+    "tags": ["template", "update", "edit"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/restapi/v2.1/accounts/{account_id}/templates/{template_id}",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "template_id": {
+              "type": "string",
+              "description": "Unique identifier for the template to update"
+            }
+          },
+          "required": ["account_id", "template_id"],
+          "visible": ["account_id", "template_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Updated name of the template"
+            },
+            "description": {
+              "type": "string",
+              "description": "Updated description of the template"
+            },
+            "emailSubject": {
+              "type": "string",
+              "description": "Updated default email subject"
+            }
+          },
+          "required": [],
+          "visible": ["name", "description", "emailSubject"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__DELETE_TEMPLATE",
+    "description": "Delete a DocuSign template. This permanently removes the template from the account.",
+    "tags": ["template", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/restapi/v2.1/accounts/{account_id}/templates/{template_id}",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "template_id": {
+              "type": "string",
+              "description": "Unique identifier for the template to delete"
+            }
+          },
+          "required": ["account_id", "template_id"],
+          "visible": ["account_id", "template_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__GET_ACCOUNT_INFO",
+    "description": "Get information about the DocuSign account including plan details, settings, and capabilities.",
+    "tags": ["account", "info", "settings"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            }
+          },
+          "required": ["account_id"],
+          "visible": ["account_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__LIST_FOLDERS",
+    "description": "List folders in the DocuSign account for organizing envelopes and templates. This helps with document management and organization.",
+    "tags": ["folders", "organization", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/folders",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            }
+          },
+          "required": ["account_id"],
+          "visible": ["account_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "include": {
+              "type": "string",
+              "description": "Additional folder information to include"
+            },
+            "include_items": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include folder items (envelopes) in response"
+            },
+            "start_position": {
+              "type": "integer",
+              "default": 0,
+              "description": "Starting position for pagination"
+            },
+            "template": {
+              "type": "string",
+              "description": "Filter folders by template association"
+            }
+          },
+          "required": [],
+          "visible": ["include", "include_items", "start_position", "template"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__GET_FOLDER_ITEMS",
+    "description": "Get envelopes and items within a specific DocuSign folder. This allows browsing organized document collections.",
+    "tags": ["folders", "items", "envelopes"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/folders/{folder_id}",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "folder_id": {
+              "type": "string",
+              "description": "Unique identifier for the folder"
+            }
+          },
+          "required": ["account_id", "folder_id"],
+          "visible": ["account_id", "folder_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "count": {
+              "type": "integer",
+              "default": 100,
+              "description": "Number of items to return"
+            },
+            "start_position": {
+              "type": "integer",
+              "default": 0,
+              "description": "Starting position for pagination"
+            },
+            "include_items": {
+              "type": "boolean",
+              "default": true,
+              "description": "Include folder items in response"
+            }
+          },
+          "required": [],
+          "visible": ["count", "start_position", "include_items"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__SEND_REMINDER",
+    "description": "Send a reminder email to recipients who have not yet completed their action on an envelope.",
+    "tags": ["envelope", "reminder", "notification"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes/{envelope_id}/notification",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "envelope_id": {
+              "type": "string",
+              "description": "Unique identifier for the envelope"
+            }
+          },
+          "required": ["account_id", "envelope_id"],
+          "visible": ["account_id", "envelope_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "expirations": {
+              "type": "object",
+              "description": "Expiration settings for the reminder",
+              "properties": {
+                "expireEnabled": {
+                  "type": "boolean",
+                  "default": false,
+                  "description": "Whether to enable expiration"
+                },
+                "expireAfter": {
+                  "type": "integer",
+                  "description": "Days after which envelope expires"
+                },
+                "expireWarn": {
+                  "type": "integer",
+                  "description": "Days before expiration to send warning"
+                }
+              },
+              "required": [],
+              "visible": ["expireEnabled", "expireAfter", "expireWarn"],
+              "additionalProperties": false
+            },
+            "reminders": {
+              "type": "object",
+              "description": "Reminder settings",
+              "properties": {
+                "reminderEnabled": {
+                  "type": "boolean",
+                  "default": true,
+                  "description": "Whether to enable reminders"
+                },
+                "reminderDelay": {
+                  "type": "integer",
+                  "default": 1,
+                  "description": "Days before first reminder"
+                },
+                "reminderFrequency": {
+                  "type": "integer",
+                  "default": 1,
+                  "description": "Frequency of reminders in days"
+                }
+              },
+              "required": [],
+              "visible": ["reminderEnabled", "reminderDelay", "reminderFrequency"],
+              "additionalProperties": false
+            }
+          },
+          "required": [],
+          "visible": ["expirations", "reminders"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__GET_ENVELOPE_AUDIT_EVENTS",
+    "description": "Get audit events and timeline for an envelope showing all actions taken on the document including signatures, views, and status changes.",
+    "tags": ["envelope", "audit", "timeline", "events"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes/{envelope_id}/audit_events",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "envelope_id": {
+              "type": "string",
+              "description": "Unique identifier for the envelope"
+            }
+          },
+          "required": ["account_id", "envelope_id"],
+          "visible": ["account_id", "envelope_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__UPDATE_RECIPIENT",
+    "description": "Update recipient information for an envelope including email, name, and routing order before the envelope is completed.",
+    "tags": ["envelope", "recipient", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes/{envelope_id}/recipients",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "envelope_id": {
+              "type": "string",
+              "description": "Unique identifier for the envelope"
+            }
+          },
+          "required": ["account_id", "envelope_id"],
+          "visible": ["account_id", "envelope_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "signers": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "recipientId": {
+                    "type": "string",
+                    "description": "Unique identifier for the recipient"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email",
+                    "description": "Updated email address"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Updated full name"
+                  },
+                  "routingOrder": {
+                    "type": "integer",
+                    "description": "Updated routing order"
+                  }
+                },
+                "required": ["recipientId"],
+                "visible": ["recipientId", "email", "name", "routingOrder"]
+              },
+              "description": "Array of recipients to update"
+            }
+          },
+          "required": ["signers"],
+          "visible": ["signers"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__RESEND_ENVELOPE",
+    "description": "Resend an envelope to recipients who have not completed their signing action. This helps ensure document completion.",
+    "tags": ["envelope", "resend", "notification"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes/{envelope_id}",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "envelope_id": {
+              "type": "string",
+              "description": "Unique identifier for the envelope to resend"
+            }
+          },
+          "required": ["account_id", "envelope_id"],
+          "visible": ["account_id", "envelope_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "resend_envelope": {
+              "type": "boolean",
+              "default": true,
+              "description": "Flag to trigger resend action"
+            }
+          },
+          "required": [],
+          "visible": ["resend_envelope"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__GET_ENVELOPE_DOCUMENTS",
+    "description": "List all documents within an envelope including document IDs, names, and types for download or management purposes.",
+    "tags": ["envelope", "documents", "list"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes/{envelope_id}/documents",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "envelope_id": {
+              "type": "string",
+              "description": "Unique identifier for the envelope"
+            }
+          },
+          "required": ["account_id", "envelope_id"],
+          "visible": ["account_id", "envelope_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__GET_SIGNING_URL",
+    "description": "Generate an embedded signing URL for a recipient to sign documents within your application instead of via email.",
+    "tags": ["signing", "url", "embedded", "integration"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes/{envelope_id}/views/recipient",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "envelope_id": {
+              "type": "string",
+              "description": "Unique identifier for the envelope"
+            }
+          },
+          "required": ["account_id", "envelope_id"],
+          "visible": ["account_id", "envelope_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "recipientId": {
+              "type": "string",
+              "description": "ID of the recipient who will sign"
+            },
+            "email": {
+              "type": "string",
+              "format": "email",
+              "description": "Email address of the recipient"
+            },
+            "userName": {
+              "type": "string",
+              "description": "Name of the recipient"
+            },
+            "returnUrl": {
+              "type": "string",
+              "format": "uri",
+              "description": "URL to redirect to after signing is complete"
+            },
+            "authenticationMethod": {
+              "type": "string",
+              "enum": ["none", "email", "password"],
+              "default": "none",
+              "description": "Authentication method for the signing session"
+            }
+          },
+          "required": ["recipientId", "email", "userName", "returnUrl"],
+          "visible": ["recipientId", "email", "userName", "returnUrl", "authenticationMethod"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__DOWNLOAD_COMBINED_DOCUMENT",
+    "description": "Download all documents from an envelope as a single combined PDF file. This provides a complete signed document package.",
+    "tags": ["documents", "download", "combined", "pdf"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/envelopes/{envelope_id}/documents/combined",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "envelope_id": {
+              "type": "string",
+              "description": "Unique identifier for the envelope"
+            }
+          },
+          "required": ["account_id", "envelope_id"],
+          "visible": ["account_id", "envelope_id"],
+          "additionalProperties": false
+        },
+        "query": {
+          "type": "object",
+          "properties": {
+            "certificate": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include completion certificate in combined document"
+            },
+            "watermark": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include watermark on the document"
+            }
+          },
+          "required": [],
+          "visible": ["certificate", "watermark"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path", "query"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__CREATE_WEBHOOK",
+    "description": "Create a Connect webhook configuration to receive real-time notifications about envelope status changes and events.",
+    "tags": ["webhook", "connect", "notifications", "events"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "POST",
+      "path": "/restapi/v2.1/accounts/{account_id}/connect",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            }
+          },
+          "required": ["account_id"],
+          "visible": ["account_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "configurationType": {
+              "type": "string",
+              "enum": ["custom"],
+              "default": "custom",
+              "description": "Type of Connect configuration"
+            },
+            "name": {
+              "type": "string",
+              "description": "Name for the webhook configuration"
+            },
+            "urlToPublishTo": {
+              "type": "string",
+              "format": "uri",
+              "description": "Webhook endpoint URL to receive notifications"
+            },
+            "enableLog": {
+              "type": "boolean",
+              "default": true,
+              "description": "Enable logging for webhook events"
+            },
+            "includeDocumentFields": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include document field data in notifications"
+            },
+            "includeSenderAccountasCustomField": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include sender account as custom field"
+            },
+            "includeEnvelopeVoidReason": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include void reason in notifications"
+            },
+            "includeTimeZoneInformation": {
+              "type": "boolean",
+              "default": false,
+              "description": "Include timezone information in timestamps"
+            },
+            "eventData": {
+              "type": "object",
+              "description": "Event configuration",
+              "properties": {
+                "version": {
+                  "type": "string",
+                  "enum": ["restv2.1"],
+                  "default": "restv2.1",
+                  "description": "API version for event data"
+                },
+                "includeData": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": ["recipients", "tabs", "extensions", "folders"]
+                  },
+                  "description": "Additional data to include in webhook events"
+                }
+              },
+              "required": ["version"],
+              "visible": ["version", "includeData"],
+              "additionalProperties": false
+            }
+          },
+          "required": ["configurationType", "name", "urlToPublishTo", "eventData"],
+          "visible": ["configurationType", "name", "urlToPublishTo", "enableLog", "includeDocumentFields", "includeSenderAccountasCustomField", "includeEnvelopeVoidReason", "includeTimeZoneInformation", "eventData"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__LIST_WEBHOOKS",
+    "description": "List all Connect webhook configurations for the account to manage notification settings and endpoints.",
+    "tags": ["webhook", "connect", "list", "configurations"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/connect",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            }
+          },
+          "required": ["account_id"],
+          "visible": ["account_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__UPDATE_WEBHOOK",
+    "description": "Update an existing Connect webhook configuration including URL, settings, and event data preferences.",
+    "tags": ["webhook", "connect", "update"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "PUT",
+      "path": "/restapi/v2.1/accounts/{account_id}/connect/{connect_id}",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "connect_id": {
+              "type": "string",
+              "description": "Unique identifier for the Connect configuration"
+            }
+          },
+          "required": ["account_id", "connect_id"],
+          "visible": ["account_id", "connect_id"],
+          "additionalProperties": false
+        },
+        "header": {
+          "type": "object",
+          "properties": {
+            "Content-Type": {
+              "type": "string",
+              "default": "application/json"
+            }
+          },
+          "required": ["Content-Type"],
+          "visible": [],
+          "additionalProperties": false
+        },
+        "body": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Updated name for the webhook configuration"
+            },
+            "urlToPublishTo": {
+              "type": "string",
+              "format": "uri",
+              "description": "Updated webhook endpoint URL"
+            },
+            "enableLog": {
+              "type": "boolean",
+              "description": "Updated logging setting"
+            },
+            "includeDocumentFields": {
+              "type": "boolean",
+              "description": "Updated document fields inclusion setting"
+            }
+          },
+          "required": [],
+          "visible": ["name", "urlToPublishTo", "enableLog", "includeDocumentFields"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path", "header", "body"],
+      "visible": ["path", "body"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__DELETE_WEBHOOK",
+    "description": "Delete a Connect webhook configuration to stop receiving notifications from DocuSign.",
+    "tags": ["webhook", "connect", "delete"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "DELETE",
+      "path": "/restapi/v2.1/accounts/{account_id}/connect/{connect_id}",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "connect_id": {
+              "type": "string",
+              "description": "Unique identifier for the Connect configuration to delete"
+            }
+          },
+          "required": ["account_id", "connect_id"],
+          "visible": ["account_id", "connect_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__GET_BRAND",
+    "description": "Get branding information for customizing the signing experience including logos, colors, and messaging.",
+    "tags": ["branding", "customization", "appearance"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/brands/{brand_id}",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            },
+            "brand_id": {
+              "type": "string",
+              "description": "Unique identifier for the brand"
+            }
+          },
+          "required": ["account_id", "brand_id"],
+          "visible": ["account_id", "brand_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "DOCUSIGN__LIST_BRANDS",
+    "description": "List all available brands for the account to manage signing experience customization and corporate branding.",
+    "tags": ["branding", "list", "customization"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "rest",
+    "protocol_data": {
+      "method": "GET",
+      "path": "/restapi/v2.1/accounts/{account_id}/brands",
+      "server_url": "https://demo.docusign.net"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "path": {
+          "type": "object",
+          "properties": {
+            "account_id": {
+              "type": "string",
+              "description": "DocuSign account ID"
+            }
+          },
+          "required": ["account_id"],
+          "visible": ["account_id"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["path"],
+      "visible": ["path"],
+      "additionalProperties": false
+    }
   }
 ]

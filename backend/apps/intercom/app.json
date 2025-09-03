@@ -1,0 +1,29 @@
+{
+  "name": "INTERCOM",
+  "display_name": "Intercom",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/intercom.svg",
+  "provider": "Intercom Inc.",
+  "version": "1.0.0",
+  "description": "Intercom is a customer messaging platform that enables businesses to communicate with customers through chat, email, and in-app messages. This integration provides comprehensive customer support, marketing automation, and user engagement capabilities for modern customer communication workflows.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_INTERCOM_APP_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_INTERCOM_APP_CLIENT_SECRET }}",
+      "scope": "read_admins read_companies read_contacts read_conversations read_messages read_users write_companies write_contacts write_conversations write_messages write_users",
+      "authorize_url": "https://app.intercom.com/oauth",
+      "access_token_url": "https://api.intercom.io/auth/eagle/token",
+      "refresh_token_url": "https://api.intercom.io/auth/eagle/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Communication",
+    "Customer Support",
+    "Marketing"
+  ],
+  "visibility": "public",
+  "active": true
+}

@@ -332,5 +332,447 @@
 			],
 			"additionalProperties": false
 		}
+	},
+	{
+		"name": "CODA__GET_DOC",
+		"description": "Retrieves metadata and details for a specific Coda document using the document ID. Returns information such as name, owner, creation date, and workspace details.",
+		"tags": [
+			"coda",
+			"docs"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "GET",
+			"path": "/docs/{doc_id}",
+			"server_url": "https://coda.io/apis/v1"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters",
+					"properties": {
+						"doc_id": {
+							"type": "string",
+							"description": "The ID of the document to retrieve."
+						}
+					},
+					"required": [
+						"doc_id"
+					],
+					"visible": [
+						"doc_id"
+					],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path"
+			],
+			"visible": [
+				"path"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "CODA__GET_TABLE",
+		"description": "Retrieves detailed information about a specific table within a Coda document, including column definitions and table configuration.",
+		"tags": [
+			"coda",
+			"tables"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "GET",
+			"path": "/docs/{doc_id}/tables/{table_id}",
+			"server_url": "https://coda.io/apis/v1"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters",
+					"properties": {
+						"doc_id": {
+							"type": "string",
+							"description": "The ID of the document containing the table."
+						},
+						"table_id": {
+							"type": "string",
+							"description": "The ID of the table to retrieve."
+						}
+					},
+					"required": [
+						"doc_id",
+						"table_id"
+					],
+					"visible": [
+						"doc_id",
+						"table_id"
+					],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path"
+			],
+			"visible": [
+				"path"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "CODA__CREATE_ROW",
+		"description": "Creates a new row in a specified table within a Coda document. Accepts column values and returns the created row with its assigned ID.",
+		"tags": [
+			"coda",
+			"rows"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "POST",
+			"path": "/docs/{doc_id}/tables/{table_id}/rows",
+			"server_url": "https://coda.io/apis/v1"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters",
+					"properties": {
+						"doc_id": {
+							"type": "string",
+							"description": "The ID of the document containing the table."
+						},
+						"table_id": {
+							"type": "string",
+							"description": "The ID of the table to add a row to."
+						}
+					},
+					"required": [
+						"doc_id",
+						"table_id"
+					],
+					"visible": [
+						"doc_id",
+						"table_id"
+					],
+					"additionalProperties": false
+				},
+				"body": {
+					"type": "object",
+					"description": "Row data to create",
+					"properties": {
+						"rows": {
+							"type": "array",
+							"description": "Array of row objects to create",
+							"items": {
+								"type": "object",
+								"properties": {
+									"cells": {
+										"type": "array",
+										"description": "Column values for the new row",
+										"items": {
+											"type": "object",
+											"properties": {
+												"column": {
+													"type": "string",
+													"description": "The column ID or name"
+												},
+												"value": {
+													"description": "The value for this cell (can be string, number, boolean, etc.)"
+												}
+											},
+											"required": [
+												"column",
+												"value"
+											],
+											"visible": [
+												"column",
+												"value"
+											],
+											"additionalProperties": false
+										}
+									}
+								},
+								"required": [
+									"cells"
+								],
+								"visible": [
+									"cells"
+								],
+								"additionalProperties": false
+							}
+						}
+					},
+					"required": [
+						"rows"
+					],
+					"visible": [
+						"rows"
+					],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path",
+				"body"
+			],
+			"visible": [
+				"path",
+				"body"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "CODA__UPDATE_ROW",
+		"description": "Updates an existing row in a Coda table with new column values. Only the specified columns are updated; others remain unchanged.",
+		"tags": [
+			"coda",
+			"rows"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "PUT",
+			"path": "/docs/{doc_id}/tables/{table_id}/rows/{row_id}",
+			"server_url": "https://coda.io/apis/v1"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters",
+					"properties": {
+						"doc_id": {
+							"type": "string",
+							"description": "The ID of the document containing the table."
+						},
+						"table_id": {
+							"type": "string",
+							"description": "The ID of the table containing the row."
+						},
+						"row_id": {
+							"type": "string",
+							"description": "The ID of the row to update."
+						}
+					},
+					"required": [
+						"doc_id",
+						"table_id",
+						"row_id"
+					],
+					"visible": [
+						"doc_id",
+						"table_id",
+						"row_id"
+					],
+					"additionalProperties": false
+				},
+				"body": {
+					"type": "object",
+					"description": "Updated row data",
+					"properties": {
+						"row": {
+							"type": "object",
+							"description": "Row update object",
+							"properties": {
+								"cells": {
+									"type": "array",
+									"description": "Column values to update",
+									"items": {
+										"type": "object",
+										"properties": {
+											"column": {
+												"type": "string",
+												"description": "The column ID or name"
+											},
+											"value": {
+												"description": "The new value for this cell"
+											}
+										},
+										"required": [
+											"column",
+											"value"
+										],
+										"visible": [
+											"column",
+											"value"
+										],
+										"additionalProperties": false
+									}
+								}
+							},
+							"required": [
+								"cells"
+							],
+							"visible": [
+								"cells"
+							],
+							"additionalProperties": false
+						}
+					},
+					"required": [
+						"row"
+					],
+					"visible": [
+						"row"
+					],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path",
+				"body"
+			],
+			"visible": [
+				"path",
+				"body"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "CODA__LIST_COLUMNS",
+		"description": "Retrieves a list of columns within a specified table. Returns column metadata including names, types, and configuration details with pagination support.",
+		"tags": [
+			"coda",
+			"columns"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "GET",
+			"path": "/docs/{doc_id}/tables/{table_id}/columns",
+			"server_url": "https://coda.io/apis/v1"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters",
+					"properties": {
+						"doc_id": {
+							"type": "string",
+							"description": "The ID of the document containing the table."
+						},
+						"table_id": {
+							"type": "string",
+							"description": "The ID of the table to list columns from."
+						}
+					},
+					"required": [
+						"doc_id",
+						"table_id"
+					],
+					"visible": [
+						"doc_id",
+						"table_id"
+					],
+					"additionalProperties": false
+				},
+				"query": {
+					"type": "object",
+					"description": "Query parameters",
+					"properties": {
+						"limit": {
+							"type": "integer",
+							"description": "Maximum number of columns to return. Default is 100; maximum is 100."
+						},
+						"pageToken": {
+							"type": "string",
+							"description": "Token to retrieve the next page of results."
+						}
+					},
+					"required": [],
+					"visible": [
+						"limit",
+						"pageToken"
+					],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path"
+			],
+			"visible": [
+				"path",
+				"query"
+			],
+			"additionalProperties": false
+		}
+	},
+	{
+		"name": "CODA__GET_COLUMN",
+		"description": "Retrieves detailed information about a specific column within a table, including its data type, configuration, and formatting options.",
+		"tags": [
+			"coda",
+			"columns"
+		],
+		"visibility": "public",
+		"active": true,
+		"protocol": "rest",
+		"protocol_data": {
+			"method": "GET",
+			"path": "/docs/{doc_id}/tables/{table_id}/columns/{column_id}",
+			"server_url": "https://coda.io/apis/v1"
+		},
+		"parameters": {
+			"type": "object",
+			"properties": {
+				"path": {
+					"type": "object",
+					"description": "Path parameters",
+					"properties": {
+						"doc_id": {
+							"type": "string",
+							"description": "The ID of the document containing the table."
+						},
+						"table_id": {
+							"type": "string",
+							"description": "The ID of the table containing the column."
+						},
+						"column_id": {
+							"type": "string",
+							"description": "The ID of the column to retrieve."
+						}
+					},
+					"required": [
+						"doc_id",
+						"table_id",
+						"column_id"
+					],
+					"visible": [
+						"doc_id",
+						"table_id",
+						"column_id"
+					],
+					"additionalProperties": false
+				}
+			},
+			"required": [
+				"path"
+			],
+			"visible": [
+				"path"
+			],
+			"additionalProperties": false
+		}
 	}
 ]

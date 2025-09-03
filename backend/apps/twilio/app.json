@@ -1,0 +1,19 @@
+{
+  "name": "TWILIO",
+  "display_name": "Twilio",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/twilio.svg",
+  "provider": "Twilio Inc.",
+  "version": "2024.1",
+  "description": "Twilio is a leading cloud communications platform that enables developers to integrate voice, SMS, video, and messaging into applications. This integration allows AI agents to send messages, make calls, manage phone numbers, and automate communication workflows for comprehensive customer engagement.",
+  "security_schemes": {
+    "api_key": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Basic"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["Communications", "SMS", "Voice"],
+  "visibility": "public",
+  "active": true
+}

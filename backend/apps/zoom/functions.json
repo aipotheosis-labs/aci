@@ -1,0 +1,1293 @@
+[
+    {
+        "name": "ZOOM__GET_MEETINGS",
+        "description": "Retrieve all scheduled meetings for a user with their settings, participants, and schedule information",
+        "tags": ["meetings", "schedule", "list"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/users/{user_id}/meetings",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "user_id": {
+                            "type": "string",
+                            "description": "User ID or email address to get meetings for"
+                        }
+                    },
+                    "required": ["user_id"],
+                    "visible": ["user_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": ["scheduled", "live", "upcoming"],
+                            "default": "scheduled",
+                            "description": "Type of meetings to retrieve"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "default": 30,
+                            "maximum": 300,
+                            "description": "Number of meetings to return per page"
+                        },
+                        "page_number": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Page number for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["type", "page_size", "page_number"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__CREATE_MEETING",
+        "description": "Schedule a new Zoom meeting with participants, settings, and agenda for video collaboration",
+        "tags": ["meetings", "create", "schedule"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/users/{user_id}/meetings",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "user_id": {
+                            "type": "string",
+                            "description": "User ID or email address creating the meeting"
+                        }
+                    },
+                    "required": ["user_id"],
+                    "visible": ["user_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "topic": {
+                            "type": "string",
+                            "description": "Meeting topic or subject"
+                        },
+                        "type": {
+                            "type": "integer",
+                            "enum": [1, 2, 3, 8],
+                            "default": 2,
+                            "description": "Meeting type (1=instant, 2=scheduled, 3=recurring no fixed time, 8=recurring fixed time)"
+                        },
+                        "start_time": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Meeting start time in ISO 8601 format"
+                        },
+                        "duration": {
+                            "type": "integer",
+                            "description": "Meeting duration in minutes"
+                        },
+                        "timezone": {
+                            "type": "string",
+                            "description": "Timezone for the meeting",
+                            "default": "UTC"
+                        },
+                        "agenda": {
+                            "type": "string",
+                            "description": "Meeting agenda or description"
+                        },
+                        "password": {
+                            "type": "string",
+                            "description": "Meeting password for security"
+                        },
+                        "settings": {
+                            "type": "object",
+                            "properties": {
+                                "host_video": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Start video when host joins"
+                                },
+                                "participant_video": {
+                                    "type": "boolean",
+                                    "default": false,
+                                    "description": "Start video when participants join"
+                                },
+                                "join_before_host": {
+                                    "type": "boolean",
+                                    "default": false,
+                                    "description": "Allow participants to join before host"
+                                },
+                                "mute_upon_entry": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Mute participants when they join"
+                                },
+                                "waiting_room": {
+                                    "type": "boolean",
+                                    "default": true,
+                                    "description": "Enable waiting room"
+                                },
+                                "auto_recording": {
+                                    "type": "string",
+                                    "enum": ["local", "cloud", "none"],
+                                    "default": "none",
+                                    "description": "Automatic recording setting"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["host_video", "participant_video", "join_before_host", "mute_upon_entry", "waiting_room", "auto_recording"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["topic"],
+                    "visible": ["topic", "type", "start_time", "duration", "timezone", "agenda", "password", "settings"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__UPDATE_MEETING",
+        "description": "Update an existing Zoom meeting's details, schedule, settings, or participants",
+        "tags": ["meetings", "update", "modify"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/v2/meetings/{meeting_id}",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "meeting_id": {
+                            "type": "string",
+                            "description": "Meeting ID to update"
+                        }
+                    },
+                    "required": ["meeting_id"],
+                    "visible": ["meeting_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "topic": {
+                            "type": "string",
+                            "description": "Updated meeting topic"
+                        },
+                        "start_time": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Updated start time"
+                        },
+                        "duration": {
+                            "type": "integer",
+                            "description": "Updated duration in minutes"
+                        },
+                        "agenda": {
+                            "type": "string",
+                            "description": "Updated meeting agenda"
+                        },
+                        "password": {
+                            "type": "string",
+                            "description": "Updated meeting password"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["topic", "start_time", "duration", "agenda", "password"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__DELETE_MEETING",
+        "description": "Delete or cancel a scheduled Zoom meeting and notify participants",
+        "tags": ["meetings", "delete", "cancel"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "DELETE",
+            "path": "/v2/meetings/{meeting_id}",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "meeting_id": {
+                            "type": "string",
+                            "description": "Meeting ID to delete"
+                        }
+                    },
+                    "required": ["meeting_id"],
+                    "visible": ["meeting_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "occurrence_id": {
+                            "type": "string",
+                            "description": "Specific occurrence ID for recurring meetings"
+                        },
+                        "schedule_for_reminder": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Whether to send cancellation email to registrants"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["occurrence_id", "schedule_for_reminder"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__GET_MEETING_PARTICIPANTS",
+        "description": "Retrieve list of participants who joined a specific Zoom meeting with their join/leave times and details",
+        "tags": ["meetings", "participants", "attendance"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/meetings/{meeting_id}/participants",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "meeting_id": {
+                            "type": "string",
+                            "description": "Meeting ID or UUID to get participants for"
+                        }
+                    },
+                    "required": ["meeting_id"],
+                    "visible": ["meeting_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "page_size": {
+                            "type": "integer",
+                            "default": 30,
+                            "maximum": 300,
+                            "description": "Number of participants to return per page"
+                        },
+                        "next_page_token": {
+                            "type": "string",
+                            "description": "Next page token for pagination"
+                        },
+                        "include_fields": {
+                            "type": "string",
+                            "description": "Additional fields to include (registrant_id, custom_questions)"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page_size", "next_page_token", "include_fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__GET_RECORDINGS",
+        "description": "Retrieve meeting and webinar recordings for a user with download URLs and metadata",
+        "tags": ["recordings", "downloads", "archive"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/users/{user_id}/recordings",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "user_id": {
+                            "type": "string",
+                            "description": "User ID or email address to get recordings for"
+                        }
+                    },
+                    "required": ["user_id"],
+                    "visible": ["user_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "from": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Start date for recording search (YYYY-MM-DD)"
+                        },
+                        "to": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "End date for recording search (YYYY-MM-DD)"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "default": 30,
+                            "maximum": 300,
+                            "description": "Number of recordings to return per page"
+                        },
+                        "next_page_token": {
+                            "type": "string",
+                            "description": "Next page token for pagination"
+                        },
+                        "mc": {
+                            "type": "string",
+                            "enum": ["true", "false"],
+                            "description": "Query recordings from monthly cohort"
+                        },
+                        "trash": {
+                            "type": "boolean",
+                            "default": false,
+                            "description": "Query recordings from trash"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["from", "to", "page_size", "next_page_token", "mc", "trash"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__CREATE_WEBINAR",
+        "description": "Create a new webinar in Zoom for large-scale presentations and educational events with registration management",
+        "tags": ["webinars", "create", "events", "presentations"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/users/{user_id}/webinars",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "user_id": {
+                            "type": "string",
+                            "description": "User ID or email address creating the webinar"
+                        }
+                    },
+                    "required": ["user_id"],
+                    "visible": ["user_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "topic": {
+                            "type": "string",
+                            "description": "Webinar topic or title"
+                        },
+                        "type": {
+                            "type": "integer",
+                            "enum": [5, 6, 9],
+                            "default": 5,
+                            "description": "Webinar type (5=regular, 6=recurring no fixed time, 9=recurring fixed time)"
+                        },
+                        "start_time": {
+                            "type": "string",
+                            "format": "date-time",
+                            "description": "Webinar start time"
+                        },
+                        "duration": {
+                            "type": "integer",
+                            "description": "Webinar duration in minutes"
+                        },
+                        "timezone": {
+                            "type": "string",
+                            "description": "Timezone for the webinar",
+                            "default": "UTC"
+                        },
+                        "agenda": {
+                            "type": "string",
+                            "description": "Webinar agenda or description"
+                        },
+                        "password": {
+                            "type": "string",
+                            "description": "Webinar password for attendees"
+                        },
+                        "settings": {
+                            "type": "object",
+                            "properties": {
+                                "approval_type": {
+                                    "type": "integer",
+                                    "enum": [0, 1, 2],
+                                    "default": 2,
+                                    "description": "Registration approval (0=auto, 1=manual, 2=no registration)"
+                                },
+                                "registration_type": {
+                                    "type": "integer",
+                                    "enum": [1, 2, 3],
+                                    "default": 1,
+                                    "description": "Registration type (1=once, 2=each occurrence, 3=once choose occurrence)"
+                                },
+                                "audio": {
+                                    "type": "string",
+                                    "enum": ["both", "telephony", "voip"],
+                                    "default": "both",
+                                    "description": "Audio options for attendees"
+                                },
+                                "auto_recording": {
+                                    "type": "string",
+                                    "enum": ["local", "cloud", "none"],
+                                    "default": "none",
+                                    "description": "Automatic recording setting"
+                                },
+                                "on_demand": {
+                                    "type": "boolean",
+                                    "default": false,
+                                    "description": "Make webinar on-demand"
+                                }
+                            },
+                            "required": [],
+                            "visible": ["approval_type", "registration_type", "audio", "auto_recording", "on_demand"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["topic"],
+                    "visible": ["topic", "type", "start_time", "duration", "timezone", "agenda", "password", "settings"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__GET_WEBINARS",
+        "description": "Retrieve all webinars for a user with their registration settings and attendee information",
+        "tags": ["webinars", "list", "events"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/users/{user_id}/webinars",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "user_id": {
+                            "type": "string",
+                            "description": "User ID or email address to get webinars for"
+                        }
+                    },
+                    "required": ["user_id"],
+                    "visible": ["user_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "page_size": {
+                            "type": "integer",
+                            "default": 30,
+                            "maximum": 300,
+                            "description": "Number of webinars to return per page"
+                        },
+                        "page_number": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Page number for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["page_size", "page_number"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__GET_USERS",
+        "description": "Retrieve all users in the Zoom account for user management and meeting assignment",
+        "tags": ["users", "accounts", "management"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/users",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "status": {
+                            "type": "string",
+                            "enum": ["active", "inactive", "pending"],
+                            "default": "active",
+                            "description": "Filter users by status"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "default": 30,
+                            "maximum": 300,
+                            "description": "Number of users to return per page"
+                        },
+                        "role_id": {
+                            "type": "string",
+                            "description": "Filter users by role ID"
+                        },
+                        "page_number": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Page number for pagination"
+                        },
+                        "include_fields": {
+                            "type": "string",
+                            "description": "Additional fields to include (custom_attributes, host_key)"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["status", "page_size", "role_id", "page_number", "include_fields"],
+                    "additionalProperties": false
+                }
+            },
+            "required": [],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__CREATE_USER",
+        "description": "Create a new user account in Zoom organization with role assignment and profile information",
+        "tags": ["users", "create", "accounts"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/users",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "action": {
+                            "type": "string",
+                            "enum": ["create", "autoCreate", "custCreate", "ssoCreate"],
+                            "default": "create",
+                            "description": "User creation method"
+                        },
+                        "user_info": {
+                            "type": "object",
+                            "properties": {
+                                "email": {
+                                    "type": "string",
+                                    "format": "email",
+                                    "description": "User's email address"
+                                },
+                                "first_name": {
+                                    "type": "string",
+                                    "description": "User's first name"
+                                },
+                                "last_name": {
+                                    "type": "string",
+                                    "description": "User's last name"
+                                },
+                                "display_name": {
+                                    "type": "string",
+                                    "description": "User's display name"
+                                },
+                                "password": {
+                                    "type": "string",
+                                    "description": "User's password (8-128 characters)"
+                                },
+                                "type": {
+                                    "type": "integer",
+                                    "enum": [1, 2, 3],
+                                    "default": 1,
+                                    "description": "User type (1=basic, 2=licensed, 3=on-prem)"
+                                }
+                            },
+                            "required": ["email", "type"],
+                            "visible": ["email", "first_name", "last_name", "display_name", "password", "type"],
+                            "additionalProperties": false
+                        }
+                    },
+                    "required": ["action", "user_info"],
+                    "visible": ["action", "user_info"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__GET_WEBINAR_REGISTRANTS",
+        "description": "Retrieve list of registrants for a webinar including their registration details and approval status",
+        "tags": ["webinars", "registrants", "registration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/webinars/{webinar_id}/registrants",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "webinar_id": {
+                            "type": "string",
+                            "description": "Webinar ID to get registrants for"
+                        }
+                    },
+                    "required": ["webinar_id"],
+                    "visible": ["webinar_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "status": {
+                            "type": "string",
+                            "enum": ["pending", "approved", "denied"],
+                            "default": "approved",
+                            "description": "Filter registrants by approval status"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "default": 30,
+                            "maximum": 300,
+                            "description": "Number of registrants to return per page"
+                        },
+                        "page_number": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Page number for pagination"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["status", "page_size", "page_number"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__CREATE_MEETING_REGISTRATION",
+        "description": "Register a participant for a meeting that requires registration with their contact information",
+        "tags": ["meetings", "registration", "participants"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/meetings/{meeting_id}/registrants",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "meeting_id": {
+                            "type": "string",
+                            "description": "Meeting ID to register participant for"
+                        }
+                    },
+                    "required": ["meeting_id"],
+                    "visible": ["meeting_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "email": {
+                            "type": "string",
+                            "format": "email",
+                            "description": "Registrant's email address"
+                        },
+                        "first_name": {
+                            "type": "string",
+                            "description": "Registrant's first name"
+                        },
+                        "last_name": {
+                            "type": "string",
+                            "description": "Registrant's last name"
+                        },
+                        "address": {
+                            "type": "string",
+                            "description": "Registrant's address"
+                        },
+                        "city": {
+                            "type": "string",
+                            "description": "Registrant's city"
+                        },
+                        "country": {
+                            "type": "string",
+                            "description": "Registrant's country"
+                        },
+                        "zip": {
+                            "type": "string",
+                            "description": "Registrant's zip/postal code"
+                        },
+                        "state": {
+                            "type": "string",
+                            "description": "Registrant's state"
+                        },
+                        "phone": {
+                            "type": "string",
+                            "description": "Registrant's phone number"
+                        },
+                        "industry": {
+                            "type": "string",
+                            "description": "Registrant's industry"
+                        },
+                        "org": {
+                            "type": "string",
+                            "description": "Registrant's organization"
+                        },
+                        "job_title": {
+                            "type": "string",
+                            "description": "Registrant's job title"
+                        }
+                    },
+                    "required": ["email", "first_name", "last_name"],
+                    "visible": ["email", "first_name", "last_name", "address", "city", "country", "zip", "state", "phone", "industry", "org", "job_title"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__GET_MEETING_ANALYTICS",
+        "description": "Retrieve analytics and metrics for meetings including attendance, engagement, and participation data",
+        "tags": ["analytics", "meetings", "metrics", "insights"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/metrics/meetings",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "enum": ["past", "pastOne", "live"],
+                            "default": "past",
+                            "description": "Type of meetings to get analytics for"
+                        },
+                        "from": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "Start date for analytics range (YYYY-MM-DD)"
+                        },
+                        "to": {
+                            "type": "string",
+                            "format": "date",
+                            "description": "End date for analytics range (YYYY-MM-DD)"
+                        },
+                        "page_size": {
+                            "type": "integer",
+                            "default": 30,
+                            "maximum": 300,
+                            "description": "Number of meetings to return per page"
+                        },
+                        "page_number": {
+                            "type": "integer",
+                            "default": 1,
+                            "description": "Page number for pagination"
+                        }
+                    },
+                    "required": ["from", "to"],
+                    "visible": ["type", "from", "to", "page_size", "page_number"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["query"],
+            "visible": ["query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__CREATE_WEBHOOK_SUBSCRIPTION",
+        "description": "Create webhook subscriptions to receive real-time notifications for meeting events, registrations, and recordings",
+        "tags": ["webhooks", "create", "notifications", "events"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/webhooks",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "endpoint_url": {
+                            "type": "string",
+                            "format": "uri",
+                            "description": "URL to receive webhook notifications"
+                        },
+                        "events": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "enum": ["meeting.started", "meeting.ended", "meeting.participant_joined", "recording.completed", "webinar.started", "webinar.ended"]
+                            },
+                            "description": "Events to subscribe to for notifications"
+                        },
+                        "auth_user": {
+                            "type": "string",
+                            "description": "Basic authentication username for webhook endpoint"
+                        },
+                        "auth_password": {
+                            "type": "string",
+                            "description": "Basic authentication password for webhook endpoint"
+                        }
+                    },
+                    "required": ["endpoint_url", "events"],
+                    "visible": ["endpoint_url", "events", "auth_user", "auth_password"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "body"],
+            "visible": ["body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__GET_ACCOUNT_SETTINGS",
+        "description": "Retrieve Zoom account settings including security policies, meeting defaults, and feature configurations",
+        "tags": ["account", "settings", "configuration"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/accounts/{account_id}/settings",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "account_id": {
+                            "type": "string",
+                            "description": "Account ID to get settings for"
+                        }
+                    },
+                    "required": ["account_id"],
+                    "visible": ["account_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "option": {
+                            "type": "string",
+                            "enum": ["meeting_authentication", "recording_authentication", "security", "meeting_security"],
+                            "description": "Specific setting category to retrieve"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["option"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__GET_CLOUD_RECORDINGS",
+        "description": "Retrieve cloud recordings with download links, transcripts, and sharing options for meeting archives",
+        "tags": ["recordings", "cloud", "downloads", "transcripts"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/meetings/{meeting_id}/recordings",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "meeting_id": {
+                            "type": "string",
+                            "description": "Meeting ID or UUID to get recordings for"
+                        }
+                    },
+                    "required": ["meeting_id"],
+                    "visible": ["meeting_id"],
+                    "additionalProperties": false
+                },
+                "query": {
+                    "type": "object",
+                    "properties": {
+                        "include_fields": {
+                            "type": "string",
+                            "description": "Additional fields to include (download_access_token)"
+                        },
+                        "ttl": {
+                            "type": "integer",
+                            "description": "Time to live for download access token in seconds"
+                        }
+                    },
+                    "required": [],
+                    "visible": ["include_fields", "ttl"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path", "query"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__START_MEETING_RECORDING",
+        "description": "Start cloud recording for an active meeting to capture video, audio, and screen sharing content",
+        "tags": ["recordings", "start", "meetings", "capture"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "PATCH",
+            "path": "/v2/meetings/{meeting_id}/recordings/status",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "meeting_id": {
+                            "type": "string",
+                            "description": "Meeting ID or UUID to start recording for"
+                        }
+                    },
+                    "required": ["meeting_id"],
+                    "visible": ["meeting_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "action": {
+                            "type": "string",
+                            "enum": ["start", "stop", "pause", "resume"],
+                            "description": "Recording action to perform"
+                        }
+                    },
+                    "required": ["action"],
+                    "visible": ["action"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__GET_MEETING_POLLS",
+        "description": "Retrieve polls created for a meeting including questions, options, and participant responses",
+        "tags": ["polls", "meetings", "surveys", "engagement"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "GET",
+            "path": "/v2/meetings/{meeting_id}/polls",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "meeting_id": {
+                            "type": "string",
+                            "description": "Meeting ID to get polls for"
+                        }
+                    },
+                    "required": ["meeting_id"],
+                    "visible": ["meeting_id"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["path"],
+            "visible": ["path"],
+            "additionalProperties": false
+        }
+    },
+    {
+        "name": "ZOOM__CREATE_MEETING_POLL",
+        "description": "Create an interactive poll for a meeting to engage participants and gather feedback during video calls",
+        "tags": ["polls", "create", "meetings", "engagement"],
+        "visibility": "public",
+        "active": true,
+        "protocol": "rest",
+        "protocol_data": {
+            "method": "POST",
+            "path": "/v2/meetings/{meeting_id}/polls",
+            "server_url": "https://api.zoom.us"
+        },
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "header": {
+                    "type": "object",
+                    "properties": {
+                        "Content-Type": {
+                            "type": "string",
+                            "default": "application/json"
+                        }
+                    },
+                    "required": ["Content-Type"],
+                    "visible": [],
+                    "additionalProperties": false
+                },
+                "path": {
+                    "type": "object",
+                    "properties": {
+                        "meeting_id": {
+                            "type": "string",
+                            "description": "Meeting ID to create poll for"
+                        }
+                    },
+                    "required": ["meeting_id"],
+                    "visible": ["meeting_id"],
+                    "additionalProperties": false
+                },
+                "body": {
+                    "type": "object",
+                    "properties": {
+                        "title": {
+                            "type": "string",
+                            "description": "Title of the poll"
+                        },
+                        "questions": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "description": "Question text"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": ["single", "multiple"],
+                                        "description": "Question type (single choice or multiple choice)"
+                                    },
+                                    "answers": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        },
+                                        "description": "Array of answer options"
+                                    }
+                                },
+                                "required": ["name", "type", "answers"],
+                                "visible": ["name", "type", "answers"],
+                                "additionalProperties": false
+                            },
+                            "description": "Poll questions and answer options"
+                        }
+                    },
+                    "required": ["title", "questions"],
+                    "visible": ["title", "questions"],
+                    "additionalProperties": false
+                }
+            },
+            "required": ["header", "path", "body"],
+            "visible": ["path", "body"],
+            "additionalProperties": false
+        }
+    }
+]

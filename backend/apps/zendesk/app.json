@@ -1,0 +1,27 @@
+{
+  "name": "ZENDESK",
+  "display_name": "Zendesk",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/zendesk.svg",
+  "provider": "Zendesk Inc.",
+  "version": "2024.1",
+  "description": "Zendesk is a leading customer service platform that provides ticketing, help desk, and customer engagement tools. This integration allows AI agents to manage tickets, customer interactions, knowledge base articles, and support analytics for comprehensive customer service automation.",
+  "security_schemes": {
+    "oauth2": {
+      "type": "oauth2",
+      "flows": {
+        "authorizationCode": {
+          "authorizationUrl": "https://{subdomain}.zendesk.com/oauth/authorizations/new",
+          "tokenUrl": "https://{subdomain}.zendesk.com/oauth/tokens",
+          "scopes": {
+            "read": "Read access to all Zendesk resources",
+            "write": "Write access to all Zendesk resources"
+          }
+        }
+      }
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["Customer Support", "Help Desk", "Customer Experience"],
+  "visibility": "public",
+  "active": true
+}

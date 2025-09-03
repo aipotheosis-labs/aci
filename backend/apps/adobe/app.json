@@ -1,0 +1,33 @@
+{
+  "name": "ADOBE",
+  "display_name": "Adobe Creative Cloud",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/adobe.svg",
+  "provider": "Adobe Inc.",
+  "version": "2024.1",
+  "description": "Adobe Creative Cloud is the industry-standard suite of creative applications including Photoshop, Illustrator, InDesign, After Effects, and Premiere Pro. This integration allows AI agents to manage creative assets, collaborate on projects, automate workflows, and integrate with Creative Cloud libraries for comprehensive creative automation.",
+  "security_schemes": {
+    "oauth2": {
+      "type": "oauth2",
+      "flows": {
+        "authorizationCode": {
+          "authorizationUrl": "https://ims-na1.adobelogin.com/ims/authorize/v2",
+          "tokenUrl": "https://ims-na1.adobelogin.com/ims/token/v3",
+          "scopes": {
+            "creative_sdk": "Access Creative Cloud APIs and services",
+            "user_profile": "Read user profile information",
+            "libraries_read": "Read Creative Cloud Libraries",
+            "libraries_write": "Write to Creative Cloud Libraries",
+            "assets_read": "Read creative assets and metadata",
+            "assets_write": "Upload and manage creative assets",
+            "projects_read": "Read creative projects and collaboration data",
+            "projects_write": "Create and manage creative projects"
+          }
+        }
+      }
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["Design", "Creative", "Digital Content"],
+  "visibility": "public",
+  "active": true
+}

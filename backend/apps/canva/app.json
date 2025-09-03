@@ -1,0 +1,36 @@
+{
+  "name": "CANVA",
+  "display_name": "Canva",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/canva.svg",
+  "provider": "Canva Pty Ltd",
+  "version": "1.0",
+  "description": "Canva is a user-friendly graphic design platform that allows teams to create professional designs, presentations, social media graphics, and marketing materials. This integration enables AI agents to automate design workflows, manage team assets, create content at scale, and maintain brand consistency across all design projects.",
+  "security_schemes": {
+    "oauth2": {
+      "type": "oauth2",
+      "flows": {
+        "authorizationCode": {
+          "authorizationUrl": "https://www.canva.com/api/oauth/authorize",
+          "tokenUrl": "https://api.canva.com/rest/v1/oauth/token",
+          "scopes": {
+            "design:read": "Read designs and templates",
+            "design:write": "Create and modify designs",
+            "asset:read": "Read brand assets and uploads",
+            "asset:write": "Upload and manage brand assets",
+            "folder:read": "Read folder structure and organization",
+            "folder:write": "Create and manage folders",
+            "team:read": "Read team information and members",
+            "team:write": "Manage team settings and permissions",
+            "brand:read": "Read brand kits and guidelines",
+            "brand:write": "Manage brand kits and guidelines",
+            "export:write": "Export designs to various formats"
+          }
+        }
+      }
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["Design", "Marketing", "Collaboration"],
+  "visibility": "public",
+  "active": true
+}
