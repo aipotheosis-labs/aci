@@ -98,15 +98,22 @@ class OAuth2Manager:
         # - "scope" can be specified here
         # - "response_type" can be specified here (default is "code")
         # - and additional options can be specified here (like access_type, prompt, etc.)
-        authorization_url, _ = self.oauth2_client.create_authorization_url(
-            url=self.authorize_url,
-            redirect_uri=redirect_uri,
-            state=state,
-            code_verifier=code_verifier,
-            access_type=access_type,
-            prompt=prompt,
-            scope=self.scope,
+        # Reddit does not support Google-style params like access_type/prompt. Build kwargs accordingly.
+        create_auth_kwargs = {
+            "url": self.authorize_url,
+            "redirect_uri": redirect_uri,
+            "state": state,
+            "code_verifier": code_verifier,
+            "scope": self.scope,
             **app_specific_params,
+        }
+
+        if self.app_name != "REDDIT":
+            create_auth_kwargs["access_type"] = access_type
+            create_auth_kwargs["prompt"] = prompt
+
+        authorization_url, _ = self.oauth2_client.create_authorization_url(
+            **create_auth_kwargs
         )
 
         return str(authorization_url)
