@@ -1,0 +1,35 @@
+# CodeQL configuration file for advanced setup
+name: "ACI CodeQL Config"
+
+# Disable the default queries to use only the ones specified below
+disable-default-queries: false
+
+# Query suites to run
+queries:
+  - uses: security-extended
+  - uses: security-and-quality
+
+# Paths to ignore during analysis
+paths-ignore:
+  - "frontend/node_modules/**"
+  - "backend/aci/**/__pycache__/**"
+  - "**/*.test.ts"
+  - "**/*.test.tsx"
+  - "**/*.test.py"
+  - "**/*.spec.ts"
+  - "**/*.spec.tsx"
+  - "**/*.spec.py"
+  - "backend/uv.lock"
+  - "frontend/package-lock.json"
+  - "**/migrations/**"
+  - "**/alembic/versions/**"
+
+# Paths to include (optional - by default all paths are included)
+paths:
+  - "backend/aci/"
+  - "frontend/src/"
+
+# Additional packs to download and use
+# packs:
+#   - "codeql/python-queries"
+#   - "codeql/javascript-queries"
