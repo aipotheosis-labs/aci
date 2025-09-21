@@ -23,6 +23,7 @@ export function SettingsSidebar({ status, setMessages }: SettingsSidebarProps) {
     fetchApps,
     fetchAppFunctions,
     getApiKey,
+    initializeAgent,
   } = useAgentStore(
     useShallow((state) => ({
       initializeFromProject: state.initializeFromProject,
@@ -30,6 +31,7 @@ export function SettingsSidebar({ status, setMessages }: SettingsSidebarProps) {
       fetchApps: state.fetchApps,
       fetchAppFunctions: state.fetchAppFunctions,
       getApiKey: state.getApiKey,
+      initializeAgent: state.initializeAgent,
     })),
   );
   const { activeProject } = useMetaInfo();
@@ -40,6 +42,7 @@ export function SettingsSidebar({ status, setMessages }: SettingsSidebarProps) {
     const initializeData = async () => {
       try {
         initializeFromProject(activeProject);
+        initializeAgent(activeProject);
         const apiKey = getApiKey(activeProject);
         // Initialize settings data (agents, linked accounts, apps, app functions)
         await fetchLinkedAccounts(apiKey);
@@ -55,6 +58,7 @@ export function SettingsSidebar({ status, setMessages }: SettingsSidebarProps) {
   }, [
     activeProject,
     initializeFromProject,
+    initializeAgent,
     fetchLinkedAccounts,
     fetchApps,
     fetchAppFunctions,
