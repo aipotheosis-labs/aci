@@ -34,7 +34,7 @@ This plan explains how the ACI maintainers handle security incidents. It ensures
 
 ### Reporting
 
-All vulnerabilities must be reported by email to support@aipolabs.xyz. Public GitHub issues should not be used. Reports should include a description, steps to reproduce, the potential impact, and suggested mitigations. We aim to acknowledge all reports within 48 hours and provide a timeline for investigation and resolution.
+All vulnerabilities must be reported by email to support@aipolabs.xyz. Public GitHub issues should not be used. Reports should include a description, steps to reproduce, the potential impact, and suggested mitigations. We aim to acknowledge all reports within 48 hours (or a reasonable timeframe) and provide a timeline for investigation and resolution.
 
 ### Process
 
