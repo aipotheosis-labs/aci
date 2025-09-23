@@ -1,7 +1,7 @@
 # CodeQL configuration file for advanced setup
 name: "ACI CodeQL Config"
 
-# Disable the default queries to use only the ones specified below
+# Keep default queries enabled (disable-default-queries: false) and also run the suites specified below
 disable-default-queries: false
 
 # Query suites to run
@@ -27,7 +27,11 @@ paths-ignore:
 # Paths to include (optional - by default all paths are included)
 paths:
   - "backend/aci/"
+  - "backend/aci/apps"
+  - "backend/aci/deployment"
+  - "backend/aci/evals"
   - "frontend/src/"
+  - ".github/workflows/"
 
 # Additional packs to download and use
 # packs:
