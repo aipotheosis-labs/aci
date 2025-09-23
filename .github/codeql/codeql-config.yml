@@ -27,9 +27,9 @@ paths-ignore:
 # Paths to include (optional - by default all paths are included)
 paths:
   - "backend/aci/"
-  - "backend/aci/apps"
-  - "backend/aci/deployment"
-  - "backend/aci/evals"
+  - "backend/apps"
+  - "backend/deployment"
+  - "backend/evals"
   - "frontend/src/"
   - ".github/workflows/"
 
