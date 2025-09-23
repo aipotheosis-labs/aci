@@ -26,6 +26,39 @@ We take the security of [ACI.dev](http://ACI.dev) very seriously. If you believe
 5. We will acknowledge receipt of your vulnerability report within 48 hours and provide an estimated timeline for a fix.
 6. Once the vulnerability is fixed, we will notify you and publicly acknowledge your contribution (unless you prefer to remain anonymous).
 
+## **Incident Response Plan (IRP)**
+
+### Purpose
+
+This plan explains how the ACI maintainers handle security incidents. It ensures that issues are confirmed, fixed, and communicated quickly and clearly. It applies to the main branch, covering both the backend and frontend.
+
+### Reporting
+
+All vulnerabilities must be reported by email to support@aipolabs.xyz. Public GitHub issues should not be used. Reports should include a description, steps to reproduce, the potential impact, and suggested mitigations. We aim to acknowledge all reports within 48 hours and provide a timeline for investigation and resolution.
+
+### Process
+
+#### 1. Validation
+
+The first maintainer to review the report becomes the Incident Lead. They confirm if the issue is valid, decide its severity (low, medium, high, or critical), and record which components are affected. If the report is not valid or out of scope, it will be closed.
+
+#### 2. Mitigation
+
+If the issue is valid, we will take steps to reduce immediate risk and then prepare a permanent fix. Once the fix is merged, we release a patched version. The mitigation date, affected components, and link to the fix are recorded.
+
+#### 3. Scoping
+
+We review the project history and logs to check if the issue has been exploited and to understand the scale of impact. If we confirm that user data or systems were affected, we mark the case as a formal incident.
+
+#### 4. Notification
+
+After the issue is resolved, we notify the reporter directly. Reporters may choose to be acknowledged publicly in release notes or remain anonymous. If wider communication is needed, we will publish a GitHub Security Advisory or update the changelog.
+
+### After the Incident
+
+Once resolved, we review what happened, note lessons learned, and improve our processes where possible. We follow a safe harbor policy: researchers who report issues in good faith and follow this process will not face legal action.
+
+
 ## Safe Harbor
 
 We consider security research and vulnerability disclosure activities conducted following this policy to be authorized and beneficial. We will not pursue legal action against individuals who report vulnerabilities in good faith and adhere to this policy, including the restrictions on public disclosure.
