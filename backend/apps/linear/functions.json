@@ -1,0 +1,236 @@
+[
+  {
+    "name": "LINEAR__CREATE_ISSUE",
+    "description": "Create a new issue in Linear with title, description, team, and optional assignee",
+    "tags": ["issue", "create", "project-management"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "connector",
+    "protocol_data": {},
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title of the issue"
+        },
+        "description": {
+          "type": "string",
+          "description": "Description of the issue in markdown format"
+        },
+        "team_id": {
+          "type": "string",
+          "description": "ID of the team to create the issue in"
+        },
+        "assignee_id": {
+          "type": "string",
+          "description": "ID of the user to assign the issue to (optional)"
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Priority level (0=No priority, 1=Urgent, 2=High, 3=Normal, 4=Low)",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "label_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Array of label IDs to attach to the issue"
+        }
+      },
+      "required": ["title", "team_id"],
+      "visible": ["title", "description", "team_id", "assignee_id", "priority", "label_ids"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__GET_ISSUES",
+    "description": "Get issues from Linear with optional filtering by team, assignee, or status",
+    "tags": ["issue", "list", "query"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "connector",
+    "protocol_data": {},
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "team_id": {
+          "type": "string",
+          "description": "Filter issues by team ID"
+        },
+        "assignee_id": {
+          "type": "string",
+          "description": "Filter issues by assignee ID"
+        },
+        "state": {
+          "type": "string",
+          "description": "Filter issues by state (backlog, unstarted, started, completed, canceled)"
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Maximum number of issues to return (default: 50)",
+          "minimum": 1,
+          "maximum": 250,
+          "default": 50
+        }
+      },
+      "required": [],
+      "visible": ["team_id", "assignee_id", "state", "limit"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__UPDATE_ISSUE",
+    "description": "Update an existing issue in Linear",
+    "tags": ["issue", "update", "modify"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "connector",
+    "protocol_data": {},
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "issue_id": {
+          "type": "string",
+          "description": "ID of the issue to update"
+        },
+        "title": {
+          "type": "string",
+          "description": "New title for the issue"
+        },
+        "description": {
+          "type": "string",
+          "description": "New description for the issue"
+        },
+        "assignee_id": {
+          "type": "string",
+          "description": "ID of the user to assign the issue to"
+        },
+        "priority": {
+          "type": "integer",
+          "description": "Priority level (0=No priority, 1=Urgent, 2=High, 3=Normal, 4=Low)",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "state_id": {
+          "type": "string",
+          "description": "ID of the workflow state to set"
+        }
+      },
+      "required": ["issue_id"],
+      "visible": ["issue_id", "title", "description", "assignee_id", "priority", "state_id"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__GET_TEAMS",
+    "description": "Get all teams in the Linear workspace",
+    "tags": ["team", "list", "workspace"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "connector",
+    "protocol_data": {},
+    "parameters": {
+      "type": "object",
+      "properties": {},
+      "required": [],
+      "visible": [],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__GET_USERS",
+    "description": "Get users in the Linear workspace",
+    "tags": ["user", "list", "workspace"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "connector",
+    "protocol_data": {},
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "active_only": {
+          "type": "boolean",
+          "description": "Only return active users (default: true)",
+          "default": true
+        }
+      },
+      "required": [],
+      "visible": ["active_only"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__GET_ISSUE",
+    "description": "Get a specific issue by ID with full details",
+    "tags": ["issue", "get", "details"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "connector",
+    "protocol_data": {},
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "issue_id": {
+          "type": "string",
+          "description": "ID of the issue to retrieve"
+        }
+      },
+      "required": ["issue_id"],
+      "visible": ["issue_id"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__GET_PROJECTS",
+    "description": "Get all projects in the Linear workspace with optional filtering",
+    "tags": ["project", "list", "workspace"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "connector",
+    "protocol_data": {},
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "include_archived": {
+          "type": "boolean",
+          "description": "Include archived projects (default: false)",
+          "default": false
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Maximum number of projects to return (default: 50)",
+          "minimum": 1,
+          "maximum": 250,
+          "default": 50
+        }
+      },
+      "required": [],
+      "visible": ["include_archived", "limit"],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "LINEAR__GET_PROJECT",
+    "description": "Get a specific project by ID with full details including progress and team information",
+    "tags": ["project", "get", "details"],
+    "visibility": "public",
+    "active": true,
+    "protocol": "connector",
+    "protocol_data": {},
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "project_id": {
+          "type": "string",
+          "description": "ID of the project to retrieve"
+        }
+      },
+      "required": ["project_id"],
+      "visible": ["project_id"],
+      "additionalProperties": false
+    }
+  }
+] 
