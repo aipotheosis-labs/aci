@@ -30,9 +30,8 @@ def test_no_visible_field() -> None:
             "b": {"type": "integer"},
         },
     }
-    expected = {"type": "object", "properties": {}}
     result = filter_visible_properties(schema)
-    assert result == expected
+    assert result == schema, "if visible field is not present, all properties should be visible"
 
 
 def test_empty_visible_field() -> None:
