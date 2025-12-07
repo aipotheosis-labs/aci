@@ -4,7 +4,7 @@
   "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/accredible.svg",
   "provider": "Accredible",
   "version": "1.0",
-  "description": "Accredible integration for managing digital certificates and badges. Create, search, and generate PDFs for credentials.",
+  "description": "   Accredible integration for managing digital certificates and badges. Create, search, and generate PDFs for credentials.",
   "security_schemes": {
     "api_key": {
       "location": "header",
