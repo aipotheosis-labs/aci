@@ -90,3 +90,5 @@ ANTHROPIC_MODEL_FOR_FRONTEND_QA_AGENT = "claude-3-5-sonnet-latest"
 
 # Vector DB
 VECTOR_DB_FULL_URL = check_and_get_env_variable("SERVER_VECTOR_DB_FULL_URL")
+
+SENTRY_DSN = check_and_get_env_variable("SERVER_SENTRY_DSN")
