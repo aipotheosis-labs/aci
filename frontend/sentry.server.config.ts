@@ -10,7 +10,7 @@ if (
   process.env.NEXT_PUBLIC_ENVIRONMENT !== "local"
 ) {
   Sentry.init({
-    dsn: "https://2ec877a53cbd31d24690cc4cb1828457@o4508859021459456.ingest.us.sentry.io/4508859022376960",
+    dsn: process.env.NEXT_PUBLIC_SENTRY_DSN || "",
 
     // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
     tracesSampleRate:
