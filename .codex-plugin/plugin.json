@@ -1,0 +1,24 @@
+{
+  "name": "aci",
+  "version": "0.1.0",
+  "description": "600+ tools for AI agents from Codex via MCP",
+  "author": {
+    "name": "aipotheosis-labs",
+    "url": "https://github.com/aipotheosis-labs/aci"
+  },
+  "homepage": "https://github.com/aipotheosis-labs/aci",
+  "repository": "https://github.com/aipotheosis-labs/aci",
+  "keywords": [
+    "mcp",
+    "codex"
+  ],
+  "mcpServers": "./.mcp.json",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "ACI.dev",
+    "shortDescription": "600+ tools for AI agents from Codex via MCP",
+    "longDescription": "Open source tool-calling platform that hooks up 600+ tools into any agentic IDE or custom AI agent through direct function calling or a unified MCP server.",
+    "category": "Development",
+    "websiteURL": "https://github.com/aipotheosis-labs/aci"
+  }
+}
