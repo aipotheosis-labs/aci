@@ -1,6 +1,6 @@
 ---
 name: aci
-description: 600+ tools for AI agents from Codex via MCP
+description: 600+ tools for AI agents for Codex via MCP
 ---
 
 # ACI.dev for Codex
