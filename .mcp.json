@@ -1,11 +1,8 @@
 {
   "mcpServers": {
     "aci": {
-      "command": "pip",
-      "args": [
-        "install",
-        "aci"
-      ]
+      "command": "aci",
+      "args": []
     }
   }
 }
