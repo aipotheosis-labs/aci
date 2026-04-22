@@ -28,10 +28,13 @@ jobs:
       - name: Get PR title and body
         id: pr-info
         if: steps.changed-files.outputs.skip != 'true'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: |
-          echo "title=${{ github.event.pull_request.title }}" >> $GITHUB_OUTPUT
+          echo "title=$PR_TITLE" >> $GITHUB_OUTPUT
           echo "body<<BODY_DELIMITER" >> $GITHUB_OUTPUT
-          echo "${{ github.event.pull_request.body }}" >> $GITHUB_OUTPUT
+          echo "$PR_BODY" >> $GITHUB_OUTPUT
           echo "BODY_DELIMITER" >> $GITHUB_OUTPUT
 
       - name: Generate file content for Claude
