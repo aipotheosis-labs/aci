@@ -1,9 +1,67 @@
-def validate_function_parameters_schema_common(parameters_schema: dict, path: str) -> None:
+from aci.common.enums import HttpLocation, Protocol
+
+
+def validate_function_parameters_schema(protocol: Protocol, parameters_schema: dict) -> None:
     """
-    Validate a function parameters schema based on a set of common rules.
-    These rules should be true for all types of protocols. (rest, connector, etc.)
+    Validate a function parameters schema based on the protocol.
+    """
+    match protocol:
+        case Protocol.REST:
+            _validate_function_parameters_schema_rest_protocol(parameters_schema, "root.parameters")
+        case Protocol.CONNECTOR | Protocol.MCP:
+            _validate_function_parameters_schema_non_rest_protocol(
+                parameters_schema, "root.parameters"
+            )
+        case _:
+            raise ValueError(f"Invalid protocol: {protocol}")
+
+
+def _validate_function_parameters_schema_non_rest_protocol(
+    parameters_schema: dict, path: str
+) -> None:
+    """
+    Validate a function parameters schema for functions of the CONNECTOR protocol type
+    """
+    # if not an object type schema, skip most of the validation
+    if parameters_schema.get("type") != "object":
+        if "required" in parameters_schema:
+            raise ValueError(
+                f"Invalid schema at {path}: 'required' is not allowed for non-object type schemas"
+            )
+        return
+
+    # Ensure visible field does NOT exist (it's only for REST protocol)
+    # TODO: uncomment this after we remove the visible field from the existing connector based functions
+    # if "visible" in parameters_schema:
+    #     raise ValueError(
+    #         f"Invalid schema at {path}: 'visible' is not allowed for CONNECTOR protocol"
+    #     )
+
+    # Ensure properties field exists
+    if "properties" not in parameters_schema:
+        raise ValueError(f"Missing 'properties' field at {path}")
+
+    properties = parameters_schema.get("properties", {})
+    required = parameters_schema.get("required", [])
+
+    # Check that all required properties actually exist
+    for prop in required:
+        if prop not in properties:
+            raise ValueError(f"Required property '{prop}' at {path} not found in properties")
+
+    # Recursively validate nested properties
+    for prop_name, prop_schema in properties.items():
+        _validate_function_parameters_schema_non_rest_protocol(prop_schema, f"{path}.{prop_name}")
+
+
+def _validate_function_parameters_schema_rest_protocol(parameters_schema: dict, path: str) -> None:
+    """
+    Validate a function parameters schema for functions of the REST protocol type
     Some of rules we make it more strict than JSON Schema standard to avoid human errors, e.g., 'required' must be specified.
     """
+    if path == "root.parameters":
+        _validate_function_parameters_schema_rest_protocol_root_level(parameters_schema)
+
     # if not an object type schema, skip most of the validation but make sure required and visible does NOT exist
     if parameters_schema.get("type") != "object":
         if "required" in parameters_schema or "visible" in parameters_schema:
@@ -52,7 +110,7 @@ def validate_function_parameters_schema_common(parameters_schema: dict, path: st
 
     # Recursively validate nested properties
     for prop_name, prop_schema in properties.items():
-        validate_function_parameters_schema_common(prop_schema, f"{path}.{prop_name}")
+        _validate_function_parameters_schema_rest_protocol(prop_schema, f"{path}.{prop_name}")
 
         # Check if each property should be visible based on children's visibility
         if prop_schema.get("type") == "object":
@@ -69,9 +127,7 @@ def validate_function_parameters_schema_common(parameters_schema: dict, path: st
                 )
 
 
-def validate_function_parameters_schema_rest_protocol(
-    parameters_schema: dict, path: str, allowed_top_level_keys: list[str]
-) -> None:
+def _validate_function_parameters_schema_rest_protocol_root_level(parameters_schema: dict) -> None:
     """
     Validate a function parameters schema for the REST protocol, for rules that are not covered by the common rules.
     """
@@ -82,7 +138,9 @@ def validate_function_parameters_schema_rest_protocol(
     # type must be "object"
     if parameters_schema.get("type") != "object":
         raise ValueError("top level type must be 'object' for REST protocol's parameters schema")
+
     # properties must be a dict and can only have "path", "query", "header", "cookie", "body" keys
+    allowed_top_level_keys: list[str] = [str(location) for location in HttpLocation]
     properties = parameters_schema["properties"]
     if not isinstance(properties, dict):
         raise ValueError(
