@@ -38,16 +38,14 @@ class InterceptorMiddleware(BaseHTTPMiddleware):
         api_key = request.headers.get(config.ACI_API_KEY_HEADER)
         api_key_id = agent_id = project_id = org_id = None
         if api_key:
-            logger.info(f"API key found in header, api_key={api_key[:4] + '...' + api_key[-4:]}")
+            logger.info("API key found in header")
             try:
                 with utils.create_db_session(config.DB_FULL_URL) as db_session:
                     api_key_id, agent_id, project_id, org_id = (
                         crud.projects.get_request_context_by_api_key(db_session, api_key)
                     )
                     if not api_key_id and not agent_id and not project_id and not org_id:
-                        logger.warning(
-                            f"API key not found in db, api_key={api_key[:4] + '...' + api_key[-4:]}"
-                        )
+                        logger.warning("API key not found in db")
                         return JSONResponse(
                             status_code=401,
                             content={"error": "Unauthorized"},
