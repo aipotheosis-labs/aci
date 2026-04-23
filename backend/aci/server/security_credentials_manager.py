@@ -112,7 +112,7 @@ async def _get_oauth2_credentials(
 
         if not token_response.get("access_token") or not expires_at:
             logger.error(
-                f"Failed to refresh access token, token_response={token_response}, "
+                f"Failed to refresh access token "
                 f"app={app.name}, linked_account_id={linked_account.id}, "
                 f"security_scheme={linked_account.security_scheme}"
             )
