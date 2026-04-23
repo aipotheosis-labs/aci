@@ -40,9 +40,15 @@ jobs:
       - name: Generate file content for Claude
         id: file-content
         if: steps.changed-files.outputs.skip != 'true'
+        env:
+          PR_TITLE: ${{ steps.pr-info.outputs.title }}
+          PR_BODY: ${{ steps.pr-info.outputs.body }}
+          CHANGED_FILES: ${{ steps.changed-files.outputs.changed_files }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           # Generate PR content using our script
-          bash .github/scripts/integration_generate_pr_content.sh "${{ steps.pr-info.outputs.title }}" "${{ steps.pr-info.outputs.body }}" "${{ steps.changed-files.outputs.changed_files }}" "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}"
+          bash .github/scripts/integration_generate_pr_content.sh "$PR_TITLE" "$PR_BODY" "$CHANGED_FILES" "$BASE_SHA" "$HEAD_SHA"
 
       - name: Set up Python
         uses: actions/setup-python@v4
