@@ -1,0 +1,26 @@
+{
+  "name": "LINEAR",
+  "display_name": "Linear",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/linear.svg",
+  "provider": "Linear",
+  "version": "1.0.0",
+  "description": "Linear is a modern project management tool for software teams. Create issues, track progress, and manage projects with powerful workflows and integrations.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_LINEAR_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_LINEAR_CLIENT_SECRET }}",
+      "scope": "read write issues:create comments:create timeSchedule:write",
+      "authorize_url": "https://linear.app/oauth/authorize",
+      "access_token_url": "https://api.linear.app/oauth/token",
+      "refresh_token_url": "https://api.linear.app/oauth/token",
+      "revoke_url": "https://api.linear.app/oauth/revoke"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": ["Productivity", "Project Management", "Development"],
+  "visibility": "public",
+  "active": true
+}
