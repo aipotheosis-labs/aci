@@ -151,11 +151,11 @@ async def _refresh_oauth2_access_token(
     oauth2_manager = OAuth2Manager(
         app_name=app_name,
         client_id=oauth2_scheme_credentials.client_id,
-        client_secret=oauth2_scheme_credentials.client_secret,
         scope=oauth2_scheme_credentials.scope,
         authorize_url=oauth2_scheme.authorize_url,
         access_token_url=oauth2_scheme.access_token_url,
         refresh_token_url=oauth2_scheme.refresh_token_url,
+        client_secret=oauth2_scheme_credentials.client_secret,
         token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
     )
 

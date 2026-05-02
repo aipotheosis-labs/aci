@@ -19,9 +19,17 @@ def filter_visible_properties(parameters_schema: dict) -> dict:
         if schema.get("type") != "object":
             return schema
 
-        visible: list[str] = schema.pop("visible", [])  # remove visible field itself
+        visible: list[str] | None = schema.pop(
+            "visible", None
+        )  # use pop to remove visible field itself
         properties: dict | None = schema.get("properties")
         required: list[str] | None = schema.get("required")
+
+        # NOTE: if visible is not present, assume all properties are visible
+        # TODO: this is a temporary backward compatibility fix to handle the case where functions of connector or mcp protocol,
+        # where the visible field should not be defined. Ideally we only call this function for functions of REST protocol.
+        if visible is None:
+            visible = list(schema.get("properties", {}).keys())
 
         # only continue if properties are defined
         if properties is not None:

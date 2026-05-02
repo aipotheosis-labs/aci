@@ -5,6 +5,7 @@ import jsonschema
 
 from aci.common import processor
 from aci.common.db.sql_models import Function, LinkedAccount
+from aci.common.enums import Protocol
 from aci.common.exceptions import InvalidFunctionInput
 from aci.common.logging_setup import get_logger
 from aci.common.schemas.function import FunctionExecutionResult
@@ -51,6 +52,8 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
         try:
             jsonschema.validate(
                 instance=function_input,
+                # TODO: ideally filter_visible_properties only applies to functions of REST protocol. But we have visible field in connector
+                # based functions as well, so we need to keep it for now until we remove it from all existing non-rest functions.
                 schema=processor.filter_visible_properties(function.parameters),
             )
         except jsonschema.ValidationError as e:
@@ -67,13 +70,16 @@ class FunctionExecutor(ABC, Generic[TScheme, TCred]):
         )
 
         # inject non-visible defaults, note that should pass the original parameters schema not just visible ones
-        function_input = processor.inject_required_but_invisible_defaults(
-            function.parameters, function_input
-        )
-        logger.debug(
-            f"Function_input after injecting defaults, function_name={function.name}, "
-            f"function_input={function_input}"
-        )
+        # NOTE: only inject defaults for functions of REST protocol.
+        # TODO: clean this up.
+        if function.protocol == Protocol.REST:
+            function_input = processor.inject_required_but_invisible_defaults(
+                function.parameters, function_input
+            )
+            logger.debug(
+                f"Function_input after injecting defaults, function_name={function.name}, "
+                f"function_input={function_input}"
+            )
 
         # remove None values from the input
         # TODO: better way to remove None values? and if it's ok to remove all of them?
