@@ -12,6 +12,11 @@ from .types import ClientMessage
 
 logger = get_logger(__name__)
 
+# OpenAI API has limits on tool count and total token size of tool definitions.
+# Empirically, requests fail around 128+ tools or when tool definitions exceed ~200k tokens.
+# Using a conservative limit to prevent cryptic API errors.
+MAX_TOOLS = 64
+
 
 def convert_to_openai_messages(messages: list[ClientMessage]) -> list[ChatCompletionMessageParam]:
     """
@@ -69,7 +74,19 @@ async def openai_chat_stream(
     Args:
         messages: List of chat messages
         tools: List of tools to use
+
+    Raises:
+        ValueError: If too many tools are selected, exceeding API limits.
     """
+    if len(tools) > MAX_TOOLS:
+        logger.warning(
+            f"Tool limit exceeded: {len(tools)} tools requested, max is {MAX_TOOLS}"
+        )
+        raise ValueError(
+            f"Too many tools selected ({len(tools)}). Maximum allowed is {MAX_TOOLS}. "
+            "Please reduce the number of selected functions or apps."
+        )
+
     client = OpenAI(api_key=config.OPENAI_API_KEY)
 
     # TODO: support different meta function mode ACI_META_FUNCTIONS_SCHEMA_LIST

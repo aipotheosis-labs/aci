@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 from openai import OpenAI
 from pydantic import BaseModel
@@ -12,6 +12,7 @@ from aci.server import config
 from aci.server import dependencies as deps
 from aci.server.agent.prompt import (
     ClientMessage,
+    MAX_TOOLS,
     convert_to_openai_messages,
     openai_chat_stream,
 )
@@ -61,6 +62,13 @@ async def handle_chat(
     tools = [
         func for func in selected_functions if isinstance(func, OpenAIResponsesFunctionDefinition)
     ]
+
+    if len(tools) > MAX_TOOLS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Too many tools selected ({len(tools)}). Maximum allowed is {MAX_TOOLS}. "
+            "Please reduce the number of selected functions or apps.",
+        )
 
     response = StreamingResponse(openai_chat_stream(openai_messages, tools=tools))
     response.headers["x-vercel-ai-data-stream"] = "v1"
