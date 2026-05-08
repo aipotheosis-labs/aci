@@ -3,7 +3,6 @@ from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
-from openai import OpenAI
 from sqlalchemy.orm import Session
 
 from aci.common import processor
@@ -22,6 +21,7 @@ from aci.common.exceptions import (
     LinkedAccountNotFound,
 )
 from aci.common.logging_setup import get_logger
+from aci.common.openai_client import OpenAI, create_openai_client
 from aci.common.schemas.function import (
     AnthropicFunctionDefinition,
     BasicFunctionDefinition,
@@ -44,7 +44,7 @@ router = APIRouter()
 logger = get_logger(__name__)
 # TODO: will this be a bottleneck and problem if high concurrent requests from users?
 # TODO: should probably be a singleton and inject into routes, shared access with Apps route
-openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
+openai_client = create_openai_client(api_key=config.OPENAI_API_KEY)
 
 
 @router.get("", response_model=list[FunctionDetails])
