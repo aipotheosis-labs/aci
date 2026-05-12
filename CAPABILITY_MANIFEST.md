@@ -6,7 +6,7 @@ ACI provides 600+ tools for AI agents. The Capability Manifest Protocol (CC BY 4
 
 ACI's semantic search finds the right tool. A Capability Manifest proves an agent can actually use it:
 
-```
+```text
 ACI tool discovery    →  "Here's the Gmail send function"
 Capability Manifest   →  "This agent is verified to use Gmail send responsibly"
 ```
@@ -45,12 +45,12 @@ Each capability entry includes tool identity, verification proof, and optional c
 
 The Capability Manifest specification is open source:
 
-- **Spec:** https://workswithagents.com/specs/capability-manifest.md (CC BY 4.0)
-- **Python SDK:** `pip install works-with-agents`
-- **Reference implementations:** 6 languages
+- **Spec:** https://workswithagents.dev/specs/capability-manifest (CC BY 4.0)
+- **Python SDK:** `pip install workswithagents`
+- **Reference implementations:** [6 languages](https://github.com/workswithagents/works-with-agents) (Python, TypeScript, Go, Rust, Shell, C#)
 
 ## Related Specs
 
-- [Identity Protocol](https://workswithagents.com/specs/identity.md) — Ed25519 agent identity (required for manifest signing)
-- [Trust Score](https://workswithagents.com/specs/trust-score.md) — Agent reputation scoring
-- [Onboarding Protocol](https://workswithagents.com/specs/onboarding.md) — Structured agent provisioning
+- [Identity Protocol](https://workswithagents.dev/specs/identity.md) — Ed25519 agent identity (required for manifest signing)
+- [Trust Score](https://workswithagents.dev/specs/trust-score.md) — Agent reputation scoring
+- [Onboarding Protocol](https://workswithagents.dev/specs/onboarding.md) — Structured agent provisioning
