@@ -1,0 +1,29 @@
+{
+    "name": "INSTAGRAM",
+    "display_name": "Instagram",
+    "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/instagram.svg",
+    "provider": "Meta Platforms, Inc.",
+    "version": "1.0.0",
+    "description": "The Instagram API allows developers to access and manage Instagram resources programmatically. It provides functionality for publishing content, retrieving user information, fetching post data, tracking user feeds, and managing direct messages through RESTful HTTP calls.",
+    "security_schemes": {
+      "oauth2": {
+        "location": "header",
+        "name": "Authorization",
+        "prefix": "Bearer",
+        "client_id": "{{ AIPOLABS_INSTAGRAM_APP_CLIENT_ID }}",
+        "client_secret": "{{ AIPOLABS_INSTAGRAM_APP_CLIENT_SECRET }}",
+        "scope": "instagram_business_basic instagram_business_content_publish instagram_business_manage_messages instagram_business_manage_comments instagram_business_manage_insights",
+        "authorize_url": "https://www.instagram.com/oauth/authorize",
+        "access_token_url": "https://api.instagram.com/oauth/access_token",
+        "refresh_token_url": "https://graph.instagram.com/refresh_access_token",
+        "custom_data": {
+          "exchange_token_url": "https://graph.instagram.com/access_token"
+        },
+        "token_endpoint_auth_method": "client_secret_post"
+      }
+    },
+    "default_security_credentials_by_scheme": {},
+    "categories": ["Social Media"],
+    "visibility": "public",
+    "active": true
+  }
