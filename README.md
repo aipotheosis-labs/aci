@@ -93,6 +93,142 @@ To run the full ACI.dev platform (backend server and frontend portal) locally, f
 - **Backend:** [backend/README.md](backend/README.md)
 - **Frontend:** [frontend/README.md](frontend/README.md)
 
+## ❓ FAQ
+
+<details>
+<summary><strong>What is ACI.dev?</strong></summary>
+
+ACI.dev is an open-source tool-calling platform that connects **600+ tools** to any agentic IDE or custom AI agent through a unified interface. It provides:
+
+- **Unified MCP Server**: Single MCP server exposing all 600+ integrations
+- **Lightweight SDKs**: Python & TypeScript SDKs for direct function calling
+- **Multi-tenant Auth**: Built-in OAuth flows and secrets management
+- **Granular Permissions**: Natural language permission boundaries
+- **Dynamic Tool Discovery**: Find the right tools without overwhelming LLM context
+
+</details>
+
+<details>
+<summary><strong>How does ACI.dev compare to other tool-calling solutions?</strong></summary>
+
+| Feature | ACI.dev | LangChain Tools | CrewAI Tools | Custom MCP Servers |
+|---------|---------|-----------------|--------------|-------------------|
+| Built-in Auth | ✅ OAuth + Secrets | ❌ Manual setup | ❌ Manual setup | ❌ Manual setup |
+| Tool Count | 600+ | ~50 built-in | ~30 built-in | Build yourself |
+| MCP Support | ✅ Unified MCP | ❌ No MCP | ❌ No MCP | ✅ Single-purpose |
+| Multi-tenant | ✅ Yes | ❌ No | ❌ No | ❌ No |
+| Open Source | ✅ Apache 2.0 | ✅ MIT | ✅ MIT | Varies |
+
+</details>
+
+<details>
+<summary><strong>What are Key Features?</strong></summary>
+
+| Feature | Description |
+|---------|-------------|
+| **600+ Integrations** | Connect to popular services (Google, Slack, GitHub, Notion, etc.) |
+| **Flexible Access** | Unified MCP server OR lightweight SDK |
+| **Multi-tenant Auth** | OAuth flows for developers AND end-users |
+| **Enhanced Reliability** | Intent-aware tool discovery, permission boundaries |
+| **Framework Agnostic** | Works with any LLM framework (LangChain, CrewAI, custom) |
+| **100% Open Source** | Backend, dev portal, integrations - Apache 2.0 |
+
+</details>
+
+<details>
+<summary><strong>How to Get Started?</strong></summary>
+
+**Option 1: Unified MCP Server** (Recommended for agentic IDEs)
+
+```bash
+# Add to your Claude Code/Cursor/Windsurf config
+{
+  "mcpServers": {
+    "aci": {
+      "url": "https://mcp.aci.dev"
+    }
+  }
+}
+```
+
+**Option 2: Python SDK**
+
+```bash
+pip install aci-sdk
+```
+
+```python
+from aci import ACI
+
+aci = ACI(api_key="your-api-key")
+tools = aci.get_tools(linked_account_owner_id="user-123")
+```
+
+**Option 3: Local Development**
+
+```bash
+git clone https://github.com/aipotheosis-labs/aci.git
+cd aci
+# See backend/README.md and frontend/README.md for setup
+```
+
+</details>
+
+<details>
+<summary><strong>What are Common Use Cases?</strong></summary>
+
+| Use Case | Description |
+|----------|-------------|
+| **VibeOps** | Automate devOps with Vercel, Supabase, Cloudflare, Sentry access |
+| **Personal Assistant** | Search web, manage calendar, send emails, interact with SaaS |
+| **Research Agent** | Research topics and sync to Notion, Google Sheets |
+| **Outbound Sales** | Lead generation, email outreach, CRM updates |
+| **Customer Support** | Answer questions, manage tickets, perform actions |
+
+</details>
+
+<details>
+<summary><strong>Available Tools & Integrations?</strong></summary>
+
+See full list at [aci.dev/tools](https://www.aci.dev/tools). Popular categories:
+
+- **Communication**: Slack, Discord, Email, Twilio
+- **Productivity**: Google Calendar, Notion, Google Sheets, Asana
+- **DevOps**: GitHub, Vercel, Supabase, Cloudflare, Sentry
+- **Search**: Brave Search, Tavily, Exa
+- **AI/ML**: OpenAI, Anthropic, Hugging Face
+- **Finance**: Stripe, Plaid
+
+</details>
+
+<details>
+<summary><strong>License & Contributing?</strong></summary>
+
+- **License**: Apache 2.0
+- **Contributing**: See [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Integration Requests**: Request new tools via GitHub Issues or Discord
+
+</details>
+
+<details>
+<summary><strong>Help & Resources?</strong></summary>
+
+| Resource | Link |
+|----------|------|
+| Documentation | [aci.dev/docs](https://www.aci.dev/docs) |
+| Managed Service | [aci.dev](https://www.aci.dev/) |
+| Python SDK | [aci-python-sdk](https://github.com/aipotheosis-labs/aci-python-sdk) |
+| TypeScript SDK | [aci-typescript-sdk](https://github.com/aipotheosis-labs/aci-typescript-sdk) |
+| Unified MCP | [aci-mcp](https://github.com/aipotheosis-labs/aci-mcp) |
+| Agent Examples | [aci-agents](https://github.com/aipotheosis-labs/aci-agents) |
+| Discord | [Join Community](https://discord.com/invite/UU2XAnfHJh) |
+| Twitter/X | [@AipoLabs](https://x.com/AipoLabs) |
+| LinkedIn | [ACI.dev](https://www.linkedin.com/company/aci-dev-by-aipolabs) |
+
+</details>
+
+---
+
 ## 👋 Contributing
 
 We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
