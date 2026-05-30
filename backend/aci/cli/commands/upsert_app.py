@@ -5,7 +5,6 @@ from uuid import UUID
 import click
 from deepdiff import DeepDiff
 from jinja2 import Environment, FileSystemLoader, StrictUndefined, Template
-from openai import OpenAI
 from rich.console import Console
 from sqlalchemy.orm import Session
 
@@ -13,11 +12,12 @@ from aci.cli import config
 from aci.common import embeddings, utils
 from aci.common.db import crud
 from aci.common.db.sql_models import App
+from aci.common.openai_client import create_openai_client
 from aci.common.schemas.app import AppEmbeddingFields, AppUpsert
 
 console = Console()
 
-openai_client = OpenAI(api_key=config.OPENAI_API_KEY)
+openai_client = create_openai_client(api_key=config.OPENAI_API_KEY)
 
 
 @click.command()

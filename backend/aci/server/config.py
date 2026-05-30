@@ -1,7 +1,22 @@
+import os
+
 from aci.common.utils import check_and_get_env_variable, construct_db_url
 
 ENVIRONMENT = check_and_get_env_variable("SERVER_ENVIRONMENT")
 
+# OpenAI API providers related configurations #
+# Additional parameters for the openai_client
+# choose between openai (compatible) or azure
+OPENAI_CLIENT_TYPE = os.getenv("OPENAI_CLIENT_TYPE", "openai")
+# Support openai compatible end points
+OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL", None)
+# Azure - OpenAI Endpoint resource e.g.g https://<your_resource>.openai.azure.com/
+AZURE_OPENAI_ENDPOINT = os.getenv("AZURE_OPENAI_ENDPOINT", None)
+# Optional, API Version can be used when reference Azure or OpenAI
+# Replace with your actual OpenAI API version.
+OPENAI_API_VERSION = os.getenv("OPENAI_API_VERSION", None)
+OPENAI_ORG_ID = os.getenv("OPENAI_ORG_ID", None)
+OPENAI_PROJECT_ID = os.getenv("OPENAI_PROJECT_ID", None)
 # LLM
 OPENAI_API_KEY = check_and_get_env_variable("SERVER_OPENAI_API_KEY")
 OPENAI_EMBEDDING_MODEL = check_and_get_env_variable("SERVER_OPENAI_EMBEDDING_MODEL")
