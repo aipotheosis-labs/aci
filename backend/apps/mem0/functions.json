@@ -50,7 +50,8 @@
                         },
                         "user_id": {
                             "type": "string",
-                            "description": "Unique identifier for the user"
+                            "description": "Unique identifier for the user",
+                            "default": "{{linked_account_owner_id}}"
                         },
                         "agent_id": {
                             "type": "string",
@@ -70,7 +71,7 @@
                         }
                     },
                     "required": ["messages", "user_id"],
-                    "visible": ["messages", "user_id", "agent_id", "run_id"],
+                    "visible": ["messages", "agent_id", "run_id"],
                     "additionalProperties": false
                 }
             },
@@ -118,11 +119,12 @@
                             "properties": {
                                 "user_id": {
                                     "type": "string",
-                                    "description": "Filter memories by a specific user ID"
+                                    "description": "Filter memories by a specific user ID",
+                                    "default": "{{linked_account_owner_id}}"
                                 }
                             },
                             "required": ["user_id"],
-                            "visible": ["user_id"],
+                            "visible": [],
                             "description": "Filters to apply to the memory search",
                             "additionalProperties": true
                         },
@@ -177,11 +179,12 @@
                             "properties": {
                                 "user_id": {
                                     "type": "string",
-                                    "description": "Filter memories by a specific user ID"
+                                    "description": "Filter memories by a specific user ID",
+                                    "default": "{{linked_account_owner_id}}"
                                 }
                             },
                             "required": ["user_id"],
-                            "visible": ["user_id"],
+                            "visible": [],
                             "description": "Advanced filters using AND/OR logic and comparison operators",
                             "additionalProperties": true
                         },
