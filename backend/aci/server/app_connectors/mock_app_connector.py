@@ -38,7 +38,7 @@ class MockAppConnector(AppConnectorBase):
         input_int: int,
         input_bool: bool,
         input_list: list[str],
-        input_required_invisible_string: str,
+        input_optional_string: str | None = "default_value_for_optional_string",
     ) -> dict[str, Any]:
         """Test function that returns the input parameter."""
         return {
@@ -46,7 +46,7 @@ class MockAppConnector(AppConnectorBase):
             "input_int": input_int,
             "input_bool": input_bool,
             "input_list": input_list,
-            "input_required_invisible_string": input_required_invisible_string,
+            "input_optional_string": input_optional_string,
             "security_scheme": self.linked_account.security_scheme,
             "security_scheme_cls": type(self.security_scheme).__name__,
             "security_credentials_cls": type(self.security_credentials).__name__,

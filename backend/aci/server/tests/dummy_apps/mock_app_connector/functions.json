@@ -29,15 +29,13 @@
                         "type": "string"
                     }
                 },
-                "input_required_invisible_string": {
+                "input_optional_string": {
                     "type": "string",
-                    "description": "The required but invisible (to LLM) input string to be echoed back.",
-                    "default": "default_string_value"
+                    "description": "The optional input string to be echoed back."
                 }
             },
-            "required": ["input_string", "input_int", "input_bool", "input_list", "input_required_invisible_string"],
-            "visible": ["input_string", "input_int", "input_bool", "input_list"],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "required": ["input_string", "input_int", "input_bool", "input_list"]
         }
     },
     {

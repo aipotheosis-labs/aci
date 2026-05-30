@@ -29,6 +29,7 @@ class Protocol(StrEnum):
 
     REST = "rest"
     CONNECTOR = "connector"
+    MCP = "mcp"
     # GRAPHQL = "graphql"
     # WEBSOCKET = "websocket"
     # GRPC = "grpc"

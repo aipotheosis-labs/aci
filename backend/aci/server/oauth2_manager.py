@@ -18,11 +18,11 @@ class OAuth2Manager:
         self,
         app_name: str,
         client_id: str,
-        client_secret: str,
         scope: str,
         authorize_url: str,
         access_token_url: str,
         refresh_token_url: str,
+        client_secret: str | None = None,
         token_endpoint_auth_method: str | None = None,
     ):
         """
@@ -31,11 +31,11 @@ class OAuth2Manager:
         Args:
             app_name: The name of the ACI.dev App
             client_id: The client ID of the OAuth2 client
-            client_secret: The client secret of the OAuth2 client
             scope: The scope of the OAuth2 client
             authorize_url: The URL of the OAuth2 authorization server
             access_token_url: The URL of the OAuth2 access token server
             refresh_token_url: The URL of the OAuth2 refresh token server
+            client_secret: The client secret of the OAuth2 client, optional for mcp server based app which use dynamic client registration
             token_endpoint_auth_method:
                 client_secret_basic (default) | client_secret_post | none
                 Additional options can be achieved by registering a custom auth method
@@ -98,6 +98,7 @@ class OAuth2Manager:
         # - "scope" can be specified here
         # - "response_type" can be specified here (default is "code")
         # - and additional options can be specified here (like access_type, prompt, etc.)
+        # TODO: might need to add "resource" as it is required for MCP spec.
         authorization_url, _ = self.oauth2_client.create_authorization_url(
             url=self.authorize_url,
             redirect_uri=redirect_uri,
