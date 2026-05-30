@@ -21,12 +21,14 @@ interface AgentState {
   apps: App[];
   appFunctions: AppFunction[];
   loadingFunctions: boolean;
+  currentProjectId: string | null;
   setSelectedApps: (apps: string[]) => void;
   setSelectedLinkedAccountOwnerId: (id: string) => void;
   setAllowedApps: (apps: string[]) => void;
   setSelectedFunctions: (functions: string[]) => void;
   setSelectedAgent: (id: string) => void;
   setAgents: (agents: Agent[]) => void;
+  setCurrentProjectId: (id: string | null) => void;
   getApiKey: (activeProject: Project) => string;
   fetchLinkedAccounts: (apiKey: string) => Promise<LinkedAccount[]>;
   getUniqueLinkedAccounts: () => LinkedAccount[];
@@ -35,6 +37,7 @@ interface AgentState {
   fetchAppFunctions: (apiKey: string) => Promise<AppFunction[]>;
   getAvailableAppFunctions: () => AppFunction[];
   initializeFromProject: (project: Project) => void;
+  initializeAgent: (activeProject: Project) => void;
 }
 
 export const useAgentStore = create<AgentState>()(
@@ -50,6 +53,7 @@ export const useAgentStore = create<AgentState>()(
       apps: [],
       appFunctions: [],
       loadingFunctions: false,
+      currentProjectId: null,
       setSelectedApps: (apps: string[]) =>
         set((state) => ({ ...state, selectedApps: apps })),
       setSelectedLinkedAccountOwnerId: (id: string) =>
@@ -62,8 +66,10 @@ export const useAgentStore = create<AgentState>()(
         set((state) => ({ ...state, selectedAgent: id })),
       setAgents: (agents: Agent[]) =>
         set((state) => ({ ...state, agents: agents })),
+      setCurrentProjectId: (id: string | null) =>
+        set((state) => ({ ...state, currentProjectId: id })),
       getApiKey: (activeProject: Project) => {
-        let selectedAgent = get().selectedAgent;
+        const selectedAgent = get().selectedAgent;
         const agentExists = activeProject.agents?.some(
           (agent) => agent.id === selectedAgent,
         );
@@ -73,16 +79,10 @@ export const useAgentStore = create<AgentState>()(
           activeProject.agents &&
           activeProject.agents.length > 0
         ) {
-          selectedAgent = activeProject.agents[0].id;
-          set((state) => ({
-            ...state,
-            selectedAgent,
-            allowedApps: activeProject.agents[0].allowed_apps || [],
-          }));
+          return getApiKey(activeProject, activeProject.agents[0].id);
         }
 
-        const apiKey = getApiKey(activeProject, selectedAgent);
-        return apiKey;
+        return getApiKey(activeProject, selectedAgent);
       },
       fetchLinkedAccounts: async (apiKey: string) => {
         try {
@@ -176,9 +176,6 @@ export const useAgentStore = create<AgentState>()(
       },
       initializeFromProject: (project: Project) => {
         if (project?.agents && project.agents.length > 0) {
-          // After the selected agent's loaded from session storage,
-          // we need to check if the selected agent is still in the project.
-          // If not, we need to set the default agent to the first agent in the project.
           const currentSelectedAgent = get().selectedAgent;
           let selectedAgent = currentSelectedAgent;
 
@@ -195,6 +192,32 @@ export const useAgentStore = create<AgentState>()(
             allowedApps:
               project.agents.find((agent) => agent.id === selectedAgent)
                 ?.allowed_apps || [],
+            currentProjectId: project.id,
+            // Clear these when switching projects
+            apps: [],
+            appFunctions: [],
+            linkedAccounts: [],
+            selectedApps: [],
+            selectedFunctions: [],
+            selectedLinkedAccountOwnerId: "",
+          }));
+        }
+      },
+      initializeAgent: (activeProject: Project) => {
+        const selectedAgent = get().selectedAgent;
+        const agentExists = activeProject.agents?.some(
+          (agent) => agent.id === selectedAgent,
+        );
+
+        if (
+          !agentExists &&
+          activeProject.agents &&
+          activeProject.agents.length > 0
+        ) {
+          set((state) => ({
+            ...state,
+            selectedAgent: activeProject.agents[0].id,
+            allowedApps: activeProject.agents[0].allowed_apps || [],
           }));
         }
       },
@@ -207,7 +230,23 @@ export const useAgentStore = create<AgentState>()(
         selectedLinkedAccountOwnerId: state.selectedLinkedAccountOwnerId,
         selectedFunctions: state.selectedFunctions,
         selectedAgent: state.selectedAgent,
+        currentProjectId: state.currentProjectId,
       }),
+      onRehydrateStorage: () => (state) => {
+        // Clear state if project ID doesn't match
+        if (
+          state &&
+          state.currentProjectId !== window.location.pathname.split("/")[2]
+        ) {
+          state.selectedApps = [];
+          state.selectedFunctions = [];
+          state.selectedLinkedAccountOwnerId = "";
+          state.selectedAgent = "";
+          state.apps = [];
+          state.appFunctions = [];
+          state.linkedAccounts = [];
+        }
+      },
     },
   ),
 );
