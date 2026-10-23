@@ -48,8 +48,7 @@ export type DashboardDateRange = {
 };
 
 export type DateRangeAggregationOption =
-  | DashboardDateRangeAggregationOption
-  | TableDateRangeAggregationOption;
+  DashboardDateRangeAggregationOption | TableDateRangeAggregationOption;
 
 export type DashboardDateRangeOptions =
   | DashboardDateRangeAggregationOption

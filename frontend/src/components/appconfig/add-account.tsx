@@ -107,9 +107,7 @@ export function AddAccountForm({ appInfos }: AddAccountProps) {
     defaultValues: {
       appName: appInfos[0].name,
       authType: Object.keys(appInfos[0].supported_security_schemes)[0] as
-        | "api_key"
-        | "oauth2"
-        | "no_auth",
+        "api_key" | "oauth2" | "no_auth",
       linkedAccountOwnerId: "",
       apiKey: "",
     },

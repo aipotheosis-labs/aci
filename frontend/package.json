@@ -88,7 +88,7 @@
     "eslint-config-next": "15.1.5",
     "jsdom": "^26.0.0",
     "postcss": "^8",
-    "prettier": "^3.9.10",
+    "prettier": "3.9.10",
     "tailwindcss": "^4.1.11",
     "typescript": "^5",
     "vite-tsconfig-paths": "^5.1.4",
