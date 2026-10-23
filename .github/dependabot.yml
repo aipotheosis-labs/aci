@@ -28,6 +28,9 @@ updates:
         versions: [">=2.1"]
       - dependency-name: "logfire"
         versions: [">=5"]
+      # authlib >= 1.8 switches to httpx2 when installed, which respx can't mock in tests
+      - dependency-name: "authlib"
+        versions: [">=1.8"]
     # Formatter/linter/type-checker bumps get their own PR (they need code reformatting);
     # library minor/patch bumps are grouped; majors arrive as individual PRs for review.
     # A dependency joins the first group it matches, so tooling must come first.
