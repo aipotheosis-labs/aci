@@ -8,7 +8,7 @@ dependencies = [
     "fastapi[standard]>=0.115.12",
     "uvicorn[standard]>=0.31.1",
     "pydantic>=2.14.1",
-    "sqlalchemy>=2.1.5",
+    "sqlalchemy>=2.0.40,<2.1",
     "pgvector>=0.5.1",
     "authlib>=1.9.1",
     "psycopg[binary]>=3.3.6",
@@ -24,7 +24,7 @@ dependencies = [
     "jinja2>=3.1.6",
     "deepdiff>=8.6.2",
     "python-json-logger>=3.3.0",
-    "logfire[fastapi,sqlalchemy]>=3.16.0",
+    "logfire[fastapi,sqlalchemy]>=3.16.0,<5",
     "sentry-sdk[fastapi]>=2.26.1",
     "google-api-python-client>=2.201.0",
     "aws-encryption-sdk[mpl]>=4.0.1",
@@ -45,7 +45,7 @@ dev = [
     "pytest-subtests>=0.15.0",
     "mypy>=1.15.0",
     "alembic>=1.20.0",
-    "ruff>=0.17.1",
+    "ruff==0.17.1",
     "pre-commit>=4.7.0",
     "responses>=0.26.3",
     "respx>=0.23.1",
@@ -83,7 +83,9 @@ select = [
 
 # N501 is line to long error, we current have 200 comments that are longer than 100
 # characters, need to fix them gradually. Ignoring this error for now.
-ignore = ["W", "D", "ERA001", "N806", "E501", "N805", "RUF012"]
+# UP046 (PEP 695 generic syntax, added in ruff 0.12) would require refactoring the
+# function executors' shared TypeVars; keep classic Generic[...] for now.
+ignore = ["W", "D", "ERA001", "N806", "E501", "N805", "RUF012", "UP046"]
 
 [tool.ruff.format]
 quote-style = "double"
