@@ -1,0 +1,40 @@
+# Dependabot version-update configuration.
+# NOTE: Dependabot *security* updates (CVE-driven PRs) are raised immediately
+# regardless of these schedules; the intervals below only control proactive
+# version bumps.
+version: 2
+
+updates:
+  # GitHub Actions used by CI workflows (.github/workflows/*)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    # Group all action bumps into a single PR to reduce noise
+    groups:
+      actions:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Backend Python dependencies (uv.lock + pyproject.toml)
+  - package-ecosystem: "uv"
+    directory: "/backend"
+    schedule:
+      interval: "monthly"
+    groups:
+      python:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Frontend dependencies (package-lock.json)
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "monthly"
+    groups:
+      npm:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore(deps)"
