@@ -33,7 +33,10 @@ services:
     restart: no
 
   aws:
-    image: localstack/localstack
+    # Pinned: starting with 2026.03.0, localstack/localstack is a unified image that
+    # requires a LOCALSTACK_AUTH_TOKEN to start (exits with code 55 without one).
+    # 4.14.0 is the last Community image that runs without a token.
+    image: localstack/localstack:4.14.0
     ports:
       - "4566:4566"
     environment:
