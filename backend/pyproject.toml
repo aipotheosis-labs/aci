@@ -53,7 +53,7 @@ dev = [
     "google-api-python-client-stubs>=1.29.0",
 
     # eval dependencies
-    "datasets>=3.6.0",
+    "datasets>=5.1.0",
     "huggingface-hub>=0.31.2",
     "pandas>=2.2.3",
     "pandas-stubs>=2.2.3.250308",
