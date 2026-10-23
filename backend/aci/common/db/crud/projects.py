@@ -5,9 +5,10 @@ TODO: function todelete project and all related data (app_configurations, agents
 
 import secrets
 from datetime import UTC, datetime, timedelta
+from typing import Any, cast
 from uuid import UUID
 
-from sqlalchemy import func, select, update
+from sqlalchemy import CursorResult, func, select, update
 from sqlalchemy.orm import Session
 
 from aci.common import encryption
@@ -157,7 +158,8 @@ def increment_api_monthly_quota_usage(
         )
     )
 
-    result = db_session.execute(statement)
+    # UPDATE statements return a CursorResult, which exposes rowcount
+    result = cast(CursorResult[Any], db_session.execute(statement))
 
     # If rowcount is 0, the update didn't happen (quota would be exceeded)
     if result.rowcount == 0:
