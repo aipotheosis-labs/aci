@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v7
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0  # Fetches all history for all branches and tags
 
@@ -54,7 +54,7 @@ jobs:
           bash .github/scripts/integration_generate_pr_content.sh "$PR_TITLE" "$PR_BODY" "$CHANGED_FILES" "$BASE_SHA" "$HEAD_SHA"
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
         with:
           python-version: '3.12'
 
@@ -71,7 +71,7 @@ jobs:
           python .github/scripts/integration_pr_review.py
 
       - name: Read Review and Post Comment
-        uses: actions/github-script@v9
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         if: steps.changed-files.outputs.skip != 'true'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

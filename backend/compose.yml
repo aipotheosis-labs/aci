@@ -3,7 +3,7 @@ name: aci
 services:
   db:
     # Note: we need to use the pgvector/pgvector:pg17 image to use the pgvector extension, instead of the official postgres image
-    image: pgvector/pgvector:pg17
+    image: pgvector/pgvector:pg17@sha256:ac08538c6f8b9904c33c8224c5e5706dbe760aca29db1d096972b4052c22a75d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d local_db"]
       interval: 1s
@@ -19,7 +19,7 @@ services:
     restart: no
 
   test-db:
-    image: pgvector/pgvector:pg17
+    image: pgvector/pgvector:pg17@sha256:ac08538c6f8b9904c33c8224c5e5706dbe760aca29db1d096972b4052c22a75d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d local_db"]
       interval: 1s
@@ -36,7 +36,7 @@ services:
     # Pinned: starting with 2026.03.0, localstack/localstack is a unified image that
     # requires a LOCALSTACK_AUTH_TOKEN to start (exits with code 55 without one).
     # 4.14.0 is the last Community image that runs without a token.
-    image: localstack/localstack:4.14.0
+    image: localstack/localstack:4.14.0@sha256:3ebc37595918b8accb852f8048fef2aff047d465167edd655528065b07bc364a
     ports:
       - "4566:4566"
     environment:

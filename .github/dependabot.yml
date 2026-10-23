@@ -22,8 +22,21 @@ updates:
     directory: "/backend"
     schedule:
       interval: "monthly"
-    # Group minor/patch bumps; majors arrive as individual PRs for review
+    ignore:
+      # Held back: SQLAlchemy 2.1 and Logfire 5 introduce API/type changes we haven't migrated to yet
+      - dependency-name: "sqlalchemy"
+        versions: [">=2.1"]
+      - dependency-name: "logfire"
+        versions: [">=5"]
+      # authlib >= 1.8 switches to httpx2 when installed, which respx can't mock in tests
+      - dependency-name: "authlib"
+        versions: [">=1.8"]
+    # Formatter/linter/type-checker bumps get their own PR (they need code reformatting);
+    # library minor/patch bumps are grouped; majors arrive as individual PRs for review.
+    # A dependency joins the first group it matches, so tooling must come first.
     groups:
+      python-tooling:
+        patterns: ["ruff", "mypy", "types-*", "*-stubs", "pre-commit"]
       python:
         patterns: ["*"]
         update-types: ["minor", "patch"]
@@ -35,10 +48,44 @@ updates:
     directory: "/frontend"
     schedule:
       interval: "monthly"
-    # Group minor/patch bumps; majors arrive as individual PRs for review
+    # Formatter/linter/type-checker bumps get their own PR (they need code reformatting);
+    # library minor/patch bumps are grouped; majors arrive as individual PRs for review.
+    # A dependency joins the first group it matches, so tooling must come first.
     groups:
+      npm-tooling:
+        patterns: ["prettier", "eslint", "eslint-*", "@eslint/*", "typescript"]
       npm:
         patterns: ["*"]
         update-types: ["minor", "patch"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Backend Docker base images (Dockerfile.*), pinned by digest
+  - package-ecosystem: "docker"
+    directory: "/backend"
+    schedule:
+      interval: "monthly"
+    ignore:
+      # Stay on Python 3.12 (matches backend/.python-version); digest refreshes still apply
+      - dependency-name: "python"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+    groups:
+      docker:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Backend Compose service images (compose.yml), pinned by digest
+  - package-ecosystem: "docker-compose"
+    directory: "/backend"
+    schedule:
+      interval: "monthly"
+    ignore:
+      # LocalStack >= 2026.03 requires an auth token; stay on 4.x
+      - dependency-name: "localstack/localstack"
+        update-types: ["version-update:semver-major"]
+    groups:
+      docker-compose:
+        patterns: ["*"]
     commit-message:
       prefix: "chore(deps)"
