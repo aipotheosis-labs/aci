@@ -5,8 +5,9 @@ import { Switch as ShadcnSwitch } from "@/components/ui/switch";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-interface EnhancedSwitchProps
-  extends React.ComponentPropsWithoutRef<typeof ShadcnSwitch> {
+interface EnhancedSwitchProps extends React.ComponentPropsWithoutRef<
+  typeof ShadcnSwitch
+> {
   /** Async function to call when the switch toggles, should return a boolean indicating if the operation was successful */
   onAsyncChange?: (checked: boolean) => Promise<boolean>;
   /**
