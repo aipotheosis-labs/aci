@@ -22,9 +22,11 @@ updates:
     directory: "/backend"
     schedule:
       interval: "monthly"
+    # Group minor/patch bumps; majors arrive as individual PRs for review
     groups:
       python:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
     commit-message:
       prefix: "chore(deps)"
 
@@ -33,8 +35,10 @@ updates:
     directory: "/frontend"
     schedule:
       interval: "monthly"
+    # Group minor/patch bumps; majors arrive as individual PRs for review
     groups:
       npm:
         patterns: ["*"]
+        update-types: ["minor", "patch"]
     commit-message:
       prefix: "chore(deps)"

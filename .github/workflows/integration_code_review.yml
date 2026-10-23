@@ -6,6 +6,9 @@ on:
     paths:
       - 'apps/**'
 
+permissions:
+  contents: read
+
 jobs:
   integration-pr-review:
     runs-on: ubuntu-latest
