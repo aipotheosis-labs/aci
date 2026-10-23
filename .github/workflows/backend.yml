@@ -6,6 +6,9 @@ on:
   pull_request_target:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   lint:
     name: Format & Lint
