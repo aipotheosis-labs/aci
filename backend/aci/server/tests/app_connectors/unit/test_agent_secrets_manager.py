@@ -133,7 +133,7 @@ def test_get_credential_for_domain_not_found(secrets_manager: AgentSecretsManage
     ):
         # When
         with pytest.raises(
-            AgentSecretsManagerError, match="No credentials found for domain 'nonexistent.com'"
+            AgentSecretsManagerError, match=r"No credentials found for domain 'nonexistent.com'"
         ):
             secrets_manager.get_credential_for_domain("nonexistent.com")
 
@@ -217,7 +217,7 @@ def test_create_credential_for_domain_already_exists(
     ):
         # When
         with pytest.raises(
-            AgentSecretsManagerError, match="Credential for domain 'example.com' already exists"
+            AgentSecretsManagerError, match=r"Credential for domain 'example.com' already exists"
         ):
             secrets_manager.create_credential_for_domain("example.com", "user1", "pass1")
 
