@@ -43,7 +43,7 @@ dependencies = [
 dev = [
     "pytest>=9.1.1",
     "pytest-subtests>=0.15.0",
-    "mypy>=1.15.0",
+    "mypy>=2.4.0",
     "alembic>=1.20.0",
     "ruff==0.17.1",
     "pre-commit>=4.7.0",
@@ -56,7 +56,7 @@ dev = [
     "datasets>=5.1.0",
     "huggingface-hub>=0.31.2",
     "pandas>=2.2.3",
-    "pandas-stubs>=2.2.3.250308",
+    "pandas-stubs>=3.0.5.260914",
     "tenacity>=8.2.3",
     "tqdm>=4.70.1",
     "types-tqdm>=4.70.0.20260906",
