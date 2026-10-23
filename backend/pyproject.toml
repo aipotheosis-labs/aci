@@ -55,7 +55,7 @@ dev = [
     # eval dependencies
     "datasets>=5.1.0",
     "huggingface-hub>=0.31.2",
-    "pandas>=2.2.3",
+    "pandas>=3.0.6",
     "pandas-stubs>=2.2.3.250308",
     "tenacity>=8.2.3",
     "tqdm>=4.70.1",
