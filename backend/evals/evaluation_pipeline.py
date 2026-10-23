@@ -3,16 +3,20 @@ import os
 
 import click
 import pandas as pd
-import wandb
 
+import wandb
+from evals.intent_prompts import PROMPTS
 from evals.search_evaluator import SearchEvaluator
 from evals.synthetic_intent_generator import SyntheticIntentGenerator
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Suppress verbose httpx logging
+logging.getLogger("httpx").setLevel(logging.WARNING)
+
 DEFAULT_DATASET_ARTIFACT = "synthetic_intent_dataset"
-DEFAULT_DATASET_FILENAME = "synthetic_intents.csv"
+DEFAULT_DATASET_FILENAME = "synthetic_intents.json"
 DEFAULT_EVALUATION_MODEL = "dual-encoder-text-embedding-1024"
 
 
@@ -33,7 +37,7 @@ class EvaluationPipeline:
         openai_api_key: str,
         wandb_token: str,
         model: str = "gpt-4o-mini",
-        prompt_type: str = "task",
+        prompt_type: str = "prompt_easy",
     ):
         """
         Initialize the pipeline with configuration.
@@ -73,7 +77,93 @@ class EvaluationPipeline:
         """
         artifact = wandb.use_artifact(f"{artifact_name}:latest")
         artifact_dir = artifact.download()
-        return pd.read_csv(os.path.join(artifact_dir, dataset_filename))
+
+        dataset_path = os.path.join(artifact_dir, dataset_filename)
+        return pd.read_json(dataset_path, orient="records")
+
+    def _create_composite_artifact(
+        self,
+        dataset_artifact: str,
+        dataset_filename: str,
+        df: pd.DataFrame,
+        detailed_metrics: dict,
+        incorrect_results: list,
+    ) -> str:
+        """
+        Create a composite artifact with properly written files.
+
+        Args:
+            dataset_artifact: Name of the dataset artifact
+            dataset_filename: Filename for the dataset
+            df: DataFrame containing the dataset
+            detailed_metrics: Dictionary of detailed metrics
+            incorrect_results: List of incorrect results
+
+        Returns:
+            Name of the created artifact
+        """
+        import json
+        import os
+        import tempfile
+
+        # Create composite artifact without automatic suffixes
+        composite_artifact_name = dataset_artifact
+
+        composite_artifact = wandb.Artifact(
+            name=composite_artifact_name,
+            type="dataset",
+            description=f"Composite evaluation results for {dataset_artifact} - includes dataset, metrics, and incorrect predictions",
+        )
+
+        temp_files = []
+
+        try:
+            # Create dataset file
+            if df is not None:
+                dataset_file = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False)
+                temp_files.append(dataset_file.name)
+                # Write data and ensure it's flushed to disk
+                df.to_json(dataset_file.name, orient="records", indent=2)
+                dataset_file.close()  # Explicitly close to ensure data is written
+                composite_artifact.add_file(dataset_file.name, name=dataset_filename)
+
+            # Create metrics file
+            metrics_file = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False)
+            temp_files.append(metrics_file.name)
+            # Write data and ensure it's flushed to disk
+            with open(metrics_file.name, "w") as f:
+                json.dump(detailed_metrics, f, indent=2)
+            metrics_file.close()  # Explicitly close
+            composite_artifact.add_file(metrics_file.name, name="detailed_metrics.json")
+
+            # Create incorrect results file if any exist
+            if incorrect_results:
+                incorrect_file = tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False)
+                temp_files.append(incorrect_file.name)
+                # Write data and ensure it's flushed to disk
+                with open(incorrect_file.name, "w") as f:
+                    json.dump(incorrect_results, f, indent=2)
+                incorrect_file.close()  # Explicitly close
+                composite_artifact.add_file(incorrect_file.name, name="incorrect_results.json")
+
+            # Log the composite artifact
+            wandb.log_artifact(composite_artifact)
+
+            logger.info(
+                f"Saved composite evaluation results to artifact: {composite_artifact_name}"
+            )
+            if incorrect_results:
+                logger.info(f"Included {len(incorrect_results)} incorrect results for analysis")
+
+            return composite_artifact_name
+
+        finally:
+            # Clean up temporary files
+            for temp_file in temp_files:
+                try:
+                    os.unlink(temp_file)
+                except OSError:
+                    pass
 
     def _generate(
         self,
@@ -132,17 +222,53 @@ class EvaluationPipeline:
             num_samples=evaluation_samples,
         )
 
-        # Log metrics to wandb
-        wandb.log(metrics)
+        # Extract incorrect results for the composite artifact
+        incorrect_results = metrics.pop("incorrect_results", [])
 
-        # Log results
+        # Create detailed metrics
+        detailed_metrics = {
+            "correct": metrics["correct"],
+            "mrr": metrics["mrr"],
+            "response_time": metrics["response_time"],
+            "top_k": metrics["top_k"],
+            "avg_response_time": metrics["avg_response_time"],
+            "total_samples": metrics["total_samples"],
+            "incorrect_count": len(incorrect_results),
+            "evaluation_config": {
+                "prompt_type": self.prompt_type,
+                "model": self.model,
+                "evaluation_samples": evaluation_samples,
+                "dataset_artifact": dataset_artifact,
+            },
+        }
+
+        # Create composite artifact with all files using the new method
+        self._create_composite_artifact(
+            dataset_artifact=dataset_artifact,
+            dataset_filename=dataset_filename,
+            df=df,
+            detailed_metrics=detailed_metrics,
+            incorrect_results=incorrect_results,
+        )
+
+        # Log only summary metrics to wandb
+        summary_metrics = {
+            "correct": metrics["correct"],
+            "mrr": metrics["mrr"],
+            "avg_response_time": metrics["avg_response_time"],
+            "total_samples": metrics["total_samples"],
+            "incorrect_count": len(incorrect_results),
+        }
+        wandb.log(summary_metrics)
+
+        # Log concise results
         logger.info("Evaluation Results:")
-        logger.info(f"Accuracy: {metrics['accuracy']:.2%}")
+        logger.info(f"Correct: {metrics['correct']}")
         logger.info(f"MRR: {metrics['mrr']:.3f}")
-        logger.info(f"Top-K Accuracy: {metrics['top_k_accuracy']}")
+        logger.info(f"Top-K: {metrics['top_k']}")
         logger.info(f"Average Response Time: {metrics['avg_response_time']:.2f}s")
         logger.info(f"Total Samples: {metrics['total_samples']}")
-        logger.info(f"Correct Predictions: {metrics['correct_predictions']}")
+        logger.info(f"Incorrect Predictions: {len(incorrect_results)}")
 
         return metrics
 
@@ -182,17 +308,49 @@ class EvaluationPipeline:
                 "evaluation_samples": evaluation_samples,
                 "dataset_artifact": dataset_artifact,
                 "dataset_filename": dataset_filename,
+                "prompt_type": self.prompt_type,
+                "generation_model": self.model,
             },
         )
 
         df = None
         try:
             if generate_data:
-                df = self._generate(
-                    dataset_artifact=dataset_artifact,
-                    dataset_filename=dataset_filename,
-                    generation_limit=generation_limit,
-                )
+                # For generate-only mode, still create the dataset artifact
+                # For generate-and-evaluate mode, we'll include it in the composite evaluation artifact
+                if not evaluate_data:
+                    # Generate-only mode: create separate dataset artifact
+                    df = self._generate(
+                        dataset_artifact=dataset_artifact,
+                        dataset_filename=dataset_filename,
+                        generation_limit=generation_limit,
+                    )
+                else:
+                    # Generate-and-evaluate mode: generate but don't save separately
+                    # The dataset will be included in the composite evaluation artifact
+                    logger.info("Generating synthetic intents...")
+                    df = self.generator._fetch_app_function_data()
+
+                    if df.empty:
+                        raise ValueError(
+                            "No app and function data found in the database. Please seed the database."
+                        )
+
+                    if generation_limit:
+                        df = df[:generation_limit]
+
+                    # Generate intents
+                    from tqdm import tqdm
+
+                    from evals.intent_prompts import PROMPTS
+
+                    df[self.prompt_type] = df.apply(PROMPTS[self.prompt_type], axis=1)
+                    df["synthetic_output"] = [
+                        self.generator._generate_intent(prompt)
+                        for prompt in tqdm(df[self.prompt_type])
+                    ]
+
+                    logger.info(f"Generated {len(df)} synthetic intents")
 
             if evaluate_data:
                 self._evaluate(
@@ -214,7 +372,14 @@ class EvaluationPipeline:
     required=True,
 )
 @click.option(
-    "--dataset-artifact",
+    "--prompt-type",
+    type=click.Choice(list(PROMPTS.keys())),
+    default="prompt_easy",
+    help="Type of prompt to use for intent generation",
+    show_default=True,
+)
+@click.option(
+    "--dataset",
     default=DEFAULT_DATASET_ARTIFACT,
     help="Name of the W&B dataset artifact to use",
     show_default=True,
@@ -223,14 +388,15 @@ class EvaluationPipeline:
     "--dataset-filename",
     default=DEFAULT_DATASET_FILENAME,
     type=str,
-    help="Filename to save the generated dataset to",
+    help="Filename to save the generated dataset to (supports .json)",
     show_default=True,
 )
 @click.option("--generation-limit", type=int, help="Limit number of samples to generate")
 @click.option("--evaluation-samples", type=int, help="Limit number of samples to evaluate")
 def main(
     mode: str,
-    dataset_artifact: str,
+    prompt_type: str,
+    dataset: str,
     generation_limit: int | None,
     evaluation_samples: int | None,
     dataset_filename: str,
@@ -247,12 +413,24 @@ def main(
             "EVALS_SERVER_URL, EVALS_ACI_API_KEY, EVALS_OPENAI_KEY, and EVALS_WANDB_KEY must be set in environment"
         )
 
+    # Automatically append prompt type to dataset name for better organization
+    # BUT don't append if it's already an evaluation artifact
+    if "_evaluation" in dataset:
+        # This is already an evaluation artifact, use as-is
+        dataset_with_prompt = dataset
+    elif dataset == DEFAULT_DATASET_ARTIFACT:
+        dataset_with_prompt = f"{dataset}_{prompt_type}"
+    else:
+        # If user provided custom dataset name, still append prompt type
+        dataset_with_prompt = f"{dataset}_{prompt_type}"
+
     # Create pipeline
     pipeline = EvaluationPipeline(
         search_server_url=str(search_server_url),
         search_api_key=str(search_api_key),
         openai_api_key=str(openai_api_key),
         wandb_token=str(wandb_token),
+        prompt_type=prompt_type,
     )
 
     # Determine operation modes
@@ -261,7 +439,7 @@ def main(
 
     # Run pipeline
     pipeline.run(
-        dataset_artifact=dataset_artifact,
+        dataset_artifact=dataset_with_prompt,
         dataset_filename=dataset_filename,
         generate_data=generate_data,
         evaluate_data=evaluate_data,

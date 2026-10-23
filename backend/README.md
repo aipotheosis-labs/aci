@@ -380,7 +380,11 @@ docker compose exec runner python -m aci.cli create-app --app-file ./apps/brave_
 
 ## Running Evaluations
 
-You will need to set up the following environment variables:
+The evaluation system tests function search performance using synthetic intents. It generates realistic user queries and evaluates how well the search API finds the correct functions.
+
+### Prerequisites
+
+1. **Environment Variables**: Set up the following environment variables:
 
 ```bash
 EVALS_SERVER_URL=<your_server_url_typically_http://localhost:8000>
@@ -389,17 +393,26 @@ EVALS_OPENAI_KEY=<your_openai_api_key>
 EVALS_WANDB_KEY=<your_wandb_api_key>
 ```
 
-The evaluation results will be logged to [Weights & Biases](https://wandb.ai/aipotheosis-labs/function-search-evaluation) where you can track metrics, view experiment configurations, and analyze the results.
-
-Then, seed the database with all apps and mock credentials:
+2. **Database Setup**: Seed the database with all apps and mock credentials:
 
 ```bash
 docker compose exec runner ./scripts/seed_db.sh --all --mock
 ```
 
+### Evaluation Metrics
+
+The system tracks the following metrics:
+
+- **`correct`**: Number of queries where the expected function was found at rank 1
+- **`mrr`**: Mean Reciprocal Rank (average of 1/rank for all found functions)
+- **`response_time`**: Total response time across all queries
+- **`top_k`**: Dictionary with counts for top-1, top-3, and top-5 accuracy
+- **`avg_response_time`**: Average response time per query
+- **`total_samples`**: Total number of queries evaluated
+
 ### Running the Evaluation Pipeline
 
-To run the complete evaluation pipeline with different modes:
+The pipeline supports three modes:
 
 ```bash
 # Generate synthetic intents and evaluate them
@@ -412,25 +425,57 @@ docker compose exec runner python -m evals.evaluation_pipeline --mode generate-o
 docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only
 ```
 
-Additional flags:
+### Command Line Options
 
 ```bash
 # Specify a custom dataset artifact name (default: "synthetic_intent_dataset")
-docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset-artifact my_custom_artifact
+docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset my_custom_artifact
 
-# Specify the filename saved on the dataset artifact
-docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset-filename my_custom_dataset.csv
+# Specify the filename in the dataset artifact (default: "synthetic_intents.json")
+docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --dataset-filename intents.json
 
 # Limit the number of samples to generate
 docker compose exec runner python -m evals.evaluation_pipeline --mode generate-only --generation-limit 50
 
 # Limit the number of samples to evaluate
 docker compose exec runner python -m evals.evaluation_pipeline --mode evaluate-only --evaluation-samples 25
+
+# Specify prompt type for generation (default: "prompt_easy")
+docker compose exec runner python -m evals.evaluation_pipeline --mode generate-only --prompt-type prompt_hard
 ```
 
+### Example Usage
+
+```bash
+# Evaluate existing dataset with custom name
+docker compose exec runner python -m evals.evaluation_pipeline \
+  --mode evaluate-only \
+  --dataset synthetic_intent_dataset_prompt_hard_evaluation \
+  --dataset-filename intents.json \
+  --evaluation-samples 100
+
+# Generate new dataset with hard prompts
+docker compose exec runner python -m evals.evaluation_pipeline \
+  --mode generate-only \
+  --dataset my_custom_dataset \
+  --prompt-type prompt_hard \
+  --generation-limit 200
+```
+
+### Results and Artifacts
+
+Evaluation results are logged to [Weights & Biases](https://wandb.ai/aipotheosis-labs/function-search-evaluation) where you can:
+
+- Track metrics over time
+- View experiment configurations
+- Analyze incorrect predictions
+- Compare different models and prompt types
+- Download detailed results and datasets
+
 > [!NOTE]
-> If you use the `generate-and-evaluate` mode, the pipeline will use the freshly generated dataset directly
-> without having to reload it from Weights & Biases, which is more efficient.
+> - The system uses JSON format for all datasets (CSV support has been removed)
+> - Dataset names are used exactly as provided (no automatic suffixes)
+> - If you use `generate-and-evaluate` mode, the pipeline uses the freshly generated dataset directly without reloading from W&B, which is more efficient
 
 ## Contributing
 
