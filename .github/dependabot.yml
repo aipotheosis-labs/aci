@@ -42,3 +42,33 @@ updates:
         update-types: ["minor", "patch"]
     commit-message:
       prefix: "chore(deps)"
+
+  # Backend Docker base images (Dockerfile.*), pinned by digest
+  - package-ecosystem: "docker"
+    directory: "/backend"
+    schedule:
+      interval: "monthly"
+    ignore:
+      # Stay on Python 3.12 (matches backend/.python-version); digest refreshes still apply
+      - dependency-name: "python"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+    groups:
+      docker:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Backend Compose service images (compose.yml), pinned by digest
+  - package-ecosystem: "docker-compose"
+    directory: "/backend"
+    schedule:
+      interval: "monthly"
+    ignore:
+      # LocalStack >= 2026.03 requires an auth token; stay on 4.x
+      - dependency-name: "localstack/localstack"
+        update-types: ["version-update:semver-major"]
+    groups:
+      docker-compose:
+        patterns: ["*"]
+    commit-message:
+      prefix: "chore(deps)"
