@@ -5,7 +5,7 @@ description = "agent computer interface by aipolabs"
 authors = [{ name = "Aipolabs", email = "support@aipolabs.xyz" }]
 requires-python = ">=3.12"
 dependencies = [
-    "fastapi[standard]>=0.115.12",
+    "fastapi[standard]>=0.153.0",
     "uvicorn[standard]>=0.31.1",
     "pydantic>=2.14.1",
     "sqlalchemy>=2.0.40,<2.1",
