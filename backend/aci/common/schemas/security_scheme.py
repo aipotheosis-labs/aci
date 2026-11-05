@@ -73,6 +73,10 @@ class OAuth2Scheme(BaseModel):
         description="The authentication method for the OAuth2 token endpoint, e.g., 'client_secret_post' "
         "for some providers that require client_id/client_secret to be sent in the body of the token request, like Hubspot",
     )
+    custom_data: dict | None = Field(
+        default=None,
+        description="Custom data for OAuth2 scheme, e.g., additional URLs or configuration parameters specific to the provider",
+    )
     # NOTE: For now this field should not be provided when creating a new OAuth2 App (because the current server redirect URL should be used,
     # which is constructed dynamically).
     # It only makes sense for user to provide it in OAuth2SchemeOverride if they want whitelabeling.

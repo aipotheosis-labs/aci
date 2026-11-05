@@ -360,6 +360,7 @@ async def link_oauth2_account(
         access_token_url=oauth2_scheme.access_token_url,
         refresh_token_url=oauth2_scheme.refresh_token_url,
         token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
+        custom_data=oauth2_scheme.custom_data,
     )
 
     # create and encode the state payload.
@@ -500,6 +501,7 @@ async def linked_accounts_oauth2_callback(
         access_token_url=oauth2_scheme.access_token_url,
         refresh_token_url=oauth2_scheme.refresh_token_url,
         token_endpoint_auth_method=oauth2_scheme.token_endpoint_auth_method,
+        custom_data=oauth2_scheme.custom_data,
     )
 
     path = request.url_for(LINKED_ACCOUNTS_OAUTH2_CALLBACK_ROUTE_NAME).path
@@ -509,7 +511,7 @@ async def linked_accounts_oauth2_callback(
         code=code,
         code_verifier=state.code_verifier,
     )
-    security_credentials = oauth2_manager.parse_fetch_token_response(token_response)
+    security_credentials = await oauth2_manager.parse_fetch_token_response(token_response)
 
     # if the linked account already exists, update it, otherwise create a new one
     # TODO: consider separating the logic for updating and creating a linked account or give warning to clients
