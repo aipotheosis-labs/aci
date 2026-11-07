@@ -1,0 +1,29 @@
+{
+  "name": "FIREBASE",
+  "display_name": "Firebase",
+  "logo": "https://raw.githubusercontent.com/aipotheosis-labs/aipolabs-icons/refs/heads/main/apps/firebase.svg",
+  "provider": "Google",
+  "version": "1.0.0",
+  "description": "Firebase is a platform for building mobile and web applications. It provides real-time database, authentication, hosting, cloud functions, and other backend services.",
+  "security_schemes": {
+    "oauth2": {
+      "location": "header",
+      "name": "Authorization",
+      "prefix": "Bearer",
+      "client_id": "{{ AIPOLABS_FIREBASE_CLIENT_ID }}",
+      "client_secret": "{{ AIPOLABS_FIREBASE_CLIENT_SECRET }}",
+      "scope": "https://www.googleapis.com/auth/firebase https://www.googleapis.com/auth/datastore https://www.googleapis.com/auth/firebase.messaging",
+      "authorize_url": "https://accounts.google.com/o/oauth2/v2/auth",
+      "access_token_url": "https://oauth2.googleapis.com/token",
+      "refresh_token_url": "https://oauth2.googleapis.com/token"
+    }
+  },
+  "default_security_credentials_by_scheme": {},
+  "categories": [
+    "Backend Services",
+    "Database",
+    "Authentication"
+  ],
+  "visibility": "public",
+  "active": true
+}
